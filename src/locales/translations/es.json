@@ -1,0 +1,25 @@
+{
+    "welcome": "Educación Moderna en Heridas - con métodos innovadores de aprendizaje digital - para la Generación Z",
+    "login": {
+        "title": "Iniciar sesión",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "button": "Iniciar sesión"
+    },
+    "errors": {
+        "requiredField": "Este campo es obligatorio.",
+        "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida.",
+        "passwordTooShort": "La contraseña debe tener al menos 8 caracteres."
+    },
+    "dashboard": {
+        "greeting": "Hola, {{name}}!",
+        "overview": "Aquí está el resumen de tu panel.",
+        "logout": "Cerrar sesión"
+    },
+    "footer": {
+        "copyright": "© 2023 Tu Empresa. Todos los derechos reservados.",
+        "privacyPolicy": "Política de privacidad",
+        "termsOfService": "Términos del servicio"
+    }
+    
+}
