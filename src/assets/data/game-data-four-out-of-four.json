@@ -1,0 +1,627 @@
+[
+  {
+    "id": 1,
+    "questionText": "Wann heften sich Bakterien an eine Oberfläche?",
+    "answers": [
+      {
+        "text": "Beim Anheften",
+        "correct": true
+      },
+      {
+        "text": "In der Kolonie",
+        "correct": false,
+        "reason": "Die Koloniebildung erfolgt NACH dem Anheften (Phase 2). Bakterien heften sich initial an Oberflächen, bevor sie Kolonien bilden [S. 52]."
+      },
+      {
+        "text": "Bei der Reifung",
+        "correct": false,
+        "reason": "Die Reifung ist Phase 3 des Biofilms. Das Anheften erfolgt in Phase 1 [S. 52]."
+      },
+      {
+        "text": "Beim Verteilen",
+        "correct": false,
+        "reason": "Verteilung ist Phase 4 (Endstadium). Das Anheften ist der Startpunkt des Biofilm-Zyklus [S. 52]."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "questionText": "Wann bilden Bakterien besonders viel Schleim (Matrix) um sich herum?",
+    "answers": [
+      {
+        "text": "In der Kolonie-Phase",
+        "correct": true
+      },
+      {
+        "text": "Bei der Reifung",
+        "correct": false,
+        "reason": "In der Reifung (Phase 3) entstehen Wasserkanäle, nicht die Matrix. Die Schleimbildung ist für die Koloniebildung (Phase 2) charakteristisch [S. 52]."
+      },
+      {
+        "text": "Beim Anheften",
+        "correct": false,
+        "reason": "Beim Anheften (Phase 1) entsteht nur eine dünne Schleimschicht, keine dichte Matrix [S. 52]."
+      },
+      {
+        "text": "Beim Verteilen",
+        "correct": false,
+        "reason": "In der Verteilungsphase (Phase 4) lösen sich Bakterien vom Biofilm – die Matrix wird abgebaut, nicht aufgebaut [S. 52]."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "questionText": "Wie sprechen Bakterien im Biofilm miteinander?",
+    "answers": [
+      {
+        "text": "Mit Quorum Sensing",
+        "correct": true
+      },
+      {
+        "text": "Mit Anheftungsmolekülen",
+        "correct": false,
+        "reason": "Anheftungsmoleküle dienen der Adhäsion, nicht der Kommunikation. Quorum Sensing ist der spezifische Signalmechanismus [S. 52]."
+      },
+      {
+        "text": "Mit Oberflächenproteinen",
+        "correct": false,
+        "reason": "Oberflächenproteine sind Strukturkomponenten, keine Kommunikationsmittel. Die Interaktion erfolgt über chemische Signale (Quorum Sensing) [S. 52]."
+      },
+      {
+        "text": "Mit Wasserkanälen",
+        "correct": false,
+        "reason": "Wasserkanäle dienen dem Nährstofftransport, nicht der Zellkommunikation [S. 52]."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "questionText": "Wozu dienen die Wasserkanäle im Biofilm?",
+    "answers": [
+      {
+        "text": "Für Nährstoff- und Abfalltransport",
+        "correct": true
+      },
+      {
+        "text": "Für die Kommunikation",
+        "correct": false,
+        "reason": "Kommunikation erfolgt via Quorum Sensing, nicht durch Wasserkanäle. Diese sind rein für Transportprozesse angelegt [S. 52]."
+      },
+      {
+        "text": "Zum Anheften",
+        "correct": false,
+        "reason": "Anheften erfolgt über Adhäsionsmoleküle, nicht durch Kanäle. Wasserkanäle entstehen erst in der Reifungsphase [S. 52]."
+      },
+      {
+        "text": "Zur Schleimbildung",
+        "correct": false,
+        "reason": "Schleim (Matrix) wird in der Koloniephase produziert – nicht durch Wasserkanäle [S. 52]."
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "questionText": "Wie bewegen sich Bakterien in der letzten Phase wieder fort?",
+    "answers": [
+      {
+        "text": "Sie werden wieder beweglich",
+        "correct": true
+      },
+      {
+        "text": "Sie bleiben festsitzen",
+        "correct": false,
+        "reason": "In der Verteilungsphase (Phase 4) lösen sich Bakterien aktiv vom Biofilm – sie werden mobil [S. 52]."
+      },
+      {
+        "text": "Sie bilden eine Kolonie",
+        "correct": false,
+        "reason": "Koloniebildung ist Phase 2. In Phase 4 (Verteilung) verlassen Bakterien die Kolonie [S. 52]."
+      },
+      {
+        "text": "Sie sind von Schleim umgeben",
+        "correct": false,
+        "reason": "Schleim ist in Phase 2–3 relevant. In Phase 4 erfolgt Abbau der Matrix für die Bewegung [S. 52]."
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "questionText": "Was ist Granulation?",
+    "answers": [
+      {
+        "text": "Bildung von neuem Gewebe zur Wundauffüllung",
+        "correct": true
+      },
+      {
+        "text": "Entfernung von nekrotischem Gewebe",
+        "correct": false,
+        "reason": "Nekrosenentfernung ist Teil des Débridements, nicht der Granulation. Granulation beschreibt die Neubildung von Gewebe [S. 69]."
+      },
+      {
+        "text": "Verhornung der Haut",
+        "correct": false,
+        "reason": "Verhornung (Hyperkeratose) betrifft die Epidermis, nicht die Gewebeneubildung in der Wunde [S. 63]."
+      },
+      {
+        "text": "Ansammlung von Fibrin",
+        "correct": false,
+        "reason": "Fibrin ist ein Wundbelag, kein Zeichen von Geweberegeneration [S. 69]."
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "questionText": "Wie sollte man Haare im Wundgebiet behandeln?",
+    "answers": [
+      {
+        "text": "Mit einer Schere entfernen",
+        "correct": true
+      },
+      {
+        "text": "Rasieren",
+        "correct": false,
+        "reason": "Rasur kann mikroskopische Hautverletzungen verursachen, die als Eintrittspforte für Mikroorganismen dienen [S. 69]."
+      },
+      {
+        "text": "Mit Enthaarungscreme behandeln",
+        "correct": false,
+        "reason": "Enthaarungscremes können die Haut reizen und sind in Wundnähe kontraindiziert [S. 69]."
+      },
+      {
+        "text": "Ignorieren",
+        "correct": false,
+        "reason": "Haare können Wundkontamination fördern; fachgerechte Entfernung ist notwendig [S. 69]."
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "questionText": "Was kennzeichnet ein Hämatom?",
+    "answers": [
+      {
+        "text": "Bluterguss im Unterhautfettgewebe",
+        "correct": true
+      },
+      {
+        "text": "Entzündliche Hautrötung",
+        "correct": false,
+        "reason": "Rötung deutet auf Entzündung hin, nicht auf Blutansammlung [S. 69]."
+      },
+      {
+        "text": "Gewebeverhärtung durch Narben",
+        "correct": false,
+        "reason": "Narbengewebe ist fibrotisch, kein Bluterguss [S. 69]."
+      },
+      {
+        "text": "Eitrige Infektion",
+        "correct": false,
+        "reason": "Hämatome sind blutbedingt, nicht eitrig [S. 69]."
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "questionText": "Wofür wird medizinischer Honig eingesetzt?",
+    "answers": [
+      {
+        "text": "Zur Unterstützung der Wundreinigung",
+        "correct": true
+      },
+      {
+        "text": "Als Nahrungsergänzung",
+        "correct": false,
+        "reason": "Honig ist kein Nahrungsmittel, sondern ein Medizinprodukt für Wunden [S. 74]."
+      },
+      {
+        "text": "Zur Narbenpflege",
+        "correct": false,
+        "reason": "Narbenpflege erfolgt mit speziellen Gelen, nicht mit Honig [S. 74]."
+      },
+      {
+        "text": "Bei Verbrennungen 3. Grades",
+        "correct": false,
+        "reason": "Tiefe Verbrennungen erfordern chirurgische Intervention; Honig ist hier nicht indiziert [S. 74]."
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "questionText": "Was ist ein Hühnerauge?",
+    "answers": [
+      {
+        "text": "Hornverdickung mit zentralem Zapfen",
+        "correct": true
+      },
+      {
+        "text": "Pilzinfektion der Zehen",
+        "correct": false,
+        "reason": "Pilzinfektionen zeigen Schuppung, keine zentrale Verdickung [S. 74]."
+      },
+      {
+        "text": "Blase durch Reibung",
+        "correct": false,
+        "reason": "Blasen sind flüssigkeitsgefüllt, nicht verhornt [S. 74]."
+      },
+      {
+        "text": "Entzündete Schweißdrüse",
+        "correct": false,
+        "reason": "Hühneraugen entstehen durch Druck, nicht durch Drüsenentzündung [S. 74]."
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "questionText": "Welches Merkmal kennzeichnet einen mazerierten Wundrand?",
+    "answers": [
+      {
+        "text": "Aufgeweichte, weißliche Hautbereiche durch zu viel Feuchtigkeit",
+        "correct": true
+      },
+      {
+        "text": "Bläuliche Verfärbung durch Durchblutungsstörungen",
+        "correct": false,
+        "reason": "Bläuliche Verfärbung (livide) weist auf Durchblutungsstörungen hin, nicht auf Mazeration [S. 64]."
+      },
+      {
+        "text": "Verdickte, erhöhte Randbereiche",
+        "correct": false,
+        "reason": "Verdickte Ränder sind typisch für hyperkeratotische oder wulstige Wundränder, nicht mazerierte [S. 63]."
+      },
+      {
+        "text": "Schwarze Verfärbung durch abgestorbenes Gewebe",
+        "correct": false,
+        "reason": "Schwarze Verfärbung kennzeichnet Nekrosen, nicht Mazeration. Mazeration ist weißlich und aufgeweicht [S. 64]."
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "questionText": "Was ist die Grundausstattung für Verbandstoffe gemäß DIN 13157?",
+    "answers": [
+      {
+        "text": "Sterile Kompressen, Heftpflaster, Mullbinden",
+        "correct": true
+      },
+      {
+        "text": "Nur Desinfektionsmittel",
+        "correct": false,
+        "reason": "DIN 13157 umfasst diverse Materialien, nicht nur Desinfektion [S. 69]."
+      },
+      {
+        "text": "Chirurgische Instrumente",
+        "correct": false,
+        "reason": "Die Norm gilt für Verbandkasten-Grundausstattung, nicht für OP-Bedarf [S. 69]."
+      },
+      {
+        "text": "Spezialverbände für chronische Wunden",
+        "correct": false,
+        "reason": "Die Norm definiert Basisverbandstoffe für Erste Hilfe, keine Spezialprodukte [S. 69]."
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "questionText": "Wie wirkt Urea (Harnstoff) in der Hautpflege?",
+    "answers": [
+      {
+        "text": "Als Feuchthaltemittel und Keratolytikum",
+        "correct": true
+      },
+      {
+        "text": "Zur Desinfektion",
+        "correct": false,
+        "reason": "Urea hat keine desinfizierende Wirkung [S. 70]."
+      },
+      {
+        "text": "Zur Gefäßverengung",
+        "correct": false,
+        "reason": "Urea beeinflusst nicht die Durchblutung [S. 70]."
+      },
+      {
+        "text": "Zur Narbenreduktion",
+        "correct": false,
+        "reason": "Narbenbehandlung erfordert Silikon oder Druck, nicht Urea [S. 70]."
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "questionText": "Was ist bei der Hautpflege von Wundpatienten zu beachten?",
+    "answers": [
+      {
+        "text": "pH-neutrale Produkte (pH 4,5–5,5)",
+        "correct": true
+      },
+      {
+        "text": "Alkoholbasierte Lösungen",
+        "correct": false,
+        "reason": "Alkohol trocknet die Haut aus und zerstört die Barrierefunktion [S. 70]."
+      },
+      {
+        "text": "Reine Öle",
+        "correct": false,
+        "reason": "Öle können zu Juckreiz führen; Cremes oder Lotionen sind vorzuziehen [S. 71]."
+      },
+      {
+        "text": "Parfümierte Seifen",
+        "correct": false,
+        "reason": "Duftstoffe erhöhen das Allergierisiko; Syndets sind empfehlenswert [S. 70]."
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "questionText": "Wozu dient ein Hautschutzfilm?",
+    "answers": [
+      {
+        "text": "Zum Schutz vor Mazeration und Klebstoffreizung",
+        "correct": true
+      },
+      {
+        "text": "Zur Wunddesinfektion",
+        "correct": false,
+        "reason": "Hautschutzfilme haben keine antiseptische Wirkung [S. 72]."
+      },
+      {
+        "text": "Zur Narbenaufweichung",
+        "correct": false,
+        "reason": "Narben werden mit Silikon oder Druck behandelt, nicht mit Hautschutzfilmen [S. 72]."
+      },
+      {
+        "text": "Zur Pigmentierung",
+        "correct": false,
+        "reason": "Hautschutzfilme beeinflussen nicht die Hautfarbe [S. 72]."
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "questionText": "Wie erkennt man nekrotische Bereiche am Wundrand?",
+    "answers": [
+      {
+        "text": "Durch dunkle, oft schwarze Verfärbung von abgestorbenem Gewebe",
+        "correct": true
+      },
+      {
+        "text": "Durch weißliche, aufgeweichte Struktur",
+        "correct": false,
+        "reason": "Weißliche Aufweichung ist typisch für mazerierte Wundränder, nicht für Nekrosen [S. 64]."
+      },
+      {
+        "text": "Durch bläuliche Verfärbung",
+        "correct": false,
+        "reason": "Bläuliche Verfärbung (livide) deutet auf Sauerstoffmangel hin, nicht auf Nekrose [S. 64]."
+      },
+      {
+        "text": "Durch normale rosa Färbung",
+        "correct": false,
+        "reason": "Rosa Färbung zeigt intaktes Gewebe. Nekrosen sind durch schwarze/gelbliche Verfärbung gekennzeichnet [S. 63–64]."
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "questionText": "Was ist ein Lipödem?",
+    "answers": [
+      {
+        "text": "Fettverteilungsstörung mit symmetrischer Vermehrung des Unterhautfetts",
+        "correct": true
+      },
+      {
+        "text": "Lymphstau durch Parasiten",
+        "correct": false,
+        "reason": "Lipödem ist keine Infektionskrankheit [S. 92]."
+      },
+      {
+        "text": "Tumor im Fettgewebe",
+        "correct": false,
+        "reason": "Lipödem ist keine Neoplasie, sondern eine Stoffwechselstörung [S. 92]."
+      },
+      {
+        "text": "Allergische Hautreaktion",
+        "correct": false,
+        "reason": "Lipödem betrifft die Fettverteilung, nicht die Hautoberfläche [S. 92]."
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "questionText": "Wie wird eine infizierte Wunde definiert?",
+    "answers": [
+      {
+        "text": "Durch Rötung, Schmerzen, Schwellung und Überwärmung",
+        "correct": true
+      },
+      {
+        "text": "Durch schwarze Nekrosen",
+        "correct": false,
+        "reason": "Nekrosen sind avitales Gewebe, aber kein alleiniges Infektionszeichen [S. 78]."
+      },
+      {
+        "text": "Durch starke Granulation",
+        "correct": false,
+        "reason": "Granulation ist ein Heilungszeichen, kein Infektionsindikator [S. 69]."
+      },
+      {
+        "text": "Durch weiße Mazeration",
+        "correct": false,
+        "reason": "Mazeration ist Feuchtigkeitsschaden, keine Infektion [S. 64]."
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "questionText": "Was ist Intertrigo?",
+    "answers": [
+      {
+        "text": "Hautreizung in Körperfalten durch Schwitzen",
+        "correct": true
+      },
+      {
+        "text": "Arterielle Durchblutungsstörung",
+        "correct": false,
+        "reason": "Intertrigo ist eine Hauterkrankung, keine Gefäßstörung [S. 78]."
+      },
+      {
+        "text": "Pilzinfektion der Kopfhaut",
+        "correct": false,
+        "reason": "Intertrigo betrifft Körperfalten, nicht die Kopfhaut [S. 78]."
+      },
+      {
+        "text": "Autoimmunbedingte Blasenbildung",
+        "correct": false,
+        "reason": "Intertrigo entsteht mechanisch, nicht autoimmun [S. 78]."
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "questionText": "Bei welchem Wundrandtyp ist zu viel Feuchtigkeit die häufigste Ursache?",
+    "answers": [
+      {
+        "text": "Mazerierter Wundrand",
+        "correct": true
+      },
+      {
+        "text": "Hyperkeratotischer Wundrand",
+        "correct": false,
+        "reason": "Hyperkeratotische Wundränder entstehen durch übermäßige Verhornung, nicht durch Feuchtigkeit [S. 63]."
+      },
+      {
+        "text": "Livide Verfärbung",
+        "correct": false,
+        "reason": "Lividität entsteht durch Durchblutungsstörungen, nicht durch Feuchtigkeit [S. 64]."
+      },
+      {
+        "text": "Nekrotischer Wundrand",
+        "correct": false,
+        "reason": "Nekrosen resultieren aus Ischämie oder Infektionen, nicht primär aus Feuchtigkeit [S. 64]."
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "questionText": "Was kennzeichnet eine inkontinenzassoziierte Dermatitis?",
+    "answers": [
+      {
+        "text": "Reizung durch Urin/Stuhl mit Rötung und Erosionen",
+        "correct": true
+      },
+      {
+        "text": "Verhornungsstörung durch Vitaminmangel",
+        "correct": false,
+        "reason": "Sie entsteht durch Feuchtigkeit, nicht durch Nährstoffdefizite [S. 79]."
+      },
+      {
+        "text": "Tiefe Ulzeration durch Druck",
+        "correct": false,
+        "reason": "Druckulzera sind Dekubitus, nicht Dermatitis [S. 79]."
+      },
+      {
+        "text": "Allergische Reaktion auf Textilien",
+        "correct": false,
+        "reason": "Sie wird durch Ausscheidungen verursacht, nicht durch Allergene [S. 79]."
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "questionText": "Wie wird der Knöchel-Arm-Druck-Index (KADI) interpretiert?",
+    "answers": [
+      {
+        "text": "Wert < 0,9 deutet auf pAVK hin",
+        "correct": true
+      },
+      {
+        "text": "Wert > 1,5 zeigt Venenschwäche",
+        "correct": false,
+        "reason": "KADI dient der Arteriendiagnostik, nicht der Venenbewertung [S. 85]."
+      },
+      {
+        "text": "Wert = 1,0 ist pathologisch",
+        "correct": false,
+        "reason": "1,0 ist der Normalwert [S. 85]."
+      },
+      {
+        "text": "Wert 0,5–0,75 ist unbedenklich",
+        "correct": false,
+        "reason": "0,5–0,75 zeigt eine mittelschwere pAVK an [S. 85]."
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "questionText": "Was ist der Hauptunterschied zwischen mazeriertem und nekrotischem Gewebe?",
+    "answers": [
+      {
+        "text": "Mazeriert: aufgeweicht und weißlich; Nekrotisch: abgestorben und dunkel",
+        "correct": true
+      },
+      {
+        "text": "Mazeriert: abgestorben; Nekrotisch: aufgeweicht",
+        "correct": false,
+        "reason": "Mazeriertes Gewebe ist vital, aber aufgeweicht; nekrotisches ist avital und abgestorben [S. 64]."
+      },
+      {
+        "text": "Mazeriert: dunkel verfärbt; Nekrotisch: weißlich verfärbt",
+        "correct": false,
+        "reason": "Mazeriertes Gewebe ist weißlich, nekrotisches dunkel (schwarz/braun) [S. 64]."
+      },
+      {
+        "text": "Beide Begriffe sind synonym",
+        "correct": false,
+        "reason": "Mazeration und Nekrose sind pathophysiologisch unterschiedlich: Mazeration = Aufweichung, Nekrose = Zelltod [S. 64]."
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "questionText": "Was ist eine Kalziphylaxie?",
+    "answers": [
+      {
+        "text": "Gewebekalzinose bei Dialysepatienten",
+        "correct": true
+      },
+      {
+        "text": "Knochenentzündung",
+        "correct": false,
+        "reason": "Kalziphylaxie betrifft Weichteile, nicht Knochen [S. 83]."
+      },
+      {
+        "text": "Vitamin-D-Mangel",
+        "correct": false,
+        "reason": "Sie entsteht durch Kalziumphosphat-Stoffwechselstörung, nicht Vitaminmangel [S. 83]."
+      },
+      {
+        "text": "Hautpilz",
+        "correct": false,
+        "reason": "Kalziphylaxie ist keine Infektion [S. 83]."
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "questionText": "Wie wirkt PVP-Jod?",
+    "answers": [
+      {
+        "text": "Antiseptisch",
+        "correct": true
+      },
+      {
+        "text": "Granulationsfördernd",
+        "correct": false,
+        "reason": "PVP-Jod desinfiziert, es fördert keine Gewebeneubildung [S. 110]."
+      },
+      {
+        "text": "Schmerzstillend",
+        "correct": false,
+        "reason": "Es hat keine analgetische Wirkung [S. 110]."
+      },
+      {
+        "text": "Blutungshemmend",
+        "correct": false,
+        "reason": "PVP-Jod beeinflusst nicht die Blutgerinnung [S. 110]."
+      }
+    ]
+  }
+]

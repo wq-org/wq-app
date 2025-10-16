@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1,
+    "questionText": "Wie sieht ein mazerierter Wundrand aus?",
+    "answers": [
+      { "text": "Weiß und aufgeweicht", "correct": true },
+      { "text": "Schwarz und hart", "correct": false },
+      { "text": "Rot und geschwollen", "correct": false },
+      { "text": "Blau verfärbt", "correct": false }
+    ]
+  },
+  {
+    "id": 2,
+    "questionText": "Was macht ein hyperkeratotischer Wundrand?",
+    "answers": [
+      { "text": "Er ist dick und schuppig", "correct": true },
+      { "text": "Er ist dünn und weich", "correct": false },
+      { "text": "Er ist feucht und glatt", "correct": false },
+      { "text": "Er ist transparent", "correct": false }
+    ]
+  },
+  {
+    "id": 3,
+    "questionText": "Woran erkennt man einen gesunden Wundrand?",
+    "answers": [
+      { "text": "Er sieht normal aus ohne Probleme", "correct": true },
+      { "text": "Er ist schwarz verfärbt", "correct": false },
+      { "text": "Er ist sehr dick", "correct": false },
+      { "text": "Er ist nach innen gerollt", "correct": false }
+    ]
+  },
+  {
+    "id": 4,
+    "questionText": "Was bedeutet ein ödematöser Wundrand?",
+    "answers": [
+      { "text": "Der Rand ist geschwollen", "correct": true },
+      { "text": "Der Rand ist trocken", "correct": false },
+      { "text": "Der Rand ist hart", "correct": false },
+      { "text": "Der Rand ist eingefallen", "correct": false }
+    ]
+  },
+  {
+    "id": 5,
+    "questionText": "Welche Farbe hat eine livide Verfärbung?",
+    "answers": [
+      { "text": "Blau", "correct": true },
+      { "text": "Grün", "correct": false },
+      { "text": "Gelb", "correct": false },
+      { "text": "Orange", "correct": false }
+    ]
+  },
+  {
+    "id": 6,
+    "questionText": "Wie sieht nekrotisches Gewebe aus?",
+    "answers": [
+      { "text": "Schwarz oder sehr dunkel", "correct": true },
+      { "text": "Rosa und gesund", "correct": false },
+      { "text": "Weiß und weich", "correct": false },
+      { "text": "Klar und durchsichtig", "correct": false }
+    ]
+  },
+  {
+    "id": 7,
+    "questionText": "Was ist ein eingerollter Wundrand?",
+    "answers": [
+      { "text": "Der Rand rollt sich nach innen", "correct": true },
+      { "text": "Der Rand rollt sich nach außen", "correct": false },
+      { "text": "Der Rand ist gerade", "correct": false },
+      { "text": "Der Rand ist unsichtbar", "correct": false }
+    ]
+  },
+  {
+    "id": 8,
+    "questionText": "Wie fühlt sich ein wulstiger Wundrand an?",
+    "answers": [
+      { "text": "Dick und erhaben", "correct": true },
+      { "text": "Dünn und flach", "correct": false },
+      { "text": "Weich wie Wasser", "correct": false },
+      { "text": "Hart wie Stein", "correct": false }
+    ]
+  },
+  {
+    "id": 9,
+    "questionText": "Was passiert in der ersten Phase des Biofilms?",
+    "answers": [
+      { "text": "Bakterien heften sich fest", "correct": true },
+      { "text": "Bakterien schwimmen weg", "correct": false },
+      { "text": "Bakterien sterben ab", "correct": false },
+      { "text": "Bakterien werden unsichtbar", "correct": false }
+    ]
+  },
+  {
+    "id": 10,
+    "questionText": "Was machen Bakterien in der Mikrokolonie-Phase?",
+    "answers": [
+      { "text": "Sie vermehren sich und bilden Gruppen", "correct": true },
+      { "text": "Sie verschwinden komplett", "correct": false },
+      { "text": "Sie werden zu Viren", "correct": false },
+      { "text": "Sie schlafen", "correct": false }
+    ]
+  },
+  {
+    "id": 11,
+    "questionText": "Was entsteht in der Reifungsphase des Biofilms?",
+    "answers": [
+      { "text": "Ein dicker Schutzfilm", "correct": true },
+      { "text": "Nur Wasser", "correct": false },
+      { "text": "Nur Luft", "correct": false },
+      { "text": "Gar nichts", "correct": false }
+    ]
+  },
+  {
+    "id": 12,
+    "questionText": "Was passiert in der Verteilungsphase?",
+    "answers": [
+      { "text": "Bakterien lösen sich und suchen neue Stellen", "correct": true },
+      { "text": "Bakterien bleiben für immer fest", "correct": false },
+      { "text": "Bakterien werden zu Pilzen", "correct": false },
+      { "text": "Bakterien explodieren", "correct": false }
+    ]
+  },
+  {
+    "id": 13,
+    "questionText": "Wie viele Hauptphasen hat der Biofilm-Lebenszyklus?",
+    "answers": [
+      { "text": "4 Phasen", "correct": true },
+      { "text": "2 Phasen", "correct": false },
+      { "text": "10 Phasen", "correct": false },
+      { "text": "1 Phase", "correct": false }
+    ]
+  },
+  {
+    "id": 14,
+    "questionText": "Was ist die extrazelluläre Matrix?",
+    "answers": [
+      { "text": "Ein Schutzschleim um die Bakterien", "correct": true },
+      { "text": "Ein Bakterium", "correct": false },
+      { "text": "Eine Wunde", "correct": false },
+      { "text": "Ein Medikament", "correct": false }
+    ]
+  },
+  {
+    "id": 15,
+    "questionText": "Wodurch entsteht ein mazerierter Wundrand?",
+    "answers": [
+      { "text": "Zu viel Feuchtigkeit", "correct": true },
+      { "text": "Zu wenig Wasser", "correct": false },
+      { "text": "Zu viel Sonne", "correct": false },
+      { "text": "Zu wenig Luft", "correct": false }
+    ]
+  },
+  {
+    "id": 16,
+    "questionText": "Welcher Wundrand heilt am besten?",
+    "answers": [
+      { "text": "Der intakte Wundrand", "correct": true },
+      { "text": "Der schwarze Wundrand", "correct": false },
+      { "text": "Der eingerollte Wundrand", "correct": false },
+      { "text": "Der dicke Wundrand", "correct": false }
+    ]
+  },
+  {
+    "id": 17,
+    "questionText": "Was bedeutet livide Verfärbung?",
+    "answers": [
+      { "text": "Die Haut wird blau", "correct": true },
+      { "text": "Die Haut wird grün", "correct": false },
+      { "text": "Die Haut wird gelb", "correct": false },
+      { "text": "Die Haut wird rosa", "correct": false }
+    ]
+  },
+  {
+    "id": 18,
+    "questionText": "Wann ist ein Wundrand nekrotisch?",
+    "answers": [
+      { "text": "Wenn das Gewebe abgestorben ist", "correct": true },
+      { "text": "Wenn das Gewebe gesund ist", "correct": false },
+      { "text": "Wenn das Gewebe wächst", "correct": false },
+      { "text": "Wenn das Gewebe jung ist", "correct": false }
+    ]
+  },
+  {
+    "id": 19,
+    "questionText": "Was ist schlecht an einem eingerollten Wundrand?",
+    "answers": [
+      { "text": "Die Wunde heilt schlechter", "correct": true },
+      { "text": "Die Wunde heilt schneller", "correct": false },
+      { "text": "Die Wunde wird größer", "correct": false },
+      { "text": "Die Wunde wird kleiner", "correct": false }
+    ]
+  },
+  {
+    "id": 20,
+    "questionText": "Wie kommunizieren Bakterien im reifen Biofilm?",
+    "answers": [
+      { "text": "Durch Quorum Sensing", "correct": true },
+      { "text": "Durch Sprechen", "correct": false },
+      { "text": "Durch Singen", "correct": false },
+      { "text": "Gar nicht", "correct": false }
+    ]
+  },
+  {
+    "id": 21,
+    "questionText": "Was schützt Bakterien im Biofilm?",
+    "answers": [
+      { "text": "Die schleimige Matrix", "correct": true },
+      { "text": "Ihre Größe", "correct": false },
+      { "text": "Ihre Geschwindigkeit", "correct": false },
+      { "text": "Ihre Farbe", "correct": false }
+    ]
+  },
+  {
+    "id": 22,
+    "questionText": "Welcher Wundrand ist durch Schwellung erkennbar?",
+    "answers": [
+      { "text": "Ödematöser Wundrand", "correct": true },
+      { "text": "Trockener Wundrand", "correct": false },
+      { "text": "Dünner Wundrand", "correct": false },
+      { "text": "Flacher Wundrand", "correct": false }
+    ]
+  },
+  {
+    "id": 23,
+    "questionText": "Was passiert mit Bakterien in der ersten Biofilm-Phase?",
+    "answers": [
+      { "text": "Sie kleben sich fest", "correct": true },
+      { "text": "Sie fliegen weg", "correct": false },
+      { "text": "Sie werden größer", "correct": false },
+      { "text": "Sie werden kleiner", "correct": false }
+    ]
+  },
+  {
+    "id": 24,
+    "questionText": "Wie erkennt man hyperkeratotische Wundränder?",
+    "answers": [
+      { "text": "Sie sind dick und schuppig", "correct": true },
+      { "text": "Sie sind dünn und glatt", "correct": false },
+      { "text": "Sie sind weich und feucht", "correct": false },
+      { "text": "Sie sind transparent", "correct": false }
+    ]
+  },
+  {
+    "id": 25,
+    "questionText": "Was ist das Besondere an wulstigen Wundrändern?",
+    "answers": [
+      { "text": "Sie sind verdickt und erhaben", "correct": true },
+      { "text": "Sie sind dünn und flach", "correct": false },
+      { "text": "Sie sind unsichtbar", "correct": false },
+      { "text": "Sie sind durchsichtig", "correct": false }
+    ]
+  }
+]
