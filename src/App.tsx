@@ -13,8 +13,7 @@ function App() {
       <h1 className="text-2xl font-bold">{t("welcome")}</h1>
       <p className="text-center max-w-md">{t("description")}</p>
       <div className="flex gap-2">
-        <Button onClick={() => changeLanguage("en")}>English</Button>
-        <Button onClick={() => changeLanguage("de")}>Deutsch</Button>
+    
       </div>
     </div>
   );
