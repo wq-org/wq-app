@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import "./locales/index.js"; // Initialize i18next
+import "./locales/index.js";
 
 import App from "./App.tsx";
 
