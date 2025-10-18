@@ -11,7 +11,7 @@ export default function RoleSelection() {
 
     const handleContinue = () => {
         if (selectedRole) {
-            navigate('/signUp', { state: { role: selectedRole } })
+            navigate('/login', { state: { role: selectedRole } })
         }
     }
 
@@ -84,7 +84,7 @@ export default function RoleSelection() {
             </RadioGroup>
 
             <Button disabled={!selectedRole} size="lg" onClick={handleContinue}>
-                Continue as {selectedRole || '...'}
+                Continue {selectedRole || '...'}
             </Button>
         </div>
     )
