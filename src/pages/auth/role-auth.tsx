@@ -82,7 +82,6 @@ export default function RoleSelection() {
                     </CardHeader>
                 </Card>
             </RadioGroup>
-
             <Button disabled={!selectedRole} size="lg" onClick={handleContinue}>
                 Continue {selectedRole || '...'}
             </Button>

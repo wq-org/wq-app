@@ -21,6 +21,11 @@ export default function Login({
         navigate('/')
     }
 
+    function handleLogin() {
+        // Implement login logic here
+        navigate('/teacher/dashboard')
+    }
+
     return (
         <div className="w-full container mx-auto max-w-md">
             <form
@@ -71,7 +76,9 @@ export default function Login({
                             <Input id="password" type="password" required />
                         </Field>
                         <Field>
-                            <Button type="submit">Login</Button>
+                            <Button onClick={handleLogin} type="submit">
+                                Login
+                            </Button>
                         </Field>
                         <FieldSeparator>Or</FieldSeparator>
                         <Field>
