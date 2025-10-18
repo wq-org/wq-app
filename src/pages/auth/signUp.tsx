@@ -8,11 +8,18 @@ import {
     FieldSeparator,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { ChevronLeft } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function SignUp({
     className,
     ...props
 }: React.ComponentProps<'form'>) {
+    const navigate = useNavigate()
+
+    const handleContinue = () => {
+        navigate('/')
+    }
     return (
         <div className="w-full container mx-auto max-w-md">
             <form
@@ -23,6 +30,13 @@ export default function SignUp({
                 {...props}
             >
                 <div className="border p-8 rounded-3xl shadow-lg">
+                    <Button
+                        onClick={handleContinue}
+                        variant="ghost"
+                        className=" rounded-full"
+                    >
+                        <ChevronLeft />
+                    </Button>
                     <FieldGroup>
                         <div className="flex flex-col items-center gap-1 text-center">
                             <h1 className="text-2xl font-bold">
@@ -63,7 +77,7 @@ export default function SignUp({
                         <Field>
                             <Button type="submit">Sign Up</Button>
                         </Field>
-                        <FieldSeparator>Or continue with</FieldSeparator>
+                        <FieldSeparator>Or</FieldSeparator>
                         <Field>
                             <FieldDescription className="text-center">
                                 I already have an account?{' '}
