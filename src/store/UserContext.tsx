@@ -1,20 +1,39 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState } from 'react';
 
 interface User {
-    id: string
-    name: string
-    email: string
-    role: 'admin' | 'teacher' | 'student'
+    id: string;
+    name: string;
+    email: string;
+    role: 'admin' | 'teacher' | 'student';
 }
+
+interface UserContextType {
+    user: User | null;
+    updateUser: (newUser: User) => void;
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
-export const UserContext = createContext({} as User | null)
+export const UserContext = createContext<UserContextType | null>(null);
 
 interface UserProviderProps {
-    children?: React.ReactNode
+    children?: React.ReactNode;
 }
 
 export default function UserProvider({ children }: UserProviderProps) {
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState<User | null>(null);
 
-    return <UserContext.Provider value={user}>{children}</UserContext.Provider>
+    function handleUpdateUser(newUser: User) {
+        setUser((prevUser) => {
+            return { ...prevUser, ...newUser };
+        });
+    }
+
+    const ctxValue = {
+        user: user,
+        updateUser: handleUpdateUser,
+    };
+
+    return (
+        <UserContext.Provider value={ctxValue}>{children}</UserContext.Provider>
+    );
 }

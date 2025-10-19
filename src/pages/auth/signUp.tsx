@@ -46,6 +46,16 @@ export default function SignUp({
                                 create a brand new account
                             </p>
                         </div>
+
+                        <Field>
+                            <FieldLabel htmlFor="username">Username</FieldLabel>
+                            <Input
+                                id="username"
+                                type="text"
+                                placeholder="Enter your username"
+                                required
+                            />
+                        </Field>
                         <Field>
                             <FieldLabel htmlFor="email">Email</FieldLabel>
                             <Input
@@ -55,6 +65,7 @@ export default function SignUp({
                                 required
                             />
                         </Field>
+
                         <Field>
                             <div className="flex items-center">
                                 <FieldLabel htmlFor="password">

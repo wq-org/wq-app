@@ -1,34 +1,56 @@
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
     FieldSeparator,
-} from '@/components/ui/field'
-import { useNavigate } from 'react-router-dom'
-import { Input } from '@/components/ui/input'
-import { ChevronLeft } from 'lucide-react'
+} from '@/components/ui/field';
+import { useNavigate } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
+import { ChevronLeft } from 'lucide-react';
+import { authUser } from '@/api/dummyBackend';
+import { useState } from 'react';
+import DotWaveLoader from '@/components/common/DotWaveLoader';
 
 export default function Login({
     className,
     ...props
 }: React.ComponentProps<'form'>) {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleContinue = () => {
-        navigate('/')
-    }
+    const goBack = () => {
+        navigate('/');
+    };
 
-    function handleLogin() {
-        // Implement login logic here
-        navigate('/teacher/dashboard')
+    async function handleLogin(e: React.FormEvent) {
+        e.preventDefault();
+        setIsLoading(true);
+
+        console.log('Email:', email);
+        console.log('Password:', password);
+
+        const data = { email, password };
+
+        try {
+            const response = await authUser(data);
+            console.log('response :>> ', response);
+            // navigate('/teacher/dashboard');
+        } catch (error) {
+            console.error('Login error:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
         <div className="w-full container mx-auto max-w-md">
             <form
+                onSubmit={handleLogin}
                 className={cn(
                     'flex flex-col gap-6 h-screen  justify-center',
                     className
@@ -37,7 +59,7 @@ export default function Login({
             >
                 <div className="border p-8 rounded-3xl shadow-lg">
                     <Button
-                        onClick={handleContinue}
+                        onClick={goBack}
                         variant="ghost"
                         className=" rounded-full"
                     >
@@ -58,7 +80,10 @@ export default function Login({
                                 id="email"
                                 type="email"
                                 placeholder="m@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
+                                disabled={isLoading}
                             />
                         </Field>
                         <Field>
@@ -73,11 +98,26 @@ export default function Login({
                                     Forgot your password?
                                 </a>
                             </div>
-                            <Input id="password" type="password" required />
+                            <Input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                disabled={isLoading}
+                            />
                         </Field>
                         <Field>
-                            <Button onClick={handleLogin} type="submit">
-                                Login
+                            <Button
+                                type="submit"
+                                disabled={isLoading}
+                                className="flex items-center"
+                            >
+                                {isLoading == true ? (
+                                    <DotWaveLoader variant="white" />
+                                ) : (
+                                    'Login'
+                                )}
                             </Button>
                         </Field>
                         <FieldSeparator>Or</FieldSeparator>
@@ -96,5 +136,5 @@ export default function Login({
                 </div>
             </form>
         </div>
-    )
+    );
 }
