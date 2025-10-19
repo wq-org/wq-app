@@ -39,7 +39,7 @@ export default function SignUp({
                     </Button>
                     <FieldGroup>
                         <div className="flex flex-col items-center gap-1 text-center">
-                            <h1 className="text-2xl font-bold">
+                            <h1 className="text-2xl font-light">
                                 Welcome to WQ
                             </h1>
                             <p className="text-muted-foreground text-sm text-balance">

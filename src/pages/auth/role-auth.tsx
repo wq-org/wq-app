@@ -17,7 +17,7 @@ export default function RoleSelection() {
 
     return (
         <div className="w-screen h-screen container justify-center items-center flex-col gap-8 flex mx-auto">
-            <h1 className="text-4xl">
+            <h1 className="text-4xl font-light">
                 Join your School now{' '}
                 {selectedRole && (
                     <span>
