@@ -13,6 +13,7 @@ import { ChevronLeft } from 'lucide-react';
 import { authUser } from '@/api/dummyBackend';
 import { useState } from 'react';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
+import { useUser } from '@/store/UserContext';
 
 export default function Login({
     className,
@@ -23,6 +24,8 @@ export default function Login({
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const {  updateUser } = useUser();
+
     const goBack = () => {
         navigate('/');
     };
@@ -31,15 +34,26 @@ export default function Login({
         e.preventDefault();
         setIsLoading(true);
 
-        console.log('Email:', email);
-        console.log('Password:', password);
-
         const data = { email, password };
 
         try {
-            const response = await authUser(data);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const response = (await authUser(data)) as any;
             console.log('response :>> ', response);
-            // navigate('/teacher/dashboard');
+
+            const { user_id, username, display_name, email, role } =
+                response?.data || {};
+
+            updateUser({
+                id: user_id,
+                userName: username,
+                name: display_name,
+                email: email,
+                role: role,
+            });
+
+
+         navigate('/teacher/dashboard');
         } catch (error) {
             console.error('Login error:', error);
         } finally {
