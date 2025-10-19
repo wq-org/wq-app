@@ -10,7 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { ChevronLeft } from 'lucide-react';
-import { authUser } from '@/api/dummyBackend';
+import { authUser } from '@/api/awsLambda';
 import { useState } from 'react';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import { useUser } from '@/store/UserContext';
