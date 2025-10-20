@@ -1,10 +1,21 @@
 import type { Student, Teacher, Admin } from '@/types/user.types';
-export const authUser = async (userDetails: object): Promise<object> => {
+
+export const loginUser = async (userDetails: object): Promise<object> => {
     console.log('loginDetails :>> ', userDetails);
     await new Promise((resolve) => setTimeout(resolve, 2000)); // 2-second delay
     return {
         status: 'success',
         message: 'User authenticated successfully',
+        data: mockPrimeUser,
+    };
+};
+
+export const signupUser = async (userDetails: object): Promise<object> => {
+    console.log('registerDetails :>> ', userDetails);
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // 2-second delay
+    return {
+        status: 'success',
+        message: 'User registered successfully',
         data: mockPrimeUser,
     };
 };

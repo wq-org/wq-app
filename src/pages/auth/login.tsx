@@ -10,7 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { ChevronLeft } from 'lucide-react';
-import { authUser } from '@/api/awsLambda';
+import { loginUser } from '@/api/aws-lambda';
 import { useState } from 'react';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import { useUser } from '@/store/UserContext';
@@ -24,7 +24,7 @@ export default function Login({
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const {  updateUser } = useUser();
+    const { updateUser } = useUser();
 
     const goBack = () => {
         navigate('/');
@@ -38,7 +38,7 @@ export default function Login({
 
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response = (await authUser(data)) as any;
+            const response = (await loginUser(data)) as any;
             console.log('response :>> ', response);
 
             const { user_id, username, display_name, email, role } =
@@ -52,8 +52,7 @@ export default function Login({
                 role: role,
             });
 
-
-         navigate('/teacher/dashboard');
+            navigate('/teacher/dashboard');
         } catch (error) {
             console.error('Login error:', error);
         } finally {
