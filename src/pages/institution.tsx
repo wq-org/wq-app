@@ -1,4 +1,3 @@
-import Container from '@/components/common/Container';
 import PageWrapper from '@/components/common/PageWrapper';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -7,15 +6,15 @@ import { MapPin } from 'lucide-react';
 
 interface InstitutionProps {
     imageUrl?: string;
-    name: string;
-    description: string;
+    name?: string;
+    description?: string;
     children?: React.ReactNode;
 }
 
 export default function Institution({ children }: InstitutionProps) {
     return (
         <PageWrapper className="flex flex-col gap-8 items-start w-fit">
-            <div className="flex flex-col gap-4 items-start">
+            <div className="flex flex-col gap-4 items-start ">
                 <Avatar className="w-24 h-24">
                     <AvatarImage src={'#'} />
                     <AvatarFallback>{'WQ'}</AvatarFallback>
@@ -37,7 +36,10 @@ export default function Institution({ children }: InstitutionProps) {
                 Follow
             </Button>
 
-            <section>{children || 'students | teachers '}</section>
+            <section className="flex flex-col gap-4 w-full">
+                <p className="text-xl">Overview</p>
+                {children || 'students | teachers '}
+            </section>
         </PageWrapper>
     );
 }
