@@ -5,10 +5,10 @@ const Navigation = () => {
     return (
         <nav className="w-full flex justify-end p-4">
             <Button size="icon" variant="ghost">
-                <LogOut />
+                <Bell />
             </Button>
             <Button size="icon" variant="ghost">
-                <Bell />
+                <LogOut />
             </Button>
         </nav>
     );
