@@ -23,7 +23,7 @@ export default function Institution({
     titleText = 'Better tools smooth',
     lighterFirst = 'Be workflow',
     lighterSecond = 'including same great deal, annually.',
-    street = 'Musterstraße 10 12345 Musterstadt',
+    street = 'Masterstroke 10 12345 Berlin',
     onFollowClick,
     children,
 }: InstitutionProps) {
