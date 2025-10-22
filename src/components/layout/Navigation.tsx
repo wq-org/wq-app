@@ -8,11 +8,15 @@ import {
 
 const Navigation = () => {
     return (
-        <nav className="w-full flex  justify-end py-4 px-12 ">
+        <nav className="w-full flex justify-end py-4 px-12 gap-2">
             <Popover>
-                <PopoverTrigger>
-                    <Button size="icon" variant="ghost" className="w-12 h-12">
-                        <Bell className="w-9 h-9" />
+                <PopoverTrigger asChild>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="w-12 h-12 [&_svg]:size-6"
+                    >
+                        <Bell className="size-6 text-gray-400" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent>
@@ -23,8 +27,12 @@ const Navigation = () => {
                 </PopoverContent>
             </Popover>
 
-            <Button size="icon" variant="ghost" className="w-12 h-12">
-                <LogOut className="w-9 h-9" />
+            <Button
+                size="icon"
+                variant="ghost"
+                className="w-12 h-12 [&_svg]:size-6"
+            >
+                <LogOut className="size-6 text-gray-400" />
             </Button>
         </nav>
     );

@@ -1,4 +1,10 @@
-import { HardDrive, Shapes, Users2, type LucideIcon } from 'lucide-react';
+import {
+    Gamepad2,
+    HardDrive,
+    Shapes,
+    Users2,
+    type LucideIcon,
+} from 'lucide-react';
 
 export interface DashboardTab {
     id: string;
@@ -14,5 +20,5 @@ export const teacherDashboardTabs: DashboardTab[] = [
 
 export const studentDashboardTabs: DashboardTab[] = [
     { id: 'modules', label: 'Modules', icon: Shapes },
-    { id: 'games', label: 'Games', icon: Users2 },
+    { id: 'games', label: 'Games', icon: Gamepad2 },
 ];
