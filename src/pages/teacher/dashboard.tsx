@@ -8,6 +8,7 @@ export default function Dashboard() {
                 imageUrl="https://example.com/profile.jpg"
                 userName="John Doe"
                 description="Software Engineer passionate about web development and teaching."
+                role="teacher"
             />
 
             <CommandPalette />

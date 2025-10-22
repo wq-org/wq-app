@@ -5,13 +5,14 @@ import { Linkedin, Mail, MessageCircleIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import Container from '../common/Container';
 import { useState } from 'react';
-import { studentDashboardTabs as dashboardTabs } from '@/lib/dashboard-config';
+import { getDashboardTabs } from '@/lib/dashboard-config';
 
 interface DashboardLayoutProps {
     imageUrl?: string;
     userName: string;
     description: string;
     children?: React.ReactNode;
+    role: string;
 }
 
 export default function DashboardLayout({
@@ -19,8 +20,10 @@ export default function DashboardLayout({
     userName,
     description,
     children,
+    role,
 }: DashboardLayoutProps) {
     const [activeTab, setActiveTab] = useState('modules');
+    const dashboardTabs = getDashboardTabs(role as 'teacher' | 'student');
 
     const handleTabClick = (tabId: string) => {
         setActiveTab(tabId);

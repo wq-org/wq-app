@@ -22,3 +22,12 @@ export const studentDashboardTabs: DashboardTab[] = [
     { id: 'modules', label: 'Modules', icon: Shapes },
     { id: 'games', label: 'Games', icon: Gamepad2 },
 ];
+
+export function getDashboardTabs(role: 'teacher' | 'student'): DashboardTab[] {
+    if (role === 'teacher') {
+        return teacherDashboardTabs;
+    } else if (role === 'student') {
+        return studentDashboardTabs;
+    }
+    throw new Error('Invalid role');
+}
