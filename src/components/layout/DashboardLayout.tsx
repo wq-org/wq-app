@@ -97,8 +97,8 @@ export default function DashboardLayout({
                             </Button>
                         </div>
                     </Container>
-                    <section className="min-h-[500px] pt-8 rounded-2xl bg-gray-100">
-                        <Container>
+                    <section className="pt-8 rounded-2xl bg-gray-100 min-h-[calc(95vh-400px)] pb-8">
+                        <Container className="h-full">
                             <div className="flex flex-wrap gap-12">
                                 {dashboardTabs.map((tab) => {
                                     const Icon = tab.icon;
@@ -121,7 +121,7 @@ export default function DashboardLayout({
                                 })}
                             </div>
 
-                            <section className="mt-8">
+                            <section className="mt-8 flex-1">
                                 {children || 'content ' + activeTab}
                             </section>
                         </Container>
