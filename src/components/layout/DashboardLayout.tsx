@@ -45,7 +45,7 @@ export default function DashboardLayout({
         <div>
             <Navigation />
             <div className="flex flex-col gap-8">
-                <section className="rounded-2xl px-6 h-full">
+                <section className="rounded-2xl  h-full">
                     <Container className="flex flex-col gap-4">
                         <div className="flex flex-col gap-5 max-w-[600px]">
                             <Avatar className="w-24 h-24">

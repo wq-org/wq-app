@@ -20,9 +20,9 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
     return (
         <>
             <Navigation />
-            <Container className="w-screen h-screen">
-                <section className="flex justify-start mb-8">
-                    <Container className="flex flex-col justify-center w-full items-center gap-3">
+            <div className="w-screen h-screen">
+                <section className="border">
+                    <Container className="flex flex-col items-start  w-full gap-3">
                         <div className="relative">
                             <Avatar className="w-24 h-24 rounded-full">
                                 <AvatarImage
@@ -45,7 +45,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                             </Button>
                         </div>
                         <div className="flex flex-col gap-4 w-[400px]">
-                            <div className="grid w-full max-w-sm items-center gap-3">
+                            <div className="w-full flex flex-col  gap-3">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                     type="text"
@@ -53,7 +53,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                                     placeholder="Name"
                                 />
                             </div>
-                            <div className="grid w-full max-w-sm items-center gap-3">
+                            <div className="w-full flex flex-col  gap-3">
                                 <Label htmlFor="email">Email</Label>
 
                                 <Textarea
@@ -70,7 +70,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                 </section>
 
                 {children}
-            </Container>
+            </div>
         </>
     );
 }
