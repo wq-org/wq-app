@@ -1,4 +1,4 @@
-import Navigation from '@/components/layout/Navigation';
+import Navigation from '@/components/common/Navigation';
 import Container from './Container';
 import { cn } from '@/lib/utils';
 

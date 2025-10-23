@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { GraduationCap, Presentation } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardDescription } from '@/components/ui/card'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GraduationCap, Presentation } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardDescription } from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function RoleSelection() {
-    const [selectedRole, setSelectedRole] = useState<string>('')
-    const navigate = useNavigate()
+    const [selectedRole, setSelectedRole] = useState<string>('');
+    const navigate = useNavigate();
 
     const handleContinue = () => {
         if (selectedRole) {
-            navigate('/login', { state: { role: selectedRole } })
+            navigate('/login', { state: { role: selectedRole } });
         }
-    }
+    };
 
     return (
         <div className="w-screen h-screen container justify-center items-center flex-col gap-8 flex mx-auto">
@@ -86,5 +86,5 @@ export default function RoleSelection() {
                 Continue {selectedRole || '...'}
             </Button>
         </div>
-    )
+    );
 }

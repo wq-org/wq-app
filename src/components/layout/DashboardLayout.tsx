@@ -1,4 +1,4 @@
-import Navigation from './Navigation';
+import Navigation from '../common/Navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Linkedin, Mail, MessageCircleIcon, Plus } from 'lucide-react';

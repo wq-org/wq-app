@@ -4,6 +4,8 @@ import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Separator from '@radix-ui/react-separator';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useNavigate } from 'react-router-dom';
+
 import {
     Home,
     Settings as SettingsIcon,
@@ -27,57 +29,6 @@ type CommandGroup = {
     items: CommandItem[];
 };
 
-const barGroups: CommandGroup[] = [
-    {
-        id: 'primary',
-        items: [
-            {
-                id: 'home',
-                label: 'Home',
-                icon: Home,
-                action: () => console.log('Home'),
-            },
-
-            {
-                id: 'search',
-                label: 'Search',
-                icon: SearchIcon,
-                action: () => console.log('Game Studio'),
-            },
-            {
-                id: 'studio',
-                label: 'Game Studio',
-                icon: ToyBrick,
-                action: () => console.log('Game Studio'),
-            },
-
-            {
-                id: 'upload',
-                label: 'Upload',
-                icon: Upload,
-                action: () => console.log('Upload'),
-            },
-        ],
-    },
-    {
-        id: 'system',
-        items: [
-            {
-                id: 'Feedback',
-                label: 'Feedback',
-                icon: HandHelping,
-                action: () => console.log('Brightness'),
-            },
-            {
-                id: 'settings',
-                label: 'Settings',
-                icon: SettingsIcon,
-                action: () => console.log('Settings'),
-            },
-        ],
-    },
-];
-
 const searchCommands = [
     { id: 'home', label: 'Go to Home', category: 'Navigation' },
     { id: 'settings', label: 'Open Settings', category: 'Navigation' },
@@ -90,6 +41,64 @@ export default function CommandPalette() {
     const [open, setOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [active, setActive] = useState<string | undefined>(undefined);
+
+    const barGroups: CommandGroup[] = [
+        {
+            id: 'primary',
+            items: [
+                {
+                    id: 'home',
+                    label: 'Home',
+                    icon: Home,
+                    action: () => navigateTo('dashboard'),
+                },
+
+                {
+                    id: 'search',
+                    label: 'Search',
+                    icon: SearchIcon,
+                    action: () => console.log('Search'),
+                },
+                {
+                    id: 'studio',
+                    label: 'Game Studio',
+                    icon: ToyBrick,
+                    action: () => console.log('Game Studio'),
+                },
+
+                {
+                    id: 'upload',
+                    label: 'Upload',
+                    icon: Upload,
+                    action: () => console.log('Upload'),
+                },
+            ],
+        },
+        {
+            id: 'system',
+            items: [
+                {
+                    id: 'Feedback',
+                    label: 'Feedback',
+                    icon: HandHelping,
+                    action: () => console.log('Brightness'),
+                },
+                {
+                    id: 'settings',
+                    label: 'Settings',
+                    icon: SettingsIcon,
+                    action: () => navigateTo('Settings'),
+                },
+            ],
+        },
+    ];
+
+    const navigate = useNavigate();
+
+    function navigateTo(path: string) {
+        console.log(`Navigating to ${path}...`);
+        navigate(`/teacher/${path}`);
+    }
 
     // Keyboard shortcut ⌘K / Ctrl+K to open Dialog
     useEffect(() => {
