@@ -1,7 +1,7 @@
 import Navigation from './Navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Linkedin, Mail, MessageCircleIcon } from 'lucide-react';
+import { Linkedin, Mail, MessageCircleIcon, Plus } from 'lucide-react';
 import { Button } from '../ui/button';
 import Container from '../common/Container';
 import { useState } from 'react';
@@ -99,26 +99,35 @@ export default function DashboardLayout({
                     </Container>
                     <section className="pt-8 rounded-2xl bg-gray-100 min-h-[calc(95vh-400px)] pb-8">
                         <Container className="h-full">
-                            <div className="flex flex-wrap gap-12">
-                                {dashboardTabs.map((tab) => {
-                                    const Icon = tab.icon;
-                                    return (
-                                        <span
-                                            key={tab.id}
-                                            onClick={() =>
-                                                handleTabClick(tab.id)
-                                            }
-                                            className={`text-xl flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
-                                                activeTab === tab.id
-                                                    ? 'text-black border-b-2 border-black'
-                                                    : 'text-black/40 hover:text-black/60'
-                                            }`}
-                                        >
-                                            <Icon />
-                                            <p>{tab.label}</p>
-                                        </span>
-                                    );
-                                })}
+                            <div className="flex flex-wrap justify-between items-center">
+                                <div className="flex flex-wrap gap-12">
+                                    {dashboardTabs.map((tab) => {
+                                        const Icon = tab.icon;
+                                        return (
+                                            <span
+                                                key={tab.id}
+                                                onClick={() =>
+                                                    handleTabClick(tab.id)
+                                                }
+                                                className={`text-xl flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
+                                                    activeTab === tab.id
+                                                        ? 'text-black border-b-2 border-black'
+                                                        : 'text-black/40 hover:text-black/60'
+                                                }`}
+                                            >
+                                                <Icon />
+                                                <p>{tab.label}</p>
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                                <Button
+                                    size={'icon'}
+                                    variant="default"
+                                    className=" rounded-full"
+                                >
+                                    <Plus />
+                                </Button>
                             </div>
 
                             <section className="mt-8 flex-1">

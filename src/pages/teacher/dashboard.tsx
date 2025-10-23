@@ -5,11 +5,13 @@ export default function Dashboard() {
     return (
         <>
             <DashboardLayout
-                imageUrl="https://example.com/profile.jpg"
+                imageUrl="https://github.com/hngngn.png"
                 userName="John Doe"
-                description="Software Engineer passionate about web development and teaching."
+                description="Software Engineer passionate about web development and teaching. this is the new feature"
                 role="teacher"
-            />
+            >
+                <p>TEACHER </p>
+            </DashboardLayout>
 
             <CommandPalette />
         </>

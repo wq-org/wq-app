@@ -15,7 +15,7 @@ export default function Container({
 }: ContainerProps) {
     return (
         <Component
-            className={cn('container px-4 py-8 mx-auto', className)}
+            className={cn('container px-14 py-8 mx-auto', className)}
             {...props}
         >
             {children}
