@@ -2,12 +2,14 @@ import { Routes, Route } from 'react-router-dom';
 import Login from './pages/auth/login';
 import SignUp from './pages/auth/signUp';
 import RoleAuth from './pages/auth/role-auth';
+import Institution from './pages/institution';
+
 import StudentDashboard from './pages/student/dashboard';
 import StudentSettings from './pages/student/settings';
 
 import TeacherDashboard from './pages/teacher/dashboard';
 import TeacherSettings from './pages/teacher/settings';
-
+import GameStudio from './pages/teacher/game-studio';
 import UserContextProvider from './store/UserContext';
 function App() {
     return (
@@ -19,10 +21,13 @@ function App() {
                 <Route path="/teacher">
                     <Route path="dashboard" element={<TeacherDashboard />} />
                     <Route path="settings" element={<TeacherSettings />} />
+                    <Route path="game-studio" element={<GameStudio />} />
+                    <Route path="institution" element={<Institution />} />
                 </Route>
                 <Route path="/student">
                     <Route path="dashboard" element={<StudentDashboard />} />
                     <Route path="settings" element={<StudentSettings />} />
+                    <Route path="institution" element={<Institution />} />
                 </Route>
             </Routes>
         </UserContextProvider>

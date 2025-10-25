@@ -21,7 +21,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         <>
             <Navigation />
             <div className="w-screen h-screen">
-                <section className="border">
+                <section>
                     <Container className="flex flex-col items-start  w-full gap-3">
                         <div className="relative">
                             <Avatar className="w-24 h-24 rounded-full">
@@ -46,7 +46,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                         </div>
                         <div className="flex flex-col gap-4 w-[400px]">
                             <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="name">Name</Label>
                                 <Input
                                     type="text"
                                     id="name"
@@ -54,17 +54,42 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                                 />
                             </div>
                             <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="name">Username</Label>
+                                <Input
+                                    type="text"
+                                    id="username"
+                                    placeholder="Username"
+                                />
+                            </div>
+                            <div className="w-full flex flex-col  gap-3">
+                                <Label htmlFor="email">E-mail</Label>
+                                <Input
+                                    disabled
+                                    type="link"
+                                    id="name"
+                                    placeholder="wq-health@serious-game.com"
+                                />
+                            </div>
+                            <div className="w-full flex flex-col  gap-3">
+                                <Label htmlFor="email">LinkedIn</Label>
+                                <Input
+                                    type="link"
+                                    id="name"
+                                    placeholder="linkedin.com/in/username"
+                                />
+                            </div>
+                            <div className="w-full flex flex-col  gap-3">
+                                <Label htmlFor="email">About me</Label>
 
                                 <Textarea
                                     placeholder="a text about you"
                                     className="w-full rounded-lg resize-none "
                                 />
                             </div>
-
-                            <Button type="submit" variant="outline">
+                            {/* 
+                            <Button type="submit" variant="default">
                                 Save Changes
-                            </Button>
+                            </Button> */}
                         </div>
                     </Container>
                 </section>

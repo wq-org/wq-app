@@ -6,28 +6,14 @@ import * as Separator from '@radix-ui/react-separator';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router-dom';
 
-import {
-    Home,
-    Settings as SettingsIcon,
-    Upload,
-    Search as SearchIcon,
-    HandHelping,
-    ToyBrick,
-} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { X, Search } from 'lucide-react';
-
-type CommandItem = {
-    id: string;
-    label: string;
-    icon: React.ComponentType<{ className?: string }>;
-    action: () => void | Promise<void>;
-};
-
-type CommandGroup = {
-    id: string;
-    items: CommandItem[];
-};
+import type {
+    CommandBarItem,
+    CommandBarGroup,
+    ActionId,
+} from '../types/command-bar.types';
+import { BAR_GROUPS } from '../config/bar-groups';
 
 const searchCommands = [
     { id: 'home', label: 'Go to Home', category: 'Navigation' },
@@ -42,63 +28,43 @@ export default function CommandPalette() {
     const [searchQuery, setSearchQuery] = useState('');
     const [active, setActive] = useState<string | undefined>(undefined);
 
-    const barGroups: CommandGroup[] = [
-        {
-            id: 'primary',
-            items: [
-                {
-                    id: 'home',
-                    label: 'Home',
-                    icon: Home,
-                    action: () => navigateTo('dashboard'),
-                },
-
-                {
-                    id: 'search',
-                    label: 'Search',
-                    icon: SearchIcon,
-                    action: () => console.log('Search'),
-                },
-                {
-                    id: 'studio',
-                    label: 'Game Studio',
-                    icon: ToyBrick,
-                    action: () => console.log('Game Studio'),
-                },
-
-                {
-                    id: 'upload',
-                    label: 'Upload',
-                    icon: Upload,
-                    action: () => console.log('Upload'),
-                },
-            ],
-        },
-        {
-            id: 'system',
-            items: [
-                {
-                    id: 'Feedback',
-                    label: 'Feedback',
-                    icon: HandHelping,
-                    action: () => console.log('Brightness'),
-                },
-                {
-                    id: 'settings',
-                    label: 'Settings',
-                    icon: SettingsIcon,
-                    action: () => navigateTo('Settings'),
-                },
-            ],
-        },
-    ];
-
     const navigate = useNavigate();
 
-    function navigateTo(path: string) {
-        console.log(`Navigating to ${path}...`);
-        navigate(`/teacher/${path}`);
-    }
+    // Centralized handlers for imperative actions referenced by actionId
+    const actionHandlers: Partial<Record<ActionId, () => void>> = {
+        search: () => setOpen(true),
+        add: () => console.log('Add new'),
+        feedback: () => console.log('Feedback'),
+        backwards: () => window.history.back(),
+        forwards: () => window.history.forward(),
+    };
+
+    // Use static typed config for simplicity
+    const barGroups: CommandBarGroup[] = BAR_GROUPS;
+
+    // Helper: pick groups by id to avoid brittle numeric indexes
+    const getGroupById = (id: string) => barGroups.find((g) => g.id === id);
+    const primaryGroup =
+        getGroupById('teacher') ??
+        getGroupById('student') ??
+        getGroupById('user') ??
+        barGroups[0];
+
+    console.log('primaryGroup :>> ', primaryGroup);
+    const userGroup = getGroupById('user');
+    const primaryItems = primaryGroup?.items ?? [];
+    const userItems = userGroup?.items ?? [];
+
+    // Generic click handler: runs actionId or navigates to `to`
+    const handleItemClick = (item: CommandBarItem) => {
+        if (item.actionId && actionHandlers[item.actionId]) {
+            actionHandlers[item.actionId]!();
+            return;
+        }
+        if (item.to) {
+            navigate(item.to);
+        }
+    };
 
     // Keyboard shortcut ⌘K / Ctrl+K to open Dialog
     useEffect(() => {
@@ -139,6 +105,7 @@ export default function CommandPalette() {
                 >
                     <Toolbar.Root className="flex items-center gap-3">
                         <div className="flex items-center gap-3">
+                            {/* First group: first three items */}
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
@@ -147,7 +114,7 @@ export default function CommandPalette() {
                                 aria-label="primary actions"
                                 className="flex items-center gap-3"
                             >
-                                {barGroups[0].items.slice(0, 3).map((item) => {
+                                {primaryItems.slice(0, 3).map((item) => {
                                     const Icon = item.icon;
                                     return (
                                         <Tooltip.Root key={item.id}>
@@ -155,7 +122,7 @@ export default function CommandPalette() {
                                                 <ToggleGroup.Item
                                                     value={item.id}
                                                     onClick={() =>
-                                                        item.action()
+                                                        handleItemClick(item)
                                                     }
                                                     className="
                                                         cursor-pointer
@@ -165,11 +132,11 @@ export default function CommandPalette() {
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                    aria-label={item.label}
+                                                    aria-label={item.labelKey}
                                                 >
                                                     <Icon className="h-6 w-6" />
                                                     <VisuallyHidden>
-                                                        {item.label}
+                                                        {item.labelKey}
                                                     </VisuallyHidden>
                                                 </ToggleGroup.Item>
                                             </Tooltip.Trigger>
@@ -179,7 +146,7 @@ export default function CommandPalette() {
                                                     sideOffset={8}
                                                     className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
                                                 >
-                                                    {item.label}
+                                                    {item.labelKey}
                                                     <Tooltip.Arrow className="fill-popover" />
                                                 </Tooltip.Content>
                                             </Tooltip.Portal>
@@ -195,16 +162,16 @@ export default function CommandPalette() {
                                 className="mx-2 h-12 w-px bg-border"
                             />
 
-                            {/* Fourth icon from primary group */}
+                            {/* Remaining primary items */}
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
                                 onValueChange={(v) => setActive(v || undefined)}
                                 orientation="horizontal"
-                                aria-label="upload action"
+                                aria-label="primary actions continued"
                                 className="flex items-center gap-3"
                             >
-                                {barGroups[0].items.slice(3).map((item) => {
+                                {primaryItems.slice(3).map((item) => {
                                     const Icon = item.icon;
                                     return (
                                         <Tooltip.Root key={item.id}>
@@ -212,7 +179,7 @@ export default function CommandPalette() {
                                                 <ToggleGroup.Item
                                                     value={item.id}
                                                     onClick={() =>
-                                                        item.action()
+                                                        handleItemClick(item)
                                                     }
                                                     className="
                                                         cursor-pointer
@@ -222,11 +189,11 @@ export default function CommandPalette() {
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                    aria-label={item.label}
+                                                    aria-label={item.labelKey}
                                                 >
                                                     <Icon className="h-6 w-6" />
                                                     <VisuallyHidden>
-                                                        {item.label}
+                                                        {item.labelKey}
                                                     </VisuallyHidden>
                                                 </ToggleGroup.Item>
                                             </Tooltip.Trigger>
@@ -236,7 +203,7 @@ export default function CommandPalette() {
                                                     sideOffset={8}
                                                     className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
                                                 >
-                                                    {item.label}
+                                                    {item.labelKey}
                                                     <Tooltip.Arrow className="fill-popover" />
                                                 </Tooltip.Content>
                                             </Tooltip.Portal>
@@ -246,6 +213,11 @@ export default function CommandPalette() {
                             </ToggleGroup.Root>
 
                             {/* System group */}
+                            <Separator.Root
+                                decorative
+                                orientation="vertical"
+                                className="mx-2 h-12 w-px bg-border"
+                            />
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
@@ -254,12 +226,7 @@ export default function CommandPalette() {
                                 aria-label="system actions"
                                 className="flex items-center gap-3"
                             >
-                                <Separator.Root
-                                    decorative
-                                    orientation="vertical"
-                                    className="mx-2 h-12 w-px bg-border"
-                                />
-                                {barGroups[1].items.map((item) => {
+                                {userItems.map((item) => {
                                     const Icon = item.icon;
                                     return (
                                         <Tooltip.Root key={item.id}>
@@ -267,7 +234,7 @@ export default function CommandPalette() {
                                                 <ToggleGroup.Item
                                                     value={item.id}
                                                     onClick={() =>
-                                                        item.action()
+                                                        handleItemClick(item)
                                                     }
                                                     className="
                                                         cursor-pointer
@@ -277,11 +244,11 @@ export default function CommandPalette() {
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                    aria-label={item.label}
+                                                    aria-label={item.labelKey}
                                                 >
                                                     <Icon className="h-6 w-6" />
                                                     <VisuallyHidden>
-                                                        {item.label}
+                                                        {item.labelKey}
                                                     </VisuallyHidden>
                                                 </ToggleGroup.Item>
                                             </Tooltip.Trigger>
@@ -291,7 +258,7 @@ export default function CommandPalette() {
                                                     sideOffset={8}
                                                     className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
                                                 >
-                                                    {item.label}
+                                                    {item.labelKey}
                                                     <Tooltip.Arrow className="fill-popover" />
                                                 </Tooltip.Content>
                                             </Tooltip.Portal>
@@ -307,7 +274,8 @@ export default function CommandPalette() {
             {/* Searchable dialog palette */}
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Portal>
-                    <Dialog.Content className="fixed bottom-30 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 rounded-3xl border bg-white  max-h-[80vh] overflow-hidden">
+                    {/* No overlay; positioned above the bar */}
+                    <Dialog.Content className="fixed bottom-28 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 rounded-xl border bg-white shadow-2xl max-h-[calc(100vh-10rem)] overflow-hidden flex flex-col">
                         <div className="flex items-center border-b px-4 py-3">
                             <Search className="mr-3 h-4 w-4 text-gray-400" />
                             <input
@@ -325,7 +293,8 @@ export default function CommandPalette() {
                             </Dialog.Close>
                         </div>
 
-                        <div className="max-h-96 overflow-y-auto">
+                        {/* Results area stretches to fill available height */}
+                        <div className="flex-1 overflow-y-auto">
                             {filtered.length > 0 ? (
                                 <div className="p-2">
                                     {filtered.map((command) => (

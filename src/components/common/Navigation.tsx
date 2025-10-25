@@ -5,6 +5,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import Container from './Container';
 
 interface NavigationProps {
     currentPageName?: string;
@@ -12,11 +13,11 @@ interface NavigationProps {
 }
 const Navigation = ({ currentPageName }: NavigationProps) => {
     return (
-        <nav className="w-full flex justify-between py-4 px-12 gap-2">
-            <div className="flex items-center gap-3">
+        <Container className="w-full flex justify-between gap-2">
+            <div className="flex items-center">
                 <ChevronRight className=" text-gray-400" />
                 <h1 className="text-2xl font-light text-gray-400">
-                    {currentPageName || 'Page Name'}
+                    {currentPageName || 'Page Title'}
                 </h1>
             </div>
             <div>
@@ -25,7 +26,7 @@ const Navigation = ({ currentPageName }: NavigationProps) => {
                         <Button
                             size="icon"
                             variant="ghost"
-                            className="w-12 h-12 [&_svg]:size-6"
+                            className="w-12 rounded-full h-12 [&_svg]:size-6"
                         >
                             <Bell className="size-6 text-gray-400" />
                         </Button>
@@ -40,12 +41,12 @@ const Navigation = ({ currentPageName }: NavigationProps) => {
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="w-12 h-12 [&_svg]:size-6"
+                    className="w-12 rounded-full h-12 [&_svg]:size-6"
                 >
                     <LogOut className="size-6 text-gray-400" />
                 </Button>
             </div>
-        </nav>
+        </Container>
     );
 };
 

@@ -14,6 +14,7 @@ export default function Dashboard() {
             </DashboardLayout>
 
             <CommandPalette />
+            
         </>
     );
 }

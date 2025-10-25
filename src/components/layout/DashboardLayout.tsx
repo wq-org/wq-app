@@ -1,7 +1,7 @@
 import Navigation from '../common/Navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Linkedin, Mail, MessageCircleIcon, Plus } from 'lucide-react';
+import { Linkedin, Mail } from 'lucide-react';
 import { Button } from '../ui/button';
 import Container from '../common/Container';
 import { useState } from 'react';
@@ -76,7 +76,7 @@ export default function DashboardLayout({
                                 className="gap-2"
                                 onClick={handleFollowClick}
                             >
-                                Follow
+                                Connect
                             </Button>
                             <Button
                                 variant="outline"
@@ -91,9 +91,6 @@ export default function DashboardLayout({
                                 onClick={handleLinkedInClick}
                             >
                                 <Linkedin className="text-gray-400" />
-                            </Button>
-                            <Button variant="outline" className="gap-2">
-                                <MessageCircleIcon className="text-gray-400" />
                             </Button>
                         </div>
                     </Container>
@@ -121,17 +118,10 @@ export default function DashboardLayout({
                                         );
                                     })}
                                 </div>
-                                <Button
-                                    size={'icon'}
-                                    variant="default"
-                                    className=" rounded-full"
-                                >
-                                    <Plus />
-                                </Button>
                             </div>
 
                             <section className="mt-8 flex-1">
-                                {children || 'content ' + activeTab}
+                                {children}
                             </section>
                         </Container>
                     </section>

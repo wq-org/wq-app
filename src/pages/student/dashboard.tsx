@@ -1,7 +1,7 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { CommandPalette } from '@/features/command-palette';
 
-const Dashboard = () => {
+export default function Dashboard() {
     return (
         <>
             <DashboardLayout
@@ -14,6 +14,4 @@ const Dashboard = () => {
             <CommandPalette />
         </>
     );
-};
-
-export default Dashboard;
+}
