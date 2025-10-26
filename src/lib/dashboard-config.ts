@@ -25,7 +25,6 @@ export const teacherDashboardTabs: DashboardTab[] = [
 export const studentDashboardTabs: DashboardTab[] = [
     { id: 'modules', label: 'Modules', icon: Shapes },
     { id: 'games', label: 'Games', icon: Gamepad2 },
-    { id: 'teachers', label: 'Teachers', icon: GraduationCap },
     { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
 export const adminDashboard: DashboardTab[] = [

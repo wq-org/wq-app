@@ -6,12 +6,17 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import Container from './Container';
-
+import { useNavigate } from 'react-router';
 interface NavigationProps {
     currentPageName?: string;
     children?: React.ReactNode;
 }
+
 const Navigation = ({ currentPageName }: NavigationProps) => {
+    const navigate = useNavigate();
+    const handleOnClickLogout = () => {
+        navigate('/');
+    };
     return (
         <Container className="w-full flex justify-between gap-2">
             <div className="flex items-center">
@@ -40,6 +45,7 @@ const Navigation = ({ currentPageName }: NavigationProps) => {
                 </Popover>
                 <Button
                     size="icon"
+                    onClick={handleOnClickLogout}
                     variant="ghost"
                     className="w-12 rounded-full h-12 [&_svg]:size-6"
                 >
