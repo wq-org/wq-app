@@ -1,0 +1,14 @@
+{
+    "title": "Join your School now",
+    "asA": "as a",
+    "student": {
+        "title": "I'm starting as a Student",
+        "desc": "Student of a School or University"
+    },
+    "teacher": {
+        "title": "I'm starting as a Teacher",
+        "desc": "Teacher of a School or University"
+    },
+    "continue": "Continue {{role}}",
+    "continueIdle": "Continue ..."
+}
