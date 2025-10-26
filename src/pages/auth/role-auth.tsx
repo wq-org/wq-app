@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Presentation } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardDescription } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -8,20 +9,19 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 export default function RoleSelection() {
     const [selectedRole, setSelectedRole] = useState<string>('');
     const navigate = useNavigate();
+    const { t } = useTranslation('roleSelection');
 
     const handleContinue = () => {
-        if (selectedRole) {
-            navigate('/login', { state: { role: selectedRole } });
-        }
+        if (selectedRole) navigate('/login', { state: { role: selectedRole } });
     };
 
     return (
-        <div className="w-screen h-screen container justify-center items-center flex-col gap-8 flex mx-auto">
+        <div className="w-screen h-screen container flex mx-auto flex-col items-center justify-center gap-8">
             <h1 className="text-4xl font-light">
-                Join your School now{' '}
+                {t('title')}{' '}
                 {selectedRole && (
                     <span>
-                        <span className="mr-2.5">as a</span>
+                        <span className="mr-2.5">{t('asA')}</span>
                         <span className="bg-gray-100 text-black rounded-2xl px-4 py-2 capitalize">
                             {selectedRole}
                         </span>
@@ -35,7 +35,7 @@ export default function RoleSelection() {
                 onValueChange={setSelectedRole}
             >
                 <Card
-                    className={`w-[350px] cursor-pointer hover:shadow-lg transition-shadow duration-300 ${
+                    className={`w-[350px] cursor-pointer transition-shadow duration-300 hover:shadow-lg ${
                         selectedRole === 'student'
                             ? 'border-primary shadow-lg'
                             : ''
@@ -43,23 +43,21 @@ export default function RoleSelection() {
                     onClick={() => setSelectedRole('student')}
                 >
                     <CardHeader>
-                        <div className="w-full flex justify-end">
+                        <div className="flex w-full justify-end">
                             <RadioGroupItem
                                 value="student"
                                 id="student"
-                                className="w-6 h-6"
+                                className="h-6 w-6"
                             />
                         </div>
-                        <GraduationCap className="w-12 h-12" />
-                        <p className="text-3xl">I'm starting as a Student</p>
-                        <CardDescription>
-                            Student of a School or University
-                        </CardDescription>
+                        <GraduationCap className="h-12 w-12" />
+                        <p className="text-3xl">{t('student.title')}</p>
+                        <CardDescription>{t('student.desc')}</CardDescription>
                     </CardHeader>
                 </Card>
 
                 <Card
-                    className={`w-[350px] cursor-pointer hover:shadow-lg transition-shadow duration-300 ${
+                    className={`w-[350px] cursor-pointer transition-shadow duration-300 hover:shadow-lg ${
                         selectedRole === 'teacher'
                             ? 'border-primary shadow-lg'
                             : ''
@@ -67,23 +65,24 @@ export default function RoleSelection() {
                     onClick={() => setSelectedRole('teacher')}
                 >
                     <CardHeader>
-                        <div className="w-full flex justify-end">
+                        <div className="flex w-full justify-end">
                             <RadioGroupItem
                                 value="teacher"
                                 id="teacher"
-                                className="w-6 h-6"
+                                className="h-6 w-6"
                             />
                         </div>
-                        <Presentation className="w-12 h-12" />
-                        <p className="text-3xl">I'm starting as a Teacher</p>
-                        <CardDescription>
-                            Teacher of a School or University
-                        </CardDescription>
+                        <Presentation className="h-12 w-12" />
+                        <p className="text-3xl">{t('teacher.title')}</p>
+                        <CardDescription>{t('teacher.desc')}</CardDescription>
                     </CardHeader>
                 </Card>
             </RadioGroup>
+
             <Button disabled={!selectedRole} size="lg" onClick={handleContinue}>
-                Continue {selectedRole || '...'}
+                {selectedRole
+                    ? t('continue', { role: selectedRole })
+                    : t('continueIdle')}
             </Button>
         </div>
     );
