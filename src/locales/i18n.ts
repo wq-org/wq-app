@@ -1,20 +1,25 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import commonEN from './en/common.json';
-import navigationEN from './en/navigation.json';
-import settingsEN from './en/settings.json';
-import commandPaletteEN from './en/commandPalette.json';
-import dashboardEN from './en/dashboard.json';
-import errorsEN from './en/errors.json';
+
+// DE imports
 import commonDE from './de/common.json';
 import navigationDE from './de/navigation.json';
 import settingsDE from './de/settings.json';
 import commandPaletteDE from './de/commandPalette.json';
 import dashboardDE from './de/dashboard.json';
 import errorsDE from './de/errors.json';
-
-import roleSelectionEN from './en/roleSelection.json';
 import roleSelectionDE from './de/roleSelection.json';
+import authDE from './de/auth.json';
+
+// EN imports
+import dashboardEN from './en/dashboard.json';
+import errorsEN from './en/errors.json';
+import commonEN from './en/common.json';
+import navigationEN from './en/navigation.json';
+import settingsEN from './en/settings.json';
+import commandPaletteEN from './en/commandPalette.json';
+import roleSelectionEN from './en/roleSelection.json';
+import authEN from './en/auth.json';
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -26,6 +31,7 @@ i18n.use(initReactI18next).init({
             dashboard: dashboardEN,
             errors: errorsEN,
             roleSelection: roleSelectionEN,
+            auth: authEN,
         },
         de: {
             common: commonDE,
@@ -35,6 +41,7 @@ i18n.use(initReactI18next).init({
             dashboard: dashboardDE,
             errors: errorsDE,
             roleSelection: roleSelectionDE,
+            auth: authDE,
         },
     },
     lng: 'de',
@@ -47,6 +54,7 @@ i18n.use(initReactI18next).init({
         'dashboard',
         'errors',
         'roleSelection',
+        'auth',
     ],
     defaultNS: 'common',
     interpolation: { escapeValue: false },

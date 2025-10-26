@@ -6,7 +6,7 @@ export const loginUser = async (userDetails: object): Promise<object> => {
     return {
         status: 'success',
         message: 'User authenticated successfully',
-        data: mockPrimeUser,
+        data: mockTeacher,
     };
 };
 
@@ -16,7 +16,7 @@ export const signupUser = async (userDetails: object): Promise<object> => {
     return {
         status: 'success',
         message: 'User registered successfully',
-        data: mockPrimeUser,
+        data: mockTeacher,
     };
 };
 

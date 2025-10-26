@@ -12,6 +12,7 @@ export default function RoleSelection() {
     const { t } = useTranslation('roleSelection');
 
     const handleContinue = () => {
+        console.log('selectedRole :>> ', selectedRole);
         if (selectedRole) navigate('/login', { state: { role: selectedRole } });
     };
 
