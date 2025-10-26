@@ -86,10 +86,10 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                                     className="w-full rounded-lg resize-none "
                                 />
                             </div>
-                            {/* 
+
                             <Button type="submit" variant="default">
                                 Save Changes
-                            </Button> */}
+                            </Button>
                         </div>
                     </Container>
                 </section>

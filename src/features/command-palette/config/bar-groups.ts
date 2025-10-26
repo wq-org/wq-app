@@ -7,10 +7,10 @@ import {
     Settings as SettingsIcon,
     ChevronLeft,
     ChevronRight,
+    SplinePointer,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
-// Role and system groups used by the command bar. Icons are real components.
 export const BAR_GROUPS: CommandBarGroup[] = [
     {
         id: 'teacher',
@@ -30,7 +30,7 @@ export const BAR_GROUPS: CommandBarGroup[] = [
             {
                 id: 'studio',
                 labelKey: 'navigation.studio',
-                icon: Gamepad2,
+                icon: SplinePointer,
                 to: '/teacher/game-studio',
             },
             {

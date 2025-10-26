@@ -5,7 +5,6 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Separator from '@radix-ui/react-separator';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router-dom';
-
 import { useEffect, useMemo, useState } from 'react';
 import { X, Search } from 'lucide-react';
 import type {
@@ -14,14 +13,9 @@ import type {
     ActionId,
 } from '../types/command-bar.types';
 import { BAR_GROUPS } from '../config/bar-groups';
-
-const searchCommands = [
-    { id: 'home', label: 'Go to Home', category: 'Navigation' },
-    { id: 'settings', label: 'Open Settings', category: 'Navigation' },
-    { id: 'game-studio', label: 'Game Studio', category: 'Navigation' },
-    { id: 'feedback', label: 'Send Feedback', category: 'Actions' },
-    { id: 'upload', label: 'Upload File', category: 'Actions' },
-];
+import usersList from '@/data/userList.json';
+import { Avatar } from '@radix-ui/react-avatar';
+import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function CommandPalette() {
     const [open, setOpen] = useState(false);
@@ -33,8 +27,8 @@ export default function CommandPalette() {
     // Centralized handlers for imperative actions referenced by actionId
     const actionHandlers: Partial<Record<ActionId, () => void>> = {
         search: () => setOpen(true),
-        add: () => console.log('Add new'),
-        feedback: () => console.log('Feedback'),
+        add: () => setOpen(true),
+        feedback: () => setOpen(true),
         backwards: () => window.history.back(),
         forwards: () => window.history.forward(),
     };
@@ -50,7 +44,6 @@ export default function CommandPalette() {
         getGroupById('user') ??
         barGroups[0];
 
-    console.log('primaryGroup :>> ', primaryGroup);
     const userGroup = getGroupById('user');
     const primaryItems = primaryGroup?.items ?? [];
     const userItems = userGroup?.items ?? [];
@@ -66,7 +59,6 @@ export default function CommandPalette() {
         }
     };
 
-    // Keyboard shortcut ⌘K / Ctrl+K to open Dialog
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -79,16 +71,18 @@ export default function CommandPalette() {
     }, []);
 
     const filtered = useMemo(() => {
-        const q = searchQuery.trim().toLowerCase();
-        if (!q) return searchCommands;
-        return searchCommands.filter((c) => c.label.toLowerCase().includes(q));
+        const currentSearchQuery = searchQuery.trim().toLowerCase();
+        if (!currentSearchQuery) return usersList;
+        return usersList.filter((user) =>
+            user.email.toLowerCase().includes(currentSearchQuery)
+        );
     }, [searchQuery]);
 
     return (
         <>
             {/* Mirror bar outside the component */}
-            <div className="fixed inset-x-0 bottom-20 z-40 mx-auto w-16 h-1 rounded-full bg-muted/50" />
 
+            <div className="fixed  inset-x-0 bottom-20 z-40 mx-auto w-16 h-1 rounded-full bg-red-500" />
             {/* Bottom sticky command bar */}
             <Tooltip.Provider delayDuration={200}>
                 <div
@@ -275,7 +269,7 @@ export default function CommandPalette() {
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Portal>
                     {/* No overlay; positioned above the bar */}
-                    <Dialog.Content className="fixed bottom-28 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 rounded-xl border bg-white shadow-2xl max-h-[calc(100vh-10rem)] overflow-hidden flex flex-col">
+                    <Dialog.Content className="fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white  max-h-[calc(100vh-30rem)] overflow-hidden flex flex-col">
                         <div className="flex items-center border-b px-4 py-3">
                             <Search className="mr-3 h-4 w-4 text-gray-400" />
                             <input
@@ -297,24 +291,33 @@ export default function CommandPalette() {
                         <div className="flex-1 overflow-y-auto">
                             {filtered.length > 0 ? (
                                 <div className="p-2">
-                                    {filtered.map((command) => (
+                                    {filtered.map((item) => (
                                         <button
-                                            key={command.id}
                                             className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                             onClick={() => {
-                                                console.log(
-                                                    `Executing: ${command.label}`
-                                                );
                                                 setOpen(false);
                                             }}
                                         >
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm font-medium">
-                                                    {command.label}
-                                                </span>
-                                                <span className="text-xs text-gray-500">
-                                                    {command.category}
-                                                </span>
+                                            <div className="flex gap-3">
+                                                <Avatar className="w-12 h-12">
+                                                    <AvatarImage
+                                                        src="https://github.com/hngngn.png"
+                                                        alt="avatar"
+                                                        className="rounded-full w-12 h-12"
+                                                    />
+                                                    <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
+                                                        U
+                                                    </AvatarFallback>
+                                                </Avatar>
+
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm">
+                                                        @{item.username}
+                                                    </span>
+                                                    <span className="text-xs text-gray-400">
+                                                        {item.email}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </button>
                                     ))}

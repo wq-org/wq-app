@@ -1,0 +1,22 @@
+[
+    { "id": "1", "username": "jsnow", "name": "Jon Snow", "email": "jon.snow@winterfell.com" },
+    { "id": "2", "username": "arya.stark", "name": "Arya Stark", "email": "arya@starkmail.com" },
+    { "id": "3", "username": "targaryen_d", "name": "Daenerys Targaryen", "email": "daenerys@dragonstone.io" },
+    { "id": "4", "username": "tyrion_l", "name": "Tyrion Lannister", "email": "tyrion@casterlyrock.org" },
+    { "id": "5", "username": "bruce.wayne", "name": "Bruce Wayne", "email": "bruce@wayneenterprises.com" },
+    { "id": "6", "username": "clark.kent", "name": "Clark Kent", "email": "clark@dailyplanet.com" },
+    { "id": "7", "username": "diana_p", "name": "Diana Prince", "email": "diana@themiscira.io" },
+    { "id": "8", "username": "tony_stark", "name": "Tony Stark", "email": "tony@starkindustries.com" },
+    { "id": "9", "username": "natasha.romanoff", "name": "Natasha Romanoff", "email": "natasha@shield.gov" },
+    { "id": "10", "username": "p.parker", "name": "Peter Parker", "email": "peter@dailybugle.net" },
+    { "id": "11", "username": "steve_rogers", "name": "Steve Rogers", "email": "steve@avengers.us" },
+    { "id": "12", "username": "banner_b", "name": "Bruce Banner", "email": "bruce@avengers.us" },
+    { "id": "13", "username": "carol.d", "name": "Carol Danvers", "email": "carol@starforce.mil" },
+    { "id": "14", "username": "w.wilson", "name": "Wade Wilson", "email": "wade@mercwithmouth.com" },
+    { "id": "15", "username": "selina_kyle", "name": "Selina Kyle", "email": "selina@gotham.net" },
+    { "id": "16", "username": "barry_allen", "name": "Barry Allen", "email": "barry@ccpd.gov" },
+    { "id": "17", "username": "arthur.c", "name": "Arthur Curry", "email": "arthur@atlantis.org" },
+    { "id": "18", "username": "hal.jordan", "name": "Hal Jordan", "email": "hal@greenlanterncorp.io" },
+    { "id": "19", "username": "v.strange", "name": "Stephen Strange", "email": "stephen@kamar-taj.org" },
+    { "id": "20", "username": "wanda.m", "name": "Wanda Maximoff", "email": "wanda@avengers.us" }
+]

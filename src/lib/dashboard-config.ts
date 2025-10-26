@@ -1,4 +1,5 @@
 import {
+    FolderOpen,
     Gamepad2,
     GraduationCap,
     HardDrive,
@@ -16,7 +17,7 @@ export interface DashboardTab {
 
 export const teacherDashboardTabs: DashboardTab[] = [
     { id: 'modules', label: 'Modules', icon: Shapes },
-    { id: 'database', label: 'Database', icon: HardDrive },
+    { id: 'database', label: 'Database', icon: FolderOpen },
     { id: 'students', label: 'Students', icon: Users2 },
     { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
