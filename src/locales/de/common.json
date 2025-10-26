@@ -1,1 +1,34 @@
-{}
+{
+    "app": {
+        "name": "WQ Health",
+        "tagline": "Lernen durch Spielen"
+    },
+    "buttons": {
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "continue": "Weiter",
+        "submit": "Absenden",
+        "back": "Zurück",
+        "next": "Nächstes",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "close": "Schließen"
+    },
+    "labels": {
+        "email": "E-Mail",
+        "password": "Passwort",
+        "username": "Benutzername",
+        "date": "Datum",
+        "name": "Name"
+    },
+    "messages": {
+        "loading": "Wird geladen...",
+        "noData": "Keine Daten verfügbar",
+        "success": "Vorgang erfolgreich abgeschlossen",
+        "oops": "Etwas ist schiefgelaufen."
+    },
+    "placeholders": {
+        "search": "Suchen...",
+        "typeHere": "Hier tippen..."
+    }
+}

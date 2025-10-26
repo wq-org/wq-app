@@ -32,3 +32,9 @@ export type CommandBarGroup = {
     id: string;
     items: CommandBarItem[];
 };
+
+export interface CommandPaletteProps {
+    children?: React.ReactNode;
+    role: string;
+    type?: string;
+}

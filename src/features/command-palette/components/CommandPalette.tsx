@@ -5,50 +5,43 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Separator from '@radix-ui/react-separator';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
-import { X, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type {
     CommandBarItem,
     CommandBarGroup,
     ActionId,
 } from '../types/command-bar.types';
 import { BAR_GROUPS } from '../config/bar-groups';
-import usersList from '@/data/userList.json';
-import { Avatar } from '@radix-ui/react-avatar';
-import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-export default function CommandPalette() {
+import type { CommandPaletteProps } from '../types/command-bar.types';
+import { getGroupById } from '../config/bar-groups';
+import Container from '@/components/common/Container';
+import CommandSearchDialog from './CommandSearchDialog';
+
+export default function CommandPalette({ role }: CommandPaletteProps) {
     const [open, setOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [active, setActive] = useState<string | undefined>(undefined);
 
     const navigate = useNavigate();
 
     // Centralized handlers for imperative actions referenced by actionId
     const actionHandlers: Partial<Record<ActionId, () => void>> = {
-        search: () => setOpen(true),
-        add: () => setOpen(true),
-        feedback: () => setOpen(true),
+        search: () => setOpen(true), // search interface
+        add: () => setOpen(true), // type add-interface
+        feedback: () => setOpen(true), // type feedback-form
         backwards: () => window.history.back(),
         forwards: () => window.history.forward(),
     };
 
-    // Use static typed config for simplicity
-    const barGroups: CommandBarGroup[] = BAR_GROUPS;
+    const commandBarGroup: CommandBarGroup[] = BAR_GROUPS;
 
-    // Helper: pick groups by id to avoid brittle numeric indexes
-    const getGroupById = (id: string) => barGroups.find((g) => g.id === id);
-    const primaryGroup =
-        getGroupById('teacher') ??
-        getGroupById('student') ??
-        getGroupById('user') ??
-        barGroups[0];
+    const primaryGroup = getGroupById(role) ?? commandBarGroup[0];
+    console.log('primaryGroup :>> ', primaryGroup);
 
-    const userGroup = getGroupById('user');
-    const primaryItems = primaryGroup?.items ?? [];
-    const userItems = userGroup?.items ?? [];
+    const defaultUserCommands = getGroupById('user');
+    const userItems = defaultUserCommands?.items ?? [];
+    const roleBasedUserCommands = primaryGroup?.items ?? [];
 
-    // Generic click handler: runs actionId or navigates to `to`
     const handleItemClick = (item: CommandBarItem) => {
         if (item.actionId && actionHandlers[item.actionId]) {
             actionHandlers[item.actionId]!();
@@ -70,20 +63,8 @@ export default function CommandPalette() {
         return () => window.removeEventListener('keydown', onKey);
     }, []);
 
-    const filtered = useMemo(() => {
-        const currentSearchQuery = searchQuery.trim().toLowerCase();
-        if (!currentSearchQuery) return usersList;
-        return usersList.filter((user) =>
-            user.email.toLowerCase().includes(currentSearchQuery)
-        );
-    }, [searchQuery]);
-
     return (
         <>
-            {/* Mirror bar outside the component */}
-
-            <div className="fixed  inset-x-0 bottom-20 z-40 mx-auto w-16 h-1 rounded-full bg-red-500" />
-            {/* Bottom sticky command bar */}
             <Tooltip.Provider delayDuration={200}>
                 <div
                     className="
@@ -108,17 +89,21 @@ export default function CommandPalette() {
                                 aria-label="primary actions"
                                 className="flex items-center gap-3"
                             >
-                                {primaryItems.slice(0, 3).map((item) => {
-                                    const Icon = item.icon;
-                                    return (
-                                        <Tooltip.Root key={item.id}>
-                                            <Tooltip.Trigger asChild>
-                                                <ToggleGroup.Item
-                                                    value={item.id}
-                                                    onClick={() =>
-                                                        handleItemClick(item)
-                                                    }
-                                                    className="
+                                {roleBasedUserCommands
+                                    .slice(0, 3)
+                                    .map((item) => {
+                                        const Icon = item.icon;
+                                        return (
+                                            <Tooltip.Root key={item.id}>
+                                                <Tooltip.Trigger asChild>
+                                                    <ToggleGroup.Item
+                                                        value={item.id}
+                                                        onClick={() =>
+                                                            handleItemClick(
+                                                                item
+                                                            )
+                                                        }
+                                                        className="
                                                         cursor-pointer
                                                         inline-flex h-14 w-14 items-center justify-center
                                                         rounded-full border
@@ -126,27 +111,29 @@ export default function CommandPalette() {
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                    aria-label={item.labelKey}
-                                                >
-                                                    <Icon className="h-6 w-6" />
-                                                    <VisuallyHidden>
+                                                        aria-label={
+                                                            item.labelKey
+                                                        }
+                                                    >
+                                                        <Icon className="h-6 w-6" />
+                                                        <VisuallyHidden>
+                                                            {item.labelKey}
+                                                        </VisuallyHidden>
+                                                    </ToggleGroup.Item>
+                                                </Tooltip.Trigger>
+                                                <Tooltip.Portal>
+                                                    <Tooltip.Content
+                                                        side="top"
+                                                        sideOffset={8}
+                                                        className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
+                                                    >
                                                         {item.labelKey}
-                                                    </VisuallyHidden>
-                                                </ToggleGroup.Item>
-                                            </Tooltip.Trigger>
-                                            <Tooltip.Portal>
-                                                <Tooltip.Content
-                                                    side="top"
-                                                    sideOffset={8}
-                                                    className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
-                                                >
-                                                    {item.labelKey}
-                                                    <Tooltip.Arrow className="fill-popover" />
-                                                </Tooltip.Content>
-                                            </Tooltip.Portal>
-                                        </Tooltip.Root>
-                                    );
-                                })}
+                                                        <Tooltip.Arrow className="fill-popover" />
+                                                    </Tooltip.Content>
+                                                </Tooltip.Portal>
+                                            </Tooltip.Root>
+                                        );
+                                    })}
                             </ToggleGroup.Root>
 
                             {/* Separator after third icon */}
@@ -165,7 +152,7 @@ export default function CommandPalette() {
                                 aria-label="primary actions continued"
                                 className="flex items-center gap-3"
                             >
-                                {primaryItems.slice(3).map((item) => {
+                                {roleBasedUserCommands.slice(3).map((item) => {
                                     const Icon = item.icon;
                                     return (
                                         <Tooltip.Root key={item.id}>
@@ -268,73 +255,14 @@ export default function CommandPalette() {
             {/* Searchable dialog palette */}
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Portal>
-                    {/* No overlay; positioned above the bar */}
                     <Dialog.Content className="fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white  max-h-[calc(100vh-30rem)] overflow-hidden flex flex-col">
-                        <div className="flex items-center border-b px-4 py-3">
-                            <Search className="mr-3 h-4 w-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Type a command or search..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="flex-1 outline-none text-sm"
-                                autoFocus
-                            />
-                            <Dialog.Close asChild>
-                                <button className="p-1 rounded-sm hover:bg-gray-100">
-                                    <X className="h-4 w-4" />
-                                </button>
-                            </Dialog.Close>
-                        </div>
-
-                        {/* Results area stretches to fill available height */}
-                        <div className="flex-1 overflow-y-auto">
-                            {filtered.length > 0 ? (
-                                <div className="p-2">
-                                    {filtered.map((item) => (
-                                        <button
-                                            className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                                            onClick={() => {
-                                                setOpen(false);
-                                            }}
-                                        >
-                                            <div className="flex gap-3">
-                                                <Avatar className="w-12 h-12">
-                                                    <AvatarImage
-                                                        src="https://github.com/hngngn.png"
-                                                        alt="avatar"
-                                                        className="rounded-full w-12 h-12"
-                                                    />
-                                                    <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
-                                                        U
-                                                    </AvatarFallback>
-                                                </Avatar>
-
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm">
-                                                        @{item.username}
-                                                    </span>
-                                                    <span className="text-xs text-gray-400">
-                                                        {item.email}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="p-8 text-center text-gray-500 text-sm">
-                                    No commands found
-                                </div>
-                            )}
-                        </div>
-
                         <Dialog.Title className="sr-only">
                             Command Palette
                         </Dialog.Title>
-                        <Dialog.Description className="sr-only">
-                            Search and execute commands quickly
-                        </Dialog.Description>
+
+                        <Container className="px-4 py-2">
+                            <CommandSearchDialog />
+                        </Container>
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>

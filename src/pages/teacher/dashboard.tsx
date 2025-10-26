@@ -9,11 +9,9 @@ export default function Dashboard() {
                 userName="John Doe"
                 description="Software Engineer passionate about web development and teaching. this is the new feature"
                 role="teacher"
-            >
-                <p>TEACHER </p>
-            </DashboardLayout>
+            ></DashboardLayout>
 
-            <CommandPalette />
+            <CommandPalette role="teacher" />
         </>
     );
 }

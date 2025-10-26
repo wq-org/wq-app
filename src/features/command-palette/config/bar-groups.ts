@@ -11,6 +11,9 @@ import {
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
+export const getGroupById = (id: string) =>
+    BAR_GROUPS.find((group) => group.id === id);
+
 export const BAR_GROUPS: CommandBarGroup[] = [
     {
         id: 'teacher',

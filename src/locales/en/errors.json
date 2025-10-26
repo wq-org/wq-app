@@ -1,1 +1,13 @@
-{}
+{
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Bitte eine gültige E‑Mail-Adresse eingeben",
+    "invalidPassword": "Falsches Passwort",
+    "passwordMin": "Das Passwort muss mindestens {{min}} Zeichen lang sein",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "userNotFound": "Kein Benutzer mit dieser E‑Mail gefunden",
+    "network": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+    "unknown": "Ein unerwarteter Fehler ist aufgetreten",
+    "unauthorized": "Sie haben keine Berechtigung für diese Aktion.",
+    "forbidden": "Sie sind nicht berechtigt, diese Seite zu betreten.",
+    "404": "Seite nicht gefunden"
+}
