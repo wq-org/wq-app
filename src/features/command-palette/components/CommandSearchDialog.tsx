@@ -85,7 +85,6 @@ export default function CommandSearch() {
                     </div>
                 )}
             </div>
-
             <Dialog.Description className="sr-only">
                 Search and execute commands quickly
             </Dialog.Description>

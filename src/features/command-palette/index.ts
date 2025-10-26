@@ -1,5 +1,5 @@
 import CommandEmpty from './components/CommandEmpty';
-import CommandFeedbackForm from './components/CommandFeedbackForm';
+import CommandFeedbackForm from './components/CommandFeedbackDialog';
 import CommandList from './components/CommandList';
 import CommandPalette from './components/CommandPalette';
 import CommandSearch from './components/CommandSearchDialog';

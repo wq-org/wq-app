@@ -17,24 +17,46 @@ import type { CommandPaletteProps } from '../types/command-bar.types';
 import { getGroupById } from '../config/bar-groups';
 import Container from '@/components/common/Container';
 import CommandSearchDialog from './CommandSearchDialog';
+import CommandUploadDialog from './CommandUploadDialog';
+import CommandFeedbackDialog from './CommandFeedbackDialog';
 
 export default function CommandPalette({ role }: CommandPaletteProps) {
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState<string | undefined>(undefined);
+    // Track which dialog component to render when opened
+    const [activeDialog, setActiveDialog] = useState<ActionId | undefined>(
+        undefined
+    );
 
     const navigate = useNavigate();
 
     // Centralized handlers for imperative actions referenced by actionId
     const actionHandlers: Partial<Record<ActionId, () => void>> = {
-        search: () => setOpen(true), // search interface
-        add: () => setOpen(true), // type add-interface
-        feedback: () => setOpen(true), // type feedback-form
+        search: () => handleOnClickSearchDialog(), // search interface
+        add: () => handleOnClickUploadDialog(), // type add-interface
+        feedback: () => handleOnClickFeedbackDialog(), // type feedback-form
         backwards: () => window.history.back(),
         forwards: () => window.history.forward(),
     };
 
     const commandBarGroup: CommandBarGroup[] = BAR_GROUPS;
 
+    function handleOnClickSearchDialog() {
+        setActiveDialog('search');
+        setOpen(true);
+        console.log('Search dialog triggered');
+    }
+    function handleOnClickUploadDialog() {
+        setActiveDialog('add');
+        setOpen(true);
+        console.log('Upload dialog triggered');
+    }
+
+    function handleOnClickFeedbackDialog() {
+        setActiveDialog('feedback');
+        setOpen(true);
+        console.log('Feedback dialog triggered');
+    }
     const primaryGroup = getGroupById(role) ?? commandBarGroup[0];
     console.log('primaryGroup :>> ', primaryGroup);
 
@@ -56,6 +78,7 @@ export default function CommandPalette({ role }: CommandPaletteProps) {
         const onKey = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
+                setActiveDialog('search');
                 setOpen(true);
             }
         };
@@ -253,7 +276,13 @@ export default function CommandPalette({ role }: CommandPaletteProps) {
             </Tooltip.Provider>
 
             {/* Searchable dialog palette */}
-            <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Root
+                open={open}
+                onOpenChange={(v) => {
+                    setOpen(v);
+                    if (!v) setActiveDialog(undefined);
+                }}
+            >
                 <Dialog.Portal>
                     <Dialog.Content className="fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white  max-h-[calc(100vh-30rem)] overflow-hidden flex flex-col">
                         <Dialog.Title className="sr-only">
@@ -261,7 +290,13 @@ export default function CommandPalette({ role }: CommandPaletteProps) {
                         </Dialog.Title>
 
                         <Container className="px-4 py-2">
-                            <CommandSearchDialog />
+                            {activeDialog === 'search' && (
+                                <CommandSearchDialog />
+                            )}
+                            {activeDialog === 'add' && <CommandUploadDialog />}
+                            {activeDialog === 'feedback' && (
+                                <CommandFeedbackDialog />
+                            )}
                         </Container>
                     </Dialog.Content>
                 </Dialog.Portal>
