@@ -1,18 +1,20 @@
-// src/features/command-palette/config/bar-groups.ts
 import {
     Home,
     Search as SearchIcon,
-    HandHelping,
-    Settings as SettingsIcon,
-    ChevronRight,
-    ChevronLeft,
-    DraftingCompass,
+    Gamepad2,
     Plus,
-    Play,
+    MessageSquare,
+    Settings as SettingsIcon,
+    ChevronLeft,
+    ChevronRight,
+    SplinePointer,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
-export const COMMAND_BAR_GROUPS: CommandBarGroup[] = [
+export const getGroupById = (id: string) =>
+    BAR_GROUPS.find((group) => group.id === id);
+
+export const BAR_GROUPS: CommandBarGroup[] = [
     {
         id: 'teacher',
         items: [
@@ -31,7 +33,7 @@ export const COMMAND_BAR_GROUPS: CommandBarGroup[] = [
             {
                 id: 'studio',
                 labelKey: 'navigation.studio',
-                icon: DraftingCompass,
+                icon: SplinePointer,
                 to: '/teacher/game-studio',
             },
             {
@@ -58,9 +60,9 @@ export const COMMAND_BAR_GROUPS: CommandBarGroup[] = [
                 actionId: 'search',
             },
             {
-                id: 'Play Store',
+                id: 'play-store',
                 labelKey: 'navigation.play-store',
-                icon: Play,
+                icon: Gamepad2,
                 to: '/student/play-store',
             },
             {
@@ -72,12 +74,12 @@ export const COMMAND_BAR_GROUPS: CommandBarGroup[] = [
         ],
     },
     {
-        id: 'general',
+        id: 'user',
         items: [
             {
                 id: 'feedback',
                 labelKey: 'navigation.feedback',
-                icon: HandHelping,
+                icon: MessageSquare,
                 actionId: 'feedback',
             },
             {
@@ -85,23 +87,6 @@ export const COMMAND_BAR_GROUPS: CommandBarGroup[] = [
                 labelKey: 'navigation.settings',
                 icon: SettingsIcon,
                 to: '/teacher/settings',
-            },
-        ],
-    },
-    {
-        id: 'system',
-        items: [
-            {
-                id: 'backwards',
-                labelKey: 'navigation.forward',
-                icon: ChevronLeft,
-                actionId: 'backwards',
-            },
-            {
-                id: 'forwards',
-                labelKey: 'navigation.settings',
-                icon: ChevronRight,
-                actionId: 'forwards',
             },
         ],
     },

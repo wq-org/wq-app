@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Bell, LogOut, ChevronRight } from 'lucide-react';
+import { Bell, LogOut, ChevronLeft } from 'lucide-react';
 import {
     Popover,
     PopoverContent,
@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/popover';
 import Container from './Container';
 import { useNavigate } from 'react-router';
+
 interface NavigationProps {
     currentPageName?: string;
     children?: React.ReactNode;
@@ -19,8 +20,12 @@ const Navigation = ({ currentPageName }: NavigationProps) => {
     };
     return (
         <Container className="w-full flex justify-between gap-2">
-            <div className="flex items-center">
-                <ChevronRight className=" text-gray-400" />
+            <div className="flex gap-2 items-center">
+                <ChevronLeft
+                    className="cursor-pointer text-gray-400"
+                    onClick={() => window.history.back()}
+                />
+
                 <h1 className="text-2xl font-light text-gray-400">
                     {currentPageName || 'Page Title'}
                 </h1>

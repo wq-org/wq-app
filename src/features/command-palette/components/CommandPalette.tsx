@@ -6,21 +6,25 @@ import * as Separator from '@radix-ui/react-separator';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 import type {
     CommandBarItem,
     CommandBarGroup,
     ActionId,
 } from '../types/command-bar.types';
-import { BAR_GROUPS } from '../config/bar-groups';
+import { BAR_GROUPS } from '../config/commandBarGroups';
 
 import type { CommandPaletteProps } from '../types/command-bar.types';
-import { getGroupById } from '../config/bar-groups';
+import { getGroupById } from '../config/commandBarGroups';
 import Container from '@/components/common/Container';
 import CommandSearchDialog from './CommandSearchDialog';
 import CommandUploadDialog from './CommandUploadDialog';
 import CommandFeedbackDialog from './CommandFeedbackDialog';
 
-export default function CommandPalette({ role }: CommandPaletteProps) {
+export default function CommandPalette({
+    role,
+    className
+}: CommandPaletteProps) {
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState<string | undefined>(undefined);
     // Track which dialog component to render when opened
@@ -90,14 +94,10 @@ export default function CommandPalette({ role }: CommandPaletteProps) {
         <>
             <Tooltip.Provider delayDuration={200}>
                 <div
-                    className="
-                        fixed inset-x-0 bottom-8 z-50
-                        mx-auto flex items-center justify-center
-                        rounded-full border bg-background/80 backdrop-blur
-                        shadow-xl
-                        px-4 py-3
-                        w-fit
-                    "
+                    className={cn(
+                        className,
+                        'fixed inset-x-0 bottom-8 z-50 mx-auto flex items-center justify-center rounded-full border bg-background/80 backdrop-blur shadow-xl px-4 py-3 w-fit'
+                    )}
                     role="region"
                     aria-label="Quick actions"
                 >
@@ -284,7 +284,11 @@ export default function CommandPalette({ role }: CommandPaletteProps) {
                 }}
             >
                 <Dialog.Portal>
-                    <Dialog.Content className="fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white  max-h-[calc(100vh-30rem)] overflow-hidden flex flex-col">
+                    <Dialog.Content
+                        className={
+                            'fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white  max-h-[calc(100vh-30rem)] overflow-hidden flex flex-col'
+                        }
+                    >
                         <Dialog.Title className="sr-only">
                             Command Palette
                         </Dialog.Title>

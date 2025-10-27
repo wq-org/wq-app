@@ -1,4 +1,4 @@
-import { COMMAND_BAR_GROUPS } from './commandBarGroups';
+import { BAR_GROUPS } from './commandBarGroups';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
 type ActionMap = {
@@ -11,7 +11,7 @@ export function buildBarGroups(
     navigate: (to: string) => void,
     actions: ActionMap
 ): CommandBarGroup[] {
-    return COMMAND_BAR_GROUPS.map((group) => ({
+    return BAR_GROUPS.map((group) => ({
         id: group.id,
         items: group.items.map((item) => ({
             ...item,

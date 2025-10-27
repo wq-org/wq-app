@@ -37,4 +37,5 @@ export interface CommandPaletteProps {
     children?: React.ReactNode;
     role: string;
     type?: string;
+    className?: string;
 }
