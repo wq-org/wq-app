@@ -6,7 +6,7 @@ export default function Settings() {
         <>
             <SettingsLayout />
 
-            <CommandPalette />
+            <CommandPalette role="teacher" />
         </>
     );
 }
