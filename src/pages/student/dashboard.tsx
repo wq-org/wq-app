@@ -11,7 +11,7 @@ export default function Dashboard() {
                 role="student"
             />
 
-            <CommandPalette />
+            <CommandPalette role="student" />
         </>
     );
 }
