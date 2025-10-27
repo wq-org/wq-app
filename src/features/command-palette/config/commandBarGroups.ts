@@ -5,8 +5,6 @@ import {
     Plus,
     MessageSquare,
     Settings as SettingsIcon,
-    ChevronLeft,
-    ChevronRight,
     SplinePointer,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
