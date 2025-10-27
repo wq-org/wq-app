@@ -13,6 +13,10 @@ interface DashboardLayoutProps {
     description: string;
     children?: React.ReactNode;
     role: string;
+    handleFollowClick?: () => void;
+    handleMailClick?: () => void;
+    handleLinkedInClick?: () => void;
+    onClickTabHandler?: (tabId: string) => void;
 }
 
 export default function DashboardLayout({
@@ -21,25 +25,20 @@ export default function DashboardLayout({
     description,
     children,
     role,
+    handleFollowClick,
+    handleMailClick,
+    handleLinkedInClick,
+    onClickTabHandler,
 }: DashboardLayoutProps) {
     const [activeTab, setActiveTab] = useState('modules');
     const dashboardTabs = getDashboardTabs(role as 'teacher' | 'student');
 
-    const handleTabClick = (tabId: string) => {
+    function handleTabClick(tabId: string) {
         setActiveTab(tabId);
-    };
-
-    const handleFollowClick = () => {
-        console.log('followed');
-    };
-
-    const handleMailClick = () => {
-        console.log('mail clicked');
-    };
-
-    const handleLinkedInClick = () => {
-        console.log('linkedin clicked');
-    };
+        if (onClickTabHandler) {
+            onClickTabHandler(tabId);
+        }
+    }
 
     return (
         <div>
@@ -120,9 +119,9 @@ export default function DashboardLayout({
                                 </div>
                             </div>
 
-                            <section className="mt-8 flex-1">
+                            <Container className="flex  px-0 flex-1">
                                 {children}
-                            </section>
+                            </Container>
                         </Container>
                     </section>
                 </section>

@@ -1,5 +1,6 @@
 import SettingsLayout from '@/components/layout/SettingsLayout';
 
+
 export default function Settings() {
     return (
         <SettingsLayout>

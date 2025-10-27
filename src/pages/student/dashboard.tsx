@@ -1,6 +1,7 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { CommandPalette } from '@/features/command-palette';
 
+
 export default function Dashboard() {
     return (
         <>
