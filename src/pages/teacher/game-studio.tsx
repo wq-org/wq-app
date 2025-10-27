@@ -14,7 +14,7 @@ export default function GameStudio() {
                 </p>
             </Container>
 
-            <CommandPalette />
+            <CommandPalette role="teacher" />
         </>
     );
 }
