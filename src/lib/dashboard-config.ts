@@ -17,7 +17,7 @@ export interface DashboardTab {
 
 export const teacherDashboardTabs: DashboardTab[] = [
     { id: 'modules', label: 'Modules', icon: Shapes },
-    { id: 'database', label: 'Database', icon: FolderOpen },
+    { id: 'files', label: 'Files', icon: FolderOpen },
     { id: 'students', label: 'Students', icon: Users2 },
     { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
@@ -36,7 +36,7 @@ export const adminDashboard: DashboardTab[] = [
     { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
 
-type Roles = 'teacher' | 'student' | 'admin';
+export type Roles = 'teacher' | 'student' | 'admin';
 
 export function getDashboardTabs(role: Roles): DashboardTab[] {
     if (role === 'teacher') {

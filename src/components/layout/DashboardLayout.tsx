@@ -16,7 +16,7 @@ interface DashboardLayoutProps {
     handleFollowClick?: () => void;
     handleMailClick?: () => void;
     handleLinkedInClick?: () => void;
-    onClickTabHandler?: (tabId: string) => void;
+    onClickTab?: (tabId: string) => void;
 }
 
 export default function DashboardLayout({
@@ -28,15 +28,15 @@ export default function DashboardLayout({
     handleFollowClick,
     handleMailClick,
     handleLinkedInClick,
-    onClickTabHandler,
+    onClickTab,
 }: DashboardLayoutProps) {
     const [activeTab, setActiveTab] = useState('modules');
     const dashboardTabs = getDashboardTabs(role as 'teacher' | 'student');
 
     function handleTabClick(tabId: string) {
         setActiveTab(tabId);
-        if (onClickTabHandler) {
-            onClickTabHandler(tabId);
+        if (onClickTab) {
+            onClickTab(tabId);
         }
     }
 
@@ -119,7 +119,7 @@ export default function DashboardLayout({
                                 </div>
                             </div>
 
-                            <Container className="flex  px-0 flex-1">
+                            <Container className="flex  w-full px-0 flex-1">
                                 {children}
                             </Container>
                         </Container>
