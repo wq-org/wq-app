@@ -5,59 +5,84 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import Container from './Container';
 import { useNavigate } from 'react-router';
+import { cn } from '@/lib/utils';
 
 interface NavigationProps {
     currentPageName?: string;
     children?: React.ReactNode;
+    className?: string;
 }
 
-const Navigation = ({ currentPageName }: NavigationProps) => {
+const Navigation = ({ currentPageName, className }: NavigationProps) => {
     const navigate = useNavigate();
     const handleOnClickLogout = () => {
         navigate('/');
     };
-    return (
-        <Container className="w-full flex justify-between gap-2">
-            <div className="flex gap-2 items-center">
-                <ChevronLeft
-                    className="cursor-pointer text-gray-400"
-                    onClick={() => window.history.back()}
-                />
 
-                <h1 className="text-2xl font-light text-gray-400">
-                    {currentPageName || 'Page Title'}
-                </h1>
-            </div>
-            <div>
-                <Popover>
-                    <PopoverTrigger asChild>
+    return (
+        <div
+            className={cn(
+                'sticky top-0 z-40 w-full',
+               
+
+                className
+            )}
+        >
+            <div className="container mx-auto px-4 py-3">
+                <div className="flex items-center justify-between gap-4">
+                    {/* Left Section - Back button and Title */}
+                    <div className="flex items-center gap-3 rounded-full border bg-card/50 backdrop-blur px-4 py-2 shadow-sm">
                         <Button
-                            size="icon"
                             variant="ghost"
-                            className="w-12 rounded-full h-12 [&_svg]:size-6"
+                            size="icon"
+                            onClick={() => window.history.back()}
+                            className="h-8 w-8 rounded-full hover:bg-accent"
                         >
-                            <Bell className="size-6 text-gray-400" />
+                            <ChevronLeft className="h-5 w-5 text-gray-600" />
                         </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        <p className="text-lg">Notification</p>
-                        <section>
-                            <p>Test notification content</p>
-                        </section>
-                    </PopoverContent>
-                </Popover>
-                <Button
-                    size="icon"
-                    onClick={handleOnClickLogout}
-                    variant="ghost"
-                    className="w-12 rounded-full h-12 [&_svg]:size-6"
-                >
-                    <LogOut className="size-6 text-gray-400" />
-                </Button>
+                        <div className="h-6 w-px bg-border" />
+                        <h1 className="text-lg font-normal text-gray-700">
+                            {currentPageName || 'Page Title'}
+                        </h1>
+                    </div>
+
+                    {/* Right Section - Notification and Logout */}
+                    <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-10 w-10 rounded-full hover:bg-accent"
+                                >
+                                    <Bell className="h-5 w-5 text-gray-600" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                                <div className="space-y-2">
+                                    <p className="text-lg font-semibold">
+                                        Notifications
+                                    </p>
+                                    <div className="text-sm text-gray-600">
+                                        <p>No new notifications</p>
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                        <div className="h-6 w-px bg-border" />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleOnClickLogout}
+                            className="h-10 w-10 rounded-full hover:bg-accent hover:text-red-600"
+                        >
+                            <LogOut className="h-5 w-5 text-gray-600" />
+                        </Button>
+                    </div>
+                </div>
             </div>
-        </Container>
+        </div>
     );
 };
 
