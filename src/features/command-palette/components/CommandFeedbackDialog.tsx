@@ -12,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle2, MessageSquare } from 'lucide-react';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 import Container from '@/components/common/Container';
 
 const FEEDBACK_TYPES = [
@@ -65,7 +64,7 @@ export default function CommandFeedbackForm() {
                         onSubmit={handleSubmit}
                         className="flex min-h-[12rem] flex-col"
                     >
-                        <ScrollArea className="flex-1">
+
                             <div className="flex flex-col gap-4 pr-2">
                                 <div className="flex flex-col gap-2">
                                     <Label htmlFor="feedback-type">Type</Label>
@@ -101,7 +100,7 @@ export default function CommandFeedbackForm() {
                                     />
                                 </div>
                             </div>
-                        </ScrollArea>
+
                         <Button
                             type="submit"
                             className="mt-4 w-full"

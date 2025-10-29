@@ -17,6 +17,7 @@ import { BAR_GROUPS } from '../config/commandBarGroups';
 import type { CommandPaletteProps } from '../types/command-bar.types';
 import { getGroupById } from '../config/commandBarGroups';
 import Container from '@/components/common/Container';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import CommandSearchDialog from './CommandSearchDialog';
 import CommandUploadDialog from './CommandUploadDialog';
 import CommandFeedbackDialog from './CommandFeedbackDialog';
@@ -293,15 +294,17 @@ export default function CommandPalette({
                             Command Palette
                         </Dialog.Title>
 
-                        <Container className="px-4 py-2">
-                            {activeDialog === 'search' && (
-                                <CommandSearchDialog />
-                            )}
-                            {activeDialog === 'add' && <CommandUploadDialog />}
-                            {activeDialog === 'feedback' && (
-                                <CommandFeedbackDialog />
-                            )}
-                        </Container>
+                        <ScrollArea className="flex-1 h-[100px] overflow-y-auto ">
+                            <Container className="px-4 py-2">
+                                {activeDialog === 'search' && (
+                                    <CommandSearchDialog />
+                                )}
+                                {activeDialog === 'add' && <CommandUploadDialog />}
+                                {activeDialog === 'feedback' && (
+                                    <CommandFeedbackDialog />
+                                )}
+                            </Container>
+                        </ScrollArea>
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
