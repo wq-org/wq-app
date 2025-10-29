@@ -43,7 +43,7 @@ export default function DashboardLayout({
     return (
         <div>
             <Navigation />
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 mb-8">
                 <section className="rounded-2xl  h-full">
                     <Container className="flex flex-col gap-4">
                         <div className="flex flex-col gap-5 max-w-[600px]">
@@ -105,7 +105,7 @@ export default function DashboardLayout({
                                                 onClick={() =>
                                                     handleTabClick(tab.id)
                                                 }
-                                                className={`text-xl flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
+                                                className={`text-xl border-b-2  flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
                                                     activeTab === tab.id
                                                         ? 'text-black border-b-2 border-black'
                                                         : 'text-black/40 hover:text-black/60'

@@ -47,62 +47,70 @@ export default function CommandFeedbackForm() {
     return (
         <Container className="px-0">
             <Card className="w-full shadow-none border-0 px-0 py-0">
-                <ScrollArea className="h-80">
-                    <CardHeader>
-                        <h2 className="text-xl  flex items-center gap-2">
-                            <MessageSquare className="h-6 w-6 " /> Send Feedback
-                        </h2>
-                    </CardHeader>
-                    <CardContent>
-                        <form
-                            onSubmit={handleSubmit}
-                            className="flex flex-col gap-4"
+                <CardHeader className="pb-2">
+                    <div className="flex items-start gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-gray-500/10 border-gray-500/20">
+                            <MessageSquare className="h-5 w-5 text-gray-500" />
+                        </div>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-semibold leading-none">Send Feedback</h2>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                Tell us what’s on your mind. We read every message.
+                            </p>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <form
+                        onSubmit={handleSubmit}
+                        className="flex min-h-[12rem] flex-col"
+                    >
+                        <ScrollArea className="flex-1">
+                            <div className="flex flex-col gap-4 pr-2">
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="feedback-type">Type</Label>
+                                    <Select
+                                        value={type}
+                                        onValueChange={setType}
+                                        name="type"
+                                    >
+                                        <SelectTrigger className="h-10">
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {FEEDBACK_TYPES.map((item) => (
+                                                <SelectItem
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="feedback-message">Message</Label>
+                                    <Textarea
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        id="feedback-message"
+                                        placeholder="Describe your feedback, bug, or idea..."
+                                        required
+                                        className="h-28 resize-none"
+                                    />
+                                </div>
+                            </div>
+                        </ScrollArea>
+                        <Button
+                            type="submit"
+                            className="mt-4 w-full"
+                            disabled={!message.trim()}
                         >
-                            <div className="flex flex-col gap-2">
-                                <Label htmlFor="feedback-type">Type</Label>
-                                <Select
-                                    value={type}
-                                    onValueChange={setType}
-                                    name="type"
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {FEEDBACK_TYPES.map((item) => (
-                                            <SelectItem
-                                                key={item.value}
-                                                value={item.value}
-                                            >
-                                                {item.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <Label htmlFor="feedback-message">
-                                    Message
-                                </Label>
-                                <Textarea
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    id="feedback-message"
-                                    placeholder="Describe your feedback, bug, or idea..."
-                                    required
-                                    rows={4}
-                                />
-                            </div>
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={!message.trim()}
-                            >
-                                Submit
-                            </Button>
-                        </form>
-                    </CardContent>
-                </ScrollArea>
+                            Submit
+                        </Button>
+                    </form>
+                </CardContent>
             </Card>
         </Container>
     );

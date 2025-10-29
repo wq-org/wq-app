@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -8,43 +9,22 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
     File,
     FileText,
     FileSpreadsheet,
     FileBarChart2,
     Ellipsis,
 } from 'lucide-react';
-
-const files = [
-    {
-        id: 1,
-        filename: 'Report.docx',
-        description: 'Final report document',
-        type: 'Word',
-        size: '850 KB',
-    },
-    {
-        id: 2,
-        filename: 'Presentation.pptx',
-        description: 'Q3 Results Slides',
-        type: 'PPT',
-        size: '2.4 MB',
-    },
-    {
-        id: 3,
-        filename: 'Budget.xlsx',
-        description: 'Annual Budgets',
-        type: 'Exl',
-        size: '1.1 MB',
-    },
-    {
-        id: 4,
-        filename: 'Brochure.pdf',
-        description: 'Product Brochure',
-        type: 'PDF',
-        size: '900 KB',
-    },
-];
+import type { FileItem } from '@/features/files/data/files';
 
 const typeConfig = {
     Word: {
@@ -73,14 +53,64 @@ const typeConfig = {
     },
 };
 
-export default function FileTable() {
+interface FileTableProps {
+    files: FileItem[];
+}
+export default function FileTable({ files }: FileTableProps) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
+    const totalPages = Math.ceil(files.length / itemsPerPage);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentFiles = files.slice(startIndex, endIndex);
+
     const handleEdit = (fileId: number) => {
         console.log('Edit clicked for file:', fileId);
     };
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        const maxVisible = 5;
+
+        if (totalPages <= maxVisible) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 4; i++) {
+                    pages.push(i);
+                }
+                pages.push('ellipsis');
+                pages.push(totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1);
+                pages.push('ellipsis');
+                for (let i = totalPages - 3; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                pages.push(1);
+                pages.push('ellipsis');
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                    pages.push(i);
+                }
+                pages.push('ellipsis');
+                pages.push(totalPages);
+            }
+        }
+
+        return pages;
+    };
+
     return (
-        <div className="w-full  flex items-center justify-center">
-            <div className="w-full  bg-white rounded-2xl shadow p-6">
+        <div className="w-full flex flex-col items-center justify-center gap-6">
+            <div className="w-full bg-white rounded-4xl shadow p-6">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -105,7 +135,7 @@ export default function FileTable() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {files.map((file) => {
+                        {currentFiles.map((file) => {
                             const config =
                                 typeConfig[
                                     file.type as keyof typeof typeConfig
@@ -119,7 +149,6 @@ export default function FileTable() {
                                         {file.id}
                                     </TableCell>
                                     <TableCell className="flex items-center gap-3 text-left">
-                                    
                                         {file.filename}
                                     </TableCell>
                                     <TableCell className="text-center">
@@ -153,6 +182,53 @@ export default function FileTable() {
                     </TableBody>
                 </Table>
             </div>
+            {totalPages > 1 && (
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={() =>
+                                    handlePageChange(Math.max(1, currentPage - 1))
+                                }
+                                className={
+                                    currentPage === 1
+                                        ? 'pointer-events-none opacity-50'
+                                        : 'cursor-pointer'
+                                }
+                            />
+                        </PaginationItem>
+                        {getPageNumbers().map((page, index) => (
+                            <PaginationItem key={index}>
+                                {page === 'ellipsis' ? (
+                                    <PaginationEllipsis />
+                                ) : (
+                                    <PaginationLink
+                                        onClick={() => handlePageChange(page as number)}
+                                        isActive={currentPage === page}
+                                        className="cursor-pointer"
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                )}
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                onClick={() =>
+                                    handlePageChange(
+                                        Math.min(totalPages, currentPage + 1)
+                                    )
+                                }
+                                className={
+                                    currentPage === totalPages
+                                        ? 'pointer-events-none opacity-50'
+                                        : 'cursor-pointer'
+                                }
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            )}
         </div>
     );
 }

@@ -8,7 +8,6 @@ interface CourseCardListProps {
     onCourseView?: (id: string) => void;
 }
 
-
 export default function CourseCardList({
     courses,
     onCourseView,

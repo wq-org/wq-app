@@ -19,7 +19,7 @@ export const teacherDashboardTabs: DashboardTab[] = [
     { id: 'modules', label: 'Modules', icon: Shapes },
     { id: 'files', label: 'Files', icon: FolderOpen },
     { id: 'students', label: 'Students', icon: Users2 },
-    { id: 'todos', label: 'Todos', icon: LayoutList },
+    // { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
 
 export const studentDashboardTabs: DashboardTab[] = [

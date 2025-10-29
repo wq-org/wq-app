@@ -5,6 +5,9 @@ import { getDashboardTabs } from '@/lib/dashboard-config';
 import TableView from '@/features/files/TableView';
 import bgImage from '@/assets/img/bg-silver.jpeg';
 import { useState } from 'react';
+import { StudentCardList } from '@/features/student/StudentCardList';
+import filesJson from '@/data/files.json';
+import type { FileItem } from '@/features/files/data/files';
 
 const dummyCourses = [
     {
@@ -51,6 +54,35 @@ const dummyCourses = [
     },
 ];
 
+const dummyStudents = [
+    {
+        name: 'Jane Smith',
+        username: 'janesmith',
+        email: 'jane.smith@example.com',
+        imgSrc: 'https://github.com/hngngn.png',
+    },
+    {
+        name: 'John Doe',
+        username: 'johndoe',
+        email: 'john.doe@example.com',
+        imgSrc: 'https://github.com/evilrabbit.png',
+    },
+    {
+        name: 'Alex Müller',
+        username: 'alexmuller',
+        email: 'alex.mueller@example.com',
+        imgSrc: 'https://github.com/shadcn.png',
+    },
+    {
+        name: 'Mia Chen',
+        username: 'miachen',
+        email: 'mia.chen@example.com',
+        imgSrc: 'https://github.com/unovue.png',
+    },
+];
+
+// replaced local sample files with JSON data from src/data/files.json
+
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('modules');
 
@@ -81,9 +113,12 @@ export default function Dashboard() {
                     />
                 )}
 
-                {selectedTab === 'files' && <TableView />}
-                {selectedTab === 'students' && <section>students</section>}
-                {selectedTab === 'todos' && <section>todos</section>}
+                {selectedTab === 'files' && (
+                    <TableView files={filesJson as unknown as FileItem[]} />
+                )}
+                {selectedTab === 'students' && (
+                    <StudentCardList students={dummyStudents} />
+                )}
             </DashboardLayout>
 
             <CommandPalette role="teacher" />
