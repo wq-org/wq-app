@@ -1,7 +1,22 @@
 import React from 'react';
+import Container from '../common/Container';
+import Navigation from '../common/Navigation';
+import CommandPalette from '@/features/command-palette/components/CommandPalette';
+interface AppWrapperProps {
+    children: React.ReactNode;
+    role: 'teacher' | 'student';
+}
+function AppWrapper({ children, role }: AppWrapperProps) {
+    return (       
+        <>
+         <Navigation />
+        <Container>
+      {children}
+        </Container>
 
-function AppWrapper({ children }: { children: React.ReactNode }) {
-    return <div className="app-wrapper">{children}</div>;
+        <CommandPalette role={role} />
+        </>
+);
 }
 
 export default AppWrapper;
