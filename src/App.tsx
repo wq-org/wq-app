@@ -12,6 +12,8 @@ import TeacherSettings from './pages/teacher/settings';
 import GameStudio from './pages/teacher/game-studio';
 import UserContextProvider from './store/UserContext';
 import Course from './pages/teacher/course';
+import Error404 from './pages/404';
+import Lession from './pages/teacher/lession';
 function App() {
     return (
         <UserContextProvider>
@@ -22,6 +24,7 @@ function App() {
                 <Route path="/teacher">
                     <Route path="dashboard" element={<TeacherDashboard />} />
                     <Route path="course" element={<Course />} />
+                    <Route path="lession" element={<Lession />} />
                     <Route path="settings" element={<TeacherSettings />} />
                     <Route path="game-studio" element={<GameStudio />} />
                     <Route path="institution" element={<Institution />} />
@@ -31,6 +34,7 @@ function App() {
                     <Route path="settings" element={<StudentSettings />} />
                     <Route path="institution" element={<Institution />} />
                 </Route>
+                <Route path="*" element={<Error404 />} />
             </Routes>
         </UserContextProvider>
     );

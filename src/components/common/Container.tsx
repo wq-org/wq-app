@@ -15,7 +15,8 @@ export default function Container({
 }: ContainerProps) {
     return (
         <Component
-            className={cn('container px-14 py-8 mx-auto', className)}
+            // Allow the container to span the full width when needed by disabling max-width
+            className={cn('container mx-auto max-w-none px-14 py-8', className)}
             {...props}
         >
             {children}

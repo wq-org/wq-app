@@ -6,6 +6,7 @@ import {
     MessageSquare,
     Settings as SettingsIcon,
     SplinePointer,
+    Upload,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
@@ -35,10 +36,10 @@ export const BAR_GROUPS: CommandBarGroup[] = [
                 to: '/teacher/game-studio',
             },
             {
-                id: 'add',
-                labelKey: 'navigation.add-new',
-                icon: Plus,
-                actionId: 'add',
+                id: 'upload',
+                labelKey: 'navigation.upload',
+                icon: Upload,
+                actionId: 'upload',
             },
         ],
     },
@@ -67,7 +68,7 @@ export const BAR_GROUPS: CommandBarGroup[] = [
                 id: 'add',
                 labelKey: 'navigation.add-new',
                 icon: Plus,
-                actionId: 'add',
+                actionId: 'upload',
             },
         ],
     },

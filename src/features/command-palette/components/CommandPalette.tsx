@@ -19,8 +19,8 @@ import { getGroupById } from '../config/commandBarGroups';
 import Container from '@/components/common/Container';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import CommandSearchDialog from './CommandSearchDialog';
-import CommandUploadDialog from './CommandUploadDialog';
 import CommandFeedbackDialog from './CommandFeedbackDialog';
+import CommandUploadDialog from './CommandUploadDialog';
 
 export default function CommandPalette({
     role,
@@ -38,7 +38,7 @@ export default function CommandPalette({
     // Centralized handlers for imperative actions referenced by actionId
     const actionHandlers: Partial<Record<ActionId, () => void>> = {
         search: () => handleOnClickSearchDialog(), // search interface
-        add: () => handleOnClickUploadDialog(), // type add-interface
+        upload: () => handleOnClickUploadDialog(), // type add-interface
         feedback: () => handleOnClickFeedbackDialog(), // type feedback-form
         backwards: () => window.history.back(),
         forwards: () => window.history.forward(),
@@ -52,7 +52,7 @@ export default function CommandPalette({
         console.log('Search dialog triggered');
     }
     function handleOnClickUploadDialog() {
-        setActiveDialog('add');
+        setActiveDialog('upload');
         setOpen(true);
         console.log('Upload dialog triggered');
     }
@@ -299,7 +299,7 @@ export default function CommandPalette({
                                 {activeDialog === 'search' && (
                                     <CommandSearchDialog />
                                 )}
-                                {activeDialog === 'add' && <CommandUploadDialog />}
+                                {activeDialog === 'upload' && <CommandUploadDialog />}
                                 {activeDialog === 'feedback' && (
                                     <CommandFeedbackDialog />
                                 )}

@@ -2,15 +2,17 @@ import React from 'react';
 import Container from '../common/Container';
 import Navigation from '../common/Navigation';
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
+import { cn } from '@/lib/utils';
 interface AppWrapperProps {
     children: React.ReactNode;
     role: 'teacher' | 'student';
+    className?: string;
 }
-function AppWrapper({ children, role }: AppWrapperProps) {
+function AppWrapper({ children, role, className }: AppWrapperProps) {
     return (       
         <>
          <Navigation />
-        <Container>
+        <Container className={cn(className)}>
       {children}
         </Container>
 
