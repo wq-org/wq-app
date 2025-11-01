@@ -1,17 +1,17 @@
-import { useMemo, useState } from 'react';
-import YooptaEditor, { createYooptaEditor } from '@yoopta/editor';
-import type { YooptaContentValue } from '@yoopta/editor';
-import Paragraph from '@yoopta/paragraph';
-import { HeadingOne } from '@yoopta/headings';
+// import { useMemo, useState } from 'react';
+// import YooptaEditor, { createYooptaEditor } from '@yoopta/editor';
+// import type { YooptaContentValue } from '@yoopta/editor';
+// import Paragraph from '@yoopta/paragraph';
+// import { HeadingOne } from '@yoopta/headings';
 import AppWrapper from '@/components/layout/AppWrapper';
 import { Separator } from '@/components/ui/separator';
 
-const plugins = [Paragraph, HeadingOne];
+// const plugins = [Paragraph, HeadingOne];
 
 export default function Lession() {
 
-  const editor = useMemo(() => createYooptaEditor(), []);
-  const [value, setValue] = useState<YooptaContentValue | undefined>(undefined);
+  // const editor = useMemo(() => createYooptaEditor(), []);
+  // const [value, setValue] = useState<YooptaContentValue | undefined>(undefined);
 
   return (
     <AppWrapper role="teacher" className="flex flex-col gap-12">
@@ -37,7 +37,7 @@ export default function Lession() {
       </div>
       <Separator />
       <div className="flex-1 flex w-full">
-        <YooptaEditor
+        {/* <YooptaEditor
           className="w-full  max-w-4xl mx-auto flex-1"
           editor={editor}
           plugins={plugins}
@@ -45,7 +45,7 @@ export default function Lession() {
           autoFocus={true}
           onChange={(newValue) => setValue(newValue)}
           placeholder="Start writing..."
-        />
+        /> */}
       </div>
     </AppWrapper>
   );
