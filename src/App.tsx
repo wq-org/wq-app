@@ -3,6 +3,7 @@ import Login from './pages/auth/login';
 import SignUp from './pages/auth/signUp';
 import RoleAuth from './pages/auth/role-auth';
 import Institution from './pages/institution';
+import Test from './pages/Test';    
 
 import StudentDashboard from './pages/student/dashboard';
 import StudentSettings from './pages/student/settings';
@@ -34,6 +35,7 @@ function App() {
                     <Route path="settings" element={<StudentSettings />} />
                     <Route path="institution" element={<Institution />} />
                 </Route>
+                <Route path="/test" element={<Test />} />
                 <Route path="*" element={<Error404 />} />
             </Routes>
         </UserContextProvider>

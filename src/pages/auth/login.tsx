@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/field';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
-import { ChevronLeft } from 'lucide-react';
+import {  MoveLeft } from 'lucide-react';
 import { loginUser } from '@/api/aws-lambda';
 import { useState } from 'react';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
@@ -61,7 +61,7 @@ export default function Login({ className }: React.ComponentProps<'form'>) {
     }
 
     return (
-        <div className="w-full container mx-auto max-w-md">
+        <div className="w-full container mx-auto max-w-lg">
             <form
                 onSubmit={handleLogin}
                 className={cn(
@@ -75,7 +75,7 @@ export default function Login({ className }: React.ComponentProps<'form'>) {
                         variant="ghost"
                         className="rounded-full"
                     >
-                        <ChevronLeft />
+                        <MoveLeft />
                         <span className="sr-only">{t('common.back')}</span>
                     </Button>
 

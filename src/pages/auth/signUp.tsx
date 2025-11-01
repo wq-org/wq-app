@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ChevronLeft } from 'lucide-react';
+import {  MoveLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ export default function SignUp({ className }: React.ComponentProps<'form'>) {
         console.log('e :>> ', e);
     }
     return (
-        <div className="w-full container mx-auto max-w-md">
+        <div className="w-full container mx-auto max-w-lg">
             <form
                 onSubmit={handleOnSubmitSignUp}
                 className={cn(
@@ -38,7 +38,7 @@ export default function SignUp({ className }: React.ComponentProps<'form'>) {
                         variant="ghost"
                         className="rounded-full"
                     >
-                        <ChevronLeft />
+                        <MoveLeft />
                         <span className="sr-only">{t('common.back')}</span>
                     </Button>
 
