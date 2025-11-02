@@ -6,5 +6,6 @@ export default function Test() {
         <AppWrapper role="teacher">
             <Onboarding />
         </AppWrapper>
+        
     );
 }
