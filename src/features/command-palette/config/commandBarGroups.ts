@@ -41,6 +41,12 @@ export const BAR_GROUPS: CommandBarGroup[] = [
                 icon: Upload,
                 actionId: 'upload',
             },
+            {
+                id: "add-new",
+                labelKey: 'navigation.add-new',
+                icon: Plus,
+                actionId: 'add',
+            },
         ],
     },
     {

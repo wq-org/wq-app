@@ -21,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import CommandSearchDialog from './CommandSearchDialog';
 import CommandFeedbackDialog from './CommandFeedbackDialog';
 import CommandUploadDialog from './CommandUploadDialog';
+import CommandAddDialog from './CommandAddDialog';
 
 export default function CommandPalette({
     role,
@@ -40,6 +41,7 @@ export default function CommandPalette({
         search: () => handleOnClickSearchDialog(), // search interface
         upload: () => handleOnClickUploadDialog(), // type add-interface
         feedback: () => handleOnClickFeedbackDialog(), // type feedback-form
+        add: () => handleOnClickAddNewDialog(), // type add-new-form
         backwards: () => window.history.back(),
         forwards: () => window.history.forward(),
     };
@@ -61,6 +63,11 @@ export default function CommandPalette({
         setActiveDialog('feedback');
         setOpen(true);
         console.log('Feedback dialog triggered');
+    }
+    function handleOnClickAddNewDialog() {
+        setActiveDialog('add');
+        setOpen(true);
+        console.log('Add new dialog triggered');
     }
     const primaryGroup = getGroupById(role) ?? commandBarGroup[0];
     console.log('primaryGroup :>> ', primaryGroup);
@@ -293,7 +300,6 @@ export default function CommandPalette({
                         <Dialog.Title className="sr-only">
                             Command Palette
                         </Dialog.Title>
-
                         <ScrollArea className="flex-1 h-[100px] overflow-y-auto ">
                             <Container className="px-4 py-2">
                                 {activeDialog === 'search' && (
@@ -302,6 +308,9 @@ export default function CommandPalette({
                                 {activeDialog === 'upload' && <CommandUploadDialog />}
                                 {activeDialog === 'feedback' && (
                                     <CommandFeedbackDialog />
+                                )}
+                                {activeDialog === 'add' && (
+                                    <CommandAddDialog />
                                 )}
                             </Container>
                         </ScrollArea>

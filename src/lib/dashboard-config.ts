@@ -16,19 +16,20 @@ export interface DashboardTab {
 }
 
 export const teacherDashboardTabs: DashboardTab[] = [
-    { id: 'modules', label: 'Modules', icon: Shapes },
+    { id: 'courses', label: 'Courses', icon: Shapes },
     { id: 'files', label: 'Files', icon: FolderOpen },
-    { id: 'students', label: 'Students', icon: Users2 },
+    { id: 'students', label: 'Students', icon: Users2 }
+    ,
     // { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
 
 export const studentDashboardTabs: DashboardTab[] = [
-    { id: 'modules', label: 'Modules', icon: Shapes },
+    { id: 'courses', label: 'Courses', icon: Shapes },
     { id: 'games', label: 'Games', icon: Gamepad2 },
     { id: 'todos', label: 'Todos', icon: LayoutList },
 ];
 export const adminDashboard: DashboardTab[] = [
-    { id: 'modules', label: 'Modules', icon: Shapes },
+    { id: 'courses', label: 'Courses', icon: Shapes },
     { id: 'games', label: 'Games', icon: Gamepad2 },
     { id: 'teachers', label: 'Teachers', icon: GraduationCap },
     { id: 'database', label: 'Database', icon: HardDrive },

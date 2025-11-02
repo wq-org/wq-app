@@ -30,7 +30,7 @@ export default function DashboardLayout({
     handleLinkedInClick,
     onClickTab,
 }: DashboardLayoutProps) {
-    const [activeTab, setActiveTab] = useState('modules');
+    const [activeTab, setActiveTab] = useState('courses');
     const dashboardTabs = getDashboardTabs(role as 'teacher' | 'student');
 
     function handleTabClick(tabId: string) {
