@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import {useState} from 'react';
+import {Button} from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
@@ -7,29 +7,42 @@ import {
     FieldLabel,
     FieldSeparator,
 } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { MoveLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import {Input} from '@/components/ui/input';
+import {cn} from '@/lib/utils';
+import {MoveLeft, Presentation, GraduationCap} from 'lucide-react';
+import {useTranslation} from 'react-i18next';
+import {useNavigate, useLocation} from 'react-router-dom';
+import {signUpUser} from '../api/authApi';
 
-export default function SignUpForm({ className }: React.ComponentProps<'form'>) {
+export default function SignUpForm({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
-    const { t } = useTranslation('auth');
+    const location = useLocation();
+    const {t} = useTranslation('auth');
+
+    const role = (location.state as { role?: string })?.role || '';
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
 
-    const goBack = () => {
+    const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
         navigate('/');
     };
 
+    const goToLogin = () => {
+        navigate('/auth/login', { state: { role } });
+    };
+
+    // Select icon based on role
+    const RoleIcon = role === 'teacher' ? Presentation : GraduationCap;
+
     // Check if passwords match and all fields are filled
-    const isFormValid = 
-        email.trim() !== '' && 
-        password.trim() !== '' && 
-        repeatPassword.trim() !== '' && 
+    const isFormValid =
+        email.trim() !== '' &&
+        password.trim() !== '' &&
+        repeatPassword.trim() !== '' &&
         password === repeatPassword;
 
     async function handleOnSubmitSignUp(e: React.FormEvent) {
@@ -37,8 +50,11 @@ export default function SignUpForm({ className }: React.ComponentProps<'form'>) 
 
         // Only logging out everything on handleOnSubmit
         try {
-            // const response = await signUpNewUser(email, password);
-            console.log('Sign up with:', { email, password });
+            console.log('Sign up with:', {email, password});
+            const responseData = await signUpUser({email, password});
+            console.log('responseData :>> ', responseData);
+
+            navigate('/auth/login');
         } catch (error) {
             console.error('Sign up error:', error);
         }
@@ -54,17 +70,26 @@ export default function SignUpForm({ className }: React.ComponentProps<'form'>) 
                 )}
             >
                 <div className="border p-8 rounded-3xl shadow-lg">
-                    <Button
-                        onClick={goBack}
-                        variant="ghost"
-                        className="rounded-full"
-                        type="button"
-                    >
-                        <MoveLeft />
-                        <span className="sr-only">{t('common.back')}</span>
-                    </Button>
+                    <div>
+                        <Button
+                            onClick={goBack}
+                            variant="ghost"
+                            className="rounded-full"
+                            type="button"
+                        >
+                            <MoveLeft />
+                            <span className="sr-only">{t('common.back')}</span>
+                        </Button>
+                    </div>
 
                     <FieldGroup>
+                        {role && (
+                            <div className="flex justify-center mb-4">
+                                <div className="inline-flex p-3 bg-gray-100 rounded-lg">
+                                    <RoleIcon className="h-8 w-8 text-gray-600" />
+                                </div>
+                            </div>
+                        )}
                         <div className="flex flex-col items-center gap-1 text-center">
                             <h1 className="text-2xl font-light">
                                 {t('signUp.title')}
@@ -131,12 +156,13 @@ export default function SignUpForm({ className }: React.ComponentProps<'form'>) 
                         <Field>
                             <FieldDescription className="text-center">
                                 {t('signUp.hasAccount')}{' '}
-                                <a
-                                    href="/auth/login"
-                                    className="underline underline-offset-4"
+                                <button
+                                    type="button"
+                                    onClick={goToLogin}
+                                    className="underline underline-offset-4 hover:text-primary transition-colors"
                                 >
                                     {t('signUp.loginLink')}
-                                </a>
+                                </button>
                             </FieldDescription>
                         </Field>
                     </FieldGroup>

@@ -1,6 +1,5 @@
-// Supabase auth API functions
-
-export interface SignUpData {
+import { supabase } from '@/lib/supabase';
+export interface AuthData {
   email: string;
   password: string;
 }
@@ -21,19 +20,65 @@ export interface AuthResponse {
 /**
  * Sign up a new user
  */
-export async function signUpUser(data: SignUpData): Promise<AuthResponse> {
-  // TODO: Implement Supabase sign up logic
-  console.log('Sign up user:', data);
-  throw new Error('Not implemented');
+export async function signUpUser(signUpData: AuthData): Promise<{
+  success: boolean;
+  user?: any;      // Supabase user object
+  session?: any;   // Supabase session object
+  error?: string | null;
+}> {
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: signUpData.email,
+      password: signUpData.password,
+      options: {
+        emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
+      },
+    });
+
+
+    return {
+      success: !error,
+      user: data?.user ?? null,
+      session: data?.session ?? null,
+      error: error?.message ?? null,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err.message || "Unexpected error",
+    };
+  }
 }
 
 /**
  * Log in an existing user
  */
-export async function loginUser(data: LoginData): Promise<AuthResponse> {
-  // TODO: Implement Supabase login logic
-  console.log('Login user:', data);
-  throw new Error('Not implemented');
+export async function loginUser(loginData: AuthData): Promise<{
+  success: boolean;
+  user?: any;      // Supabase user object
+  session?: any;   // Supabase session object
+  error?: string | null;
+}> {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: loginData.email,
+      password: loginData.password,
+    });
+
+    console.log('Login result:', data);
+
+    return {
+      success: !error,
+      user: data?.user ?? null,
+      session: data?.session ?? null,
+      error: error?.message ?? null,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err.message || "Unexpected error",
+    };
+  }
 }
 
 /**

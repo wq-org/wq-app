@@ -7,52 +7,50 @@ import {
     FieldLabel,
     FieldSeparator,
 } from '@/components/ui/field';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
-import { MoveLeft } from 'lucide-react';
-import { loginUser } from '@/api/aws-lambda';
+import { MoveLeft, Presentation, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
+import { loginUser } from '../api/authApi';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
-import { useUser } from '@/store/UserContext';
 import { useTranslation } from 'react-i18next';
 
 export default function LoginForm({ className }: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const { t } = useTranslation('auth');
+    const role = (location.state as { role?: string })?.role || '';
+    
+    // Select icon based on role
+    const RoleIcon = role === 'teacher' ? Presentation : GraduationCap;
 
-    const { updateUser } = useUser();
-
-    const goBack = () => {
+    const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
         navigate('/');
+    };
+
+    const goToSignUp = () => {
+        navigate('/auth/signup', { state: { role } });
     };
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
         setIsLoading(true);
 
-        const data = { email, password };
-
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response = (await loginUser(data)) as any;
-            console.log('response :>> ', response);
+            const responseData = await loginUser({email, password});
+            console.log('responseData :>> ', responseData);
 
-            const { user_id, username, display_name, email, role } =
-                response?.data || {};
+            if (responseData.error) {
+                throw new Error(responseData.error);
+            }
 
-            updateUser({
-                id: user_id,
-                userName: username,
-                name: display_name,
-                email: email,
-                role: role,
-            });
-
-            navigate(`/${role}/dashboard`);
+            navigate(`/teacher/dashboard`);
         } catch (error) {
             console.error('Login error:', error);
         } finally {
@@ -74,12 +72,20 @@ export default function LoginForm({ className }: React.ComponentProps<'form'>) {
                         onClick={goBack}
                         variant="ghost"
                         className="rounded-full"
+                        type="button"
                     >
                         <MoveLeft />
                         <span className="sr-only">{t('common.back')}</span>
                     </Button>
 
                     <FieldGroup>
+                        {role && (
+                            <div className="flex justify-center mb-4">
+                                <div className="inline-flex p-3 bg-gray-100 rounded-lg">
+                                    <RoleIcon className="h-8 w-8 text-gray-600" />
+                                </div>
+                            </div>
+                        )}
                         <div className="flex flex-col items-center gap-1 text-center">
                             <h1 className="text-2xl font-light">
                                 {t('login.title')}
@@ -144,12 +150,13 @@ export default function LoginForm({ className }: React.ComponentProps<'form'>) {
                         <Field>
                             <FieldDescription className="text-center">
                                 {t('login.noAccount')}{' '}
-                                <a
-                                    href="/auth/signup"
-                                    className="underline underline-offset-4"
+                                <button
+                                    type="button"
+                                    onClick={goToSignUp}
+                                    className="underline underline-offset-4 hover:text-primary transition-colors"
                                 >
                                     {t('login.signUpLink')}
-                                </a>
+                                </button>
                             </FieldDescription>
                         </Field>
                     </FieldGroup>

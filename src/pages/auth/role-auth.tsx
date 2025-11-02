@@ -13,7 +13,7 @@ export default function RoleSelection() {
 
     const handleContinue = () => {
         console.log('selectedRole :>> ', selectedRole);
-        if (selectedRole) navigate('/login', { state: { role: selectedRole } });
+        if (selectedRole) navigate('/auth/signup', { state: { role: selectedRole } });
     };
 
     return (
@@ -51,7 +51,9 @@ export default function RoleSelection() {
                                 className="h-6 w-6"
                             />
                         </div>
-                        <GraduationCap className="h-12 w-12" />
+                        <div className="inline-flex p-3 bg-gray-100 rounded-lg w-fit">
+                            <GraduationCap className="h-8 w-8 text-gray-600" />
+                        </div>
                         <p className="text-3xl">{t('student.title')}</p>
                         <CardDescription>{t('student.desc')}</CardDescription>
                     </CardHeader>
@@ -73,7 +75,9 @@ export default function RoleSelection() {
                                 className="h-6 w-6"
                             />
                         </div>
-                        <Presentation className="h-12 w-12" />
+                        <div className="inline-flex p-3 bg-gray-100 rounded-lg w-fit">
+                            <Presentation className="h-8 w-8 text-gray-600" />
+                        </div>
                         <p className="text-3xl">{t('teacher.title')}</p>
                         <CardDescription>{t('teacher.desc')}</CardDescription>
                     </CardHeader>
