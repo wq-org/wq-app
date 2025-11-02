@@ -1,7 +1,9 @@
-import React from 'react';
-
-export default function GameStudioHeader(): JSX.Element {
-  return null;
+export default function GameStudioHeader() {
+  return (
+    <div>
+      <h1>Game Studio Header</h1>
+    </div>
+  );
 }
 
 

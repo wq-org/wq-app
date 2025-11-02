@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser as loginAPI, signUpUser, logoutUser } from '../api/authApi';
-import type { LoginData, SignUpData, AuthResponse } from '../types/auth.types';
+import type { LoginData, SignUpData } from '../types/auth.types';
 
 export default function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const login = useCallback(async (data: LoginData): Promise<AuthResponse | null> => {
+  const login = useCallback(async (data: LoginData): Promise<any | null> => {
     setIsLoading(true);
     setError(null);
 
@@ -24,7 +24,7 @@ export default function useAuth() {
     }
   }, []);
 
-  const signUp = useCallback(async (data: SignUpData): Promise<AuthResponse | null> => {
+  const signUp = useCallback(async (data: SignUpData): Promise<any | null> => {
     setIsLoading(true);
     setError(null);
 

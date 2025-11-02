@@ -1,7 +1,10 @@
-import React from 'react';
 
-export default function GameFileNode(): JSX.Element {
-  return null;
+export default function GameFileNode() {
+  return (
+    <div>
+      <h1>Game File Node</h1>
+    </div>
+  );
 }
 
 

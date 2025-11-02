@@ -1,7 +1,10 @@
-import React from 'react';
-
-export default function GameGuardrailNode(): JSX.Element {
-  return null;
+  
+    export default function GameGuardrailNode() {
+  return (
+    <div>
+      <h1>Game Guardrail Node</h1>
+    </div>
+  );
 }
 
 

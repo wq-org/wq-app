@@ -1,7 +1,10 @@
-import React from 'react';
 
-export default function GameAgentNode(): JSX.Element {
-  return null;
+export default function GameAgentNode() {
+  return (
+    <div>
+      <h1>Game Agent Node</h1>
+    </div>
+  );
 }
 
 

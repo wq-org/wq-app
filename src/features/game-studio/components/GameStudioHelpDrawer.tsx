@@ -1,7 +1,9 @@
-import React from 'react';
-
-export default function GameStudioHelpDrawer(): JSX.Element {
-  return null;
+export default function GameStudioHelpDrawer() {
+  return (
+    <div>
+      <h1>Game Studio Help Drawer</h1>
+    </div>
+  );
 }
 
 

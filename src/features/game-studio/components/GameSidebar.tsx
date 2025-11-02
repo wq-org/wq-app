@@ -1,7 +1,11 @@
-import React from 'react';
 
-export default function GameSidebar(): JSX.Element {
-  return null;
+
+export default function GameSidebar() {
+  return (
+    <div>
+      <h1>Game Sidebar</h1>
+    </div>
+  );
 }
 
 

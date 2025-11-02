@@ -1,7 +1,9 @@
-import React from 'react';
-
-export default function GameNodeDialog(): JSX.Element {
-  return null;
+export default function GameNodeDialog() {
+  return (
+    <div>
+      <h1>Game Node Dialog</h1>
+    </div>
+  );
 }
 
 
