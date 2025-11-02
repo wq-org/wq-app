@@ -1,17 +1,19 @@
-import { BookOpen, Plus } from 'lucide-react';
+import { Users, SearchIcon } from 'lucide-react';
 
-export default function EmptyCourseView() {
+export default function EmptyStudentView() {
     return (
         <div className="w-full animate-fade-in slide-in-from-bottom-5 duration-300 flex flex-col items-center justify-center p-12 border border-dashed border-gray-200 rounded-xl">
             <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
-                <BookOpen className="w-8 h-8 text-gray-400" />
+                <Users className="w-8 h-8 text-gray-400" />
             </div>
             <p className="mt-3 text-gray-500 text-center text-sm">
-                Erstelle deinen ersten Kurs
+                No students found
             </p>
             <p className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2">
-                Benutze das Kommando <Plus className="w-4 h-4 text-gray-400" /> in der Befehlsleiste, um einen neuen Kurs zu erstellen.
+                    Use the command palette to search for students and add them to your class.
+                <SearchIcon className="w-4 h-4 text-gray-400" />
             </p>
         </div>
     );
 }
+
