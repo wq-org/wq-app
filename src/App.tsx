@@ -6,7 +6,7 @@ import ResetPasswordPage from './pages/auth/reset-password';
 import VerifyEmailPage from './pages/auth/verify-email';
 import RoleAuth from './pages/auth/role-auth';
 import Institution from './pages/institution';
-//import Test from './pages/Test';    
+import Test from './pages/Test';    
 
 import StudentDashboard from './pages/student/dashboard';
 import StudentSettings from './pages/student/settings';
@@ -55,7 +55,7 @@ function App() {
                     <Route path="institution" element={<Institution />} />
                 </Route>
 
-            {/* //    <Route path="/test" element={<Test />} /> */}
+                <Route path="/test" element={<Test />} />
                 <Route path="*" element={<Error404 />} />
             </Routes>
         </UserContextProvider>
