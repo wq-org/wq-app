@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import Container from '../common/Container';
 import { useState } from 'react';
 import { getDashboardTabs } from '@/lib/dashboard-config';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 interface DashboardLayoutProps {
     imageUrl?: string;
@@ -13,6 +14,8 @@ interface DashboardLayoutProps {
     description: string;
     children?: React.ReactNode;
     role: string;
+    email?: string;
+    linkedInUrl?: string;
     handleFollowClick?: () => void;
     handleMailClick?: () => void;
     handleLinkedInClick?: () => void;
@@ -25,6 +28,8 @@ export default function DashboardLayout({
     description,
     children,
     role,
+    email = 'john.doe@example.com',
+    linkedInUrl = 'linkedin.com/in/johndoe',
     handleFollowClick,
     handleMailClick,
     handleLinkedInClick,
@@ -70,27 +75,50 @@ export default function DashboardLayout({
                             <Badge variant="secondary">1.200 Contacts</Badge>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Button
-                                variant="default"
-                                className="gap-2"
-                                onClick={handleFollowClick}
-                            >
-                                Connect
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="gap-2"
-                                onClick={handleMailClick}
-                            >
-                                <Mail className="text-gray-400" />
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="gap-2"
-                                onClick={handleLinkedInClick}
-                            >
-                                <Linkedin className="text-gray-400" />
-                            </Button>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="default"
+                                        className="gap-2"
+                                        onClick={handleFollowClick}
+                                    >
+                                        Connect
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Connect with {userName}
+                                </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="gap-2"
+                                        onClick={handleMailClick}
+                                    >
+                                        <Mail className="text-gray-400" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {email}
+                                </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="gap-2"
+                                        onClick={handleLinkedInClick}
+                                    >
+                                        <Linkedin className="text-gray-400" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {linkedInUrl}
+                                </TooltipContent>
+                            </Tooltip>
                         </div>
                     </Container>
                     <section className="pt-8 rounded-2xl bg-gray-100 min-h-[calc(95vh-400px)] pb-8">

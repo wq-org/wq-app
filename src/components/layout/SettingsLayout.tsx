@@ -7,6 +7,7 @@ import { Edit2Icon } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
+import AstridAvatar from '@/assets/img/avatars/Astrid.png';
 
 interface SettingsLayoutProps {
     children?: React.ReactNode;
@@ -26,11 +27,11 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                         <div className="relative">
                             <Avatar className="w-24 h-24 rounded-full">
                                 <AvatarImage
-                                    src="https://github.com/hngngn.png"
+                                    src={AstridAvatar}
                                     alt="avatar"
                                 />
                                 <AvatarFallback className="text-xl">
-                                    U
+                                    A
                                 </AvatarFallback>
                             </Avatar>
                             <Button

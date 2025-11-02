@@ -3,10 +3,10 @@ import CommandPalette from '@/features/command-palette/components/CommandPalette
 import CourseCardList from '@/features/courses/CourseCardList';
 import { getDashboardTabs } from '@/lib/dashboard-config';
 import TableView from '@/features/files/components/TableView';
-// import bgImage from '@/assets/img/bg-silver.jpeg';
 import { useState } from 'react';
 import { StudentCardList } from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
+import AstridAvatar from '@/assets/img/avatars/Astrid.png';
 
 const dummyCourses: any = [
    
@@ -39,8 +39,10 @@ export default function Dashboard() {
     return (
         <>
             <DashboardLayout
-                imageUrl="https://github.com/hngngn.png"
-                userName="John Doe"
+                imageUrl={AstridAvatar}
+                userName="@Astrid"
+                email="astrid@wq-health.com"
+                linkedInUrl="linkedin.com/in/astrid"
                 description="Software Engineer passionate about web development and teaching. this is the new feature"
                 role="teacher"
                 onClickTab={(tabId: string) => handleClickTab(tabId)}
