@@ -24,7 +24,8 @@ import {
     FileBarChart2,
     Ellipsis,
 } from 'lucide-react';
-import type { FileItem } from '@/features/files/data/files';
+import TableEmptyView from '@/features/files/components/TableEmptyView';
+import type {FileItem} from '../types/files.types';
 
 const typeConfig = {
     Word: {
@@ -107,6 +108,10 @@ export default function FileTable({ files }: FileTableProps) {
 
         return pages;
     };
+
+    if (files.length === 0) {
+        return <TableEmptyView />;
+    }
 
     return (
         <div className="w-full flex flex-col items-center justify-center gap-6">

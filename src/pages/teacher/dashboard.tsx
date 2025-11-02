@@ -2,12 +2,10 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
 import CourseCardList from '@/features/courses/CourseCardList';
 import { getDashboardTabs } from '@/lib/dashboard-config';
-import TableView from '@/features/files/TableView';
+import TableView from '@/features/files/components/TableView';
 // import bgImage from '@/assets/img/bg-silver.jpeg';
 import { useState } from 'react';
 import { StudentCardList } from '@/features/student/StudentCardList';
-import filesJson from '@/data/files.json';
-import type { FileItem } from '@/features/files/data/files';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
 
 const dummyCourses: any = [
@@ -15,6 +13,10 @@ const dummyCourses: any = [
 ];
 
 const dummyStudents: any = [
+ 
+];
+
+const dummyFiles: any = [
  
 ];
 
@@ -56,7 +58,7 @@ export default function Dashboard() {
                 )}
 
                 {selectedTab === 'files' && (
-                    <TableView files={filesJson as unknown as FileItem[]} />
+                    <TableView files={dummyFiles} />
                 )}
                 {selectedTab === 'students' && (
                     <StudentCardList students={dummyStudents} />
