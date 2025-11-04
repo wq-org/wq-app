@@ -60,7 +60,7 @@ const Navigation = ({ currentPageName, className }: NavigationProps) => {
                                     <Bell className="h-5 w-5 text-gray-600" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="p-0 w-[90vw] sm:w-[420px] md:w-[480px] max-w-[95vw] rounded-2xl backdrop-blur overflow-hidden">
+                            <PopoverContent className="p-0 w-90 h-120 rounded-4xl backdrop-blur overflow-hidden mr-20 mt-4">
                               <NotificationPanel />
                             </PopoverContent>
                         </Popover>

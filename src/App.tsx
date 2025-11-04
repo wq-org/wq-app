@@ -18,6 +18,7 @@ import UserContextProvider from './store/UserContext';
 import Course from './pages/teacher/course';
 import Error404 from './pages/404';
 import Lession from './pages/teacher/lession';
+import Onboarding from './features/onboarding/onboarding';
 
 function App() {
     return (
@@ -48,6 +49,8 @@ function App() {
                     <Route path="institution" element={<Institution />} />
                 </Route>
 
+                <Route path="/onboarding" element={<Onboarding />} />
+        
                 {/* Student Routes */}
                 <Route path="/student">
                     <Route path="dashboard" element={<StudentDashboard />} />
