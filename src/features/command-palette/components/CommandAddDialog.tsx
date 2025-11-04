@@ -11,7 +11,7 @@ import {
     CardFooter
 } from "@/components/ui/card";
 
-const CommandAddDialog = () => {
+const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
@@ -43,21 +43,21 @@ const CommandAddDialog = () => {
             >
                 <CardHeader className="items-center p-0">
                     <CardTitle className="text-xl  font-light text-muted-foreground">
-                        Add New Course
+                        Add New {type}
                     </CardTitle>
 
                     <p className="text-sm text-muted-foreground mt-1 font-light">
-                        Create a new course to get started.
+                        Create a new {type} to get started.
                     </p>
 
                 </CardHeader>
 
                 <CardContent className="flex flex-col gap-8 w-full px-0">
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="course-title" className="font-light">Course Title</Label>
+                        <Label htmlFor="course-title" className="font-light">{type} Title</Label>
                         <Input
-                            id="course-title"
-                            placeholder="Course Title"
+                            id={`${type}-title`}
+                            placeholder={`${type} Title`}
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             required

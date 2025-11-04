@@ -310,7 +310,10 @@ export default function CommandPalette({
                                     <CommandFeedbackDialog />
                                 )}
                                 {activeDialog === 'add' && (
-                                    <CommandAddDialog />
+                                    <CommandAddDialog type="course" />
+                                )}
+                                {activeDialog === 'add' && role === 'admin' && (
+                                    <CommandAddDialog type="institution" />
                                 )}
                             </Container>
                         </ScrollArea>

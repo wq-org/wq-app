@@ -5,7 +5,7 @@ import CommandPalette from '@/features/command-palette/components/CommandPalette
 import { cn } from '@/lib/utils';
 interface AppWrapperProps {
     children: React.ReactNode;
-    role: 'teacher' | 'student';
+    role: 'teacher' | 'student' | 'admin';
     className?: string;
 }
 function AppWrapper({ children, role, className }: AppWrapperProps) {

@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/popover';
 import { useNavigate } from 'react-router';
 import { cn } from '@/lib/utils';
+import NotificationPanel from '@/features/notification/components/NotificationPanel';
 
 interface NavigationProps {
     currentPageName?: string;
@@ -59,15 +60,8 @@ const Navigation = ({ currentPageName, className }: NavigationProps) => {
                                     <Bell className="h-5 w-5 text-gray-600" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-80">
-                                <div className="space-y-2">
-                                    <p className="text-lg font-semibold">
-                                        Notifications
-                                    </p>
-                                    <div className="text-sm text-gray-600">
-                                        <p>No new notifications</p>
-                                    </div>
-                                </div>
+                            <PopoverContent className="p-0 w-[90vw] sm:w-[420px] md:w-[480px] max-w-[95vw] rounded-2xl backdrop-blur overflow-hidden">
+                              <NotificationPanel />
                             </PopoverContent>
                         </Popover>
                         <div className="h-6 w-px bg-border" />
