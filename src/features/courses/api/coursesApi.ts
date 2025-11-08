@@ -105,3 +105,93 @@ export async function deleteCourse(courseId: string): Promise<void> {
   }
 }
 
+/**
+ * Create a new topic for a course
+ * Note: The topics table uses 'title' column, not 'name'
+ */
+export async function createTopic(
+  courseId: string,
+  name: string
+): Promise<{ id: string; name: string; course_id: string;  }> {
+  const now = new Date().toISOString();
+  
+  // Get the maximum order_index for topics in this course to calculate the next index
+  const { data: existingTopics, error: fetchError } = await supabase
+    .from('topics')
+    .select('order_index')
+    .eq('course_id', courseId)
+    .order('order_index', { ascending: false })
+    .limit(1);
+  
+  if (fetchError) {
+    console.error('Error fetching existing topics:', fetchError);
+    throw fetchError;
+  }
+  
+  // Calculate the next order_index (max + 1, or 0 if no topics exist)
+  const nextOrderIndex = existingTopics && existingTopics.length > 0 
+    ? (existingTopics[0].order_index ?? -1) + 1 
+    : 0;
+  
+  const { data, error } = await supabase
+    .from('topics')
+    .insert({
+      title: name.trim(), // Database column is 'title', not 'name'
+      course_id: courseId,
+      order_index: nextOrderIndex,
+      created_at: now,
+    })
+    .select('id, title, course_id, created_at, updated_at')
+    .single();
+
+  if (error) {
+    console.error('Error creating topic:', error);
+    throw error;
+  }
+
+  // Map 'title' from database to 'name' to match the Topic interface
+  return {
+    id: data.id,
+    name: data.title, // Map title -> name for interface compatibility
+    course_id: data.course_id,
+  };
+}
+
+/**
+ * Get all topics for a course
+ */
+export async function getTopicsByCourseId(courseId: string): Promise<{ id: string; name: string; course_id: string }[]> {
+  const { data, error } = await supabase
+    .from('topics')
+    .select('id, title, course_id')
+    .eq('course_id', courseId)
+    .order('order_index', { ascending: true });
+  
+  if (error) {
+    console.error('Error fetching topics:', error);
+    throw error;
+  }
+  
+  // Map 'title' from database to 'name' to match the Topic interface
+  return (data || []).map(topic => ({
+    id: topic.id,
+    name: topic.title, // Map title -> name for interface compatibility
+    course_id: topic.course_id,
+  }));
+}
+
+/**
+ * Delete a topic
+ */
+export async function deleteTopic(topicId: string): Promise<void> {
+  const { error } = await supabase
+    .from('topics')
+    .delete()
+    .eq('id', topicId);
+  
+  if (error) {
+    console.error('Error deleting topic:', error);
+    throw error;
+  }
+}
+

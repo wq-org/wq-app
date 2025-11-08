@@ -11,6 +11,7 @@ import { TopicBadge, type Topic } from '@/features/courses/components/TopicBadge
 import { CreateLessonForm } from '@/features/lessons/components/CreateLessonForm';
 import { LessonCardList } from '@/features/lessons/components/LessonCardList';
 import type { Lesson } from '@/features/lessons/types/lesson.types';
+import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/courses/api/coursesApi';
 
 const dummyLessons: Lesson[] = [
     {
@@ -84,31 +85,57 @@ export default function Course() {
         }
     }, [id, fetchCourseById, selectedCourse]);
 
-    const addTopic = async () => {
-        if (!newTopic.trim()) return;
-
-        setLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const topic: Topic = {
-            id: Date.now().toString(),
-            name: newTopic.trim(),
+    // Fetch topics for the course when component mounts or id changes
+    useEffect(() => {
+        const fetchTopics = async () => {
+            if (id) {
+                try {
+                    const fetchedTopics = await getTopicsByCourseId(id);
+                    setTopics(fetchedTopics);
+                } catch (error) {
+                    console.error('Failed to fetch topics:', error);
+                    // TODO: Show error toast/notification
+                }
+            }
         };
 
-        setTopics(prev => [...prev, topic]);
-        setNewTopic('');
-        setLoading(false);
+        fetchTopics();
+    }, [id]);
+
+    const addTopic = async () => {
+        if (!newTopic.trim() || !id) return;
+
+        setLoading(true);
+        try {
+            const createdTopic = await createTopic(id, newTopic.trim());
+            const topic: Topic = {
+                id: createdTopic.id,
+                name: createdTopic.name,
+            };
+            setTopics(prev => [...prev, topic]);
+            setNewTopic('');
+        } catch (error) {
+            console.error('Failed to create topic:', error);
+            // TODO: Show error toast/notification
+        } finally {
+            setLoading(false);
+        }
     };
 
     const toggleTopic = (topic: Topic) => {
         setSelectedTopic(selectedTopic?.id === topic.id ? null : topic);
     };
 
-    const onDeleteTopic = (topicToDelete: Topic) => {
-        setTopics(prev => prev.filter(t => t.id !== topicToDelete.id));
-        if (selectedTopic?.id === topicToDelete.id) {
-            setSelectedTopic(null);
+    const onDeleteTopic = async (topicToDelete: Topic) => {
+        try {
+            await deleteTopic(topicToDelete.id);
+            setTopics(prev => prev.filter(t => t.id !== topicToDelete.id));
+            if (selectedTopic?.id === topicToDelete.id) {
+                setSelectedTopic(null);
+            }
+        } catch (error) {
+            console.error('Failed to delete topic:', error);
+            // TODO: Show error toast/notification
         }
     };
 

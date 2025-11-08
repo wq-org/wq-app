@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Check, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export interface Topic {
     id: string;
@@ -24,11 +24,10 @@ export function TopicBadge({
     onDelete,
 }: TopicBadgeProps) {
     return (
-        <Button
+        <div
             key={topic.id}
             onClick={() => onToggle(topic)}
-            variant="secondary"
-            className="flex items-center gap-2 rounded-full py-2 text-base font-semibold transition hover:scale-105 active:scale-95 duration-200 animate-in fade-in slide-in-from-bottom-2"
+            className="flex items-center gap-2 rounded-full py-2 px-4 text-base font-semibold transition hover:scale-105 active:scale-95 duration-200 animate-in fade-in slide-in-from-bottom-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
             style={{ animationDelay: `${index * 50}ms` }}
         >
             {isSelected && (
@@ -42,7 +41,7 @@ export function TopicBadge({
             <span className="animate-in fade-in slide-in-from-top-1 duration-200">
                 {topic.name}
             </span>
-            <Separator orientation="vertical" className="h-4 bg-black" />
+            <Separator orientation="vertical" className="h-full bg-gray-300" />
             <Button
                 variant="ghost"
                 size="icon"
@@ -50,11 +49,10 @@ export function TopicBadge({
                     e.stopPropagation();
                     onDelete(topic);
                 }}
-                className="rounded-full hover:scale-105 active:scale-95 transition-all duration-200 h-6 w-6"
             >
                 <X className="w-4 h-4 text-red-500" />
-            </Button>
-        </Button>
+             </Button    >
+        </div>
     );
 }
 
