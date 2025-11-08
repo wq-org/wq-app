@@ -1,23 +1,25 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
 import CourseCardList from '@/features/courses/CourseCardList';
-import { getDashboardTabs } from '@/lib/dashboard-config';
+import {getDashboardTabs} from '@/lib/dashboard-config';
 import TableView from '@/features/files/components/TableView';
-import { useState, useEffect, useCallback } from 'react';
-import { StudentCardList } from '@/features/student/StudentCardList';
+import {useState, useEffect, useCallback} from 'react';
+import {StudentCardList} from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
-import { useUser } from '@/contexts/UserContext';
-import { useAvatarUrl } from '@/hooks/useAvatarUrl';
-import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
+import {useUser} from '@/contexts/UserContext';
+import {useAvatarUrl} from '@/hooks/useAvatarUrl';
+import {AVATAR_PLACEHOLDER_SRC} from '@/lib/constants';
 import PulsarLoading from '@/components/ui/pulsar-loading';
-import { getTeacherCourses } from '@/features/auth/api/authApi';
+import {getTeacherCourses} from '@/features/auth/api/authApi';
+import {useNavigate} from 'react-router-dom';
+import DotWaveLoader from '@/components/common/DotWaveLoader';
 
 const dummyStudents: any = [
- 
+
 ];
 
 const dummyFiles: any = [
- 
+
 ];
 
 
@@ -25,13 +27,13 @@ export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
     const [courses, setCourses] = useState<any[]>([]);
     const [coursesLoading, setCoursesLoading] = useState(true);
-    const { profile, loading } = useUser();
-    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
-
+    const {profile, loading} = useUser();
+    const {url: signedAvatarUrl} = useAvatarUrl(profile?.avatar_url || '');
+    const navigate = useNavigate();
     // Fetch courses for the teacher
     const fetchCourses = useCallback(async () => {
         if (!profile?.user_id) return;
-        
+
         setCoursesLoading(true);
         try {
             const data = await getTeacherCourses(profile.user_id);
@@ -60,12 +62,13 @@ export default function Dashboard() {
 
     function handleCardView(id: string) {
         console.log('id :>> ', id);
+        navigate(`/teacher/course/${id}`);
     }
 
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <PulsarLoading variant="gray" size="xl" speed={1750} />
+                <DotWaveLoader />
             </div>
         );
     }

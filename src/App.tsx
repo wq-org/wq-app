@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import {Routes, Route} from 'react-router-dom';
 import LoginPage from './pages/auth/login';
 import SignUpPage from './pages/auth/signUp';
 import ForgotPasswordPage from './pages/auth/forgot-password';
@@ -22,18 +22,18 @@ import Onboarding from './features/onboarding/onboarding';
 
 import AdminDashboard from './pages/admin/dashboard';
 
-import { UserProvider } from './contexts/UserContext';
+import {UserProvider} from './contexts/UserContext';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
-import { Toaster } from './components/ui/sonner';
+import {Toaster} from './components/ui/sonner';
 
 function App() {
     return (
         <UserProvider>
-        <UserContextProvider>
+            <UserContextProvider>
                 <Toaster />
-            <Routes>
-                <Route path="/" element={<RoleAuth />} />
+                <Routes>
+                    <Route path="/" element={<RoleAuth />} />
 
                     {/* Auth Routes */}
                     <Route path="/auth">
@@ -51,7 +51,7 @@ function App() {
                     {/* Onboarding (requires auth but not onboarding status) */}
                     <Route path="/onboarding" element={
 
-                            <Onboarding />
+                        <Onboarding />
 
                     } />
 
@@ -67,7 +67,7 @@ function App() {
                     </Route>
 
                     {/* Teacher Routes (require auth + onboarding) */}
-                <Route path="/teacher">
+                    <Route path="/teacher">
                         <Route path="dashboard" element={
                             <RequireAuth>
                                 <RequireOnboarding>
@@ -75,18 +75,21 @@ function App() {
                                 </RequireOnboarding>
                             </RequireAuth>
                         } />
-                        <Route path="course" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <Course />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
+                        <Route
+                            path="course/:id"
+                            element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <Course />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            }
+                        />
                         <Route path="lession" element={
                             <RequireAuth>
                                 <RequireOnboarding>
                                     <Lession />
-                                </RequireOnboarding>
+                             </RequireOnboarding>
                             </RequireAuth>
                         } />
                         <Route path="settings" element={
@@ -110,10 +113,10 @@ function App() {
                                 </RequireOnboarding>
                             </RequireAuth>
                         } />
-                </Route>
+                    </Route>
 
                     {/* Student Routes (require auth + onboarding) */}
-                <Route path="/student">
+                    <Route path="/student">
                         <Route path="dashboard" element={
                             <RequireAuth>
                                 <RequireOnboarding>
@@ -135,12 +138,12 @@ function App() {
                                 </RequireOnboarding>
                             </RequireAuth>
                         } />
-                </Route>
+                    </Route>
 
                     <Route path="/test" element={<Test />} />
                     <Route path="*" element={<Error404 />} />
-            </Routes>
-        </UserContextProvider>
+                </Routes>
+            </UserContextProvider>
         </UserProvider>
     );
 }

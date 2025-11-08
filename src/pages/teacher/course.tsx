@@ -117,11 +117,6 @@ export default function Course() {
     return (
         <AppWrapper role="teacher">
             <div className="flex flex-col gap-6 max-w-4xl mx-auto p-6">
-                {/* Add new topic input section */}
-                <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl">
-                    Themen
-                </p>
-                
                 <div className="flex items-center gap-4">
                     <Input
                         value={newTopic}
@@ -145,10 +140,10 @@ export default function Course() {
                     </Button>
                 </div>
 
-                <Label className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                    Deine Themen
-                </Label>
-
+                <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl">
+                    Themen
+                </p>
+                
                 {/* Empty state when no topics */}
                 {topics.length === 0 ? (
                     <div className="flex  border-4xl flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-xl animate-in fade-in slide-in-from-bottom-5 duration-300">

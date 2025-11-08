@@ -18,7 +18,7 @@ export default function CourseCardList({
                 <CourseCard
                     key={idx}
                     {...course}
-                    onView={() => onCourseView?.(course.title)}
+                    onView={(id) => onCourseView?.(id)}
                 />
             ))}
         </div>

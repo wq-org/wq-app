@@ -71,7 +71,6 @@ export default function CommandPalette({
         console.log('Add new dialog triggered');
     }
     const primaryGroup = getGroupById(role) ?? commandBarGroup[0];
-    console.log('primaryGroup :>> ', primaryGroup);
 
     const defaultUserCommands = getGroupById('user');
     const userItems = defaultUserCommands?.items ?? [];

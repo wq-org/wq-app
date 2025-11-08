@@ -7,26 +7,29 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {Button} from '@/components/ui/button';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import bgBlueImage from '@/assets/img/backgrounds/bg-blue.jpeg';
 
 export interface CourseCardProps {
+    id: string;
     title: string;
     description: string;
     image?: string;
     teacherAvatar?: string;
     teacherInitials?: string;
-    onView?: () => void;
+    onView?: (id: string) => void;
 }
 
 export default function CourseCard({
+    id,
     title,
     description,
     image,
     teacherAvatar,
     teacherInitials = 'U',
-    onView,
+    onView = () => {},
 }: CourseCardProps) {
     const courseImage = image || bgBlueImage;
 
@@ -40,26 +43,33 @@ export default function CourseCard({
                 />
             </CardHeader>
             <CardContent className="flex flex-col gap-4 items-start p-6 -mt-6">
-            <Avatar className="w-12 h-12 rounded-full">
-                        {teacherAvatar ? (
-                            <AvatarImage src={teacherAvatar} alt="avatar" />
-                        ) : (
-                            <AvatarFallback className="text-xl">
-                                {teacherInitials || 'U'}
-                            </AvatarFallback>
-                        )}
-                    </Avatar>
+                <Avatar className="w-12 h-12 rounded-full">
+                    {teacherAvatar ? (
+                        <AvatarImage src={teacherAvatar} alt="avatar" />
+                    ) : (
+                        <AvatarFallback className="text-xl">
+                            {teacherInitials || 'U'}
+                        </AvatarFallback>
+                    )}
+                </Avatar>
                 <div className="flex flex-col gap-1 w-full">
-                    <CardTitle className="text-xl font-semibold text-left w-full">
-                        {title}
-                    </CardTitle>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <CardTitle className="text-xl font-semibold text-left w-full line-clamp-1 overflow-hidden text-ellipsis">
+                                {title}
+                            </CardTitle>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p className="max-w-xs">{title}</p>
+                        </TooltipContent>
+                    </Tooltip>
                     <CardDescription className="text-gray-500 text-left w-full line-clamp-3 overflow-hidden text-ellipsis">
                         {description}
                     </CardDescription>
                 </div>
                 <div className="flex justify-between w-full items-center">
-                    <Button onClick={onView}>View</Button>
-                  
+                    <Button className='cursor-pointer' onClick={() => onView?.(id)}>View</Button>
+
                 </div>
             </CardContent>
         </Card>
