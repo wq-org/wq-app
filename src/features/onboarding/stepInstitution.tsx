@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/input-group';
 import { supabase } from '@/lib/supabase';
 import EmptyInstitutionView from './EmptyInstitutionView';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 
 interface Institution {
     id: string;
@@ -81,7 +81,7 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[300px]">
-                <PulsarLoading variant="black" size="xl" speed={1750} />
+                <Spinner variant="black" size="xl" speed={1750} />
             </div>
         );
     }

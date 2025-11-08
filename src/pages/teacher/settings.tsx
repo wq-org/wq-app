@@ -1,7 +1,7 @@
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
 import SettingsLayout from '@/components/layout/SettingsLayout';
 import { useUser } from '@/contexts/UserContext';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 
 export default function Settings() {
     const { profile, loading } = useUser();
@@ -9,7 +9,7 @@ export default function Settings() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <PulsarLoading variant="gray" size="xl" speed={1750} />
+                <Spinner variant="gray" size="xl" speed={1750} />
             </div>
         );
     }

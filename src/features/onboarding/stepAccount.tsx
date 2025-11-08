@@ -6,7 +6,7 @@ import {Button} from '@/components/ui/button';
 import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar';
 import {ChevronLeft, ChevronRight} from 'lucide-react';
 import {supabase} from '@/lib/supabase';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 import {useAvatarUrl} from '@/hooks/useAvatarUrl';
 
 interface AvatarOption {
@@ -160,7 +160,7 @@ export default function StepAccount({onNext, initialData}: StepAccountProps) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <PulsarLoading variant="light" size="xl" speed={1750} />
+                <Spinner variant="light" size="xl" speed={1750} />
             </div>
         );
     }

@@ -9,7 +9,7 @@ import EmptyCourseView from '@/features/courses/EmptyCourseView';
 import {useUser} from '@/contexts/UserContext';
 import {useAvatarUrl} from '@/hooks/useAvatarUrl';
 import {AVATAR_PLACEHOLDER_SRC} from '@/lib/constants';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 import {getTeacherCourses} from '@/features/auth/api/authApi';
 import {useNavigate} from 'react-router-dom';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
@@ -86,7 +86,7 @@ export default function Dashboard() {
                 {selectedTab === 'courses' && (
                     coursesLoading ? (
                         <div className="flex items-center justify-center py-12">
-                            <PulsarLoading variant="gray" size="lg" speed={1750} />
+                            <Spinner variant="gray" size="lg" speed={1750} />
                         </div>
                     ) : courses.length === 0 ? (
                         <EmptyCourseView />

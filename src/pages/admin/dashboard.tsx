@@ -3,7 +3,7 @@ import CommandPalette from '@/features/command-palette/components/CommandPalette
 import InstitutionForm from '@/components/admin/InstitutionForm';
 import { useUser } from '@/contexts/UserContext';
 import { useAvatarUrl } from '@/hooks/useAvatarUrl';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 
 const AdminDashboardInner = () => {
   const { profile, loading } = useUser();
@@ -12,7 +12,7 @@ const AdminDashboardInner = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <PulsarLoading variant="gray" size="xl" speed={1750} />
+        <Spinner variant="gray" size="xl" speed={1750} />
       </div>
     );
   }

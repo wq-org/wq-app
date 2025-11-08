@@ -2,7 +2,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { CommandPalette } from '@/features/command-palette';
 import { useUser } from '@/contexts/UserContext';
 import { useAvatarUrl } from '@/hooks/useAvatarUrl';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 
 export default function Dashboard() {
     const { profile, loading } = useUser();
@@ -11,7 +11,7 @@ export default function Dashboard() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <PulsarLoading variant="gray" size="xl" speed={1750} />
+                <Spinner variant="gray" size="xl" speed={1750} />
             </div>
         );
     }

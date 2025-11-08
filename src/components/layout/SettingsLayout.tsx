@@ -10,7 +10,7 @@ import { Label } from '../ui/label';
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
 import { useAvatarUrl } from '@/hooks/useAvatarUrl';
 import type { Profile } from '@/contexts/UserContext';
-import PulsarLoading from '../ui/pulsar-loading';
+import Spinner from '../ui/spinner';
 
 interface SettingsLayoutProps {
     children?: React.ReactNode;
@@ -32,7 +32,7 @@ export default function SettingsLayout({ children, profile, loading }: SettingsL
             <>
                 <Navigation />
                 <div className="w-screen h-screen flex items-center justify-center">
-                    <PulsarLoading variant="gray" size="xl" speed={1750} />
+                    <Spinner variant="gray" size="xl" speed={1750} />
                 </div>
             </>
         );

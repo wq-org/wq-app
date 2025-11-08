@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
-import PulsarLoading from '@/components/ui/pulsar-loading';
+import Spinner from '@/components/ui/spinner';
 
 export default function RequireOnboarding({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useUser();
@@ -8,7 +8,7 @@ export default function RequireOnboarding({ children }: { children: React.ReactN
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <PulsarLoading variant="black" size="xl" speed={1750} />
+        <Spinner variant="black" size="xl" speed={1750} />
       </div>
     );
   }
