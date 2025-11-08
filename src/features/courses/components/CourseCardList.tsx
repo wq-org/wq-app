@@ -1,7 +1,5 @@
-// src/features/courses/components/CourseCardList.tsx
-
 import CourseCard from './CourseCard';
-import type { CourseCardProps } from './CourseCard';
+import type { CourseCardProps } from '../types/course.types';
 
 interface CourseCardListProps {
     courses: CourseCardProps[];
@@ -24,3 +22,4 @@ export default function CourseCardList({
         </div>
     );
 }
+

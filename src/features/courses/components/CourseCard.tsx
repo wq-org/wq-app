@@ -1,5 +1,3 @@
-// src/features/courses/components/CourseCard.tsx
-
 import {
     Card,
     CardContent,
@@ -11,16 +9,7 @@ import {Button} from '@/components/ui/button';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import bgBlueImage from '@/assets/img/backgrounds/bg-blue.jpeg';
-
-export interface CourseCardProps {
-    id: string;
-    title: string;
-    description: string;
-    image?: string;
-    teacherAvatar?: string;
-    teacherInitials?: string;
-    onView?: (id: string) => void;
-}
+import type { CourseCardProps } from '../types/course.types';
 
 export default function CourseCard({
     id,
@@ -80,3 +69,4 @@ export default function CourseCard({
         </Card>
     );
 }
+

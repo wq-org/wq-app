@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { getCourseById, updateCourse, deleteCourse } from '@/features/auth/api/authApi';
+import { getCourseById, updateCourse, deleteCourse } from '@/features/courses/api/coursesApi';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, Loader2 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';

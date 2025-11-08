@@ -1,6 +1,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
-import CourseCardList from '@/features/courses/CourseCardList';
+import CourseCardList from '@/features/courses/components/CourseCardList';
 import {getDashboardTabs} from '@/lib/dashboard-config';
 import TableView from '@/features/files/components/TableView';
 import {useState, useEffect} from 'react';

@@ -10,7 +10,8 @@ import {
     CardContent,
     CardFooter
 } from "@/components/ui/card";
-import { createCourse, createInstitution } from "@/features/auth/api/authApi";
+import { createCourse } from "@/features/courses/api/coursesApi";
+import { createInstitution } from "@/features/auth/api/authApi";
 import { useUser } from "@/contexts/UserContext";
 
 // This function calls create based on type
