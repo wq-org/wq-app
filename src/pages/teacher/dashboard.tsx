@@ -6,8 +6,10 @@ import TableView from '@/features/files/components/TableView';
 import { useState } from 'react';
 import { StudentCardList } from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
-import { useFullProfile } from '@/hooks/useFullProfile';
+import { useUser } from '@/contexts/UserContext';
 import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
+import PulsarLoading from '@/components/ui/pulsar-loading';
 
 const dummyCourses: any = [
    
@@ -21,12 +23,11 @@ const dummyFiles: any = [
  
 ];
 
-// replaced local sample files with JSON data from src/data/files.json
 
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
-    const { profile, loading } = useFullProfile();
-    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url);
+    const { profile, loading } = useUser();
+    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
 
     const handleClickTab = (id: string) => {
         const currentTab = getDashboardTabs('teacher').filter(
@@ -39,12 +40,18 @@ export default function Dashboard() {
         console.log('id :>> ', id);
     }
 
-    if (loading) return null;
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <PulsarLoading variant="gray" size="xl" speed={1750} />
+            </div>
+        );
+    }
 
     return (
         <>
             <DashboardLayout
-                imageUrl={signedAvatarUrl || undefined}
+                imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
                 userName={profile?.display_name || profile?.username || '@Teacher'}
                 email={profile?.email || undefined}
                 description={profile?.description || 'Welcome to your dashboard'}

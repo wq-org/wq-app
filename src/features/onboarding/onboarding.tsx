@@ -33,10 +33,7 @@ export default function Onboarding() {
     };
 
     const handleFinish = () => {
-        console.log('Onboarding Complete!', { accountData, institutions });
 
-        // If user has a role, navigate to their dashboard, else show error toast and advise to refresh/contact support
-        console.log('pendingRole :>> ', pendingRole);
         const role = pendingRole;
         if (!role) {
             toast.error('Something went wrong', {

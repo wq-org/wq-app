@@ -142,7 +142,7 @@ export async function getCurrentUser(): Promise<AuthResponse | null> {
 }
 
 /**
- * Get user profile from 'profiles' table
+ * Get user profile from 'profiles' table (minimal fields)
  * Returns null if profile doesn't exist (instead of throwing error)
  */
 export async function getProfile(userId: string) {
@@ -154,6 +154,25 @@ export async function getProfile(userId: string) {
   
   if (error) {
     console.error('Error fetching profile:', error);
+    throw error;
+  }
+  
+  return data; // Will be null if profile doesn't exist
+}
+
+/**
+ * Get complete user profile from 'profiles' table (all fields)
+ * Returns null if profile doesn't exist (instead of throwing error)
+ */
+export async function getCompleteProfile(userId: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('user_id, username, display_name, avatar_url, email, description, role, is_onboarded')
+    .eq('user_id', userId)
+    .maybeSingle();
+  
+  if (error) {
+    console.error('Error fetching complete profile:', error);
     throw error;
   }
   

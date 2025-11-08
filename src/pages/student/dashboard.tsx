@@ -1,13 +1,20 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { CommandPalette } from '@/features/command-palette';
-import { useFullProfile } from '@/hooks/useFullProfile';
+import { useUser } from '@/contexts/UserContext';
 import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import PulsarLoading from '@/components/ui/pulsar-loading';
 
 export default function Dashboard() {
-    const { profile, loading } = useFullProfile();
-    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url);
+    const { profile, loading } = useUser();
+    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
 
-    if (loading) return null;
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <PulsarLoading variant="gray" size="xl" speed={1750} />
+            </div>
+        );
+    }
 
     return (
         <>

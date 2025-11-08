@@ -7,19 +7,37 @@ import { Edit2Icon } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
-
-const AVATAR_PLACEHOLDER_SRC = "https://github.com/shadcn.png";
-
+import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
+import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import type { Profile } from '@/contexts/UserContext';
+import PulsarLoading from '../ui/pulsar-loading';
 
 interface SettingsLayoutProps {
     children?: React.ReactNode;
+    profile?: Profile | null;
+    loading?: boolean;
 }
 
 const handleOnClickEditImage = () => {
     console.log('pick image clicked');
 };
 
-export default function SettingsLayout({ children }: SettingsLayoutProps) {
+export default function SettingsLayout({ children, profile, loading }: SettingsLayoutProps) {
+    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
+    const avatarSrc = signedAvatarUrl || profile?.avatar_url || AVATAR_PLACEHOLDER_SRC;
+    const displayNameInitial = profile?.display_name?.charAt(0).toUpperCase() || 'A';
+
+    if (loading) {
+        return (
+            <>
+                <Navigation />
+                <div className="w-screen h-screen flex items-center justify-center">
+                    <PulsarLoading variant="gray" size="xl" speed={1750} />
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <Navigation />
@@ -29,11 +47,12 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                         <div className="relative">
                             <Avatar className="w-24 h-24 rounded-full">
                                 <AvatarImage
-                                    src={AVATAR_PLACEHOLDER_SRC}
-                                    alt="avatar"
+                                    src={avatarSrc}
+                                    alt={profile?.display_name || 'Avatar'}
+                                    className="object-cover"
                                 />
                                 <AvatarFallback className="text-xl">
-                                    A
+                                    {displayNameInitial}
                                 </AvatarFallback>
                             </Avatar>
                             <Button
@@ -54,39 +73,44 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                                     type="text"
                                     id="name"
                                     placeholder="Name"
+                                    defaultValue={profile?.display_name || ''}
                                 />
                             </div>
                             <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="name">Username</Label>
+                                <Label htmlFor="username">Username</Label>
                                 <Input
                                     type="text"
+                                    disabled
                                     id="username"
                                     placeholder="Username"
+                                    defaultValue={profile?.username || ''}
                                 />
                             </div>
                             <div className="w-full flex flex-col  gap-3">
                                 <Label htmlFor="email">E-mail</Label>
                                 <Input
                                     disabled
-                                    type="link"
-                                    id="name"
+                                    type="email"
+                                    id="email"
                                     placeholder="wq-health@serious-game.com"
+                                    defaultValue={profile?.email || ''}
                                 />
                             </div>
                             <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="email">LinkedIn</Label>
+                                <Label htmlFor="linkedin">LinkedIn</Label>
                                 <Input
-                                    type="link"
-                                    id="name"
+                                    type="url"
+                                    id="linkedin"
                                     placeholder="linkedin.com/in/username"
                                 />
                             </div>
                             <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="email">About me</Label>
-
+                                <Label htmlFor="description">About me</Label>
                                 <Textarea
+                                    id="description"
                                     placeholder="a text about you"
-                                    className="w-full rounded-lg resize-none "
+                                    className="w-full rounded-lg resize-none"
+                                    defaultValue={profile?.description || ''}
                                 />
                             </div>
 
