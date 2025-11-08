@@ -7,6 +7,7 @@ import Container from '../common/Container';
 import { useState } from 'react';
 import { getDashboardTabs } from '@/lib/dashboard-config';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { QuoteOfTheDay } from '@/components/ui/quote';
 
 interface DashboardLayoutProps {
     imageUrl?: string;
@@ -45,28 +46,44 @@ export default function DashboardLayout({
         }
     }
 
+    // Sample quote - can be replaced with a hook later
+    const sampleQuote = {
+        text: "Education is the kindling of a flame, not the filling of a vessel.",
+        author: "Socrates",
+        source: "Anecdotal"
+    };
+
     return (
         <div>
             <Navigation />
             <div className="flex flex-col gap-8 mb-8">
                 <section className="rounded-2xl  h-full">
                     <Container className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-5 max-w-[600px]">
-                            <Avatar className="w-24 h-24">
-                                <AvatarImage
-                                    src={
-                                        imageUrl ||
-                                        'https://github.com/shadcn.png'
-                                    }
-                                />
-                                <AvatarFallback>
-                                    {userName.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
-                            <p className="text-5xl">{userName}</p>
-                            <p className="text-muted-foreground">
-                                {description}
-                            </p>
+                        <div className="flex gap-4 items-start">
+                            <div className="flex flex-col gap-5 max-w-[600px]">
+                                <Avatar className="w-24 h-24">
+                                    <AvatarImage
+                                        src={
+                                            imageUrl ||
+                                            'https://github.com/shadcn.png'
+                                        }
+                                    />
+                                    <AvatarFallback>
+                                        {userName.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <p className="text-5xl">{userName}</p>
+                                <p className="text-muted-foreground">
+                                    {description}
+                                </p>
+                            </div>
+                            {/* Quote of the Day - aligned with profile section border */}
+                            <QuoteOfTheDay
+                                quote={sampleQuote.text}
+                                author={sampleQuote.author}
+                                source={sampleQuote.source}
+                                className="flex-1"
+                            />
                         </div>
                         <div className="flex gap-4">
                             <Badge variant="secondary">
