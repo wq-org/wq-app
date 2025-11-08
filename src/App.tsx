@@ -17,7 +17,7 @@ import GameStudio from './pages/teacher/game-studio';
 import UserContextProvider from './store/UserContext';
 import Course from './pages/teacher/course';
 import Error404 from './pages/404';
-import Lession from './pages/teacher/lession';
+import Lesson from './features/lessons/pages/Lesson';
 import Onboarding from './features/onboarding/onboarding';
 
 import AdminDashboard from './pages/admin/dashboard';
@@ -87,11 +87,11 @@ function App() {
                                 </RequireAuth>
                             }
                         />
-                        <Route path="lession" element={
+                        <Route path="lesson/:id" element={
                             <RequireAuth>
                                 <RequireOnboarding>
-                                    <Lession />
-                             </RequireOnboarding>
+                                    <Lesson />
+                                </RequireOnboarding>
                             </RequireAuth>
                         } />
                         <Route path="settings" element={

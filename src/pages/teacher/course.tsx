@@ -1,23 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CourseLayout from '@/components/layout/CourseLayout';
 import CourseSettings from '@/features/courses/CourseSettings';
 import { useCourseContext } from '@/contexts/CourseContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Loader2, File } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { EmptyTopicsView } from '@/features/courses/components/EmptyTopicsView';
 import { TopicBadge, type Topic } from '@/features/courses/components/TopicBadge';
+import { CreateLessonForm } from '@/features/lessons/components/CreateLessonForm';
+import { LessonCardList } from '@/features/lessons/components/LessonCardList';
+import type { Lesson } from '@/features/lessons/types/lesson.types';
 
-interface LessonCard {
-    id: string;
-    title: string;
-    description: string;
-}
-
-const dummyLessons: LessonCard[] = [
+const dummyLessons: Lesson[] = [
     {
         id: '1',
         title: 'Wound Watch',
@@ -71,11 +66,13 @@ const dummyLessons: LessonCard[] = [
 ];
 export default function Course() {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const { fetchCourseById, selectedCourse } = useCourseContext();
     const [newTopic, setNewTopic] = useState('');
     const [topics, setTopics] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
     const [loading, setLoading] = useState(false);
+    const [lessons] = useState<Lesson[]>(dummyLessons);
 
     // Fetch and store course in context when component mounts or id changes
     useEffect(() => {
@@ -187,59 +184,22 @@ export default function Course() {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {dummyLessons.map((lesson, index) => (
-                                <Card
-                                    key={lesson.id}
-                                    className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md h-[280px] flex flex-col"
-                                >
-                                    <div className="flex flex-col h-full">
-                                        {/* Icon and Title */}
-                                        <div className="flex items-start gap-3 mb-3">
-                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
-                                                <File className="h-6 w-6 text-blue-500" />
-                                            </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 cursor-help">
-                                                            {index + 1}. {lesson.title}
-                                                        </h3>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p className="max-w-xs">{index + 1}. {lesson.title}</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </div>
-                                        </div>
-
-                                        {/* Description */}
-                                        <div className="flex-1 mb-4 min-h-0">
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <p className="text-sm text-gray-600 line-clamp-3 cursor-help">
-                                                        {lesson.description}
-                                                    </p>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p className="max-w-xs">{lesson.description}</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </div>
-
-                                        {/* View Button */}
-                                        <div className="mt-auto">
-                                            <Button
-                                                variant="default"
-                                                className="w-full rounded-lg  w-fit bg-gray-900 px-6 text-sm font-medium hover:bg-gray-800"
-                                            >
-                                                View
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </Card>
-                            ))}
+                        <div className="mb-6">
+                            <CreateLessonForm
+                                topicId={selectedTopic.id}
+                                courseId={id}
+                                onLessonCreated={() => {
+                                    // Optionally refresh lessons list
+                                }}
+                            />
                         </div>
+
+                        <LessonCardList
+                            lessons={lessons}
+                            onView={(lessonId) => {
+                                navigate(`/teacher/lesson/${lessonId}`);
+                            }}
+                        />
                     </div>
                 )}
         </div>
