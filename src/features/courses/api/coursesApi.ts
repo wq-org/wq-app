@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { getUserInstitutionId } from '@/features/auth/api/authApi';
-import type { Course, CreateCourseData, UpdateCourseData } from '../types/course.types';
+import type { Course, UpdateCourseData } from '../types/course.types';
 
 /**
  * Create a new course

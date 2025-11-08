@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { getCourseById, updateCourse, deleteCourse } from '@/features/courses/api/coursesApi';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/contexts/UserContext';
 import { Trash2, Loader2 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
@@ -15,6 +16,7 @@ interface CourseSettingsProps {
 
 export default function CourseSettings({ courseId }: CourseSettingsProps) {
   const navigate = useNavigate();
+  const { profile } = useUser();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -96,7 +98,8 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
     try {
       setDeleting(true);
       await deleteCourse(courseId);
-      navigate('/teacher/dashboard');
+      const role = profile?.role || 'teacher';
+      navigate(`/${role}/dashboard`);
     } catch (error) {
       console.error('Error deleting course:', error);
       alert('Failed to delete course. Please try again.');

@@ -33,6 +33,7 @@ export interface CourseCardProps {
   id: string;
   title: string;
   description: string;
+  is_published?: boolean;
   image?: string;
   teacherAvatar?: string;
   teacherInitials?: string;
