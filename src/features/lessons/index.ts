@@ -1,13 +1,18 @@
 // Components
+// Components
 export { LessonCard } from './components/LessonCard';
 export { LessonCardList } from './components/LessonCardList';
 export { CreateLessonForm } from './components/CreateLessonForm';
+export { EmptyLessonsView } from './components/EmptyLessonsView';
 
 // Pages
-export { default as Lesson } from './pages/Lesson';
+export { default as LessonPage } from './pages/Lesson';
 
 // Types
-export type { Lesson, CreateLessonData } from './types/lesson.types';
+export type { Lesson as LessonType, CreateLessonData } from './types/lesson.types';
+
+// API
+export { getLessonsByTopicId, getLessonsByCourseId } from './api/lessonsApi';
 
 // Hooks
 export { useLessons } from './hooks/useLessons';

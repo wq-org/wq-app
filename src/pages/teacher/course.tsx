@@ -10,61 +10,10 @@ import { EmptyTopicsView } from '@/features/courses/components/EmptyTopicsView';
 import { TopicBadge, type Topic } from '@/features/courses/components/TopicBadge';
 import { CreateLessonForm } from '@/features/lessons/components/CreateLessonForm';
 import { LessonCardList } from '@/features/lessons/components/LessonCardList';
+import { EmptyLessonsView } from '@/features/lessons/components/EmptyLessonsView';
 import type { Lesson } from '@/features/lessons/types/lesson.types';
+import { getLessonsByTopicId } from '@/features/lessons/api/lessonsApi';
 import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/courses/api/coursesApi';
-
-const dummyLessons: Lesson[] = [
-    {
-        id: '1',
-        title: 'Wound Watch',
-        description: 'Identify different types of wounds from clinical photos.',
-    },
-    {
-        id: '2',
-        title: 'Symptom Snap',
-        description: 'Match symptoms to the correct wound type or condition.',
-    },
-    {
-        id: '3',
-        title: 'Treatment Tactics',
-        description: 'Choose the best wound care intervention for each case scenario.',
-    },
-    {
-        id: '4',
-        title: 'Fact Check: Wound Edition',
-        description: 'Determine whether wound care statements are true or myths.',
-    },
-    {
-        id: '5',
-        title: 'Clinical Strategy Lab',
-        description: 'Make step-by-step clinical decisions in complex wound management cases.',
-    },
-    {
-        id: '6',
-        title: 'Healing Match',
-        description: 'Pair wound images with the correct dressing or treatment technique.',
-    },
-    {
-        id: '7',
-        title: 'Rapid Recall',
-        description: 'Answer time-limited questions to test your wound care knowledge.',
-    },
-    {
-        id: '8',
-        title: 'Patient Case Explorer',
-        description: 'Analyze detailed case studies and propose optimal care plans.',
-    },
-    {
-        id: '9',
-        title: 'Treatment Sorter',
-        description: 'Organize wound treatments and materials into the correct categories.',
-    },
-    {
-        id: '10',
-        title: 'Healing Timeline',
-        description: 'Arrange the phases of wound healing in the proper sequence.',
-    },
-];
 export default function Course() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -73,7 +22,8 @@ export default function Course() {
     const [topics, setTopics] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
     const [loading, setLoading] = useState(false);
-    const [lessons] = useState<Lesson[]>(dummyLessons);
+    const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [lessonsLoading, setLessonsLoading] = useState(false);
 
     // Fetch and store course in context when component mounts or id changes
     useEffect(() => {
@@ -101,6 +51,29 @@ export default function Course() {
 
         fetchTopics();
     }, [id]);
+
+    // Fetch lessons when a topic is selected
+    useEffect(() => {
+        const fetchLessons = async () => {
+            if (selectedTopic?.id) {
+                setLessonsLoading(true);
+                try {
+                    const fetchedLessons = await getLessonsByTopicId(selectedTopic.id);
+                    setLessons(fetchedLessons);
+                } catch (error) {
+                    console.error('Failed to fetch lessons:', error);
+                    // TODO: Show error toast/notification
+                } finally {
+                    setLessonsLoading(false);
+                }
+            } else {
+                // Clear lessons when no topic is selected
+                setLessons([]);
+            }
+        };
+
+        fetchLessons();
+    }, [selectedTopic?.id]);
 
     const addTopic = async () => {
         if (!newTopic.trim() || !id) return;
@@ -215,18 +188,34 @@ export default function Course() {
                             <CreateLessonForm
                                 topicId={selectedTopic.id}
                                 courseId={id}
-                                onLessonCreated={() => {
-                                    // Optionally refresh lessons list
+                                onLessonCreated={async () => {
+                                    // Refresh lessons list after creating a lesson
+                                    if (selectedTopic?.id) {
+                                        try {
+                                            const fetchedLessons = await getLessonsByTopicId(selectedTopic.id);
+                                            setLessons(fetchedLessons);
+                                        } catch (error) {
+                                            console.error('Failed to refresh lessons:', error);
+                                        }
+                                    }
                                 }}
                             />
                         </div>
 
-                        <LessonCardList
-                            lessons={lessons}
-                            onView={(lessonId) => {
-                                navigate(`/teacher/lesson/${lessonId}`);
-                            }}
-                        />
+                        {lessonsLoading ? (
+                            <div className="flex items-center justify-center py-12">
+                                <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                            </div>
+                        ) : lessons.length === 0 ? (
+                            <EmptyLessonsView />
+                        ) : (
+                            <LessonCardList
+                                lessons={lessons}
+                                onView={(lessonId) => {
+                                    navigate(`/teacher/lesson/${lessonId}`);
+                                }}
+                            />
+                        )}
                     </div>
                 )}
         </div>
