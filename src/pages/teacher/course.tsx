@@ -5,16 +5,11 @@ import CourseSettings from '@/features/courses/CourseSettings';
 import { useCourseContext } from '@/contexts/CourseContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, TextCursorInput, Check, X, Loader2, File } from 'lucide-react';
-
-interface Topic {
-    id: string;
-    name: string;
-}
+import { Plus, Loader2, File } from 'lucide-react';
+import { EmptyTopicsView } from '@/features/courses/components/EmptyTopicsView';
+import { TopicBadge, type Topic } from '@/features/courses/components/TopicBadge';
 
 interface LessonCard {
     id: string;
@@ -163,52 +158,19 @@ export default function Course() {
                 
                 {/* Empty state when no topics */}
                 {topics.length === 0 ? (
-                    <div className="flex  border-4xl flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-xl animate-in fade-in slide-in-from-bottom-5 duration-300">
-                        <div className="p-3 rounded-full bg-gray-50 border border-gray-200 animate-in zoom-in-50 duration-300 delay-150">
-                            <TextCursorInput className="w-8 h-8 text-gray-400" />
-                        </div>
-                        <p className="mt-3 text-gray-500 text-center text-sm animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200">
-                            füge ein neues Thema hinzu
-                        </p>
-                        <p className="text-xs text-gray-400 text-center mt-1 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-300">
-                            Es ist noch kein Thema vorhanden. Bitte nutzen Sie das Eingabefeld und klicken Sie auf das Plus-Symbol
-                        </p>
-                    </div>
+                    <EmptyTopicsView />
                 ) : (
                     /* Topics list */
                     <div className="flex flex-wrap gap-4">
                         {topics.map((topic, index) => (
-                            <Button
+                            <TopicBadge
                                 key={topic.id}
-                                onClick={() => toggleTopic(topic)}
-                                variant="secondary"
-                                className="flex items-center gap-2 rounded-full py-2 text-base font-semibold transition hover:scale-105 active:scale-95 duration-200 animate-in fade-in slide-in-from-bottom-2"
-                                style={{ animationDelay: `${index * 50}ms` }}
-                            >
-                                {selectedTopic?.id === topic.id && (
-                                    <Badge
-                                        variant="default"
-                                        className="rounded-full animate-in zoom-in-50 duration-200 hover:scale-95 active:scale-90 transition-all text-white p-0.5"
-                                    >
-                                        <Check className="w-4 h-4 text-white" />
-                                    </Badge>
-                                )}
-                                <span className="animate-in fade-in slide-in-from-top-1 duration-200">
-                                    {topic.name}
-                                </span>
-                                <Separator orientation="vertical" className="h-4 bg-black" />
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onDeleteTopic(topic);
-                                    }}
-                                    className="rounded-full hover:scale-105 active:scale-95 transition-all duration-200 h-6 w-6"
-                                >
-                                    <X className="w-4 h-4 text-red-500" />
-                                </Button>
-                            </Button>
+                                topic={topic}
+                                isSelected={selectedTopic?.id === topic.id}
+                                index={index}
+                                onToggle={toggleTopic}
+                                onDelete={onDeleteTopic}
+                            />
                         ))}
                     </div>
                 )}
