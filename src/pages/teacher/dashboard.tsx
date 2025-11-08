@@ -6,7 +6,8 @@ import TableView from '@/features/files/components/TableView';
 import { useState } from 'react';
 import { StudentCardList } from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
-import AstridAvatar from '@/assets/img/avatars/Astrid.png';
+import { useFullProfile } from '@/hooks/useFullProfile';
+import { useAvatarUrl } from '@/hooks/useAvatarUrl';
 
 const dummyCourses: any = [
    
@@ -24,6 +25,8 @@ const dummyFiles: any = [
 
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
+    const { profile, loading } = useFullProfile();
+    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url);
 
     const handleClickTab = (id: string) => {
         const currentTab = getDashboardTabs('teacher').filter(
@@ -36,14 +39,15 @@ export default function Dashboard() {
         console.log('id :>> ', id);
     }
 
+    if (loading) return null;
+
     return (
         <>
             <DashboardLayout
-                imageUrl={AstridAvatar}
-                userName="@Astrid"
-                email="astrid@wq-health.com"
-                linkedInUrl="linkedin.com/in/astrid"
-                description="Software Engineer passionate about web development and teaching. this is the new feature"
+                imageUrl={signedAvatarUrl || undefined}
+                userName={profile?.display_name || profile?.username || '@Teacher'}
+                email={profile?.email || undefined}
+                description={profile?.description || 'Welcome to your dashboard'}
                 role="teacher"
                 onClickTab={(tabId: string) => handleClickTab(tabId)}
             >

@@ -42,11 +42,11 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
                 }}
             >
                 <CardHeader className="items-center p-0">
-                    <CardTitle className="text-xl  font-light text-muted-foreground">
+                    <CardTitle className="text-xl text-gray-900">
                         Add New {type}
                     </CardTitle>
 
-                    <p className="text-sm text-muted-foreground mt-1 font-light">
+                    <p className="text-sm text-gray-500 mt-2 font-normal">
                         Create a new {type} to get started.
                     </p>
 
@@ -54,7 +54,7 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
 
                 <CardContent className="flex flex-col gap-8 w-full px-0">
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="course-title" className="font-light">{type} Title</Label>
+                        <Label htmlFor="course-title" className="font-normal text-gray-700">{type} Title</Label>
                         <Input
                             id={`${type}-title`}
                             placeholder={`${type} Title`}
@@ -66,14 +66,14 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="course-description" className="font-light">Course Description</Label>
+                        <Label htmlFor="course-description" className="font-normal text-gray-700">{type} Description</Label>
                         <Textarea
                             id="course-description"
-                            placeholder="Course Description"
+                            placeholder={`${type} Description`}
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             rows={3}
-                            className="h-28 resize-none font-light w-full"
+                            className="h-28 resize-none w-full"
                             required
                         />
                     </div>
@@ -94,7 +94,7 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
                         disabled={!title.trim() || !description.trim()}
                         className="w-full"
                     >
-                        Create Course
+                        Create {type.charAt(0).toUpperCase() + type.slice(1)}
                     </Button>
                 </CardFooter>
             </form>

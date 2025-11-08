@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase';
 export interface AuthData {
   email: string;
   password: string;
+  role?: string;
+
 }
 
 export interface LoginData {
@@ -26,21 +28,40 @@ export async function signUpUser(signUpData: AuthData): Promise<{
   session?: any;   // Supabase session object
   error?: string | null;
 }> {
+  if (!signUpData.role) {
+    return {
+      success: false,
+      user: null,
+      session: null,
+      error: "Role must be set before signing up.",
+    };
+  }
   try {
     const { data, error } = await supabase.auth.signUp({
       email: signUpData.email,
       password: signUpData.password,
       options: {
         emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
+        data: {
+          role: signUpData.role, 
+        },
       },
     });
 
+    if (error) {
+      return {
+        success: false,
+        user: null,
+        session: null,
+        error: error.message,
+      };
+    }
 
     return {
-      success: !error,
+      success: true,
       user: data?.user ?? null,
       session: data?.session ?? null,
-      error: error?.message ?? null,
+      error: null,
     };
   } catch (err: any) {
     return {
@@ -65,7 +86,6 @@ export async function loginUser(loginData: AuthData): Promise<{
       password: loginData.password,
     });
 
-    console.log('Login result:', data);
 
     return {
       success: !error,
@@ -106,7 +126,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
 }
 
 /**
- * Verify email with token
+ * Verify email with tokenx
  */
 export async function verifyEmail(token: string): Promise<void> {
   // TODO: Implement Supabase email verification
@@ -119,5 +139,57 @@ export async function verifyEmail(token: string): Promise<void> {
 export async function getCurrentUser(): Promise<AuthResponse | null> {
   // TODO: Implement Supabase get current user
   return null;
+}
+
+/**
+ * Get user profile from 'profiles' table
+ * Returns null if profile doesn't exist (instead of throwing error)
+ */
+export async function getProfile(userId: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('user_id, role, is_onboarded')
+    .eq('user_id', userId)
+    .maybeSingle(); // ✅ Returns null if no rows found, instead of throwing error
+  
+  if (error) {
+    console.error('Error fetching profile:', error);
+    throw error;
+  }
+  
+  return data; // Will be null if profile doesn't exist
+}
+
+export async function updateProfile(userId: string, payload: Partial<{ display_name: string; avatar_url: string; is_onboarded: boolean; linkedin_url: string; instagram_url: string; }>) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(payload)
+    .eq('user_id', userId)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertProfile(
+  userId: string, 
+  payload: Partial<{ 
+    email: string;
+    username: string;
+    description: string;
+    display_name: string; 
+    avatar_url: string; 
+    is_onboarded: boolean; 
+    role: string | null;
+
+  }>
+) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert({ user_id: userId, ...payload }, { onConflict: 'user_id' })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 

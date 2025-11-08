@@ -5,6 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 
+interface InstitutionLinks {
+    website?: string;
+    twitter?: string;
+    facebook?: string;
+    instagram?: string;
+}
+
 interface InstitutionProps {
     imageUrl?: string;
     name?: string;
@@ -14,6 +21,7 @@ interface InstitutionProps {
     lighterFirst?: string;
     lighterSecond?: string;
     street?: string;
+    links?: InstitutionLinks;
     onFollowClick?: () => void;
     children?: React.ReactNode;
 }
@@ -24,9 +32,23 @@ export default function Institution({
     lighterFirst = 'Be workflow',
     lighterSecond = 'including same great deal, annually.',
     street = 'Masterstroke 10 12345 Berlin',
+    links,
     onFollowClick,
     children,
 }: InstitutionProps) {
+    // Helper function to clean URLs (remove angle brackets if present)
+    const cleanUrl = (url?: string): string | undefined => {
+        if (!url) return undefined;
+        return url.replace(/^<|>$/g, '');
+    };
+
+    // Get all available links
+    const availableLinks = [
+        { key: 'website', label: 'Website', url: cleanUrl(links?.website) },
+        { key: 'twitter', label: 'Twitter', url: cleanUrl(links?.twitter) },
+        { key: 'facebook', label: 'Facebook', url: cleanUrl(links?.facebook) },
+        { key: 'instagram', label: 'Instagram', url: cleanUrl(links?.instagram) },
+    ].filter(link => link.url);
     return (
         <PageWrapper className="flex flex-col gap-8 items-start w-fit">
             <div className="flex flex-col gap-4 items-start ">
@@ -43,6 +65,27 @@ export default function Institution({
                     <MapPin className=" h-4 w-4" />
                     <p>{street}</p>
                 </Badge>
+                
+                {availableLinks.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 pt-2">
+                        {availableLinks.map((link) => (
+                            <Button
+                                key={link.key}
+                                variant="link"
+                                asChild
+                                className="p-0 h-auto text-sm"
+                            >
+                                <a
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {link.label}
+                                </a>
+                            </Button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <Button

@@ -7,7 +7,9 @@ import { Edit2Icon } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
-import AstridAvatar from '@/assets/img/avatars/Astrid.png';
+
+const AVATAR_PLACEHOLDER_SRC = "https://github.com/shadcn.png";
+
 
 interface SettingsLayoutProps {
     children?: React.ReactNode;
@@ -27,7 +29,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                         <div className="relative">
                             <Avatar className="w-24 h-24 rounded-full">
                                 <AvatarImage
-                                    src={AstridAvatar}
+                                    src={AVATAR_PLACEHOLDER_SRC}
                                     alt="avatar"
                                 />
                                 <AvatarFallback className="text-xl">

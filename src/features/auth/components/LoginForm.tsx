@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import {cn} from '@/lib/utils';
+import {Button} from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
@@ -7,26 +7,32 @@ import {
     FieldLabel,
     FieldSeparator,
 } from '@/components/ui/field';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
-import { MoveLeft, Presentation, GraduationCap } from 'lucide-react';
-import { useState } from 'react';
-import { loginUser } from '../api/authApi';
+import {useNavigate, useLocation} from 'react-router-dom';
+import {Input} from '@/components/ui/input';
+import {MoveLeft, Presentation, UserIcon} from 'lucide-react';
+import {useState} from 'react';
+import {loginUser} from '../api/authApi';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
+import {supabase} from '@/lib/supabase';
+import {useUser} from '@/contexts/UserContext';
+import {toast} from 'sonner';
 
-export default function LoginForm({ className }: React.ComponentProps<'form'>) {
+export default function LoginForm({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
     const location = useLocation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const { t } = useTranslation('auth');
-    const role = (location.state as { role?: string })?.role || '';
-    
+    const {t} = useTranslation('auth');
+    const {pendingRole} = useUser();
+
+    // Single source of truth: context first, then fallback to location.state
+    const role = pendingRole || (location.state as {role?: string})?.role || '';
+
     // Select icon based on role
-    const RoleIcon = role === 'teacher' ? Presentation : GraduationCap;
+    const RoleIcon = role === 'teacher' ? Presentation : UserIcon;
 
     const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -35,7 +41,7 @@ export default function LoginForm({ className }: React.ComponentProps<'form'>) {
     };
 
     const goToSignUp = () => {
-        navigate('/auth/signup', { state: { role } });
+        navigate('/auth/signup');
     };
 
     async function handleLogin(e: React.FormEvent) {
@@ -47,12 +53,49 @@ export default function LoginForm({ className }: React.ComponentProps<'form'>) {
             console.log('responseData :>> ', responseData);
 
             if (responseData.error) {
-                throw new Error(responseData.error);
+                toast.error('Login Failed', {
+                    description: responseData.error || 'Invalid email or password',
+                });
+                setIsLoading(false);
+                return;
             }
 
-            navigate(`/teacher/dashboard`);
+            if (responseData.success && responseData.session) {
+                try {
+                    const profile = await supabase
+                        .from('profiles')
+                        .select('user_id, role, is_onboarded')
+                        .eq('user_id', responseData.user.id)
+                        .maybeSingle();
+
+                    console.log('profile :>> ', profile);
+
+                    if (!profile?.data?.is_onboarded || !profile?.data?.role) {
+                        toast.info('Complete Your Profile', {
+                            description: 'Please complete the onboarding process',
+                        });
+                        navigate('/onboarding');
+                    } else {
+                        const userRole = profile.data.role;
+                        toast.success('Welcome Back!', {
+                            description: `Logging you in as ${userRole}`,
+                            duration: 2000,
+                        });
+                        navigate(`/${userRole}/dashboard`);
+                    }
+                } catch (error) {
+                    console.error('Profile error:', error);
+                    toast.warning('Profile Not Found', {
+                        description: 'Please complete your profile setup',
+                    });
+                    navigate('/onboarding'); // Fallback
+                }
+            }
         } catch (error) {
             console.error('Login error:', error);
+            toast.error('Login Error', {
+                description: 'An unexpected error occurred. Please try again.',
+            });
         } finally {
             setIsLoading(false);
         }

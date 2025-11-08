@@ -5,15 +5,20 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardDescription } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useUser } from '@/contexts/UserContext';
 
 export default function RoleSelection() {
     const [selectedRole, setSelectedRole] = useState<string>('');
     const navigate = useNavigate();
     const { t } = useTranslation('roleSelection');
+    const { setPendingRole } = useUser();
 
     const handleContinue = () => {
         console.log('selectedRole :>> ', selectedRole);
-        if (selectedRole) navigate('/auth/signup', { state: { role: selectedRole } });
+        if (selectedRole) {
+            setPendingRole(selectedRole);
+            navigate('/auth/signup');
+        }
     };
 
     return (

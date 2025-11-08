@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -8,58 +8,65 @@ import {
     InputGroupAddon,
     InputGroupInput,
 } from '@/components/ui/input-group';
+import { supabase } from '@/lib/supabase';
+import EmptyInstitutionView from './EmptyInstitutionView';
+import PulsarLoading from '@/components/ui/pulsar-loading';
 
-const institutions = [
-    {
-        id: 1,
-        name: 'Reutlingen University',
-        description: 'University of Applied Sciences in Reutlingen, Germany',
-        location: 'Reutlingen, Germany',
-    },
-    {
-        id: 2,
-        name: 'University of Stuttgart',
-        description: 'Leading technical university in Baden-Württemberg',
-        location: 'Stuttgart, Germany',
-    },
-    {
-        id: 3,
-        name: 'Tübingen University',
-        description: 'Traditional university with strong research focus',
-        location: 'Tübingen, Germany',
-    },
-    {
-        id: 4,
-        name: 'Karlsruhe Institute of Technology',
-        description: 'Research university focusing on engineering and natural sciences',
-        location: 'Karlsruhe, Germany',
-    },
-    {
-        id: 5,
-        name: 'University of Heidelberg',
-        description: 'Germany\'s oldest university, founded in 1386',
-        location: 'Heidelberg, Germany',
-    },
-];
+interface Institution {
+    id: string;
+    name: string;
+    description: string | null;
+    email: string | null;
+    address: Record<string, any> | null;
+    website: string | null;
+}
 
 interface StepInstitutionProps {
-    onNext: (selectedInstitutions: typeof institutions) => void;
+    onNext: (selectedInstitutions: Institution[]) => void;
     onBack: () => void;
-    initialData?: number[];
+    initialData?: string[];
 }
 
 export default function StepInstitution({ onNext, onBack, initialData }: StepInstitutionProps) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedIds, setSelectedIds] = useState<number[]>(initialData || []);
+    const [selectedIds, setSelectedIds] = useState<string[]>(initialData || []);
+    const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Fetch institutions from Supabase
+    useEffect(() => {
+        async function fetchInstitutions() {
+            try {
+                const { data, error } = await supabase
+                    .from('institutions')
+                    .select('id, name, description, email, address, website')
+                    .order('name', { ascending: true });
+
+                if (error) {
+                    console.error('Error fetching institutions:', error);
+                    setInstitutions([]);
+                } else {
+                    setInstitutions(data || []);
+                }
+            } catch (err) {
+                console.error('Unexpected error fetching institutions:', err);
+                setInstitutions([]);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchInstitutions();
+    }, []);
 
     const filteredInstitutions = institutions.filter(
         (inst) =>
             inst.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            inst.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            inst.location.toLowerCase().includes(searchTerm.toLowerCase())
+            (inst.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+            (inst.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
     );
 
-    const toggleInstitution = (id: number) => {
+    const toggleInstitution = (id: string) => {
         setSelectedIds((prev) =>
             prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
         );
@@ -69,6 +76,43 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
         const selected = institutions.filter((inst) => selectedIds.includes(inst.id));
         onNext(selected);
     };
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[300px]">
+                <PulsarLoading variant="black" size="xl" speed={1750} />
+            </div>
+        );
+    }
+
+    // Empty state
+    if (institutions.length === 0) {
+        return (
+            <div className="flex flex-col gap-8">
+                <div className="text-center">
+                    <h2 className="text-3xl font-light mb-2">Follow Institutions</h2>
+                    <p className="text-muted-foreground text-sm">
+                        Select institutions to follow and get all updates
+                    </p>
+                </div>
+                <EmptyInstitutionView />
+                <div className="flex justify-between gap-4 py-11">
+                    <Button type="button" variant="outline" onClick={onBack}>
+                        Back
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="default"
+                        onClick={handleContinue}
+                        disabled={selectedIds.length === 0}
+                    >
+                        Continue
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-8">
@@ -125,9 +169,11 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
                                             <CardTitle className="text-xl mb-1">
                                                 {institution.name}
                                             </CardTitle>
-                                            <CardDescription className="text-sm">
-                                                {institution.description}
-                                            </CardDescription>
+                                            {institution.description && (
+                                                <CardDescription className="text-sm">
+                                                    {institution.description}
+                                                </CardDescription>
+                                            )}
                                         </div>
                                         {isSelected && (
                                             <div className="flex-shrink-0 ml-4">
@@ -138,10 +184,17 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
                                         )}
                                     </div>
                                 </CardHeader>
-                                <CardContent>
-                                    <p className="text-xs text-muted-foreground">
-                                        📍 {institution.location}
-                                    </p>
+                                <CardContent className="flex flex-col gap-2">
+                                    {institution.email && (
+                                        <p className="text-xs text-muted-foreground">
+                                            ✉️ {institution.email}
+                                        </p>
+                                    )}
+                                    {institution.website && (
+                                        <p className="text-xs text-muted-foreground">
+                                            🌐 {institution.website}
+                                        </p>
+                                    )}
                                 </CardContent>
                             </Card>
                         );

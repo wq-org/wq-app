@@ -3,7 +3,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import confetti from 'canvas-confetti';
+import { useState } from 'react';
+import { upsertProfile } from '@/features/auth/api/authApi';
+import { useUser } from '@/contexts/UserContext';
+import { supabase } from '@/lib/supabase';
+import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import SuccessPage from './SuccessPage';
 
 interface StepFinishProps {
     onBack: () => void;
@@ -19,30 +24,95 @@ interface StepFinishProps {
         };
     };
     institutions: Array<{
-        id: number;
+        id: string;
         name: string;
-        description: string;
-        location: string;
+        description?: string | null;
+        email?: string | null;
+        website?: string | null;
     }>;
 }
 
 export default function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
-    const handleFinish = () => {
-        // Trigger confetti animation
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
+    const { session, pendingRole, refreshProfile } = useUser();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    
+    // Generate signed URL for displaying avatar (accountData.avatar.src is just the path)
+    const { url: signedAvatarUrl } = useAvatarUrl(accountData.avatar.src);
 
-        // Small delay to let confetti animation play before navigating
-        setTimeout(() => {
-            onFinish();
-        }, 1500);
+    const handleFinish = async () => {
+        if (!session?.user) {
+            console.error('No authenticated user found');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        if (!pendingRole) {
+            setIsSubmitting(false);
+            // Show error or prevent submission if role is not selected
+            console.error('Role must be selected before finishing onboarding.');
+                return;
+        }
+
+        await refreshProfile();
+
+        try {
+            // Upsert profile with all onboarding data
+            await upsertProfile(session.user.id, {
+                email: session.user.email,
+                description: accountData.description,
+                display_name: accountData.displayName,
+                avatar_url: accountData.avatar.src,
+                role: pendingRole,
+                is_onboarded: true,
+            });
+
+            // Link selected institutions to user
+            if (institutions.length > 0) {
+                const rows = institutions.map((inst) => ({
+                    user_id: session.user.id,
+                    institution_id: inst.id,
+                }));
+
+                // Use upsert to avoid duplicate key errors
+                const { error: linkErr } = await supabase
+                    .from('user_institutions')
+                    .upsert(rows, { 
+                        onConflict: 'user_id,institution_id',
+                        ignoreDuplicates: false  // Update joined_at if already exists
+                    });
+
+                if (linkErr) {
+                    console.error('Error linking institutions:', linkErr);
+                    // Don't fail onboarding if institution linking fails
+                }
+            }
+
+            // Show success dialog which will trigger confetti
+            setShowSuccess(true);
+
+            // Call onFinish callback after dialog closes
+            setTimeout(() => {
+                onFinish();
+            }, 7000);
+        } catch (error) {
+            console.error('Error completing onboarding:', error);
+            setIsSubmitting(false);
+            // TODO: Show error to user
+        }
     };
 
     return (
-        <div className="flex flex-col gap-8">
+        <>
+            <SuccessPage
+                isOpen={showSuccess}
+                title="Welcome to WQ Health! 🎉"
+                description="Your account has been set up successfully. You are now ready to start your journey with us."
+                onClickHandler={onFinish}
+            />
+
+            <div className="flex flex-col gap-8">
             <div className="text-center">
                 <h2 className="text-3xl font-light mb-2">All Set! 🎉</h2>
                 <p className="text-muted-foreground text-sm">
@@ -54,9 +124,15 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
             <Card className="shadow-lg">
                 <CardHeader>
                     <div className="flex items-center gap-4">
-                        <Avatar className="w-20 h-20 border-2 border-primary/20">
-                            <AvatarImage src={accountData.avatar.src} alt={accountData.avatar.name} />
-                            <AvatarFallback>{accountData.avatar.name.charAt(0)}</AvatarFallback>
+                        <Avatar className="w-20 h-20">
+                            <AvatarImage
+                                src={signedAvatarUrl || accountData.avatar.src}
+                                alt={accountData.avatar.name}
+                                className="object-cover"
+                            />
+                            <AvatarFallback>
+                                {accountData.avatar.name.charAt(0)}
+                            </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
@@ -121,11 +197,13 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
                     variant="default" 
                     onClick={handleFinish} 
                     className="gap-2"
+                    disabled={isSubmitting}
                 >
-                    Finish Setup 🎉
+                    {isSubmitting ? 'Saving...' : 'Finish Setup 🎉'}
                 </Button>
             </div>
         </div>
+        </>
     );
 }
 

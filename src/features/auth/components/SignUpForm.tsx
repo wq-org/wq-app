@@ -13,17 +13,23 @@ import {MoveLeft, Presentation, GraduationCap} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {signUpUser} from '../api/authApi';
+import {useUser} from '@/contexts/UserContext';
+import DotWaveLoader from '@/components/common/DotWaveLoader';
+import {toast} from 'sonner';
 
 export default function SignUpForm({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
     const location = useLocation();
     const {t} = useTranslation('auth');
+    const {pendingRole} = useUser();
 
-    const role = (location.state as { role?: string })?.role || '';
+    // Single source of truth: context first, then fallback to location.state
+    const role = pendingRole || (location.state as { role?: string })?.role || '';
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -32,7 +38,7 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
     };
 
     const goToLogin = () => {
-        navigate('/auth/login', { state: { role } });
+        navigate('/auth/login');
     };
 
     // Select icon based on role
@@ -47,16 +53,31 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
 
     async function handleOnSubmitSignUp(e: React.FormEvent) {
         e.preventDefault();
+        setIsLoading(true);
 
-        // Only logging out everything on handleOnSubmit
         try {
-            console.log('Sign up with:', {email, password});
-            const responseData = await signUpUser({email, password});
-            console.log('responseData :>> ', responseData);
+            console.log('Sign up with:', { email, password, role});
+            const responseData = await signUpUser({email, password, role});
 
-            navigate('/auth/login');
+            if (responseData.success) {
+                toast.success('Account Created!', {
+                    description: 'Welcome to WQ Health. Let\'s complete your profile.',
+                });
+                // Redirect to onboarding after successful signup
+                navigate('/onboarding');
+            } else {
+                console.error('Signup failed:', responseData.error);
+                toast.error('Sign Up Failed', {
+                    description: responseData.error || 'Unable to create account. Please try again.',
+                });
+            }
         } catch (error) {
             console.error('Sign up error:', error);
+            toast.error('Sign Up Error', {
+                description: 'An unexpected error occurred. Please try again.',
+            });
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -147,8 +168,16 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
                         </Field>
 
                         <Field>
-                            <Button type="submit" disabled={!isFormValid}>
-                                {t('signUp.submit')}
+                            <Button 
+                                type="submit" 
+                                disabled={!isFormValid || isLoading}
+                                className="flex items-center cursor-pointer"
+                            >
+                                {isLoading ? (
+                                    <DotWaveLoader variant="white" />
+                                ) : (
+                                    t('signUp.submit')
+                                )}
                             </Button>
                         </Field>
 

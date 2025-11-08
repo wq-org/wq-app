@@ -9,11 +9,15 @@ import {
 } from '@/components/ui/stepper';
 import { CheckIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StepAccount from './stepAccount';
 import StepInstitution from './stepInstitution';
 import StepFinish from './stepFinish';
-
+import { useUser } from '@/contexts/UserContext';
+import { toast } from 'sonner';
 export default function Onboarding() {
+    const navigate = useNavigate();
+    const { pendingRole } = useUser();
     const [step, setStep] = useState(1);
     const [accountData, setAccountData] = useState<any>(null);
     const [institutions, setInstitutions] = useState<any[]>([]);
@@ -30,7 +34,21 @@ export default function Onboarding() {
 
     const handleFinish = () => {
         console.log('Onboarding Complete!', { accountData, institutions });
-        // Navigate to dashboard or wherever needed
+
+        // If user has a role, navigate to their dashboard, else show error toast and advise to refresh/contact support
+        console.log('pendingRole :>> ', pendingRole);
+        const role = pendingRole;
+        if (!role) {
+            toast.error('Something went wrong', {
+                description: 'Your account is missing a role. Please refresh the page. If this keeps happening, contact support.',
+                action: {
+                    label: 'Refresh',
+                    onClick: () => window.location.reload(),
+                },
+            });
+        } else {
+            navigate(`/${role}/dashboard`);
+        }
     };
 
     return (
