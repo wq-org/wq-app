@@ -25,7 +25,8 @@ import CommandAddDialog from './CommandAddDialog';
 
 export default function CommandPalette({
     role,
-    className
+    className,
+    onCourseCreated
 }: CommandPaletteProps) {
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState<string | undefined>(undefined);
@@ -310,7 +311,7 @@ export default function CommandPalette({
                                     <CommandFeedbackDialog />
                                 )}
                                 {activeDialog === 'add' && (
-                                    <CommandAddDialog type="course" />
+                                    <CommandAddDialog type="course" onSuccess={onCourseCreated} />
                                 )}
                                 {activeDialog === 'add' && role === 'admin' && (
                                     <CommandAddDialog type="institution" />

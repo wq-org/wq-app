@@ -3,17 +3,14 @@ import CommandPalette from '@/features/command-palette/components/CommandPalette
 import CourseCardList from '@/features/courses/CourseCardList';
 import { getDashboardTabs } from '@/lib/dashboard-config';
 import TableView from '@/features/files/components/TableView';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StudentCardList } from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
 import { useUser } from '@/contexts/UserContext';
 import { useAvatarUrl } from '@/hooks/useAvatarUrl';
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
 import PulsarLoading from '@/components/ui/pulsar-loading';
-
-const dummyCourses: any = [
-   
-];
+import { getTeacherCourses } from '@/features/auth/api/authApi';
 
 const dummyStudents: any = [
  
@@ -26,8 +23,33 @@ const dummyFiles: any = [
 
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
+    const [courses, setCourses] = useState<any[]>([]);
+    const [coursesLoading, setCoursesLoading] = useState(true);
     const { profile, loading } = useUser();
     const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
+
+    // Fetch courses for the teacher
+    const fetchCourses = useCallback(async () => {
+        if (!profile?.user_id) return;
+        
+        setCoursesLoading(true);
+        try {
+            const data = await getTeacherCourses(profile.user_id);
+            setCourses(data);
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+            setCourses([]);
+        } finally {
+            setCoursesLoading(false);
+        }
+    }, [profile?.user_id]);
+
+    // Fetch courses when profile is loaded
+    useEffect(() => {
+        if (profile?.user_id && !loading) {
+            fetchCourses();
+        }
+    }, [profile?.user_id, loading, fetchCourses]);
 
     const handleClickTab = (id: string) => {
         const currentTab = getDashboardTabs('teacher').filter(
@@ -59,15 +81,18 @@ export default function Dashboard() {
                 onClickTab={(tabId: string) => handleClickTab(tabId)}
             >
                 {selectedTab === 'courses' && (
-                    dummyCourses.length === 0 ? (
-                            <EmptyCourseView
-                            />
-                        ) : (
-                            <CourseCardList
-                                courses={dummyCourses}
-                                onCourseView={handleCardView}
-                            />
-                        )
+                    coursesLoading ? (
+                        <div className="flex items-center justify-center py-12">
+                            <PulsarLoading variant="gray" size="lg" speed={1750} />
+                        </div>
+                    ) : courses.length === 0 ? (
+                        <EmptyCourseView />
+                    ) : (
+                        <CourseCardList
+                            courses={courses}
+                            onCourseView={handleCardView}
+                        />
+                    )
                 )}
 
                 {selectedTab === 'files' && (
@@ -78,7 +103,7 @@ export default function Dashboard() {
                 )}
             </DashboardLayout>
 
-            <CommandPalette role="teacher" />
+            <CommandPalette role="teacher" onCourseCreated={fetchCourses} />
         </>
     );
 }

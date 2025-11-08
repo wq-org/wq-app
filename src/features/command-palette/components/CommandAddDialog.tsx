@@ -1,8 +1,8 @@
-import {useState} from "react";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
     Card,
     CardHeader,
@@ -10,20 +10,52 @@ import {
     CardContent,
     CardFooter
 } from "@/components/ui/card";
+import { createCourse, createInstitution } from "@/features/auth/api/authApi";
+import { useUser } from "@/contexts/UserContext";
 
-const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
+// This function calls create based on type
+const createByType = async (
+    type: "course" | "institution",
+    teacherId: string | null,
+    data: { title: string; description: string },
+    onSuccess?: () => void
+) => {
+    switch (type) {
+        case "course":
+            if (!teacherId) {
+                throw new Error("Teacher ID is required to create a course");
+            }
+            const result = await createCourse(teacherId, data);
+            onSuccess?.();
+            return result;
+        case "institution":
+            return await createInstitution(data);
+        default:
+            throw new Error("Unknown type");
+    }
+};
+
+const CommandAddDialog = ({ type, onSuccess }: { type: 'course' | 'institution'; onSuccess?: () => void }) => {
+    const { profile } = useUser();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleCreate = () => {
-        // Here would go your create logic or API call
-        // For now, just log
-        console.log("Create Course", {
-            title,
-            description,
-        });
-        setTitle("");
-        setDescription("");
+    const handleCreate = async () => {
+        setLoading(true);
+        try {
+            const teacherId = type === 'course' ? profile?.user_id || null : null;
+            const result = await createByType(type, teacherId, { title, description }, onSuccess);
+            // You might want to handle result (show notification, close dialog etc)
+            console.log("Created", { type, result });
+            setTitle("");
+            setDescription("");
+        } catch (error) {
+            // Handle error (toast etc)
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancel = () => {
@@ -36,9 +68,9 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
         <Card className="max-w-md mx-auto border-0 shadow-none">
             <form
                 className="flex flex-col gap-5"
-                onSubmit={e => {
+                onSubmit={async (e) => {
                     e.preventDefault();
-                    handleCreate();
+                    await handleCreate();
                 }}
             >
                 <CardHeader className="items-center p-0">
@@ -49,12 +81,11 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
                     <p className="text-sm text-gray-500 mt-2 font-normal">
                         Create a new {type} to get started.
                     </p>
-
                 </CardHeader>
 
                 <CardContent className="flex flex-col gap-8 w-full px-0">
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="course-title" className="font-normal text-gray-700">{type} Title</Label>
+                        <Label htmlFor={`${type}-title`} className="font-normal text-gray-700">{type} Title</Label>
                         <Input
                             id={`${type}-title`}
                             placeholder={`${type} Title`}
@@ -66,9 +97,9 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="course-description" className="font-normal text-gray-700">{type} Description</Label>
+                        <Label htmlFor={`${type}-description`} className="font-normal text-gray-700">{type} Description</Label>
                         <Textarea
-                            id="course-description"
+                            id={`${type}-description`}
                             placeholder={`${type} Description`}
                             value={description}
                             onChange={e => setDescription(e.target.value)}
@@ -85,16 +116,17 @@ const CommandAddDialog = ({ type }: { type: 'course' | 'institution' }) => {
                         type="button"
                         onClick={handleCancel}
                         className="w-full"
+                        disabled={loading}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         variant="default"
-                        disabled={!title.trim() || !description.trim()}
+                        disabled={!title.trim() || !description.trim() || loading}
                         className="w-full"
                     >
-                        Create {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {loading ? "Creating..." : `Create ${type.charAt(0).toUpperCase() + type.slice(1)}`}
                     </Button>
                 </CardFooter>
             </form>

@@ -38,4 +38,5 @@ export interface CommandPaletteProps {
     role: string;
     type?: string;
     className?: string;
+    onCourseCreated?: () => void;
 }

@@ -212,3 +212,83 @@ export async function upsertProfile(
   return data;
 }
 
+
+
+/**
+ * Get user's first institution_id from user_institutions table
+ */
+export async function getUserInstitutionId(userId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('user_institutions')
+    .select('institution_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle();
+  
+  if (error) {
+    // If no rows found, that's okay - user might not have an institution yet
+    if (error.code === 'PGRST116') {
+      return null;
+    }
+    console.error('Error fetching user institution:', error);
+    return null;
+  }
+  
+  return data?.institution_id || null;
+}
+
+/**
+ * Create a new course
+ */
+export async function createCourse(
+  teacherId: string,
+  { title, description }: { title: string; description: string }
+) {
+  // Get teacher's institution_id
+  const institutionId = await getUserInstitutionId(teacherId);
+  
+  const { data, error } = await supabase
+    .from('courses')
+    .insert({
+      title,
+      description,
+      teacher_id: teacherId,
+      institution_id: institutionId,
+      is_published: false,
+    })
+    .select()
+    .single();
+  
+  if (error) {
+    console.error('Error creating course:', error);
+    throw error;
+  }
+  
+  return data;
+}
+
+/**
+ * Get all courses for a teacher
+ */
+export async function getTeacherCourses(teacherId: string) {
+  const { data, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('teacher_id', teacherId)
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching courses:', error);
+    throw error;
+  }
+  
+  return data || [];
+}
+
+// Dummy create function for institution (keep for now)
+export const createInstitution = async ({ title, description }: { title: string; description: string }) => {
+  // Replace with actual institution creation logic/API call
+  console.log("Creating Institution", { title, description });
+  // Simulate API delay
+  return Promise.resolve({ ok: true, id: Math.random().toString(36).substring(2) });
+};
