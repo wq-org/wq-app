@@ -42,20 +42,21 @@ export default function CourseCard({
                     className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
                 />
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 items-start p-6 -mt-6">
-                <Avatar className="w-12 h-12 rounded-full">
-                    {teacherAvatar ? (
-                        <AvatarImage src={teacherAvatar} alt="avatar" />
-                    ) : (
-                        <AvatarFallback className="text-xl">
-                            {teacherInitials || 'U'}
-                        </AvatarFallback>
-                    )}
-                </Avatar>
-                <div className="flex flex-col gap-1 w-full">
+            <CardContent className="flex flex-col p-6">
+                {/* Header */}
+                <div className="flex items-center gap-3">
+                    <Avatar className="w-12 h-12 rounded-full">
+                        {teacherAvatar ? (
+                            <AvatarImage src={teacherAvatar} alt="avatar" />
+                        ) : (
+                            <AvatarFallback className="text-xl">
+                                {teacherInitials || 'U'}
+                            </AvatarFallback>
+                        )}
+                    </Avatar>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <CardTitle className="text-xl font-semibold text-left w-full line-clamp-1 overflow-hidden text-ellipsis">
+                            <CardTitle className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis">
                                 {title}
                             </CardTitle>
                         </TooltipTrigger>
@@ -63,13 +64,17 @@ export default function CourseCard({
                             <p className="max-w-xs">{title}</p>
                         </TooltipContent>
                     </Tooltip>
-                    <CardDescription className="text-gray-500 text-left w-full line-clamp-3 overflow-hidden text-ellipsis">
+                </div>
+
+                {/* Description area that can stretch */}
+                <div className='flex flex-col gap-3'>
+                    <CardDescription className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
                         {description}
                     </CardDescription>
-                </div>
-                <div className="flex justify-between w-full items-center">
-                    <Button className='cursor-pointer' onClick={() => onView?.(id)}>View</Button>
-
+                    {/* Button pinned to bottom */}
+                    <Button className="mt-auto w-fit cursor-pointer" onClick={() => onView?.(id)}>
+                        View
+                    </Button>
                 </div>
             </CardContent>
         </Card>

@@ -285,6 +285,61 @@ export async function getTeacherCourses(teacherId: string) {
   return data || [];
 }
 
+/**
+ * Get a single course by ID
+ */
+export async function getCourseById(courseId: string) {
+  const { data, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('id', courseId)
+    .single();
+  
+  if (error) {
+    console.error('Error fetching course:', error);
+    throw error;
+  }
+  
+  return data;
+}
+
+/**
+ * Update a course
+ */
+export async function updateCourse(
+  courseId: string,
+  updates: { title?: string; description?: string; is_published?: boolean }
+) {
+  const { data, error } = await supabase
+    .from('courses')
+    .update(updates)
+    .eq('id', courseId)
+    .select()
+    .single();
+  
+  if (error) {
+    console.error('Error updating course:', error);
+    throw error;
+  }
+  
+  return data;
+}
+
+/**
+ * Delete a course
+ */
+export async function deleteCourse(courseId: string) {
+  const { error } = await supabase
+    .from('courses')
+    .delete()
+    .eq('id', courseId);
+  
+  if (error) {
+    console.error('Error deleting course:', error);
+    throw error;
+  }
+}
+
 // Dummy create function for institution (keep for now)
 export const createInstitution = async ({ title, description }: { title: string; description: string }) => {
   // Replace with actual institution creation logic/API call

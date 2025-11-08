@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import AppWrapper from '@/components/layout/AppWrapper';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import CourseLayout from '@/components/layout/CourseLayout';
+import CourseSettings from '@/features/courses/CourseSettings';
+import { useCourseContext } from '@/contexts/CourseContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
@@ -73,10 +75,22 @@ const dummyLessons: LessonCard[] = [
     },
 ];
 export default function Course() {
+    const { id } = useParams<{ id: string }>();
+    const { fetchCourseById, selectedCourse } = useCourseContext();
     const [newTopic, setNewTopic] = useState('');
     const [topics, setTopics] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
     const [loading, setLoading] = useState(false);
+
+    // Fetch and store course in context when component mounts or id changes
+    useEffect(() => {
+        if (id) {
+            // Only fetch if we don't already have this course selected
+            if (!selectedCourse || selectedCourse.id !== id) {
+                fetchCourseById(id);
+            }
+        }
+    }, [id, fetchCourseById, selectedCourse]);
 
     const addTopic = async () => {
         if (!newTopic.trim()) return;
@@ -114,9 +128,12 @@ export default function Course() {
 
 
 
-    return (
-        <AppWrapper role="teacher">
-            <div className="flex flex-col gap-6 max-w-4xl mx-auto p-6">
+    if (!id) {
+        return <div>Course not found</div>;
+    }
+
+    const overviewContent = (
+        <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-4">
                     <Input
                         value={newTopic}
@@ -263,7 +280,14 @@ export default function Course() {
                         </div>
                     </div>
                 )}
-            </div>
-        </AppWrapper>
+        </div>
+    );
+
+    return (
+        <CourseLayout
+            courseId={id}
+            overviewContent={overviewContent}
+            settingsContent={<CourseSettings courseId={id} />}
+        />
     );
 }
