@@ -24,6 +24,7 @@ import AdminDashboard from './pages/admin/dashboard';
 
 import {UserProvider} from './contexts/UserContext';
 import {CourseProvider} from './contexts/CourseContext';
+import {LessonProvider} from './contexts/LessonContext';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
@@ -32,8 +33,9 @@ function App() {
     return (
         <UserProvider>
             <CourseProvider>
-                <UserContextProvider>
-                    <Toaster />
+                <LessonProvider>
+                    <UserContextProvider>
+                        <Toaster />
                 <Routes>
                     <Route path="/" element={<RoleAuth />} />
 
@@ -146,6 +148,7 @@ function App() {
                     <Route path="*" element={<Error404 />} />
                 </Routes>
                 </UserContextProvider>
+                </LessonProvider>
             </CourseProvider>
         </UserProvider>
     );

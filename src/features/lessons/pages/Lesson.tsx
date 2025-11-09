@@ -1,42 +1,47 @@
-// import { useMemo, useState } from 'react';
-// import YooptaEditor, { createYooptaEditor } from '@yoopta/editor';
-// import type { YooptaContentValue } from '@yoopta/editor';
-// import Paragraph from '@yoopta/paragraph';
-// import { HeadingOne } from '@yoopta/headings';
-import AppWrapper from '@/components/layout/AppWrapper';
-import { Separator } from '@/components/ui/separator';
+import { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
-
-// const plugins = [Paragraph, HeadingOne];
+import { useLessonContext } from '@/contexts/LessonContext';
+import LessonLayout from '@/components/layout/LessonLayout';
+import LessonSettings from '@/features/lessons/components/LessonSettings';
+import { Separator } from '@/components/ui/separator';
 
 export default function Lesson() {
     const { id } = useParams<{ id: string }>();
     const location = useLocation();
-    const lessonTitle = (location.state as { title?: string })?.title || "What's your Page about?";
+    const { lesson, fetchLessonById, createLesson } = useLessonContext();
 
-    // const editor = useMemo(() => createYooptaEditor(), []);
-    // const [value, setValue] = useState<YooptaContentValue | undefined>(undefined);
+    // Initialize lesson on mount
+    useEffect(() => {
+        if (id) {
+            // Check if this is a new lesson (from location state)
+            const state = location.state as { title?: string; description?: string; topicId?: string } | null;
+            if (state?.title && state?.topicId) {
+                // Create new lesson
+                createLesson({
+                    title: state.title,
+                    content: '',
+                    description: state.description || '',
+                    topic_id: state.topicId,
+                }).catch(console.error);
+            } else {
+                // Fetch existing lesson
+                fetchLessonById(id);
+            }
+        }
+    }, [id, location.state, fetchLessonById, createLesson]);
 
-    return (
-        <AppWrapper role="teacher" className="flex flex-col gap-12">
+    if (!id) {
+        return <div>Lesson not found</div>;
+    }
+
+    const overviewContent = (
+        <div className="flex flex-col gap-12">
             <div className="max-w-4xl mt-4 flex flex-col mx-auto">
-                <h1
-                    className="px-4 text-6xl font-light mb-2 outline-none focus:ring-2 focus:ring-primary/30 transition leading-[1.2] rounded-lg"
-                    contentEditable
-                    suppressContentEditableWarning
-                    spellCheck={true}
-                    tabIndex={0}
-                >
-                    {lessonTitle}
+                <h1 className="px-4 text-6xl font-light mb-2 leading-[1.2]">
+                    {lesson?.title || "What's your Page about?"}
                 </h1>
-                <p
-                    className="px-4 text-2xl text-gray-400 font-light mt-2 outline-none focus:ring-2 focus:ring-primary/20 transition max-w-[28rem] rounded-lg"
-                    contentEditable
-                    suppressContentEditableWarning
-                    spellCheck={true}
-                    tabIndex={0}
-                >
-                    Description about the page
+                <p className="px-4 text-2xl text-gray-400 font-light mt-2 max-w-[28rem]">
+                    {lesson?.description || 'Description about the page'}
                 </p>
             </div>
             <Separator />
@@ -51,7 +56,15 @@ export default function Lesson() {
                     placeholder="Start writing..."
                 /> */}
             </div>
-        </AppWrapper>
+        </div>
+    );
+
+    return (
+        <LessonLayout
+            lessonId={id}
+            overviewContent={overviewContent}
+            settingsContent={<LessonSettings lessonId={id} />}
+        />
     );
 }
 

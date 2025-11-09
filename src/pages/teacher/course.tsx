@@ -125,7 +125,7 @@ export default function Course() {
     }
 
     const overviewContent = (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 pb-32">
                 <div className="flex items-center gap-4">
                     <Input
                         value={newTopic}
@@ -187,7 +187,6 @@ export default function Course() {
                         <div className="mb-6">
                             <CreateLessonForm
                                 topicId={selectedTopic.id}
-                                courseId={id}
                                 onLessonCreated={async () => {
                                     // Refresh lessons list after creating a lesson
                                     if (selectedTopic?.id) {

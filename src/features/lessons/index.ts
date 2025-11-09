@@ -12,7 +12,7 @@ export { default as LessonPage } from './pages/Lesson';
 export type { Lesson as LessonType, CreateLessonData } from './types/lesson.types';
 
 // API
-export { getLessonsByTopicId, getLessonsByCourseId } from './api/lessonsApi';
+export { getLessonsByTopicId } from './api/lessonsApi';
 
 // Hooks
 export { useLessons } from './hooks/useLessons';
