@@ -12,11 +12,15 @@ import {
 } from "@/components/ui/card";
 import { createCourse } from "@/features/courses/api/coursesApi";
 import { createInstitution } from "@/features/auth/api/authApi";
+import { createGame } from "@/features/command-palette/api/commandPaletteApi";
 import { useUser } from "@/contexts/UserContext";
+import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft } from "lucide-react";
+
+type AddType = "course" | "institution" | "game";
 
 // This function calls create based on type
 const createByType = async (
-    type: "course" | "institution",
+    type: AddType,
     teacherId: string | null,
     data: { title: string; description: string },
     onSuccess?: () => void
@@ -31,28 +35,76 @@ const createByType = async (
             return result;
         case "institution":
             return await createInstitution(data);
+        case "game":
+            if (!teacherId) {
+                throw new Error("Teacher ID is required to create a game");
+            }
+            const gameResult = await createGame(teacherId, { title: data.title, description: data.description });
+            onSuccess?.();
+            return gameResult;
         default:
             throw new Error("Unknown type");
     }
 };
 
-const CommandAddDialog = ({ type, onSuccess }: { type: 'course' | 'institution'; onSuccess?: () => void }) => {
+interface AddOption {
+    type: AddType;
+    label: string;
+    description: string;
+    icon: typeof BookOpen;
+    availableForRoles: ("admin" | "teacher" | "student")[];
+}
+
+const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () => void }) => {
     const { profile } = useUser();
+    const [selectedType, setSelectedType] = useState<AddType | null>(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const addOptions: AddOption[] = [
+        {
+            type: "course",
+            label: "Add Course",
+            description: "Create a new course",
+            icon: BookOpen,
+            availableForRoles: ["admin", "teacher", "student"],
+        },
+        {
+            type: "institution",
+            label: "Add Institution",
+            description: "Create a new institution",
+            icon: Building2,
+            availableForRoles: ["admin"],
+        },
+        {
+            type: "game",
+            label: "Add Game",
+            description: "Create a new educational game",
+            icon: Gamepad2,
+            availableForRoles: ["admin", "teacher"],
+        },
+    ];
+
+    // Filter options based on role
+    const availableOptions = addOptions.filter((option) =>
+        role ? option.availableForRoles.includes(role as "admin" | "teacher" | "student") : true
+    );
+
     const handleCreate = async () => {
+        if (!selectedType) return;
+        
         setLoading(true);
         try {
-            const teacherId = type === 'course' ? profile?.user_id || null : null;
-            const result = await createByType(type, teacherId, { title, description }, onSuccess);
-            // You might want to handle result (show notification, close dialog etc)
-            console.log("Created", { type, result });
+            const teacherId = selectedType === 'course' || selectedType === 'game' 
+                ? profile?.user_id || null 
+                : null;
+            const result = await createByType(selectedType, teacherId, { title, description }, onSuccess);
+            console.log("Created", { type: selectedType, result });
             setTitle("");
             setDescription("");
+            setSelectedType(null); // Reset to selection view
         } catch (error) {
-            // Handle error (toast etc)
             console.error(error);
         } finally {
             setLoading(false);
@@ -62,9 +114,58 @@ const CommandAddDialog = ({ type, onSuccess }: { type: 'course' | 'institution';
     const handleCancel = () => {
         setTitle("");
         setDescription("");
-        // Optionally, trigger dialog close if needed
+        setSelectedType(null);
     };
 
+    const handleOptionSelect = (type: AddType) => {
+        setSelectedType(type);
+    };
+
+    // Show selection list if no type is selected
+    if (!selectedType) {
+        return (
+            <Card className="max-w-md mx-auto border-0 shadow-none">
+                <CardHeader className="items-center p-0">
+                    <CardTitle className="text-xl text-gray-900">
+                        Add New
+                    </CardTitle>
+                    <p className="text-sm text-gray-500 mt-2 font-normal">
+                        Choose what you want to create.
+                    </p>
+                </CardHeader>
+
+                <CardContent className="flex flex-col gap-3 w-full px-0 mt-6">
+                    {availableOptions.map((option) => {
+                        const Icon = option.icon;
+                        return (
+                            <button
+                                key={option.type}
+                                onClick={() => handleOptionSelect(option.type)}
+                                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-left w-full"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-gray-100">
+                                        <Icon className="w-5 h-5 text-gray-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-medium text-gray-900">
+                                            {option.label}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {option.description}
+                                        </div>
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-5 h-5 text-gray-400" />
+                            </button>
+                        );
+                    })}
+                </CardContent>
+            </Card>
+        );
+    }
+
+    // Show form when a type is selected
     return (
         <Card className="max-w-md mx-auto border-0 shadow-none">
             <form
@@ -75,21 +176,33 @@ const CommandAddDialog = ({ type, onSuccess }: { type: 'course' | 'institution';
                 }}
             >
                 <CardHeader className="items-center p-0">
-                    <CardTitle className="text-xl text-gray-900">
-                        Add New {type}
-                    </CardTitle>
-
+                    <div className="flex items-center gap-3 mb-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleCancel}
+                            className="shrink-0"
+                        >
+                            <MoveLeft className="h-4 w-4" />
+                        </Button>
+                        <CardTitle className="text-xl text-gray-900">
+                            Add New {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}
+                        </CardTitle>
+                    </div>
                     <p className="text-sm text-gray-500 mt-2 font-normal">
-                        Create a new {type} to get started.
+                        Create a new {selectedType} to get started.
                     </p>
                 </CardHeader>
 
                 <CardContent className="flex flex-col gap-8 w-full px-0">
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor={`${type}-title`} className="font-normal text-gray-700">{type} Title</Label>
+                        <Label htmlFor={`${selectedType}-title`} className="font-normal text-gray-700">
+                            {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Title
+                        </Label>
                         <Input
-                            id={`${type}-title`}
-                            placeholder={`${type} Title`}
+                            id={`${selectedType}-title`}
+                            placeholder={`${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Title`}
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             required
@@ -98,10 +211,12 @@ const CommandAddDialog = ({ type, onSuccess }: { type: 'course' | 'institution';
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor={`${type}-description`} className="font-normal text-gray-700">{type} Description</Label>
+                        <Label htmlFor={`${selectedType}-description`} className="font-normal text-gray-700">
+                            {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Description
+                        </Label>
                         <Textarea
-                            id={`${type}-description`}
-                            placeholder={`${type} Description`}
+                            id={`${selectedType}-description`}
+                            placeholder={`${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Description`}
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             rows={3}
@@ -127,7 +242,7 @@ const CommandAddDialog = ({ type, onSuccess }: { type: 'course' | 'institution';
                         disabled={!title.trim() || !description.trim() || loading}
                         className="w-full"
                     >
-                        {loading ? "Creating..." : `Create ${type.charAt(0).toUpperCase() + type.slice(1)}`}
+                        {loading ? "Creating..." : `Create ${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}`}
                     </Button>
                 </CardFooter>
             </form>

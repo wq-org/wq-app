@@ -40,3 +40,25 @@ export interface CommandPaletteProps {
     className?: string;
     onCourseCreated?: () => void;
 }
+
+export interface Game {
+    id: string;
+    title: string;
+    description: string;
+    teacher_id: string;
+    institution_id: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateGameData {
+    title: string;
+    description: string;
+    teacher_id: string;
+    institution_id?: string;
+}
+
+export interface UpdateGameData {
+    title?: string;
+    description?: string;
+}
