@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
     Table,
     TableHeader,
@@ -17,62 +16,18 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-    File,
-    FileText,
-    FileSpreadsheet,
-    FileBarChart2,
-    Ellipsis,
-    Image,
-    Video,
-} from 'lucide-react';
 import TableEmptyView from '@/features/files/components/TableEmptyView';
 import type {FileItem} from '../types/files.types';
-
-const typeConfig = {
-    Word: {
-        color: 'text-blue-500',
-        bgColor: 'bg-blue-500/10',
-        borderColor: 'border-blue-500/20',
-        Icon: FileText,
-    },
-    PPT: {
-        color: 'text-orange-500',
-        bgColor: 'bg-orange-500/10',
-        borderColor: 'border-orange-500/20',
-        Icon: FileBarChart2,
-    },
-    Exl: {
-        color: 'text-green-500',
-        bgColor: 'bg-green-500/10',
-        borderColor: 'border-green-500/20',
-        Icon: FileSpreadsheet,
-    },
-    PDF: {
-        color: 'text-red-500',
-        bgColor: 'bg-red-500/10',
-        borderColor: 'border-red-500/20',
-        Icon: File,
-    },
-    Image: {
-        color: 'text-purple-500',
-        bgColor: 'bg-purple-500/10',
-        borderColor: 'border-purple-500/20',
-        Icon: Image,
-    },
-    Video: {
-        color: 'text-orange-500',
-        bgColor: 'bg-orange-500/10',
-        borderColor: 'border-orange-500/20',
-        Icon: Video,
-    },
-};
+import {FILE_TYPE_CONFIG} from '../types/files.types';
+import FilesCard from './FilesCard';
 
 interface FileTableProps {
     files: FileItem[];
 }
 export default function FileTable({ files }: FileTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const itemsPerPage = 12;
     const totalPages = Math.ceil(files.length / itemsPerPage);
 
@@ -80,8 +35,9 @@ export default function FileTable({ files }: FileTableProps) {
     const endIndex = startIndex + itemsPerPage;
     const currentFiles = files.slice(startIndex, endIndex);
 
-    const handleEdit = (fileId: number) => {
-        console.log('Edit clicked for file:', fileId);
+    const handleRowClick = (file: FileItem) => {
+        setSelectedFile(file);
+        setIsDrawerOpen(true);
     };
 
     const handlePageChange = (page: number) => {
@@ -142,22 +98,17 @@ export default function FileTable({ files }: FileTableProps) {
                             <TableHead className="text-center text-gray-400 font-light">
                                 Size
                             </TableHead>
-                            <TableHead className="text-center text-gray-400 font-light w-[80px]">
-                                Actions
-                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {currentFiles.map((file) => {
-                            const config =
-                                typeConfig[
-                                    file.type as keyof typeof typeConfig
-                                ] || typeConfig.PDF;
+                            const config = FILE_TYPE_CONFIG[file.type] || FILE_TYPE_CONFIG.PDF;
                             const Icon = config.Icon;
                             return (
                                 <TableRow
                                     key={file.id}
-                                    className="border-b last:border-0"
+                                    className="border-b last:border-0 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    onClick={() => handleRowClick(file)}
                                 >
                                     <TableCell className="text-center">
                                         <div className="flex items-center justify-center">
@@ -173,18 +124,6 @@ export default function FileTable({ files }: FileTableProps) {
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {file.size}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <Button
-                                            variant={'ghost'}
-                                            type="button"
-                                            size="icon"
-                                            onClick={() => handleEdit(file.id)}
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                                            aria-label={`Edit ${file.filename}`}
-                                        >
-                                            <Ellipsis className="h-5 w-5" />
-                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             );
@@ -238,6 +177,20 @@ export default function FileTable({ files }: FileTableProps) {
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
+            )}
+            
+            {/* FilesCard Drawer */}
+            {selectedFile && (
+                <FilesCard
+                    file={selectedFile}
+                    open={isDrawerOpen}
+                    onOpenChange={setIsDrawerOpen}
+                    onFileDeleted={() => {
+                        setIsDrawerOpen(false);
+                        setSelectedFile(null);
+                        // Optionally refresh files list here
+                    }}
+                />
             )}
         </div>
     );

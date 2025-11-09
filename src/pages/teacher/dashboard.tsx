@@ -15,7 +15,6 @@ import {useNavigate} from 'react-router-dom';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import type {FileItem} from '@/features/files/types/files.types';
 import {fetchFilesByRole} from '@/features/upload-files/api/filesApi';
-import type {FileListItem} from '@/features/upload-files/types/upload.types';
 
 const dummyStudents: any = [
 
@@ -55,24 +54,12 @@ function formatFileSize(bytes: number): string {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-// Helper function to convert FileListItem to FileItem
-function mapFileListItemToFileItem(file: FileListItem, index: number): FileItem {
-    // Supabase storage list may return size in metadata.size or as a direct property
-    // Check both locations for file size
-    const fileSize = (file as any).size || file.metadata?.size || 0;
-    return {
-        id: index + 1, // Use index + 1 as id since FileItem expects number
-        filename: file.name,
-        description: '', // Description removed from system
-        type: getFileTypeFromExtension(file.name),
-        size: formatFileSize(fileSize),
-    };
-}
+
 
 
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
-    const {profile, loading, getUserId} = useUser();
+    const {profile, loading, getUserId, getRole} = useUser();
     const {courses, loading: coursesLoading, fetchCourses, setSelectedCourse} = useCourseContext();
     const {url: signedAvatarUrl} = useAvatarUrl(profile?.avatar_url || '');
     const navigate = useNavigate();
@@ -90,7 +77,7 @@ export default function Dashboard() {
     useEffect(() => {
         const loadFiles = async () => {
             const userId = getUserId();
-            const role = profile?.role?.toLowerCase();
+            const role = getRole()?.toLowerCase();
             
             if (!userId || !role || loading) {
                 return;
@@ -104,9 +91,21 @@ export default function Dashboard() {
                 });
 
                 if (result.success && result.files) {
-                    const mappedFiles = result.files.map((file, index) => 
-                        mapFileListItemToFileItem(file, index)
-                    );
+                    // Convert role to plural for storage path (e.g., 'teacher' -> 'teachers')
+                    const storageRole = role.endsWith('s') ? role : `${role}s`;
+                    
+                    const mappedFiles: FileItem[] = result.files.map((file, index) => {
+                        const fileSize = (file as any).size || file.metadata?.size || 0;
+                        const storagePath = `${storageRole}/${userId}/${file.name}`;
+                        return {
+                            id: index + 1,
+                            filename: file.name,
+                            description: '',
+                            type: getFileTypeFromExtension(file.name),
+                            size: formatFileSize(fileSize),
+                            storagePath,
+                        };
+                    });
                     setFiles(mappedFiles);
                 } else {
                     console.error('Failed to fetch files:', result.error);
@@ -123,7 +122,7 @@ export default function Dashboard() {
         if (selectedTab === 'files') {
             loadFiles();
         }
-    }, [profile?.role, profile?.user_id, loading, selectedTab, getUserId]);
+    }, [profile?.role, profile?.user_id, loading, selectedTab, getUserId, getRole]);
 
     const handleClickTab = (id: string) => {
         const currentTab = getDashboardTabs('teacher').filter(
