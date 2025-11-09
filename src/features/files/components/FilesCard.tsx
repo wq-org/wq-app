@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LayoutDashboard, Settings, Trash2, X } from 'lucide-react';
 import {
     Drawer,
@@ -10,17 +10,55 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import type { FileItem } from '../types/files.types';
-import { FILE_TYPE_CONFIG } from '../types/files.types';
-import { getFilePublicUrl, deleteFile, renameFile } from '@/features/upload-files/api/filesApi';
+import { getFileBlobUrl, deleteFile, renameFile } from '../apis/filesApi';
 import { toast } from 'sonner';
+import * as pdfjsLib from 'pdfjs-dist';
 
 interface FilesCardProps {
     file: FileItem;
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onFileDeleted?: () => void;
+}
+
+function SimplePDFViewer({ pdfUrl }: { pdfUrl: string }) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        if (!canvasRef.current || !pdfUrl) return;
+
+        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        loadingTask.promise
+            .then((pdf: pdfjsLib.PDFDocumentProxy) => {
+                return pdf.getPage(1);
+            })
+            .then((page: pdfjsLib.PDFPageProxy) => {
+                if (!canvasRef.current) return;
+                
+                const viewport = page.getViewport({ scale: 1.5 });
+                const canvas = canvasRef.current;
+                const context = canvas.getContext('2d');
+
+                if (!context) return;
+
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                page.render({
+                    canvasContext: context,
+                    viewport: viewport,
+                    canvas: canvas,
+                } as any);
+            })
+            .catch((error: Error) => {
+                console.error('Error rendering PDF:', error);
+            });
+    }, [pdfUrl]);
+
+    return <canvas ref={canvasRef} className="w-full h-full" />;
 }
 
 export default function FilesCard({
@@ -31,27 +69,60 @@ export default function FilesCard({
 }: FilesCardProps) {
     const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
     const [filename, setFilename] = useState(file.filename);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [fileUrl, setFileUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const fileUrlRef = useRef<string | null>(null);
+
+    const isImage = file.type === 'Image';
+    const isPDF = file.type === 'PDF';
+
+    // Get blob URL when drawer opens (downloads file and creates blob URL)
+    useEffect(() => {
+        if ((isImage || isPDF) && file.storagePath && open) {
+            setLoading(true);
+            getFileBlobUrl(file.storagePath)
+                .then((url) => {
+                    if (url) {
+                        // Clean up previous URL if exists
+                        if (fileUrlRef.current) {
+                            URL.revokeObjectURL(fileUrlRef.current);
+                        }
+                        fileUrlRef.current = url;
+                        setFileUrl(url);
+                    } else {
+                        toast.error('Failed to load file');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error getting file blob URL:', error);
+                    toast.error('Failed to load file');
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else if (!open) {
+            // Clean up blob URL when drawer closes
+            if (fileUrlRef.current) {
+                URL.revokeObjectURL(fileUrlRef.current);
+                fileUrlRef.current = null;
+                setFileUrl(null);
+            }
+        }
+
+        // Cleanup function - revoke URL when dependencies change or component unmounts
+        return () => {
+            if (fileUrlRef.current) {
+                URL.revokeObjectURL(fileUrlRef.current);
+                fileUrlRef.current = null;
+            }
+        };
+    }, [isImage, isPDF, file.storagePath, open]);
 
     // Reset filename when file changes
     useEffect(() => {
         setFilename(file.filename);
     }, [file.filename]);
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-    const config = FILE_TYPE_CONFIG[file.type] || FILE_TYPE_CONFIG.PDF;
-    const Icon = config.Icon;
-    const isImage = file.type === 'Image';
-
-    // Get image URL when drawer opens and file is an image
-    useEffect(() => {
-        if (isImage && file.storagePath && open) {
-            const url = getFilePublicUrl(file.storagePath);
-            setImageUrl(url);
-        } else if (!open) {
-            setImageUrl(null);
-        }
-    }, [isImage, file.storagePath, open]);
 
     const handleDelete = async () => {
         if (!file.storagePath) {
@@ -121,144 +192,139 @@ export default function FilesCard({
 
     return (
         <>
-            <Drawer open={open} onOpenChange={onOpenChange}>
-                <DrawerContent className="max-h-[90vh]">
-                    <DrawerHeader>
-                        <div className="flex items-center justify-between">
-                            <DrawerTitle>File Details</DrawerTitle>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => onOpenChange(false)}
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        <DrawerDescription className="sr-only">
-                            View and manage file details including overview and settings
-                        </DrawerDescription>
-                    </DrawerHeader>
+            <Drawer  open={open} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-[100vh]">
+                    <div className="flex flex-col h-full">
+                        {/* Header with Title on top left */}
+                        <DrawerHeader className="flex-shrink-0">
+                            <div className="flex items-center justify-between">
+                                <DrawerTitle>File Details</DrawerTitle>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => onOpenChange(false)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <DrawerDescription className="sr-only">
+                                View and manage file details including overview and settings
+                            </DrawerDescription>
+                        </DrawerHeader>
 
-                    <div className="flex flex-col gap-6 p-6 overflow-y-auto">
-                        {/* Tabs */}
-                        <div className="flex gap-12 border-b">
-                            <button
-                                onClick={() => setActiveTab('overview')}
-                                className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
-                                    activeTab === 'overview'
-                                        ? 'text-black border-black font-medium'
-                                        : 'text-black/40 hover:text-black/60 border-transparent'
-                                }`}
-                            >
-                                <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
-                                <span>Overview</span>
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('settings')}
-                                className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
-                                    activeTab === 'settings'
-                                        ? 'text-black border-black font-medium'
-                                        : 'text-black/40 hover:text-black/60 border-transparent'
-                                }`}
-                            >
-                                <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-                                <span>Settings</span>
-                            </button>
-                        </div>
+                        <div className="flex flex-col flex-1 overflow-hidden">
+                            {/* Tabs */}
+                            <div className="flex gap-12 border-b px-6 pt-4 flex-shrink-0">
+                                <button
+                                    onClick={() => setActiveTab('overview')}
+                                    className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
+                                        activeTab === 'overview'
+                                            ? 'text-black border-black font-medium'
+                                            : 'text-black/40 hover:text-black/60 border-transparent'
+                                    }`}
+                                >
+                                    <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
+                                    <span>Overview</span>
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('settings')}
+                                    className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
+                                        activeTab === 'settings'
+                                            ? 'text-black border-black font-medium'
+                                            : 'text-black/40 hover:text-black/60 border-transparent'
+                                    }`}
+                                >
+                                    <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
+                                    <span>Settings</span>
+                                </button>
+                            </div>
 
-                        {/* Tab Content */}
-                        <div className="mt-6">
-                            {activeTab === 'overview' && (
-                                <div className="space-y-6">
-                                    {/* Image Preview */}
-                                    {isImage && imageUrl && (
-                                        <div className="w-full rounded-lg overflow-hidden border bg-gray-100">
-                                            <img
-                                                src={imageUrl}
-                                                alt={file.filename}
-                                                className="w-full h-auto max-h-[400px] object-contain"
-                                            />
-                                        </div>
-                                    )}
+                            {/* Tab Content */}
+                            <div className="flex-1 overflow-y-auto p-6">
+                                {activeTab === 'overview' && (
+                                    <div className="flex flex-col space-y-6">
+                                        {/* Image/PDF Preview - 16:9 aspect ratio */}
+                                        {(isImage || isPDF) && (
+                                            <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+                                                {loading ? (
+                                                    <p className="text-gray-500">Loading...</p>
+                                                ) : fileUrl ? (
+                                                    isImage ? (
+                                                        <img
+                                                            src={fileUrl}
+                                                            alt={file.filename}
+                                                            className="w-full h-full object-contain"
+                                                        />
+                                                    ) : isPDF ? (
+                                                        <SimplePDFViewer pdfUrl={fileUrl} />
+                                                    ) : null
+                                                ) : (
+                                                    <p className="text-gray-500">Failed to load file</p>
+                                                )}
+                                            </div>
+                                        )}
 
-                                    {/* File Info */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`flex h-16 w-16 items-center justify-center rounded-lg border ${config.bgColor} ${config.borderColor}`}>
-                                                <Icon className={`h-8 w-8 ${config.color}`} />
-                                            </div>
-                                            <div className="flex-1">
-                                                <h3 className="text-lg font-semibold text-gray-900">
-                                                    {file.filename}
-                                                </h3>
-                                                <p className="text-sm text-gray-500">
-                                                    {file.type} • {file.size}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                                            <div>
-                                                <Label className="text-xs text-gray-500">Filename</Label>
-                                                <p className="text-sm font-medium mt-1">{file.filename}</p>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-gray-500">Size</Label>
-                                                <p className="text-sm font-medium mt-1">{file.size}</p>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-gray-500">Type</Label>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <div className={`flex h-8 w-8 items-center justify-center rounded border ${config.bgColor} ${config.borderColor}`}>
-                                                        <Icon className={`h-4 w-4 ${config.color}`} />
-                                                    </div>
+                                        {/* Details Section */}
+                                        <div className="space-y-4">
+                                            <Separator />
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <Label className="text-xs text-gray-500">Filename</Label>
+                                                    <p className="text-sm font-medium">{file.filename}</p>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <Label className="text-xs text-gray-500">Size</Label>
+                                                    <p className="text-sm font-medium">{file.size}</p>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <Label className="text-xs text-gray-500">Type</Label>
                                                     <p className="text-sm font-medium">{file.type}</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {activeTab === 'settings' && (
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="filename-input">Filename</Label>
-                                        <Input
-                                            id="filename-input"
-                                            value={filename}
-                                            onChange={(e) => handleFilenameChange(e.target.value)}
-                                            placeholder="Enter filename"
-                                            className="w-full"
-                                        />
-                                    </div>
+                                {activeTab === 'settings' && (
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="filename-input">Filename</Label>
+                                            <Input
+                                                id="filename-input"
+                                                value={filename}
+                                                onChange={(e) => handleFilenameChange(e.target.value)}
+                                                placeholder="Enter filename"
+                                                className="w-full"
+                                            />
+                                        </div>
 
-                                    <div className="flex items-center justify-between pt-4 border-t">
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setFilename(file.filename)}
-                                            disabled={!hasChanges}
-                                        >
-                                            Reset
-                                        </Button>
-                                        <div className="flex gap-2">
+                                        <div className="flex items-center justify-between pt-4 border-t">
                                             <Button
-                                                variant="destructive"
-                                                onClick={() => setShowDeleteDialog(true)}
-                                            >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Delete File
-                                            </Button>
-                                            <Button
-                                                onClick={handleSaveFilename}
+                                                variant="outline"
+                                                onClick={() => setFilename(file.filename)}
                                                 disabled={!hasChanges}
                                             >
-                                                Save Changes
+                                                Reset
                                             </Button>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    variant="destructive"
+                                                    onClick={() => setShowDeleteDialog(true)}
+                                                >
+                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                    Delete File
+                                                </Button>
+                                                <Button
+                                                    onClick={handleSaveFilename}
+                                                    disabled={!hasChanges}
+                                                >
+                                                    Save Changes
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 </DrawerContent>
@@ -279,4 +345,3 @@ export default function FilesCard({
         </>
     );
 }
-
