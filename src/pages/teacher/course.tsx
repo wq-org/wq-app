@@ -222,7 +222,6 @@ export default function Course() {
 
     return (
         <CourseLayout
-            courseId={id}
             overviewContent={overviewContent}
             settingsContent={<CourseSettings courseId={id} />}
         />

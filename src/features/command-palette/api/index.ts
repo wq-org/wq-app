@@ -4,8 +4,11 @@ export {
     deleteGame,
     getTeacherGames,
     getGameById,
-    type Game,
-    type CreateGameData,
-    type UpdateGameData,
 } from './commandPaletteApi';
+
+export type {
+    Game,
+    CreateGameData,
+    UpdateGameData,
+} from '../types/command-bar.types';
 
