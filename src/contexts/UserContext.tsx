@@ -22,6 +22,7 @@ interface UserContextValue {
   clearPendingRole: () => void;
   refreshProfile: () => Promise<void>;
   getUserId: () => string | null;
+  getRole: () => string | null;
 }
 
 const PENDING_ROLE_KEY = 'wq_pending_role';
@@ -35,6 +36,7 @@ const UserContext = createContext<UserContextValue>({
   clearPendingRole: () => {},
   refreshProfile: async () => {},
   getUserId: () => null,
+  getRole: () => null,
 }); 
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -116,6 +118,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
+  // Getter for role
+  const getRole = () => {
+    if (profile?.role) {
+      return profile.role;
+    }
+    return null;
+  };
+
   return (
     <UserContext.Provider value={{ 
       session, 
@@ -125,7 +135,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setPendingRole, 
       clearPendingRole, 
       refreshProfile,
-      getUserId
+      getUserId,
+      getRole
     }}>
       {children}
     </UserContext.Provider>

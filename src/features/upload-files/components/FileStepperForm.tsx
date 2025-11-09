@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Stepper, StepperItem, StepperTrigger, StepperIndicator, StepperTitle, StepperSeparator } from '@/components/ui/stepper';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import type { UploadedFile } from '../types/upload.types';
 
 interface FileStepperFormProps {
@@ -20,18 +20,11 @@ export default function FileStepperForm({
     onBack,
 }: FileStepperFormProps) {
     const [currentStep, setCurrentStep] = useState(1);
+    const isEditingRef = useRef<string | null>(null);
     
-    // Initialize form data from files
-    const initializeFormData = useCallback((): Record<string, { title: string }> => {
-        const initialData: Record<string, { title: string }> = {};
-        files.forEach((file) => {
-            initialData[file.id] = {
-                title: file.title || file.file.name.split('.')[0],
-            };
-        });
-        return initialData;
-    }, [files]);
+    const currentFile = files[currentStep - 1];
 
+    // Use files prop as source of truth, but maintain local formData for immediate UI updates
     const [formData, setFormData] = useState<Record<string, { title: string }>>(() => {
         const initialData: Record<string, { title: string }> = {};
         files.forEach((file) => {
@@ -42,15 +35,52 @@ export default function FileStepperForm({
         return initialData;
     });
 
-    // Update form data when files change
+    // Sync formData with files prop, but preserve user edits for the currently editing file
     useEffect(() => {
-        const initialData = initializeFormData();
-        setFormData(initialData);
-    }, [initializeFormData]);
+        setFormData((prev) => {
+            const updated = { ...prev };
+            let hasChanges = false;
+            const currentFileId = files[currentStep - 1]?.id;
+            
+            files.forEach((file) => {
+                const fileTitle = file.title || file.file.name.split('.')[0];
+                
+                // If this file doesn't exist in formData, add it
+                if (!updated[file.id]) {
+                    updated[file.id] = { title: fileTitle };
+                    hasChanges = true;
+                } 
+                // If this is NOT the current file being edited, sync with files prop
+                else if (file.id !== currentFileId && updated[file.id].title !== fileTitle) {
+                    updated[file.id] = { title: fileTitle };
+                    hasChanges = true;
+                }
+                // If this IS the current file, only sync if we're not currently editing it
+                else if (file.id === currentFileId && file.id !== isEditingRef.current && updated[file.id].title !== fileTitle) {
+                    updated[file.id] = { title: fileTitle };
+                    hasChanges = true;
+                }
+            });
+            
+            // Remove entries for files that no longer exist
+            const fileIds = new Set(files.map(f => f.id));
+            Object.keys(updated).forEach(id => {
+                if (!fileIds.has(id)) {
+                    delete updated[id];
+                    hasChanges = true;
+                }
+            });
+            
+            return hasChanges ? updated : prev;
+        });
+    }, [files, currentStep]);
 
-    const currentFile = files[currentStep - 1];
+    // Reset editing ref when step changes
+    useEffect(() => {
+        isEditingRef.current = null;
+    }, [currentStep]);
 
-    
+    // Get current form data - prefer formData, fallback to file prop
     const currentFormData = currentFile 
         ? (formData[currentFile.id] || { 
             title: currentFile.title || currentFile.file.name.split('.')[0]
@@ -59,11 +89,20 @@ export default function FileStepperForm({
 
     const handleFilenameChange = (value: string) => {
         if (currentFile) {
-            // Always update formData with the new value, even if empty
+            // Mark that we're editing this file
+            isEditingRef.current = currentFile.id;
+            
+            // Update local formData immediately for responsive UI
             const updated = { title: value };
             setFormData((prev) => ({ ...prev, [currentFile.id]: updated }));
-            onFileUpdate(currentFile.id, updated);            
+            // Sync with parent component
+            onFileUpdate(currentFile.id, updated);
         }
+    };
+
+    const handleInputBlur = () => {
+        // Clear editing flag when user finishes editing
+        isEditingRef.current = null;
     };
 
     const handleNext = () => {
@@ -157,13 +196,27 @@ export default function FileStepperForm({
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="filename">Filename *</Label>
-                            <Input
-                                id="filename"
-                                value={currentFormData.title}
-                                onChange={(e) => handleFilenameChange(e.target.value)}
-                                placeholder="Enter filename"
-                                className="w-full"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="filename"
+                                    value={currentFormData.title}
+                                    onChange={(e) => handleFilenameChange(e.target.value)}
+                                    onBlur={handleInputBlur}
+                                    placeholder="Enter filename"
+                                    className="w-full pr-10"
+                                />
+                                {currentFormData.title && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleFilenameChange('')}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors h-8 w-8"
+                                        aria-label="Clear input"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </div>
 

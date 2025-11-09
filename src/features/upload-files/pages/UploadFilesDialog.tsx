@@ -16,7 +16,7 @@ export default function UploadFilesDialog() {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const { validateFiles } = useFileValidation();
-    const { getUserId } = useUser();
+    const { getUserId, getRole } = useUser();
 
     const generateFileId = () => {
         return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -38,6 +38,11 @@ export default function UploadFilesDialog() {
     };
 
     const handleFilesSelected = useCallback(async (files: File[]) => {
+        // Prevent double calls by checking if we're already processing
+        if (showStepper || isUploading) {
+            return;
+        }
+
         // Validate files
         const validationResults = await validateFiles(files);
         
@@ -68,9 +73,9 @@ export default function UploadFilesDialog() {
             })
         );
 
-        setUploadedFiles((prev) => [...prev, ...newUploadedFiles]);
+        setUploadedFiles(newUploadedFiles); // Replace instead of append to prevent duplicates
         setShowStepper(true);
-    }, [validateFiles]);
+    }, [validateFiles, showStepper, isUploading]);
 
     const handleFileUpdate = useCallback((id: string, updates: { title: string }) => {
         setUploadedFiles((prev) =>
@@ -82,10 +87,17 @@ export default function UploadFilesDialog() {
 
     const handleComplete = useCallback(async () => {
         const teacherId = getUserId();
+        const role = getRole();
         
         if (!teacherId) {
             toast.error('User ID not found. Please log in again.');
             console.error('Upload failed: No teacher ID available');
+            return;
+        }
+
+        if (!role) {
+            toast.error('User role not found. Please log in again.');
+            console.error('Upload failed: No user role available');
             return;
         }
 
@@ -98,22 +110,12 @@ export default function UploadFilesDialog() {
         setIsUploading(true);
         setUploadProgress(0);
 
-        console.log('Starting file upload:', {
-            teacherId,
-            fileCount: uploadedFiles.length,
-            files: uploadedFiles.map(f => ({
-                id: f.id,
-                fileName: f.file.name,
-                title: f.title,
-                fileSize: f.file.size,
-                fileType: f.file.type,
-            })),
-        });
 
         try {
             const results = await uploadFilesWithMetadata(
                 uploadedFiles,
                 teacherId,
+                role,
                 (progress) => {
                     setUploadProgress(progress);
                     console.log(`Upload progress: ${progress.toFixed(2)}%`);
@@ -166,7 +168,7 @@ export default function UploadFilesDialog() {
             setIsUploading(false);
             setUploadProgress(0);
         }
-    }, [uploadedFiles, getUserId]);
+    }, [uploadedFiles, getUserId, getRole]);
 
     const handleBack = useCallback(() => {
         setShowStepper(false);

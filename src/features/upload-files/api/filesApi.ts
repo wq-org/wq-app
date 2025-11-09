@@ -12,16 +12,16 @@ const BUCKET_NAME = 'files';
 
 /**
  * Uploads a single file to Supabase storage
- * Path structure: teachers/{teacher_id}/filename.filetype
+ * Path structure: {role}/{user_id}/filename.filetype
  * 
- * @param options - Upload options including teacherId, file, and optional metadata
+ * @param options - Upload options including teacherId, file, role, and optional metadata
  * @returns Promise with upload result containing path, publicUrl, or error
  */
 export async function uploadFile({
     teacherId,
     file,
     title,
-    onProgress: _onProgress, // Progress tracking not yet implemented for Supabase storage
+    role,
 }: FileUploadOptions): Promise<FileUploadResult> {
     try {
         // Validate inputs
@@ -39,6 +39,13 @@ export async function uploadFile({
             };
         }
 
+        if (!role || !role.trim()) {
+            return {
+                success: false,
+                error: 'Role is required',
+            };
+        }
+
         // Use title if provided, otherwise use original filename
         const baseFileName = title || file.name.split('.')[0];
         const fileExtension = file.name.split('.').pop() || '';
@@ -47,8 +54,8 @@ export async function uploadFile({
         const sanitizedBaseName = baseFileName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '_');
         const sanitizedFileName = `${sanitizedBaseName}.${fileExtension}`;
 
-        // Construct storage path: teachers/{teacher_id}/filename.filetype
-        const storagePath = `teachers/${teacherId}/${sanitizedFileName}`;
+        // Construct storage path: {role}/{user_id}/filename.filetype
+        const storagePath = `${role}/${teacherId}/${sanitizedFileName}`;
 
         console.log('Uploading file:', {
             originalFileName: file.name,
@@ -182,13 +189,15 @@ export async function uploadFiles(
  * Uploads files from UploadedFile objects
  * 
  * @param files - Array of UploadedFile objects with metadata
- * @param teacherId - Teacher ID for the upload path
+ * @param teacherId - User ID for the upload path
+ * @param role - Role for storage path (e.g., 'teachers', 'students', 'admins')
  * @param onProgress - Optional progress callback
  * @returns Promise with array of upload results
  */
 export async function uploadFilesWithMetadata(
     files: UploadedFile[],
     teacherId: string,
+    role: string,
     onProgress?: (progress: number) => void
 ): Promise<FileUploadResult[]> {
     try {
@@ -221,6 +230,7 @@ export async function uploadFilesWithMetadata(
             teacherId,
             file: uploadedFile.file,
             title: uploadedFile.title,
+            role,
             onProgress: onProgress
                 ? (progress: number) => {
                       // Calculate overall progress across all files

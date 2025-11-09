@@ -34,6 +34,7 @@ export default function FileDropzone({ onFilesSelected, disabled = false }: File
     };
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation(); // Prevent event bubbling
         const files = e.target.files;
         if (files && files.length > 0) {
             onFilesSelected(Array.from(files));
@@ -44,7 +45,8 @@ export default function FileDropzone({ onFilesSelected, disabled = false }: File
         }
     };
 
-    const handleClick = () => {
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent event bubbling
         if (!disabled && fileInputRef.current) {
             fileInputRef.current.click();
         }
@@ -74,6 +76,7 @@ export default function FileDropzone({ onFilesSelected, disabled = false }: File
                 type="file"
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 onChange={handleFileInput}
+                onClick={(e) => e.stopPropagation()} // Prevent double triggers
                 accept={ALL_ALLOWED_TYPES.join(',')}
                 multiple
                 disabled={disabled}

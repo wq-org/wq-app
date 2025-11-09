@@ -166,8 +166,10 @@ export default function FileTable({ files }: FileTableProps) {
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="flex items-center gap-3 text-left">
-                                        {file.filename}
+                                    <TableCell className="text-left">
+                                        <div className="flex items-center gap-3 h-10 min-h-[40px]">
+                                            {file.filename}
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {file.size}

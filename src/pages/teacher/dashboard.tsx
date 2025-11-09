@@ -14,105 +14,70 @@ import Spinner from '@/components/ui/spinner';
 import {useNavigate} from 'react-router-dom';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import type {FileItem} from '@/features/files/types/files.types';
+import {fetchFilesByRole} from '@/features/upload-files/api/filesApi';
+import type {FileListItem} from '@/features/upload-files/types/upload.types';
 
 const dummyStudents: any = [
 
 ];
 
-const dummyFiles: FileItem[] = [
-    {
-        id: 1,
-        filename: 'Course_Introduction.docx',
-        description: 'Introduction to the course materials',
-        type: 'Word',
-        size: '850 KB',
-    },
-    {
-        id: 2,
-        filename: 'Lesson_Plan_Template.pptx',
-        description: 'Template for creating lesson plans',
-        type: 'PPT',
-        size: '2.4 MB',
-    },
-    {
-        id: 3,
-        filename: 'Student_Grades.xlsx',
-        description: 'Quarterly student performance data',
-        type: 'Exl',
-        size: '1.1 MB',
-    },
-    {
-        id: 4,
-        filename: 'Syllabus_2024.pdf',
-        description: 'Course syllabus and requirements',
-        type: 'PDF',
-        size: '900 KB',
-    },
-    {
-        id: 5,
-        filename: 'Assignment_Guidelines.docx',
-        description: 'Guidelines for student assignments',
-        type: 'Word',
-        size: '650 KB',
-    },
-    {
-        id: 6,
-        filename: 'Exam_Results.xlsx',
-        description: 'Final exam results and statistics',
-        type: 'Exl',
-        size: '1.8 MB',
-    },
-    {
-        id: 7,
-        filename: 'Course_Overview.pdf',
-        description: 'Overview of course objectives',
-        type: 'PDF',
-        size: '1.2 MB',
-    },
-    {
-        id: 8,
-        filename: 'Teaching_Resources.pptx',
-        description: 'Additional teaching resources',
-        type: 'PPT',
-        size: '3.1 MB',
-    },
-    {
-        id: 9,
-        filename: 'Student_Feedback.docx',
-        description: 'Compiled student feedback',
-        type: 'Word',
-        size: '450 KB',
-    },
-    {
-        id: 10,
-        filename: 'Attendance_Record.xlsx',
-        description: 'Student attendance tracking',
-        type: 'Exl',
-        size: '750 KB',
-    },
-    {
-        id: 11,
-        filename: 'Course_Materials.pdf',
-        description: 'Essential course reading materials',
-        type: 'PDF',
-        size: '2.3 MB',
-    },
-    {
-        id: 12,
-        filename: 'Presentation_Template.pptx',
-        description: 'Reusable presentation template',
-        type: 'PPT',
-        size: '1.9 MB',
-    },
-];
+// Helper function to map file extension to FileItem type
+function getFileTypeFromExtension(filename: string): FileItem['type'] {
+    const extension = filename.split('.').pop()?.toUpperCase() || '';
+    
+    if (['DOC', 'DOCX', 'TXT'].includes(extension)) {
+        return 'Word';
+    }
+    if (extension === 'PDF') {
+        return 'PDF';
+    }
+    if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
+        return 'Exl';
+    }
+    if (['PPT', 'PPTX'].includes(extension)) {
+        return 'PPT';
+    }
+    if (['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP'].includes(extension)) {
+        return 'Image';
+    }
+    if (['MP4', 'AVI', 'MOV', 'WMV'].includes(extension)) {
+        return 'Video';
+    }
+    return 'PDF'; // Default fallback
+}
+
+// Helper function to format file size
+function formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+}
+
+// Helper function to convert FileListItem to FileItem
+function mapFileListItemToFileItem(file: FileListItem, index: number): FileItem {
+    // Supabase storage list may return size in metadata.size or as a direct property
+    // Check both locations for file size
+    const fileSize = (file as any).size || file.metadata?.size || 0;
+    return {
+        id: index + 1, // Use index + 1 as id since FileItem expects number
+        filename: file.name,
+        description: '', // Description removed from system
+        type: getFileTypeFromExtension(file.name),
+        size: formatFileSize(fileSize),
+    };
+}
 
 
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
-    const {profile, loading} = useUser();
+    const {profile, loading, getUserId} = useUser();
     const {courses, loading: coursesLoading, fetchCourses, setSelectedCourse} = useCourseContext();
     const {url: signedAvatarUrl} = useAvatarUrl(profile?.avatar_url || '');
     const navigate = useNavigate();
+    const [files, setFiles] = useState<FileItem[]>([]);
+    const [filesLoading, setFilesLoading] = useState(false);
 
     // Fetch courses when profile is loaded
     useEffect(() => {
@@ -120,6 +85,45 @@ export default function Dashboard() {
             fetchCourses();
         }
     }, [profile?.user_id, loading, fetchCourses]);
+
+    // Fetch files when profile is loaded and user is on files tab
+    useEffect(() => {
+        const loadFiles = async () => {
+            const userId = getUserId();
+            const role = profile?.role?.toLowerCase();
+            
+            if (!userId || !role || loading) {
+                return;
+            }
+
+            setFilesLoading(true);
+            try {
+                const result = await fetchFilesByRole(role, userId, {
+                    limit: 100,
+                    sortBy: { column: 'created_at', order: 'desc' },
+                });
+
+                if (result.success && result.files) {
+                    const mappedFiles = result.files.map((file, index) => 
+                        mapFileListItemToFileItem(file, index)
+                    );
+                    setFiles(mappedFiles);
+                } else {
+                    console.error('Failed to fetch files:', result.error);
+                    setFiles([]);
+                }
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                setFiles([]);
+            } finally {
+                setFilesLoading(false);
+            }
+        };
+
+        if (selectedTab === 'files') {
+            loadFiles();
+        }
+    }, [profile?.role, profile?.user_id, loading, selectedTab, getUserId]);
 
     const handleClickTab = (id: string) => {
         const currentTab = getDashboardTabs('teacher').filter(
@@ -171,7 +175,13 @@ export default function Dashboard() {
                 )}
 
                 {selectedTab === 'files' && (
-                    <TableView files={dummyFiles} />
+                    filesLoading ? (
+                        <div className="flex items-center justify-center py-12">
+                            <Spinner variant="gray" size="lg" speed={1750} />
+                        </div>
+                    ) : (
+                        <TableView files={files} />
+                    )
                 )}
                 {selectedTab === 'students' && (
                     <StudentCardList students={dummyStudents} />
