@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useLessonContext } from '@/contexts/LessonContext';
 import LessonLayout from '@/components/layout/LessonLayout';
 import LessonSettings from '@/features/lessons/components/LessonSettings';
@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 export default function Lesson() {
     const { id } = useParams<{ id: string }>();
     const location = useLocation();
+    const navigate = useNavigate();
     const { lesson, fetchLessonById, createLesson } = useLessonContext();
 
     // Initialize lesson on mount
@@ -22,20 +23,25 @@ export default function Lesson() {
                     content: '',
                     description: state.description || '',
                     topic_id: state.topicId,
-                }).catch(console.error);
+                })
+                    .then((newLesson) => {
+                        // Navigate to the new lesson's ID
+                        navigate(`/teacher/lesson/${newLesson.id}`, { replace: true });
+                    })
+                    .catch(console.error);
             } else {
                 // Fetch existing lesson
                 fetchLessonById(id);
             }
         }
-    }, [id, location.state, fetchLessonById, createLesson]);
+    }, [id, location.state, fetchLessonById, createLesson, navigate]);
 
     if (!id) {
         return <div>Lesson not found</div>;
     }
 
     const overviewContent = (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-12 pb-32">
             <div className="max-w-4xl mt-4 flex flex-col mx-auto">
                 <h1 className="px-4 text-6xl font-light mb-2 leading-[1.2]">
                     {lesson?.title || "What's your Page about?"}

@@ -29,7 +29,7 @@ export default function CommandPalette({
     onCourseCreated
 }: CommandPaletteProps) {
     const [open, setOpen] = useState(false);
-    const [active, setActive] = useState<string | undefined>(undefined);
+    const [active, setActive] = useState<string>('');
     // Track which dialog component to render when opened
     const [activeDialog, setActiveDialog] = useState<ActionId | undefined>(
         undefined
@@ -115,7 +115,7 @@ export default function CommandPalette({
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
-                                onValueChange={(v) => setActive(v || undefined)}
+                                onValueChange={(v) => setActive(v || '')}
                                 orientation="horizontal"
                                 aria-label="primary actions"
                                 className="flex items-center gap-3"
@@ -178,7 +178,7 @@ export default function CommandPalette({
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
-                                onValueChange={(v) => setActive(v || undefined)}
+                                onValueChange={(v) => setActive(v || '')}
                                 orientation="horizontal"
                                 aria-label="primary actions continued"
                                 className="flex items-center gap-3"
@@ -233,7 +233,7 @@ export default function CommandPalette({
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
-                                onValueChange={(v) => setActive(v || undefined)}
+                                onValueChange={(v) => setActive(v || '')}
                                 orientation="horizontal"
                                 aria-label="system actions"
                                 className="flex items-center gap-3"
@@ -294,12 +294,15 @@ export default function CommandPalette({
                 <Dialog.Portal>
                     <Dialog.Content
                         className={
-                            'fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white  max-h-[calc(100vh-30rem)] overflow-hidden flex flex-col'
+                            'fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white   overflow-hidden flex flex-col'
                         }
                     >
                         <Dialog.Title className="sr-only">
                             Command Palette
                         </Dialog.Title>
+                        <Dialog.Description className="sr-only">
+                            Quick access to search, upload, feedback, and other actions
+                        </Dialog.Description>
                         <ScrollArea className="flex-1 h-[100px] overflow-y-auto ">
                             <Container className="px-4 py-2">
                                 {activeDialog === 'search' && (
