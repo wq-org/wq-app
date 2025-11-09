@@ -39,3 +39,4 @@ dist-ssr
 .env.test.local.backup.6
 .env.test.local.backup.7
 .env.test.local.backup.8
+*.sql

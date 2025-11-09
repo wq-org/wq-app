@@ -4,13 +4,19 @@ import Container from '@/components/common/Container';
 import FileDropzone from '../components/FileDropzone';
 import FileStepperForm from '../components/FileStepperForm';
 import { useFileValidation } from '../hooks/useFileValidation';
+import { uploadFilesWithMetadata } from '../api/filesApi';
+import { useUser } from '@/contexts/UserContext';
 import type { UploadedFile } from '../types/upload.types';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 export default function UploadFilesDialog() {
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [showStepper, setShowStepper] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const { validateFiles } = useFileValidation();
+    const { getUserId } = useUser();
 
     const generateFileId = () => {
         return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -57,7 +63,6 @@ export default function UploadFilesDialog() {
                     id: generateFileId(),
                     file,
                     title: file.name.split('.')[0],
-                    description: '',
                     preview,
                 };
             })
@@ -67,7 +72,7 @@ export default function UploadFilesDialog() {
         setShowStepper(true);
     }, [validateFiles]);
 
-    const handleFileUpdate = useCallback((id: string, updates: { title: string; description: string }) => {
+    const handleFileUpdate = useCallback((id: string, updates: { title: string }) => {
         setUploadedFiles((prev) =>
             prev.map((file) =>
                 file.id === id ? { ...file, ...updates } : file
@@ -75,15 +80,93 @@ export default function UploadFilesDialog() {
         );
     }, []);
 
-    const handleComplete = useCallback(() => {
-        // Here you would typically upload files to your backend
-        toast.success(`Successfully prepared ${uploadedFiles.length} file(s) for upload`);
-        console.log('Files ready for upload:', uploadedFiles);
+    const handleComplete = useCallback(async () => {
+        const teacherId = getUserId();
         
-        // Reset state
-        setUploadedFiles([]);
-        setShowStepper(false);
-    }, [uploadedFiles]);
+        if (!teacherId) {
+            toast.error('User ID not found. Please log in again.');
+            console.error('Upload failed: No teacher ID available');
+            return;
+        }
+
+        if (uploadedFiles.length === 0) {
+            toast.error('No files to upload');
+            console.error('Upload failed: No files available');
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        console.log('Starting file upload:', {
+            teacherId,
+            fileCount: uploadedFiles.length,
+            files: uploadedFiles.map(f => ({
+                id: f.id,
+                fileName: f.file.name,
+                title: f.title,
+                fileSize: f.file.size,
+                fileType: f.file.type,
+            })),
+        });
+
+        try {
+            const results = await uploadFilesWithMetadata(
+                uploadedFiles,
+                teacherId,
+                (progress) => {
+                    setUploadProgress(progress);
+                    console.log(`Upload progress: ${progress.toFixed(2)}%`);
+                }
+            );
+
+            // Log all results
+            console.log('Upload results:', {
+                totalFiles: results.length,
+                successful: results.filter(r => r.success).length,
+                failed: results.filter(r => !r.success).length,
+                results: results.map((result, index) => ({
+                    index: index + 1,
+                    fileName: uploadedFiles[index].file.name,
+                    success: result.success,
+                    path: result.path,
+                    publicUrl: result.publicUrl,
+                    error: result.error,
+                })),
+            });
+
+            // Check results
+            const successCount = results.filter(r => r.success).length;
+            const failedCount = results.filter(r => !r.success).length;
+
+            if (successCount > 0) {
+                toast.success(
+                    `Successfully uploaded ${successCount} file(s)${failedCount > 0 ? ` (${failedCount} failed)` : ''}`
+                );
+            }
+
+            if (failedCount > 0) {
+                const failedFiles = results
+                    .map((r, i) => r.success ? null : uploadedFiles[i].file.name)
+                    .filter(Boolean);
+                toast.error(
+                    `Failed to upload ${failedCount} file(s): ${failedFiles.join(', ')}`
+                );
+            }
+
+            // Reset state only if all uploads succeeded
+            if (failedCount === 0) {
+                setUploadedFiles([]);
+                setShowStepper(false);
+            }
+        } catch (error) {
+            console.error('Unexpected error during upload:', error);
+            toast.error('An unexpected error occurred during upload');
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
+        }
+    }, [uploadedFiles, getUserId]);
 
     const handleBack = useCallback(() => {
         setShowStepper(false);
@@ -99,12 +182,29 @@ export default function UploadFilesDialog() {
                             disabled={false}
                         />
                     ) : (
-                        <FileStepperForm
-                            files={uploadedFiles}
-                            onFileUpdate={handleFileUpdate}
-                            onComplete={handleComplete}
-                            onBack={handleBack}
-                        />
+                        <>
+                            {isUploading && (
+                                <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white rounded-2xl border">
+                                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                                    <div className="text-center">
+                                        <p className="text-sm font-medium text-gray-900">
+                                            Uploading files...
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {uploadProgress.toFixed(0)}% complete
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                            {!isUploading && (
+                                <FileStepperForm
+                                    files={uploadedFiles}
+                                    onFileUpdate={handleFileUpdate}
+                                    onComplete={handleComplete}
+                                    onBack={handleBack}
+                                />
+                            )}
+                        </>
                     )}
                 </CardContent>
             </Card>

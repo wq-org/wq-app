@@ -2,7 +2,6 @@ export interface UploadedFile {
     id: string;
     file: File;
     title: string;
-    description: string;
     preview?: string;
 }
 
@@ -136,5 +135,42 @@ export const DEFAULT_FILE_CONFIG: FileTypeConfig = {
 export function getFileTypeConfig(fileName: string): FileTypeConfig {
     const extension = fileName.split('.').pop()?.toUpperCase() || '';
     return FILE_TYPE_CONFIG[extension] || DEFAULT_FILE_CONFIG;
+}
+
+// File upload types
+export interface FileUploadResult {
+    success: boolean;
+    path?: string;
+    publicUrl?: string;
+    error?: string;
+    fileName?: string;
+}
+
+export interface FileUploadOptions {
+    teacherId: string;
+    file: File;
+    title?: string;
+    onProgress?: (progress: number) => void;
+}
+
+// File list types
+export interface FileListItem {
+    name: string;
+    id: string;
+    updated_at: string;
+    created_at: string;
+    last_accessed_at: string;
+    metadata: Record<string, any>;
+}
+
+export interface FetchFilesResult {
+    success: boolean;
+    files?: FileListItem[];
+    error?: string;
+}
+
+export interface FetchFilesOptions {
+    limit?: number;
+    sortBy?: { column: 'name' | 'created_at' | 'updated_at'; order: 'asc' | 'desc' };
 }
 

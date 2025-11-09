@@ -72,7 +72,7 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setError(err.message || 'Failed to fetch course');
       console.error('Error fetching course:', err);
     } finally {
-      setLoading(false);
+    setLoading(false);
     }
   }, []);
 
@@ -80,7 +80,7 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const createCourse = useCallback(async (data: Omit<CreateCourseData, 'teacher_id' | 'institution_id'>): Promise<Course | null> => {
     if (!profile?.user_id) {
       setError('User not authenticated');
-      return null;
+    return null;
     }
 
     setError(null);

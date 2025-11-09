@@ -140,9 +140,6 @@ export default function FileTable({ files }: FileTableProps) {
                                 Filename
                             </TableHead>
                             <TableHead className="text-center text-gray-400 font-light">
-                                Description
-                            </TableHead>
-                            <TableHead className="text-center text-gray-400 font-light">
                                 Size
                             </TableHead>
                             <TableHead className="text-center text-gray-400 font-light w-[80px]">
@@ -171,9 +168,6 @@ export default function FileTable({ files }: FileTableProps) {
                                     </TableCell>
                                     <TableCell className="flex items-center gap-3 text-left">
                                         {file.filename}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {file.description}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {file.size}
