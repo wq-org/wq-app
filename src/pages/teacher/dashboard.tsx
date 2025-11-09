@@ -13,13 +13,97 @@ import {AVATAR_PLACEHOLDER_SRC} from '@/lib/constants';
 import Spinner from '@/components/ui/spinner';
 import {useNavigate} from 'react-router-dom';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
+import type {FileItem} from '@/features/files/types/files.types';
 
 const dummyStudents: any = [
 
 ];
 
-const dummyFiles: any = [
-
+const dummyFiles: FileItem[] = [
+    {
+        id: 1,
+        filename: 'Course_Introduction.docx',
+        description: 'Introduction to the course materials',
+        type: 'Word',
+        size: '850 KB',
+    },
+    {
+        id: 2,
+        filename: 'Lesson_Plan_Template.pptx',
+        description: 'Template for creating lesson plans',
+        type: 'PPT',
+        size: '2.4 MB',
+    },
+    {
+        id: 3,
+        filename: 'Student_Grades.xlsx',
+        description: 'Quarterly student performance data',
+        type: 'Exl',
+        size: '1.1 MB',
+    },
+    {
+        id: 4,
+        filename: 'Syllabus_2024.pdf',
+        description: 'Course syllabus and requirements',
+        type: 'PDF',
+        size: '900 KB',
+    },
+    {
+        id: 5,
+        filename: 'Assignment_Guidelines.docx',
+        description: 'Guidelines for student assignments',
+        type: 'Word',
+        size: '650 KB',
+    },
+    {
+        id: 6,
+        filename: 'Exam_Results.xlsx',
+        description: 'Final exam results and statistics',
+        type: 'Exl',
+        size: '1.8 MB',
+    },
+    {
+        id: 7,
+        filename: 'Course_Overview.pdf',
+        description: 'Overview of course objectives',
+        type: 'PDF',
+        size: '1.2 MB',
+    },
+    {
+        id: 8,
+        filename: 'Teaching_Resources.pptx',
+        description: 'Additional teaching resources',
+        type: 'PPT',
+        size: '3.1 MB',
+    },
+    {
+        id: 9,
+        filename: 'Student_Feedback.docx',
+        description: 'Compiled student feedback',
+        type: 'Word',
+        size: '450 KB',
+    },
+    {
+        id: 10,
+        filename: 'Attendance_Record.xlsx',
+        description: 'Student attendance tracking',
+        type: 'Exl',
+        size: '750 KB',
+    },
+    {
+        id: 11,
+        filename: 'Course_Materials.pdf',
+        description: 'Essential course reading materials',
+        type: 'PDF',
+        size: '2.3 MB',
+    },
+    {
+        id: 12,
+        filename: 'Presentation_Template.pptx',
+        description: 'Reusable presentation template',
+        type: 'PPT',
+        size: '1.9 MB',
+    },
 ];
 
 

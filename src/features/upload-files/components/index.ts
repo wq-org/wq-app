@@ -1,3 +1,4 @@
-export { default as UploadedFileItem } from '../../command-palette/components/UploadedFileItem';
-export { default as UploadedFilesList } from './UploadedFilesList';
+export { default as FileDropzone } from './FileDropzone';
+export { default as FileStepperForm } from './FileStepperForm';
+export { default as UploadedFileItem } from './UploadedFileItem';
 

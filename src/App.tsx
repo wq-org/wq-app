@@ -34,8 +34,8 @@ function App() {
         <UserProvider>
             <CourseProvider>
                 <LessonProvider>
-                    <UserContextProvider>
-                        <Toaster />
+            <UserContextProvider>
+                <Toaster />
                 <Routes>
                     <Route path="/" element={<RoleAuth />} />
 
@@ -93,7 +93,7 @@ function App() {
                             <RequireAuth>
                                 <RequireOnboarding>
                                     <Lesson />
-                                </RequireOnboarding>
+                             </RequireOnboarding>
                             </RequireAuth>
                         } />
                         <Route path="settings" element={
@@ -147,7 +147,7 @@ function App() {
                     <Route path="/test" element={<Test />} />
                     <Route path="*" element={<Error404 />} />
                 </Routes>
-                </UserContextProvider>
+            </UserContextProvider>
                 </LessonProvider>
             </CourseProvider>
         </UserProvider>

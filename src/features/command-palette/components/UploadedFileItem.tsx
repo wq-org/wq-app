@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FileText, MoreVertical, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getFileTypeConfig } from '@/features/upload-files/types/upload.types';
 
 interface UploadedFileItemProps {
     file: File;
@@ -30,51 +31,8 @@ export default function UploadedFileItem({
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     };
 
-    // Get file extension and color config
-    const getFileConfig = () => {
-        const extension = file.name.split('.').pop()?.toUpperCase() || '';
-        
-        // For documents
-        if (['DOC', 'DOCX', 'TXT'].includes(extension)) {
-            return {
-                color: 'text-blue-500',
-                bgColor: 'bg-blue-500/10',
-                borderColor: 'border-blue-500/20',
-            };
-        }
-        // For PDFs
-        if (extension === 'PDF') {
-            return {
-                color: 'text-red-500',
-                bgColor: 'bg-red-500/10',
-                borderColor: 'border-red-500/20',
-            };
-        }
-        // For spreadsheets
-        if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
-            return {
-                color: 'text-green-500',
-                bgColor: 'bg-green-500/10',
-                borderColor: 'border-green-500/20',
-            };
-        }
-        // For presentations
-        if (['PPT', 'PPTX'].includes(extension)) {
-            return {
-                color: 'text-orange-500',
-                bgColor: 'bg-orange-500/10',
-                borderColor: 'border-orange-500/20',
-            };
-        }
-        // Default for other files
-        return {
-            color: 'text-gray-500',
-            bgColor: 'bg-gray-500/10',
-            borderColor: 'border-gray-500/20',
-        };
-    };
-
-    const config = getFileConfig();
+    // Get file type configuration
+    const config = getFileTypeConfig(file.name);
 
     return (
         <div className="flex items-center gap-3 p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors">

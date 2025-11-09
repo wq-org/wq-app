@@ -23,6 +23,8 @@ import {
     FileSpreadsheet,
     FileBarChart2,
     Ellipsis,
+    Image,
+    Video,
 } from 'lucide-react';
 import TableEmptyView from '@/features/files/components/TableEmptyView';
 import type {FileItem} from '../types/files.types';
@@ -51,6 +53,18 @@ const typeConfig = {
         bgColor: 'bg-red-500/10',
         borderColor: 'border-red-500/20',
         Icon: File,
+    },
+    Image: {
+        color: 'text-purple-500',
+        bgColor: 'bg-purple-500/10',
+        borderColor: 'border-purple-500/20',
+        Icon: Image,
+    },
+    Video: {
+        color: 'text-orange-500',
+        bgColor: 'bg-orange-500/10',
+        borderColor: 'border-orange-500/20',
+        Icon: Video,
     },
 };
 
@@ -129,9 +143,6 @@ export default function FileTable({ files }: FileTableProps) {
                                 Description
                             </TableHead>
                             <TableHead className="text-center text-gray-400 font-light">
-                                Type
-                            </TableHead>
-                            <TableHead className="text-center text-gray-400 font-light">
                                 Size
                             </TableHead>
                             <TableHead className="text-center text-gray-400 font-light w-[80px]">
@@ -144,27 +155,25 @@ export default function FileTable({ files }: FileTableProps) {
                             const config =
                                 typeConfig[
                                     file.type as keyof typeof typeConfig
-                                ];
+                                ] || typeConfig.PDF;
+                            const Icon = config.Icon;
                             return (
                                 <TableRow
                                     key={file.id}
                                     className="border-b last:border-0"
                                 >
                                     <TableCell className="text-center">
-                                        {file.id}
+                                        <div className="flex items-center justify-center">
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg border ${config.bgColor} ${config.borderColor}`}>
+                                                <Icon className={`h-5 w-5 ${config.color}`} />
+                                            </div>
+                                        </div>
                                     </TableCell>
                                     <TableCell className="flex items-center gap-3 text-left">
                                         {file.filename}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {file.description}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <span
-                                            className={`inline-block px-3 py-1 rounded border ${config.bgColor} ${config.color} ${config.borderColor} text-xs font-medium`}
-                                        >
-                                            {file.type}
-                                        </span>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {file.size}
