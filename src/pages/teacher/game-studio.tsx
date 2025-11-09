@@ -1,24 +1,10 @@
 import AppWrapper from '@/components/layout/AppWrapper';
-import {Card, CardFooter, CardHeader, CardTitle, CardDescription} from '@/components/ui/card';
 import {Camera, Grid, CheckCircle, Brain} from 'lucide-react';
 import {useNavigate} from 'react-router-dom';
-import {Button} from '@/components/ui/button';
+import GameCardList from '@/features/game-studio/components/GameCardList';
+import type { GameCardProps } from '@/features/game-studio/components/GameCard';
 
-// Cards data moved to `games2` below
-
-type GameCard = {
-    title: string;
-    route: string;
-    id: string;
-    button: string;
-    description: string;
-    icon: any;
-    color: string;
-    bgColor: string;
-    borderColor: string;
-};
-
-const games2: GameCard[] = [
+const games: GameCardProps[] = [
     {
         title: 'Photo Flash',
         route: '/student/dashboard/games/photoflash',
@@ -79,7 +65,6 @@ const games2: GameCard[] = [
 export default function GameStudio() {
     const navigate = useNavigate();
     const navigateTo = (route: string) => {
-        // For now, navigate to the provided route
         navigate(route);
     };
     return (
@@ -90,32 +75,9 @@ export default function GameStudio() {
                     This is the platform where teachers can create and manage educational games for their students.
                 </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-14">
-                {games2.map((card, idx) => {
-                    const Icon = card.icon;
-                    return (
-                        <Card key={idx} className="rounded-2xl shadow-lg bg-white animate-slideUpAndFade">
-                            <CardHeader>
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`p-2 rounded-lg ${card.bgColor} border ${card.borderColor}`}>
-                                            <Icon className={`w-6 h-6 ${card.color.replace('text-', '') ? card.color : ''}`} />
-                                        </div>
-                                        <CardTitle className="text-2xl">{card.title}</CardTitle>
-                                    </div>
-                                    <CardDescription className="text-lg">{card.description}</CardDescription>
-                                </div>
-                            </CardHeader>
-                            <CardFooter>
-                                <Button variant="default" className="rounded-lg hover:scale-95 active:scale-90 transition-all duration-200" onClick={() => navigateTo(card.route)}>
-                                    Play Now
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    );
-                })}
+            <div className="pb-14">
+                <GameCardList games={games} onGamePlay={navigateTo} />
             </div>
-
         </AppWrapper>
     );
 }
