@@ -10,6 +10,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Ensure assets are included in build
-  assetsInclude: ['**/*.jpeg', '**/*.jpg', '**/*.png'],
+  // Ensure all image formats are processed
+  assetsInclude: ['**/*.jpeg', '**/*.jpg', '**/*.png', '**/*.gif', '**/*.webp'],
+  build: {
+    // Optimize asset handling
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name].[hash].[ext]',
+      },
+    },
+  },
+  // If deploying to subdirectory, uncomment and set:
+  // base: process.env.BASE_URL || '/',
 });
