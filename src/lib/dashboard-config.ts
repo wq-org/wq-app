@@ -3,12 +3,10 @@ import {
     Building2,
     FolderOpen,
     Gamepad2,
-    GraduationCap,
     HardDrive,
     LayoutGrid,
     LayoutList,
     Shapes,
-    User,
     Users2,
     type LucideIcon,
 } from 'lucide-react';

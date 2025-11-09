@@ -25,7 +25,7 @@ export default function ImageUpload({
     maxSizeMB = 20,
 }: ImageUploadProps) {
     const [isDragging, setIsDragging] = useState(false);
-    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [_uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(value || null);
     const [urlInput, setUrlInput] = useState<string>(value && !value.startsWith('data:') ? value : '');
     const fileInputRef = useRef<HTMLInputElement>(null);

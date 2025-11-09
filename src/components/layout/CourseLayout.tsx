@@ -3,14 +3,12 @@ import { LayoutDashboard, Settings } from 'lucide-react';
 import AppWrapper from './AppWrapper';
 
 interface CourseLayoutProps {
-  courseId: string;
   children?: React.ReactNode;
   overviewContent?: React.ReactNode;
   settingsContent?: React.ReactNode;
 }
 
 export default function CourseLayout({
-  courseId,
   children,
   overviewContent,
   settingsContent,

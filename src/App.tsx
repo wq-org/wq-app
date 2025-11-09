@@ -28,6 +28,7 @@ import {LessonProvider} from './contexts/LessonContext';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
+import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
 
 function App() {
     return (
@@ -107,6 +108,13 @@ function App() {
                             <RequireAuth>
                                 <RequireOnboarding>
                                     <GameStudio />
+                                </RequireOnboarding>
+                            </RequireAuth>
+                        } />
+                        <Route path="canvas" element={
+                            <RequireAuth>
+                                <RequireOnboarding>
+                                    <GameEditorCanvas />
                                 </RequireOnboarding>
                             </RequireAuth>
                         } />
