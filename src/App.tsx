@@ -25,16 +25,18 @@ import AdminDashboard from './pages/admin/dashboard';
 import {UserProvider} from './contexts/UserContext';
 import {CourseProvider} from './contexts/CourseContext';
 import {LessonProvider} from './contexts/LessonContext';
+import {GameStudioProvider} from './contexts/GameStudioContext';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
-import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
+import GameStudioView from './features/game-studio/pages/GameStudioView';
 
 function App() {
     return (
         <UserProvider>
             <CourseProvider>
                 <LessonProvider>
+                <GameStudioProvider>
             <UserContextProvider>
                 <Toaster />
                 <Routes>
@@ -114,7 +116,7 @@ function App() {
                         <Route path="canvas" element={
                             <RequireAuth>
                                 <RequireOnboarding>
-                                    <GameEditorCanvas />
+                                    <GameStudioView />
                                 </RequireOnboarding>
                             </RequireAuth>
                         } />
@@ -156,6 +158,7 @@ function App() {
                     <Route path="*" element={<Error404 />} />
                 </Routes>
             </UserContextProvider>
+                </GameStudioProvider>
                 </LessonProvider>
             </CourseProvider>
         </UserProvider>

@@ -14,16 +14,18 @@ import { createCourse } from "@/features/courses/api/coursesApi";
 import { createInstitution } from "@/features/auth/api/authApi";
 import { createGame } from "@/features/command-palette/api/commandPaletteApi";
 import { useUser } from "@/contexts/UserContext";
-import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft } from "lucide-react";
+import { useGameStudioContext } from "@/contexts/GameStudioContext";
+import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, Plus } from "lucide-react";
 
-type AddType = "course" | "institution" | "game";
+type AddType = "course" | "institution" | "game" | "node";
 
 // This function calls create based on type
 const createByType = async (
     type: AddType,
     teacherId: string | null,
     data: { title: string; description: string },
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    addNodeFn?: (position: { x: number; y: number }, nodeData?: { title?: string; description?: string }) => void
 ) => {
     switch (type) {
         case "course":
@@ -42,6 +44,13 @@ const createByType = async (
             const gameResult = await createGame(teacherId, { title: data.title, description: data.description });
             onSuccess?.();
             return gameResult;
+        case "node":
+            // Add node using context - position will be calculated in GameEditorCanvas
+            if (addNodeFn) {
+                addNodeFn({ x: 0, y: 0 }, { title: data.title, description: data.description });
+            }
+            onSuccess?.();
+            return { success: true };
         default:
             throw new Error("Unknown type");
     }
@@ -57,6 +66,7 @@ interface AddOption {
 
 const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () => void }) => {
     const { profile } = useUser();
+    const { addNode } = useGameStudioContext();
     const [selectedType, setSelectedType] = useState<AddType | null>(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -84,6 +94,13 @@ const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () =
             icon: Gamepad2,
             availableForRoles: ["admin", "teacher"],
         },
+        {
+            type: "node",
+            label: "Add Node",
+            description: "Add a new action node to the game flow",
+            icon: Plus,
+            availableForRoles: ["admin", "teacher"],
+        },
     ];
 
     // Filter options based on role
@@ -99,7 +116,7 @@ const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () =
             const teacherId = selectedType === 'course' || selectedType === 'game' 
                 ? profile?.user_id || null 
                 : null;
-            const result = await createByType(selectedType, teacherId, { title, description }, onSuccess);
+            const result = await createByType(selectedType, teacherId, { title, description }, onSuccess, addNode);
             console.log("Created", { type: selectedType, result });
             setTitle("");
             setDescription("");

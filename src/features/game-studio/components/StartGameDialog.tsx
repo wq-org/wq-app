@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -44,6 +45,9 @@ export default function StartGameDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Configure Start Node</DialogTitle>
+          <DialogDescription className="sr-only">
+            Configure the start node with title, description, and number of rounds
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <div className="flex flex-col gap-2">

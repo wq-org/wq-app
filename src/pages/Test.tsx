@@ -5,10 +5,10 @@ import CommandAddDialog from "@/features/command-palette/components/CommandAddDi
 export default function Test() {
     return (
         <div className="min-h-screen bg-gray-50 p-8">
-    <CommandAddDialog type="course" />
+            <CommandAddDialog role="teacher" />
 
 
-<CommandPalette role="teacher" />
-    </div>
-  );
+            <CommandPalette role="teacher" />
+        </div>
+    );
 }
