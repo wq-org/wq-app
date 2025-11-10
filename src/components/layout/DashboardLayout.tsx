@@ -1,7 +1,7 @@
 import Navigation from '../common/Navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Linkedin, Mail } from 'lucide-react';
+import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react';
 import { Button } from '../ui/button';
 import Container from '../common/Container';
 import { useState } from 'react';
@@ -121,6 +121,7 @@ export default function DashboardLayout({
                                     {email}
                                 </TooltipContent>
                             </Tooltip>
+                     
 
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -136,6 +137,30 @@ export default function DashboardLayout({
                                     {linkedInUrl}
                                 </TooltipContent>
                             </Tooltip>
+
+                            {role?.toLowerCase() === 'teacher' ? (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant="outline" className="flex items-center justify-center p-2" aria-label="Teacher">
+                                            <Presentation className="text-gray-400" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Your Role is Teacher
+                                    </TooltipContent>
+                                </Tooltip>
+                            ) : role?.toLowerCase() === 'student' ? (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant="outline" className="flex items-center justify-center p-2" aria-label="Student">
+                                            <GraduationCap className="text-gray-400" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Your Role is Student
+                                    </TooltipContent>
+                                </Tooltip>
+                            ) : null}
                         </div>
                     </Container>
                     <section className="pt-8 rounded-2xl bg-gray-100 min-h-[calc(95vh-400px)] pb-8">

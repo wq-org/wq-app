@@ -14,7 +14,6 @@ export default function RoleSelection() {
     const { setPendingRole } = useUser();
 
     const handleContinue = () => {
-        console.log('selectedRole :>> ', selectedRole);
         if (selectedRole) {
             setPendingRole(selectedRole);
             navigate('/auth/signup');
