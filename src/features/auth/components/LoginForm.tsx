@@ -15,7 +15,7 @@ import {loginUser} from '../api/authApi';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import {useTranslation} from 'react-i18next';
 import {supabase} from '@/lib/supabase';
-import {useUser} from '@/contexts/UserContext';
+import {useUser} from '@/contexts/user';
 import {toast} from 'sonner';
 
 export default function LoginForm({className}: React.ComponentProps<'form'>) {

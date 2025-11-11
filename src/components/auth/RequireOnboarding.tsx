@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import Spinner from '@/components/ui/spinner';
 
 export default function RequireOnboarding({ children }: { children: React.ReactNode }) {

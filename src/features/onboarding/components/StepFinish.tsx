@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { upsertProfile } from '@/features/auth/api/authApi';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import SuccessPage from './SuccessPage';
 import { linkUserInstitutions } from '../api/onboardingApi';

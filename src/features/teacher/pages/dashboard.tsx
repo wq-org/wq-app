@@ -6,8 +6,8 @@ import TableView from '@/features/files/components/TableView';
 import {useState, useEffect} from 'react';
 import {StudentCardList} from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
-import {useUser} from '@/contexts/UserContext';
-import {useCourseContext} from '@/contexts/CourseContext';
+import {useUser} from '@/contexts/user';
+import {useCourse} from '@/contexts/course';
 import {useAvatarUrl} from '@/features/onboarding/hooks/useAvatarUrl';
 import {AVATAR_PLACEHOLDER_SRC} from '@/lib/constants';
 import Spinner from '@/components/ui/spinner';
@@ -60,7 +60,7 @@ function formatFileSize(bytes: number): string {
 export default function Dashboard() {
     const [selectedTab, setSelectedTab] = useState<string>('courses');
     const {profile, loading, getUserId, getRole} = useUser();
-    const {courses, loading: coursesLoading, fetchCourses, setSelectedCourse} = useCourseContext();
+    const {courses, loading: coursesLoading, fetchCourses, setSelectedCourse} = useCourse();
     const {url: signedAvatarUrl} = useAvatarUrl(profile?.avatar_url || '');
     const navigate = useNavigate();
     const [files, setFiles] = useState<FileItem[]>([]);

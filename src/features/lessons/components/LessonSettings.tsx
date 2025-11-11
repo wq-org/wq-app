@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Loader2 } from 'lucide-react';
 import { updateLesson, deleteLesson } from '@/features/lessons/api/lessonsApi';
 import { useNavigate } from 'react-router-dom';
-import { useLessonContext } from '@/contexts/LessonContext';
+import { useLesson } from '@/contexts/lesson';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { AlertTriangle } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
@@ -17,7 +17,7 @@ interface LessonSettingsProps {
 
 export default function LessonSettings({ lessonId }: LessonSettingsProps) {
   const navigate = useNavigate();
-  const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLessonContext();
+  const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLesson();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import {
   getTeacherCourses,
   getCourseById,

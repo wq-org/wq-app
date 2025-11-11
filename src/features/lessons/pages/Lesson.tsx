@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { useLessonContext } from '@/contexts/LessonContext';
+import { useLesson } from '@/contexts/lesson';
 import LessonLayout from '@/components/layout/LessonLayout';
 import LessonSettings from '@/features/lessons/components/LessonSettings';
 import { Separator } from '@/components/ui/separator';
@@ -9,7 +9,7 @@ export default function Lesson() {
     const { id } = useParams<{ id: string }>();
     const location = useLocation();
     const navigate = useNavigate();
-    const { lesson, fetchLessonById, createLesson } = useLessonContext();
+    const { lesson, fetchLessonById, createLesson } = useLesson();
 
     // Initialize lesson on mount
     useEffect(() => {

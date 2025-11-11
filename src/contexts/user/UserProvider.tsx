@@ -1,45 +1,9 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getCompleteProfile, logoutUser } from '@/features/auth/api/authApi';
-
-export interface Profile {
-  user_id: string;
-  role: string | null;
-  is_onboarded: boolean;
-  username: string | null;
-  display_name: string | null;
-  avatar_url: string | null;
-  email: string | null;
-  description: string | null;
-}
-
-interface UserContextValue {
-  session: any | null;
-  profile: Profile | null;
-  loading: boolean;
-  pendingRole: string | null;
-  setPendingRole: (role: string) => void;
-  clearPendingRole: () => void;
-  refreshProfile: () => Promise<void>;
-  getUserId: () => string | null;
-  getRole: () => string | null;
-  logout: () => Promise<void>;
-}
+import { UserContext, type Profile, type UserContextValue } from './UserContext';
 
 const PENDING_ROLE_KEY = 'wq_pending_role';
-
-const UserContext = createContext<UserContextValue>({
-  session: null,
-  profile: null,
-  loading: true,
-  pendingRole: null,
-  setPendingRole: () => {},
-  clearPendingRole: () => {},
-  refreshProfile: async () => {},
-  getUserId: () => null,
-  getRole: () => null,
-  logout: async () => {},
-}); 
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any | null>(null);
@@ -149,22 +113,23 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [clearPendingRole]);
 
+  const value: UserContextValue = {
+    session,
+    profile,
+    loading,
+    pendingRole,
+    setPendingRole,
+    clearPendingRole,
+    refreshProfile,
+    getUserId,
+    getRole,
+    logout: handleLogout,
+  };
+
   return (
-    <UserContext.Provider value={{ 
-      session, 
-      profile, 
-      loading, 
-      pendingRole, 
-      setPendingRole, 
-      clearPendingRole, 
-      refreshProfile,
-      getUserId,
-      getRole,
-      logout: handleLogout
-    }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );
 }
 
-export const useUser = () => useContext(UserContext);

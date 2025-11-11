@@ -1,6 +1,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { CommandPalette } from '@/features/command-palette';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import Spinner from '@/components/ui/spinner';
 

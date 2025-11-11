@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CourseLayout from '@/components/layout/CourseLayout';
 import CourseSettings from '@/features/courses/CourseSettings';
-import { useCourseContext } from '@/contexts/CourseContext';
+import { useCourse } from '@/contexts/course';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
@@ -17,7 +17,7 @@ import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/course
 export default function Course() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { fetchCourseById, selectedCourse } = useCourseContext();
+    const { fetchCourseById, selectedCourse } = useCourse();
     const [newTopic, setNewTopic] = useState('');
     const [topics, setTopics] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);

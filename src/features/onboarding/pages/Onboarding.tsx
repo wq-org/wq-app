@@ -13,7 +13,7 @@ import {useNavigate} from 'react-router-dom';
 import StepAccount from '../components/StepAccount';
 import StepInstitution from '../components/StepInstitution';
 import StepFinish from '../components/StepFinish';
-import {useUser} from '@/contexts/UserContext';
+import {useUser} from '@/contexts/user';
 import {toast} from 'sonner';
 import type {AccountData, Institution} from '../types/onboarding.types';
 import Navigation from '@/components/common/Navigation';

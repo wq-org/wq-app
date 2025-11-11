@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 
 interface SuccessPageProps {
   isOpen: boolean;

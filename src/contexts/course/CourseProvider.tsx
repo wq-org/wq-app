@@ -1,42 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
-import { getTeacherCourses, getCourseById, createCourse as createCourseApi, updateCourse as updateCourseApi, deleteCourse as deleteCourseApi } from "@/features/courses/api/coursesApi";
-import { useUser } from "./UserContext";
-import type { Course, CreateCourseData, UpdateCourseData } from "@/features/courses/types/course.types";
+import React, { useState, useCallback } from 'react';
+import { getTeacherCourses, getCourseById, createCourse as createCourseApi, updateCourse as updateCourseApi, deleteCourse as deleteCourseApi } from '@/features/courses/api/coursesApi';
+import { useUser } from '../user';
+import { CourseContext, type CourseContextValue } from './CourseContext';
+import type { Course, CreateCourseData, UpdateCourseData } from '@/features/courses/types/course.types';
 
-// Re-export types for backward compatibility
-export type { Course, CreateCourseData, UpdateCourseData } from "@/features/courses/types/course.types";
-
-interface CourseContextValue {
-  courses: Course[];
-  selectedCourse: Course | null;
-  loading: boolean;
-  error: string | null;
-  fetchCourses: () => Promise<void>;
-  createCourse: (data: Omit<CreateCourseData, 'teacher_id' | 'institution_id'>) => Promise<Course | null>;
-  updateCourse: (id: string, data: UpdateCourseData) => Promise<void>;
-  deleteCourse: (id: string) => Promise<void>;
-  refreshCourses: () => Promise<void>;
-  setSelectedCourse: (course: Course | null) => void;
-  fetchCourseById: (courseId: string) => Promise<void>;
-}
-
-const CourseContext = createContext<CourseContextValue>({
-  courses: [],
-  selectedCourse: null,
-  loading: false,
-  error: null,
-  fetchCourses: async () => {},
-  createCourse: async () => null,
-  updateCourse: async () => {},
-  deleteCourse: async () => {},
-  refreshCourses: async () => {},
-  setSelectedCourse: () => {},
-  fetchCourseById: async () => {},
-});
-
-export const useCourseContext = () => useContext(CourseContext);
-
-// CourseProvider implementation with actual API calls
 export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -72,7 +39,7 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setError(err.message || 'Failed to fetch course');
       console.error('Error fetching course:', err);
     } finally {
-    setLoading(false);
+      setLoading(false);
     }
   }, []);
 
@@ -80,7 +47,7 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const createCourse = useCallback(async (data: Omit<CreateCourseData, 'teacher_id' | 'institution_id'>): Promise<Course | null> => {
     if (!profile?.user_id) {
       setError('User not authenticated');
-    return null;
+      return null;
     }
 
     setError(null);
@@ -168,3 +135,4 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     </CourseContext.Provider>
   );
 };
+

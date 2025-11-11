@@ -13,7 +13,7 @@ import {
 import { createCourse } from "@/features/courses/api/coursesApi";
 import { createInstitution } from "@/features/auth/api/authApi";
 import { createGame } from "@/features/command-palette/api/commandPaletteApi";
-import { useUser } from "@/contexts/UserContext";
+import { useUser } from "@/contexts/user";
 import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft } from "lucide-react";
 
 type AddType = "course" | "institution" | "game";

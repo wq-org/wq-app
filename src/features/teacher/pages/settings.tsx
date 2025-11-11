@@ -1,6 +1,6 @@
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
 import SettingsLayout from '@/components/layout/SettingsLayout';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import Spinner from '@/components/ui/spinner';
 
 export default function Settings() {

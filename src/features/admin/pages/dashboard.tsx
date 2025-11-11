@@ -1,11 +1,11 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
 import InstitutionForm from '@/features/admin/pages/InstitutionForm';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import Spinner from '@/components/ui/spinner';
 
-const AdminDashboardInner = () => {
+export default function AdminDashboard() {
   const { profile, loading } = useUser();
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
 
@@ -18,26 +18,19 @@ const AdminDashboardInner = () => {
   }
 
   return (
-    <DashboardLayout
-      imageUrl={signedAvatarUrl || undefined}
-      userName={profile?.display_name || '@Admin'}
-      description={profile?.description || 'Welcome to the admin dashboard'}
-      role="admin"
-      onClickTab={() => {}}
-    >
-      <div className="w-full py-8">
-        <InstitutionForm />
-      </div>
-    </DashboardLayout>
-  );
-};
-
-export default function AdminDashboard() {
-    return (
-        <div>
-            <AdminDashboardInner />
-            
-            <CommandPalette role="admin" />
+    <div>
+      <DashboardLayout
+        imageUrl={signedAvatarUrl || undefined}
+        userName={profile?.display_name || '@Admin'}
+        description={profile?.description || 'Welcome to the admin dashboard'}
+        role="admin"
+        onClickTab={() => {}}
+      >
+        <div className="w-full py-8">
+          <InstitutionForm />
         </div>
-    );
-}
+      </DashboardLayout>
+      <CommandPalette role="admin" />
+    </div>
+  );
+} 

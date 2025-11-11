@@ -5,7 +5,7 @@ import FileDropzone from '../components/FileDropzone';
 import FileStepperForm from '../components/FileStepperForm';
 import { useFileValidation } from '../hooks/useFileValidation';
 import { uploadFilesWithMetadata } from '../api/filesApi';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import type { UploadedFile } from '../types/upload.types';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';

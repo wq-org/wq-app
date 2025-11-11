@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
-import { useLessonContext } from '@/contexts/LessonContext';
+import { useLesson } from '@/contexts/lesson';
 import { Textarea } from '@/components/ui/textarea';
 
 interface CreateLessonFormProps {
@@ -16,7 +16,7 @@ export function CreateLessonForm({ topicId, onLessonCreated }: CreateLessonFormP
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { createLesson } = useLessonContext();
+    const { createLesson } = useLesson();
 
     const bothFieldsFilled = !!newLesson.trim() && !!description.trim() && !!topicId;
 

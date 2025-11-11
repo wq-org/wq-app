@@ -8,26 +8,25 @@ import RoleAuth from './features/auth/components/role-auth';
 import Institution from './features/institution/institution';
 import Test from './user/pages/Test';
 
-import StudentDashboard from './features/student/pages/dashboard';
-import StudentSettings from './features/student/pages/settings';
+import StudentDashboard from './features/student/pages/Dashboard';
+import StudentSettings from './features/student/pages/Settings';
 
-import TeacherDashboard from './features/teacher/pages/dashboard';
-import TeacherSettings from './features/teacher/pages/settings';
-import GameStudio from './features/teacher/pages/game-studio';
-import Course from './features/teacher/pages/course';
+import TeacherDashboard from './features/teacher/pages/Dashboard';
+import TeacherSettings from './features/teacher/pages/Settings';
+import GameStudio from './features/teacher/pages/GameStudio';
+import Course from './features/teacher/pages/Course';
 import Error404 from './components/404';
 import Lesson from './features/lessons/pages/Lesson';
 import Onboarding from './features/onboarding/pages/Onboarding';
 
-import AdminDashboard from './features/admin/pages/dashboard';
-
-import {UserProvider} from './contexts/UserContext';
-import {CourseProvider} from './contexts/CourseContext';
-import {LessonProvider} from './contexts/LessonContext';
+import {UserProvider} from './contexts/user';
+import {CourseProvider} from './contexts/course';
+import {LessonProvider} from './contexts/lesson';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
+import AdminDashboard from './features/admin/pages/Dashboard';  
 
 function App() {
     return (
