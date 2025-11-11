@@ -6,16 +6,17 @@ import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { upsertProfile } from '@/features/auth/api/authApi';
 import { useUser } from '@/contexts/UserContext';
-import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import SuccessPage from './SuccessPage';
 import { linkUserInstitutions } from '../api/onboardingApi';
 import type { StepFinishProps } from '../types/onboarding.types';
+import { toast } from 'sonner';
 
 export default function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
   const { session, pendingRole, refreshProfile } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  
+
   // Generate signed URL for displaying avatar (accountData.avatar.src is just the path)
   const { url: signedAvatarUrl } = useAvatarUrl(accountData.avatar.src);
 
@@ -29,17 +30,16 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
 
     if (!pendingRole) {
       setIsSubmitting(false);
-      // Show error or prevent submission if role is not selected
-      console.error('Role must be selected before finishing onboarding.');
+      // Show error or prevent submission if role is not selected using the sonner toast
+      toast.error('Please select a logout and log in again. you must select a role (teacher or student) to finish onboarding.');
       return;
     }
-
-    await refreshProfile();
 
     try {
       // Upsert profile with all onboarding data
       await upsertProfile(session.user.id, {
         email: session.user.email,
+        username: accountData.username,
         description: accountData.description,
         display_name: accountData.displayName,
         avatar_url: accountData.avatar.src,
@@ -58,12 +58,20 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
         }
       }
 
+      // Refresh profile to get the updated is_onboarded status
+      await refreshProfile();
+      
+      // Small delay to ensure context state is updated before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // Show success dialog which will trigger confetti
       setShowSuccess(true);
     } catch (error) {
       console.error('Error completing onboarding:', error);
       setIsSubmitting(false);
-      // TODO: Show error to user
+      toast.error('Failed to complete onboarding', {
+        description: 'An error occurred while saving your profile. Please try again.',
+      });
     }
   };
 
@@ -170,4 +178,3 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
     </>
   );
 }
-

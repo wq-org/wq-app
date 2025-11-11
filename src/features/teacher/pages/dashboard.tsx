@@ -8,7 +8,7 @@ import {StudentCardList} from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
 import {useUser} from '@/contexts/UserContext';
 import {useCourseContext} from '@/contexts/CourseContext';
-import {useAvatarUrl} from '@/hooks/useAvatarUrl';
+import {useAvatarUrl} from '@/features/onboarding/hooks/useAvatarUrl';
 import {AVATAR_PLACEHOLDER_SRC} from '@/lib/constants';
 import Spinner from '@/components/ui/spinner';
 import {useNavigate} from 'react-router-dom';

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import { fetchAvatars } from '../api/onboardingApi';
 import type { StepAccountProps, AvatarOption } from '../types/onboarding.types';
 

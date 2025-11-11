@@ -25,7 +25,7 @@ export default function SuccessPage({
   onClickHandler,
 }: SuccessPageProps) {
   const navigate = useNavigate();
-  const { profile } = useUser();
+  const { profile, pendingRole } = useUser();
 
   // Trigger confetti on open
   useEffect(() => {
@@ -39,13 +39,15 @@ export default function SuccessPage({
   }, [isOpen]);
 
   const handleDone = () => {
-    if (onClickHandler) {
-      onClickHandler();
-    }
-
     // Navigate to role-specific dashboard
-    if (profile?.role) {
-      navigate(`/${profile.role}/dashboard`);
+    // Use profile.role first (from refreshed profile), then fallback to pendingRole
+    const role = profile?.role || pendingRole;
+    
+    if (role) {
+      navigate(`/${role}/dashboard`);
+    } else if (onClickHandler) {
+      // Fallback to onClickHandler if no role is available
+      onClickHandler();
     } else {
       navigate('/');
     }

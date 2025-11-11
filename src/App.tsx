@@ -1,25 +1,25 @@
 import {Routes, Route} from 'react-router-dom';
-import LoginPage from './pages/auth/login';
-import SignUpPage from './pages/auth/signUp';
-import ForgotPasswordPage from './pages/auth/forgot-password';
-import ResetPasswordPage from './pages/auth/reset-password';
-import VerifyEmailPage from './pages/auth/verify-email';
-import RoleAuth from './pages/auth/role-auth';
-import Institution from './pages/institution';
-import Test from './pages/Test';
+import LoginPage from './features/auth/components/login';
+import SignUpPage from './features/auth/components/signUp';
+import ForgotPasswordPage from './features/auth/components/forgot-password';
+import ResetPasswordPage from './features/auth/components/reset-password';
+import VerifyEmailPage from './features/auth/components/verify-email';
+import RoleAuth from './features/auth/components/role-auth';
+import Institution from './features/institution/institution';
+import Test from './user/pages/Test';
 
-import StudentDashboard from './pages/student/dashboard';
-import StudentSettings from './pages/student/settings';
+import StudentDashboard from './features/student/pages/dashboard';
+import StudentSettings from './features/student/pages/settings';
 
-import TeacherDashboard from './pages/teacher/dashboard';
-import TeacherSettings from './pages/teacher/settings';
-import GameStudio from './pages/teacher/game-studio';
-import Course from './pages/teacher/course';
-import Error404 from './pages/404';
+import TeacherDashboard from './features/teacher/pages/dashboard';
+import TeacherSettings from './features/teacher/pages/settings';
+import GameStudio from './features/teacher/pages/game-studio';
+import Course from './features/teacher/pages/course';
+import Error404 from './components/404';
 import Lesson from './features/lessons/pages/Lesson';
 import Onboarding from './features/onboarding/pages/Onboarding';
 
-import AdminDashboard from './pages/admin/dashboard';
+import AdminDashboard from './features/admin/pages/dashboard';
 
 import {UserProvider} from './contexts/UserContext';
 import {CourseProvider} from './contexts/CourseContext';
@@ -34,120 +34,120 @@ function App() {
         <UserProvider>
             <CourseProvider>
                 <LessonProvider>
-                <Toaster />
-                <Routes>
-                    <Route path="/" element={<RoleAuth />} />
+                    <Toaster />
+                    <Routes>
+                        <Route path="/" element={<RoleAuth />} />
 
-                    {/* Auth Routes */}
-                    <Route path="/auth">
-                        <Route path="login" element={<LoginPage />} />
-                        <Route path="signup" element={<SignUpPage />} />
-                        <Route path="forgot-password" element={<ForgotPasswordPage />} />
-                        <Route path="reset-password" element={<ResetPasswordPage />} />
-                        <Route path="verify-email" element={<VerifyEmailPage />} />
-                    </Route>
+                        {/* Auth Routes */}
+                        <Route path="/auth">
+                            <Route path="login" element={<LoginPage />} />
+                            <Route path="signup" element={<SignUpPage />} />
+                            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                            <Route path="reset-password" element={<ResetPasswordPage />} />
+                            <Route path="verify-email" element={<VerifyEmailPage />} />
+                        </Route>
 
-              
-
-                    <Route path="/onboarding" element={
-                        <Onboarding />
-                    } />
-
-                    {/* Admin Routes (require auth + onboarding) */}
-                    <Route path="/admin">
-                        <Route path="dashboard" element={
+                        <Route path="/onboarding" element={
                             <RequireAuth>
-                                <RequireOnboarding>
-                                    <AdminDashboard />
-                                </RequireOnboarding>
+                                <Onboarding />
                             </RequireAuth>
                         } />
-                    </Route>
 
-                    {/* Teacher Routes (require auth + onboarding) */}
-                    <Route path="/teacher">
-                        <Route path="dashboard" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <TeacherDashboard />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route
-                            path="course/:id"
-                            element={
+                        {/* Admin Routes (require auth + onboarding) */}
+                        <Route path="/admin">
+                            <Route path="dashboard" element={
                                 <RequireAuth>
                                     <RequireOnboarding>
-                                        <Course />
+                                        <AdminDashboard />
                                     </RequireOnboarding>
                                 </RequireAuth>
-                            }
-                        />
-                        <Route path="lesson/:id" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <Lesson />
-                             </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route path="settings" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <TeacherSettings />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route path="game-studio" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <GameStudio />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route path="canvas" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <GameEditorCanvas />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route path="institution" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <Institution />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                    </Route>
+                            } />
+                        </Route>
 
-                    {/* Student Routes (require auth + onboarding) */}
-                    <Route path="/student">
-                        <Route path="dashboard" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <StudentDashboard />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route path="settings" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <StudentSettings />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                        <Route path="institution" element={
-                            <RequireAuth>
-                                <RequireOnboarding>
-                                    <Institution />
-                                </RequireOnboarding>
-                            </RequireAuth>
-                        } />
-                    </Route>
+                        {/* Teacher Routes (require auth + onboarding) */}
+                        <Route path="/teacher">
+                            <Route path="dashboard" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <TeacherDashboard />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route
+                                path="course/:id"
+                                element={
+                                    <RequireAuth>
+                                        <RequireOnboarding>
+                                            <Course />
+                                        </RequireOnboarding>
+                                    </RequireAuth>
+                                }
+                            />
+                            <Route path="lesson/:id" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <Lesson />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route path="settings" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <TeacherSettings />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route path="game-studio" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <GameStudio />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route path="canvas" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <GameEditorCanvas />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route path="institution" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <Institution />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                        </Route>
 
-                    <Route path="/test" element={<Test />} />
-                    <Route path="*" element={<Error404 />} />
-                </Routes>
+                        {/* Student Routes (require auth + onboarding) */}
+                        <Route path="/student">
+                            <Route path="dashboard" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <StudentDashboard />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route path="settings" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <StudentSettings />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                            <Route path="institution" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <Institution />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
+                        </Route>
+
+                        <Route path="/test" element={<Test />} />
+                        <Route path="*" element={<Error404 />} />
+                    </Routes>
                 </LessonProvider>
             </CourseProvider>
         </UserProvider>

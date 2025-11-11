@@ -1,8 +1,8 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import CommandPalette from '@/features/command-palette/components/CommandPalette';
-import InstitutionForm from '@/components/admin/InstitutionForm';
+import InstitutionForm from '@/features/admin/pages/InstitutionForm';
 import { useUser } from '@/contexts/UserContext';
-import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import Spinner from '@/components/ui/spinner';
 
 const AdminDashboardInner = () => {
