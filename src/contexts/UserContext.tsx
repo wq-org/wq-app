@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getCompleteProfile } from '@/features/auth/api/authApi';
+import { getCompleteProfile, logoutUser } from '@/features/auth/api/authApi';
 
 export interface Profile {
   user_id: string;
@@ -23,6 +23,7 @@ interface UserContextValue {
   refreshProfile: () => Promise<void>;
   getUserId: () => string | null;
   getRole: () => string | null;
+  logout: () => Promise<void>;
 }
 
 const PENDING_ROLE_KEY = 'wq_pending_role';
@@ -37,6 +38,7 @@ const UserContext = createContext<UserContextValue>({
   refreshProfile: async () => {},
   getUserId: () => null,
   getRole: () => null,
+  logout: async () => {},
 }); 
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -126,6 +128,27 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
+  // Logout function that clears all state and storage
+  const handleLogout = useCallback(async () => {
+    try {
+      // Clear pending role
+      clearPendingRole();
+      
+      // Call the logout API function which clears Supabase session and storage
+      await logoutUser();
+      
+      // Clear local state
+      setSession(null);
+      setProfile(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even on error, clear local state
+      setSession(null);
+      setProfile(null);
+      clearPendingRole();
+    }
+  }, [clearPendingRole]);
+
   return (
     <UserContext.Provider value={{ 
       session, 
@@ -136,7 +159,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       clearPendingRole, 
       refreshProfile,
       getUserId,
-      getRole
+      getRole,
+      logout: handleLogout
     }}>
       {children}
     </UserContext.Provider>

@@ -103,10 +103,24 @@ export async function loginUser(loginData: AuthData): Promise<{
 
 /**
  * Log out the current user
+ * Clears Supabase session, sessionStorage, localStorage, and cookies
  */
 export async function logoutUser(): Promise<void> {
-  // TODO: Implement Supabase logout logic
-  console.log('Logout user');
+  try {
+    // Sign out from Supabase (clears Supabase session and cookies)
+    await supabase.auth.signOut();
+    
+    // Clear sessionStorage
+    sessionStorage.clear();
+    
+  
+  } catch (error) {
+    console.error('Error during logout:', error);
+    // Even if there's an error, try to clear local storage
+    sessionStorage.clear();
+    localStorage.clear();
+    throw error;
+  }
 }
 
 /**
@@ -150,7 +164,7 @@ export async function getProfile(userId: string) {
     .from('profiles')
     .select('user_id, role, is_onboarded')
     .eq('user_id', userId)
-    .maybeSingle(); // ✅ Returns null if no rows found, instead of throwing error
+    .maybeSingle(); 
   
   if (error) {
     console.error('Error fetching profile:', error);
@@ -176,7 +190,7 @@ export async function getCompleteProfile(userId: string) {
     throw error;
   }
   
-  return data; // Will be null if profile doesn't exist
+  return data;
 }
 
 export async function updateProfile(userId: string, payload: Partial<{ display_name: string; avatar_url: string; is_onboarded: boolean; linkedin_url: string; instagram_url: string; }>) {

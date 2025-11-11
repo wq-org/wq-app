@@ -130,6 +130,7 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 placeholder={t('common.placeholder.email')}
+                                name="email"
                                 required
                             />
                         </Field>

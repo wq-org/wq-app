@@ -14,11 +14,10 @@ import StudentSettings from './pages/student/settings';
 import TeacherDashboard from './pages/teacher/dashboard';
 import TeacherSettings from './pages/teacher/settings';
 import GameStudio from './pages/teacher/game-studio';
-import UserContextProvider from './store/UserContext';
 import Course from './pages/teacher/course';
 import Error404 from './pages/404';
 import Lesson from './features/lessons/pages/Lesson';
-import Onboarding from './features/onboarding/onboarding';
+import Onboarding from './features/onboarding/pages/Onboarding';
 
 import AdminDashboard from './pages/admin/dashboard';
 
@@ -35,7 +34,6 @@ function App() {
         <UserProvider>
             <CourseProvider>
                 <LessonProvider>
-            <UserContextProvider>
                 <Toaster />
                 <Routes>
                     <Route path="/" element={<RoleAuth />} />
@@ -49,15 +47,10 @@ function App() {
                         <Route path="verify-email" element={<VerifyEmailPage />} />
                     </Route>
 
-                    {/* Legacy auth routes for backward compatibility */}
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignUpPage />} />
+              
 
-                    {/* Onboarding (requires auth but not onboarding status) */}
                     <Route path="/onboarding" element={
-
                         <Onboarding />
-
                     } />
 
                     {/* Admin Routes (require auth + onboarding) */}
@@ -155,7 +148,6 @@ function App() {
                     <Route path="/test" element={<Test />} />
                     <Route path="*" element={<Error404 />} />
                 </Routes>
-            </UserContextProvider>
                 </LessonProvider>
             </CourseProvider>
         </UserProvider>
