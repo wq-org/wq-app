@@ -13,6 +13,10 @@
       "github": {
         "type": "http",
         "url": "https://api.githubcopilot.com/mcp/"
+      },
+      "notion": {
+        "type": "sse",
+        "url": "https://api.notion.com/mcp/sse"
       }
     }
   }
