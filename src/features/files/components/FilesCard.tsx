@@ -192,10 +192,11 @@ export default function FilesCard({
 
     return (
         <>
-            <Drawer  open={open} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[100vh]">
-                    <div className="flex flex-col h-full">
-                        {/* Header with Title on top left */}
+            <Drawer direction="right" open={open} onOpenChange={onOpenChange}>
+                <DrawerContent 
+                    className="h-[100vh] !w-[60vw] !max-w-2xl sm:!max-w-2xl" 
+                >
+                    <div className="flex flex-col h-full w-full">
                         <DrawerHeader className="flex-shrink-0">
                             <div className="flex items-center justify-between">
                                 <DrawerTitle>File Details</DrawerTitle>
@@ -214,10 +215,11 @@ export default function FilesCard({
 
                         <div className="flex flex-col flex-1 overflow-hidden">
                             {/* Tabs */}
-                            <div className="flex gap-12 border-b px-6 pt-4 flex-shrink-0">
-                                <button
+                            <div className="flex border-b px-6 pt-4 flex-shrink-0">
+                                <Button
+                                    variant="ghost"
                                     onClick={() => setActiveTab('overview')}
-                                    className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
+                                    className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
                                         activeTab === 'overview'
                                             ? 'text-black border-black font-medium'
                                             : 'text-black/40 hover:text-black/60 border-transparent'
@@ -225,10 +227,11 @@ export default function FilesCard({
                                 >
                                     <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
                                     <span>Overview</span>
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant="ghost"
                                     onClick={() => setActiveTab('settings')}
-                                    className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
+                                    className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
                                         activeTab === 'settings'
                                             ? 'text-black border-black font-medium'
                                             : 'text-black/40 hover:text-black/60 border-transparent'
@@ -236,11 +239,11 @@ export default function FilesCard({
                                 >
                                     <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
                                     <span>Settings</span>
-                                </button>
+                                </Button>
                             </div>
 
                             {/* Tab Content */}
-                            <div className="flex-1 overflow-y-auto p-6">
+                            <div className="flex-1 overflow-y-auto p-6 pb-12">
                                 {activeTab === 'overview' && (
                                     <div className="flex flex-col space-y-6">
                                         {/* Image/PDF Preview - 16:9 aspect ratio */}
