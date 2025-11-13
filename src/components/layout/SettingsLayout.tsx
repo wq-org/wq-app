@@ -8,8 +8,8 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
-import { useAvatarUrl } from '@/hooks/useAvatarUrl';
-import type { Profile } from '@/contexts/UserContext';
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
+import type { Profile } from '@/contexts/user';
 import Spinner from '../ui/spinner';
 
 interface SettingsLayoutProps {

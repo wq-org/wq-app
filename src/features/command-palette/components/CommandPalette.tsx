@@ -26,7 +26,8 @@ import CommandAddDialog from './CommandAddDialog';
 export default function CommandPalette({
     role,
     className,
-    onCourseCreated
+    onCourseCreated,
+    onFilesUploaded
 }: CommandPaletteProps) {
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState<string>('');
@@ -308,7 +309,7 @@ export default function CommandPalette({
                                 {activeDialog === 'search' && (
                                     <CommandSearchDialog />
                                 )}
-                                {activeDialog === 'upload' && <CommandUploadDialog />}
+                                {activeDialog === 'upload' && <CommandUploadDialog onSuccess={onFilesUploaded} />}
                                 {activeDialog === 'feedback' && (
                                     <CommandFeedbackDialog />
                                 )}

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { getCourseById, updateCourse, deleteCourse } from '@/features/courses/api/coursesApi';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/contexts/user';
 import { Trash2, Loader2 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 

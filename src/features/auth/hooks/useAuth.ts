@@ -46,7 +46,7 @@ export default function useAuth() {
 
     try {
       await logoutUser();
-      navigate('/auth/login');
+      navigate('/');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Logout failed';
       setError(errorMessage);

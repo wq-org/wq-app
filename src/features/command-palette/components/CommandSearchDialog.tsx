@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import usersList from '@/data/userList.json';
+
+const usersList: Array<{ id: string; username: string; email: string }> = [];
 
 import { useMemo, useState } from 'react';
 import { AvatarFallback, AvatarImage, Avatar } from '@/components/ui/avatar';

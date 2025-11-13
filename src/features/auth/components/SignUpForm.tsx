@@ -13,7 +13,7 @@ import {MoveLeft, Presentation, GraduationCap} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {signUpUser} from '../api/authApi';
-import {useUser} from '@/contexts/UserContext';
+import {useUser} from '@/contexts/user';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import {toast} from 'sonner';
 
@@ -130,6 +130,7 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 placeholder={t('common.placeholder.email')}
+                                name="email"
                                 required
                             />
                         </Field>

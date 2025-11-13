@@ -8,6 +8,8 @@ import {
 import { useNavigate } from 'react-router';
 import { cn } from '@/lib/utils';
 import NotificationPanel from '@/features/notification/components/NotificationPanel';
+import { useUser } from '@/contexts/user';
+import { toast } from 'sonner';
 
 interface NavigationProps {
     currentPageName?: string;
@@ -17,8 +19,17 @@ interface NavigationProps {
 
 const Navigation = ({ currentPageName, className }: NavigationProps) => {
     const navigate = useNavigate();
-    const handleOnClickLogout = () => {
-        navigate('/');
+    const { logout } = useUser();
+    
+    const handleOnClickLogout = async () => {
+        try {
+            await logout();
+            toast.success('Logged out successfully');
+            navigate('/');
+        } catch (error) {
+            console.error('Logout error:', error);
+            toast.error('Failed to logout. Please try again.');
+        }
     };
 
     return (
