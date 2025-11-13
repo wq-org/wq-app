@@ -23,8 +23,9 @@ import FilesCard from './FilesCard';
 
 interface FileTableProps {
     files: FileItem[];
+    onRefresh?: () => void;
 }
-export default function FileTable({ files }: FileTableProps) {
+export default function FileTable({ files, onRefresh }: FileTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -188,7 +189,10 @@ export default function FileTable({ files }: FileTableProps) {
                     onFileDeleted={() => {
                         setIsDrawerOpen(false);
                         setSelectedFile(null);
-                        // Optionally refresh files list here
+                        // Refresh files list after deletion
+                        if (onRefresh) {
+                            onRefresh();
+                        }
                     }}
                 />
             )}

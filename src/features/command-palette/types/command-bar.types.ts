@@ -39,6 +39,7 @@ export interface CommandPaletteProps {
     type?: string;
     className?: string;
     onCourseCreated?: () => void;
+    onFilesUploaded?: () => void;
 }
 
 export interface Game {

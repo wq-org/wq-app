@@ -55,7 +55,12 @@ interface AddOption {
     availableForRoles: ("admin" | "teacher" | "student")[];
 }
 
-const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () => void }) => {
+interface CommandAddDialogProps {
+    role?: string;
+    onSuccess?: () => void;
+}
+
+const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
     const { profile } = useUser();
     const [selectedType, setSelectedType] = useState<AddType | null>(null);
     const [title, setTitle] = useState("");
@@ -138,7 +143,7 @@ const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () =
                     {availableOptions.map((option) => {
                         const Icon = option.icon;
                         return (
-                            <button
+                            <div
                                 key={option.type}
                                 onClick={() => handleOptionSelect(option.type)}
                                 className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-left w-full"
@@ -157,7 +162,7 @@ const CommandAddDialog = ({ role, onSuccess }: { role?: string; onSuccess?: () =
                                     </div>
                                 </div>
                                 <ChevronRight className="w-5 h-5 text-gray-400" />
-                            </button>
+                            </div>
                         );
                     })}
                 </CardContent>

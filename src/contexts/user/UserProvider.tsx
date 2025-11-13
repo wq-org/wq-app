@@ -72,8 +72,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       await fetchProfile(session.user.id);
     }
   };
-
-  // Getter for userId
+  
   const getUserId = () => {
     if (session?.user?.id) {
       return session.user.id;
@@ -84,7 +83,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
-  // Getter for role
   const getRole = () => {
     if (profile?.role) {
       return profile.role;

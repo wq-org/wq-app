@@ -3,7 +3,7 @@ import CommandPalette from '@/features/command-palette/components/CommandPalette
 import CourseCardList from '@/features/courses/components/CourseCardList';
 import {getDashboardTabs} from '@/lib/dashboard-config';
 import TableView from '@/features/files/components/TableView';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {StudentCardList} from '@/features/student/StudentCardList';
 import EmptyCourseView from '@/features/courses/EmptyCourseView';
 import {useUser} from '@/contexts/user';
@@ -73,56 +73,57 @@ export default function Dashboard() {
         }
     }, [profile?.user_id, loading, fetchCourses]);
 
+    // Function to load files - extracted so it can be called from onFilesUploaded
+    const loadFiles = useCallback(async () => {
+        const userId = getUserId();
+        const role = getRole()?.toLowerCase();
+        
+        if (!userId || !role || loading) {
+            return;
+        }
+
+        setFilesLoading(true);
+        try {
+            const result = await fetchFilesByRole(role, userId, {
+                limit: 100,
+                sortBy: { column: 'created_at', order: 'desc' },
+            });
+
+            if (result.success && result.files) {
+                // Convert role to plural for storage path (e.g., 'teacher' -> 'teachers')
+                const storageRole = role.endsWith('s') ? role : `${role}s`;
+                
+                const mappedFiles: FileItem[] = result.files.map((file, index) => {
+                    const fileSize = (file as any).size || file.metadata?.size || 0;
+                    const storagePath = `${storageRole}/${userId}/${file.name}`;
+                    return {
+                        id: index + 1,
+                        filename: file.name,
+                        description: '',
+                        type: getFileTypeFromExtension(file.name),
+                        size: formatFileSize(fileSize),
+                        storagePath,
+                    };
+                });
+                setFiles(mappedFiles);
+            } else {
+                console.error('Failed to fetch files:', result.error);
+                setFiles([]);
+            }
+        } catch (error) {
+            console.error('Error fetching files:', error);
+            setFiles([]);
+        } finally {
+            setFilesLoading(false);
+        }
+    }, [getUserId, getRole, loading]);
+
     // Fetch files when profile is loaded and user is on files tab
     useEffect(() => {
-        const loadFiles = async () => {
-            const userId = getUserId();
-            const role = getRole()?.toLowerCase();
-            
-            if (!userId || !role || loading) {
-                return;
-            }
-
-            setFilesLoading(true);
-            try {
-                const result = await fetchFilesByRole(role, userId, {
-                    limit: 100,
-                    sortBy: { column: 'created_at', order: 'desc' },
-                });
-
-                if (result.success && result.files) {
-                    // Convert role to plural for storage path (e.g., 'teacher' -> 'teachers')
-                    const storageRole = role.endsWith('s') ? role : `${role}s`;
-                    
-                    const mappedFiles: FileItem[] = result.files.map((file, index) => {
-                        const fileSize = (file as any).size || file.metadata?.size || 0;
-                        const storagePath = `${storageRole}/${userId}/${file.name}`;
-                        return {
-                            id: index + 1,
-                            filename: file.name,
-                            description: '',
-                            type: getFileTypeFromExtension(file.name),
-                            size: formatFileSize(fileSize),
-                            storagePath,
-                        };
-                    });
-                    setFiles(mappedFiles);
-                } else {
-                    console.error('Failed to fetch files:', result.error);
-                    setFiles([]);
-                }
-            } catch (error) {
-                console.error('Error fetching files:', error);
-                setFiles([]);
-            } finally {
-                setFilesLoading(false);
-            }
-        };
-
         if (selectedTab === 'files') {
             loadFiles();
         }
-    }, [profile?.role, profile?.user_id, loading, selectedTab, getUserId, getRole]);
+    }, [profile?.role, profile?.user_id, loading, selectedTab, loadFiles]);
 
     const handleClickTab = (id: string) => {
         const currentTab = getDashboardTabs('teacher').filter(
@@ -179,7 +180,7 @@ export default function Dashboard() {
                             <Spinner variant="gray" size="lg" speed={1750} />
                         </div>
                     ) : (
-                        <TableView files={files} />
+                        <TableView files={files} onRefresh={loadFiles} />
                     )
                 )}
                 {selectedTab === 'students' && (
@@ -187,7 +188,7 @@ export default function Dashboard() {
                 )}
             </DashboardLayout>
 
-            <CommandPalette role="teacher" onCourseCreated={fetchCourses} />
+            <CommandPalette role="teacher" onCourseCreated={fetchCourses} onFilesUploaded={loadFiles} />
         </>
     );
 }
