@@ -22,6 +22,9 @@ export default function AdminDashboard() {
       <DashboardLayout
         imageUrl={signedAvatarUrl || undefined}
         userName={profile?.display_name || '@Admin'}
+        username={profile?.username || undefined}
+        email={profile?.email || undefined}
+        linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to the admin dashboard'}
         role="admin"
         onClickTab={() => {}}

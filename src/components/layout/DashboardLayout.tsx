@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { getDashboardTabs } from '@/lib/dashboard-config';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { QuoteOfTheDay } from '@/components/ui/quote';
-import { Separator } from '@/components/ui/separator';
 
 interface DashboardLayoutProps {
     imageUrl?: string;
@@ -21,7 +20,6 @@ interface DashboardLayoutProps {
     linkedInUrl?: string;
     handleFollowClick?: () => void;
     handleMailClick?: () => void;
-    handleLinkedInClick?: () => void;
     onClickTab?: (tabId: string) => void;
 }
 
@@ -33,10 +31,9 @@ export default function DashboardLayout({
     children,
     role,
     email = 'john.doe@example.com',
-    linkedInUrl = 'linkedin.com/in/johndoe',
+    linkedInUrl,
     handleFollowClick,
     handleMailClick,
-    handleLinkedInClick,
     onClickTab,
 }: DashboardLayoutProps) {
     const [activeTab, setActiveTab] = useState('courses');
@@ -77,15 +74,10 @@ export default function DashboardLayout({
                                 </Avatar>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-5xl">{userName}</p>
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                        {username && (
-                                            <>
-                                                <span className="text-sm">@{username}</span>
-                                                <Separator orientation="vertical" className="h-4" />
-                                            </>
-                                        )}
-                                        <span className="text-sm">{description}</span>
-                                    </div>
+                                    {username && (
+                                        <p className="text-sm text-muted-foreground">@{username}</p>
+                                    )}
+                                    <p className="text-muted-foreground">{description}</p>
                                 </div>
                             </div>
                             {/* Quote of the Day - aligned to the right */}
@@ -136,20 +128,29 @@ export default function DashboardLayout({
                             </Tooltip>
                      
 
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className="gap-2"
-                                        onClick={handleLinkedInClick}
-                                    >
-                                        <Linkedin className="text-gray-400" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    {linkedInUrl}
-                                </TooltipContent>
-                            </Tooltip>
+                            {linkedInUrl && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="gap-2"
+                                            onClick={() => {
+                                                if (linkedInUrl) {
+                                                    const url = linkedInUrl.startsWith('http') 
+                                                        ? linkedInUrl 
+                                                        : `https://${linkedInUrl}`;
+                                                    window.open(url, '_blank', 'noopener,noreferrer');
+                                                }
+                                            }}
+                                        >
+                                            <Linkedin className="text-gray-400" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        {linkedInUrl}
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
 
                             {role?.toLowerCase() === 'teacher' ? (
                                 <Tooltip>

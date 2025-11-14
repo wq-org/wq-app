@@ -156,6 +156,7 @@ export default function Dashboard() {
                 userName={profile?.display_name || 'Teacher'}
                 username={profile?.username || undefined}
                 email={profile?.email || undefined}
+                linkedInUrl={profile?.linkedin_url || undefined}
                 description={profile?.description || 'Welcome to your dashboard'}
                 role="teacher"
                 onClickTab={(tabId: string) => handleClickTab(tabId)}
