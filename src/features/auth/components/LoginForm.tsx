@@ -17,6 +17,7 @@ import {useTranslation} from 'react-i18next';
 import {supabase} from '@/lib/supabase';
 import {useUser} from '@/contexts/user';
 import {toast} from 'sonner';
+import {validateEmail} from '@/lib/validations';
 
 export default function LoginForm({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [emailError, setEmailError] = useState<string | null>(null);
 
     const {t} = useTranslation('auth');
     const {pendingRole} = useUser();
@@ -44,8 +46,24 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
         navigate('/auth/signup');
     };
 
+    const handleEmailChange = (value: string) => {
+        setEmail(value);
+        if (value.trim() && !validateEmail(value)) {
+            setEmailError('Please enter a valid email address');
+        } else {
+            setEmailError(null);
+        }
+    };
+
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
+        
+        // Validate email before submitting
+        if (!validateEmail(email)) {
+            setEmailError('Please enter a valid email address');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -171,10 +189,16 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
                                 type="email"
                                 placeholder={t('common.placeholder.email')}
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => handleEmailChange(e.target.value)}
                                 autoComplete="email"
                                 name="email"
+                                className={emailError ? 'border-red-500' : ''}
                             />
+                            {emailError && (
+                                <FieldDescription className="text-red-500 text-sm">
+                                    {emailError}
+                                </FieldDescription>
+                            )}
                         </Field>
 
                         <Field>

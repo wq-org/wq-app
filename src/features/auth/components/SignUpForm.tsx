@@ -16,6 +16,7 @@ import {signUpUser} from '../api/authApi';
 import {useUser} from '@/contexts/user';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import {toast} from 'sonner';
+import {validateEmail} from '@/lib/validations';
 
 export default function SignUpForm({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [emailError, setEmailError] = useState<string | null>(null);
 
     const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -44,15 +46,32 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
     // Select icon based on role
     const RoleIcon = role === 'teacher' ? Presentation : GraduationCap;
 
+    const handleEmailChange = (value: string) => {
+        setEmail(value);
+        if (value.trim() && !validateEmail(value)) {
+            setEmailError('Please enter a valid email address');
+        } else {
+            setEmailError(null);
+        }
+    };
+
     // Check if passwords match and all fields are filled
     const isFormValid =
         email.trim() !== '' &&
+        validateEmail(email) &&
         password.trim() !== '' &&
         repeatPassword.trim() !== '' &&
         password === repeatPassword;
 
     async function handleOnSubmitSignUp(e: React.FormEvent) {
         e.preventDefault();
+        
+        // Validate email before submitting
+        if (!validateEmail(email)) {
+            setEmailError('Please enter a valid email address');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -128,11 +147,17 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
                                 id="email"
                                 type="email"
                                 value={email}
-                                onChange={e => setEmail(e.target.value)}
+                                onChange={e => handleEmailChange(e.target.value)}
                                 placeholder={t('common.placeholder.email')}
                                 name="email"
                                 required
+                                className={emailError ? 'border-red-500' : ''}
                             />
+                            {emailError && (
+                                <FieldDescription className="text-red-500 text-sm">
+                                    {emailError}
+                                </FieldDescription>
+                            )}
                         </Field>
 
                         <Field>

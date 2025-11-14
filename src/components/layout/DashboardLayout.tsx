@@ -8,10 +8,12 @@ import { useState } from 'react';
 import { getDashboardTabs } from '@/lib/dashboard-config';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { QuoteOfTheDay } from '@/components/ui/quote';
+import { Separator } from '@/components/ui/separator';
 
 interface DashboardLayoutProps {
     imageUrl?: string;
     userName: string;
+    username?: string;
     description: string;
     children?: React.ReactNode;
     role: string;
@@ -26,6 +28,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({
     imageUrl,
     userName,
+    username,
     description,
     children,
     role,
@@ -72,18 +75,28 @@ export default function DashboardLayout({
                                         {userName.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
-                                <p className="text-5xl">{userName}</p>
-                                <p className="text-muted-foreground">
-                                    {description}
-                                </p>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-5xl">{userName}</p>
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        {username && (
+                                            <>
+                                                <span className="text-sm">@{username}</span>
+                                                <Separator orientation="vertical" className="h-4" />
+                                            </>
+                                        )}
+                                        <span className="text-sm">{description}</span>
+                                    </div>
+                                </div>
                             </div>
-                            {/* Quote of the Day - aligned with profile section border */}
-                            <QuoteOfTheDay
-                                quote={sampleQuote.text}
-                                author={sampleQuote.author}
-                                source={sampleQuote.source}
-                                className="flex-1"
-                            />
+                            {/* Quote of the Day - aligned to the right */}
+                            <div className="flex-1 flex justify-end">
+                                <QuoteOfTheDay
+                                    quote={sampleQuote.text}
+                                    author={sampleQuote.author}
+                                    source={sampleQuote.source}
+                                    className="max-w-md"
+                                />
+                            </div>
                         </div>
                         <div className="flex gap-4">
                             <Badge variant="secondary">

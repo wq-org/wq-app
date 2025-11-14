@@ -153,7 +153,8 @@ export default function Dashboard() {
         <>
             <DashboardLayout
                 imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
-                userName={profile?.display_name || profile?.username || '@Teacher'}
+                userName={profile?.display_name || 'Teacher'}
+                username={profile?.username || undefined}
                 email={profile?.email || undefined}
                 description={profile?.description || 'Welcome to your dashboard'}
                 role="teacher"

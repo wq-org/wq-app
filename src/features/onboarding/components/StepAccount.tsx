@@ -9,6 +9,7 @@ import Spinner from '@/components/ui/spinner';
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import { fetchAvatars } from '../api/onboardingApi';
 import type { StepAccountProps, AvatarOption } from '../types/onboarding.types';
+import { validateUsername } from '@/lib/validations';
 
 export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   const [username, setUsername] = useState(initialData?.username || '');
@@ -17,6 +18,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(initialData?.avatarIndex || 0);
   const [avatars, setAvatars] = useState<AvatarOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
   
   // Calculate safe avatar index and get signed URL
   // Must be at the top level, before any conditional returns
@@ -53,7 +55,23 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
 
   const remainingChars = 120 - description.length;
 
+  const handleUsernameChange = (value: string) => {
+    const lowerValue = value.toLowerCase();
+    setUsername(lowerValue);
+    if (lowerValue.trim() && !validateUsername(lowerValue)) {
+      setUsernameError('Username must be 3-20 characters and contain only letters, numbers, and underscores');
+    } else {
+      setUsernameError(null);
+    }
+  };
+
   const handleContinue = () => {
+    // Validate before continuing
+    if (!validateUsername(username)) {
+      setUsernameError('Username must be 3-20 characters and contain only letters, numbers, and underscores');
+      return;
+    }
+
     onNext({
       username,
       displayName,
@@ -61,6 +79,11 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       avatar: avatars[selectedAvatarIndex],
     });
   };
+
+  const isFormValid = 
+    validateUsername(username) && 
+    displayName.trim() !== '' && 
+    description.trim() !== '';
 
   if (isLoading) {
     return (
@@ -166,10 +189,13 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             id="username"
             type="text"
             placeholder="@username"
-            value={username.toLowerCase()}
-            onChange={(e) => setUsername(e.target.value.toLowerCase())}
-            className="text-base"
+            value={username}
+            onChange={(e) => handleUsernameChange(e.target.value)}
+            className={`text-base ${usernameError ? 'border-red-500' : ''}`}
           />
+          {usernameError && (
+            <p className="text-sm text-red-500">{usernameError}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -219,7 +245,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
           type="button"
           variant="default"
           onClick={handleContinue}
-          disabled={!username || !displayName || !description}
+          disabled={!isFormValid}
         >
           Continue
         </Button>
