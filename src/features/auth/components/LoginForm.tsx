@@ -70,7 +70,28 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
 
                     console.log('profile :>> ', profile);
 
-                    if (!profile?.data?.is_onboarded || !profile?.data?.role) {
+                    // Check for query errors first
+                    if (profile.error) {
+                        console.error('Profile query error:', profile.error);
+                        toast.warning('Profile Error', {
+                            description: 'Unable to fetch profile. Please try again.',
+                        });
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Check if profile exists
+                    if (!profile.data) {
+                        toast.info('Complete Your Profile', {
+                            description: 'Please complete the onboarding process',
+                        });
+                        navigate('/onboarding');
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Stricter check: explicitly check for true
+                    if (profile.data.is_onboarded !== true || !profile.data.role) {
                         toast.info('Complete Your Profile', {
                             description: 'Please complete the onboarding process',
                         });
@@ -81,14 +102,17 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
                             description: `Logging you in as ${userRole}`,
                             duration: 2000,
                         });
-                        navigate(`/${userRole}/dashboard`);
+                        
+                        // Wait a bit for UserContext to update before navigating
+                        setTimeout(() => {
+                            navigate(`/${userRole}/dashboard`);
+                        }, 700);
                     }
                 } catch (error) {
                     console.error('Profile error:', error);
-                    toast.warning('Profile Not Found', {
-                        description: 'Please complete your profile setup',
+                    toast.error('Login Error', {
+                        description: 'An unexpected error occurred. Please try again.',
                     });
-                    navigate('/onboarding'); // Fallback
                 }
             }
         } catch (error) {
