@@ -7,7 +7,6 @@ import { updateProfile } from '@/features/auth/api/authApi';
 import { fetchAvatars } from '@/features/onboarding/api/onboardingApi';
 import { validateLinkedInUrl } from '@/lib/validations';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
 import type { AvatarOption } from '@/features/onboarding/types/onboarding.types';
 
 export default function Settings() {
@@ -28,29 +27,12 @@ export default function Settings() {
       setAboutMe(profile.description || '');
       setSelectedAvatar(profile.avatar_url || '');
       
-      // Fetch linkedin_url separately since it's not in Profile type
-      const fetchLinkedIn = async () => {
-        const userId = getUserId();
-        if (userId) {
-          try {
-            const { data } = await supabase
-              .from('profiles')
-              .select('linkedin_url')
-              .eq('user_id', userId)
-              .maybeSingle();
-            
-            const linkedInValue = data?.linkedin_url || '';
-            setLinkedIn(linkedInValue);
-            setInitialLinkedIn(linkedInValue);
-          } catch (error) {
-            console.error('Error fetching LinkedIn URL:', error);
-          }
-        }
-      };
-      
-      fetchLinkedIn();
+      // Use linkedin_url from profile (now included in Profile type)
+      const linkedInValue = profile.linkedin_url || '';
+      setLinkedIn(linkedInValue);
+      setInitialLinkedIn(linkedInValue);
     }
-  }, [profile, getUserId]);
+  }, [profile]);
 
   useEffect(() => {
     const loadAvatars = async () => {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Edit2Icon, X } from 'lucide-react';
@@ -10,7 +11,6 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerTrigger,
-  DrawerClose,
 } from '@/components/ui/drawer';
 import type { AvatarOption } from '@/features/onboarding/types/onboarding.types';
 
@@ -22,10 +22,14 @@ interface AvatarOptionItemProps {
 function AvatarOptionItem({ avatar, onSelect }: AvatarOptionItemProps) {
   const { url: avatarUrl } = useAvatarUrl(avatar.src);
 
+  const handleClick = () => {
+    onSelect(avatar.src);
+  };
+
   return (
     <button
       type="button"
-      onClick={() => onSelect(avatar.src)}
+      onClick={handleClick}
       className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
       aria-label={`Select ${avatar.name} avatar`}
     >
@@ -59,15 +63,15 @@ export default function AvatarDrawer({
   avatarOptions,
   onAvatarSelect,
 }: AvatarDrawerProps) {
-  // Let drawer state live in <Drawer>, make Drawer "uncontrolled" and close via DrawerClose
-  // Remove local isDrawerOpen
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleAvatarSelect = (avatarPath: string) => {
     onAvatarSelect(avatarPath);
-    // Drawer will close via DrawerClose component.
+    setIsOpen(false);
   };
 
   return (
-    <Drawer direction="right">
+    <Drawer direction="right" open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <Button
           type="button"
@@ -97,15 +101,14 @@ export default function AvatarDrawer({
         <DrawerHeader>
           <div className="flex items-center justify-between">
             <DrawerTitle>Choose Your Avatar</DrawerTitle>
-            <DrawerClose asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Close drawer"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DrawerClose>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close drawer"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
           <DrawerDescription className="sr-only">
             Select an avatar from the available options below
@@ -114,12 +117,11 @@ export default function AvatarDrawer({
         <div className="p-4 overflow-y-auto flex-1">
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 place-items-center">
             {avatarOptions.map((avatar) => (
-              <DrawerClose asChild key={avatar.src}>
-                <AvatarOptionItem
-                  avatar={avatar}
-                  onSelect={handleAvatarSelect}
-                />
-              </DrawerClose>
+              <AvatarOptionItem
+                key={avatar.src}
+                avatar={avatar}
+                onSelect={handleAvatarSelect}
+              />
             ))}
           </div>
         </div>

@@ -9,6 +9,7 @@ export interface Profile {
   avatar_url: string | null;
   email: string | null;
   description: string | null;
+  linkedin_url: string | null;
 }
 
 export interface UserContextValue {
