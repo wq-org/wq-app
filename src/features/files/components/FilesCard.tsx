@@ -13,6 +13,8 @@ import {Label} from '@/components/ui/label';
 import {Separator} from '@/components/ui/separator';
 import {ConfirmationDialog} from '@/components/common/ConfirmationDialog';
 import FailedToLoad from '@/components/common/FailedToLoad';
+import SimplePDFViewer from '@/components/common/SimplePDFViewer';
+import SimpleVideoPlayer from '@/components/common/SimpleVideoPlayer';
 import type {FileItem} from '../types/files.types';
 import {getFileBlobUrl, deleteFile, renameFile} from '../apis/filesApi';
 import {toast} from 'sonner';
@@ -23,23 +25,6 @@ interface FilesCardProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onFileDeleted?: () => void;
-}
-
-interface SimplePDFViewerProps {
-    pdfUrl: string;
-    fileName?: string;
-}
-
-function SimplePDFViewer({pdfUrl, fileName = 'document.pdf'}: SimplePDFViewerProps) {
-    return (
-        <div className="w-full h-screen">
-            <iframe
-                src={pdfUrl}
-                className="w-full h-full border-0"
-                title={fileName}
-            />
-        </div>
-    );
 }
 
 export default function FilesCard({
@@ -57,10 +42,11 @@ export default function FilesCard({
 
     const isImage = file.type === 'Image';
     const isPDF = file.type === 'PDF';
+    const isVideo = file.type === 'Video';
 
     // Get blob URL when drawer opens (downloads file and creates blob URL)
     useEffect(() => {
-        if ((isImage || isPDF) && file.storagePath && open) {
+        if ((isImage || isPDF || isVideo) && file.storagePath && open) {
             setLoading(true);
             console.log('Getting file blob URL for:', file.storagePath);
             getFileBlobUrl(file.storagePath)
@@ -99,7 +85,7 @@ export default function FilesCard({
                 fileUrlRef.current = null;
             }
         };
-    }, [isImage, isPDF, file.storagePath, open]);
+    }, [isImage, isPDF, isVideo, file.storagePath, open]);
 
     // Reset filename when file changes
     useEffect(() => {
@@ -247,6 +233,19 @@ export default function FilesCard({
                                             <div className="w-full aspect-[9/16] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
                                                 {fileUrl ? (
                                                     <SimplePDFViewer pdfUrl={fileUrl} fileName={file.filename} />
+                                                ) : loading ? (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <Spinner variant="gray" size="xl" speed={1750} />
+                                                    </div>
+                                                ) : (
+                                                    <FailedToLoad />
+                                                )}
+                                            </div>
+                                        )}
+                                        {isVideo && (
+                                            <div className="w-full rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center p-4">
+                                                {fileUrl ? (
+                                                    <SimpleVideoPlayer videoUrl={fileUrl} fileName={file.filename} />
                                                 ) : loading ? (
                                                     <div className="w-full h-full flex items-center justify-center">
                                                         <Spinner variant="gray" size="xl" speed={1750} />
