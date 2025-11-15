@@ -81,6 +81,7 @@ export default function FilesCard({
     useEffect(() => {
         if ((isImage || isPDF) && file.storagePath && open) {
             setLoading(true);
+            console.log('Getting file blob URL for:', file.storagePath);
             getFileBlobUrl(file.storagePath)
                 .then((url) => {
                     if (url) {
@@ -246,9 +247,15 @@ export default function FilesCard({
                             <div className="flex-1 overflow-y-auto p-6 pb-12">
                                 {activeTab === 'overview' && (
                                     <div className="flex flex-col space-y-6">
-                                        {/* Image/PDF Preview - 16:9 aspect ratio */}
+                                        {/* Image Preview - 16:9, PDF Preview - 9:16 vertical aspect ratio */}
                                         {(isImage || isPDF) && (
-                                            <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+                                            <div
+                                                className={
+                                                    isPDF
+                                                        ? "w-full aspect-[9/16] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center"
+                                                        : "w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center"
+                                                }
+                                            >
                                                 {loading ? (
                                                     <p className="text-gray-500">Loading...</p>
                                                 ) : fileUrl ? (

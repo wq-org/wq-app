@@ -14,7 +14,7 @@ import Spinner from '@/components/ui/spinner';
 import {useNavigate} from 'react-router-dom';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import type {FileItem} from '@/features/files/types/files.types';
-import {fetchFilesByRole} from '@/features/upload-files/api/filesApi';
+import {fetchFilesByRole} from '@/features/upload-files/api/uploadFilesApi';
 
 const dummyStudents: any = [
 
@@ -90,12 +90,9 @@ export default function Dashboard() {
             });
 
             if (result.success && result.files) {
-                // Convert role to plural for storage path (e.g., 'teacher' -> 'teachers')
-                const storageRole = role.endsWith('s') ? role : `${role}s`;
-                
                 const mappedFiles: FileItem[] = result.files.map((file, index) => {
                     const fileSize = (file as any).size || file.metadata?.size || 0;
-                    const storagePath = `${storageRole}/${userId}/${file.name}`;
+                    const storagePath = `${role}/${userId}/${file.name}`;
                     return {
                         id: index + 1,
                         filename: file.name,

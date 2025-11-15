@@ -67,6 +67,8 @@ export async function getFileBlobUrl(path: string): Promise<string | null> {
             return null;
         }
 
+        console.log('Downloading file:', path);
+
         const { data, error } = await supabase.storage
             .from(BUCKET_NAME)
             .download(path);
@@ -93,7 +95,7 @@ export async function getFileBlobUrl(path: string): Promise<string | null> {
 /**
  * Deletes a file from Supabase storage
  * 
- * @param path - Storage path of the file to delete (e.g., "teachers/{teacher_id}/filename.ext")
+ * @param path - Storage path of the file to delete (e.g., "teacher/{teacher_id}/filename.ext")
  * @returns Promise with success status and optional error message
  */
 export async function deleteFile(path: string): Promise<{ success: boolean; error?: string }> {
@@ -157,7 +159,6 @@ export async function renameFile(
             };
         }
 
-        // Extract directory from old path (e.g., "teachers/{user_id}/" from "teachers/{user_id}/oldname.ext")
         const pathParts = oldPath.split('/');
         const directory = pathParts.slice(0, -1).join('/');
         const newPath = `${directory}/${newFilename}`;
