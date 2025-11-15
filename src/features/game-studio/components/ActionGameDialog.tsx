@@ -8,19 +8,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Image, MapPin, FileText } from 'lucide-react';
-import ImageTermMatchGame from '../games/image-term-match/ImageTermMatchGame';
-import ImagePinMarkGame from '../games/image-pin-mark/ImagePinMarkGame';
-import ParagraphLineSelectGame from '../games/paragraph-line-select/ParagraphLineSelectGame';
+import { ImageTermMatchGame } from '@/features/games/image-term-match';
+import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
+import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame';
 import GameNodeLayout from './GameNodeLayout';
 
-interface GameOption {
-  id: string;
-  icon: typeof Image;
-  title: string;
-  description: string;
-  component: React.ComponentType;
-}
-
+import type { GameOption } from '../types/game-studio.types';
 const gameOptions: GameOption[] = [
   {
     id: 'image-term-match',

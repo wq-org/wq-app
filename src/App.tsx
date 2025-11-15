@@ -22,6 +22,7 @@ import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
 import AdminDashboard from './features/admin/pages/dashboard';  
+import { ImageTermMatchGame } from './features/games/image-term-match';
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                     <Toaster />
                     <Routes>
                         <Route path="/" element={<RoleSelectionPage />} />
+                        <Route path="/game-studio/image-term-match" element={<ImageTermMatchGame />} />
 
                         {/* Auth Routes */}
                         <Route path="/auth">
