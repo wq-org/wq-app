@@ -19,7 +19,7 @@ import {useUser} from '@/contexts/user';
 import {toast} from 'sonner';
 import {validateEmail} from '@/lib/validations';
 
-export default function LoginForm({className}: React.ComponentProps<'form'>) {
+export default function LoginPage({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
     const location = useLocation();
     const [email, setEmail] = useState('');

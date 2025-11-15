@@ -1,6 +1,6 @@
 // Components
-export { CourseCard } from './components/CourseCard';
-export { CourseCardList } from './components/CourseCardList';
+export { default as CourseCard } from './components/CourseCard';
+export { default as CourseCardList } from './components/CourseCardList';
 export { EmptyTopicsView } from './components/EmptyTopicsView';
 export { TopicBadge } from './components/TopicBadge';
 export { default as CourseSettings } from './components/CourseSettings';

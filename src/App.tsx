@@ -1,10 +1,5 @@
 import {Routes, Route} from 'react-router-dom';
-import LoginPage from './features/auth/components/login';
-import SignUpPage from './features/auth/components/signUp';
-import ForgotPasswordPage from './features/auth/components/forgot-password';
-import ResetPasswordPage from './features/auth/components/reset-password';
-import VerifyEmailPage from './features/auth/components/verify-email';
-import RoleAuth from './features/auth/components/role-auth';
+import { LoginPage, SignUpPage, VerifyEmailPage, RoleSelectionPage, ForgotPasswordPage, ResetPasswordPage } from './features/auth';
 import Institution from './features/institution/pages/institution';
 import Test from './user/pages/test';
 
@@ -35,7 +30,7 @@ function App() {
                 <LessonProvider>
                     <Toaster />
                     <Routes>
-                        <Route path="/" element={<RoleAuth />} />
+                        <Route path="/" element={<RoleSelectionPage />} />
 
                         {/* Auth Routes */}
                         <Route path="/auth">

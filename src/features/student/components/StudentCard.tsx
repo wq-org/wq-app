@@ -1,12 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-
-export type StudentCardProps = {
-    name: string;
-    username: string;
-    email: string;
-    imgSrc: string;
-};
+import type { StudentCardProps } from '../types/student.types';
 
 export function StudentCard({ username, email, imgSrc }: StudentCardProps) {
     const getInitials = (n: string) =>

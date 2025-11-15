@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CourseLayout from '@/components/layout/CourseLayout';
-import CourseSettings from '@/features/courses/CourseSettings';
+import CourseSettings from '@/features/courses/components/CourseSettings';
 import { useCourse } from '@/contexts/course';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useUser } from '@/contexts/user';
 import type {Roles} from '@/lib/dashboard-config';
 
-export default function RoleSelection() {
+export default function RoleSelectionPage() {
     const [selectedRole, setSelectedRole] = useState<string>('');
     const navigate = useNavigate();
     const { t } = useTranslation('roleSelection');

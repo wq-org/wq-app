@@ -18,7 +18,7 @@ import DotWaveLoader from '@/components/common/DotWaveLoader';
 import {toast} from 'sonner';
 import {validateEmail} from '@/lib/validations';
 
-export default function SignUpForm({className}: React.ComponentProps<'form'>) {
+export default function SignUpPage({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
     const location = useLocation();
     const {t} = useTranslation('auth');
@@ -226,4 +226,3 @@ export default function SignUpForm({className}: React.ComponentProps<'form'>) {
         </div>
     );
 }
-

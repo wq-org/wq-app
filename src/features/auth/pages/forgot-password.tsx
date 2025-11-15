@@ -9,12 +9,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { MoveLeft } from 'lucide-react';
-// import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-export default function ForgotPasswordForm({ className }: React.ComponentProps<'form'>) {
+export default function ForgotPasswordPage({ className }: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
-  //  const { t } = useTranslation('auth');
 
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -112,4 +110,3 @@ export default function ForgotPasswordForm({ className }: React.ComponentProps<'
         </div>
     );
 }
-
