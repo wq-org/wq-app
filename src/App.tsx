@@ -6,18 +6,18 @@ import ResetPasswordPage from './features/auth/components/reset-password';
 import VerifyEmailPage from './features/auth/components/verify-email';
 import RoleAuth from './features/auth/components/role-auth';
 import Institution from './features/institution/institution';
-import Test from './user/pages/Test';
+import Test from './user/pages/test';
 
-import StudentDashboard from './features/student/pages/Dashboard';
-import StudentSettings from './features/student/pages/Settings';
+import StudentDashboard from './features/student/pages/dashboard';
+import StudentSettings from './features/student/pages/settings';
 
-import TeacherDashboard from './features/teacher/pages/Dashboard';
-import TeacherSettings from './features/teacher/pages/Settings';
-import GameStudio from './features/teacher/pages/GameStudio';
-import Course from './features/teacher/pages/Course';
+import TeacherDashboard from './features/teacher/pages/dashboard';
+import TeacherSettings from './features/teacher/pages/settings';
+import GameStudio from './features/teacher/pages/game-studio';
+import Course from './features/teacher/pages/course';
 import Error404 from './components/404';
-import Lesson from './features/lessons/pages/Lesson';
-import Onboarding from './features/onboarding/pages/Onboarding';
+import Lesson from './features/lessons/pages/lesson';
+import Onboarding from './features/onboarding/pages/onboarding';
 
 import {UserProvider} from './contexts/user';
 import {CourseProvider} from './contexts/course';
@@ -26,7 +26,7 @@ import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
-import AdminDashboard from './features/admin/pages/Dashboard';  
+import AdminDashboard from './features/admin/pages/dashboard';  
 
 function App() {
     return (
