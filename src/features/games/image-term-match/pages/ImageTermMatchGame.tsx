@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/drawer';
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import GameLayout from '@/components/layout/GameLayout';
+import GameInformation from '@/features/games/components/GameInformation';
 import type { Term } from '../types/image-term-match.types';
 
 export default function ImageTermMatchGame() {
@@ -87,35 +88,13 @@ export default function ImageTermMatchGame() {
     // Editor Content
     const editorContent = (
         <div className="space-y-6">
-
             {/* Title and Description Section */}
-            <Card>
-                <CardHeader>
-                    <Label>Game Information</Label>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Title</Label>
-                        <Input
-                            id="title"
-                            type="text"
-                            placeholder="Enter game title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Input
-                            id="description"
-                            type="text"
-                            placeholder="Enter game description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </div>
-                </CardContent>
-            </Card>
+            <GameInformation
+                title={title}
+                description={description}
+                onTitleChange={setTitle}
+                onDescriptionChange={setDescription}
+            />
 
             {/* Image Upload Section */}
             <Card>

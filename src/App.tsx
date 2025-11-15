@@ -23,6 +23,8 @@ import {Toaster} from './components/ui/sonner';
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
 import AdminDashboard from './features/admin/pages/dashboard';  
 import { ImageTermMatchGame } from './features/games/image-term-match';
+import ImagePinMarkGame from './features/games/image-pin-mark/ImagePinMarkGame';
+
 
 function App() {
     return (
@@ -33,6 +35,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<RoleSelectionPage />} />
                         <Route path="/game-studio/image-term-match" element={<ImageTermMatchGame />} />
+                        <Route path="/game-studio/image-pin-mark" element={<ImagePinMarkGame />} />
 
                         {/* Auth Routes */}
                         <Route path="/auth">
