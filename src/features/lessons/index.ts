@@ -6,7 +6,7 @@ export { CreateLessonForm } from './components/CreateLessonForm';
 export { EmptyLessonsView } from './components/EmptyLessonsView';
 
 // Pages
-export { default as LessonPage } from './pages/Lesson';
+export { default as LessonPage } from './pages/lesson';
 
 // Types
 export type { Lesson as LessonType, CreateLessonData } from './types/lesson.types';

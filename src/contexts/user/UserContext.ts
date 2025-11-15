@@ -1,3 +1,4 @@
+import type {Roles} from '@/lib/dashboard-config';
 import { createContext, useContext } from 'react';
 
 export interface Profile {
@@ -9,6 +10,7 @@ export interface Profile {
   avatar_url: string | null;
   email: string | null;
   description: string | null;
+  linkedin_url: string | null;
 }
 
 export interface UserContextValue {
@@ -20,7 +22,7 @@ export interface UserContextValue {
   clearPendingRole: () => void;
   refreshProfile: () => Promise<void>;
   getUserId: () => string | null;
-  getRole: () => string | null;
+  getRole: () => Roles | null;
   logout: () => Promise<void>;
 }
 

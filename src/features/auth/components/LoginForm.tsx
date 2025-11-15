@@ -17,6 +17,7 @@ import {useTranslation} from 'react-i18next';
 import {supabase} from '@/lib/supabase';
 import {useUser} from '@/contexts/user';
 import {toast} from 'sonner';
+import {validateEmail} from '@/lib/validations';
 
 export default function LoginForm({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [emailError, setEmailError] = useState<string | null>(null);
 
     const {t} = useTranslation('auth');
     const {pendingRole} = useUser();
@@ -44,8 +46,24 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
         navigate('/auth/signup');
     };
 
+    const handleEmailChange = (value: string) => {
+        setEmail(value);
+        if (value.trim() && !validateEmail(value)) {
+            setEmailError('Please enter a valid email address');
+        } else {
+            setEmailError(null);
+        }
+    };
+
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
+        
+        // Validate email before submitting
+        if (!validateEmail(email)) {
+            setEmailError('Please enter a valid email address');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -70,7 +88,28 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
 
                     console.log('profile :>> ', profile);
 
-                    if (!profile?.data?.is_onboarded || !profile?.data?.role) {
+                    // Check for query errors first
+                    if (profile.error) {
+                        console.error('Profile query error:', profile.error);
+                        toast.warning('Profile Error', {
+                            description: 'Unable to fetch profile. Please try again.',
+                        });
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Check if profile exists
+                    if (!profile.data) {
+                        toast.info('Complete Your Profile', {
+                            description: 'Please complete the onboarding process',
+                        });
+                        navigate('/onboarding');
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Stricter check: explicitly check for true
+                    if (profile.data.is_onboarded !== true || !profile.data.role) {
                         toast.info('Complete Your Profile', {
                             description: 'Please complete the onboarding process',
                         });
@@ -81,14 +120,17 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
                             description: `Logging you in as ${userRole}`,
                             duration: 2000,
                         });
-                        navigate(`/${userRole}/dashboard`);
+                        
+                        // Wait a bit for UserContext to update before navigating
+                        setTimeout(() => {
+                            navigate(`/${userRole}/dashboard`);
+                        }, 700);
                     }
                 } catch (error) {
                     console.error('Profile error:', error);
-                    toast.warning('Profile Not Found', {
-                        description: 'Please complete your profile setup',
+                    toast.error('Login Error', {
+                        description: 'An unexpected error occurred. Please try again.',
                     });
-                    navigate('/onboarding'); // Fallback
                 }
             }
         } catch (error) {
@@ -147,10 +189,16 @@ export default function LoginForm({className}: React.ComponentProps<'form'>) {
                                 type="email"
                                 placeholder={t('common.placeholder.email')}
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => handleEmailChange(e.target.value)}
                                 autoComplete="email"
                                 name="email"
+                                className={emailError ? 'border-red-500' : ''}
                             />
+                            {emailError && (
+                                <FieldDescription className="text-red-500 text-sm">
+                                    {emailError}
+                                </FieldDescription>
+                            )}
                         </Field>
 
                         <Field>

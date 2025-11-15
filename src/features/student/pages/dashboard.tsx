@@ -20,7 +20,10 @@ export default function Dashboard() {
         <>
             <DashboardLayout
                 imageUrl={signedAvatarUrl || undefined}
-                userName={profile?.display_name || profile?.username || '@Student'}
+                userName={profile?.display_name || 'Student'}
+                username={profile?.username || undefined}
+                email={profile?.email || undefined}
+                linkedInUrl={profile?.linkedin_url || undefined}
                 description={profile?.description || 'Welcome to your dashboard'}
                 role="student"
             />

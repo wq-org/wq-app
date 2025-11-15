@@ -12,6 +12,7 @@ import { QuoteOfTheDay } from '@/components/ui/quote';
 interface DashboardLayoutProps {
     imageUrl?: string;
     userName: string;
+    username?: string;
     description: string;
     children?: React.ReactNode;
     role: string;
@@ -19,21 +20,20 @@ interface DashboardLayoutProps {
     linkedInUrl?: string;
     handleFollowClick?: () => void;
     handleMailClick?: () => void;
-    handleLinkedInClick?: () => void;
     onClickTab?: (tabId: string) => void;
 }
 
 export default function DashboardLayout({
     imageUrl,
     userName,
+    username,
     description,
     children,
     role,
     email = 'john.doe@example.com',
-    linkedInUrl = 'linkedin.com/in/johndoe',
+    linkedInUrl,
     handleFollowClick,
     handleMailClick,
-    handleLinkedInClick,
     onClickTab,
 }: DashboardLayoutProps) {
     const [activeTab, setActiveTab] = useState('courses');
@@ -72,18 +72,23 @@ export default function DashboardLayout({
                                         {userName.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
-                                <p className="text-5xl">{userName}</p>
-                                <p className="text-muted-foreground">
-                                    {description}
-                                </p>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-5xl">{userName}</p>
+                                    {username && (
+                                        <p className="text-sm text-muted-foreground">@{username}</p>
+                                    )}
+                                    <p className="text-muted-foreground">{description}</p>
+                                </div>
                             </div>
-                            {/* Quote of the Day - aligned with profile section border */}
-                            <QuoteOfTheDay
-                                quote={sampleQuote.text}
-                                author={sampleQuote.author}
-                                source={sampleQuote.source}
-                                className="flex-1"
-                            />
+                            {/* Quote of the Day - aligned to the right */}
+                            <div className="flex-1 flex justify-end">
+                                <QuoteOfTheDay
+                                    quote={sampleQuote.text}
+                                    author={sampleQuote.author}
+                                    source={sampleQuote.source}
+                                    className="max-w-md"
+                                />
+                            </div>
                         </div>
                         <div className="flex gap-4">
                             <Badge variant="secondary">
@@ -123,20 +128,29 @@ export default function DashboardLayout({
                             </Tooltip>
                      
 
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className="gap-2"
-                                        onClick={handleLinkedInClick}
-                                    >
-                                        <Linkedin className="text-gray-400" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    {linkedInUrl}
-                                </TooltipContent>
-                            </Tooltip>
+                            {linkedInUrl && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="gap-2"
+                                            onClick={() => {
+                                                if (linkedInUrl) {
+                                                    const url = linkedInUrl.startsWith('http') 
+                                                        ? linkedInUrl 
+                                                        : `https://${linkedInUrl}`;
+                                                    window.open(url, '_blank', 'noopener,noreferrer');
+                                                }
+                                            }}
+                                        >
+                                            <Linkedin className="text-gray-400" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        {linkedInUrl}
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
 
                             {role?.toLowerCase() === 'teacher' ? (
                                 <Tooltip>

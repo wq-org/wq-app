@@ -14,7 +14,7 @@ import Spinner from '@/components/ui/spinner';
 import {useNavigate} from 'react-router-dom';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import type {FileItem} from '@/features/files/types/files.types';
-import {fetchFilesByRole} from '@/features/upload-files/api/filesApi';
+import {fetchFilesByRole} from '@/features/upload-files/api/uploadFilesApi';
 
 const dummyStudents: any = [
 
@@ -90,12 +90,9 @@ export default function Dashboard() {
             });
 
             if (result.success && result.files) {
-                // Convert role to plural for storage path (e.g., 'teacher' -> 'teachers')
-                const storageRole = role.endsWith('s') ? role : `${role}s`;
-                
                 const mappedFiles: FileItem[] = result.files.map((file, index) => {
                     const fileSize = (file as any).size || file.metadata?.size || 0;
-                    const storagePath = `${storageRole}/${userId}/${file.name}`;
+                    const storagePath = `${role}/${userId}/${file.name}`;
                     return {
                         id: index + 1,
                         filename: file.name,
@@ -153,8 +150,10 @@ export default function Dashboard() {
         <>
             <DashboardLayout
                 imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
-                userName={profile?.display_name || profile?.username || '@Teacher'}
+                userName={profile?.display_name || 'Teacher'}
+                username={profile?.username || undefined}
                 email={profile?.email || undefined}
+                linkedInUrl={profile?.linkedin_url || undefined}
                 description={profile?.description || 'Welcome to your dashboard'}
                 role="teacher"
                 onClickTab={(tabId: string) => handleClickTab(tabId)}

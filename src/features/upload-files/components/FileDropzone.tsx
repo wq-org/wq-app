@@ -6,9 +6,10 @@ import { ALL_ALLOWED_TYPES } from '../types/upload.types';
 interface FileDropzoneProps {
     onFilesSelected: (files: File[]) => void;
     disabled?: boolean;
+    accept?: string; // Optional: restrict file types (e.g., 'image/*' or specific MIME types)
 }
 
-export default function FileDropzone({ onFilesSelected, disabled = false }: FileDropzoneProps) {
+export default function FileDropzone({ onFilesSelected, disabled = false, accept }: FileDropzoneProps) {
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,7 +78,7 @@ export default function FileDropzone({ onFilesSelected, disabled = false }: File
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 onChange={handleFileInput}
                 onClick={(e) => e.stopPropagation()} // Prevent double triggers
-                accept={ALL_ALLOWED_TYPES.join(',')}
+                accept={accept || ALL_ALLOWED_TYPES.join(',')}
                 multiple
                 disabled={disabled}
             />

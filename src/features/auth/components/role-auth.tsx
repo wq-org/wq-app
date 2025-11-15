@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardDescription } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useUser } from '@/contexts/user';
+import type {Roles} from '@/lib/dashboard-config';
 
 export default function RoleSelection() {
     const [selectedRole, setSelectedRole] = useState<string>('');
@@ -69,7 +70,7 @@ export default function RoleSelection() {
                             ? 'border-primary shadow-lg'
                             : ''
                     }`}
-                    onClick={() => setSelectedRole('teacher')}
+                    onClick={() => setSelectedRole('teacher' as Roles)}
                 >
                     <CardHeader>
                         <div className="flex w-full justify-end">

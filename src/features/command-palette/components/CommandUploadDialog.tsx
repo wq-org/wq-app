@@ -4,7 +4,7 @@ import Container from '@/components/common/Container';
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import FileStepperForm from '@/features/upload-files/components/FileStepperForm';
 import { useFileValidation } from '@/features/upload-files/hooks/useFileValidation';
-import { uploadFilesWithMetadata } from '@/features/upload-files/api/filesApi';
+import { uploadFilesWithMetadata } from '@/features/upload-files/api/uploadFilesApi';
 import { useUser } from '@/contexts/user';
 import type { UploadedFile } from '@/features/upload-files/types/upload.types';
 import { toast } from 'sonner';
@@ -103,6 +103,19 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
             return;
         }
 
+        // Ensure role is singular (not plural) - fix any plural roles
+        let normalizedRole = role.toLowerCase().trim();
+        if (normalizedRole === 'teachers') {
+            console.error('ERROR: Role is plural "teachers" in database - should be "teacher"');
+            normalizedRole = 'teacher'; // Fix it
+        } else if (normalizedRole === 'students') {
+            console.error('ERROR: Role is plural "students" in database - should be "student"');
+            normalizedRole = 'student'; // Fix it
+        } else if (normalizedRole === 'admins') {
+            console.error('ERROR: Role is plural "admins" in database - should be "admin"');
+            normalizedRole = 'admin'; // Fix it
+        }
+
         if (uploadedFiles.length === 0) {
             toast.error('No files to upload');
             return;
@@ -115,7 +128,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
             const results = await uploadFilesWithMetadata(
                 uploadedFiles,
                 userId,
-                role,
+                normalizedRole,
                 (progress) => {
                     setUploadProgress(progress);
                 }

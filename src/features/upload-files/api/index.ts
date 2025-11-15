@@ -5,7 +5,7 @@ export {
     deleteFile,
     getFilePublicUrl,
     fetchFilesByRole,
-} from './filesApi';
+} from './uploadFilesApi';
 
 // Re-export types from upload.types.ts
 export type {

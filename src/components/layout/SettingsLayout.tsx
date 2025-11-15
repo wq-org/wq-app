@@ -1,9 +1,7 @@
+import { useState, useEffect } from 'react';
 import Container from '../common/Container';
 import Navigation from '../common/Navigation';
-
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Edit2Icon } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
@@ -11,118 +9,173 @@ import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
 import type { Profile } from '@/contexts/user';
 import Spinner from '../ui/spinner';
+import AvatarDrawer from './AvatarDrawer';
 
 interface SettingsLayoutProps {
-    children?: React.ReactNode;
-    profile?: Profile | null;
-    loading?: boolean;
+  children?: React.ReactNode;
+  profile?: Profile | null;
+  loading?: boolean;
+  onNameChange?: (value: string) => void;
+  onLinkedInChange?: (value: string) => void;
+  onAboutMeChange?: (value: string) => void;
+  onSave?: () => void;
+  hasChanges?: boolean;
+  linkedInError?: string | null;
+  avatarOptions?: Array<{ name: string; src: string; emoji: string }>;
+  onAvatarSelect?: (avatarPath: string) => void;
+  linkedInValue?: string;
 }
 
-const handleOnClickEditImage = () => {
-    console.log('pick image clicked');
-};
+export default function SettingsLayout({
+  children,
+  profile,
+  loading,
+  onNameChange,
+  onLinkedInChange,
+  onAboutMeChange,
+  onSave,
+  hasChanges = false,
+  linkedInError,
+  avatarOptions = [],
+  onAvatarSelect,
+  linkedInValue = '',
+}: SettingsLayoutProps) {
+  const [name, setName] = useState(profile?.display_name || '');
+  const [linkedIn, setLinkedIn] = useState(linkedInValue);
+  const [aboutMe, setAboutMe] = useState(profile?.description || '');
 
-export default function SettingsLayout({ children, profile, loading }: SettingsLayoutProps) {
-    const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
-    const avatarSrc = signedAvatarUrl || profile?.avatar_url || AVATAR_PLACEHOLDER_SRC;
-    const displayNameInitial = profile?.display_name?.charAt(0).toUpperCase() || 'A';
+  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
+  const avatarSrc = signedAvatarUrl || profile?.avatar_url || AVATAR_PLACEHOLDER_SRC;
+  const displayNameInitial = profile?.display_name?.charAt(0).toUpperCase() || 'A';
 
-    if (loading) {
-        return (
-            <>
-                <Navigation />
-                <div className="w-screen h-screen flex items-center justify-center">
-                    <Spinner variant="gray" size="xl" speed={1750} />
-                </div>
-            </>
-        );
+  // Update local state when profile changes
+  useEffect(() => {
+    setName(profile?.display_name || '');
+    setLinkedIn(linkedInValue);
+    setAboutMe(profile?.description || '');
+  }, [profile, linkedInValue]);
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    onNameChange?.(value);
+  };
+
+  const handleLinkedInChange = (value: string) => {
+    setLinkedIn(value);
+    onLinkedInChange?.(value);
+  };
+
+  const handleAboutMeChange = (value: string) => {
+    setAboutMe(value);
+    onAboutMeChange?.(value);
+  };
+
+  const handleAvatarSelect = (avatarPath: string) => {
+    onAvatarSelect?.(avatarPath);
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (hasChanges && onSave) {
+      onSave();
     }
+  };
 
+  if (loading) {
     return (
-        <>
-            <Navigation />
-            <div className="w-screen h-screen">
-                <section>
-                    <Container className="flex flex-col items-start  w-full gap-3">
-                        <div className="relative">
-                            <Avatar className="w-24 h-24 rounded-full">
-                                <AvatarImage
-                                    src={avatarSrc}
-                                    alt={profile?.display_name || 'Avatar'}
-                                    className="object-cover"
-                                />
-                                <AvatarFallback className="text-xl">
-                                    {displayNameInitial}
-                                </AvatarFallback>
-                            </Avatar>
-                            <Button
-                                type="button"
-                                size="icon"
-                                variant="secondary"
-                                onClick={handleOnClickEditImage}
-                                className="absolute -bottom-2 -right-2 rounded-full"
-                                aria-label="Upload image"
-                            >
-                                <Edit2Icon className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        <div className="flex flex-col gap-4 w-[400px]">
-                            <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    type="text"
-                                    id="name"
-                                    placeholder="Name"
-                                    defaultValue={profile?.display_name || ''}
-                                />
-                            </div>
-                            <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="username">Username</Label>
-                                <Input
-                                    type="text"
-                                    disabled
-                                    id="username"
-                                    placeholder="Username"
-                                    defaultValue={profile?.username || ''}
-                                />
-                            </div>
-                            <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="email">E-mail</Label>
-                                <Input
-                                    disabled
-                                    type="email"
-                                    id="email"
-                                    placeholder="wq-health@serious-game.com"
-                                    defaultValue={profile?.email || ''}
-                                />
-                            </div>
-                            <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="linkedin">LinkedIn</Label>
-                                <Input
-                                    type="url"
-                                    id="linkedin"
-                                    placeholder="linkedin.com/in/username"
-                                />
-                            </div>
-                            <div className="w-full flex flex-col  gap-3">
-                                <Label htmlFor="description">About me</Label>
-                                <Textarea
-                                    id="description"
-                                    placeholder="a text about you"
-                                    className="w-full rounded-lg resize-none"
-                                    defaultValue={profile?.description || ''}
-                                />
-                            </div>
-
-                            <Button type="submit" variant="default">
-                                Save Changes
-                            </Button>
-                        </div>
-                    </Container>
-                </section>
-
-                {children}
-            </div>
-        </>
+      <>
+        <Navigation />
+        <div className="w-screen h-screen flex items-center justify-center">
+          <Spinner variant="gray" size="xl" speed={1750} />
+        </div>
+      </>
     );
+  }
+
+  return (
+    <>
+      <Navigation />
+      <div className="w-screen h-screen">
+        <section>
+          <Container className="flex flex-col items-start w-full gap-3">
+            <div className="relative">
+              <AvatarDrawer
+                avatarSrc={avatarSrc}
+                displayNameInitial={displayNameInitial}
+                displayName={profile?.display_name}
+                avatarOptions={avatarOptions}
+                onAvatarSelect={handleAvatarSelect}
+              />
+            </div>
+            <form onSubmit={handleSave} className="flex flex-col gap-4 w-[400px]">
+              <div className="w-full flex flex-col gap-3">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  type="text"
+                  id="name"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                />
+              </div>
+              <div className="w-full flex flex-col gap-3">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  type="text"
+                  disabled
+                  id="username"
+                  placeholder="Username"
+                  value={profile?.username || ''}
+                />
+              </div>
+              <div className="w-full flex flex-col gap-3">
+                <Label htmlFor="email">E-mail</Label>
+                <Input
+                  disabled
+                  type="email"
+                  id="email"
+                  placeholder="wq-health@serious-game.com"
+                  value={profile?.email || ''}
+                />
+              </div>
+              <div className="w-full flex flex-col gap-3">
+                <Label htmlFor="linkedin">LinkedIn</Label>
+                <Input
+                  type="url"
+                  id="linkedin"
+                  placeholder="https://www.linkedin.com/in/username"
+                  value={linkedIn}
+                  onChange={(e) => handleLinkedInChange(e.target.value)}
+                  className={linkedInError ? 'border-red-500' : ''}
+                />
+                {linkedInError && (
+                  <p className="text-sm text-red-500">{linkedInError}</p>
+                )}
+              </div>
+              <div className="w-full flex flex-col gap-3">
+                <Label htmlFor="description">About me</Label>
+                <Textarea
+                  id="description"
+                  placeholder="a text about you"
+                  className="w-full rounded-lg resize-none"
+                  value={aboutMe}
+                  onChange={(e) => handleAboutMeChange(e.target.value)}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                variant="default"
+                disabled={!hasChanges}
+              >
+                Save Changes
+              </Button>
+            </form>
+          </Container>
+        </section>
+
+        {children}
+      </div>
+    </>
+  );
 }

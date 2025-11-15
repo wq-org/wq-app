@@ -9,7 +9,7 @@ import {Button} from '@/components/ui/button';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import { Eye, EyeOff } from 'lucide-react';
-import bgBlueImage from '@/assets/img/backgrounds/bg-blue.jpeg';
+import bgGreenImage from '@/assets/img/backgrounds/bg-orange.jpeg';
 import type { CourseCardProps } from '../types/course.types';
 
 export default function CourseCard({
@@ -22,7 +22,7 @@ export default function CourseCard({
     teacherInitials = 'U',
     onView = () => {},
 }: CourseCardProps) {
-    const courseImage = image || bgBlueImage;
+    const courseImage = image || bgGreenImage;
 
     return (
         <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
