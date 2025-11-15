@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { LayoutDashboard, Settings, Trash2, X } from 'lucide-react';
+import {useState, useEffect, useRef} from 'react';
+import {LayoutDashboard, Settings, Trash2, X} from 'lucide-react';
 import {
     Drawer,
     DrawerContent,
@@ -7,15 +7,16 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
-import type { FileItem } from '../types/files.types';
-import { getFileBlobUrl, deleteFile, renameFile } from '../apis/filesApi';
-import { toast } from 'sonner';
-import * as pdfjsLib from 'pdfjs-dist';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Separator} from '@/components/ui/separator';
+import {ConfirmationDialog} from '@/components/common/ConfirmationDialog';
+import FailedToLoad from '@/components/common/FailedToLoad';
+import type {FileItem} from '../types/files.types';
+import {getFileBlobUrl, deleteFile, renameFile} from '../apis/filesApi';
+import {toast} from 'sonner';
+import Spinner from '@/components/ui/spinner';
 
 interface FilesCardProps {
     file: FileItem;
@@ -24,41 +25,21 @@ interface FilesCardProps {
     onFileDeleted?: () => void;
 }
 
-function SimplePDFViewer({ pdfUrl }: { pdfUrl: string }) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+interface SimplePDFViewerProps {
+    pdfUrl: string;
+    fileName?: string;
+}
 
-    useEffect(() => {
-        if (!canvasRef.current || !pdfUrl) return;
-
-        const loadingTask = pdfjsLib.getDocument(pdfUrl);
-        loadingTask.promise
-            .then((pdf: pdfjsLib.PDFDocumentProxy) => {
-                return pdf.getPage(1);
-            })
-            .then((page: pdfjsLib.PDFPageProxy) => {
-                if (!canvasRef.current) return;
-                
-                const viewport = page.getViewport({ scale: 1.5 });
-                const canvas = canvasRef.current;
-                const context = canvas.getContext('2d');
-
-                if (!context) return;
-
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                page.render({
-                    canvasContext: context,
-                    viewport: viewport,
-                    canvas: canvas,
-                } as any);
-            })
-            .catch((error: Error) => {
-                console.error('Error rendering PDF:', error);
-            });
-    }, [pdfUrl]);
-
-    return <canvas ref={canvasRef} className="w-full h-full" />;
+function SimplePDFViewer({pdfUrl, fileName = 'document.pdf'}: SimplePDFViewerProps) {
+    return (
+        <div className="w-full h-screen">
+            <iframe
+                src={pdfUrl}
+                className="w-full h-full border-0"
+                title={fileName}
+            />
+        </div>
+    );
 }
 
 export default function FilesCard({
@@ -165,8 +146,8 @@ export default function FilesCard({
 
         // Get file extension from original filename
         const fileExtension = file.filename.split('.').pop() || '';
-        const newFilename = filename.endsWith(`.${fileExtension}`) 
-            ? filename 
+        const newFilename = filename.endsWith(`.${fileExtension}`)
+            ? filename
             : `${filename}.${fileExtension}`;
 
         try {
@@ -194,8 +175,8 @@ export default function FilesCard({
     return (
         <>
             <Drawer direction="right" open={open} onOpenChange={onOpenChange}>
-                <DrawerContent 
-                    className="h-[100vh] !w-[60vw] !max-w-2xl sm:!max-w-2xl" 
+                <DrawerContent
+                    className="h-[100vh] !w-[60vw] !max-w-2xl sm:!max-w-2xl"
                 >
                     <div className="flex flex-col h-full w-full">
                         <DrawerHeader className="flex-shrink-0">
@@ -220,11 +201,10 @@ export default function FilesCard({
                                 <Button
                                     variant="ghost"
                                     onClick={() => setActiveTab('overview')}
-                                    className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
-                                        activeTab === 'overview'
+                                    className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${activeTab === 'overview'
                                             ? 'text-black border-black font-medium'
                                             : 'text-black/40 hover:text-black/60 border-transparent'
-                                    }`}
+                                        }`}
                                 >
                                     <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
                                     <span>Overview</span>
@@ -232,11 +212,10 @@ export default function FilesCard({
                                 <Button
                                     variant="ghost"
                                     onClick={() => setActiveTab('settings')}
-                                    className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
-                                        activeTab === 'settings'
+                                    className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${activeTab === 'settings'
                                             ? 'text-black border-black font-medium'
                                             : 'text-black/40 hover:text-black/60 border-transparent'
-                                    }`}
+                                        }`}
                                 >
                                     <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
                                     <span>Settings</span>
@@ -247,29 +226,33 @@ export default function FilesCard({
                             <div className="flex-1 overflow-y-auto p-6 pb-12">
                                 {activeTab === 'overview' && (
                                     <div className="flex flex-col space-y-6">
-                                        {/* Image Preview - 16:9, PDF Preview - 9:16 vertical aspect ratio */}
-                                        {(isImage || isPDF) && (
-                                            <div
-                                                className={
-                                                    isPDF
-                                                        ? "w-full aspect-[9/16] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center"
-                                                        : "w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center"
-                                                }
-                                            >
+                                        {isImage && (
+                                            <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
                                                 {loading ? (
-                                                    <p className="text-gray-500">Loading...</p>
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <Spinner variant="gray" size="xl" speed={1750} />
+                                                    </div>
                                                 ) : fileUrl ? (
-                                                    isImage ? (
-                                                        <img
-                                                            src={fileUrl}
-                                                            alt={file.filename}
-                                                            className="w-full h-full object-contain"
-                                                        />
-                                                    ) : isPDF ? (
-                                                        <SimplePDFViewer pdfUrl={fileUrl} />
-                                                    ) : null
+                                                    <img
+                                                        src={fileUrl}
+                                                        alt={file.filename}
+                                                        className="w-full h-full object-cover "
+                                                    />
                                                 ) : (
-                                                    <p className="text-gray-500">Failed to load file</p>
+                                                    <FailedToLoad />
+                                                )}
+                                            </div>
+                                        )}
+                                        {isPDF && (
+                                            <div className="w-full aspect-[9/16] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+                                                {fileUrl ? (
+                                                    <SimplePDFViewer pdfUrl={fileUrl} fileName={file.filename} />
+                                                ) : loading ? (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <Spinner variant="gray" size="xl" speed={1750} />
+                                                    </div>
+                                                ) : (
+                                                    <FailedToLoad />
                                                 )}
                                             </div>
                                         )}
