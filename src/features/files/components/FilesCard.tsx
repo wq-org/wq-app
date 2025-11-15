@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import {LayoutDashboard, Settings, Trash2, X} from 'lucide-react';
 import {
     Drawer,
@@ -15,6 +15,9 @@ import {ConfirmationDialog} from '@/components/common/ConfirmationDialog';
 import FailedToLoad from '@/components/common/FailedToLoad';
 import SimplePDFViewer from '@/components/common/SimplePDFViewer';
 import SimpleVideoPlayer from '@/components/common/SimpleVideoPlayer';
+import FileDropzone from '@/features/upload-files/components/FileDropzone';
+import {uploadFile} from '@/features/upload-files/api/uploadFilesApi';
+import {useUser} from '@/contexts/user';
 import type {FileItem} from '../types/files.types';
 import {getFileBlobUrl, deleteFile, renameFile} from '../apis/filesApi';
 import {toast} from 'sonner';
@@ -33,11 +36,14 @@ export default function FilesCard({
     onOpenChange,
     onFileDeleted,
 }: FilesCardProps) {
+    const {getUserId, getRole} = useUser();
     const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
     const [filename, setFilename] = useState(file.filename);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [fileUrl, setFileUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [newFile, setNewFile] = useState<File | null>(null);
+    const [newFilePreview, setNewFilePreview] = useState<string | null>(null);
     const fileUrlRef = useRef<string | null>(null);
 
     const isImage = file.type === 'Image';
@@ -90,7 +96,62 @@ export default function FilesCard({
     // Reset filename when file changes
     useEffect(() => {
         setFilename(file.filename);
+        setNewFile(null);
+        setNewFilePreview(null);
     }, [file.filename]);
+
+    // Handle new file selection
+    const handleFileSelected = useCallback((files: File[]) => {
+        if (files.length === 0) return;
+        
+        const selectedFile = files[0];
+        setNewFile(selectedFile);
+
+        // Create preview for images only
+        if (selectedFile.type.startsWith('image/') && selectedFile.type !== 'image/webp') {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewFilePreview(reader.result as string);
+            };
+            reader.onerror = () => {
+                setNewFilePreview(null);
+            };
+            reader.readAsDataURL(selectedFile);
+        } else {
+            setNewFilePreview(null);
+        }
+    }, []);
+
+    // Extract role and userId from storage path
+    const extractPathInfo = useCallback(() => {
+        if (!file.storagePath) return null;
+        
+        const pathParts = file.storagePath.split('/');
+        if (pathParts.length >= 2) {
+            return {
+                role: pathParts[0],
+                userId: pathParts[1],
+            };
+        }
+        
+        // Fallback to useUser if path parsing fails
+        const userId = getUserId();
+        const role = getRole();
+        if (userId && role) {
+            // Normalize role to singular
+            let normalizedRole = role.toLowerCase().trim();
+            if (normalizedRole === 'teachers') normalizedRole = 'teacher';
+            if (normalizedRole === 'students') normalizedRole = 'student';
+            if (normalizedRole === 'admins') normalizedRole = 'admin';
+            
+            return {
+                role: normalizedRole,
+                userId,
+            };
+        }
+        
+        return null;
+    }, [file.storagePath, getUserId, getRole]);
 
     const handleDelete = async () => {
         if (!file.storagePath) {
@@ -119,44 +180,92 @@ export default function FilesCard({
         setFilename(value);
     };
 
-    const handleSaveFilename = async () => {
+    const hasChanges = filename !== file.filename || newFile !== null;
+
+    const handleSaveChanges = async () => {
         if (!file.storagePath) {
-            toast.error('File path not available. Cannot rename file.');
+            toast.error('File path not available. Cannot save changes.');
             return;
         }
 
-        if (!filename.trim()) {
-            toast.error('Filename cannot be empty');
+        const pathInfo = extractPathInfo();
+        if (!pathInfo) {
+            toast.error('Unable to determine file location. Please try again.');
             return;
         }
-
-        // Get file extension from original filename
-        const fileExtension = file.filename.split('.').pop() || '';
-        const newFilename = filename.endsWith(`.${fileExtension}`)
-            ? filename
-            : `${filename}.${fileExtension}`;
 
         try {
-            const result = await renameFile(file.storagePath, newFilename);
-            if (result.success) {
-                toast.success('Filename updated successfully');
-                // Update the file object with new filename
-                file.filename = newFilename;
-                if (result.newPath) {
-                    file.storagePath = result.newPath;
+            let newStoragePath = file.storagePath;
+            let newFilename = file.filename;
+
+            // Handle filename change
+            if (filename !== file.filename) {
+                if (!filename.trim()) {
+                    toast.error('Filename cannot be empty');
+                    return;
                 }
-                // Trigger refresh by closing and reopening or calling onFileDeleted
-                onFileDeleted?.();
-            } else {
-                toast.error(result.error || 'Failed to rename file');
+
+                // Get file extension from original filename
+                const fileExtension = file.filename.split('.').pop() || '';
+                newFilename = filename.endsWith(`.${fileExtension}`)
+                    ? filename
+                    : `${filename}.${fileExtension}`;
+
+                const renameResult = await renameFile(file.storagePath, newFilename);
+                if (!renameResult.success) {
+                    toast.error(renameResult.error || 'Failed to rename file');
+                    return;
+                }
+                
+                if (renameResult.newPath) {
+                    newStoragePath = renameResult.newPath;
+                }
             }
+
+            // Handle file replacement
+            if (newFile) {
+                // Delete the file at the target path (either old path or new path after rename)
+                // This ensures we can upload the new file without conflicts
+                const targetPath = filename !== file.filename ? newStoragePath : file.storagePath;
+                const deleteResult = await deleteFile(targetPath);
+                if (!deleteResult.success) {
+                    console.warn('Failed to delete old file before upload:', deleteResult.error);
+                    // Continue anyway - upload might still work if file doesn't exist
+                }
+
+                // Upload new file with the target filename
+                const uploadResult = await uploadFile({
+                    teacherId: pathInfo.userId,
+                    file: newFile,
+                    title: newFilename.split('.')[0],
+                    role: pathInfo.role,
+                });
+
+                if (!uploadResult.success) {
+                    toast.error(uploadResult.error || 'Failed to upload new file');
+                    return;
+                }
+
+                if (uploadResult.path) {
+                    newStoragePath = uploadResult.path;
+                }
+            }
+
+            // Update file object
+            file.filename = newFilename;
+            file.storagePath = newStoragePath;
+
+            // Clear new file state
+            setNewFile(null);
+            setNewFilePreview(null);
+
+            toast.success('Changes saved successfully');
+            onFileDeleted?.(); // Trigger refresh
         } catch (error) {
-            console.error('Error renaming file:', error);
-            toast.error('An unexpected error occurred while renaming the file');
+            console.error('Error saving changes:', error);
+            toast.error('An unexpected error occurred while saving changes');
         }
     };
-
-    const hasChanges = filename !== file.filename;
 
     return (
         <>
@@ -290,10 +399,65 @@ export default function FilesCard({
                                             />
                                         </div>
 
+                                        <div className="space-y-2">
+                                            <Label>Replace File</Label>
+                                            {newFilePreview ? (
+                                                <div className="space-y-2">
+                                                    <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
+                                                        <img
+                                                            src={newFilePreview}
+                                                            alt="New file preview"
+                                                            className="w-full h-full object-contain"
+                                                        />
+                                                    </div>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setNewFile(null);
+                                                            setNewFilePreview(null);
+                                                        }}
+                                                        className="w-full"
+                                                    >
+                                                        Remove New File
+                                                    </Button>
+                                                </div>
+                                            ) : newFile ? (
+                                                <div className="space-y-2">
+                                                    <div className="p-4 border rounded-lg bg-gray-50">
+                                                        <p className="text-sm font-medium">{newFile.name}</p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {(newFile.size / 1024 / 1024).toFixed(2)} MB
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setNewFile(null);
+                                                            setNewFilePreview(null);
+                                                        }}
+                                                        className="w-full"
+                                                    >
+                                                        Remove New File
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <FileDropzone
+                                                    onFilesSelected={handleFileSelected}
+                                                    disabled={false}
+                                                />
+                                            )}
+                                        </div>
+
                                         <div className="flex items-center justify-between pt-4 border-t">
                                             <Button
                                                 variant="outline"
-                                                onClick={() => setFilename(file.filename)}
+                                                onClick={() => {
+                                                    setFilename(file.filename);
+                                                    setNewFile(null);
+                                                    setNewFilePreview(null);
+                                                }}
                                                 disabled={!hasChanges}
                                             >
                                                 Reset
@@ -307,7 +471,7 @@ export default function FilesCard({
                                                     Delete File
                                                 </Button>
                                                 <Button
-                                                    onClick={handleSaveFilename}
+                                                    onClick={handleSaveChanges}
                                                     disabled={!hasChanges}
                                                 >
                                                     Save Changes
