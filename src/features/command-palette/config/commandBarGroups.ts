@@ -7,6 +7,10 @@ import {
     Settings as SettingsIcon,
     SplinePointer,
     Upload,
+    Hand,
+    MousePointer2,
+    Undo2,
+    Redo2,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
@@ -92,6 +96,35 @@ export const BAR_GROUPS: CommandBarGroup[] = [
                 labelKey: 'navigation.settings',
                 icon: SettingsIcon,
                 to: '/teacher/settings',
+            },
+        ],
+    },
+    {
+        id: 'game-studio',
+        items: [
+            {
+                id: 'pan',
+                labelKey: 'navigation.pan',
+                icon: Hand,
+                actionId: 'pan',
+            },
+            {
+                id: 'select',
+                labelKey: 'navigation.select',
+                icon: MousePointer2,
+                actionId: 'select',
+            },
+            {
+                id: 'undo',
+                labelKey: 'navigation.undo',
+                icon: Undo2,
+                actionId: 'undo',
+            },
+            {
+                id: 'redo',
+                labelKey: 'navigation.redo',
+                icon: Redo2,
+                actionId: 'redo',
             },
         ],
     },

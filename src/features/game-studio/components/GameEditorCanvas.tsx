@@ -31,6 +31,8 @@ export default function GameEditorCanvas() {
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // Sync context nodes with React Flow nodes
   useEffect(() => {
@@ -201,6 +203,20 @@ export default function GameEditorCanvas() {
     }
   };
 
+  // Measure container dimensions for React Flow
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setDimensions({ width: rect.width, height: rect.height });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
   // Initialize nodes with onClick handlers
   const nodesWithHandlers = nodes.map((node) => {
     if (node.type === 'gameStart' && !(node.data as any).onClick) {
@@ -232,18 +248,25 @@ export default function GameEditorCanvas() {
  
   return (
     <>
-      <div className='w-full rounded-4xl h-full bg-gray-100 p-4 flex items-center justify-center overflow-auto' style={{ minHeight: '600px' }}>
-        <ReactFlow
-          nodes={nodesWithHandlers}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onPaneClick={onPaneClick}
-          onInit={onInit}
-          fitView
-        />
+      <div 
+        ref={containerRef}
+        className='w-full rounded-4xl bg-gray-100 overflow-hidden' 
+        style={{ width: '100%', height: '100vh', minHeight: '600px' }}
+      >
+        {dimensions.width > 0 && dimensions.height > 0 && (
+          <ReactFlow
+            nodes={nodesWithHandlers}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onPaneClick={onPaneClick}
+            onInit={onInit}
+            fitView
+            style={{ width: '100%', height: '100%' }}
+          />
+        )}
       </div>
       <StartGameDialog
         open={isStartDialogOpen}

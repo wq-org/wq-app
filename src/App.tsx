@@ -5,7 +5,7 @@ import ForgotPasswordPage from './features/auth/components/forgot-password';
 import ResetPasswordPage from './features/auth/components/reset-password';
 import VerifyEmailPage from './features/auth/components/verify-email';
 import RoleAuth from './features/auth/components/role-auth';
-import Institution from './features/institution/institution';
+import Institution from './features/institution/pages/institution';
 import Test from './user/pages/test';
 
 import StudentDashboard from './features/student/pages/dashboard';

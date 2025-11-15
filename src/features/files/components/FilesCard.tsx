@@ -19,7 +19,7 @@ import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import {uploadFile} from '@/features/upload-files/api/uploadFilesApi';
 import {useUser} from '@/contexts/user';
 import type {FileItem} from '../types/files.types';
-import {getFileBlobUrl, deleteFile, renameFile} from '../apis/filesApi';
+import {getFileBlobUrl, deleteFile, renameFile} from '../api/filesApi';
 import {toast} from 'sonner';
 import Spinner from '@/components/ui/spinner';
 

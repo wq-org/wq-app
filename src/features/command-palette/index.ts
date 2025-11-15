@@ -1,17 +1,26 @@
-import CommandEmpty from './components/CommandEmpty';
-import CommandFeedbackForm from './components/CommandFeedbackDialog';
-import CommandList from './components/CommandList';
-import CommandPalette from './components/CommandPalette';
-import CommandSearch from './components/CommandSearchDialog';
-import CommandShortcut from './components/CommandShortcut';
-import CommandUploadForm from './components/CommandUploadForm';
+// Components
+export { default as CommandEmpty } from './components/CommandEmpty';
+export { default as CommandFeedbackForm } from './components/CommandFeedbackDialog';
+export { default as CommandList } from './components/CommandList';
+export { default as CommandPalette } from './components/CommandPalette';
+export { default as CommandSearch } from './components/CommandSearchDialog';
+export { default as CommandShortcut } from './components/CommandShortcut';
+export { default as CommandUploadForm } from './components/CommandUploadForm';
+export { default as CommandAddDialog } from './components/CommandAddDialog';
+export { default as CommandUploadDialog } from './components/CommandUploadDialog';
 
-export {
-    CommandEmpty,
-    CommandFeedbackForm,
-    CommandList,
-    CommandPalette,
-    CommandSearch,
-    CommandShortcut,
-    CommandUploadForm,
-};
+// Hooks
+export * from './hooks';
+
+// Types
+export type * from './types/command-bar.types';
+
+// API
+export * from './api/commandPaletteApi';
+
+// Config
+export { BAR_GROUPS, getGroupById } from './config/commandBarGroups';
+export * from './config/buildBarGroups';
+
+// Pages
+// Add page exports when available
