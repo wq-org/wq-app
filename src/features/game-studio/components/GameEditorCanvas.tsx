@@ -6,6 +6,7 @@ import GameStartNode from './GameStartNode';
 import GameActionNode from './GameActionNode';
 import StartGameDialog from './StartGameDialog';
 import ActionGameDialog from './ActionGameDialog';
+import GameSidebar from './GameSidebar';
 import { useGameStudioContext } from '@/contexts/GameStudioContext';
 
 const nodeTypes = {
@@ -20,8 +21,21 @@ const initialNodes: Node[] = [
     position: { x: 100, y: 100 }, 
     data: { label: 'Start' } 
   },
+  {
+    id: 'action-1',
+    type: 'gameAction',
+    position: { x: 100, y: 250 },
+    data: { label: 'Action' },
+  },
 ];
-const initialEdges: Edge[] = [];
+const initialEdges: Edge[] = [
+  {
+    id: 'edge-start-action',
+    source: 'start-1',
+    target: 'action-1',
+    type: 'smoothstep',
+  },
+];
  
 export default function GameEditorCanvas() {
   const { nodes: contextNodes, setNodes: setContextNodes, addNode: addContextNode } = useGameStudioContext();
@@ -248,25 +262,28 @@ export default function GameEditorCanvas() {
  
   return (
     <>
-      <div 
-        ref={containerRef}
-        className='w-full rounded-4xl bg-gray-100 overflow-hidden' 
-        style={{ width: '100%', height: '100vh', minHeight: '600px' }}
-      >
-        {dimensions.width > 0 && dimensions.height > 0 && (
-          <ReactFlow
-            nodes={nodesWithHandlers}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onPaneClick={onPaneClick}
-            onInit={onInit}
-            fitView
-            style={{ width: '100%', height: '100%' }}
-          />
-        )}
+      <div className="relative h-screen w-full">
+        <GameSidebar />
+        <div 
+          ref={containerRef}
+          className='w-full h-full rounded-4xl bg-gray-100 overflow-hidden' 
+          style={{ height: '100vh', minHeight: '600px' }}
+        >
+          {dimensions.width > 0 && dimensions.height > 0 && (
+            <ReactFlow
+              nodes={nodesWithHandlers}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onPaneClick={onPaneClick}
+              onInit={onInit}
+              fitView
+              style={{ width: '100%', height: '100%' }}
+            />
+          )}
+        </div>
       </div>
       <StartGameDialog
         open={isStartDialogOpen}

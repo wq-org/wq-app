@@ -3,8 +3,12 @@ import GameEditorCanvas from '../components/GameEditorCanvas';
 
 export default function GameStudioView() {
   return (
-    <AppWrapper role="teacher" className="flex flex-col h-screen">
-      <div className="flex-1 w-">
+    <AppWrapper 
+      role="teacher" 
+      commandPaletteRole="game-studio"
+      className="flex flex-col h-screen"
+    >
+      <div className="flex-1 w-full">
         <GameEditorCanvas />
       </div>
     </AppWrapper>

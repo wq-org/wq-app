@@ -21,6 +21,7 @@ import RequireAuth from './components/auth/RequireAuth';
 import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
+import AppWrapper from './components/layout/AppWrapper';
 import AdminDashboard from './features/admin/pages/dashboard';  
 import { ImageTermMatchGame } from './features/games/image-term-match';
 import ImagePinMarkGame from './features/games/image-pin-mark/ImagePinMarkGame';
@@ -108,7 +109,15 @@ function App() {
                             <Route path="canvas" element={
                                 <RequireAuth>
                                     <RequireOnboarding>
-                                        <GameEditorCanvas />
+                                        <AppWrapper 
+                                            role="teacher" 
+                                            commandPaletteRole="game-studio"
+                                            className="flex flex-col h-screen"
+                                        >
+                                            <div className="flex-1 w-full">
+                                                <GameEditorCanvas />
+                                            </div>
+                                        </AppWrapper>
                                     </RequireOnboarding>
                                 </RequireAuth>
                             } />
