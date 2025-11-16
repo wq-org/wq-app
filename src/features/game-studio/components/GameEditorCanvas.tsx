@@ -21,12 +21,7 @@ const initialNodes: Node[] = [
     position: { x: 100, y: 100 }, 
     data: { label: 'Start' } 
   },
-  {
-    id: 'action-1',
-    type: 'gameAction',
-    position: { x: 100, y: 250 },
-    data: { label: 'Action' },
-  },
+
 ];
 const initialEdges: Edge[] = [
   {

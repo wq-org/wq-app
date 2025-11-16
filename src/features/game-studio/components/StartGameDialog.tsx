@@ -8,6 +8,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
@@ -60,12 +61,19 @@ export default function StartGameDialog({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Description</Label>
+              <span className="text-xs text-muted-foreground">
+                {description.length}/1000
+              </span>
+            </div>
+            <Textarea
               id="description"
-              placeholder="Enter description"
+              placeholder="Describe how the game is going to work"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              maxLength={1000}
+              rows={4}
             />
           </div>
           <div className="flex flex-col gap-2">
