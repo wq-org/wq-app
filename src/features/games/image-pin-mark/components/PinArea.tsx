@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { useState, useRef, ReactNode, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 export interface PinAreaProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;

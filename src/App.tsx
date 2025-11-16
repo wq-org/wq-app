@@ -34,6 +34,8 @@ function App() {
                     <Toaster />
                     <Routes>
                         <Route path="/" element={<RoleSelectionPage />} />
+                        <Route path="/test" element={<Test />} />
+                        <Route path="*" element={<Error404 />} />
                         <Route path="/game-studio/image-term-match" element={<ImageTermMatchGame />} />
                         <Route path="/game-studio/image-pin-mark" element={<ImagePinMarkGame />} />
 
@@ -144,8 +146,7 @@ function App() {
                             } />
                         </Route>
 
-                        <Route path="/test" element={<Test />} />
-                        <Route path="*" element={<Error404 />} />
+                     
                     </Routes>
                 </LessonProvider>
             </CourseProvider>
