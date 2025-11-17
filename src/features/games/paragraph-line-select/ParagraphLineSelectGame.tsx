@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle2, X, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle2, X, Plus, Trash2, Save } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,8 @@ import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
 import { Card, CardContent } from '@/components/ui/card';
 
-const paragraph = `2 ASKA 134: Better than a course, it's a reference manual to making great work full of tactical secrets I haven't seen anywhere else. Notification came in. I didn't hesitate. You shouldn't either. © Rauno is undoubtedly one of the best in the world at what he does. Strongly recommend his course. € This lowkey changed how I think about building software. ©I need to frame this at the office, wonderful work. O I started reading the intro and found myself opening the inspector like crazy. © If even 1/10 of this craft rubs off on work I do, it's worth it. * One of my favorite digital purchases in recent history. @ Probably the most gorgeous & inspiring thing online in a long time. ) l've learned a lot from Rauno over the years, now you can too. ¿ It's kind of like reading a beautifully designed interactive Medium article. • It's not often the best-of-the-best bring you along and show you how it's done. • The bar he sets is ridiculous. Every company I know wants to work with him.`;
+const paragraph = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. Sometimes just going for a walk or drinking enough water can boost your energy levels. In my opinion, prioritizing sleep is just as crucial as staying active. Everyone has different routines, but finding what makes you feel your best is key. Taking care of your mental health is just as vital as taking care of your physical health, and it's perfectly okay to rest when you need it.`;
+
 
 interface VotingOption {
   id: string;
@@ -116,6 +117,17 @@ export default function ParagraphLineSelectGame() {
     return answer ? answer.optionId : null;
   };
 
+  // Handle save - log everything as a single object
+  const handleSave = () => {
+    const gameData = {
+      title,
+      description,
+      paragraph,
+      sentenceConfigs,
+    };
+    console.log(gameData);
+  };
+
   const editorContent = (
     <div className="space-y-6">
       <GameInformation
@@ -138,13 +150,13 @@ export default function ParagraphLineSelectGame() {
                   <div
                     className={`relative cursor-pointer transition-all duration-200 p-3 rounded-lg ${
                       isSelected
-                        ? 'bg-gray-100 ring-2 ring-black'
-                        : 'hover:bg-gray-50'
+                        ? 'ring-2 ring-black/20'
+                        : ''
                     }`}
                     onClick={() => handleSelectSentence(index)}
                   >
                     <p className="text-base leading-relaxed">
-                      <span className="font-medium text-gray-400 mr-2">
+                      <span className="font-medium  mr-2">
                         {index + 1}.
                       </span>
                       {sentence}
@@ -265,6 +277,13 @@ export default function ParagraphLineSelectGame() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSave} className="flex items-center gap-2">
+          <Save className="w-4 h-4" />
+          Save
+        </Button>
+      </div>
     </div>
   );
 
