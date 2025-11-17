@@ -55,10 +55,10 @@ export default function GameCard({
 
       {/* Content */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-[#252525]">
+        <h2 className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
           {title}
         </h2>
-        <p className="text-sm text-[#252525]/70 leading-relaxed">
+        <p className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
           {description}
         </p>
         <button
@@ -66,7 +66,7 @@ export default function GameCard({
             e.stopPropagation();
             onPlay?.();
           }}
-          className="inline-flex items-center gap-1 text-[#0000FF] hover:opacity-80 font-medium text-sm transition-opacity"
+          className="inline-flex items-center gap-1 text-blue-500 hover:opacity-80 font-medium text-sm transition-opacity"
         >
           {button}
           <ArrowRight className="w-4 h-4" />

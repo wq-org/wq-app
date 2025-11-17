@@ -24,6 +24,7 @@ import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas
 import AdminDashboard from './features/admin/pages/dashboard';  
 import { ImageTermMatchGame } from './features/games/image-term-match';
 import ImagePinMarkGame from './features/games/image-pin-mark/ImagePinMarkGame';
+import ParagraphLineSelectGame from './features/games/paragraph-line-select/ParagraphLineSelectGame';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
                         <Route path="*" element={<Error404 />} />
                         <Route path="/game-studio/image-term-match" element={<ImageTermMatchGame />} />
                         <Route path="/game-studio/image-pin-mark" element={<ImagePinMarkGame />} />
+                        <Route path="/game-studio/paragraph-line-select" element={<ParagraphLineSelectGame />} />
 
                         {/* Auth Routes */}
                         <Route path="/auth">
