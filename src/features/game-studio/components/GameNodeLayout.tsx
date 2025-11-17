@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { LayoutDashboard, Settings } from 'lucide-react';
-import { useGameStudioContext } from '@/contexts/GameStudioContext';
 import GameNodeSettings from './GameNodeSettings';
 
 interface GameNodeLayoutProps {
@@ -17,8 +16,6 @@ export default function GameNodeLayout({
   onBack,
 }: GameNodeLayoutProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
-  const { getNode } = useGameStudioContext();
-  const node = nodeId ? getNode(nodeId) : null;
 
   return (
     <div className="mt-4">
@@ -28,6 +25,9 @@ export default function GameNodeLayout({
       >
         ← Back to options
       </button>
+
+      {/* Game Title */}
+      <h2 className="text-2xl font-semibold mb-2">{gameTitle}</h2>
 
       {/* Tabs */}
       <div className="flex gap-12 border-b mb-6">
@@ -69,4 +69,3 @@ export default function GameNodeLayout({
     </div>
   );
 }
-

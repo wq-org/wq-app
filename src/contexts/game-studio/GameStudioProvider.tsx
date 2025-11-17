@@ -1,35 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { Node } from '@xyflow/react';
-
-export interface GameNode {
-  id: string;
-  title: string;
-  description: string;
-  gameType?: string;
-  position?: { x: number; y: number };
-}
-
-interface GameStudioContextValue {
-  selectedNode: GameNode | null;
-  nodes: Node[];
-  setSelectedNode: (node: GameNode | null) => void;
-  addNode: (position: { x: number; y: number }, data?: { title?: string; description?: string }) => void;
-  updateNode: (nodeId: string, updates: { title?: string; description?: string }) => void;
-  setNodes: (nodes: Node[]) => void;
-  getNode: (nodeId: string) => Node | undefined;
-}
-
-const GameStudioContext = createContext<GameStudioContextValue>({
-  selectedNode: null,
-  nodes: [],
-  setSelectedNode: () => {},
-  addNode: () => {},
-  updateNode: () => {},
-  setNodes: () => {},
-  getNode: () => undefined,
-});
-
-export const useGameStudioContext = () => useContext(GameStudioContext);
+import { GameStudioContext, type GameStudioContextValue, type GameNode } from './GameStudioContext';
 
 export const GameStudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedNode, setSelectedNode] = useState<GameNode | null>(null);
@@ -51,7 +22,7 @@ export const GameStudioProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     setNodes((prevNodes) => {
       // Check if node already exists
-      if (prevNodes.find(n => n.id === newNodeId)) {
+      if (prevNodes.find((n) => n.id === newNodeId)) {
         return prevNodes;
       }
       return [...prevNodes, newNode];

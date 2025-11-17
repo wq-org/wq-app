@@ -2,12 +2,22 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import type { Node, Edge, Connection, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { Settings, Play } from 'lucide-react';
 import GameStartNode from './GameStartNode';
 import GameActionNode from './GameActionNode';
 import StartGameDialog from './StartGameDialog';
 import ActionGameDialog from './ActionGameDialog';
 import GameSidebar from './GameSidebar';
-import { useGameStudioContext } from '@/contexts/GameStudioContext';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import { useGameStudioContext } from '@/contexts/game-studio';
+import AppWrapper from '@/components/layout/AppWrapper';
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -21,16 +31,8 @@ const initialNodes: Node[] = [
     position: { x: 100, y: 100 }, 
     data: { label: 'Start' } 
   },
-
 ];
-const initialEdges: Edge[] = [
-  {
-    id: 'edge-start-action',
-    source: 'start-1',
-    target: 'action-1',
-    type: 'smoothstep',
-  },
-];
+const initialEdges: Edge[] = [];
  
 export default function GameEditorCanvas() {
   const { nodes: contextNodes, setNodes: setContextNodes, addNode: addContextNode } = useGameStudioContext();
@@ -39,8 +41,13 @@ export default function GameEditorCanvas() {
   const [isStartDialogOpen, setIsStartDialogOpen] = useState(false);
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [gameTitle, setGameTitle] = useState<string>('General');
+  const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false);
+  const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false);
+  const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // Sync context nodes with React Flow nodes
@@ -201,6 +208,9 @@ export default function GameEditorCanvas() {
 
   const handleStartSave = (data: { title: string; description: string; rounds: string }) => {
     console.log('Saved game data:', data);
+    if (data.title) {
+      setGameTitle(data.title);
+    }
     if (selectedNodeId) {
       setNodes((prevNodes) =>
         prevNodes.map((node) =>
@@ -211,6 +221,13 @@ export default function GameEditorCanvas() {
       );
     }
   };
+
+  // Sync contentEditable element with gameTitle state
+  useEffect(() => {
+    if (titleRef.current && titleRef.current.textContent !== gameTitle) {
+      titleRef.current.textContent = gameTitle;
+    }
+  }, [gameTitle]);
 
   // Measure container dimensions for React Flow
   useEffect(() => {
@@ -256,14 +273,63 @@ export default function GameEditorCanvas() {
   });
  
   return (
-    <>
-      <div className="relative h-screen w-full">
+    <AppWrapper 
+      role="teacher" 
+      commandPaletteRole="game-studio"
+      className="flex flex-col h-screen"
+    >
+      <div className="flex-1 w-full relative">
         <GameSidebar />
         <div 
           ref={containerRef}
-          className='w-full h-full rounded-4xl bg-gray-100 overflow-hidden' 
-          style={{ height: '100vh', minHeight: '600px' }}
+          className='w-full h-full rounded-4xl bg-gray-100 overflow-hidden relative' 
         >
+          {/* Top Center Badge */}
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+            <Badge 
+              variant="outline" 
+              className="px-4 py-2 text-sm cursor-text"
+              asChild
+            >
+              <div
+                ref={titleRef}
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const newTitle = e.currentTarget.textContent?.trim() || 'General';
+                  setGameTitle(newTitle);
+                  if (newTitle === '') {
+                    e.currentTarget.textContent = 'General';
+                    setGameTitle('General');
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
+                className="outline-none focus:ring-2 focus:ring-ring rounded-full"
+              >
+                {gameTitle}
+              </div>
+            </Badge>
+          </div>
+
+          {/* Top Right Controls */}
+          <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setIsSettingsDrawerOpen(true)}>
+              <Settings className="h-5 w-5" />
+            </Button>
+            <Button variant="outline" onClick={() => setIsPreviewDrawerOpen(true)}>
+              <Play className="h-4 w-4 mr-2" />
+              Preview
+            </Button>
+            <Button onClick={() => setIsPublishDrawerOpen(true)}>
+              Publish
+            </Button>
+          </div>
+
           {dimensions.width > 0 && dimensions.height > 0 && (
             <ReactFlow
               nodes={nodesWithHandlers}
@@ -280,6 +346,43 @@ export default function GameEditorCanvas() {
           )}
         </div>
       </div>
+
+      {/* Settings Drawer */}
+      <Drawer open={isSettingsDrawerOpen} onOpenChange={setIsSettingsDrawerOpen} direction="right">
+        <DrawerContent className="!w-[50vw] !max-w-none !h-[100vh]">
+          <DrawerHeader>
+            <DrawerTitle>Settings</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">
+            {/* Empty content for now */}
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Preview Drawer */}
+      <Drawer open={isPreviewDrawerOpen} onOpenChange={setIsPreviewDrawerOpen} direction="right">
+        <DrawerContent className="!w-[50vw] !max-w-none !h-[100vh]">
+          <DrawerHeader>
+            <DrawerTitle>Preview</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">
+            {/* Empty content for now */}
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Publish Drawer */}
+      <Drawer open={isPublishDrawerOpen} onOpenChange={setIsPublishDrawerOpen} direction="right">
+        <DrawerContent className="!w-[50vw] !max-w-none">
+          <DrawerHeader>
+            <DrawerTitle>Publish</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">
+            {/* Empty content for now */}
+          </div>
+        </DrawerContent>
+      </Drawer>
+
       <StartGameDialog
         open={isStartDialogOpen}
         onOpenChange={setIsStartDialogOpen}
@@ -290,6 +393,6 @@ export default function GameEditorCanvas() {
         onOpenChange={setIsActionDialogOpen}
         nodeId={selectedNodeId || undefined}
       />
-    </>
+    </AppWrapper>
   );
 }

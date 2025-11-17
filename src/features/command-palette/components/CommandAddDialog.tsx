@@ -14,7 +14,7 @@ import { createCourse } from "@/features/courses/api/coursesApi";
 import { createInstitution } from "@/features/auth/api/authApi";
 import { createGame } from "@/features/command-palette/api/commandPaletteApi";
 import { useUser } from "@/contexts/user";
-import { useGameStudioContext } from "@/contexts/GameStudioContext";
+import { useGameStudioContext } from '@/contexts/game-studio';
 import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, Plus } from "lucide-react";
 
 type AddType = "course" | "institution" | "game" | "node";
