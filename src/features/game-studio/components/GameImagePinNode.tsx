@@ -1,14 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { MapPin } from 'lucide-react';
-
-interface GameImagePinNodeProps {
-  data?: {
-    label?: string;
-    onClick?: () => void;
-    gameType?: string;
-  };
-  selected?: boolean;
-}
+import type { GameImagePinNodeProps } from '../types/game-studio.types';
 
 export default function GameImagePinNode({ data, selected }: GameImagePinNodeProps) {
   return (

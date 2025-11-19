@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, SelectionMode } from '@xyflow/react';
 import type { Node, Edge, Connection, ReactFlowInstance, NodeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -12,6 +12,8 @@ import GameImagePinNode from './GameImagePinNode';
 import GameIfElseNode from './GameIfElseNode';
 import StartGameDialog from './StartGameDialog';
 import GameNodeDialog from './GameNodeDialog';
+import IfElseGameDialog from './IfElseGameDialog';
+import EndGameDialog from './EndGameDialog';
 import GameSidebar from './GameSidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +22,7 @@ import AppWrapper from '@/components/layout/AppWrapper';
 import SettingsDrawer from './SettingsDrawer';
 import PreviewDrawer from './PreviewDrawer';
 import PublishDrawer from './PublishDrawer';
+import type { HistoryState } from '../types/game-studio.types';
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -40,18 +43,17 @@ const initialNodes: Node[] = [
 ];
 const initialEdges: Edge[] = [];
 
-// History state type
-type HistoryState = {
-  nodes: Node[];
-  edges: Edge[];
-};
-
 export default function GameEditorCanvas() {
+  // ========== Context & State Management ==========
   const { nodes: contextNodes, setNodes: setContextNodes, addNode: addContextNode } = useGameStudioContext();
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  
+  // ========== UI State ==========
   const [isStartDialogOpen, setIsStartDialogOpen] = useState(false);
   const [isGameNodeDialogOpen, setIsGameNodeDialogOpen] = useState(false);
+  const [isIfElseDialogOpen, setIsIfElseDialogOpen] = useState(false);
+  const [isEndDialogOpen, setIsEndDialogOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null);
   const [gameTitle, setGameTitle] = useState<string>('General');
@@ -59,19 +61,25 @@ export default function GameEditorCanvas() {
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false);
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false);
   const [interactionMode, setInteractionMode] = useState<'pan' | 'select'>('select');
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  
+  // ========== Refs ==========
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const isDroppingRef = useRef(false); // Prevent duplicate drop notifications
+  const isSyncingRef = useRef(false);
+  const setContextNodesRef = useRef(setContextNodes);
   
-  // Undo/Redo history
+  // ========== History Management ==========
   const [history, setHistory] = useState<HistoryState[]>([{ nodes: initialNodes, edges: initialEdges }]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  // Save state to history
+  // ========== History Functions ==========
   const saveToHistory = useCallback((newNodes: Node[], newEdges: Edge[]) => {
     setHistory((prevHistory) => {
-      const newHistory = prevHistory.slice(0, historyIndex + 1);
+      const currentIndex = historyIndex;
+      const newHistory = prevHistory.slice(0, currentIndex + 1);
       newHistory.push({ 
         nodes: JSON.parse(JSON.stringify(newNodes)), 
         edges: JSON.parse(JSON.stringify(newEdges)) 
@@ -81,7 +89,6 @@ export default function GameEditorCanvas() {
     setHistoryIndex((prevIndex) => Math.min(prevIndex + 1, 49));
   }, [historyIndex]);
 
-  // Undo function
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       const prevState = history[historyIndex - 1];
@@ -94,7 +101,6 @@ export default function GameEditorCanvas() {
     }
   }, [history, historyIndex]);
 
-  // Redo function
   const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const nextState = history[historyIndex + 1];
@@ -107,7 +113,7 @@ export default function GameEditorCanvas() {
     }
   }, [history, historyIndex]);
 
-  // Check node constraints
+  // ========== Validation Functions ==========
   const checkNodeConstraints = useCallback((newNodes: Node[]): { valid: boolean; reason?: string } => {
     const startNodes = newNodes.filter(n => n.type === 'gameStart');
     const endNodes = newNodes.filter(n => n.type === 'gameEnd');
@@ -122,8 +128,7 @@ export default function GameEditorCanvas() {
     return { valid: true };
   }, []);
 
-  // Connection validation
-  const canConnect = useCallback((sourceNode: Node | undefined, targetNode: Node | undefined): { can: boolean; reason?: string } => {
+  const canConnect = useCallback((sourceNode: Node | undefined, targetNode: Node | undefined, currentEdges: Edge[]): { can: boolean; reason?: string } => {
     if (!sourceNode || !targetNode) {
       return { can: false, reason: 'Invalid nodes' };
     }
@@ -133,34 +138,32 @@ export default function GameEditorCanvas() {
       if (targetNode.type === 'gameEnd') {
         return { can: false, reason: 'Cannot connect Start node to End node' };
       }
-      // Start node can only have one outgoing connection
-      const startOutgoingEdges = edges.filter(e => e.source === sourceNode.id);
+      const startOutgoingEdges = currentEdges.filter(e => e.source === sourceNode.id);
       if (startOutgoingEdges.length >= 1) {
         return { can: false, reason: 'Start node can only have one outgoing connection' };
       }
-      // Allow connection to any other node type
       return { can: true };
     }
 
     // End node can only have one incoming connection
     if (targetNode.type === 'gameEnd') {
-      const endIncomingEdges = edges.filter(e => e.target === targetNode.id);
+      const endIncomingEdges = currentEdges.filter(e => e.target === targetNode.id);
       if (endIncomingEdges.length >= 1) {
         return { can: false, reason: 'End node can only have one incoming connection' };
       }
     }
 
-    // Regular chainable nodes (End, Paragraph, ImageTerms, ImagePin) can only have 1:1 connections
+    // Regular chainable nodes can only have 1:1 connections
     const chainableTypes = ['gameEnd', 'gameParagraph', 'gameImageTerms', 'gameImagePin'];
     if (chainableTypes.includes(targetNode.type || '')) {
-      const targetIncomingEdges = edges.filter(e => e.target === targetNode.id);
+      const targetIncomingEdges = currentEdges.filter(e => e.target === targetNode.id);
       if (targetIncomingEdges.length >= 1) {
         return { can: false, reason: 'This node can only have one incoming connection' };
       }
     }
 
     if (chainableTypes.includes(sourceNode.type || '')) {
-      const sourceOutgoingEdges = edges.filter(e => e.source === sourceNode.id);
+      const sourceOutgoingEdges = currentEdges.filter(e => e.source === sourceNode.id);
       if (sourceOutgoingEdges.length >= 1) {
         return { can: false, reason: 'This node can only have one outgoing connection' };
       }
@@ -168,7 +171,7 @@ export default function GameEditorCanvas() {
 
     // If/Else node can have max 2 outgoing connections
     if (sourceNode.type === 'gameIfElse') {
-      const ifElseOutgoingEdges = edges.filter(e => e.source === sourceNode.id);
+      const ifElseOutgoingEdges = currentEdges.filter(e => e.source === sourceNode.id);
       if (ifElseOutgoingEdges.length >= 2) {
         return { can: false, reason: 'If/Else node can only have two outgoing connections' };
       }
@@ -176,15 +179,44 @@ export default function GameEditorCanvas() {
 
     // If/Else node can only have one incoming connection
     if (targetNode.type === 'gameIfElse') {
-      const ifElseIncomingEdges = edges.filter(e => e.target === targetNode.id);
+      const ifElseIncomingEdges = currentEdges.filter(e => e.target === targetNode.id);
       if (ifElseIncomingEdges.length >= 1) {
         return { can: false, reason: 'If/Else node can only have one incoming connection' };
       }
     }
 
     return { can: true };
-  }, [edges]);
+  }, []);
 
+  // ========== Event Handlers ==========
+  // Create node click handlers - memoized to prevent recreation
+  const createNodeClickHandler = useCallback((nodeId: string, nodeType: string | null) => {
+    if (nodeType === 'gameStart') {
+      return () => {
+        setSelectedNodeId(nodeId);
+        setIsStartDialogOpen(true);
+      };
+    }
+    if (nodeType === 'gameIfElse') {
+      return () => {
+        setSelectedNodeId(nodeId);
+        setIsIfElseDialogOpen(true);
+      };
+    }
+    if (nodeType === 'gameEnd') {
+      return () => {
+        setSelectedNodeId(nodeId);
+        setIsEndDialogOpen(true);
+      };
+    }
+    return () => {
+      setSelectedNodeId(nodeId);
+      setSelectedNodeType(nodeType);
+      setIsGameNodeDialogOpen(true);
+    };
+  }, []);
+
+  // ========== Effects ==========
   // Listen for command bar actions
   useEffect(() => {
     const handleCommandAction = (event: Event) => {
@@ -227,16 +259,37 @@ export default function GameEditorCanvas() {
               ? { x: lastNode.position.x, y: lastNode.position.y + 150 }
               : newNode.position || { x: 100, y: 100 };
             
+            // Create appropriate click handler based on node type
+            let onClickHandler: () => void;
+            if (newNode.type === 'gameStart') {
+              onClickHandler = () => {
+                setSelectedNodeId(newNode.id);
+                setIsStartDialogOpen(true);
+              };
+            } else if (newNode.type === 'gameIfElse') {
+              onClickHandler = () => {
+                setSelectedNodeId(newNode.id);
+                setIsIfElseDialogOpen(true);
+              };
+            } else if (newNode.type === 'gameEnd') {
+              onClickHandler = () => {
+                setSelectedNodeId(newNode.id);
+                setIsEndDialogOpen(true);
+              };
+            } else {
+              onClickHandler = () => {
+                setSelectedNodeId(newNode.id);
+                setSelectedNodeType(newNode.type || null);
+                setIsGameNodeDialogOpen(true);
+              };
+            }
+
             const nodeWithHandlers: Node = {
               ...newNode,
               position,
               data: {
                 ...newNode.data,
-                onClick: () => {
-                  setSelectedNodeId(newNode.id);
-                  setSelectedNodeType(newNode.type || null);
-                  setIsGameNodeDialogOpen(true);
-                },
+                onClick: onClickHandler,
               },
             };
             
@@ -251,16 +304,12 @@ export default function GameEditorCanvas() {
     }
   }, [contextNodes]);
 
-  // Sync React Flow nodes back to context when they change
-  // Use a ref to prevent infinite loops
-  const isSyncingRef = useRef(false);
-  const setContextNodesRef = useRef(setContextNodes);
-  
   // Keep ref updated
   useEffect(() => {
     setContextNodesRef.current = setContextNodes;
   }, [setContextNodes]);
 
+  // Sync React Flow nodes back to context when they change
   useEffect(() => {
     if (!isSyncingRef.current && nodes.length > 0) {
       isSyncingRef.current = true;
@@ -272,6 +321,7 @@ export default function GameEditorCanvas() {
     }
   }, [nodes]);
 
+  // ========== React Flow Handlers ==========
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       // Handle node deletion
@@ -340,33 +390,44 @@ export default function GameEditorCanvas() {
           }
         }
 
-        // Update node data with onClick handlers
+        // Update node data with onClick handlers - use memoized handler creator
         const nodesWithHandlers = updatedNodes.map((node) => {
           const baseData = node.data || {};
 
-          if (node.type === 'gameStart' && !baseData.onClick) {
-            return {
-              ...node,
-              data: {
-                ...baseData,
-                onClick: () => {
-                  setSelectedNodeId(node.id);
-                  setIsStartDialogOpen(true);
-                },
-              },
-            };
-          }
-          if (['gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameEnd', 'gameIfElse'].includes(node.type || '')) {
-            if (!baseData.onClick) {
+          if (!baseData.onClick) {
+            if (node.type === 'gameStart') {
               return {
                 ...node,
                 data: {
                   ...baseData,
-                  onClick: () => {
-                    setSelectedNodeId(node.id);
-                    setSelectedNodeType(node.type || null);
-                    setIsGameNodeDialogOpen(true);
-                  },
+                  onClick: createNodeClickHandler(node.id, 'gameStart'),
+                },
+              };
+            }
+            if (node.type === 'gameIfElse') {
+              return {
+                ...node,
+                data: {
+                  ...baseData,
+                  onClick: createNodeClickHandler(node.id, 'gameIfElse'),
+                },
+              };
+            }
+            if (node.type === 'gameEnd') {
+              return {
+                ...node,
+                data: {
+                  ...baseData,
+                  onClick: createNodeClickHandler(node.id, 'gameEnd'),
+                },
+              };
+            }
+            if (['gameParagraph', 'gameImageTerms', 'gameImagePin'].includes(node.type || '')) {
+              return {
+                ...node,
+                data: {
+                  ...baseData,
+                  onClick: createNodeClickHandler(node.id, node.type || null),
                 },
               };
             }
@@ -383,7 +444,7 @@ export default function GameEditorCanvas() {
         return nodesWithHandlers;
       });
     },
-    [nodes, edges, checkNodeConstraints, saveToHistory],
+    [nodes, edges, checkNodeConstraints, saveToHistory, createNodeClickHandler],
   );
 
   const onEdgesChange = useCallback(
@@ -412,8 +473,8 @@ export default function GameEditorCanvas() {
       const sourceNode = nodes.find(n => n.id === params.source);
       const targetNode = nodes.find(n => n.id === params.target);
 
-      // Check connection constraints
-      const connectionCheck = canConnect(sourceNode, targetNode);
+      // Check connection constraints - pass current edges
+      const connectionCheck = canConnect(sourceNode, targetNode, edges);
       if (!connectionCheck.can) {
         toast.error(connectionCheck.reason || 'Connection not allowed');
         return;
@@ -442,22 +503,30 @@ export default function GameEditorCanvas() {
     [nodes, edges, canConnect, saveToHistory],
   );
 
-  // Handle drag over canvas
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  // Handle drop on canvas
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
 
+      // Prevent duplicate drops
+      if (isDroppingRef.current) return;
+      isDroppingRef.current = true;
+
       const reactFlowBounds = containerRef.current?.getBoundingClientRect();
-      if (!reactFlowInstance.current || !reactFlowBounds) return;
+      if (!reactFlowInstance.current || !reactFlowBounds) {
+        isDroppingRef.current = false;
+        return;
+      }
 
       const data = event.dataTransfer.getData('application/reactflow');
-      if (!data) return;
+      if (!data) {
+        isDroppingRef.current = false;
+        return;
+      }
 
       try {
         const nodeData = JSON.parse(data);
@@ -466,26 +535,48 @@ export default function GameEditorCanvas() {
           y: event.clientY - reactFlowBounds.top,
         });
 
-        // Create new node
         const newNodeId = `${nodeData.nodeId}-${Date.now()}`;
+        
+        // Create appropriate click handler based on node type
+        let onClickHandler: () => void;
+        if (nodeData.type === 'gameStart') {
+          onClickHandler = () => {
+            setSelectedNodeId(newNodeId);
+            setIsStartDialogOpen(true);
+          };
+        } else if (nodeData.type === 'gameIfElse') {
+          onClickHandler = () => {
+            setSelectedNodeId(newNodeId);
+            setIsIfElseDialogOpen(true);
+          };
+        } else if (nodeData.type === 'gameEnd') {
+          onClickHandler = () => {
+            setSelectedNodeId(newNodeId);
+            setIsEndDialogOpen(true);
+          };
+        } else {
+          onClickHandler = () => {
+            setSelectedNodeId(newNodeId);
+            setSelectedNodeType(nodeData.type);
+            setIsGameNodeDialogOpen(true);
+          };
+        }
+        
         const newNode: Node = {
           id: newNodeId,
           type: nodeData.type,
           position,
           data: {
             label: nodeData.label,
-            onClick: () => {
-              setSelectedNodeId(newNodeId);
-              setSelectedNodeType(nodeData.type);
-              setIsGameNodeDialogOpen(true);
-            },
+            onClick: onClickHandler,
           },
         };
 
-        // Check constraints before adding
+        // Check constraints and add node
         setNodes((prevNodes) => {
           // Check if node already exists
           if (prevNodes.find((n) => n.id === newNodeId)) {
+            isDroppingRef.current = false;
             return prevNodes;
           }
           
@@ -493,18 +584,30 @@ export default function GameEditorCanvas() {
           const constraintCheck = checkNodeConstraints(testNodes);
           if (!constraintCheck.valid) {
             toast.error(constraintCheck.reason || 'Cannot add this node');
+            isDroppingRef.current = false;
             return prevNodes;
           }
           
-          saveToHistory(testNodes, edges);
+          // Get current edges from state
+          setEdges((prevEdges) => {
+            saveToHistory(testNodes, prevEdges);
+            return prevEdges;
+          });
+          
+          // Reset flag after a short delay to allow state updates
+          setTimeout(() => {
+            isDroppingRef.current = false;
+          }, 100);
+          
           toast.success('Node added');
           return testNodes;
         });
       } catch (error) {
         console.error('Error parsing drop data:', error);
+        isDroppingRef.current = false;
       }
     },
-    [nodes, edges, checkNodeConstraints, saveToHistory],
+    [checkNodeConstraints, saveToHistory],
   );
 
   // Handle keyboard delete
@@ -547,7 +650,6 @@ export default function GameEditorCanvas() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedNodeId, nodes, edges, interactionMode, checkNodeConstraints, saveToHistory]);
 
-  // Handle clicking on empty canvas to add node (only in select mode)
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       // Only add node if clicking on empty space (not on a node) and in select mode
@@ -606,6 +708,30 @@ export default function GameEditorCanvas() {
     }
   };
 
+  const handleIfElseSave = (data: { title: string; description: string; condition?: string }) => {
+    if (selectedNodeId) {
+      setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+          node.id === selectedNodeId
+            ? { ...node, data: { ...node.data, label: data.title, ...data } }
+            : node
+        )
+      );
+    }
+  };
+
+  const handleEndSave = (data: { title: string; description: string }) => {
+    if (selectedNodeId) {
+      setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+          node.id === selectedNodeId
+            ? { ...node, data: { ...node.data, label: data.title, ...data } }
+            : node
+        )
+      );
+    }
+  };
+
   // Sync contentEditable element with gameTitle state
   useEffect(() => {
     if (titleRef.current && titleRef.current.textContent !== gameTitle) {
@@ -627,44 +753,59 @@ export default function GameEditorCanvas() {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  // Initialize nodes with onClick handlers
-  const nodesWithHandlers = nodes.map((node) => {
-    // Skip if onClick already exists
-    if ((node.data as any).onClick) {
-      return node;
-    }
+  // Initialize nodes with onClick handlers - memoized
+  const nodesWithHandlers = useMemo(() => {
+    return nodes.map((node) => {
+      // Skip if onClick already exists
+      if ((node.data as any).onClick) {
+        return node;
+      }
 
-    // Add onClick handlers based on node type
-    if (node.type === 'gameStart') {
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          onClick: () => {
-            setSelectedNodeId(node.id);
-            setIsStartDialogOpen(true);
+      // Add onClick handlers based on node type
+      if (node.type === 'gameStart') {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            onClick: createNodeClickHandler(node.id, 'gameStart'),
           },
-        },
-      };
-    }
-    
-    // All other node types open game node dialog
-    if (['gameAction', 'gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameEnd', 'gameIfElse'].includes(node.type || '')) {
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          onClick: () => {
-            setSelectedNodeId(node.id);
-            setSelectedNodeType(node.type || null);
-            setIsGameNodeDialogOpen(true);
+        };
+      }
+      
+      if (node.type === 'gameIfElse') {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            onClick: createNodeClickHandler(node.id, 'gameIfElse'),
           },
-        },
-      };
-    }
-    
-    return node;
-  });
+        };
+      }
+      
+      if (node.type === 'gameEnd') {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            onClick: createNodeClickHandler(node.id, 'gameEnd'),
+          },
+        };
+      }
+      
+      // All other node types open game node dialog
+      if (['gameParagraph', 'gameImageTerms', 'gameImagePin'].includes(node.type || '')) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            onClick: createNodeClickHandler(node.id, node.type || null),
+          },
+        };
+      }
+      
+      return node;
+    });
+  }, [nodes, createNodeClickHandler]);
  
   return (
     <AppWrapper 
@@ -774,6 +915,33 @@ export default function GameEditorCanvas() {
         open={isStartDialogOpen}
         onOpenChange={setIsStartDialogOpen}
         onSave={handleStartSave}
+      />
+      <IfElseGameDialog
+        open={isIfElseDialogOpen}
+        onOpenChange={setIsIfElseDialogOpen}
+        onSave={handleIfElseSave}
+        initialData={
+          selectedNodeId
+            ? nodes.find((n) => n.id === selectedNodeId)?.data as {
+                title?: string;
+                description?: string;
+                condition?: string;
+              } | undefined
+            : undefined
+        }
+      />
+      <EndGameDialog
+        open={isEndDialogOpen}
+        onOpenChange={setIsEndDialogOpen}
+        onSave={handleEndSave}
+        initialData={
+          selectedNodeId
+            ? nodes.find((n) => n.id === selectedNodeId)?.data as {
+                title?: string;
+                description?: string;
+              } | undefined
+            : undefined
+        }
       />
       <GameNodeDialog
         open={isGameNodeDialogOpen}

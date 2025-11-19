@@ -1,12 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { Play } from 'lucide-react';
-
-interface GameStartNodeProps {
-  data?: { 
-    onClick?: () => void;
-  };
-  selected?: boolean;
-}
+import type { GameStartNodeProps } from '../types/game-studio.types';
 
 export default function GameStartNode({ data, selected }: GameStartNodeProps) {
   return (

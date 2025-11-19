@@ -4,11 +4,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-
-interface SettingsDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import type { SettingsDrawerProps } from '../types/game-studio.types';
 
 export default function SettingsDrawer({
   open,

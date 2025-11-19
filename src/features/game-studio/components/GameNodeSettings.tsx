@@ -4,10 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useGameStudioContext } from '@/contexts/game-studio';
-
-interface GameNodeSettingsProps {
-  nodeId?: string;
-}
+import type { GameNodeSettingsProps } from '../types/game-studio.types';
 
 export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
   const { getNode, updateNode } = useGameStudioContext();

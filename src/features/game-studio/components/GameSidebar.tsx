@@ -9,14 +9,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-
-interface SidebarItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  category: 'node' | 'logic';
-  nodeType: string;
-}
+import type { SidebarItem } from '../types/game-studio.types';
 
 const nodeItems: SidebarItem[] = [
   {

@@ -1,10 +1,5 @@
 import GameCard from './GameCard';
-import type { GameCardProps } from './GameCard';
-
-interface GameCardListProps {
-    games: GameCardProps[];
-    onGamePlay?: (route?: string) => void;
-}
+import type { GameCardListProps } from '../types/game-studio.types';
 
 export default function GameCardList({
     games,

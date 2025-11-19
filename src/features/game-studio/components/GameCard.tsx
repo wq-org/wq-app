@@ -1,14 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { ArrowRight, Coffee, CheckCircle, Flag } from 'lucide-react';
-
-export interface GameCardProps {
-  id: string;
-  title: string;
-  description: string;
-  route?: string;
-  button: string;
-  onPlay?: () => void;
-}
+import type { GameCardProps } from '../types/game-studio.types';
 
 export default function GameCard({
   id: _id,

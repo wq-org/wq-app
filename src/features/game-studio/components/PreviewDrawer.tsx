@@ -4,11 +4,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-
-interface PreviewDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import type { PreviewDrawerProps } from '../types/game-studio.types';
 
 export default function PreviewDrawer({
   open,

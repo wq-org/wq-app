@@ -1,14 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { StickyNote } from 'lucide-react';
-
-interface GameParagraphNodeProps {
-  data?: {
-    label?: string;
-    onClick?: () => void;
-    gameType?: string;
-  };
-  selected?: boolean;
-}
+import type { GameParagraphNodeProps } from '../types/game-studio.types';
 
 export default function GameParagraphNode({ data, selected }: GameParagraphNodeProps) {
   return (

@@ -1,13 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { Square } from 'lucide-react';
-
-interface GameEndNodeProps {
-  data?: {
-    label?: string;
-    onClick?: () => void;
-  };
-  selected?: boolean;
-}
+import type { GameEndNodeProps } from '../types/game-studio.types';
 
 export default function GameEndNode({ data, selected }: GameEndNodeProps) {
   return (

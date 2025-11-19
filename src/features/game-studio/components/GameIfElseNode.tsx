@@ -1,14 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { GitBranch } from 'lucide-react';
-
-interface GameIfElseNodeProps {
-  data?: {
-    label?: string;
-    onClick?: () => void;
-    condition?: string;
-  };
-  selected?: boolean;
-}
+import type { GameIfElseNodeProps } from '../types/game-studio.types';
 
 export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
   return (

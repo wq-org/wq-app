@@ -7,12 +7,7 @@ import {
 import { ImageTermMatchGame } from '@/features/games/image-term-match';
 import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
 import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame';
-
-interface GameNodeDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  nodeType?: string;
-}
+import type { GameNodeDialogProps } from '../types/game-studio.types';
 
 // Map node types to game components and titles
 const nodeTypeToGame: Record<string, { component: React.ComponentType; title: string }> = {

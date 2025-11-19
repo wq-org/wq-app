@@ -1,14 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { Image as ImageIcon } from 'lucide-react';
-
-interface GameImageTermsNodeProps {
-  data?: {
-    label?: string;
-    onClick?: () => void;
-    gameType?: string;
-  };
-  selected?: boolean;
-}
+import type { GameImageTermsNodeProps } from '../types/game-studio.types';
 
 export default function GameImageTermsNode({ data, selected }: GameImageTermsNodeProps) {
   return (

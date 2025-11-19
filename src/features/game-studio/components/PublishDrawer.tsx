@@ -4,11 +4,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-
-interface PublishDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import type { PublishDrawerProps } from '../types/game-studio.types';
 
 export default function PublishDrawer({
   open,

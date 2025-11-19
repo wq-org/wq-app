@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,20 +12,29 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import type { StartGameDialogProps } from '../types/game-studio.types';
+import type { IfElseGameDialogProps } from '../types/game-studio.types';
 
-export default function StartGameDialog({
+export default function IfElseGameDialog({
   open,
   onOpenChange,
   onSave,
-}: StartGameDialogProps) {
+  initialData,
+}: IfElseGameDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [rounds, setRounds] = useState('');
+  const [condition, setCondition] = useState('');
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || '');
+      setDescription(initialData.description || '');
+      setCondition(initialData.condition || '');
+    }
+  }, [initialData, open]);
 
   const handleSave = () => {
-    if (title.trim() && description.trim() && rounds.trim()) {
-      onSave?.({ title, description, rounds });
+    if (title.trim() && description.trim()) {
+      onSave?.({ title, description, condition: condition.trim() || undefined });
       handleCancel();
     }
   };
@@ -33,17 +42,17 @@ export default function StartGameDialog({
   const handleCancel = () => {
     setTitle('');
     setDescription('');
-    setRounds('');
+    setCondition('');
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="[&_button[data-slot='dialog-close']]:text-blue-500 [&_button[data-slot='dialog-close']]:hover:text-blue-600">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Configure Start Node</DialogTitle>
+          <DialogTitle>Configure If/Else Node</DialogTitle>
           <DialogDescription className="sr-only">
-            Configure the start node with title, description, and number of rounds
+            Configure the if/else node with title, description, and condition
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
@@ -65,21 +74,11 @@ export default function StartGameDialog({
             </div>
             <Textarea
               id="description"
-              placeholder="Describe how the game is going to work"
+              placeholder="Describe the condition logic"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={1000}
               rows={4}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="rounds">Rounds</Label>
-            <Input
-              id="rounds"
-              type="number"
-              placeholder="Enter number of rounds"
-              value={rounds}
-              onChange={(e) => setRounds(e.target.value)}
             />
           </div>
           
@@ -98,7 +97,7 @@ export default function StartGameDialog({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={!title.trim() || !description.trim() || !rounds.trim()}
+            disabled={!title.trim() || !description.trim()}
           >
             Save
           </Button>
