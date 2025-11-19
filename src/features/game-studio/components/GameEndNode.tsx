@@ -6,26 +6,27 @@ interface GameEndNodeProps {
     label?: string;
     onClick?: () => void;
   };
+  selected?: boolean;
 }
 
-export default function GameEndNode({ data }: GameEndNodeProps) {
+export default function GameEndNode({ data, selected }: GameEndNodeProps) {
   return (
     <div
-      className="relative flex items-center gap-3 px-4 py-3 bg-white rounded-lg border-2 border-gray-800 shadow-sm min-w-[120px] cursor-pointer hover:shadow-md transition-shadow"
+      className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow ${selected ? 'border-2 border-gray-300' : ''}`}
       onClick={data?.onClick}
     >
       <Handle
         type="target"
-        position={Position.Top}
-        className="!w-3 !h-3 !bg-gray-800 !border-2 !border-white"
-        id="top"
+        position={Position.Left}
+        className="!w-3 !h-3 !bg-red-500 !border-2 !border-white"
+        id="left"
         onClick={(e) => e.stopPropagation()}
       />
-      <div className="p-2 rounded-lg bg-gray-500/15 flex items-center justify-center">
-        <Square className="w-4 h-4 text-gray-700" />
+      <div className="p-2 rounded-lg border border-red-500/20 bg-red-500/10 flex items-center justify-center">
+        <Square className="w-4 h-4 text-red-500" />
       </div>
-      <span className="text-gray-900 font-medium text-sm">
-        {data?.label || 'End Node'}
+      <span className="text-gray-900 font-medium">
+        {data?.label || 'End'}
       </span>
     </div>
   );

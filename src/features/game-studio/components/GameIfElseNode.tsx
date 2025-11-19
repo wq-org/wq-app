@@ -7,12 +7,13 @@ interface GameIfElseNodeProps {
     onClick?: () => void;
     condition?: string;
   };
+  selected?: boolean;
 }
 
-export default function GameIfElseNode({ data }: GameIfElseNodeProps) {
+export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
   return (
     <div
-      className="relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[120px] cursor-pointer hover:shadow-md transition-shadow"
+      className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow ${selected ? 'border-2 border-gray-300' : ''}`}
       onClick={data?.onClick}
     >
       <Handle

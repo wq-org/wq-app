@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, SelectionMode } from '@xyflow/react';
-import type { Node, Edge, Connection, ReactFlowInstance } from '@xyflow/react';
+import type { Node, Edge, Connection, ReactFlowInstance, NodeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Settings, Play } from 'lucide-react';
+import { toast } from 'sonner';
 import GameStartNode from './GameStartNode';
-import GameActionNode from './GameActionNode';
 import GameEndNode from './GameEndNode';
 import GameParagraphNode from './GameParagraphNode';
 import GameImageTermsNode from './GameImageTermsNode';
@@ -26,7 +26,6 @@ import AppWrapper from '@/components/layout/AppWrapper';
 
 const nodeTypes = {
   gameStart: GameStartNode,
-  gameAction: GameActionNode,
   gameEnd: GameEndNode,
   gameParagraph: GameParagraphNode,
   gameImageTerms: GameImageTermsNode,
@@ -38,12 +37,18 @@ const initialNodes: Node[] = [
   { 
     id: 'start-1', 
     type: 'gameStart',
-    position: { x: 100, y: 100 }, 
+    position: { x: 0, y: 0 }, 
     data: { label: 'Start' } 
   },
 ];
 const initialEdges: Edge[] = [];
- 
+
+// History state type
+type HistoryState = {
+  nodes: Node[];
+  edges: Edge[];
+};
+
 export default function GameEditorCanvas() {
   const { nodes: contextNodes, setNodes: setContextNodes, addNode: addContextNode } = useGameStudioContext();
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -61,6 +66,127 @@ export default function GameEditorCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  
+  // Undo/Redo history
+  const [history, setHistory] = useState<HistoryState[]>([{ nodes: initialNodes, edges: initialEdges }]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  // Save state to history
+  const saveToHistory = useCallback((newNodes: Node[], newEdges: Edge[]) => {
+    setHistory((prevHistory) => {
+      const newHistory = prevHistory.slice(0, historyIndex + 1);
+      newHistory.push({ 
+        nodes: JSON.parse(JSON.stringify(newNodes)), 
+        edges: JSON.parse(JSON.stringify(newEdges)) 
+      });
+      return newHistory.slice(-50); // Keep last 50 states
+    });
+    setHistoryIndex((prevIndex) => Math.min(prevIndex + 1, 49));
+  }, [historyIndex]);
+
+  // Undo function
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      const prevState = history[historyIndex - 1];
+      setNodes(prevState.nodes);
+      setEdges(prevState.edges);
+      setHistoryIndex(historyIndex - 1);
+      toast.success('Undone');
+    } else {
+      toast.info('Nothing to undo');
+    }
+  }, [history, historyIndex]);
+
+  // Redo function
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const nextState = history[historyIndex + 1];
+      setNodes(nextState.nodes);
+      setEdges(nextState.edges);
+      setHistoryIndex(historyIndex + 1);
+      toast.success('Redone');
+    } else {
+      toast.info('Nothing to redo');
+    }
+  }, [history, historyIndex]);
+
+  // Check node constraints
+  const checkNodeConstraints = useCallback((newNodes: Node[]): { valid: boolean; reason?: string } => {
+    const startNodes = newNodes.filter(n => n.type === 'gameStart');
+    const endNodes = newNodes.filter(n => n.type === 'gameEnd');
+
+    if (startNodes.length > 1) {
+      return { valid: false, reason: 'Only one Start node is allowed' };
+    }
+    if (endNodes.length > 1) {
+      return { valid: false, reason: 'Only one End node is allowed' };
+    }
+
+    return { valid: true };
+  }, []);
+
+  // Connection validation
+  const canConnect = useCallback((sourceNode: Node | undefined, targetNode: Node | undefined): { can: boolean; reason?: string } => {
+    if (!sourceNode || !targetNode) {
+      return { can: false, reason: 'Invalid nodes' };
+    }
+
+    // Start node can connect to any node except end node
+    if (sourceNode.type === 'gameStart') {
+      if (targetNode.type === 'gameEnd') {
+        return { can: false, reason: 'Cannot connect Start node to End node' };
+      }
+      // Start node can only have one outgoing connection
+      const startOutgoingEdges = edges.filter(e => e.source === sourceNode.id);
+      if (startOutgoingEdges.length >= 1) {
+        return { can: false, reason: 'Start node can only have one outgoing connection' };
+      }
+      // Allow connection to any other node type
+      return { can: true };
+    }
+
+    // End node can only have one incoming connection
+    if (targetNode.type === 'gameEnd') {
+      const endIncomingEdges = edges.filter(e => e.target === targetNode.id);
+      if (endIncomingEdges.length >= 1) {
+        return { can: false, reason: 'End node can only have one incoming connection' };
+      }
+    }
+
+    // Regular chainable nodes (End, Paragraph, ImageTerms, ImagePin) can only have 1:1 connections
+    const chainableTypes = ['gameEnd', 'gameParagraph', 'gameImageTerms', 'gameImagePin'];
+    if (chainableTypes.includes(targetNode.type || '')) {
+      const targetIncomingEdges = edges.filter(e => e.target === targetNode.id);
+      if (targetIncomingEdges.length >= 1) {
+        return { can: false, reason: 'This node can only have one incoming connection' };
+      }
+    }
+
+    if (chainableTypes.includes(sourceNode.type || '')) {
+      const sourceOutgoingEdges = edges.filter(e => e.source === sourceNode.id);
+      if (sourceOutgoingEdges.length >= 1) {
+        return { can: false, reason: 'This node can only have one outgoing connection' };
+      }
+    }
+
+    // If/Else node can have max 2 outgoing connections
+    if (sourceNode.type === 'gameIfElse') {
+      const ifElseOutgoingEdges = edges.filter(e => e.source === sourceNode.id);
+      if (ifElseOutgoingEdges.length >= 2) {
+        return { can: false, reason: 'If/Else node can only have two outgoing connections' };
+      }
+    }
+
+    // If/Else node can only have one incoming connection
+    if (targetNode.type === 'gameIfElse') {
+      const ifElseIncomingEdges = edges.filter(e => e.target === targetNode.id);
+      if (ifElseIncomingEdges.length >= 1) {
+        return { can: false, reason: 'If/Else node can only have one incoming connection' };
+      }
+    }
+
+    return { can: true };
+  }, [edges]);
 
   // Listen for command bar actions
   useEffect(() => {
@@ -69,8 +195,14 @@ export default function GameEditorCanvas() {
       const actionId = customEvent.detail?.actionId;
       if (actionId === 'pan') {
         setInteractionMode('pan');
+        toast.success('Pan mode activated');
       } else if (actionId === 'select') {
         setInteractionMode('select');
+        toast.success('Select mode activated');
+      } else if (actionId === 'undo') {
+        handleUndo();
+      } else if (actionId === 'redo') {
+        handleRedo();
       }
     };
 
@@ -78,7 +210,7 @@ export default function GameEditorCanvas() {
     return () => {
       window.removeEventListener('command-action', handleCommandAction);
     };
-  }, []);
+  }, [handleUndo, handleRedo]);
 
   // Sync context nodes with React Flow nodes
   useEffect(() => {
@@ -144,16 +276,82 @@ export default function GameEditorCanvas() {
   }, [nodes]);
 
   const onNodesChange = useCallback(
-    (changes: any) => {
+    (changes: NodeChange[]) => {
+      // Handle node deletion
+      const deleteChanges = changes.filter(c => c.type === 'remove');
+      for (const change of deleteChanges) {
+        if (change.type === 'remove') {
+          const nodeToDelete = nodes.find(n => n.id === change.id);
+          if (nodeToDelete?.type === 'gameStart') {
+            toast.error('Cannot delete Start node');
+            return; // Prevent deletion
+          }
+          
+          // Delete node and connected edges
+          setNodes((prevNodes) => {
+            const newNodes = prevNodes.filter(n => n.id !== change.id);
+            const constraintCheck = checkNodeConstraints(newNodes);
+            if (!constraintCheck.valid) {
+              toast.error(constraintCheck.reason || 'Cannot delete this node');
+              return prevNodes;
+            }
+            
+            // Remove edges connected to deleted node
+            setEdges((prevEdges) => {
+              const newEdges = prevEdges.filter(
+                e => e.source !== change.id && e.target !== change.id
+              );
+              saveToHistory(newNodes, newEdges);
+              return newEdges;
+            });
+            
+            saveToHistory(newNodes, edges);
+            toast.success('Node deleted');
+            setSelectedNodeId(null);
+            return newNodes;
+          });
+          return; // Exit early after deletion
+        }
+      }
+
+      // Handle node selection
+      const selectChanges = changes.filter(c => c.type === 'select');
+      for (const change of selectChanges) {
+        if (change.type === 'select') {
+          if (change.selected) {
+            setSelectedNodeId(change.id);
+          } else {
+            setSelectedNodeId(null);
+          }
+        }
+      }
+
+      // Apply all changes (including position changes for dragging)
       setNodes((nodesSnapshot) => {
         const updatedNodes = applyNodeChanges(changes, nodesSnapshot);
+        
+        // Only check constraints for non-position changes
+        const hasNonPositionChanges = changes.some(
+          c => c.type !== 'position' && c.type !== 'dimensions' && c.type !== 'select'
+        );
+        
+        if (hasNonPositionChanges) {
+          const constraintCheck = checkNodeConstraints(updatedNodes);
+          if (!constraintCheck.valid) {
+            toast.error(constraintCheck.reason || 'Node constraint violation');
+            return nodesSnapshot; // Revert changes
+          }
+        }
+
         // Update node data with onClick handlers
-        return updatedNodes.map((node) => {
-          if (node.type === 'gameStart' && !(node.data as any).onClick) {
+        const nodesWithHandlers = updatedNodes.map((node) => {
+          const baseData = node.data || {};
+
+          if (node.type === 'gameStart' && !baseData.onClick) {
             return {
               ...node,
               data: {
-                ...node.data,
+                ...baseData,
                 onClick: () => {
                   setSelectedNodeId(node.id);
                   setIsStartDialogOpen(true);
@@ -161,46 +359,90 @@ export default function GameEditorCanvas() {
               },
             };
           }
-          if (node.type === 'gameAction' && !(node.data as any).onClick) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                onClick: () => {
-                  setSelectedNodeId(node.id);
-                  setSelectedNodeType(node.type || null);
-                  setIsGameNodeDialogOpen(true);
+          if (['gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameEnd', 'gameIfElse'].includes(node.type || '')) {
+            if (!baseData.onClick) {
+              return {
+                ...node,
+                data: {
+                  ...baseData,
+                  onClick: () => {
+                    setSelectedNodeId(node.id);
+                    setSelectedNodeType(node.type || null);
+                    setIsGameNodeDialogOpen(true);
+                  },
                 },
-              },
-            };
+              };
+            }
           }
+          
           return node;
         });
+
+        // Save to history only for significant changes (not just position updates)
+        if (hasNonPositionChanges && JSON.stringify(nodesSnapshot) !== JSON.stringify(nodesWithHandlers)) {
+          saveToHistory(nodesWithHandlers, edges);
+        }
+
+        return nodesWithHandlers;
       });
     },
-    [],
+    [nodes, edges, checkNodeConstraints, saveToHistory],
   );
 
   const onEdgesChange = useCallback(
-    (changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
+    (changes: any) => {
+      setEdges((edgesSnapshot) => {
+        const updatedEdges = applyEdgeChanges(changes, edgesSnapshot);
+        
+        // Save to history if edges changed
+        if (JSON.stringify(edgesSnapshot) !== JSON.stringify(updatedEdges)) {
+          saveToHistory(nodes, updatedEdges);
+        }
+        
+        return updatedEdges;
+      });
+    },
+    [nodes, saveToHistory],
   );
 
   const onConnect = useCallback(
     (params: Connection) => {
-      // Only allow linear connections (one source, one target)
-      const existingTargetEdge = edges.find((e) => e.target === params.target);
-      if (existingTargetEdge) {
-        // Replace existing edge
-        setEdges((prevEdges) => {
-          const filtered = prevEdges.filter((e) => e.target !== params.target);
-          return [...filtered, { ...params, id: `edge-${params.source}-${params.target}` }];
-        });
-      } else {
-        setEdges((prevEdges) => addEdge(params, prevEdges));
+      if (!params.source || !params.target) {
+        toast.error('Invalid connection');
+        return;
       }
+
+      const sourceNode = nodes.find(n => n.id === params.source);
+      const targetNode = nodes.find(n => n.id === params.target);
+
+      // Check connection constraints
+      const connectionCheck = canConnect(sourceNode, targetNode);
+      if (!connectionCheck.can) {
+        toast.error(connectionCheck.reason || 'Connection not allowed');
+        return;
+      }
+
+      // For If/Else node, need to specify which handle
+      if (sourceNode?.type === 'gameIfElse') {
+        const existingIfElseEdges = edges.filter(e => e.source === params.source);
+        if (existingIfElseEdges.length >= 2) {
+          toast.error('If/Else node can only have two outgoing connections');
+          return;
+        }
+        
+        // Use handle ID to distinguish between the two outputs
+        const handleId = existingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom';
+        params.sourceHandle = handleId;
+      }
+
+      setEdges((prevEdges) => {
+        const newEdges = addEdge({ ...params, id: `edge-${params.source}-${params.target}-${Date.now()}` }, prevEdges);
+        saveToHistory(nodes, newEdges);
+        toast.success('Connection created');
+        return newEdges;
+      });
     },
-    [edges],
+    [nodes, edges, canConnect, saveToHistory],
   );
 
   // Handle drag over canvas
@@ -243,19 +485,70 @@ export default function GameEditorCanvas() {
           },
         };
 
+        // Check constraints before adding
         setNodes((prevNodes) => {
           // Check if node already exists
           if (prevNodes.find((n) => n.id === newNodeId)) {
             return prevNodes;
           }
-          return [...prevNodes, newNode];
+          
+          const testNodes = [...prevNodes, newNode];
+          const constraintCheck = checkNodeConstraints(testNodes);
+          if (!constraintCheck.valid) {
+            toast.error(constraintCheck.reason || 'Cannot add this node');
+            return prevNodes;
+          }
+          
+          saveToHistory(testNodes, edges);
+          toast.success('Node added');
+          return testNodes;
         });
       } catch (error) {
         console.error('Error parsing drop data:', error);
       }
     },
-    [nodes],
+    [nodes, edges, checkNodeConstraints, saveToHistory],
   );
+
+  // Handle keyboard delete
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedNodeId && interactionMode === 'select') {
+        event.preventDefault();
+        const nodeToDelete = nodes.find(n => n.id === selectedNodeId);
+        if (nodeToDelete?.type === 'gameStart') {
+          toast.error('Cannot delete Start node');
+          return;
+        }
+
+        setNodes((prevNodes) => {
+          const newNodes = prevNodes.filter(n => n.id !== selectedNodeId);
+          const constraintCheck = checkNodeConstraints(newNodes);
+          if (!constraintCheck.valid) {
+            toast.error(constraintCheck.reason || 'Cannot delete this node');
+            return prevNodes;
+          }
+          
+          // Remove edges connected to deleted node
+          setEdges((prevEdges) => {
+            const newEdges = prevEdges.filter(
+              e => e.source !== selectedNodeId && e.target !== selectedNodeId
+            );
+            saveToHistory(newNodes, newEdges);
+            return newEdges;
+          });
+          
+          saveToHistory(newNodes, edges);
+          toast.success('Node deleted');
+          setSelectedNodeId(null);
+          return newNodes;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedNodeId, nodes, edges, interactionMode, checkNodeConstraints, saveToHistory]);
 
   // Handle clicking on empty canvas to add node (only in select mode)
   const onPaneClick = useCallback(
@@ -278,9 +571,27 @@ export default function GameEditorCanvas() {
     [addContextNode, interactionMode],
   );
 
-  const onInit = useCallback((instance: ReactFlowInstance) => {
-    reactFlowInstance.current = instance;
-  }, []);
+  const onInit = useCallback((instance: any) => {
+    reactFlowInstance.current = instance as ReactFlowInstance;
+    
+    // Center view on start node after a short delay
+    setTimeout(() => {
+      if (instance) {
+        const startNode = nodes.find(n => n.type === 'gameStart');
+        if (startNode) {
+          instance.fitView({ 
+            padding: 0.5,
+            includeHiddenNodes: false,
+            nodes: [startNode],
+            minZoom: 0.5,
+            maxZoom: 2,
+          });
+        } else {
+          instance.fitView({ padding: 0.3 });
+        }
+      }
+    }, 300);
+  }, [nodes]);
 
   const handleStartSave = (data: { title: string; description: string; rounds: string }) => {
     console.log('Saved game data:', data);
@@ -428,7 +739,7 @@ export default function GameEditorCanvas() {
               onConnect={onConnect}
               onPaneClick={onPaneClick}
               onInit={onInit}
-              fitView
+              fitView={false}
               style={{ width: '100%', height: '100%' }}
               nodesDraggable={interactionMode === 'select'}
               nodesConnectable={interactionMode === 'select'}
@@ -437,6 +748,11 @@ export default function GameEditorCanvas() {
               panOnScroll={interactionMode === 'pan'}
               selectionOnDrag={interactionMode === 'select'}
               selectionMode={SelectionMode.Full}
+              defaultEdgeOptions={{
+                type: 'smoothstep',
+                animated: false,
+                style: { strokeWidth: 2, stroke: '#374151' },
+              }}
             />
           )}
         </div>

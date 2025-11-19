@@ -7,19 +7,20 @@ interface GameImagePinNodeProps {
     onClick?: () => void;
     gameType?: string;
   };
+  selected?: boolean;
 }
 
-export default function GameImagePinNode({ data }: GameImagePinNodeProps) {
+export default function GameImagePinNode({ data, selected }: GameImagePinNodeProps) {
   return (
     <div
-      className="relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[120px] cursor-pointer hover:shadow-md transition-shadow"
+      className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow ${selected ? 'border-2 border-gray-300' : ''}`}
       onClick={data?.onClick}
     >
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         className="!w-3 !h-3 !bg-gray-800 !border-2 !border-white"
-        id="top"
+        id="left"
         onClick={(e) => e.stopPropagation()}
       />
       <div className="p-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-center">
@@ -30,9 +31,9 @@ export default function GameImagePinNode({ data }: GameImagePinNodeProps) {
       </span>
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         className="!w-3 !h-3 !bg-gray-800 !border-2 !border-white"
-        id="bottom"
+        id="right"
         onClick={(e) => e.stopPropagation()}
       />
     </div>

@@ -99,8 +99,6 @@ export default function ActionGameDialog({
           <GameNodeLayout
             nodeId={nodeId}
             gameComponent={SelectedGameComponent}
-            gameTitle={selectedGame.title}
-            onBack={() => setSelectedGame(null)}
           />
         )}
       </DialogContent>
