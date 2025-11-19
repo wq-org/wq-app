@@ -7,12 +7,10 @@ import {
 import { ImageTermMatchGame } from '@/features/games/image-term-match';
 import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
 import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame';
-import GameNodeLayout from './GameNodeLayout';
 
 interface GameNodeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  nodeId?: string;
   nodeType?: string;
 }
 
@@ -35,7 +33,6 @@ const nodeTypeToGame: Record<string, { component: React.ComponentType; title: st
 export default function GameNodeDialog({
   open,
   onOpenChange,
-  nodeId,
   nodeType,
 }: GameNodeDialogProps) {
   if (!nodeType) return null;
@@ -51,10 +48,9 @@ export default function GameNodeDialog({
         <DialogHeader>
           <DialogTitle>{gameConfig.title}</DialogTitle>
         </DialogHeader>
-        <GameNodeLayout
-          nodeId={nodeId}
-          gameComponent={GameComponent}
-        />
+        <div className="p-4">
+          <GameComponent />
+        </div>
       </DialogContent>
     </Dialog>
   );

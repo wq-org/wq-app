@@ -15,14 +15,11 @@ import GameNodeDialog from './GameNodeDialog';
 import GameSidebar from './GameSidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer';
 import { useGameStudioContext } from '@/contexts/game-studio';
 import AppWrapper from '@/components/layout/AppWrapper';
+import SettingsDrawer from './SettingsDrawer';
+import PreviewDrawer from './PreviewDrawer';
+import PublishDrawer from './PublishDrawer';
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -758,41 +755,20 @@ export default function GameEditorCanvas() {
         </div>
       </div>
 
-      {/* Settings Drawer */}
-      <Drawer open={isSettingsDrawerOpen} onOpenChange={setIsSettingsDrawerOpen} direction="right">
-        <DrawerContent className="!w-[50vw] !max-w-none !h-[100vh]">
-          <DrawerHeader>
-            <DrawerTitle>Settings</DrawerTitle>
-          </DrawerHeader>
-          <div className="p-4">
-            {/* Empty content for now */}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <SettingsDrawer
+        open={isSettingsDrawerOpen}
+        onOpenChange={setIsSettingsDrawerOpen}
+      />
 
-      {/* Preview Drawer */}
-      <Drawer open={isPreviewDrawerOpen} onOpenChange={setIsPreviewDrawerOpen} direction="right">
-        <DrawerContent className="!w-[50vw] !max-w-none !h-[100vh]">
-          <DrawerHeader>
-            <DrawerTitle>Preview</DrawerTitle>
-          </DrawerHeader>
-          <div className="p-4">
-            {/* Empty content for now */}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <PreviewDrawer
+        open={isPreviewDrawerOpen}
+        onOpenChange={setIsPreviewDrawerOpen}
+      />
 
-      {/* Publish Drawer */}
-      <Drawer open={isPublishDrawerOpen} onOpenChange={setIsPublishDrawerOpen} direction="right">
-        <DrawerContent className="!w-[50vw] !max-w-none">
-          <DrawerHeader>
-            <DrawerTitle>Publish</DrawerTitle>
-          </DrawerHeader>
-          <div className="p-4">
-            {/* Empty content for now */}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <PublishDrawer
+        open={isPublishDrawerOpen}
+        onOpenChange={setIsPublishDrawerOpen}
+      />
 
       <StartGameDialog
         open={isStartDialogOpen}
@@ -802,7 +778,6 @@ export default function GameEditorCanvas() {
       <GameNodeDialog
         open={isGameNodeDialogOpen}
         onOpenChange={setIsGameNodeDialogOpen}
-        nodeId={selectedNodeId || undefined}
         nodeType={selectedNodeType || undefined}
       />
     </AppWrapper>
