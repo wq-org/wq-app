@@ -78,6 +78,14 @@ export default function CommandPalette({
     const roleBasedUserCommands = primaryGroup?.items ?? [];
 
     const handleItemClick = (item: CommandBarItem) => {
+        // Dispatch custom event for pan/select actions
+        if (item.actionId === 'pan' || item.actionId === 'select') {
+            window.dispatchEvent(new CustomEvent('command-action', {
+                detail: { actionId: item.actionId }
+            }));
+            return;
+        }
+        
         if (item.actionId && actionHandlers[item.actionId]) {
             actionHandlers[item.actionId]!();
             return;

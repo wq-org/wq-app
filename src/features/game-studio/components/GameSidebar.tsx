@@ -8,7 +8,6 @@ import {
   GitBranch,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface SidebarItem {
@@ -16,6 +15,7 @@ interface SidebarItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   category: 'node' | 'logic';
+  nodeType: string;
 }
 
 const nodeItems: SidebarItem[] = [
@@ -24,24 +24,28 @@ const nodeItems: SidebarItem[] = [
     label: 'End Node',
     icon: Square,
     category: 'node',
+    nodeType: 'gameEnd',
   },
   {
     id: 'paragraph',
     label: 'Paragraph',
     icon: StickyNote,
     category: 'node',
+    nodeType: 'gameParagraph',
   },
   {
     id: 'image-terms',
     label: 'Image and Terms',
     icon: ImageIcon,
     category: 'node',
+    nodeType: 'gameImageTerms',
   },
   {
     id: 'image-pin',
     label: 'Image and Pin',
     icon: MapPin,
     category: 'node',
+    nodeType: 'gameImagePin',
   },
 ];
 
@@ -51,14 +55,20 @@ const logicItems: SidebarItem[] = [
     label: 'If / else',
     icon: GitBranch,
     category: 'logic',
+    nodeType: 'gameIfElse',
   },
 ];
 
 export default function GameSidebar() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleItemClick = (item: SidebarItem) => {
-    console.log('Clicked:', item.id, item.label);
+  const onDragStart = (event: React.DragEvent, item: SidebarItem) => {
+    event.dataTransfer.setData('application/reactflow', JSON.stringify({
+      type: item.nodeType,
+      label: item.label,
+      nodeId: item.id,
+    }));
+    event.dataTransfer.effectAllowed = 'move';
   };
 
   const filteredNodeItems = nodeItems.filter((item) =>
@@ -70,7 +80,7 @@ export default function GameSidebar() {
   );
 
   return (
-    <div className="absolute left-4 top-4 z-50 w-64">
+    <div className="absolute left-4 top-4 z-10 w-64">
       <div className="flex flex-col w-full bg-white border border-border rounded-2xl shadow-lg">
         {/* Search Bar */}
         <div className="p-4 border-b border-border">
@@ -98,12 +108,14 @@ export default function GameSidebar() {
                 {filteredNodeItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <Button
+                    <div
                       key={item.id}
-                      variant="ghost"
-                      onClick={() => handleItemClick(item)}
+                      draggable
+                      onDragStart={(e) => onDragStart(e, item)}
                       className={cn(
-                        'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto'
+                        'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
+                        'cursor-grab active:cursor-grabbing hover:bg-accent transition-colors',
+                        'flex items-center'
                       )}
                     >
                       <div className={cn(
@@ -113,7 +125,7 @@ export default function GameSidebar() {
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
                       <span className="text-foreground">{item.label}</span>
-                    </Button>
+                    </div>
                   );
                 })}
               </div>
@@ -130,12 +142,14 @@ export default function GameSidebar() {
                 {filteredLogicItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <Button
+                    <div
                       key={item.id}
-                      variant="ghost"
-                      onClick={() => handleItemClick(item)}
+                      draggable
+                      onDragStart={(e) => onDragStart(e, item)}
                       className={cn(
-                        'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto'
+                        'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
+                        'cursor-grab active:cursor-grabbing hover:bg-accent transition-colors',
+                        'flex items-center'
                       )}
                     >
                       <div className={cn(
@@ -145,7 +159,7 @@ export default function GameSidebar() {
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
                       <span className="text-foreground">{item.label}</span>
-                    </Button>
+                    </div>
                   );
                 })}
               </div>

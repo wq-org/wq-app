@@ -20,7 +20,7 @@ export default function GameCard({
 }: GameCardProps) {
   return (
     <Card 
-      className="max-w-md w-full p-8 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow"
+      className="max-w-md rounded-4xl w-full p-8 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow"
     >
       {/* Avatar Group */}
       <div className="relative h-40 mb-8">

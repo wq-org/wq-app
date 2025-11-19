@@ -5,29 +5,18 @@ import GameNodeSettings from './GameNodeSettings';
 interface GameNodeLayoutProps {
   nodeId?: string;
   gameComponent: React.ComponentType | undefined;
-  gameTitle: string;
-  onBack: () => void;
 }
 
 export default function GameNodeLayout({
   nodeId,
   gameComponent: GameComponent,
-  gameTitle,
-  onBack,
-}: GameNodeLayoutProps) {
+  }: GameNodeLayoutProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
 
   return (
     <div className="mt-4">
-      <button
-        onClick={onBack}
-        className="mb-4 text-sm text-primary hover:underline"
-      >
-        ← Back to options
-      </button>
 
       {/* Game Title */}
-      <h2 className="text-2xl font-semibold mb-2">{gameTitle}</h2>
 
       {/* Tabs */}
       <div className="flex gap-12 border-b mb-6">

@@ -1,12 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, SelectionMode } from '@xyflow/react';
 import type { Node, Edge, Connection, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Settings, Play } from 'lucide-react';
 import GameStartNode from './GameStartNode';
 import GameActionNode from './GameActionNode';
+import GameEndNode from './GameEndNode';
+import GameParagraphNode from './GameParagraphNode';
+import GameImageTermsNode from './GameImageTermsNode';
+import GameImagePinNode from './GameImagePinNode';
+import GameIfElseNode from './GameIfElseNode';
 import StartGameDialog from './StartGameDialog';
-import ActionGameDialog from './ActionGameDialog';
+import GameNodeDialog from './GameNodeDialog';
 import GameSidebar from './GameSidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +27,11 @@ import AppWrapper from '@/components/layout/AppWrapper';
 const nodeTypes = {
   gameStart: GameStartNode,
   gameAction: GameActionNode,
+  gameEnd: GameEndNode,
+  gameParagraph: GameParagraphNode,
+  gameImageTerms: GameImageTermsNode,
+  gameImagePin: GameImagePinNode,
+  gameIfElse: GameIfElseNode,
 };
 
 const initialNodes: Node[] = [
@@ -39,16 +49,36 @@ export default function GameEditorCanvas() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [isStartDialogOpen, setIsStartDialogOpen] = useState(false);
-  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
+  const [isGameNodeDialogOpen, setIsGameNodeDialogOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null);
   const [gameTitle, setGameTitle] = useState<string>('General');
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false);
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false);
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false);
+  const [interactionMode, setInteractionMode] = useState<'pan' | 'select'>('select');
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  // Listen for command bar actions
+  useEffect(() => {
+    const handleCommandAction = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const actionId = customEvent.detail?.actionId;
+      if (actionId === 'pan') {
+        setInteractionMode('pan');
+      } else if (actionId === 'select') {
+        setInteractionMode('select');
+      }
+    };
+
+    window.addEventListener('command-action', handleCommandAction);
+    return () => {
+      window.removeEventListener('command-action', handleCommandAction);
+    };
+  }, []);
 
   // Sync context nodes with React Flow nodes
   useEffect(() => {
@@ -75,23 +105,13 @@ export default function GameEditorCanvas() {
                 ...newNode.data,
                 onClick: () => {
                   setSelectedNodeId(newNode.id);
-                  setIsActionDialogOpen(true);
+                  setSelectedNodeType(newNode.type || null);
+                  setIsGameNodeDialogOpen(true);
                 },
               },
             };
             
             updatedNodes.push(nodeWithHandlers);
-            
-            // Auto-connect to the last node linearly
-            if (lastNode) {
-              const newEdge: Edge = {
-                id: `edge-${lastNode.id}-${newNode.id}`,
-                source: lastNode.id,
-                target: newNode.id,
-                type: 'smoothstep',
-              };
-              setEdges((prevEdges) => [...prevEdges, newEdge]);
-            }
           });
           
           return updatedNodes;
@@ -148,7 +168,8 @@ export default function GameEditorCanvas() {
                 ...node.data,
                 onClick: () => {
                   setSelectedNodeId(node.id);
-                  setIsActionDialogOpen(true);
+                  setSelectedNodeType(node.type || null);
+                  setIsGameNodeDialogOpen(true);
                 },
               },
             };
@@ -182,10 +203,65 @@ export default function GameEditorCanvas() {
     [edges],
   );
 
-  // Handle clicking on empty canvas to add node
+  // Handle drag over canvas
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  // Handle drop on canvas
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+
+      const reactFlowBounds = containerRef.current?.getBoundingClientRect();
+      if (!reactFlowInstance.current || !reactFlowBounds) return;
+
+      const data = event.dataTransfer.getData('application/reactflow');
+      if (!data) return;
+
+      try {
+        const nodeData = JSON.parse(data);
+        const position = reactFlowInstance.current.screenToFlowPosition({
+          x: event.clientX - reactFlowBounds.left,
+          y: event.clientY - reactFlowBounds.top,
+        });
+
+        // Create new node
+        const newNodeId = `${nodeData.nodeId}-${Date.now()}`;
+        const newNode: Node = {
+          id: newNodeId,
+          type: nodeData.type,
+          position,
+          data: {
+            label: nodeData.label,
+            onClick: () => {
+              setSelectedNodeId(newNodeId);
+              setSelectedNodeType(nodeData.type);
+              setIsGameNodeDialogOpen(true);
+            },
+          },
+        };
+
+        setNodes((prevNodes) => {
+          // Check if node already exists
+          if (prevNodes.find((n) => n.id === newNodeId)) {
+            return prevNodes;
+          }
+          return [...prevNodes, newNode];
+        });
+      } catch (error) {
+        console.error('Error parsing drop data:', error);
+      }
+    },
+    [nodes],
+  );
+
+  // Handle clicking on empty canvas to add node (only in select mode)
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
-      // Only add node if clicking on empty space (not on a node)
+      // Only add node if clicking on empty space (not on a node) and in select mode
+      if (interactionMode !== 'select') return;
       if ((event.target as HTMLElement).closest('.react-flow__node')) {
         return;
       }
@@ -199,7 +275,7 @@ export default function GameEditorCanvas() {
         addContextNode(position);
       }
     },
-    [addContextNode],
+    [addContextNode, interactionMode],
   );
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
@@ -245,7 +321,13 @@ export default function GameEditorCanvas() {
 
   // Initialize nodes with onClick handlers
   const nodesWithHandlers = nodes.map((node) => {
-    if (node.type === 'gameStart' && !(node.data as any).onClick) {
+    // Skip if onClick already exists
+    if ((node.data as any).onClick) {
+      return node;
+    }
+
+    // Add onClick handlers based on node type
+    if (node.type === 'gameStart') {
       return {
         ...node,
         data: {
@@ -257,18 +339,22 @@ export default function GameEditorCanvas() {
         },
       };
     }
-    if (node.type === 'gameAction' && !(node.data as any).onClick) {
+    
+    // All other node types open game node dialog
+    if (['gameAction', 'gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameEnd', 'gameIfElse'].includes(node.type || '')) {
       return {
         ...node,
         data: {
           ...node.data,
           onClick: () => {
             setSelectedNodeId(node.id);
-            setIsActionDialogOpen(true);
+            setSelectedNodeType(node.type || null);
+            setIsGameNodeDialogOpen(true);
           },
         },
       };
     }
+    
     return node;
   });
  
@@ -282,7 +368,9 @@ export default function GameEditorCanvas() {
         <GameSidebar />
         <div 
           ref={containerRef}
-          className='w-full h-full rounded-4xl bg-gray-100 overflow-hidden relative' 
+          className='w-full h-full rounded-4xl bg-gray-100 overflow-hidden relative'
+          onDragOver={onDragOver}
+          onDrop={onDrop}
         >
           {/* Top Center Badge */}
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
@@ -342,6 +430,13 @@ export default function GameEditorCanvas() {
               onInit={onInit}
               fitView
               style={{ width: '100%', height: '100%' }}
+              nodesDraggable={interactionMode === 'select'}
+              nodesConnectable={interactionMode === 'select'}
+              elementsSelectable={interactionMode === 'select'}
+              panOnDrag={interactionMode === 'pan'}
+              panOnScroll={interactionMode === 'pan'}
+              selectionOnDrag={interactionMode === 'select'}
+              selectionMode={SelectionMode.Full}
             />
           )}
         </div>
@@ -388,10 +483,11 @@ export default function GameEditorCanvas() {
         onOpenChange={setIsStartDialogOpen}
         onSave={handleStartSave}
       />
-      <ActionGameDialog
-        open={isActionDialogOpen}
-        onOpenChange={setIsActionDialogOpen}
+      <GameNodeDialog
+        open={isGameNodeDialogOpen}
+        onOpenChange={setIsGameNodeDialogOpen}
         nodeId={selectedNodeId || undefined}
+        nodeType={selectedNodeType || undefined}
       />
     </AppWrapper>
   );

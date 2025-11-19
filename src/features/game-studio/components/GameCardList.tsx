@@ -3,7 +3,7 @@ import type { GameCardProps } from './GameCard';
 
 interface GameCardListProps {
     games: GameCardProps[];
-    onGamePlay?: () => void;
+    onGamePlay?: (route?: string) => void;
 }
 
 export default function GameCardList({
@@ -16,7 +16,7 @@ export default function GameCardList({
                 <div key={game.id} className="flex-1 min-w-[320px] max-w-[350px] flex justify-center">
                     <GameCard
                         {...game}
-                        onPlay={onGamePlay}
+                        onPlay={() => onGamePlay?.(game.route)}
                     />
                 </div>
             ))}
