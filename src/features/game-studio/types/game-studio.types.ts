@@ -90,6 +90,7 @@ export interface StartGameDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave?: (data: { title: string; description: string; rounds: string }) => void;
+  nodeId?: string;
 }
 
 export interface EndGameDialogProps {
@@ -97,6 +98,7 @@ export interface EndGameDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave?: (data: { title: string; description: string }) => void;
   initialData?: { title?: string; description?: string };
+  nodeId?: string;
 }
 
 export interface IfElseGameDialogProps {

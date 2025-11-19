@@ -205,7 +205,11 @@ export default function GameEditorCanvas() {
     }
     if (nodeType === 'gameEnd') {
       return () => {
-        setSelectedNodeId(nodeId);
+        // Find the End node directly since there can only be one
+        const endNode = nodes.find((n) => n.type === 'gameEnd');
+        if (endNode) {
+          setSelectedNodeId(endNode.id);
+        }
         setIsEndDialogOpen(true);
       };
     }
@@ -721,15 +725,35 @@ export default function GameEditorCanvas() {
   };
 
   const handleEndSave = (data: { title: string; description: string }) => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) =>
-          node.id === selectedNodeId
-            ? { ...node, data: { ...node.data, label: data.title, ...data } }
-            : node
-        )
-      );
-    }
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.type === 'gameEnd'
+          ? { ...node, data: { ...node.data, label: data.title, ...data } }
+          : node
+      )
+    );
+  };
+
+  const handleEndDelete = () => {
+    setNodes((prevNodes) => {
+      const endNode = prevNodes.find((n) => n.type === 'gameEnd');
+      if (!endNode) return prevNodes;
+      
+      const newNodes = prevNodes.filter((n) => n.type !== 'gameEnd');
+      
+      // Remove edges connected to deleted node
+      setEdges((prevEdges) => {
+        const newEdges = prevEdges.filter(
+          (e) => e.source !== endNode.id && e.target !== endNode.id
+        );
+        saveToHistory(newNodes, newEdges);
+        return newEdges;
+      });
+      
+      toast.success('End node deleted');
+      return newNodes;
+    });
+    setIsEndDialogOpen(false);
   };
 
   // Sync contentEditable element with gameTitle state
@@ -895,26 +919,23 @@ export default function GameEditorCanvas() {
           )}
         </div>
       </div>
-
       <SettingsDrawer
         open={isSettingsDrawerOpen}
         onOpenChange={setIsSettingsDrawerOpen}
       />
-
       <PreviewDrawer
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
       />
-
       <PublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
       />
-
       <StartGameDialog
         open={isStartDialogOpen}
         onOpenChange={setIsStartDialogOpen}
         onSave={handleStartSave}
+        nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
       />
       <IfElseGameDialog
         open={isIfElseDialogOpen}
@@ -934,14 +955,8 @@ export default function GameEditorCanvas() {
         open={isEndDialogOpen}
         onOpenChange={setIsEndDialogOpen}
         onSave={handleEndSave}
-        initialData={
-          selectedNodeId
-            ? nodes.find((n) => n.id === selectedNodeId)?.data as {
-                title?: string;
-                description?: string;
-              } | undefined
-            : undefined
-        }
+        nodeId={nodes.find((n) => n.type === 'gameEnd')?.id}
+        onDelete={handleEndDelete}
       />
       <GameNodeDialog
         open={isGameNodeDialogOpen}
