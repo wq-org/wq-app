@@ -23,6 +23,7 @@ import SettingsDrawer from './SettingsDrawer';
 import PreviewDrawer from './PreviewDrawer';
 import PublishDrawer from './PublishDrawer';
 import type { HistoryState } from '../types/game-studio.types';
+import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants';
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -269,17 +270,27 @@ export default function GameEditorCanvas() {
   // ========== React Flow Handlers ==========
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      // Handle node deletion
+      // Handle node deletion - prevent deletion through React Flow UI, only allow via Settings button
       const deleteChanges = changes.filter(c => c.type === 'remove');
       for (const change of deleteChanges) {
         if (change.type === 'remove') {
           const nodeToDelete = nodes.find(n => n.id === change.id);
-          if (nodeToDelete?.type === 'gameStart') {
+          if (!nodeToDelete) return;
+          
+          // Prevent deletion of Start node
+          if (nodeToDelete.type === 'gameStart') {
             toast.error('Cannot delete Start node');
             return; // Prevent deletion
           }
           
-          // Delete node and connected edges
+          // Prevent deletion of nodes that should only be deleted via Settings button
+          const deletableOnlyViaButton = ['gameEnd', 'gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameIfElse'];
+          if (nodeToDelete.type && deletableOnlyViaButton.includes(nodeToDelete.type)) {
+            toast.error('Please use the Delete button in the Settings tab to delete this node');
+            return; // Prevent deletion
+          }
+          
+          // For any other node types, allow deletion (though there shouldn't be any)
           setNodes((prevNodes) => {
             const newNodes = prevNodes.filter(n => n.id !== change.id);
             const constraintCheck = checkNodeConstraints(newNodes);
@@ -464,11 +475,11 @@ export default function GameEditorCanvas() {
           updatedEdges = updatedEdges.filter(e => e.target !== params.target);
         }
 
-        // For End node, check if we're at the limit (10)
+        // For End node, check if we're at the limit
         if (targetNode.type === 'gameEnd') {
           const endIncomingEdges = updatedEdges.filter(e => e.target === params.target);
-          if (endIncomingEdges.length >= 10) {
-            toast.error('End node can only have up to 10 incoming connections');
+          if (endIncomingEdges.length >= MAX_END_NODE_INCOMING_CONNECTIONS) {
+            toast.error(`End node can only have up to ${MAX_END_NODE_INCOMING_CONNECTIONS} incoming connections`);
             return prevEdges;
           }
         }
@@ -597,45 +608,6 @@ export default function GameEditorCanvas() {
     [checkNodeConstraints, saveToHistory],
   );
 
-  // Handle keyboard delete
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedNodeId && interactionMode === 'select') {
-        event.preventDefault();
-        const nodeToDelete = nodes.find(n => n.id === selectedNodeId);
-        if (nodeToDelete?.type === 'gameStart') {
-          toast.error('Cannot delete Start node');
-          return;
-        }
-
-        setNodes((prevNodes) => {
-          const newNodes = prevNodes.filter(n => n.id !== selectedNodeId);
-          const constraintCheck = checkNodeConstraints(newNodes);
-          if (!constraintCheck.valid) {
-            toast.error(constraintCheck.reason || 'Cannot delete this node');
-            return prevNodes;
-          }
-          
-          // Remove edges connected to deleted node
-          setEdges((prevEdges) => {
-            const newEdges = prevEdges.filter(
-              e => e.source !== selectedNodeId && e.target !== selectedNodeId
-            );
-            saveToHistory(newNodes, newEdges);
-            return newEdges;
-          });
-          
-          saveToHistory(newNodes, edges);
-          toast.success('Node deleted');
-          setSelectedNodeId(null);
-          return newNodes;
-        });
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedNodeId, nodes, edges, interactionMode, checkNodeConstraints, saveToHistory]);
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
@@ -718,25 +690,51 @@ export default function GameEditorCanvas() {
   };
 
   const handleEndDelete = () => {
-    setNodes((prevNodes) => {
-      const endNode = prevNodes.find((n) => n.type === 'gameEnd');
-      if (!endNode) return prevNodes;
-      
-      const newNodes = prevNodes.filter((n) => n.type !== 'gameEnd');
-      
-      // Remove edges connected to deleted node
-      setEdges((prevEdges) => {
-        const newEdges = prevEdges.filter(
-          (e) => e.source !== endNode.id && e.target !== endNode.id
-        );
-        saveToHistory(newNodes, newEdges);
-        return newEdges;
+    if (selectedNodeId) {
+      setNodes((prevNodes) => {
+        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId);
+        if (!nodeToDelete) return prevNodes;
+        
+        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
+        
+        // Remove edges connected to deleted node
+        setEdges((prevEdges) => {
+          const newEdges = prevEdges.filter(
+            (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
+          );
+          saveToHistory(newNodes, newEdges);
+          return newEdges;
+        });
+        
+        toast.success('End node deleted');
+        return newNodes;
       });
-      
-      toast.success('End node deleted');
-      return newNodes;
-    });
-    setIsEndDialogOpen(false);
+      setIsEndDialogOpen(false);
+    }
+  };
+
+  const handleIfElseDelete = () => {
+    if (selectedNodeId) {
+      setNodes((prevNodes) => {
+        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId);
+        if (!nodeToDelete) return prevNodes;
+        
+        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
+        
+        // Remove edges connected to deleted node
+        setEdges((prevEdges) => {
+          const newEdges = prevEdges.filter(
+            (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
+          );
+          saveToHistory(newNodes, newEdges);
+          return newEdges;
+        });
+        
+        toast.success('If/Else node deleted');
+        return newNodes;
+      });
+      setIsIfElseDialogOpen(false);
+    }
   };
 
   // Sync contentEditable element with gameTitle state
@@ -933,12 +931,22 @@ export default function GameEditorCanvas() {
               } | undefined
             : undefined
         }
+        nodeId={selectedNodeId || undefined}
+        onDelete={handleIfElseDelete}
       />
       <EndGameDialog
         open={isEndDialogOpen}
         onOpenChange={setIsEndDialogOpen}
         onSave={handleEndSave}
-        nodeId={nodes.find((n) => n.type === 'gameEnd')?.id}
+        nodeId={selectedNodeId || undefined}
+        initialData={
+          selectedNodeId
+            ? nodes.find((n) => n.id === selectedNodeId)?.data as {
+                title?: string;
+                description?: string;
+              } | undefined
+            : undefined
+        }
         onDelete={handleEndDelete}
       />
       <GameNodeDialog

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LayoutDashboard, Settings } from 'lucide-react';
 import GameNodeSettings from './GameNodeSettings';
+import { Button } from '@/components/ui/button';
 
 interface GameNodeLayoutProps {
   nodeId?: string;
@@ -63,16 +64,6 @@ export default function GameNodeLayout({
         {activeTab === 'settings' && (
           <div className="flex flex-col gap-4">
             <GameNodeSettings nodeId={nodeId} />
-            {showDelete && onDelete && (
-              <div className="mt-4 pt-4 border-t">
-                <button
-                  onClick={onDelete}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  Delete Node
-                </button>
-              </div>
-            )}
           </div>
         )}
       </div>

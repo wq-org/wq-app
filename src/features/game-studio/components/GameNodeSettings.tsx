@@ -53,14 +53,6 @@ export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
         />
       </div>
 
-      <div className="flex justify-end">
-        <Button
-          onClick={handleSave}
-          disabled={!hasChanges}
-        >
-          Save Changes
-        </Button>
-      </div>
     </div>
   );
 }

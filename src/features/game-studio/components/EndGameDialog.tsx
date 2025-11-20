@@ -99,16 +99,28 @@ export default function EndGameDialog({
           showDelete={true}
           onDelete={handleDelete}
         />
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={!title.trim() || !description.trim()}
-          >
-            Save
-          </Button>
+        <DialogFooter className="flex items-center border-t border-gray-200 pt-4 justify-between gap-4">
+          <div className="flex-shrink-0">
+            {onDelete && (
+              <Button
+                variant="delete"
+                onClick={handleDelete}
+              >
+                Delete Node
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2 ml-auto">
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={!title.trim() || !description.trim()}
+            >
+              Save
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -106,6 +106,8 @@ export interface IfElseGameDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave?: (data: { title: string; description: string; condition?: string }) => void;
   initialData?: { title?: string; description?: string; condition?: string };
+  nodeId?: string;
+  onDelete?: () => void;
 }
 
 export interface GameNodeDialogProps {
