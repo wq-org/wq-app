@@ -15,11 +15,12 @@ export default function GameStartNode({ data, selected }: GameStartNodeProps) {
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-3 !h-3 !bg-gray-800 !border-2 !border-white"
+        className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white"
         id="right"
         onClick={(e) => e.stopPropagation()}
       />
     </div>
   );
 }
+
 

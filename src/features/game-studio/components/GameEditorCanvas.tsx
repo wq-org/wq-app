@@ -128,65 +128,6 @@ export default function GameEditorCanvas() {
     return { valid: true };
   }, []);
 
-  const canConnect = useCallback((sourceNode: Node | undefined, targetNode: Node | undefined, currentEdges: Edge[]): { can: boolean; reason?: string } => {
-    if (!sourceNode || !targetNode) {
-      return { can: false, reason: 'Invalid nodes' };
-    }
-
-    // Start node can connect to any node except end node
-    if (sourceNode.type === 'gameStart') {
-      if (targetNode.type === 'gameEnd') {
-        return { can: false, reason: 'Cannot connect Start node to End node' };
-      }
-      const startOutgoingEdges = currentEdges.filter(e => e.source === sourceNode.id);
-      if (startOutgoingEdges.length >= 1) {
-        return { can: false, reason: 'Start node can only have one outgoing connection' };
-      }
-      return { can: true };
-    }
-
-    // End node can only have one incoming connection
-    if (targetNode.type === 'gameEnd') {
-      const endIncomingEdges = currentEdges.filter(e => e.target === targetNode.id);
-      if (endIncomingEdges.length >= 1) {
-        return { can: false, reason: 'End node can only have one incoming connection' };
-      }
-    }
-
-    // Regular chainable nodes can only have 1:1 connections
-    const chainableTypes = ['gameEnd', 'gameParagraph', 'gameImageTerms', 'gameImagePin'];
-    if (chainableTypes.includes(targetNode.type || '')) {
-      const targetIncomingEdges = currentEdges.filter(e => e.target === targetNode.id);
-      if (targetIncomingEdges.length >= 1) {
-        return { can: false, reason: 'This node can only have one incoming connection' };
-      }
-    }
-
-    if (chainableTypes.includes(sourceNode.type || '')) {
-      const sourceOutgoingEdges = currentEdges.filter(e => e.source === sourceNode.id);
-      if (sourceOutgoingEdges.length >= 1) {
-        return { can: false, reason: 'This node can only have one outgoing connection' };
-      }
-    }
-
-    // If/Else node can have max 2 outgoing connections
-    if (sourceNode.type === 'gameIfElse') {
-      const ifElseOutgoingEdges = currentEdges.filter(e => e.source === sourceNode.id);
-      if (ifElseOutgoingEdges.length >= 2) {
-        return { can: false, reason: 'If/Else node can only have two outgoing connections' };
-      }
-    }
-
-    // If/Else node can only have one incoming connection
-    if (targetNode.type === 'gameIfElse') {
-      const ifElseIncomingEdges = currentEdges.filter(e => e.target === targetNode.id);
-      if (ifElseIncomingEdges.length >= 1) {
-        return { can: false, reason: 'If/Else node can only have one incoming connection' };
-      }
-    }
-
-    return { can: true };
-  }, []);
 
   // ========== Event Handlers ==========
   // Create node click handlers - memoized to prevent recreation
@@ -477,34 +418,76 @@ export default function GameEditorCanvas() {
       const sourceNode = nodes.find(n => n.id === params.source);
       const targetNode = nodes.find(n => n.id === params.target);
 
-      // Check connection constraints - pass current edges
-      const connectionCheck = canConnect(sourceNode, targetNode, edges);
-      if (!connectionCheck.can) {
-        toast.error(connectionCheck.reason || 'Connection not allowed');
+      if (!sourceNode || !targetNode) {
+        toast.error('Invalid nodes');
         return;
       }
 
-      // For If/Else node, need to specify which handle
-      if (sourceNode?.type === 'gameIfElse') {
-        const existingIfElseEdges = edges.filter(e => e.source === params.source);
-        if (existingIfElseEdges.length >= 2) {
-          toast.error('If/Else node can only have two outgoing connections');
-          return;
-        }
-        
-        // Use handle ID to distinguish between the two outputs
-        const handleId = existingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom';
-        params.sourceHandle = handleId;
+      // Prevent Start to End direct connection
+      if (sourceNode.type === 'gameStart' && targetNode.type === 'gameEnd') {
+        toast.error('Cannot connect Start node to End node');
+        return;
       }
 
       setEdges((prevEdges) => {
-        const newEdges = addEdge({ ...params, id: `edge-${params.source}-${params.target}-${Date.now()}` }, prevEdges);
+        let updatedEdges = [...prevEdges];
+
+        // For nodes that can only have one outgoing connection, remove old outgoing edges
+        const singleOutgoingTypes = ['gameStart', 'gameParagraph', 'gameImageTerms', 'gameImagePin'];
+        if (singleOutgoingTypes.includes(sourceNode.type || '')) {
+          updatedEdges = updatedEdges.filter(e => e.source !== params.source);
+        }
+
+        // For If/Else node, handle the two outputs
+        if (sourceNode.type === 'gameIfElse') {
+          const existingIfElseEdges = updatedEdges.filter(e => e.source === params.source);
+          if (existingIfElseEdges.length >= 2) {
+            // If connecting to same target, replace that specific edge
+            const existingToSameTarget = existingIfElseEdges.find(e => e.target === params.target);
+            if (existingToSameTarget) {
+              updatedEdges = updatedEdges.filter(e => e.id !== existingToSameTarget.id);
+            } else {
+              // If both handles are used, replace the first one
+              updatedEdges = updatedEdges.filter(e => e.id !== existingIfElseEdges[0].id);
+            }
+          }
+          
+          // Use handle ID to distinguish between the two outputs
+          const remainingIfElseEdges = updatedEdges.filter(e => e.source === params.source);
+          const handleId = remainingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom';
+          params.sourceHandle = handleId;
+        }
+
+        // For nodes that can only have one incoming connection (except End which can have up to 10)
+        const singleIncomingTypes = ['gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameIfElse'];
+        if (singleIncomingTypes.includes(targetNode.type || '')) {
+          updatedEdges = updatedEdges.filter(e => e.target !== params.target);
+        }
+
+        // For End node, check if we're at the limit (10)
+        if (targetNode.type === 'gameEnd') {
+          const endIncomingEdges = updatedEdges.filter(e => e.target === params.target);
+          if (endIncomingEdges.length >= 10) {
+            toast.error('End node can only have up to 10 incoming connections');
+            return prevEdges;
+          }
+        }
+
+        // Add the new edge
+        const newEdges = addEdge(
+          { 
+            ...params,
+            source: params.source!,
+            target: params.target!,
+          }, 
+          updatedEdges
+        );
         saveToHistory(nodes, newEdges);
-        toast.success('Connection created');
+        toast.success('Connection updated');
         return newEdges;
       });
     },
-    [nodes, edges, canConnect, saveToHistory],
+    [nodes, edges, saveToHistory],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {

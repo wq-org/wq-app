@@ -40,7 +40,7 @@ export default function StartGameDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="[&_button[data-slot='dialog-close']]:text-blue-500 [&_button[data-slot='dialog-close']]:hover:text-blue-600">
+      <DialogContent className="max-h-[90vh] overflow-y-auto !w-[90vw] !max-w-[1080px] [&_button[data-slot='dialog-close']]:text-blue-500 [&_button[data-slot='dialog-close']]:hover:text-blue-600">
         <DialogHeader>
           <DialogTitle>Configure Start Node</DialogTitle>
           <DialogDescription className="sr-only">

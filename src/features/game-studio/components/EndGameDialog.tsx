@@ -58,7 +58,7 @@ export default function EndGameDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto !w-[90vw] !max-w-[1080px]">
         <DialogHeader>
           <DialogTitle>Configure End Node</DialogTitle>
           <DialogDescription className="sr-only">

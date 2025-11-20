@@ -100,6 +100,8 @@ export default function GameSidebar() {
               <div className="space-y-1">
                 {filteredNodeItems.map((item) => {
                   const Icon = item.icon;
+                  // End node gets red, others get purple (matching node colors)
+                  const isEndNode = item.nodeType === 'gameEnd';
                   return (
                     <div
                       key={item.id}
@@ -113,7 +115,9 @@ export default function GameSidebar() {
                     >
                       <div className={cn(
                         'flex items-center justify-center h-8 w-8 rounded-full border',
-                        'text-gray-500 bg-gray-500/10 border-gray-500/20'
+                        isEndNode
+                          ? 'text-red-500 bg-red-500/10 border-red-500/20'
+                          : 'text-purple-500 bg-purple-500/10 border-purple-500/20'
                       )}>
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
