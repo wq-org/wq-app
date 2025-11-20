@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
 import { Card, CardContent } from '@/components/ui/card';
+import { useGameNodePoints } from '@/features/game-studio/contexts/GameNodePointsContext';
 
 const paragraph = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. Sometimes just going for a walk or drinking enough water can boost your energy levels. In my opinion, prioritizing sleep is just as crucial as staying active. Everyone has different routines, but finding what makes you feel your best is key. Taking care of your mental health is just as vital as taking care of your physical health, and it's perfectly okay to rest when you need it.`;
 
@@ -30,6 +31,7 @@ interface SelectedAnswer {
 }
 
 export default function ParagraphLineSelectGame() {
+  const { points, onPointsChange } = useGameNodePoints();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null);
@@ -135,6 +137,8 @@ export default function ParagraphLineSelectGame() {
         description={description}
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
+        points={points}
+        onPointsChange={onPointsChange}
       />
 
       <Card>

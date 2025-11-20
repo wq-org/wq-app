@@ -440,6 +440,18 @@ export default function GameEditorCanvas() {
         return;
       }
 
+      // Prevent End node from connecting to Start node
+      if (sourceNode.type === 'gameEnd' && targetNode.type === 'gameStart') {
+        toast.error('Cannot connect End node to Start node');
+        return;
+      }
+
+      // Prevent End node from connecting to End node
+      if (sourceNode.type === 'gameEnd' && targetNode.type === 'gameEnd') {
+        toast.error('Cannot connect End node to End node');
+        return;
+      }
+
       setEdges((prevEdges) => {
         let updatedEdges = [...prevEdges];
 
@@ -667,7 +679,7 @@ export default function GameEditorCanvas() {
     }
   };
 
-  const handleIfElseSave = (data: { title: string; description: string; condition?: string }) => {
+  const handleIfElseSave = (data: { title: string; description: string; condition?: string; correctPath?: 'A' | 'B' }) => {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
         prevNodes.map((node) =>
@@ -676,6 +688,19 @@ export default function GameEditorCanvas() {
             : node
         )
       );
+    }
+  };
+
+  const handleGameNodeSave = (data: { points?: number }) => {
+    if (selectedNodeId) {
+      setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+          node.id === selectedNodeId
+            ? { ...node, data: { ...node.data, points: data.points } }
+            : node
+        )
+      );
+      toast.success('Points saved');
     }
   };
 
@@ -928,11 +953,14 @@ export default function GameEditorCanvas() {
                 title?: string;
                 description?: string;
                 condition?: string;
+                correctPath?: 'A' | 'B';
               } | undefined
             : undefined
         }
         nodeId={selectedNodeId || undefined}
         onDelete={handleIfElseDelete}
+        nodes={nodes}
+        edges={edges}
       />
       <EndGameDialog
         open={isEndDialogOpen}
@@ -953,6 +981,8 @@ export default function GameEditorCanvas() {
         open={isGameNodeDialogOpen}
         onOpenChange={setIsGameNodeDialogOpen}
         nodeType={selectedNodeType || undefined}
+        nodeId={selectedNodeId || undefined}
+        onSave={handleGameNodeSave}
       />
     </AppWrapper>
   );

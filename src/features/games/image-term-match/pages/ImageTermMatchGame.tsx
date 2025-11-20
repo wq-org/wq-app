@@ -17,9 +17,11 @@ import {
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
+import { useGameNodePoints } from '@/features/game-studio/contexts/GameNodePointsContext';
 import type { Term } from '../types/image-term-match.types';
 
 export default function ImageTermMatchGame() {
+    const { points, onPointsChange } = useGameNodePoints();
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [feedbackText, setFeedbackText] = useState<string>('');
@@ -94,6 +96,8 @@ export default function ImageTermMatchGame() {
                 description={description}
                 onTitleChange={setTitle}
                 onDescriptionChange={setDescription}
+                points={points}
+                onPointsChange={onPointsChange}
             />
 
             {/* Image Upload Section */}

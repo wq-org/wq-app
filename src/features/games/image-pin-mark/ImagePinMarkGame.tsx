@@ -6,6 +6,7 @@ import GameLayout from '@/components/layout/GameLayout';
 import ImagePin from './components/ImagePin';
 import SquareMarker from './components/SquareMarker';
 import GameInformation from '@/features/games/components/GameInformation';
+import { useGameNodePoints } from '@/features/game-studio/contexts/GameNodePointsContext';
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -103,6 +104,7 @@ function DroppableArea({ children, id }: { children: React.ReactNode; id: string
 }
 
 export default function ImagePinMarkGame() {
+  const { points, onPointsChange } = useGameNodePoints();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -301,6 +303,8 @@ export default function ImagePinMarkGame() {
         description={description}
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
+        points={points}
+        onPointsChange={onPointsChange}
       />
 
       <Card>

@@ -104,16 +104,20 @@ export interface EndGameDialogProps {
 export interface IfElseGameDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave?: (data: { title: string; description: string; condition?: string }) => void;
-  initialData?: { title?: string; description?: string; condition?: string };
+  onSave?: (data: { title: string; description: string; condition?: string; correctPath?: 'A' | 'B' }) => void;
+  initialData?: { title?: string; description?: string; condition?: string; correctPath?: 'A' | 'B' };
   nodeId?: string;
   onDelete?: () => void;
+  nodes?: Node[];
+  edges?: Edge[];
 }
 
 export interface GameNodeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   nodeType?: string;
+  nodeId?: string;
+  onSave?: (data: { points?: number }) => void;
 }
 
 // ========== Drawer Props ==========
