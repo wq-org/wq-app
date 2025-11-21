@@ -936,6 +936,8 @@ export default function GameEditorCanvas() {
       <PublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
+        nodes={nodes}
+        gameTitle={gameTitle}
       />
       <StartGameDialog
         open={isStartDialogOpen}

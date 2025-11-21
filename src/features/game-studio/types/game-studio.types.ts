@@ -134,6 +134,8 @@ export interface PreviewDrawerProps {
 export interface PublishDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  nodes?: Node[];
+  gameTitle?: string;
 }
 
 // ========== Sidebar Types ==========
