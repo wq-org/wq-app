@@ -48,6 +48,12 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
                     to: `${teacherPrefix}/game-studio`,
                 },
                 {
+                    id: 'chat',
+                    labelKey: 'navigation.chat',
+                    icon: MessagesSquare,
+                    to: `${teacherPrefix}/chat`,
+                },
+                {
                     id: 'upload',
                     labelKey: 'navigation.upload',
                     icon: Upload,

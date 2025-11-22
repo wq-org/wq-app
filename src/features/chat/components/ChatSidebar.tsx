@@ -1,15 +1,6 @@
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { Chat } from '../types/chat.types';
 
@@ -24,73 +15,48 @@ export function ChatSidebar({
     selectedChatId,
     onChatSelect,
 }: ChatSidebarProps) {
+    // Limit to max 6 entries
+    const displayChats = chats.slice(0, 6);
+
     return (
-        <Sidebar collapsible="icon">
-            <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Previous Chats</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {chats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
-                                    <SidebarMenuButton
-                                        onClick={() => onChatSelect(chat.id)}
-                                        className={cn(
-                                            'w-full justify-start gap-3 h-auto py-3',
-                                            selectedChatId === chat.id && 'bg-accent'
-                                        )}
-                                    >
-                                        <div className="relative">
-                                            <Avatar className="h-10 w-10">
-                                                <AvatarImage
-                                                    src={chat.user.avatar}
-                                                    alt={chat.user.name}
-                                                />
-                                                <AvatarFallback>
-                                                    {chat.user.name
-                                                        .split(' ')
-                                                        .map((n) => n[0])
-                                                        .join('')
-                                                        .toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            {chat.user.isOnline && (
-                                                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-sm font-medium truncate">
-                                                    {chat.user.name}
-                                                </p>
-                                                {chat.unreadCount > 0 && (
-                                                    <Badge
-                                                        variant="default"
-                                                        className="h-5 min-w-5 px-1.5 text-xs"
-                                                    >
-                                                        {chat.unreadCount}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                            {chat.lastMessage && (
-                                                <p className="text-xs text-muted-foreground truncate mt-0.5">
-                                                    {chat.lastMessage.content}
-                                                </p>
-                                            )}
-                                            {chat.lastMessage && (
-                                                <p className="text-xs text-muted-foreground mt-0.5">
-                                                    {chat.updatedAt}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-            </SidebarContent>
-        </Sidebar>
+        <div className="fixed left-4 top-4 w-64 h-[600px] z-10">
+            <Card className="h-full flex flex-col p-2 rounded-xl backdrop-blur-md bg-background/80 border">
+                <ScrollArea className="flex-1">
+                    <div className="space-y-2">
+                        {displayChats.map((chat) => (
+                            <button
+                                key={chat.id}
+                                onClick={() => onChatSelect(chat.id)}
+                                className={cn(
+                                    'w-full text-left p-3 rounded-lg transition-colors hover:bg-accent',
+                                    selectedChatId === chat.id && 'bg-accent'
+                                )}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Avatar className="h-10 w-10">
+                                        <AvatarImage
+                                            src={chat.user.avatar}
+                                            alt={chat.user.name}
+                                        />
+                                        <AvatarFallback>
+                                            {chat.user.name
+                                                .split(' ')
+                                                .map((n) => n[0])
+                                                .join('')
+                                                .toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">
+                                            {chat.user.name}
+                                        </p>
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </ScrollArea>
+            </Card>
+        </div>
     );
 }
-

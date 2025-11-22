@@ -6,6 +6,7 @@ import Test from './user/pages/test';
 import StudentDashboard from './features/student/pages/dashboard';
 import StudentSettings from './features/student/pages/settings';
 import StudentChat from './features/student/pages/chat';
+import TeacherChat from './features/teacher/pages/chat';
 
 import TeacherDashboard from './features/teacher/pages/dashboard';
 import TeacherSettings from './features/teacher/pages/settings';
@@ -70,6 +71,13 @@ function App() {
 
                         {/* Teacher Routes (require auth + onboarding) */}
                         <Route path="/teacher">
+                            <Route path="chat" element={
+                                <RequireAuth>
+                                    <RequireOnboarding>
+                                        <TeacherChat />
+                                    </RequireOnboarding>
+                                </RequireAuth>
+                            } />
                             <Route path="dashboard" element={
                                 <RequireAuth>
                                     <RequireOnboarding>
