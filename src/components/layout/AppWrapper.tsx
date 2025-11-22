@@ -9,19 +9,21 @@ interface AppWrapperProps {
     role: 'teacher' | 'student' | 'admin';
     className?: string;
     commandPaletteRole?: 'teacher' | 'student' | 'admin' | 'game-studio';
+    authenticated?: boolean;
+    currentPageName?: string;
 }
 
-function AppWrapper({ children, role, className, commandPaletteRole }: AppWrapperProps) {
+function AppWrapper({ children, role, className, commandPaletteRole, authenticated = true, currentPageName }: AppWrapperProps) {
     const paletteRole = commandPaletteRole || role;
     
     return (       
         <>
-         <Navigation />
+         <Navigation authenticated={authenticated} currentPageName={currentPageName} />
         <Container className={cn(className)}>
       {children}
         </Container>
 
-        <CommandPalette role={paletteRole} />
+       {authenticated && <CommandPalette role={paletteRole} />}
         </>
 );
 }

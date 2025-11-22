@@ -16,9 +16,10 @@ interface NavigationProps {
     currentPageName?: string;
     children?: React.ReactNode;
     className?: string;
+    authenticated?: boolean;
 }
 
-const Navigation = ({ currentPageName, className }: NavigationProps) => {
+const Navigation = ({ currentPageName, className, authenticated = true }: NavigationProps) => {
     const navigate = useNavigate();
     const { logout } = useUser();
     
@@ -63,30 +64,34 @@ const Navigation = ({ currentPageName, className }: NavigationProps) => {
                     {/* Right Section - Language Switcher, Notification and Logout */}
                     <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm">
                         <LanguageSwitcher />
-                        <div className="h-6 w-px bg-border" />
-                        <Popover>
-                            <PopoverTrigger asChild>
+                        {authenticated && (
+                            <>
+                                <div className="h-6 w-px bg-border" />
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-10 w-10 rounded-full hover:bg-accent"
+                                        >
+                                            <Bell className="h-5 w-5 text-gray-600" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-0 w-90 h-120 rounded-4xl backdrop-blur overflow-hidden mr-20 mt-4">
+                                      <NotificationPanel />
+                                    </PopoverContent>
+                                </Popover>
+                                <div className="h-6 w-px bg-border" />
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-10 w-10 rounded-full hover:bg-accent"
+                                    onClick={handleOnClickLogout}
+                                    className="h-10 w-10 rounded-full hover:bg-accent hover:text-red-600"
                                 >
-                                    <Bell className="h-5 w-5 text-gray-600" />
+                                    <LogOut className="h-5 w-5 text-gray-600" />
                                 </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="p-0 w-90 h-120 rounded-4xl backdrop-blur overflow-hidden mr-20 mt-4">
-                              <NotificationPanel />
-                            </PopoverContent>
-                        </Popover>
-                        <div className="h-6 w-px bg-border" />
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleOnClickLogout}
-                            className="h-10 w-10 rounded-full hover:bg-accent hover:text-red-600"
-                        >
-                            <LogOut className="h-5 w-5 text-gray-600" />
-                        </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

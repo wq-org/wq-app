@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/field';
 import {Input} from '@/components/ui/input';
 import {cn} from '@/lib/utils';
-import {MoveLeft, Presentation, GraduationCap} from 'lucide-react';
+import {Presentation, GraduationCap} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {signUpUser} from '../api/authApi';
@@ -17,6 +17,7 @@ import {useUser} from '@/contexts/user';
 import DotWaveLoader from '@/components/common/DotWaveLoader';
 import {toast} from 'sonner';
 import {validateEmail} from '@/lib/validations';
+import AppWrapper from '@/components/layout/AppWrapper';
 
 export default function SignUpPage({className}: React.ComponentProps<'form'>) {
     const navigate = useNavigate();
@@ -33,11 +34,8 @@ export default function SignUpPage({className}: React.ComponentProps<'form'>) {
     const [isLoading, setIsLoading] = useState(false);
     const [emailError, setEmailError] = useState<string | null>(null);
 
-    const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        navigate('/');
-    };
+    // Determine role for AppWrapper (default to 'student' if no role)
+    const appWrapperRole = (role === 'teacher' ? 'teacher' : 'student') as 'teacher' | 'student' | 'admin';
 
     const goToLogin = () => {
         navigate('/auth/login');
@@ -101,28 +99,21 @@ export default function SignUpPage({className}: React.ComponentProps<'form'>) {
     }
 
     return (
-        <div className="w-full container mx-auto max-w-lg">
-            <form
-                onSubmit={handleOnSubmitSignUp}
-                className={cn(
-                    'flex flex-col gap-6 h-screen  justify-center',
-                    className
-                )}
-            >
-                <div className="border p-8 rounded-3xl shadow-lg">
-                    <div>
-                        <Button
-                            onClick={goBack}
-                            variant="ghost"
-                            className="rounded-full"
-                            type="button"
-                        >
-                            <MoveLeft />
-                            <span className="sr-only">{t('common.back')}</span>
-                        </Button>
-                    </div>
-
-                    <FieldGroup>
+        <AppWrapper 
+            role={appWrapperRole} 
+            authenticated={false}
+            currentPageName={t('signUp.title')}
+        >
+            <div className="w-full container mx-auto max-w-lg">
+                <form
+                    onSubmit={handleOnSubmitSignUp}
+                    className={cn(
+                        'flex flex-col gap-6 h-screen justify-center',
+                        className
+                    )}
+                >
+                    <div className="border p-8 rounded-3xl shadow-lg">
+                        <FieldGroup>
                         {role && (
                             <div className="flex justify-center mb-4">
                                 <div className="inline-flex p-3 bg-gray-100 rounded-lg">
@@ -220,9 +211,10 @@ export default function SignUpPage({className}: React.ComponentProps<'form'>) {
                                 </button>
                             </FieldDescription>
                         </Field>
-                    </FieldGroup>
-                </div>
-            </form>
-        </div>
+                        </FieldGroup>
+                    </div>
+                </form>
+            </div>
+        </AppWrapper>
     );
 }

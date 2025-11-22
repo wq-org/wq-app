@@ -6,15 +6,15 @@ import { cn } from "@/lib/utils";
 const flags: Record<string, string> = {
   US: '🇺🇸',
   DE: '🇩🇪',
-  FR: '🇫🇷',
-  ES: '🇪🇸',
+  // FR: '🇫🇷',
+  // ES: '🇪🇸',
 };
 
 const languages = [
   { code: "de", name: "Deutsch", flag: "DE" },
   { code: "en", name: "English", flag: "US" },
-  { code: "fr", name: "Français", flag: "FR" },
-  { code: "es", name: "Español", flag: "ES" },
+  // { code: "fr", name: "Français", flag: "FR" },
+  // { code: "es", name: "Español", flag: "ES" },
 ];
 
 export function LanguageSwitcher() {
