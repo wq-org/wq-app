@@ -855,7 +855,7 @@ export default function GameEditorCanvas() {
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
             <Badge 
               variant="outline" 
-              className="px-4 py-2 text-sm cursor-text"
+              className="px-4 py-2 text-sm cursor-text bg-white"
               asChild
             >
               <div

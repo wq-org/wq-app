@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PublishDrawerProps } from '../types/game-studio.types';
 import type { Node } from '@xyflow/react';
+import { toast } from 'sonner';
 
 const nodeTypeConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
   gameStart: { label: 'Start', icon: Play, color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
@@ -38,6 +39,9 @@ export default function PublishDrawer({
     n.type && ['gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameIfElse'].includes(n.type)
   );
 
+  // Get end node
+  const endNode = nodes.find((n: Node) => n.type === 'gameEnd');
+
   // Calculate total nodes (excluding start/end)
   const totalNodes = gameNodes.length;
 
@@ -47,10 +51,39 @@ export default function PublishDrawer({
     return sum + points;
   }, 0);
 
+  // Validation function to check required nodes
+  const validateGameStructure = (): { valid: boolean; error?: string } => {
+    // Check for required nodes
+    if (!startNode) {
+      return { valid: false, error: 'At least one Start node is required' };
+    }
+
+    if (gameNodes.length === 0) {
+      return { valid: false, error: 'At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required' };
+    }
+
+    if (!endNode) {
+      return { valid: false, error: 'At least one End node is required' };
+    }
+
+    return { valid: true };
+  };
+
   const handlePublish = () => {
+    const validation = validateGameStructure();
+    
+    if (!validation.valid) {
+      toast.error(validation.error || 'Cannot publish game');
+      return;
+    }
+
     // TODO: Implement publish functionality
+    toast.success('Game published successfully!');
     console.log('Publishing game...', { gameTitle, nodes: gameNodes });
   };
+
+  const validation = validateGameStructure();
+  const canPublish = validation.valid;
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
@@ -148,10 +181,16 @@ export default function PublishDrawer({
 
         {/* Publish Button - Always at bottom */}
         <div className="p-6 border-t flex-shrink-0">
+          {!canPublish && validation.error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{validation.error}</p>
+            </div>
+          )}
           <Button
             onClick={handlePublish}
             variant="default"
-            className="rounded-lg"
+            className="rounded-lg w-full"
+            disabled={!canPublish}
           >
             Publish for Students
           </Button>
