@@ -1,0 +1,34 @@
+{
+    "labels": {
+        "courses": "Courses",
+        "files": "Files",
+        "gameStudio": "Game Studio",
+        "games": "Games",
+        "institution": "Institutions",
+        "lessons": "Lessons",
+        "notifications": "Notifications",
+        "onboarding": "Onboarding",
+        "student": "Students",
+        "teacher": "Teachers",
+        "uploadFiles": "Upload files"
+    },
+    "actions": {
+        "dashboard": "Dashboard",
+        "search": "Search",
+        "studio": "Game Studio",
+        "chat": "Chat",
+        "upload": "Upload",
+        "addNew": "Add New",
+        "feedback": "Feedback",
+        "settings": "Settings",
+        "pan": "Pan",
+        "select": "Select",
+        "undo": "Undo",
+        "redo": "Redo"
+    },
+    "search": {
+        "placeholder": "Search courses, people, institutions, games…",
+        "noResults": "No results found",
+        "recent": "Recent searches"
+    }
+}

@@ -6,6 +6,7 @@ import * as Separator from '@radix-ui/react-separator';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type {
     CommandBarItem,
@@ -41,6 +42,7 @@ export default function CommandPalette({
 
     const navigate = useNavigate();
     const { getRole } = useUser();
+    const { t } = useTranslation('features.commandPalette');
     
     // Get role from context or fallback to prop, ensure it's a valid Roles type
     const contextRole = getRole();
@@ -169,13 +171,11 @@ export default function CommandPalette({
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                        aria-label={
-                                                            item.labelKey
-                                                        }
+                                                        aria-label={t(item.labelKey)}
                                                     >
                                                         <Icon className="h-6 w-6" />
                                                         <VisuallyHidden>
-                                                            {item.labelKey}
+                                                            {t(item.labelKey)}
                                                         </VisuallyHidden>
                                                     </ToggleGroup.Item>
                                                 </Tooltip.Trigger>
@@ -185,7 +185,7 @@ export default function CommandPalette({
                                                         sideOffset={8}
                                                         className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
                                                     >
-                                                        {item.labelKey}
+                                                        {t(item.labelKey)}
                                                         <Tooltip.Arrow className="fill-popover" />
                                                     </Tooltip.Content>
                                                 </Tooltip.Portal>
@@ -228,11 +228,11 @@ export default function CommandPalette({
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                    aria-label={item.labelKey}
+                                                    aria-label={t(item.labelKey)}
                                                 >
                                                     <Icon className="h-6 w-6" />
                                                     <VisuallyHidden>
-                                                        {item.labelKey}
+                                                        {t(item.labelKey)}
                                                     </VisuallyHidden>
                                                 </ToggleGroup.Item>
                                             </Tooltip.Trigger>
@@ -242,7 +242,7 @@ export default function CommandPalette({
                                                     sideOffset={8}
                                                     className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
                                                 >
-                                                    {item.labelKey}
+                                                    {t(item.labelKey)}
                                                     <Tooltip.Arrow className="fill-popover" />
                                                 </Tooltip.Content>
                                             </Tooltip.Portal>
@@ -283,11 +283,11 @@ export default function CommandPalette({
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                                                    aria-label={item.labelKey}
+                                                    aria-label={t(item.labelKey)}
                                                 >
                                                     <Icon className="h-6 w-6" />
                                                     <VisuallyHidden>
-                                                        {item.labelKey}
+                                                        {t(item.labelKey)}
                                                     </VisuallyHidden>
                                                 </ToggleGroup.Item>
                                             </Tooltip.Trigger>
@@ -297,7 +297,7 @@ export default function CommandPalette({
                                                     sideOffset={8}
                                                     className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
                                                 >
-                                                    {item.labelKey}
+                                                    {t(item.labelKey)}
                                                     <Tooltip.Arrow className="fill-popover" />
                                                 </Tooltip.Content>
                                             </Tooltip.Portal>

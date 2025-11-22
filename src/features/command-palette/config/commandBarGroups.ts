@@ -31,37 +31,37 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
             items: [
                 {
                     id: 'home',
-                    labelKey: 'navigation.dashboard',
+                    labelKey: 'actions.dashboard',
                     icon: Home,
                     to: `${teacherPrefix}/dashboard`,
                 },
                 {
                     id: 'search',
-                    labelKey: 'navigation.search',
+                    labelKey: 'actions.search',
                     icon: SearchIcon,
                     actionId: 'search',
                 },
                 {
                     id: 'studio',
-                    labelKey: 'navigation.studio',
+                    labelKey: 'actions.studio',
                     icon: SplinePointer,
                     to: `${teacherPrefix}/game-studio`,
                 },
                 {
                     id: 'chat',
-                    labelKey: 'navigation.chat',
+                    labelKey: 'actions.chat',
                     icon: MessagesSquare,
                     to: `${teacherPrefix}/chat`,
                 },
                 {
                     id: 'upload',
-                    labelKey: 'navigation.upload',
+                    labelKey: 'actions.upload',
                     icon: Upload,
                     actionId: 'upload',
                 },
                 {
                     id: 'add-new',
-                    labelKey: 'navigation.add-new',
+                    labelKey: 'actions.addNew',
                     icon: Plus,
                     actionId: 'add',
                 },
@@ -72,25 +72,25 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
             items: [
                 {
                     id: 'home',
-                    labelKey: 'navigation.dashboard',
+                    labelKey: 'actions.dashboard',
                     icon: Home,
                     to: `${studentPrefix}/dashboard`,
                 },
                 {
                     id: 'search',
-                    labelKey: 'navigation.search',
+                    labelKey: 'actions.search',
                     icon: SearchIcon,
                     actionId: 'search',
                 },
                 {
                     id: 'chat',
-                    labelKey: 'navigation.chat',
+                    labelKey: 'actions.chat',
                     icon: MessagesSquare,
                     to: `${studentPrefix}/chat`,
                 },
                 {
                     id: 'add',
-                    labelKey: 'navigation.add-new',
+                    labelKey: 'actions.addNew',
                     icon: Plus,
                     actionId: 'add',
                 },
@@ -101,13 +101,13 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
             items: [
                 {
                     id: 'feedback',
-                    labelKey: 'navigation.feedback',
+                    labelKey: 'actions.feedback',
                     icon: UserStar,
                     actionId: 'feedback',
                 },
                 {
                     id: 'settings',
-                    labelKey: 'navigation.settings',
+                    labelKey: 'actions.settings',
                     icon: SettingsIcon,
                     to: `${rolePrefix}/settings`,
                 },
@@ -118,25 +118,25 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
             items: [
                 {
                     id: 'pan',
-                    labelKey: 'navigation.pan',
+                    labelKey: 'actions.pan',
                     icon: Hand,
                     actionId: 'pan',
                 },
                 {
                     id: 'select',
-                    labelKey: 'navigation.select',
+                    labelKey: 'actions.select',
                     icon: MousePointer2,
                     actionId: 'select',
                 },
                 {
                     id: 'undo',
-                    labelKey: 'navigation.undo',
+                    labelKey: 'actions.undo',
                     icon: Undo2,
                     actionId: 'undo',
                 },
                 {
                     id: 'redo',
-                    labelKey: 'navigation.redo',
+                    labelKey: 'actions.redo',
                     icon: Redo2,
                     actionId: 'redo',
                 },

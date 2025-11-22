@@ -1,0 +1,34 @@
+{
+    "labels": {
+        "courses": "Kurse",
+        "files": "Dateien",
+        "gameStudio": "Spiel-Studio",
+        "games": "Spiele",
+        "institution": "Institutionen",
+        "lessons": "Lektionen",
+        "notifications": "Benachrichtigungen",
+        "onboarding": "Einführung",
+        "student": "Schüler",
+        "teacher": "Lehrer",
+        "uploadFiles": "Dateien hochladen"
+    },
+    "actions": {
+        "dashboard": "Dashboard",
+        "search": "Suchen",
+        "studio": "Spiel-Studio",
+        "chat": "Chat",
+        "upload": "Hochladen",
+        "addNew": "Neu hinzufügen",
+        "feedback": "Feedback",
+        "settings": "Einstellungen",
+        "pan": "Verschieben",
+        "select": "Auswählen",
+        "undo": "Rückgängig",
+        "redo": "Wiederholen"
+    },
+    "search": {
+        "placeholder": "Kurse, Personen, Institutionen, Spiele suchen…",
+        "noResults": "Keine Ergebnisse gefunden",
+        "recent": "Letzte Suchen"
+    }
+}
