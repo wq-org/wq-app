@@ -1,1 +1,14 @@
-{}
+{
+    "badges": {
+        "university": "Hochschule Reutlingen",
+        "contacts": "{{formattedCount}} Kontakte"
+    },
+    "actions": {
+        "connect": "Verbinden",
+        "connectWith": "Verbinde dich mit {{userName}}"
+    },
+    "roles": {
+        "teacher": "Deine Rolle ist Lehrer",
+        "student": "Deine Rolle ist Schüler"
+    }
+}

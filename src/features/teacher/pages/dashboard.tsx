@@ -16,9 +16,6 @@ import DotWaveLoader from '@/components/common/DotWaveLoader';
 import type {FileItem} from '@/features/files/types/files.types';
 import {fetchFilesByRole} from '@/features/upload-files/api/uploadFilesApi';
 
-const dummyStudents: any = [
-
-];
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -183,7 +180,7 @@ export default function Dashboard() {
                     )
                 )}
                 {selectedTab === 'students' && (
-                    <StudentCardList students={dummyStudents} />
+                    <StudentCardList students={[]} />
                 )}
             </DashboardLayout>
 

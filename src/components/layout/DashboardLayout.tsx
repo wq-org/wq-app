@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { getDashboardTabs } from '@/lib/dashboard-config';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { QuoteOfTheDay } from '@/components/ui/quote';
+import { useTranslation } from 'react-i18next';
 
 interface DashboardLayoutProps {
     imageUrl?: string;
@@ -21,6 +22,8 @@ interface DashboardLayoutProps {
     handleFollowClick?: () => void;
     handleMailClick?: () => void;
     onClickTab?: (tabId: string) => void;
+    contactsCount?: number;
+    universityName?: string;
 }
 
 export default function DashboardLayout({
@@ -35,9 +38,12 @@ export default function DashboardLayout({
     handleFollowClick,
     handleMailClick,
     onClickTab,
+    contactsCount = 1200,
+    universityName,
 }: DashboardLayoutProps) {
     const [activeTab, setActiveTab] = useState('courses');
     const dashboardTabs = getDashboardTabs(role as 'teacher' | 'student');
+    const { t, i18n } = useTranslation('features.teacher');
 
     function handleTabClick(tabId: string) {
         setActiveTab(tabId);
@@ -46,12 +52,15 @@ export default function DashboardLayout({
         }
     }
 
-    // Sample quote - can be replaced with a hook later
+    // Hardcoded quote
     const sampleQuote = {
         text: "Education is the kindling of a flame, not the filling of a vessel.",
         author: "Socrates",
         source: "Anecdotal"
     };
+
+    // Format contacts count based on locale
+    const formattedContactsCount = contactsCount.toLocaleString(i18n.language === 'de' ? 'de-DE' : 'en-US');
 
     return (
         <div>
@@ -92,9 +101,11 @@ export default function DashboardLayout({
                         </div>
                         <div className="flex gap-4">
                             <Badge variant="secondary">
-                                Reutlingen University
+                                {universityName || t('badges.university')}
                             </Badge>
-                            <Badge variant="secondary">1.200 Contacts</Badge>
+                            <Badge variant="secondary">
+                                {t('badges.contacts', { formattedCount: formattedContactsCount })}
+                            </Badge>
                         </div>
                         <div className="flex items-center gap-4">
                             <Tooltip>
@@ -104,11 +115,11 @@ export default function DashboardLayout({
                                         className="gap-2"
                                         onClick={handleFollowClick}
                                     >
-                                        Connect
+                                        {t('actions.connect')}
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    Connect with {userName}
+                                    {t('actions.connectWith', { userName })}
                                 </TooltipContent>
                             </Tooltip>
 
@@ -160,7 +171,7 @@ export default function DashboardLayout({
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        Your Role is Teacher
+                                        {t('roles.teacher')}
                                     </TooltipContent>
                                 </Tooltip>
                             ) : role?.toLowerCase() === 'student' ? (
@@ -171,7 +182,7 @@ export default function DashboardLayout({
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        Your Role is Student
+                                        {t('roles.student')}
                                     </TooltipContent>
                                 </Tooltip>
                             ) : null}

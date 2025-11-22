@@ -3,11 +3,13 @@ import { initReactI18next } from 'react-i18next';
 
 // DE imports - Root level
 import commonDE from './de/common.json';
-import dashboardDE from './de/dashboard.json';
 import errorsDE from './de/errors.json';
 import navigationDE from './de/navigation.json';
 import roleSelectionDE from './de/roleSelection.json';
 import settingsDE from './de/settings.json';
+
+// DE imports - Layout
+import layoutDashboardLayoutDE from './de/layout/dashboardLayout.json';
 
 // DE imports - Features (alphabetically ordered to match directory structure)
 import featuresAdminDE from './de/features/admin.json';
@@ -29,11 +31,13 @@ import featuresUploadFilesDE from './de/features/uploadFiles.json';
 import featuresAuthEN from './en/features/auth.json';
 import featuresCommandPaletteEN from './en/features/commandPalette.json';
 import commonEN from './en/common.json';
-import dashboardEN from './en/dashboard.json';
 import errorsEN from './en/errors.json';
 import navigationEN from './en/navigation.json';
 import roleSelectionEN from './en/roleSelection.json';
 import settingsEN from './en/settings.json';
+
+// EN imports - Layout
+import layoutDashboardLayoutEN from './en/layout/dashboardLayout.json';
 
 // EN imports - Features (alphabetically ordered to match directory structure)
 import featuresAdminEN from './en/features/admin.json';
@@ -56,7 +60,6 @@ i18n.use(initReactI18next).init({
             auth: featuresAuthEN,
             commandPalette: featuresCommandPaletteEN,
             common: commonEN,
-            dashboard: dashboardEN,
             errors: errorsEN,
             navigation: navigationEN,
             roleSelection: roleSelectionEN,
@@ -76,13 +79,14 @@ i18n.use(initReactI18next).init({
             'features.student': featuresStudentEN,
             'features.teacher': featuresTeacherEN,
             'features.uploadFiles': featuresUploadFilesEN,
+            // Layout namespaces
+            'layout.dashboardLayout': layoutDashboardLayoutEN,
         },
         de: {
             // Root level namespaces (alphabetically ordered)
             auth: featuresAuthDE,
             commandPalette: featuresCommandPaletteDE,
             common: commonDE,
-            dashboard: dashboardDE,
             errors: errorsDE,
             navigation: navigationDE,
             roleSelection: roleSelectionDE,
@@ -102,6 +106,8 @@ i18n.use(initReactI18next).init({
             'features.student': featuresStudentDE,
             'features.teacher': featuresTeacherDE,
             'features.uploadFiles': featuresUploadFilesDE,
+            // Layout namespaces
+            'layout.dashboardLayout': layoutDashboardLayoutDE,
         }, 
     },
     lng: 'de',
@@ -111,7 +117,6 @@ i18n.use(initReactI18next).init({
         'auth',
         'commandPalette',
         'common',
-        'dashboard',
         'errors',
         'navigation',
         'roleSelection',
@@ -131,6 +136,8 @@ i18n.use(initReactI18next).init({
         'features.student',
         'features.teacher',
         'features.uploadFiles',
+        // Layout namespaces
+        'layout.dashboardLayout',
     ],
     defaultNS: 'common',
     interpolation: { escapeValue: false },
