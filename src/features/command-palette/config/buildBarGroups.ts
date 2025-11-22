@@ -1,4 +1,5 @@
-import { BAR_GROUPS } from './commandBarGroups';
+import { getBarGroups } from './commandBarGroups';
+import type { Roles } from '@/lib/dashboard-config';
 import type { CommandBarGroup } from '../types/command-bar.types';
 
 type ActionMap = {
@@ -9,9 +10,10 @@ type ActionMap = {
 
 export function buildBarGroups(
     navigate: (to: string) => void,
-    actions: ActionMap
+    actions: ActionMap,
+    role: Roles
 ): CommandBarGroup[] {
-    return BAR_GROUPS.map((group) => ({
+    return getBarGroups(role).map((group) => ({
         id: group.id,
         items: group.items.map((item) => ({
             ...item,

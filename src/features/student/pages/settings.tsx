@@ -14,8 +14,7 @@ export default function Settings() {
     }
 
     return (
-        <SettingsLayout profile={profile} loading={loading}>
-            <h1>Student Settings Page</h1>
-        </SettingsLayout>
+        <SettingsLayout profile={profile} loading={loading} />
+
     );
 }

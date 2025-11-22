@@ -19,7 +19,7 @@ export type * from './types/command-bar.types';
 export * from './api/commandPaletteApi';
 
 // Config
-export { BAR_GROUPS, getGroupById } from './config/commandBarGroups';
+export { getBarGroups, getGroupById } from './config/commandBarGroups';
 export * from './config/buildBarGroups';
 
 // Pages

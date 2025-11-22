@@ -12,16 +12,19 @@ import type {
     CommandBarGroup,
     ActionId,
 } from '../types/command-bar.types';
-import { BAR_GROUPS } from '../config/commandBarGroups';
+import { getBarGroups } from '../config/commandBarGroups';
 
 import type { CommandPaletteProps } from '../types/command-bar.types';
 import { getGroupById } from '../config/commandBarGroups';
+import { useUser } from '@/contexts/user';
+import type { Roles } from '@/lib/dashboard-config';
 import Container from '@/components/common/Container';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import CommandSearchDialog from './CommandSearchDialog';
 import CommandFeedbackDialog from './CommandFeedbackDialog';
 import CommandUploadDialog from './CommandUploadDialog';
 import CommandAddDialog from './CommandAddDialog';
+import RestrictedCommandPalette from './RestrictedCommandPalette';
 
 export default function CommandPalette({
     role,
@@ -37,24 +40,38 @@ export default function CommandPalette({
     );
 
     const navigate = useNavigate();
+    const { getRole } = useUser();
+    
+    // Get role from context or fallback to prop, ensure it's a valid Roles type
+    const contextRole = getRole();
+    const userRole: Roles = (contextRole || role) as Roles;
+    
+    // Validate role exists - show restricted component if invalid
+    const isValidRole = userRole && ['teacher', 'student', 'admin'].includes(userRole);
+    
+    if (!isValidRole) {
+        console.error('Invalid role provided to CommandPalette:', userRole);
+        return <RestrictedCommandPalette />;
+    }
 
     // Centralized handlers for imperative actions referenced by actionId
     const actionHandlers: Partial<Record<ActionId, () => void>> = {
-        search: () => handleOnClickSearchDialog(), // search interface
-        upload: () => handleOnClickUploadDialog(), // type add-interface
-        feedback: () => handleOnClickFeedbackDialog(), // type feedback-form
-        add: () => handleOnClickAddNewDialog(), // type add-new-form
+        search: () => handleOnClickSearchDialog(),
+        upload: () => handleOnClickUploadDialog(),
+        feedback: () => handleOnClickFeedbackDialog(),
+        add: () => handleOnClickAddNewDialog(),
         backwards: () => window.history.back(),
         forwards: () => window.history.forward(),
     };
 
-    const commandBarGroup: CommandBarGroup[] = BAR_GROUPS;
+    const commandBarGroup: CommandBarGroup[] = getBarGroups(userRole);
 
     function handleOnClickSearchDialog() {
         setActiveDialog('search');
         setOpen(true);
         console.log('Search dialog triggered');
     }
+    
     function handleOnClickUploadDialog() {
         setActiveDialog('upload');
         setOpen(true);
@@ -66,14 +83,15 @@ export default function CommandPalette({
         setOpen(true);
         console.log('Feedback dialog triggered');
     }
+    
     function handleOnClickAddNewDialog() {
         setActiveDialog('add');
         setOpen(true);
         console.log('Add new dialog triggered');
     }
-    const primaryGroup = getGroupById(role) ?? commandBarGroup[0];
-
-    const defaultUserCommands = getGroupById('user');
+    
+    const primaryGroup = getGroupById(userRole, userRole) ?? commandBarGroup[0];
+    const defaultUserCommands = getGroupById('user', userRole);
     const userItems = defaultUserCommands?.items ?? [];
     const roleBasedUserCommands = primaryGroup?.items ?? [];
 

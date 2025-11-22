@@ -13,119 +13,137 @@ import {
     Redo2,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
+import type { Roles } from '@/lib/dashboard-config';
 
-export const getGroupById = (id: string) =>
-    BAR_GROUPS.find((group) => group.id === id);
+/**
+ * Get command bar groups with role-based routes
+ * @param role - User role (required)
+ * @returns Array of command bar groups with dynamic routes
+ */
+export const getBarGroups = (role: Roles): CommandBarGroup[] => {
+    const teacherPrefix = '/teacher';
+    const studentPrefix = '/student';
+    const rolePrefix = `/${role}`;
 
-export const BAR_GROUPS: CommandBarGroup[] = [
-    {
-        id: 'teacher',
-        items: [
-            {
-                id: 'home',
-                labelKey: 'navigation.dashboard',
-                icon: Home,
-                to: '/teacher/dashboard',
-            },
-            {
-                id: 'search',
-                labelKey: 'navigation.search',
-                icon: SearchIcon,
-                actionId: 'search',
-            },
-            {
-                id: 'studio',
-                labelKey: 'navigation.studio',
-                icon: SplinePointer,
-                to: '/teacher/game-studio',
-            },
-            {
-                id: 'upload',
-                labelKey: 'navigation.upload',
-                icon: Upload,
-                actionId: 'upload',
-            },
-            {
-                id: "add-new",
-                labelKey: 'navigation.add-new',
-                icon: Plus,
-                actionId: 'add',
-            },
-        ],
-    },
-    {
-        id: 'student',
-        items: [
-            {
-                id: 'home',
-                labelKey: 'navigation.dashboard',
-                icon: Home,
-                to: '/student/dashboard',
-            },
-            {
-                id: 'search',
-                labelKey: 'navigation.search',
-                icon: SearchIcon,
-                actionId: 'search',
-            },
-            {
-                id: 'play-store',
-                labelKey: 'navigation.play-store',
-                icon: Gamepad2,
-                to: '/student/play-store',
-            },
-            {
-                id: 'add',
-                labelKey: 'navigation.add-new',
-                icon: Plus,
-                actionId: 'upload',
-            },
-        ],
-    },
-    {
-        id: 'user',
-        items: [
-            {
-                id: 'feedback',
-                labelKey: 'navigation.feedback',
-                icon: MessageSquare,
-                actionId: 'feedback',
-            },
-            {
-                id: 'settings',
-                labelKey: 'navigation.settings',
-                icon: SettingsIcon,
-                to: '/teacher/settings',
-            },
-        ],
-    },
-    {
-        id: 'game-studio',
-        items: [
-            {
-                id: 'pan',
-                labelKey: 'navigation.pan',
-                icon: Hand,
-                actionId: 'pan',
-            },
-            {
-                id: 'select',
-                labelKey: 'navigation.select',
-                icon: MousePointer2,
-                actionId: 'select',
-            },
-            {
-                id: 'undo',
-                labelKey: 'navigation.undo',
-                icon: Undo2,
-                actionId: 'undo',
-            },
-            {
-                id: 'redo',
-                labelKey: 'navigation.redo',
-                icon: Redo2,
-                actionId: 'redo',
-            },
-        ],
-    },
-];
+    return [
+        {
+            id: 'teacher',
+            items: [
+                {
+                    id: 'home',
+                    labelKey: 'navigation.dashboard',
+                    icon: Home,
+                    to: `${teacherPrefix}/dashboard`,
+                },
+                {
+                    id: 'search',
+                    labelKey: 'navigation.search',
+                    icon: SearchIcon,
+                    actionId: 'search',
+                },
+                {
+                    id: 'studio',
+                    labelKey: 'navigation.studio',
+                    icon: SplinePointer,
+                    to: `${teacherPrefix}/game-studio`,
+                },
+                {
+                    id: 'upload',
+                    labelKey: 'navigation.upload',
+                    icon: Upload,
+                    actionId: 'upload',
+                },
+                {
+                    id: 'add-new',
+                    labelKey: 'navigation.add-new',
+                    icon: Plus,
+                    actionId: 'add',
+                },
+            ],
+        },
+        {
+            id: 'student',
+            items: [
+                {
+                    id: 'home',
+                    labelKey: 'navigation.dashboard',
+                    icon: Home,
+                    to: `${studentPrefix}/dashboard`,
+                },
+                {
+                    id: 'search',
+                    labelKey: 'navigation.search',
+                    icon: SearchIcon,
+                    actionId: 'search',
+                },
+                {
+                    id: 'play-store',
+                    labelKey: 'navigation.play-store',
+                    icon: Gamepad2,
+                    to: `${studentPrefix}/play-store`,
+                },
+                {
+                    id: 'add',
+                    labelKey: 'navigation.add-new',
+                    icon: Plus,
+                    actionId: 'upload',
+                },
+            ],
+        },
+        {
+            id: 'user',
+            items: [
+                {
+                    id: 'feedback',
+                    labelKey: 'navigation.feedback',
+                    icon: MessageSquare,
+                    actionId: 'feedback',
+                },
+                {
+                    id: 'settings',
+                    labelKey: 'navigation.settings',
+                    icon: SettingsIcon,
+                    to: `${rolePrefix}/settings`,
+                },
+            ],
+        },
+        {
+            id: 'game-studio',
+            items: [
+                {
+                    id: 'pan',
+                    labelKey: 'navigation.pan',
+                    icon: Hand,
+                    actionId: 'pan',
+                },
+                {
+                    id: 'select',
+                    labelKey: 'navigation.select',
+                    icon: MousePointer2,
+                    actionId: 'select',
+                },
+                {
+                    id: 'undo',
+                    labelKey: 'navigation.undo',
+                    icon: Undo2,
+                    actionId: 'undo',
+                },
+                {
+                    id: 'redo',
+                    labelKey: 'navigation.redo',
+                    icon: Redo2,
+                    actionId: 'redo',
+                },
+            ],
+        },
+    ];
+};
+
+/**
+ * Get a specific command bar group by ID
+ * @param id - Group ID to find
+ * @param role - User role (required)
+ * @returns Command bar group or undefined if not found
+ */
+export const getGroupById = (id: string, role: Roles): CommandBarGroup | undefined =>
+    getBarGroups(role).find((group) => group.id === id);
