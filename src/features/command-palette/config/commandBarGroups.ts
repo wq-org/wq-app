@@ -1,7 +1,6 @@
 import {
     Home,
     Search as SearchIcon,
-    Gamepad2,
     Plus,
     MessageSquare,
     Settings as SettingsIcon,
@@ -11,6 +10,8 @@ import {
     MousePointer2,
     Undo2,
     Redo2,
+    MessagesSquare,
+    UserStar,
 } from 'lucide-react';
 import type { CommandBarGroup } from '../types/command-bar.types';
 import type { Roles } from '@/lib/dashboard-config';
@@ -77,16 +78,16 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
                     actionId: 'search',
                 },
                 {
-                    id: 'play-store',
-                    labelKey: 'navigation.play-store',
-                    icon: Gamepad2,
-                    to: `${studentPrefix}/play-store`,
+                    id: 'chat',
+                    labelKey: 'navigation.chat',
+                    icon: MessagesSquare,
+                    to: `${studentPrefix}/chat`,
                 },
                 {
                     id: 'add',
                     labelKey: 'navigation.add-new',
                     icon: Plus,
-                    actionId: 'upload',
+                    actionId: 'add',
                 },
             ],
         },
@@ -96,7 +97,7 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
                 {
                     id: 'feedback',
                     labelKey: 'navigation.feedback',
-                    icon: MessageSquare,
+                    icon: UserStar,
                     actionId: 'feedback',
                 },
                 {

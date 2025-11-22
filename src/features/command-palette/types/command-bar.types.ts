@@ -63,3 +63,8 @@ export interface UpdateGameData {
     title?: string;
     description?: string;
 }
+
+/**
+ * Types of items that can be added via CommandAddDialog
+ */
+export type AddType = "course" | "institution" | "game" | "node" | "notes";

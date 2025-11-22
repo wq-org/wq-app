@@ -15,9 +15,8 @@ import { createInstitution } from "@/features/auth/api/authApi";
 import { createGame } from "@/features/command-palette/api/commandPaletteApi";
 import { useUser } from "@/contexts/user";
 import { useGameStudioContext } from '@/contexts/game-studio';
-import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, Plus } from "lucide-react";
-
-type AddType = "course" | "institution" | "game" | "node";
+import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, Plus, StickyNote } from "lucide-react";
+import type { AddType } from '../types/command-bar.types';
 
 // This function calls create based on type
 const createByType = async (
@@ -49,6 +48,11 @@ const createByType = async (
             if (addNodeFn) {
                 addNodeFn({ x: 0, y: 0 }, { title: data.title, description: data.description });
             }
+            onSuccess?.();
+            return { success: true };
+        case "notes":
+            // Log "create new node" when notes are created
+            console.log("create new node");
             onSuccess?.();
             return { success: true };
         default:
@@ -105,6 +109,13 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
             description: "Add a new action node to the game flow",
             icon: Plus,
             availableForRoles: ["admin", "teacher"],
+        },
+        {
+            type: "notes",
+            label: "Add New Notes",
+            description: "Create a new note",
+            icon: StickyNote,
+            availableForRoles: ["admin", "teacher", "student"],
         },
     ];
 
