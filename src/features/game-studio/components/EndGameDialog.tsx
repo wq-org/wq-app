@@ -96,8 +96,6 @@ export default function EndGameDialog({
               </div>
             </div>
           }
-          showDelete={true}
-          onDelete={handleDelete}
         />
         <DialogFooter className="flex items-center border-t border-gray-200 pt-4 justify-between gap-4">
           <div className="flex-shrink-0">
