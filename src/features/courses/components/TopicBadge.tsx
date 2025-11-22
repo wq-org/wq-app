@@ -4,6 +4,7 @@ import { Check, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface Topic {
     id: string;
@@ -26,6 +27,7 @@ export function TopicBadge({
     onDelete,
 }: TopicBadgeProps) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const { t } = useTranslation('features.courses');
 
     const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -73,16 +75,17 @@ export function TopicBadge({
             <ConfirmationDialog
                 open={showDeleteDialog}
                 onOpenChange={setShowDeleteDialog}
-                title="Delete Topic"
-                description={`Are you sure you want to delete "${topic.name}"? This action cannot be undone.`}
+                title={t('topic.deleteDialog.title')}
+                description={t('topic.deleteDialog.description', {
+                    name: topic.name,
+                })}
                 Icon={AlertTriangle}
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
-                confirmText="Delete"
-                cancelText="Cancel"
+                confirmText={t('topic.deleteDialog.confirm')}
+                cancelText={t('topic.deleteDialog.cancel')}
                 confirmVariant="destructive"
             />
         </>
     );
 }
-

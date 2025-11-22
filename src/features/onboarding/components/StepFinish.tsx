@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -11,11 +10,14 @@ import SuccessPage from './SuccessPage';
 import { linkUserInstitutions } from '../api/onboardingApi';
 import type { StepFinishProps } from '../types/onboarding.types';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import {Button} from '@/components/ui/button';
 
 export default function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
   const { session, pendingRole, refreshProfile } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const { t } = useTranslation('features.onboarding');
 
   // Generate signed URL for displaying avatar (accountData.avatar.src is just the path)
   const { url: signedAvatarUrl } = useAvatarUrl(accountData.avatar.src);
@@ -31,7 +33,7 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
     if (!pendingRole) {
       setIsSubmitting(false);
       // Show error or prevent submission if role is not selected using the sonner toast
-      toast.error('Please select a logout and log in again. you must select a role (teacher or student) to finish onboarding.');
+      toast.error(t('finish.errors.missingRole'));
       return;
     }
 
@@ -69,8 +71,8 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
     } catch (error) {
       console.error('Error completing onboarding:', error);
       setIsSubmitting(false);
-      toast.error('Failed to complete onboarding', {
-        description: 'An error occurred while saving your profile. Please try again.',
+      toast.error(t('finish.errors.completionTitle'), {
+        description: t('finish.errors.completionDescription'),
       });
     }
   };
@@ -79,16 +81,18 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
     <>
       <SuccessPage
         isOpen={showSuccess}
-        title="Welcome to WQ Health! 🎉"
-        description="Your account has been set up successfully. You are now ready to start your journey with us."
+        title={t('finish.successDialog.title')}
+        description={t('finish.successDialog.description')}
         onClickHandler={onFinish}
       />
 
       <div className="flex flex-col gap-8">
         <div className="text-center">
-          <h2 className="text-3xl font-light mb-2">All Set! 🎉</h2>
+          <h2 className="text-3xl font-light mb-2">
+            {t('finish.header.title')}
+          </h2>
           <p className="text-muted-foreground text-sm">
-            Review your information before finishing
+            {t('finish.header.subtitle')}
           </p>
         </div>
 
@@ -119,7 +123,9 @@ export default function StepFinish({ onBack, onFinish, accountData, institutions
           <CardContent className="flex flex-col gap-6">
             {/* Description */}
             <div>
-              <h3 className="font-semibold mb-2">About</h3>
+              <h3 className="font-semibold mb-2">
+                {t('finish.about.title')}
+              </h3>
               <p className="text-muted-foreground text-sm">{accountData.description}</p>
             </div>
 

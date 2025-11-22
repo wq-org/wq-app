@@ -10,6 +10,7 @@ import { useLesson } from '@/contexts/lesson';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { AlertTriangle } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { useTranslation } from 'react-i18next';
 
 interface LessonSettingsProps {
   lessonId: string;
@@ -18,6 +19,7 @@ interface LessonSettingsProps {
 export default function LessonSettings({ lessonId }: LessonSettingsProps) {
   const navigate = useNavigate();
   const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLesson();
+  const { t } = useTranslation('features.lessons');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -112,9 +114,11 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
     <>
       <div className="flex flex-col gap-6 pb-12">
         <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold">Lesson Settings</h2>
+          <h2 className="text-2xl font-semibold">
+            {t('settings.title', { defaultValue: 'Lesson Settings' })}
+          </h2>
           <p className="text-muted-foreground text-sm">
-            Manage your lesson details
+            {t('settings.subtitle', { defaultValue: 'Manage your lesson details' })}
           </p>
         </div>
 
@@ -125,7 +129,7 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
             <Input
               id="title"
               type="text"
-              placeholder="Lesson title"
+              placeholder={t('settings.titlePlaceholder')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="text-base"
@@ -137,7 +141,7 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              placeholder="Lesson description"
+              placeholder={t('settings.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="resize-none"
@@ -156,10 +160,10 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
+                  {t('settings.saving', { defaultValue: 'Saving...' })}
                 </>
               ) : (
-                'Save Changes'
+                t('settings.save', { defaultValue: 'Save Changes' })
               )}
             </Button>
 
@@ -169,7 +173,7 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
               className="gap-2"
             >
               <Trash2 className="w-4 h-4" />
-              Delete Lesson
+              {t('settings.deleteAction', { defaultValue: 'Delete Lesson' })}
             </Button>
           </div>
         </div>
@@ -178,16 +182,17 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
       <ConfirmationDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        title="Delete Lesson"
-        description={`Are you sure you want to delete "${lesson?.title || 'this lesson'}"? This action cannot be undone.`}
+        title={t('settings.deleteDialog.title')}
+        description={t('settings.deleteDialog.description', {
+          title: lesson?.title || t('settings.deleteDialog.fallbackTitle', { defaultValue: 'this lesson' }),
+        })}
         Icon={AlertTriangle}
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteDialog(false)}
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText={t('settings.deleteDialog.confirm')}
+        cancelText={t('settings.deleteDialog.cancel')}
         confirmVariant="destructive"
       />
     </>
   );
 }
-

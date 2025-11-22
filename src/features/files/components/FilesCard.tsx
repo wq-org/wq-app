@@ -21,6 +21,7 @@ import {useUser} from '@/contexts/user';
 import type {FileItem} from '../types/files.types';
 import {getFileBlobUrl, deleteFile, renameFile} from '../api/filesApi';
 import {toast} from 'sonner';
+import {useTranslation} from 'react-i18next';
 import Spinner from '@/components/ui/spinner';
 
 interface FilesCardProps {
@@ -37,6 +38,7 @@ export default function FilesCard({
     onFileDeleted,
 }: FilesCardProps) {
     const {getUserId, getRole} = useUser();
+    const {t} = useTranslation('features.files');
     const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
     const [filename, setFilename] = useState(file.filename);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -394,7 +396,7 @@ export default function FilesCard({
                                                 id="filename-input"
                                                 value={filename}
                                                 onChange={(e) => handleFilenameChange(e.target.value)}
-                                                placeholder="Enter filename"
+                                                placeholder={t('editor.filenamePlaceholder')}
                                                 className="w-full"
                                             />
                                         </div>
@@ -419,7 +421,7 @@ export default function FilesCard({
                                                         }}
                                                         className="w-full"
                                                     >
-                                                        Remove New File
+                                                        {t('editor.removeNewFile', {defaultValue: 'Remove New File'})}
                                                     </Button>
                                                 </div>
                                             ) : newFile ? (
@@ -439,7 +441,7 @@ export default function FilesCard({
                                                         }}
                                                         className="w-full"
                                                     >
-                                                        Remove New File
+                                                        {t('editor.removeNewFile', {defaultValue: 'Remove New File'})}
                                                     </Button>
                                                 </div>
                                             ) : (
@@ -460,7 +462,7 @@ export default function FilesCard({
                                                 }}
                                                 disabled={!hasChanges}
                                             >
-                                                Reset
+                                                {t('editor.reset', {defaultValue: 'Reset'})}
                                             </Button>
                                             <div className="flex gap-2">
                                                 <Button
@@ -468,13 +470,13 @@ export default function FilesCard({
                                                     onClick={() => setShowDeleteDialog(true)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
-                                                    Delete File
+                                                    {t('deleteDialog.action', {defaultValue: 'Delete File'})}
                                                 </Button>
                                                 <Button
                                                     onClick={handleSaveChanges}
                                                     disabled={!hasChanges}
                                                 >
-                                                    Save Changes
+                                                    {t('editor.saveChanges', {defaultValue: 'Save Changes'})}
                                                 </Button>
                                             </div>
                                         </div>
@@ -487,13 +489,15 @@ export default function FilesCard({
             </Drawer>
 
             <ConfirmationDialog
-                title="Delete File"
-                description={`Are you sure you want to delete "${file.filename}"? This action cannot be undone.`}
+                title={t('deleteDialog.title')}
+                description={t('deleteDialog.description', {
+                    filename: file.filename,
+                })}
                 onConfirm={handleDelete}
                 onCancel={() => setShowDeleteDialog(false)}
                 Icon={Trash2}
-                confirmText="Delete"
-                cancelText="Cancel"
+                confirmText={t('deleteDialog.confirm')}
+                cancelText={t('deleteDialog.cancel')}
                 confirmVariant="destructive"
                 open={showDeleteDialog}
                 onOpenChange={setShowDeleteDialog}
