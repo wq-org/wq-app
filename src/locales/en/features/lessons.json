@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "title": "Lesson Settings",
+    "subtitle": "Manage your lesson details",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "deleteAction": "Delete Lesson",
+    "titlePlaceholder": "Lesson title",
+    "descriptionPlaceholder": "Lesson description",
+    "deleteDialog": {
+      "title": "Delete Lesson",
+      "description": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
+      "fallbackTitle": "this lesson",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "page": {
+    "fallbackTitle": "What's your Page about?",
+    "editorPlaceholder": "Start writing..."
+  },
+  "create": {
+    "titlePlaceholder": "New lesson",
+    "descriptionPlaceholder": "Lesson description (max 120 characters)"
+  }
+}

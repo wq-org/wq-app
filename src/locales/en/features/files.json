@@ -1,0 +1,15 @@
+{
+  "deleteDialog": {
+    "title": "Delete File",
+    "description": "Are you sure you want to delete \"{{filename}}\"? This action cannot be undone.",
+    "action": "Delete File",
+    "confirm": "Delete",
+    "cancel": "Cancel"
+  },
+  "editor": {
+    "filenamePlaceholder": "Enter filename",
+    "removeNewFile": "Remove New File",
+    "reset": "Reset",
+    "saveChanges": "Save Changes"
+  }
+}

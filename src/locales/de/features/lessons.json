@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "title": "Lektionseinstellungen",
+    "subtitle": "Verwalte die Details deiner Lektion",
+    "save": "Änderungen speichern",
+    "saving": "Speichern...",
+    "deleteAction": "Lektion löschen",
+    "titlePlaceholder": "Titel der Lektion",
+    "descriptionPlaceholder": "Beschreibung der Lektion",
+    "deleteDialog": {
+      "title": "Lektion löschen",
+      "description": "Möchtest du \"{{title}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "fallbackTitle": "diese Lektion",
+      "confirm": "Löschen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "page": {
+    "fallbackTitle": "Worum geht es auf deiner Seite?",
+    "editorPlaceholder": "Beginne zu schreiben..."
+  },
+  "create": {
+    "titlePlaceholder": "Neue Lektion hinzufügen",
+    "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
+  }
+}

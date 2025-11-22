@@ -1,0 +1,20 @@
+{
+  "finish": {
+    "successDialog": {
+      "title": "Willkommen bei WQ Health! 🎉",
+      "description": "Dein Konto wurde erfolgreich eingerichtet. Du bist jetzt bereit, deine Reise mit uns zu beginnen."
+    },
+    "header": {
+      "title": "Alles erledigt! 🎉",
+      "subtitle": "Überprüfe deine Informationen, bevor du fertigstellst"
+    },
+    "about": {
+      "title": "Über dich"
+    },
+    "errors": {
+      "missingRole": "Bitte melde dich ab und erneut an. Du musst eine Rolle (Lehrkraft oder Studierende:r) auswählen, um das Onboarding abzuschließen.",
+      "completionTitle": "Onboarding konnte nicht abgeschlossen werden",
+      "completionDescription": "Beim Speichern deines Profils ist ein Fehler aufgetreten. Bitte versuche es erneut."
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "deleteDialog": {
+    "title": "Datei löschen",
+    "description": "Möchtest du \"{{filename}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "action": "Datei löschen",
+    "confirm": "Löschen",
+    "cancel": "Abbrechen"
+  },
+  "editor": {
+    "filenamePlaceholder": "Dateiname eingeben",
+    "removeNewFile": "Neue Datei entfernen",
+    "reset": "Zurücksetzen",
+    "saveChanges": "Änderungen speichern"
+  }
+}
