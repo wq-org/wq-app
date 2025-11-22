@@ -2,7 +2,6 @@ import {
     Home,
     Search as SearchIcon,
     Plus,
-    MessageSquare,
     Settings as SettingsIcon,
     SplinePointer,
     Upload,

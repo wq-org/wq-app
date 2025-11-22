@@ -43,7 +43,7 @@ const initialNodes: Node[] = [
   },
 ];
 const initialEdges: Edge[] = [];
-
+ 
 export default function GameEditorCanvas() {
   // ========== Context & State Management ==========
   const { nodes: contextNodes, setNodes: setContextNodes, addNode: addContextNode } = useGameStudioContext();
@@ -229,7 +229,7 @@ export default function GameEditorCanvas() {
                 setIsGameNodeDialogOpen(true);
               };
             }
-
+            
             const nodeWithHandlers: Node = {
               ...newNode,
               position,
@@ -249,7 +249,7 @@ export default function GameEditorCanvas() {
       });
     }
   }, [contextNodes]);
-
+  
   // Keep ref updated
   useEffect(() => {
     setContextNodesRef.current = setContextNodes;
@@ -352,9 +352,9 @@ export default function GameEditorCanvas() {
 
           if (!baseData.onClick) {
             if (node.type === 'gameStart') {
-              return {
-                ...node,
-                data: {
+            return {
+              ...node,
+              data: {
                   ...baseData,
                   onClick: createNodeClickHandler(node.id, 'gameStart'),
                 },
@@ -366,13 +366,13 @@ export default function GameEditorCanvas() {
                 data: {
                   ...baseData,
                   onClick: createNodeClickHandler(node.id, 'gameIfElse'),
-                },
-              };
-            }
+              },
+            };
+          }
             if (node.type === 'gameEnd') {
-              return {
-                ...node,
-                data: {
+            return {
+              ...node,
+              data: {
                   ...baseData,
                   onClick: createNodeClickHandler(node.id, 'gameEnd'),
                 },
@@ -384,9 +384,9 @@ export default function GameEditorCanvas() {
                 data: {
                   ...baseData,
                   onClick: createNodeClickHandler(node.id, node.type || null),
-                },
-              };
-            }
+              },
+            };
+          }
           }
           
           return node;
@@ -786,17 +786,17 @@ export default function GameEditorCanvas() {
   // Initialize nodes with onClick handlers - memoized
   const nodesWithHandlers = useMemo(() => {
     return nodes.map((node) => {
-      // Skip if onClick already exists
-      if ((node.data as any).onClick) {
-        return node;
-      }
+    // Skip if onClick already exists
+    if ((node.data as any).onClick) {
+      return node;
+    }
 
-      // Add onClick handlers based on node type
-      if (node.type === 'gameStart') {
-        return {
-          ...node,
-          data: {
-            ...node.data,
+    // Add onClick handlers based on node type
+    if (node.type === 'gameStart') {
+      return {
+        ...node,
+        data: {
+          ...node.data,
             onClick: createNodeClickHandler(node.id, 'gameStart'),
           },
         };
@@ -818,23 +818,23 @@ export default function GameEditorCanvas() {
           data: {
             ...node.data,
             onClick: createNodeClickHandler(node.id, 'gameEnd'),
-          },
-        };
-      }
-      
-      // All other node types open game node dialog
+        },
+      };
+    }
+    
+    // All other node types open game node dialog
       if (['gameParagraph', 'gameImageTerms', 'gameImagePin'].includes(node.type || '')) {
-        return {
-          ...node,
-          data: {
-            ...node.data,
+      return {
+        ...node,
+        data: {
+          ...node.data,
             onClick: createNodeClickHandler(node.id, node.type || null),
-          },
-        };
-      }
-      
-      return node;
-    });
+        },
+      };
+    }
+    
+    return node;
+  });
   }, [nodes, createNodeClickHandler]);
  
   return (

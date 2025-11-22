@@ -1,6 +1,6 @@
-import EmptyChatView from '../components/EmptyChatView';
+import { ChatLayout } from '@/features/chat';
 
 export default function Chat() {
-    return <EmptyChatView />;
+    return <ChatLayout />;
 }
 

@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { Node, Edge } from '@xyflow/react';
 
 // ========== Core Types ==========
-export interface GameNodeTemplate {
+  export interface GameNodeTemplate {
   id: string;
   label: string;
   type: string;
