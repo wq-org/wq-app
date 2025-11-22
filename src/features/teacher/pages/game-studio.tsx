@@ -1,7 +1,7 @@
 import AppWrapper from '@/components/layout/AppWrapper';
 import {useNavigate} from 'react-router-dom';
 import GameCardList from '@/features/game-studio/components/GameCardList';
-import type { GameCardProps } from '@/features/game-studio/components/GameCard';
+import type { GameCardProps } from '@/features/game-studio/types/game-studio.types';
 
 const games: GameCardProps[] = [
     {

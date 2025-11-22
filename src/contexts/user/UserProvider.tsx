@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getCompleteProfile, logoutUser } from '@/features/auth/api/authApi';
 import { UserContext, type Profile, type UserContextValue } from './UserContext';
+import type { Roles } from '@/lib/dashboard-config';
 
 const PENDING_ROLE_KEY = 'wq_pending_role';
 
@@ -83,9 +84,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
-  const getRole = () => {
+  const getRole = (): Roles | null => {
     if (profile?.role) {
-      return profile.role;
+      return profile.role as Roles;
     }
     return null;
   };

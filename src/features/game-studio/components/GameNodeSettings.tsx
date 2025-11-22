@@ -2,33 +2,30 @@ import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { useGameStudioContext } from '@/contexts/game-studio';
 import type { GameNodeSettingsProps } from '../types/game-studio.types';
 
 export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
-  const { getNode, updateNode } = useGameStudioContext();
+  const { getNode } = useGameStudioContext();
   const node = nodeId ? getNode(nodeId) : null;
   
-  const [title, setTitle] = useState(node?.data?.title || node?.data?.label || '');
-  const [description, setDescription] = useState(node?.data?.description || '');
+  const [title, setTitle] = useState<string>(() => {
+    const nodeTitle = node?.data?.title || node?.data?.label;
+    return typeof nodeTitle === 'string' ? nodeTitle : '';
+  });
+  const [description, setDescription] = useState<string>(() => {
+    const nodeDesc = node?.data?.description;
+    return typeof nodeDesc === 'string' ? nodeDesc : '';
+  });
 
   useEffect(() => {
     if (node) {
-      setTitle(node.data?.title || node.data?.label || '');
-      setDescription(node.data?.description || '');
+      const nodeTitle = node.data?.title || node.data?.label;
+      const nodeDesc = node.data?.description;
+      setTitle(typeof nodeTitle === 'string' ? nodeTitle : '');
+      setDescription(typeof nodeDesc === 'string' ? nodeDesc : '');
     }
   }, [node]);
-
-  const handleSave = () => {
-    if (nodeId) {
-      updateNode(nodeId, { title, description });
-    }
-  };
-
-  const hasChanges = 
-    title !== (node?.data?.title || node?.data?.label || '') ||
-    description !== (node?.data?.description || '');
 
   return (
     <div className="flex flex-col gap-6">
