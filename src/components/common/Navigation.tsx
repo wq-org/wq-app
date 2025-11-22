@@ -8,6 +8,7 @@ import {
 import { useNavigate } from 'react-router';
 import { cn } from '@/lib/utils';
 import NotificationPanel from '@/features/notification/components/NotificationPanel';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { useUser } from '@/contexts/user';
 import { toast } from 'sonner';
 
@@ -59,8 +60,10 @@ const Navigation = ({ currentPageName, className }: NavigationProps) => {
                         </h1>
                     </div>
 
-                    {/* Right Section - Notification and Logout */}
+                    {/* Right Section - Language Switcher, Notification and Logout */}
                     <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm">
+                        <LanguageSwitcher />
+                        <div className="h-6 w-px bg-border" />
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button

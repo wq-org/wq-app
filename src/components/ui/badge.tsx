@@ -43,4 +43,6 @@ function Badge({
   )
 }
 
-export { Badge, badgeVariants }
+export { Badge }
+
+export type {badgeVariants}
