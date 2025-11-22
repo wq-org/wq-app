@@ -1,9 +1,10 @@
 import SettingsLayout from '@/components/layout/SettingsLayout';
-import { useUser } from '@/contexts/user';
+import {useUser} from '@/contexts/user';
 import Spinner from '@/components/ui/spinner';
+import {CommandPalette} from '@/features/command-palette';
 
 export default function Settings() {
-    const { profile, loading } = useUser();
+    const {profile, loading} = useUser();
 
     if (loading) {
         return (
@@ -14,7 +15,11 @@ export default function Settings() {
     }
 
     return (
-        <SettingsLayout profile={profile} loading={loading} />
+        <>
+            <SettingsLayout profile={profile} loading={loading} />
+            <CommandPalette role="student" />
+        </>
+
 
     );
 }
