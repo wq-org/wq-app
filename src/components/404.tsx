@@ -1,7 +1,29 @@
-import { Ghost, Home, ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Ghost, ArrowLeft, HomeIcon , LogIn } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useUser } from '@/contexts/user'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 const Error404 = () => {
+  const navigate = useNavigate()
+  const { getRole } = useUser()
+  const role = getRole()
+
+  const handleGoBack = () => {
+    window.history.back()
+  }
+
+  const handleGoToDashboard = () => {
+    if (role) {
+      navigate(`/${role}/dashboard`)
+    } else {
+      navigate('/')
+    }
+  }
+
+  const handleGoToLogin = () => {
+    navigate('/')
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50 p-4">
       <div className="text-center max-w-xl">
@@ -19,23 +41,55 @@ const Error404 = () => {
           seems to have gone exploring.
         </p>
 
-        {/* Navigation options with icons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors gap-2"
-          >
-            <Home className="w-5 h-5" />
-            Go Home
-          </Link>
+        {/* Navigation options with circular icon buttons */}
+        <div className="flex items-center justify-center gap-6">
+          {/* Go Back Button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleGoBack}
+                className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                aria-label="Go back to previous page"
+              >
+                <ArrowLeft className="w-6 h-6" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Go Back</p>
+            </TooltipContent>
+          </Tooltip>
 
-          <Link
-            to="/login"
-            className="inline-flex items-center justify-center px-6 py-3 bg-white text-black border-2 border-black rounded-lg hover:bg-gray-100 transition-colors gap-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Go to Login
-          </Link>
+          {/* Dashboard Button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleGoToDashboard}
+                className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                aria-label="Go to dashboard"
+              >
+                <HomeIcon className="w-6 h-6" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Go to Dashboard</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Login Button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleGoToLogin}
+                className="w-14 h-14 rounded-full bg-white text-black border-2 border-black flex items-center justify-center hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                aria-label="Go to login"
+              >
+                <LogIn className="w-6 h-6" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Go to Login</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </div>

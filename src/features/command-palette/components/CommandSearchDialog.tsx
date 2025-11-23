@@ -1,15 +1,21 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AvatarFallback, AvatarImage, Avatar } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { X, Search } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { useSearchItems, type SearchItem } from '../hooks'
+import { useTranslation } from 'react-i18next'
+import DotWaveLoader from '@/components/common/DotWaveLoader'
 
 export default function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const { items, loading } = useSearchItems()
+  const { t } = useTranslation('common')
+  const navigate = useNavigate()
 
   const filtered = useMemo(() => {
     const currentSearchQuery = searchQuery.trim().toLowerCase()
@@ -25,9 +31,14 @@ export default function CommandSearch() {
   }, [searchQuery, items])
 
   const handleClickItem = (item: SearchItem) => {
-    console.log('Email:', item.email)
-    console.log('Username:', item.username)
-    // Add your logic here, e.g., navigate to user profile or execute a command
+    // Navigate based on item type
+    if (item.type === 'student') {
+      navigate(`/student/view/${item.id}`)
+    } else if (item.type === 'teacher' || item.type === 'admin') {
+      navigate(`/teacher/view/${item.id}`)
+    } else if (item.type === 'institution') {
+      navigate(`/institution/view/${item.id}`)
+    }
   }
 
   return (
@@ -56,15 +67,17 @@ export default function CommandSearch() {
       {/* Results area stretches to fill available height */}
       <div className="flex-1 ">
         {loading ? (
-          <div className="p-8 text-center text-gray-500 text-sm">Loading...</div>
+          <div className="p-8 flex items-center justify-center">
+            <DotWaveLoader variant="gray" size={32} />
+          </div>
         ) : filtered.length > 0 ? (
           <div className="p-2 max-h-80 overflow-y-auto">
             {filtered.map((item) => (
-              <Card
-                onClick={() => handleClickItem(item)}
-                key={`${item.type}-${item.id}`}
-                className="border-0 rounded-2xl shadow-none w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer"
-              >
+              <Dialog.Close key={`${item.type}-${item.id}`} asChild>
+                <Card
+                  onClick={() => handleClickItem(item)}
+                  className="border-0 rounded-2xl shadow-none w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer"
+                >
                 <div className="flex gap-3">
                   <Avatar className="w-12 h-12">
                     <AvatarImage
@@ -76,12 +89,16 @@ export default function CommandSearch() {
                       {item.title.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col gap-1">
                     <span className="text-sm font-medium">{item.title}</span>
                     <span className="text-xs text-gray-400">{item.email || 'No email'}</span>
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 w-fit">
+                      {t(`roles.${item.type}`)}
+                    </Badge>
                   </div>
                 </div>
-              </Card>
+                </Card>
+              </Dialog.Close>
             ))}
           </div>
         ) : (

@@ -3,7 +3,7 @@ import { fetchProfilesForSearch, fetchInstitutionsForSearch } from '../api/comma
 
 export interface SearchItem {
   id: string
-  type: 'student' | 'teacher' | 'institution'
+  type: 'student' | 'teacher' | 'admin' | 'institution'
   title: string
   email: string | null
   username: string | null
@@ -29,7 +29,7 @@ export function useSearchItems() {
         // Transform profiles to SearchItem format
         const profileItems: SearchItem[] = profiles.map((profile) => ({
           id: profile.user_id,
-          type: profile.role as 'student' | 'teacher',
+          type: profile.role as 'student' | 'teacher' | 'admin',
           title: profile.display_name || profile.username || 'Unknown',
           email: profile.email,
           username: profile.username,

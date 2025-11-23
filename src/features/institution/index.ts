@@ -1,5 +1,6 @@
 // Components
 export { default as InstitutionProfileView } from './components/InstitutionProfileView'
+export { default as InstitutionView } from './components/InstitutionView'
 
 // Pages
 export { default as Institution } from './pages/institution'

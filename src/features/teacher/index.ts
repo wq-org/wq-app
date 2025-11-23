@@ -1,5 +1,6 @@
 // Components
 export { default as TeacherProfileView } from './components/TeacherProfileView'
+export { default as TeacherView } from './components/TeacherView'
 
 // Pages
 export { default as TeacherDashboard } from './pages/dashboard'

@@ -30,5 +30,11 @@
   "placeholders": {
     "search": "Search...",
     "typeHere": "Type here..."
+  },
+  "roles": {
+    "teacher": "Teacher",
+    "student": "Student",
+    "admin": "Admin",
+    "institution": "Institution"
   }
 }

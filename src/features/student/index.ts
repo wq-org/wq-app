@@ -2,6 +2,7 @@
 export { StudentCard } from './components/StudentCard'
 export { StudentCardList } from './components/StudentCardList'
 export { default as StudentProfileView } from './components/StudentProfileView'
+export { default as StudentView } from './components/StudentView'
 export { default as EmptyStudentView } from './components/EmptyStudentView'
 export { default as EmptyGamesView } from './components/EmptyGamesView'
 export { default as EmptyTodosView } from './components/EmptyTodosView'

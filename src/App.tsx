@@ -13,12 +13,15 @@ import Test from './user/pages/test'
 import StudentDashboard from './features/student/pages/dashboard'
 import StudentSettings from './features/student/pages/settings'
 import StudentChat from './features/student/pages/chat'
+import StudentViewPage from './features/student/pages/view'
 import TeacherChat from './features/teacher/pages/chat'
 
 import TeacherDashboard from './features/teacher/pages/dashboard'
 import TeacherSettings from './features/teacher/pages/settings'
+import TeacherViewPage from './features/teacher/pages/view'
 import GameStudio from './features/teacher/pages/game-studio'
 import Course from './features/teacher/pages/course'
+import InstitutionViewPage from './features/institution/pages/view'
 import Error404 from './components/404'
 import Lesson from './features/lessons/pages/lesson'
 import Onboarding from './features/onboarding/pages/onboarding'
@@ -49,10 +52,6 @@ function App() {
             <Route
               path="/test"
               element={<Test />}
-            />
-            <Route
-              path="*"
-              element={<Error404 />}
             />
             <Route
               path="/game-studio/image-term-match"
@@ -196,6 +195,16 @@ function App() {
                   </RequireAuth>
                 }
               />
+              <Route
+                path="view/:id"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <TeacherViewPage />
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
             </Route>
 
             {/* Student Routes (require auth + onboarding) */}
@@ -240,7 +249,37 @@ function App() {
                   </RequireAuth>
                 }
               />
+              <Route
+                path="view/:id"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <StudentViewPage />
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
             </Route>
+
+            {/* Institution Routes (require auth + onboarding) */}
+            <Route path="/institution">
+              <Route
+                path="view/:id"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <InstitutionViewPage />
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
+            </Route>
+
+            {/* Catch-all 404 route - must be last */}
+            <Route
+              path="*"
+              element={<Error404 />}
+            />
           </Routes>
         </LessonProvider>
       </CourseProvider>
