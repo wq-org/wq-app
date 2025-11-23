@@ -193,6 +193,7 @@ export default function ImagePinMarkGame() {
 
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null)
   const dragPositionRef = useRef<{ x: number; y: number } | null>(null)
+  const dragCleanupRef = useRef<(() => void) | null>(null)
 
   const handleDragStart = () => {
     dragPositionRef.current = null
@@ -211,10 +212,10 @@ export default function ImagePinMarkGame() {
 
     window.addEventListener('mousemove', handleMouseMove)
 
-    // Store cleanup function
-    ;(window as any).__dragCleanup = () => {
+    // Store cleanup function in ref
+    dragCleanupRef.current = () => {
       window.removeEventListener('mousemove', handleMouseMove)
-      delete (window as any).__dragCleanup
+      dragCleanupRef.current = null
     }
   }
 
@@ -222,8 +223,8 @@ export default function ImagePinMarkGame() {
     const { active, over } = event
 
     // Always clean up mouse listener
-    if ((window as any).__dragCleanup) {
-      ;(window as any).__dragCleanup()
+    if (dragCleanupRef.current) {
+      dragCleanupRef.current()
     }
 
     if (over && over.id === 'image-drop-area') {

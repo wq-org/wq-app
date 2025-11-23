@@ -1,6 +1,8 @@
+import type { HistoryState } from '../types/game-studio.types'
+
 export default function useGamePersistence(): {
   save: () => Promise<void>
-  load: () => Promise<any[]>
+  load: () => Promise<HistoryState[]>
 } {
   return {
     save: async () => {},

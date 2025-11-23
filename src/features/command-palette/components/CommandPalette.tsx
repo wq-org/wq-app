@@ -5,7 +5,7 @@ import * as Tooltip from '@radix-ui/react-tooltip'
 import * as Separator from '@radix-ui/react-separator'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import type { CommandBarItem, CommandBarGroup, ActionId } from '../types/command-bar.types'
@@ -110,18 +110,6 @@ export default function CommandPalette({
       navigate(item.to)
     }
   }
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault()
-        setActiveDialog('search')
-        setOpen(true)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
 
   return (
     <>

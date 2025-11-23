@@ -1,3 +1,5 @@
-export default function nodeTemplates(): any {
-  return [] as const
+import type { GameNodeTemplate } from '../types/game-studio.types'
+
+export default function nodeTemplates(): GameNodeTemplate[] {
+  return []
 }

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import type { ReactNode } from 'react'
 
 export interface PinAreaProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -11,17 +11,20 @@ export default function PinArea({ className, children, onPinMove, ...props }: Pi
   const [isDragging, setIsDragging] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
 
-  const updatePosition = (e: React.MouseEvent | MouseEvent) => {
-    if (areaRef.current) {
-      const rect = areaRef.current.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      // Clamp to area bounds
-      const clampedX = Math.max(0, Math.min(rect.width, x))
-      const clampedY = Math.max(0, Math.min(rect.height, y))
-      onPinMove?.({ x: clampedX, y: clampedY })
-    }
-  }
+  const updatePosition = useCallback(
+    (e: React.MouseEvent | MouseEvent) => {
+      if (areaRef.current) {
+        const rect = areaRef.current.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        // Clamp to area bounds
+        const clampedX = Math.max(0, Math.min(rect.width, x))
+        const clampedY = Math.max(0, Math.min(rect.height, y))
+        onPinMove?.({ x: clampedX, y: clampedY })
+      }
+    },
+    [onPinMove],
+  )
 
   const handleMouseDown = (e: React.MouseEvent) => {
     // Prevent dragging if clicking directly on the pin
@@ -50,7 +53,7 @@ export default function PinArea({ className, children, onPinMove, ...props }: Pi
         window.removeEventListener('mouseup', handleMouseUp)
       }
     }
-  }, [isDragging, onPinMove])
+  }, [isDragging, onPinMove, updatePosition])
 
   return (
     <div

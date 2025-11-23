@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loginUser as loginAPI, signUpUser, logoutUser } from '../api/authApi'
+import { loginUser as loginApi, signUpUser, logoutUser, type AuthApiResponse } from '../api/authApi'
 import type { LoginData, SignUpData } from '../types/auth.types'
 
 export default function useAuth() {
@@ -8,12 +8,12 @@ export default function useAuth() {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  const login = useCallback(async (data: LoginData): Promise<any | null> => {
+  const login = useCallback(async (data: LoginData): Promise<AuthApiResponse | null> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await loginAPI(data)
+      const response = await loginApi(data)
       return response
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed'
@@ -24,14 +24,14 @@ export default function useAuth() {
     }
   }, [])
 
-  const signUp = useCallback(async (data: SignUpData): Promise<any | null> => {
+  const signUp = useCallback(async (data: SignUpData): Promise<AuthApiResponse | null> => {
     setIsLoading(true)
     setError(null)
 
     try {
       const response = await signUpUser(data)
       return response
-    } catch (err) {
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Sign up failed'
       setError(errorMessage)
       return null

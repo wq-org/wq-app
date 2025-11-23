@@ -14,6 +14,7 @@ import Spinner from '@/components/ui/spinner'
 import { useNavigate } from 'react-router-dom'
 import DotWaveLoader from '@/components/common/DotWaveLoader'
 import type { FileItem } from '@/features/files/types/files.types'
+import type { FileListItem } from '@/features/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/features/upload-files/api/uploadFilesApi'
 
 // Helper function to map file extension to FileItem type
@@ -83,8 +84,8 @@ export default function Dashboard() {
       })
 
       if (result.success && result.files) {
-        const mappedFiles: FileItem[] = result.files.map((file, index) => {
-          const fileSize = (file as any).size || file.metadata?.size || 0
+        const mappedFiles: FileItem[] = result.files.map((file: FileListItem, index) => {
+          const fileSize = Number(file.metadata?.size) || 0
           const storagePath = `${role}/${userId}/${file.name}`
           return {
             id: index + 1,

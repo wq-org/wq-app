@@ -1,4 +1,13 @@
 import { supabase } from '@/lib/supabase'
+import type { Session, User } from '@supabase/supabase-js'
+
+export interface AuthApiResponse {
+  success: boolean
+  user?: User | null // Supabase user object
+  session?: Session | null // Supabase session object
+  error?: string | null
+}
+
 export interface AuthData {
   email: string
   password: string
@@ -21,12 +30,7 @@ export interface AuthResponse {
 /**
  * Sign up a new user
  */
-export async function signUpUser(signUpData: AuthData): Promise<{
-  success: boolean
-  user?: any // Supabase user object
-  session?: any // Supabase session object
-  error?: string | null
-}> {
+export async function signUpUser(signUpData: AuthData): Promise<AuthApiResponse> {
   if (!signUpData.role) {
     return {
       success: false,
@@ -62,10 +66,10 @@ export async function signUpUser(signUpData: AuthData): Promise<{
       session: data?.session ?? null,
       error: null,
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
-      error: err.message || 'Unexpected error',
+      error: err instanceof Error ? err.message : 'Unexpected error',
     }
   }
 }
@@ -73,12 +77,7 @@ export async function signUpUser(signUpData: AuthData): Promise<{
 /**
  * Log in an existing user
  */
-export async function loginUser(loginData: AuthData): Promise<{
-  success: boolean
-  user?: any // Supabase user object
-  session?: any // Supabase session object
-  error?: string | null
-}> {
+export async function loginUser(loginData: AuthData): Promise<AuthApiResponse> {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: loginData.email,
@@ -91,10 +90,10 @@ export async function loginUser(loginData: AuthData): Promise<{
       session: data?.session ?? null,
       error: error?.message ?? null,
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
-      error: err.message || 'Unexpected error',
+      error: err instanceof Error ? err.message : 'Unexpected error',
     }
   }
 }

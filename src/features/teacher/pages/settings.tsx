@@ -146,13 +146,14 @@ export default function Settings() {
     }
   }, [
     profile,
-    name,
-    linkedIn,
-    aboutMe,
-    selectedAvatar,
     hasChanges,
     linkedInError,
     getUserId,
+    name,
+    aboutMe,
+    selectedAvatar,
+    linkedIn,
+    initialLinkedIn,
     refreshProfile,
   ])
 

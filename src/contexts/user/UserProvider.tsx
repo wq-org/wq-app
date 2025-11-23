@@ -3,11 +3,12 @@ import { supabase } from '@/lib/supabase'
 import { getCompleteProfile, logoutUser } from '@/features/auth/api/authApi'
 import { UserContext, type Profile, type UserContextValue } from './UserContext'
 import type { Roles } from '@/lib/dashboard-config'
+import type { Session } from '@supabase/supabase-js'
 
 const PENDING_ROLE_KEY = 'wq_pending_role'
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<any | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [pendingRole, setPendingRoleState] = useState<string | null>(() => {
@@ -58,15 +59,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [fetchProfile])
 
   // Centralized role state management
-  const setPendingRole = (role: string) => {
+  const setPendingRole = useCallback((role: string) => {
     setPendingRoleState(role)
     sessionStorage.setItem(PENDING_ROLE_KEY, role)
-  }
+  }, [])
 
-  const clearPendingRole = () => {
+  const clearPendingRole = useCallback(() => {
     setPendingRoleState(null)
     sessionStorage.removeItem(PENDING_ROLE_KEY)
-  }
+  }, [])
 
   const refreshProfile = async () => {
     if (session?.user) {

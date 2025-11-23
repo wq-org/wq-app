@@ -32,16 +32,17 @@ const createByType = async (
   ) => void,
 ) => {
   switch (type) {
-    case 'course':
+    case 'course': {
       if (!teacherId) {
         throw new Error('Teacher ID is required to create a course')
       }
       const result = await createCourse(teacherId, data)
       onSuccess?.()
       return result
+    }
     case 'institution':
       return await createInstitution(data)
-    case 'game':
+    case 'game': {
       if (!teacherId) {
         throw new Error('Teacher ID is required to create a game')
       }
@@ -51,6 +52,7 @@ const createByType = async (
       })
       onSuccess?.()
       return gameResult
+    }
     case 'node':
       // Add node using context - position will be calculated in GameEditorCanvas
       if (addNodeFn) {

@@ -110,6 +110,7 @@ export function StepperItem({
 }
 
 // Stepper Trigger
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StepperTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const StepperTrigger = React.forwardRef<HTMLButtonElement, StepperTriggerProps>(
@@ -134,6 +135,7 @@ export const StepperTrigger = React.forwardRef<HTMLButtonElement, StepperTrigger
 StepperTrigger.displayName = 'StepperTrigger'
 
 // Stepper Indicator
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StepperIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const StepperIndicator = React.forwardRef<HTMLDivElement, StepperIndicatorProps>(
@@ -158,6 +160,7 @@ export const StepperIndicator = React.forwardRef<HTMLDivElement, StepperIndicato
 StepperIndicator.displayName = 'StepperIndicator'
 
 // Stepper Title
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StepperTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
 
 export const StepperTitle = React.forwardRef<HTMLHeadingElement, StepperTitleProps>(
@@ -176,6 +179,7 @@ export const StepperTitle = React.forwardRef<HTMLHeadingElement, StepperTitlePro
 StepperTitle.displayName = 'StepperTitle'
 
 // Stepper Description
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StepperDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 export const StepperDescription = React.forwardRef<HTMLParagraphElement, StepperDescriptionProps>(
@@ -194,6 +198,7 @@ export const StepperDescription = React.forwardRef<HTMLParagraphElement, Stepper
 StepperDescription.displayName = 'StepperDescription'
 
 // Stepper Separator
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StepperSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const StepperSeparator = React.forwardRef<HTMLDivElement, StepperSeparatorProps>(

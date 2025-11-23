@@ -25,8 +25,10 @@ export default function VerifyEmailPage() {
         console.log('Verify email with token:', token)
         await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
         setIsSuccess(true)
-      } catch (err) {
-        setError('Verification failed. Please try again.')
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Verification failed. Please try again.'
+        setError(errorMessage)
       } finally {
         setIsVerifying(false)
       }

@@ -1,5 +1,6 @@
 import type { Roles } from '@/lib/dashboard-config'
 import { createContext, useContext } from 'react'
+import type { Session } from '@supabase/supabase-js'
 
 export interface Profile {
   user_id: string
@@ -14,7 +15,7 @@ export interface Profile {
 }
 
 export interface UserContextValue {
-  session: any | null
+  session: Session | null
   profile: Profile | null
   loading: boolean
   pendingRole: string | null

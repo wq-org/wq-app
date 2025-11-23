@@ -25,6 +25,7 @@ export default function ImageUpload({
   maxSizeMB = 20,
 }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(value || null)
   const [urlInput, setUrlInput] = useState<string>(value && !value.startsWith('data:') ? value : '')

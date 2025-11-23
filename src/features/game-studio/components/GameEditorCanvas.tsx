@@ -6,7 +6,14 @@ import {
   addEdge,
   SelectionMode,
 } from '@xyflow/react'
-import type { Node, Edge, Connection, ReactFlowInstance, NodeChange } from '@xyflow/react'
+import type {
+  Node,
+  Edge,
+  Connection,
+  ReactFlowInstance,
+  NodeChange,
+  EdgeChange,
+} from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { Settings, Play } from 'lucide-react'
 import { toast } from 'sonner'
@@ -28,7 +35,7 @@ import AppWrapper from '@/components/layout/AppWrapper'
 import SettingsDrawer from './SettingsDrawer'
 import PreviewDrawer from './PreviewDrawer'
 import PublishDrawer from './PublishDrawer'
-import type { HistoryState } from '../types/game-studio.types'
+import type { HistoryState, GameNodeData } from '../types/game-studio.types'
 import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
 
 const nodeTypes = {
@@ -149,35 +156,38 @@ export default function GameEditorCanvas() {
 
   // ========== Event Handlers ==========
   // Create node click handlers - memoized to prevent recreation
-  const createNodeClickHandler = useCallback((nodeId: string, nodeType: string | null) => {
-    if (nodeType === 'gameStart') {
-      return () => {
-        setSelectedNodeId(nodeId)
-        setIsStartDialogOpen(true)
-      }
-    }
-    if (nodeType === 'gameIfElse') {
-      return () => {
-        setSelectedNodeId(nodeId)
-        setIsIfElseDialogOpen(true)
-      }
-    }
-    if (nodeType === 'gameEnd') {
-      return () => {
-        // Find the End node directly since there can only be one
-        const endNode = nodes.find((n) => n.type === 'gameEnd')
-        if (endNode) {
-          setSelectedNodeId(endNode.id)
+  const createNodeClickHandler = useCallback(
+    (nodeId: string, nodeType: string | null) => {
+      if (nodeType === 'gameStart') {
+        return () => {
+          setSelectedNodeId(nodeId)
+          setIsStartDialogOpen(true)
         }
-        setIsEndDialogOpen(true)
       }
-    }
-    return () => {
-      setSelectedNodeId(nodeId)
-      setSelectedNodeType(nodeType)
-      setIsGameNodeDialogOpen(true)
-    }
-  }, [])
+      if (nodeType === 'gameIfElse') {
+        return () => {
+          setSelectedNodeId(nodeId)
+          setIsIfElseDialogOpen(true)
+        }
+      }
+      if (nodeType === 'gameEnd') {
+        return () => {
+          // Find the End node directly since there can only be one
+          const endNode = nodes.find((n) => n.type === 'gameEnd')
+          if (endNode) {
+            setSelectedNodeId(endNode.id)
+          }
+          setIsEndDialogOpen(true)
+        }
+      }
+      return () => {
+        setSelectedNodeId(nodeId)
+        setSelectedNodeType(nodeType)
+        setIsGameNodeDialogOpen(true)
+      }
+    },
+    [nodes],
+  )
 
   // ========== Effects ==========
   // Listen for command bar actions
@@ -430,7 +440,7 @@ export default function GameEditorCanvas() {
   )
 
   const onEdgesChange = useCallback(
-    (changes: any) => {
+    (changes: EdgeChange[]) => {
       setEdges((edgesSnapshot) => {
         const updatedEdges = applyEdgeChanges(changes, edgesSnapshot)
 
@@ -543,7 +553,7 @@ export default function GameEditorCanvas() {
         return newEdges
       })
     },
-    [nodes, edges, saveToHistory],
+    [nodes, saveToHistory],
   )
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -674,7 +684,7 @@ export default function GameEditorCanvas() {
   )
 
   const onInit = useCallback(
-    (instance: any) => {
+    (instance: ReactFlowInstance) => {
       reactFlowInstance.current = instance as ReactFlowInstance
 
       // Center view on start node after a short delay
@@ -825,7 +835,7 @@ export default function GameEditorCanvas() {
   const nodesWithHandlers = useMemo(() => {
     return nodes.map((node) => {
       // Skip if onClick already exists
-      if ((node.data as any).onClick) {
+      if ((node.data as GameNodeData).onClick) {
         return node
       }
 

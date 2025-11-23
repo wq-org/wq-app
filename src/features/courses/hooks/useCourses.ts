@@ -25,8 +25,8 @@ export function useCourses() {
     try {
       const data = await getTeacherCourses(profile.user_id)
       setCourses(data)
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch courses')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch courses')
       console.error('Error fetching courses:', err)
     } finally {
       setLoading(false)
@@ -40,8 +40,8 @@ export function useCourses() {
     try {
       const course = await getCourseById(courseId)
       setSelectedCourse(course)
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch course')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch course')
       console.error('Error fetching course:', err)
     } finally {
       setLoading(false)
@@ -69,8 +69,8 @@ export function useCourses() {
         await fetchCourses()
 
         return course
-      } catch (err: any) {
-        setError(err.message || 'Failed to create course')
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to create course')
         console.error('Error creating course:', err)
         return null
       }
@@ -94,8 +94,8 @@ export function useCourses() {
         if (selectedCourse?.id === id) {
           setSelectedCourse((prev) => (prev ? ({ ...prev, ...data } as Course) : null))
         }
-      } catch (err: any) {
-        setError(err.message || 'Failed to update course')
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to update course')
         console.error('Error updating course:', err)
         throw err
       }
@@ -117,8 +117,8 @@ export function useCourses() {
         if (selectedCourse?.id === id) {
           setSelectedCourse(null)
         }
-      } catch (err: any) {
-        setError(err.message || 'Failed to delete course')
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to delete course')
         console.error('Error deleting course:', err)
         throw err
       }
