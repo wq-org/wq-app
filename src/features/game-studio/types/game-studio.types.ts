@@ -163,7 +163,6 @@ export interface GameCardProps {
   title: string
   description: string
   route?: string
-  button: string
   onPlay?: () => void
 }
 

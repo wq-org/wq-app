@@ -8,28 +8,24 @@ const games: GameCardProps[] = [
     title: 'Canvas Game',
     route: '/teacher/canvas',
     id: 'canvas-game',
-    button: 'Create',
     description: 'Create a canvas game for your students.',
   },
   {
     title: 'Image Term Match',
     route: '/game-studio/image-term-match',
     id: 'image-term-match',
-    button: 'Create',
     description: 'Match images with their corresponding terms in this interactive game.',
   },
   {
     title: 'Image Pin Mark',
     route: '/game-studio/image-pin-mark',
     id: 'image-pin-mark',
-    button: 'Create',
     description: 'Pin and mark specific areas on images to test knowledge.',
   },
   {
     title: 'Paragraph Line Select',
     route: '/game-studio/paragraph-line-select',
     id: 'paragraph-line-select',
-    button: 'Create',
     description: 'Select sentences from paragraphs and answer questions about them.',
   },
 ]

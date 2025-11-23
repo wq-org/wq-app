@@ -6,5 +6,9 @@
       "confirm": "Delete",
       "cancel": "Cancel"
     }
+  },
+  "card": {
+    "published": "Published",
+    "unpublished": "Unpublished"
   }
 }

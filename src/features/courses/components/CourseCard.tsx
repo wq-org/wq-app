@@ -1,10 +1,12 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Eye, EyeOff } from 'lucide-react'
-import { DEFAULT_COURSE_IMAGE } from '@/lib/constants'
-import type { CourseCardProps } from '../types/course.types'
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
+import {Button} from '@/components/ui/button'
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
+import {Badge} from '@/components/ui/badge'
+import {ArrowRight} from 'lucide-react'
+import {DEFAULT_COURSE_IMAGE} from '@/lib/constants'
+import type {CourseCardProps} from '../types/course.types'
+import {useTranslation} from 'react-i18next'
 
 export default function CourseCard({
   id,
@@ -14,18 +16,25 @@ export default function CourseCard({
   image,
   teacherAvatar,
   teacherInitials = 'U',
-  onView = () => {},
+  onView = () => { },
 }: CourseCardProps) {
+  const {t} = useTranslation('features.courses')
   const courseImage = image || DEFAULT_COURSE_IMAGE
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
-      <CardHeader className="flex flex-col justify-start items-start px-0 gap-4">
+      <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <img
           src={courseImage}
           alt="Course"
           className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
         />
+        <Badge
+          variant="secondary"
+          className="absolute top-3 left-3 backdrop-blur-sm bg-white/80 dark:bg-black/80 border-white/20"
+        >
+          {is_published ? t('card.published') : t('card.unpublished')}
+        </Badge>
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         {/* Header */}
@@ -40,16 +49,18 @@ export default function CourseCard({
               <AvatarFallback className="text-xl">{teacherInitials || 'U'}</AvatarFallback>
             )}
           </Avatar>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <CardTitle className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
-                {title}
-              </CardTitle>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="max-w-xs">{title}</p>
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CardTitle className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+                  {title}
+                </CardTitle>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">{title}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         {/* Description area that can stretch */}
@@ -57,35 +68,18 @@ export default function CourseCard({
           <CardDescription className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
             {description}
           </CardDescription>
-          {/* Button and published status icon */}
+          {/* Button */}
           <div className="flex items-center gap-2 mt-auto">
             <Button
-              className="w-fit cursor-pointer"
-              onClick={() => onView?.(id)}
+              variant="ghost"
+              onClick={() => {
+                onView?.(id)
+              }}
+              className="text-blue-500 hover:opacity-80 h-auto"
             >
-              View
+              <p>View</p>
+              <ArrowRight className="w-4 h-4" />
             </Button>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className={`flex items-center justify-center h-9 w-9 rounded-full border ${
-                    is_published
-                      ? 'text-blue-500 bg-blue-500/10 border-blue-500/20'
-                      : 'text-gray-500 bg-gray-500/10 border-gray-500/20'
-                  }`}
-                >
-                  {is_published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs">
-                  {is_published
-                    ? 'Published - Students can see this course'
-                    : 'Unpublished - Students cannot see this course'}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">Adjustable in course settings</p>
-              </TooltipContent>
-            </Tooltip>
           </div>
         </div>
       </CardContent>

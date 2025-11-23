@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import type { GameCardProps } from '../types/game-studio.types'
 import { GAME_CARD_BACKGROUND_IMAGE } from '@/lib/constants'
 
-export default function GameCard({ title, description, button, onPlay }: GameCardProps) {
+export default function GameCard({ title, description, onPlay }: GameCardProps) {
   return (
     <Card className="max-w-md rounded-4xl w-full p-0 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow overflow-hidden">
       {/* Background Image - Full Width */}
@@ -29,14 +29,14 @@ export default function GameCard({ title, description, button, onPlay }: GameCar
       {/* Footer with Button */}
       <CardFooter className="pt-0 pb-6">
         <Button
-          variant="link"
+          variant="ghost"
           onClick={(e) => {
             e.stopPropagation()
             onPlay?.()
           }}
-          className="text-blue-500 hover:opacity-80 p-0 h-auto"
+          className="text-blue-500 hover:opacity-80 h-auto"
         >
-          {button}
+          <p>Play</p>
           <ArrowRight className="w-4 h-4" />
         </Button>
       </CardFooter>
