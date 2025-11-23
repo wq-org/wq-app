@@ -1,12 +1,12 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
-import {Button} from '@/components/ui/button'
-import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
-import {Badge} from '@/components/ui/badge'
-import {ArrowRight} from 'lucide-react'
-import {DEFAULT_COURSE_IMAGE} from '@/lib/constants'
-import type {CourseCardProps} from '../types/course.types'
-import {useTranslation} from 'react-i18next'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Badge } from '@/components/ui/badge'
+import { ArrowRight } from 'lucide-react'
+import { DEFAULT_COURSE_IMAGE } from '@/lib/constants'
+import type { CourseCardProps } from '../types/course.types'
+import { useTranslation } from 'react-i18next'
 
 export default function CourseCard({
   id,
@@ -16,9 +16,9 @@ export default function CourseCard({
   image,
   teacherAvatar,
   teacherInitials = 'U',
-  onView = () => { },
+  onView = () => {},
 }: CourseCardProps) {
-  const {t} = useTranslation('features.courses')
+  const { t } = useTranslation('features.courses')
   const courseImage = image || DEFAULT_COURSE_IMAGE
 
   return (
