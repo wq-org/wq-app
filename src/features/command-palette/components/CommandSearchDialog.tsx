@@ -68,35 +68,44 @@ export default function CommandSearch() {
       <div className="flex-1 ">
         {loading ? (
           <div className="p-8 flex items-center justify-center">
-            <DotWaveLoader variant="gray" size={32} />
+            <DotWaveLoader
+              variant="gray"
+              size={32}
+            />
           </div>
         ) : filtered.length > 0 ? (
           <div className="p-2 max-h-80 overflow-y-auto">
             {filtered.map((item) => (
-              <Dialog.Close key={`${item.type}-${item.id}`} asChild>
+              <Dialog.Close
+                key={`${item.type}-${item.id}`}
+                asChild
+              >
                 <Card
                   onClick={() => handleClickItem(item)}
                   className="border-0 rounded-2xl shadow-none w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer"
                 >
-                <div className="flex gap-3">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage
-                      src={item.avatar_url || AVATAR_PLACEHOLDER_SRC}
-                      alt={item.title}
-                      className="rounded-full w-12 h-12"
-                    />
-                    <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
-                      {item.title.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium">{item.title}</span>
-                    <span className="text-xs text-gray-400">{item.email || 'No email'}</span>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 w-fit">
-                      {t(`roles.${item.type}`)}
-                    </Badge>
+                  <div className="flex gap-3">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage
+                        src={item.avatar_url || AVATAR_PLACEHOLDER_SRC}
+                        alt={item.title}
+                        className="rounded-full w-12 h-12"
+                      />
+                      <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
+                        {item.title.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-medium">{item.title}</span>
+                      <span className="text-xs text-gray-400">{item.email || 'No email'}</span>
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0 w-fit"
+                      >
+                        {t(`roles.${item.type}`)}
+                      </Badge>
+                    </div>
                   </div>
-                </div>
                 </Card>
               </Dialog.Close>
             ))}

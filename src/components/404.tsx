@@ -1,4 +1,4 @@
-import { Ghost, ArrowLeft, HomeIcon , LogIn } from 'lucide-react'
+import { Ghost, ArrowLeft, HomeIcon, LogIn } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
