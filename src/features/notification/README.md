@@ -10,7 +10,6 @@ Main notification panel with tabs (All, Following, Archive) and notification lis
 
 ```tsx
 import { NotificationPanel } from '@/features/notification'
-
 ;<NotificationPanel />
 ```
 
@@ -20,7 +19,6 @@ Bell icon with notification count badge and popover.
 
 ```tsx
 import { NotificationBadge } from '@/features/notification'
-
 ;<NotificationBadge count={8} />
 ```
 
@@ -30,7 +28,6 @@ Individual notification item with avatar, message, timestamp, and optional actio
 
 ```tsx
 import { NotificationItem } from '@/features/notification'
-
 ;<NotificationItem notification={notification} />
 ```
 

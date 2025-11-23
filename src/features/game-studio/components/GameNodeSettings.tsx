@@ -24,6 +24,9 @@ export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
       const nodeDesc = node.data?.description
       setTitle(typeof nodeTitle === 'string' ? nodeTitle : '')
       setDescription(typeof nodeDesc === 'string' ? nodeDesc : '')
+    } else {
+      setTitle('')
+      setDescription('')
     }
   }, [node])
 

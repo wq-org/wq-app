@@ -10,7 +10,7 @@ export interface Institution {
   name: string
   description: string | null
   email: string | null
-  address: Record<string, any> | null
+  address: Record<string, string> | null
   website: string | null
 }
 
