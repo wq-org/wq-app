@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -6,13 +6,13 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ImageTermMatchGame } from '@/features/games/image-term-match';
-import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
-import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame';
-import type { GameNodeDialogProps } from '../types/game-studio.types';
-import GameNodeLayout from './GameNodeLayout';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { ImageTermMatchGame } from '@/features/games/image-term-match'
+import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame'
+import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame'
+import type { GameNodeDialogProps } from '../types/game-studio.types'
+import GameNodeLayout from './GameNodeLayout'
 
 // Map node types to game components and titles
 const nodeTypeToGame: Record<string, { component: React.ComponentType; title: string }> = {
@@ -28,7 +28,7 @@ const nodeTypeToGame: Record<string, { component: React.ComponentType; title: st
     component: ImagePinMarkGame,
     title: 'Image Pin Mark',
   },
-};
+}
 
 export default function GameNodeDialog({
   open,
@@ -37,33 +37,36 @@ export default function GameNodeDialog({
   nodeId,
   onSave,
 }: GameNodeDialogProps) {
-  const [points, setPoints] = useState(100);
+  const [points, setPoints] = useState(100)
 
   useEffect(() => {
     if (!open) {
-      setPoints(100);
+      setPoints(100)
     }
-  }, [open]);
+  }, [open])
 
-  if (!nodeType) return null;
+  if (!nodeType) return null
 
-  const gameConfig = nodeTypeToGame[nodeType];
-  if (!gameConfig) return null;
+  const gameConfig = nodeTypeToGame[nodeType]
+  if (!gameConfig) return null
 
-  const GameComponent = gameConfig.component;
+  const GameComponent = gameConfig.component
 
   const handleSave = () => {
-    onSave?.({ points });
-    onOpenChange(false);
-  };
+    onSave?.({ points })
+    onOpenChange(false)
+  }
 
   const handleCancel = () => {
-    setPoints(100);
-    onOpenChange(false);
-  };
+    setPoints(100)
+    onOpenChange(false)
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto !w-[90vw] !max-w-[1080px]">
         <DialogHeader>
           <DialogTitle>{gameConfig.title}</DialogTitle>
@@ -79,15 +82,15 @@ export default function GameNodeDialog({
           hideSettingsTab={true}
         />
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave}>
-            Save
-          </Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
-

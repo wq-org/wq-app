@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { LayoutDashboard, Settings } from 'lucide-react';
-import AppWrapper from './AppWrapper';
+import { useState } from 'react'
+import { LayoutDashboard, Settings } from 'lucide-react'
+import AppWrapper from './AppWrapper'
 
 interface LessonLayoutProps {
-  lessonId: string;
-  children?: React.ReactNode;
-  overviewContent?: React.ReactNode;
-  settingsContent?: React.ReactNode;
+  lessonId: string
+  children?: React.ReactNode
+  overviewContent?: React.ReactNode
+  settingsContent?: React.ReactNode
 }
 
 export default function LessonLayout({
@@ -14,7 +14,7 @@ export default function LessonLayout({
   overviewContent,
   settingsContent,
 }: LessonLayoutProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
   return (
     <AppWrapper role="teacher">
@@ -29,7 +29,9 @@ export default function LessonLayout({
                 : 'text-black/40 hover:text-black/60 border-transparent'
             }`}
           >
-            <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
+            <LayoutDashboard
+              className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
+            />
             <span>Overview</span>
           </button>
           <button
@@ -47,15 +49,10 @@ export default function LessonLayout({
 
         {/* Tab Content */}
         <div className="mt-6">
-          {activeTab === 'overview' && (
-            <div>{overviewContent || children}</div>
-          )}
-          {activeTab === 'settings' && (
-            <div>{settingsContent}</div>
-          )}
+          {activeTab === 'overview' && <div>{overviewContent || children}</div>}
+          {activeTab === 'settings' && <div>{settingsContent}</div>}
         </div>
       </div>
     </AppWrapper>
-  );
+  )
 }
-

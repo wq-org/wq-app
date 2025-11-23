@@ -3,7 +3,5 @@ export default function GameStudioHelpDrawer() {
     <div>
       <h1>Game Studio Help Drawer</h1>
     </div>
-  );
+  )
 }
-
-

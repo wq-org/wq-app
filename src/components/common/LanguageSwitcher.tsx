@@ -1,29 +1,29 @@
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
 
 const flags: Record<string, string> = {
   US: '🇺🇸',
   DE: '🇩🇪',
   // FR: '🇫🇷',
   // ES: '🇪🇸',
-};
+}
 
 const languages = [
-  { code: "de", name: "Deutsch", flag: "DE" },
-  { code: "en", name: "English", flag: "US" },
+  { code: 'de', name: 'Deutsch', flag: 'DE' },
+  { code: 'en', name: 'English', flag: 'US' },
   // { code: "fr", name: "Français", flag: "FR" },
   // { code: "es", name: "Español", flag: "ES" },
-];
+]
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const { i18n } = useTranslation()
+  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
 
   const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
-  };
+    i18n.changeLanguage(languageCode)
+  }
 
   return (
     <Popover>
@@ -36,15 +36,18 @@ export function LanguageSwitcher() {
           <span className="text-base">{flags[currentLanguage.flag]}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-2 rounded-2xl  mt-4" align="end">
+      <PopoverContent
+        className="w-48 p-2 rounded-2xl  mt-4"
+        align="end"
+      >
         <div className="space-y-1">
           {languages.map((lang) => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
               className={cn(
-                "w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-accent transition-colors flex items-center gap-2",
-                i18n.language === lang.code && "bg-accent"
+                'w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-accent transition-colors flex items-center gap-2',
+                i18n.language === lang.code && 'bg-accent',
               )}
             >
               <span>{flags[lang.flag]}</span>
@@ -54,5 +57,5 @@ export function LanguageSwitcher() {
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

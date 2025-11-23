@@ -43,31 +43,31 @@ src/
 **`src/features/command-palette/types/command.types.ts`**
 
 ```typescript
-export type CommandRole = 'teacher' | 'student' | 'both';
+export type CommandRole = 'teacher' | 'student' | 'both'
 
 export interface Command {
-    id: string;
-    label: string;
-    icon?: React.ReactNode;
-    description?: string;
-    shortcut?: string[];
-    role: CommandRole;
-    keywords?: string[]; // For better search matching
-    action: () => void | Promise<void>;
-    category?: string;
+  id: string
+  label: string
+  icon?: React.ReactNode
+  description?: string
+  shortcut?: string[]
+  role: CommandRole
+  keywords?: string[] // For better search matching
+  action: () => void | Promise<void>
+  category?: string
 }
 
 export interface CommandGroup {
-    id: string;
-    label: string;
-    role: CommandRole;
-    commands: Command[];
+  id: string
+  label: string
+  role: CommandRole
+  commands: Command[]
 }
 
 export interface CommandPaletteState {
-    isOpen: boolean;
-    query: string;
-    selectedIndex: number;
+  isOpen: boolean
+  query: string
+  selectedIndex: number
 }
 ```
 
@@ -247,132 +247,123 @@ export const commandGroups: CommandGroup[] = [
 **`src/features/command-palette/hooks/useCommandPalette.ts`**
 
 ```typescript
-import { useState, useCallback, useEffect } from 'react';
-import type { CommandPaletteState } from '../types/command.types';
+import { useState, useCallback, useEffect } from 'react'
+import type { CommandPaletteState } from '../types/command.types'
 
 export const useCommandPalette = () => {
-    const [state, setState] = useState<CommandPaletteState>({
-        isOpen: false,
-        query: '',
-        selectedIndex: 0,
-    });
+  const [state, setState] = useState<CommandPaletteState>({
+    isOpen: false,
+    query: '',
+    selectedIndex: 0,
+  })
 
-    const open = useCallback(() => {
-        setState((prev) => ({
-            ...prev,
-            isOpen: true,
-            query: '',
-            selectedIndex: 0,
-        }));
-    }, []);
+  const open = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isOpen: true,
+      query: '',
+      selectedIndex: 0,
+    }))
+  }, [])
 
-    const close = useCallback(() => {
-        setState((prev) => ({
-            ...prev,
-            isOpen: false,
-            query: '',
-            selectedIndex: 0,
-        }));
-    }, []);
+  const close = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isOpen: false,
+      query: '',
+      selectedIndex: 0,
+    }))
+  }, [])
 
-    const toggle = useCallback(() => {
-        setState((prev) => ({
-            ...prev,
-            isOpen: !prev.isOpen,
-            query: '',
-            selectedIndex: 0,
-        }));
-    }, []);
+  const toggle = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isOpen: !prev.isOpen,
+      query: '',
+      selectedIndex: 0,
+    }))
+  }, [])
 
-    const setQuery = useCallback((query: string) => {
-        setState((prev) => ({ ...prev, query, selectedIndex: 0 }));
-    }, []);
+  const setQuery = useCallback((query: string) => {
+    setState((prev) => ({ ...prev, query, selectedIndex: 0 }))
+  }, [])
 
-    const setSelectedIndex = useCallback((index: number) => {
-        setState((prev) => ({ ...prev, selectedIndex: index }));
-    }, []);
+  const setSelectedIndex = useCallback((index: number) => {
+    setState((prev) => ({ ...prev, selectedIndex: index }))
+  }, [])
 
-    return {
-        ...state,
-        open,
-        close,
-        toggle,
-        setQuery,
-        setSelectedIndex,
-    };
-};
+  return {
+    ...state,
+    open,
+    close,
+    toggle,
+    setQuery,
+    setSelectedIndex,
+  }
+}
 ```
 
 **`src/features/command-palette/hooks/useKeyboardShortcuts.ts`**
 
 ```typescript
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 interface KeyboardShortcutOptions {
-    onOpen: () => void;
-    isOpen: boolean;
-    onClose: () => void;
+  onOpen: () => void
+  isOpen: boolean
+  onClose: () => void
 }
 
-export const useKeyboardShortcuts = ({
-    onOpen,
-    isOpen,
-    onClose,
-}: KeyboardShortcutOptions) => {
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            // Command/Ctrl + K to open
-            if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
-                event.preventDefault();
-                onOpen();
-            }
+export const useKeyboardShortcuts = ({ onOpen, isOpen, onClose }: KeyboardShortcutOptions) => {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Command/Ctrl + K to open
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault()
+        onOpen()
+      }
 
-            // Escape to close
-            if (event.key === 'Escape' && isOpen) {
-                event.preventDefault();
-                onClose();
-            }
-        };
+      // Escape to close
+      if (event.key === 'Escape' && isOpen) {
+        event.preventDefault()
+        onClose()
+      }
+    }
 
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onOpen, onClose, isOpen]);
-};
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onOpen, onClose, isOpen])
+}
 ```
 
 **`src/features/command-palette/hooks/useCommandSearch.ts`**
 
 ```typescript
-import { useMemo } from 'react';
-import type { Command } from '../types/command.types';
+import { useMemo } from 'react'
+import type { Command } from '../types/command.types'
 
 export const useCommandSearch = (commands: Command[], query: string) => {
-    return useMemo(() => {
-        if (!query.trim()) return commands;
+  return useMemo(() => {
+    if (!query.trim()) return commands
 
-        const lowerQuery = query.toLowerCase();
+    const lowerQuery = query.toLowerCase()
 
-        return commands.filter((command) => {
-            // Match by label
-            if (command.label.toLowerCase().includes(lowerQuery)) return true;
+    return commands.filter((command) => {
+      // Match by label
+      if (command.label.toLowerCase().includes(lowerQuery)) return true
 
-            // Match by description
-            if (command.description?.toLowerCase().includes(lowerQuery))
-                return true;
+      // Match by description
+      if (command.description?.toLowerCase().includes(lowerQuery)) return true
 
-            // Match by keywords
-            if (
-                command.keywords?.some((kw) =>
-                    kw.toLowerCase().includes(lowerQuery)
-                )
-            ) {
-                return true;
-            }
+      // Match by keywords
+      if (command.keywords?.some((kw) => kw.toLowerCase().includes(lowerQuery))) {
+        return true
+      }
 
-            return false;
-        });
-    }, [commands, query]);
-};
+      return false
+    })
+  }, [commands, query])
+}
 ```
 
 ### Step 4: Component Implementation
@@ -715,22 +706,18 @@ export const CommandEmpty = ({ query }: CommandEmptyProps) => {
 
 ```typescript
 // Main component
-export { CommandPalette } from './components/CommandPalette';
+export { CommandPalette } from './components/CommandPalette'
 
 // Hooks
-export { useCommandPalette } from './hooks/useCommandPalette';
-export { useCommandSearch } from './hooks/useCommandSearch';
-export { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+export { useCommandPalette } from './hooks/useCommandPalette'
+export { useCommandSearch } from './hooks/useCommandSearch'
+export { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 
 // Configuration
-export {
-    commandGroups,
-    teacherCommands,
-    studentCommands,
-} from './config/commands';
+export { commandGroups, teacherCommands, studentCommands } from './config/commands'
 
 // Types
-export type * from './types/command.types';
+export type * from './types/command.types'
 ```
 
 ### Step 6: Integration in App
@@ -835,10 +822,10 @@ Command palette is a **feature**, not a simple reusable component.[7][4]
 
 **2. Keyboard Shortcuts Best Practices:**
 
--   `Cmd/Ctrl + K` - Industry standard for opening command palettes[1][3]
--   `↑↓` - Navigation
--   `Enter` - Execute command
--   `Esc` - Close
+- `Cmd/Ctrl + K` - Industry standard for opening command palettes[1][3]
+- `↑↓` - Navigation
+- `Enter` - Execute command
+- `Esc` - Close
 
 **3. Performance Optimization:**
 Use fuzzy search for better UX:
@@ -848,31 +835,31 @@ npm install fuse.js
 ```
 
 ```typescript
-import Fuse from 'fuse.js';
+import Fuse from 'fuse.js'
 
 const fuse = new Fuse(commands, {
-    keys: ['label', 'description', 'keywords'],
-    threshold: 0.3,
-});
+  keys: ['label', 'description', 'keywords'],
+  threshold: 0.3,
+})
 
-const results = fuse.search(query);
+const results = fuse.search(query)
 ```
 
 **4. AWS Integration for Search:**
 
 ```typescript
 // src/features/command-palette/api/command-search.ts
-import { searchClient } from '@/api/client';
+import { searchClient } from '@/api/client'
 
 export const searchCommands = async (query: string) => {
-    // Use AWS OpenSearch or Elasticsearch
-    const response = await searchClient.post('/search', {
-        query,
-        filters: { role: user.role },
-    });
+  // Use AWS OpenSearch or Elasticsearch
+  const response = await searchClient.post('/search', {
+    query,
+    filters: { role: user.role },
+  })
 
-    return response.data.hits;
-};
+  return response.data.hits
+}
 ```
 
 This structure follows 2025 React best practices and gives you a production-ready, accessible command palette.[5][3][4][1]

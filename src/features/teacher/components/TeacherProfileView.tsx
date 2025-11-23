@@ -1,5 +1,5 @@
 const TeacherProfileView = () => {
-    return <div></div>;
-};
+  return <div></div>
+}
 
-export default TeacherProfileView;
+export default TeacherProfileView

@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { LayoutDashboard, Settings } from 'lucide-react';
-import GameNodeSettings from './GameNodeSettings';
-import { GameNodePointsContext } from '../contexts/GameNodePointsContext';
+import { useState } from 'react'
+import { LayoutDashboard, Settings } from 'lucide-react'
+import GameNodeSettings from './GameNodeSettings'
+import { GameNodePointsContext } from '../contexts/GameNodePointsContext'
 
 interface GameNodeLayoutProps {
-  nodeId?: string;
-  gameComponent?: React.ComponentType;
-  overviewContent?: React.ReactNode;
-  points?: number;
-  onPointsChange?: (points: number) => void;
-  hideSettingsTab?: boolean;
+  nodeId?: string
+  gameComponent?: React.ComponentType
+  overviewContent?: React.ReactNode
+  points?: number
+  onPointsChange?: (points: number) => void
+  hideSettingsTab?: boolean
 }
 
 export default function GameNodeLayout({
@@ -20,7 +20,7 @@ export default function GameNodeLayout({
   onPointsChange,
   hideSettingsTab = false,
 }: GameNodeLayoutProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
   return (
     <div className="mt-4">
@@ -35,7 +35,9 @@ export default function GameNodeLayout({
                 : 'text-black/40 hover:text-black/60 border-transparent'
             }`}
           >
-            <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
+            <LayoutDashboard
+              className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
+            />
             <span>Overview</span>
           </button>
           <button
@@ -56,9 +58,7 @@ export default function GameNodeLayout({
       <div>
         {(activeTab === 'overview' || hideSettingsTab) && (
           <div className="flex flex-col gap-6">
-            {overviewContent && (
-              <div>{overviewContent}</div>
-            )}
+            {overviewContent && <div>{overviewContent}</div>}
             {GameComponent && (
               <div>
                 {overviewContent && <div className="border-t pt-6 mt-6" />}
@@ -79,6 +79,5 @@ export default function GameNodeLayout({
         )}
       </div>
     </div>
-  );
+  )
 }
-

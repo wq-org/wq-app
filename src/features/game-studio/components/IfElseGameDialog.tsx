@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -6,16 +6,16 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import type { IfElseGameDialogProps } from '../types/game-studio.types';
-import GameNodeLayout from './GameNodeLayout';
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
+import { Badge } from '@/components/ui/badge'
+import type { IfElseGameDialogProps } from '../types/game-studio.types'
+import GameNodeLayout from './GameNodeLayout'
 
 export default function IfElseGameDialog({
   open,
@@ -27,63 +27,66 @@ export default function IfElseGameDialog({
   nodes = [],
   edges = [],
 }: IfElseGameDialogProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [condition, setCondition] = useState('');
-  const [correctPath, setCorrectPath] = useState<'A' | 'B'>('A');
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [condition, setCondition] = useState('')
+  const [correctPath, setCorrectPath] = useState<'A' | 'B'>('A')
 
   // Find incoming and outgoing nodes
   const { incomingNode, outgoingNodes } = useMemo(() => {
-    if (!nodeId) return { incomingNode: null, outgoingNodes: [] };
+    if (!nodeId) return { incomingNode: null, outgoingNodes: [] }
 
-    const incomingEdge = edges.find(e => e.target === nodeId);
-    const incomingNode = incomingEdge ? nodes.find(n => n.id === incomingEdge.source) : null;
+    const incomingEdge = edges.find((e) => e.target === nodeId)
+    const incomingNode = incomingEdge ? nodes.find((n) => n.id === incomingEdge.source) : null
 
-    const outgoingEdges = edges.filter(e => e.source === nodeId);
+    const outgoingEdges = edges.filter((e) => e.source === nodeId)
     const outgoingNodes = outgoingEdges
-      .map(edge => {
-        const node = nodes.find(n => n.id === edge.target);
-        const handleId = edge.sourceHandle || '';
-        return node ? { node, handleId } : null;
+      .map((edge) => {
+        const node = nodes.find((n) => n.id === edge.target)
+        const handleId = edge.sourceHandle || ''
+        return node ? { node, handleId } : null
       })
-      .filter((item): item is { node: typeof nodes[0]; handleId: string } => item !== null);
+      .filter((item): item is { node: (typeof nodes)[0]; handleId: string } => item !== null)
 
-    return { incomingNode, outgoingNodes };
-  }, [nodeId, nodes, edges]);
+    return { incomingNode, outgoingNodes }
+  }, [nodeId, nodes, edges])
 
   useEffect(() => {
     if (initialData) {
-      setTitle(initialData.title || '');
-      setDescription(initialData.description || '');
-      setCondition(initialData.condition || '');
-      setCorrectPath(initialData.correctPath || 'A');
+      setTitle(initialData.title || '')
+      setDescription(initialData.description || '')
+      setCondition(initialData.condition || '')
+      setCorrectPath(initialData.correctPath || 'A')
     }
-  }, [initialData, open]);
+  }, [initialData, open])
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {
-      onSave?.({ title, description, condition: condition.trim() || undefined, correctPath });
-      handleCancel();
+      onSave?.({ title, description, condition: condition.trim() || undefined, correctPath })
+      handleCancel()
     }
-  };
+  }
 
   const handleCancel = () => {
-    setTitle('');
-    setDescription('');
-    setCondition('');
-    setCorrectPath('A');
-    onOpenChange(false);
-  };
+    setTitle('')
+    setDescription('')
+    setCondition('')
+    setCorrectPath('A')
+    onOpenChange(false)
+  }
 
   const handleDelete = () => {
     if (onDelete) {
-      onDelete();
-      handleCancel();
+      onDelete()
+      handleCancel()
     }
-  };
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto !w-[90vw] !max-w-[1080px]">
         <DialogHeader>
           <DialogTitle>Configure If/Else Node</DialogTitle>
@@ -107,9 +110,7 @@ export default function IfElseGameDialog({
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="description">Description</Label>
-                  <span className="text-xs text-muted-foreground">
-                    {description.length}/1000
-                  </span>
+                  <span className="text-xs text-muted-foreground">{description.length}/1000</span>
                 </div>
                 <Textarea
                   id="description"
@@ -128,7 +129,9 @@ export default function IfElseGameDialog({
                 <div>
                   {incomingNode ? (
                     <Badge variant="outline">
-                      {String(incomingNode.data?.label || incomingNode.data?.title || incomingNode.id)}
+                      {String(
+                        incomingNode.data?.label || incomingNode.data?.title || incomingNode.id,
+                      )}
                     </Badge>
                   ) : (
                     <span className="text-sm text-muted-foreground">No incoming node</span>
@@ -141,10 +144,14 @@ export default function IfElseGameDialog({
                 <div className="flex flex-col gap-2">
                   {outgoingNodes.length > 0 ? (
                     outgoingNodes.map(({ node, handleId }) => {
-                      const isNodeA = handleId === 'right-top';
-                      const isSelected = (isNodeA && correctPath === 'A') || (!isNodeA && correctPath === 'B');
+                      const isNodeA = handleId === 'right-top'
+                      const isSelected =
+                        (isNodeA && correctPath === 'A') || (!isNodeA && correctPath === 'B')
                       return (
-                        <div key={node.id} className="flex items-center gap-2">
+                        <div
+                          key={node.id}
+                          className="flex items-center gap-2"
+                        >
                           <Badge variant={isSelected ? 'default' : 'outline'}>
                             {isNodeA ? 'Node A' : 'Node B'}
                           </Badge>
@@ -152,7 +159,7 @@ export default function IfElseGameDialog({
                             {String(node.data?.label || node.data?.title || node.id)}
                           </Badge>
                         </div>
-                      );
+                      )
                     })
                   ) : (
                     <span className="text-sm text-muted-foreground">No outgoing nodes</span>
@@ -169,9 +176,7 @@ export default function IfElseGameDialog({
                     checked={correctPath === 'A'}
                     onCheckedChange={(checked) => setCorrectPath(checked ? 'A' : 'B')}
                   />
-                  <span className="text-sm">
-                    {correctPath === 'A' ? 'Node A' : 'Node B'}
-                  </span>
+                  <span className="text-sm">{correctPath === 'A' ? 'Node A' : 'Node B'}</span>
                 </div>
               </div>
             </div>
@@ -189,7 +194,10 @@ export default function IfElseGameDialog({
             )}
           </div>
           <div className="flex gap-2 ml-auto">
-            <Button variant="outline" onClick={handleCancel}>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+            >
               Cancel
             </Button>
             <Button
@@ -202,6 +210,5 @@ export default function IfElseGameDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
-

@@ -1,5 +1,5 @@
 const CommandList = () => {
-    return <div></div>;
-};
+  return <div></div>
+}
 
-export default CommandList;
+export default CommandList

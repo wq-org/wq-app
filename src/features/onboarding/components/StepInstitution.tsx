@@ -1,66 +1,64 @@
-import { useState, useEffect } from 'react';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Search, Check } from 'lucide-react';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group';
-import EmptyInstitutionView from './EmptyInstitutionView';
-import Spinner from '@/components/ui/spinner';
-import { fetchInstitutions } from '../api/onboardingApi';
-import type { StepInstitutionProps, Institution } from '../types/onboarding.types';
+import { useState, useEffect } from 'react'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Search, Check } from 'lucide-react'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import EmptyInstitutionView from './EmptyInstitutionView'
+import Spinner from '@/components/ui/spinner'
+import { fetchInstitutions } from '../api/onboardingApi'
+import type { StepInstitutionProps, Institution } from '../types/onboarding.types'
 
 export default function StepInstitution({ onNext, onBack, initialData }: StepInstitutionProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>(initialData || []);
-  const [institutions, setInstitutions] = useState<Institution[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialData || [])
+  const [institutions, setInstitutions] = useState<Institution[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   // Fetch institutions from API
   useEffect(() => {
     async function loadInstitutions() {
       try {
-        const fetchedInstitutions = await fetchInstitutions();
-        setInstitutions(fetchedInstitutions);
+        const fetchedInstitutions = await fetchInstitutions()
+        setInstitutions(fetchedInstitutions)
       } catch (error) {
-        console.error('Error loading institutions:', error);
-        setInstitutions([]);
+        console.error('Error loading institutions:', error)
+        setInstitutions([])
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
 
-    loadInstitutions();
-  }, []);
+    loadInstitutions()
+  }, [])
 
   const filteredInstitutions = institutions.filter(
     (inst) =>
       inst.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (inst.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
-      (inst.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
-  );
+      (inst.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false),
+  )
 
   const toggleInstitution = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
+  }
 
   const handleContinue = () => {
-    const selected = institutions.filter((inst) => selectedIds.includes(inst.id));
-    onNext(selected);
-  };
+    const selected = institutions.filter((inst) => selectedIds.includes(inst.id))
+    onNext(selected)
+  }
 
   // Loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
-        <Spinner variant="black" size="xl" speed={1750} />
+        <Spinner
+          variant="black"
+          size="xl"
+          speed={1750}
+        />
       </div>
-    );
+    )
   }
 
   // Empty state
@@ -75,7 +73,11 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
         </div>
         <EmptyInstitutionView />
         <div className="flex justify-between gap-4 py-11">
-          <Button type="button" variant="outline" onClick={onBack}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+          >
             Back
           </Button>
           <Button
@@ -88,7 +90,7 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -102,7 +104,10 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
 
       {/* Search Input */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="search" className="font-light">
+        <Label
+          htmlFor="search"
+          className="font-light"
+        >
           Search Institutions
         </Label>
         <InputGroup>
@@ -129,23 +134,19 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
           </div>
         ) : (
           filteredInstitutions.map((institution) => {
-            const isSelected = selectedIds.includes(institution.id);
+            const isSelected = selectedIds.includes(institution.id)
             return (
               <Card
                 key={institution.id}
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                  isSelected
-                    ? 'border-primary border-2 bg-primary/5'
-                    : 'border-gray-200'
+                  isSelected ? 'border-primary border-2 bg-primary/5' : 'border-gray-200'
                 }`}
                 onClick={() => toggleInstitution(institution.id)}
               >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-xl mb-1">
-                        {institution.name}
-                      </CardTitle>
+                      <CardTitle className="text-xl mb-1">{institution.name}</CardTitle>
                       {institution.description && (
                         <CardDescription className="text-sm">
                           {institution.description}
@@ -163,18 +164,14 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                   {institution.email && (
-                    <p className="text-xs text-muted-foreground">
-                      ✉️ {institution.email}
-                    </p>
+                    <p className="text-xs text-muted-foreground">✉️ {institution.email}</p>
                   )}
                   {institution.website && (
-                    <p className="text-xs text-muted-foreground">
-                      🌐 {institution.website}
-                    </p>
+                    <p className="text-xs text-muted-foreground">🌐 {institution.website}</p>
                   )}
                 </CardContent>
               </Card>
-            );
+            )
           })
         )}
       </div>
@@ -188,7 +185,11 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
 
       {/* Action Buttons */}
       <div className="flex justify-between gap-4 py-11">
-        <Button type="button" variant="outline" onClick={onBack}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+        >
           Back
         </Button>
         <Button
@@ -201,6 +202,5 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
         </Button>
       </div>
     </div>
-  );
+  )
 }
-

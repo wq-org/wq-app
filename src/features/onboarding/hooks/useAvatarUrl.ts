@@ -1,33 +1,33 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
 export function useAvatarUrl(path?: string | null, expiresIn = 3600) {
-  const [url, setUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [url, setUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function sign() {
       if (!path) {
-        setUrl(null);
-        setLoading(false);
-        return;
+        setUrl(null)
+        setLoading(false)
+        return
       }
-      
-      setLoading(true);
+
+      setLoading(true)
       const { data, error } = await supabase.storage
         .from('avatars')
-        .createSignedUrl(path, expiresIn);
+        .createSignedUrl(path, expiresIn)
 
       if (error) {
-        console.error('Error signing avatar url:', error);
-        setUrl(null);
+        console.error('Error signing avatar url:', error)
+        setUrl(null)
       } else {
-        setUrl(data?.signedUrl || null);
+        setUrl(data?.signedUrl || null)
       }
-      setLoading(false);
+      setLoading(false)
     }
-    sign();
-  }, [path, expiresIn]);
+    sign()
+  }, [path, expiresIn])
 
-  return { url, loading };
+  return { url, loading }
 }

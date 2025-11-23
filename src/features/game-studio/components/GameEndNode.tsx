@@ -1,6 +1,6 @@
-import { Handle, Position } from '@xyflow/react';
-import { Square } from 'lucide-react';
-import type { GameEndNodeProps } from '../types/game-studio.types';
+import { Handle, Position } from '@xyflow/react'
+import { Square } from 'lucide-react'
+import type { GameEndNodeProps } from '../types/game-studio.types'
 
 export default function GameEndNode({ data, selected }: GameEndNodeProps) {
   return (
@@ -18,9 +18,7 @@ export default function GameEndNode({ data, selected }: GameEndNodeProps) {
       <div className="p-2 rounded-lg border border-red-500/20 bg-red-500/10 flex items-center justify-center">
         <Square className="w-4 h-4 text-red-500" />
       </div>
-      <span className="text-gray-900 font-medium">
-        {data?.label || 'End'}
-      </span>
+      <span className="text-gray-900 font-medium">{data?.label || 'End'}</span>
     </div>
-  );
+  )
 }

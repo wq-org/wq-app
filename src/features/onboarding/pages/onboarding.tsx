@@ -5,56 +5,61 @@ import {
   StepperIndicator,
   StepperTitle,
   StepperDescription,
-  StepperSeparator
-} from '@/components/ui/stepper';
-import {CheckIcon} from 'lucide-react';
-import {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import StepAccount from '../components/StepAccount';
-import StepInstitution from '../components/StepInstitution';
-import StepFinish from '../components/StepFinish';
-import {useUser} from '@/contexts/user';
-import {toast} from 'sonner';
-import type {AccountData, Institution} from '../types/onboarding.types';
-import Navigation from '@/components/common/Navigation';
+  StepperSeparator,
+} from '@/components/ui/stepper'
+import { CheckIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import StepAccount from '../components/StepAccount'
+import StepInstitution from '../components/StepInstitution'
+import StepFinish from '../components/StepFinish'
+import { useUser } from '@/contexts/user'
+import { toast } from 'sonner'
+import type { AccountData, Institution } from '../types/onboarding.types'
+import Navigation from '@/components/common/Navigation'
 
 export default function Onboarding() {
-  const navigate = useNavigate();
-  const {pendingRole} = useUser();
-  const [step, setStep] = useState(1);
-  const [accountData, setAccountData] = useState<AccountData | null>(null);
-  const [institutions, setInstitutions] = useState<Institution[]>([]);
+  const navigate = useNavigate()
+  const { pendingRole } = useUser()
+  const [step, setStep] = useState(1)
+  const [accountData, setAccountData] = useState<AccountData | null>(null)
+  const [institutions, setInstitutions] = useState<Institution[]>([])
 
   const handleAccountNext = (data: AccountData) => {
-    setAccountData(data);
-    setStep(2);
-  };
+    setAccountData(data)
+    setStep(2)
+  }
 
   const handleInstitutionNext = (selectedInstitutions: Institution[]) => {
-    setInstitutions(selectedInstitutions);
-    setStep(3);
-  };
+    setInstitutions(selectedInstitutions)
+    setStep(3)
+  }
 
   const handleFinish = () => {
-    const role = pendingRole;
+    const role = pendingRole
     if (!role) {
       toast.error('Something went wrong', {
-        description: 'Your account is missing a role. Please refresh the page. If this keeps happening, contact support.',
+        description:
+          'Your account is missing a role. Please refresh the page. If this keeps happening, contact support.',
         action: {
           label: 'Refresh',
           onClick: () => window.location.reload(),
         },
-      });
+      })
     } else {
-      navigate(`/${role}/dashboard`);
+      navigate(`/${role}/dashboard`)
     }
-  };
+  }
 
   return (
     <div>
       <Navigation />
       <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
-        <Stepper value={step} onValueChange={setStep} className="w-full max-w-2xl mb-8">
+        <Stepper
+          value={step}
+          onValueChange={setStep}
+          className="w-full max-w-2xl mb-8"
+        >
           <StepperItem step={1}>
             <StepperTrigger onClick={() => step > 1 && setStep(1)}>
               <StepperIndicator>
@@ -62,9 +67,7 @@ export default function Onboarding() {
               </StepperIndicator>
               <div>
                 <StepperTitle>Account</StepperTitle>
-                <StepperDescription>
-                  Create your account
-                </StepperDescription>
+                <StepperDescription>Create your account</StepperDescription>
               </div>
             </StepperTrigger>
           </StepperItem>
@@ -76,9 +79,7 @@ export default function Onboarding() {
               </StepperIndicator>
               <div>
                 <StepperTitle>Institution</StepperTitle>
-                <StepperDescription>
-                  Follow institutions
-                </StepperDescription>
+                <StepperDescription>Follow institutions</StepperDescription>
               </div>
             </StepperTrigger>
           </StepperItem>
@@ -90,9 +91,7 @@ export default function Onboarding() {
               </StepperIndicator>
               <div>
                 <StepperTitle>Finish</StepperTitle>
-                <StepperDescription>
-                  Complete onboarding
-                </StepperDescription>
+                <StepperDescription>Complete onboarding</StepperDescription>
               </div>
             </StepperTrigger>
           </StepperItem>
@@ -116,6 +115,5 @@ export default function Onboarding() {
         </div>
       </div>
     </div>
-  );
+  )
 }
-

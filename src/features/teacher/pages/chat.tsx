@@ -1,10 +1,10 @@
-import { ChatLayout } from '@/features/chat';
-import AppWrapper from '@/components/layout/AppWrapper';
+import { ChatLayout } from '@/features/chat'
+import AppWrapper from '@/components/layout/AppWrapper'
 
 export default function Chat() {
-    return (
-        <AppWrapper role="teacher">
-            <ChatLayout />
-        </AppWrapper>
-    );
+  return (
+    <AppWrapper role="teacher">
+      <ChatLayout />
+    </AppWrapper>
+  )
 }

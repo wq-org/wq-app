@@ -1,17 +1,17 @@
-import { supabase } from '@/lib/supabase';
-import { getUserInstitutionId } from '@/features/auth/api/authApi';
-import type { Course, UpdateCourseData } from '../types/course.types';
+import { supabase } from '@/lib/supabase'
+import { getUserInstitutionId } from '@/features/auth/api/authApi'
+import type { Course, UpdateCourseData } from '../types/course.types'
 
 /**
  * Create a new course
  */
 export async function createCourse(
   teacherId: string,
-  { title, description }: { title: string; description: string }
+  { title, description }: { title: string; description: string },
 ): Promise<Course> {
   // Get teacher's institution_id
-  const institutionId = await getUserInstitutionId(teacherId);
-  
+  const institutionId = await getUserInstitutionId(teacherId)
+
   const { data, error } = await supabase
     .from('courses')
     .insert({
@@ -22,14 +22,14 @@ export async function createCourse(
       is_published: false,
     })
     .select()
-    .single();
-  
+    .single()
+
   if (error) {
-    console.error('Error creating course:', error);
-    throw error;
+    console.error('Error creating course:', error)
+    throw error
   }
-  
-  return data as Course;
+
+  return data as Course
 }
 
 /**
@@ -40,68 +40,58 @@ export async function getTeacherCourses(teacherId: string): Promise<Course[]> {
     .from('courses')
     .select('*')
     .eq('teacher_id', teacherId)
-    .order('created_at', { ascending: false });
-  
+    .order('created_at', { ascending: false })
+
   if (error) {
-    console.error('Error fetching courses:', error);
-    throw error;
+    console.error('Error fetching courses:', error)
+    throw error
   }
-  
-  return (data || []) as Course[];
+
+  return (data || []) as Course[]
 }
 
 /**
  * Get a single course by ID
  */
 export async function getCourseById(courseId: string): Promise<Course> {
-  const { data, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('id', courseId)
-    .single();
-  
+  const { data, error } = await supabase.from('courses').select('*').eq('id', courseId).single()
+
   if (error) {
-    console.error('Error fetching course:', error);
-    throw error;
+    console.error('Error fetching course:', error)
+    throw error
   }
-  
-  return data as Course;
+
+  return data as Course
 }
 
 /**
  * Update a course
  */
-export async function updateCourse(
-  courseId: string,
-  updates: UpdateCourseData
-): Promise<Course> {
+export async function updateCourse(courseId: string, updates: UpdateCourseData): Promise<Course> {
   const { data, error } = await supabase
     .from('courses')
     .update(updates)
     .eq('id', courseId)
     .select()
-    .single();
-  
+    .single()
+
   if (error) {
-    console.error('Error updating course:', error);
-    throw error;
+    console.error('Error updating course:', error)
+    throw error
   }
-  
-  return data as Course;
+
+  return data as Course
 }
 
 /**
  * Delete a course
  */
 export async function deleteCourse(courseId: string): Promise<void> {
-  const { error } = await supabase
-    .from('courses')
-    .delete()
-    .eq('id', courseId);
-  
+  const { error } = await supabase.from('courses').delete().eq('id', courseId)
+
   if (error) {
-    console.error('Error deleting course:', error);
-    throw error;
+    console.error('Error deleting course:', error)
+    throw error
   }
 }
 
@@ -111,28 +101,27 @@ export async function deleteCourse(courseId: string): Promise<void> {
  */
 export async function createTopic(
   courseId: string,
-  name: string
-): Promise<{ id: string; name: string; course_id: string;  }> {
-  const now = new Date().toISOString();
-  
+  name: string,
+): Promise<{ id: string; name: string; course_id: string }> {
+  const now = new Date().toISOString()
+
   // Get the maximum order_index for topics in this course to calculate the next index
   const { data: existingTopics, error: fetchError } = await supabase
     .from('topics')
     .select('order_index')
     .eq('course_id', courseId)
     .order('order_index', { ascending: false })
-    .limit(1);
-  
+    .limit(1)
+
   if (fetchError) {
-    console.error('Error fetching existing topics:', fetchError);
-    throw fetchError;
+    console.error('Error fetching existing topics:', fetchError)
+    throw fetchError
   }
-  
+
   // Calculate the next order_index (max + 1, or 0 if no topics exist)
-  const nextOrderIndex = existingTopics && existingTopics.length > 0 
-    ? (existingTopics[0].order_index ?? -1) + 1 
-    : 0;
-  
+  const nextOrderIndex =
+    existingTopics && existingTopics.length > 0 ? (existingTopics[0].order_index ?? -1) + 1 : 0
+
   const { data, error } = await supabase
     .from('topics')
     .insert({
@@ -142,11 +131,11 @@ export async function createTopic(
       created_at: now,
     })
     .select('id, title, course_id, created_at, updated_at')
-    .single();
+    .single()
 
   if (error) {
-    console.error('Error creating topic:', error);
-    throw error;
+    console.error('Error creating topic:', error)
+    throw error
   }
 
   // Map 'title' from database to 'name' to match the Topic interface
@@ -154,44 +143,42 @@ export async function createTopic(
     id: data.id,
     name: data.title, // Map title -> name for interface compatibility
     course_id: data.course_id,
-  };
+  }
 }
 
 /**
  * Get all topics for a course
  */
-export async function getTopicsByCourseId(courseId: string): Promise<{ id: string; name: string; course_id: string }[]> {
+export async function getTopicsByCourseId(
+  courseId: string,
+): Promise<{ id: string; name: string; course_id: string }[]> {
   const { data, error } = await supabase
     .from('topics')
     .select('id, title, course_id')
     .eq('course_id', courseId)
-    .order('order_index', { ascending: true });
-  
+    .order('order_index', { ascending: true })
+
   if (error) {
-    console.error('Error fetching topics:', error);
-    throw error;
+    console.error('Error fetching topics:', error)
+    throw error
   }
-  
+
   // Map 'title' from database to 'name' to match the Topic interface
-  return (data || []).map(topic => ({
+  return (data || []).map((topic) => ({
     id: topic.id,
     name: topic.title, // Map title -> name for interface compatibility
     course_id: topic.course_id,
-  }));
+  }))
 }
 
 /**
  * Delete a topic
  */
 export async function deleteTopic(topicId: string): Promise<void> {
-  const { error } = await supabase
-    .from('topics')
-    .delete()
-    .eq('id', topicId);
-  
+  const { error } = await supabase.from('topics').delete().eq('id', topicId)
+
   if (error) {
-    console.error('Error deleting topic:', error);
-    throw error;
+    console.error('Error deleting topic:', error)
+    throw error
   }
 }
-

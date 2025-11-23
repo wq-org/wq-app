@@ -1,6 +1,6 @@
-import { Handle, Position } from '@xyflow/react';
-import { GitBranch } from 'lucide-react';
-import type { GameIfElseNodeProps } from '../types/game-studio.types';
+import { Handle, Position } from '@xyflow/react'
+import { GitBranch } from 'lucide-react'
+import type { GameIfElseNodeProps } from '../types/game-studio.types'
 
 export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
   return (
@@ -15,25 +15,21 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
         position={Position.Left}
         className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
         id="left"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       />
       <div className="p-2 rounded-lg border border-orange-500/20 bg-orange-500/10 flex items-center justify-center">
         <GitBranch className="w-4 h-4 text-orange-500" />
       </div>
       <div className="flex flex-col">
-        <span className="text-gray-900 font-medium">
-          {data?.label || 'If / else'}
-        </span>
-        {data?.condition && (
-          <span className="text-xs text-gray-500">{data.condition}</span>
-        )}
+        <span className="text-gray-900 font-medium">{data?.label || 'If / else'}</span>
+        {data?.condition && <span className="text-xs text-gray-500">{data.condition}</span>}
       </div>
       <Handle
         type="source"
         position={Position.Right}
         className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
         id="right-top"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{ top: '30%' }}
       />
       <Handle
@@ -41,9 +37,9 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
         position={Position.Right}
         className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
         id="right-bottom"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{ top: '70%' }}
       />
     </div>
-  );
+  )
 }

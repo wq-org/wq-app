@@ -1,12 +1,12 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'
 
 export interface SquareMarkerProps {
-  number: number;
-  x: number;
-  y: number;
-  onDelete?: () => void;
-  className?: string;
-  pointerEvents?: 'auto' | 'none';
+  number: number
+  x: number
+  y: number
+  onDelete?: () => void
+  className?: string
+  pointerEvents?: 'auto' | 'none'
 }
 
 export default function SquareMarker({
@@ -23,7 +23,7 @@ export default function SquareMarker({
         'absolute flex items-center justify-center rounded-lg border-2 border-white bg-white/80 backdrop-blur-sm shadow-lg',
         'w-20 h-20 text-xl font-bold text-gray-900',
         pointerEvents === 'none' && 'pointer-events-none',
-        className
+        className,
       )}
       style={{
         left: `${x}px`,
@@ -32,13 +32,12 @@ export default function SquareMarker({
       }}
       onClick={(e) => {
         if (pointerEvents === 'auto') {
-          e.stopPropagation();
-          onDelete?.();
+          e.stopPropagation()
+          onDelete?.()
         }
       }}
     >
       {number}
     </div>
-  );
+  )
 }
-

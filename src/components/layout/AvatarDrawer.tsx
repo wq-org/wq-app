@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Edit2Icon, X } from 'lucide-react';
-import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
+import { useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Edit2Icon, X } from 'lucide-react'
+import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import {
   Drawer,
   DrawerContent,
@@ -11,20 +11,20 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import type { AvatarOption } from '@/features/onboarding/types/onboarding.types';
+} from '@/components/ui/drawer'
+import type { AvatarOption } from '@/features/onboarding/types/onboarding.types'
 
 interface AvatarOptionItemProps {
-  avatar: AvatarOption;
-  onSelect: (avatarPath: string) => void;
+  avatar: AvatarOption
+  onSelect: (avatarPath: string) => void
 }
 
 function AvatarOptionItem({ avatar, onSelect }: AvatarOptionItemProps) {
-  const { url: avatarUrl } = useAvatarUrl(avatar.src);
+  const { url: avatarUrl } = useAvatarUrl(avatar.src)
 
   const handleClick = () => {
-    onSelect(avatar.src);
-  };
+    onSelect(avatar.src)
+  }
 
   return (
     <button
@@ -39,21 +39,19 @@ function AvatarOptionItem({ avatar, onSelect }: AvatarOptionItemProps) {
           alt={avatar.name}
           className="object-cover"
         />
-        <AvatarFallback className="text-lg">
-          {avatar.emoji}
-        </AvatarFallback>
+        <AvatarFallback className="text-lg">{avatar.emoji}</AvatarFallback>
       </Avatar>
       <span className="text-xs text-center">{avatar.name}</span>
     </button>
-  );
+  )
 }
 
 interface AvatarDrawerProps {
-  avatarSrc: string;
-  displayNameInitial: string;
-  displayName?: string | null;
-  avatarOptions: AvatarOption[];
-  onAvatarSelect: (avatarPath: string) => void;
+  avatarSrc: string
+  displayNameInitial: string
+  displayName?: string | null
+  avatarOptions: AvatarOption[]
+  onAvatarSelect: (avatarPath: string) => void
 }
 
 export default function AvatarDrawer({
@@ -63,15 +61,19 @@ export default function AvatarDrawer({
   avatarOptions,
   onAvatarSelect,
 }: AvatarDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleAvatarSelect = (avatarPath: string) => {
-    onAvatarSelect(avatarPath);
-    setIsOpen(false);
-  };
+    onAvatarSelect(avatarPath)
+    setIsOpen(false)
+  }
 
   return (
-    <Drawer direction="right" open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer
+      direction="right"
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    >
       <DrawerTrigger asChild>
         <Button
           type="button"
@@ -85,9 +87,7 @@ export default function AvatarDrawer({
               alt={displayName || 'Avatar'}
               className="object-cover"
             />
-            <AvatarFallback className="text-xl">
-              {displayNameInitial}
-            </AvatarFallback>
+            <AvatarFallback className="text-xl">{displayNameInitial}</AvatarFallback>
           </Avatar>
           <div
             className="absolute -bottom-2 -right-2 rounded-full bg-secondary p-2 pointer-events-none"
@@ -127,5 +127,5 @@ export default function AvatarDrawer({
         </div>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }

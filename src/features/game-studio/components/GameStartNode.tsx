@@ -1,10 +1,10 @@
-import { Handle, Position } from '@xyflow/react';
-import { Play } from 'lucide-react';
-import type { GameStartNodeProps } from '../types/game-studio.types';
+import { Handle, Position } from '@xyflow/react'
+import { Play } from 'lucide-react'
+import type { GameStartNodeProps } from '../types/game-studio.types'
 
 export default function GameStartNode({ data, selected }: GameStartNodeProps) {
   return (
-    <div 
+    <div
       className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow ${selected ? 'border-2 border-gray-300' : ''}`}
       onClick={data?.onClick}
     >
@@ -20,7 +20,5 @@ export default function GameStartNode({ data, selected }: GameStartNodeProps) {
         onClick={(e) => e.stopPropagation()}
       />
     </div>
-  );
+  )
 }
-
-

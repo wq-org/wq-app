@@ -1,10 +1,10 @@
-import AppWrapper from '@/components/layout/AppWrapper';
-import GameEditorCanvas from '../components/GameEditorCanvas';
+import AppWrapper from '@/components/layout/AppWrapper'
+import GameEditorCanvas from '../components/GameEditorCanvas'
 
 export default function GameStudioView() {
   return (
-    <AppWrapper 
-      role="teacher" 
+    <AppWrapper
+      role="teacher"
       commandPaletteRole="game-studio"
       className="flex flex-col h-screen"
     >
@@ -12,6 +12,5 @@ export default function GameStudioView() {
         <GameEditorCanvas />
       </div>
     </AppWrapper>
-  );
+  )
 }
-

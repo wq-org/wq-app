@@ -1,2 +1,1 @@
-export { QuoteOfTheDay } from './QuoteOfTheDay';
-
+export { QuoteOfTheDay } from './QuoteOfTheDay'

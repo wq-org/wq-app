@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -6,16 +6,16 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import type { EndGameDialogProps } from '../types/game-studio.types';
-import GameNodeLayout from './GameNodeLayout';
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import type { EndGameDialogProps } from '../types/game-studio.types'
+import GameNodeLayout from './GameNodeLayout'
 
 interface EndGameDialogPropsWithDelete extends EndGameDialogProps {
-  onDelete?: () => void;
+  onDelete?: () => void
 }
 
 export default function EndGameDialog({
@@ -26,38 +26,41 @@ export default function EndGameDialog({
   nodeId,
   onDelete,
 }: EndGameDialogPropsWithDelete) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
 
   useEffect(() => {
     if (initialData) {
-      setTitle(initialData.title || '');
-      setDescription(initialData.description || '');
+      setTitle(initialData.title || '')
+      setDescription(initialData.description || '')
     }
-  }, [initialData, open]);
+  }, [initialData, open])
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {
-      onSave?.({ title, description });
-      handleCancel();
+      onSave?.({ title, description })
+      handleCancel()
     }
-  };
+  }
 
   const handleCancel = () => {
-    setTitle('');
-    setDescription('');
-    onOpenChange(false);
-  };
+    setTitle('')
+    setDescription('')
+    onOpenChange(false)
+  }
 
   const handleDelete = () => {
     if (onDelete) {
-      onDelete();
-      handleCancel();
+      onDelete()
+      handleCancel()
     }
-  };
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto !w-[90vw] !max-w-[1080px]">
         <DialogHeader>
           <DialogTitle>Configure End Node</DialogTitle>
@@ -81,9 +84,7 @@ export default function EndGameDialog({
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="description">Description</Label>
-                  <span className="text-xs text-muted-foreground">
-                    {description.length}/1000
-                  </span>
+                  <span className="text-xs text-muted-foreground">{description.length}/1000</span>
                 </div>
                 <Textarea
                   id="description"
@@ -109,7 +110,10 @@ export default function EndGameDialog({
             )}
           </div>
           <div className="flex gap-2 ml-auto">
-            <Button variant="outline" onClick={handleCancel}>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+            >
               Cancel
             </Button>
             <Button
@@ -122,6 +126,5 @@ export default function EndGameDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
-

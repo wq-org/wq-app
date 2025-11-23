@@ -1,2 +1,1 @@
-export { useSearchItems, type SearchItem } from './useSearchItems';
-
+export { useSearchItems, type SearchItem } from './useSearchItems'

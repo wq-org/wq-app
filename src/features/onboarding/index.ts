@@ -1,19 +1,18 @@
 // Components
-export { default as StepAccount } from './components/StepAccount';
-export { default as StepFinish } from './components/StepFinish';
-export { default as StepInstitution } from './components/StepInstitution';
-export { default as SuccessPage } from './components/SuccessPage';
-export { default as EmptyInstitutionView } from './components/EmptyInstitutionView';
+export { default as StepAccount } from './components/StepAccount'
+export { default as StepFinish } from './components/StepFinish'
+export { default as StepInstitution } from './components/StepInstitution'
+export { default as SuccessPage } from './components/SuccessPage'
+export { default as EmptyInstitutionView } from './components/EmptyInstitutionView'
 
 // Pages
-export { default as Onboarding } from './pages/onboarding';
+export { default as Onboarding } from './pages/onboarding'
 
 // Hooks
-export { useAvatarUrl } from './hooks/useAvatarUrl';
+export { useAvatarUrl } from './hooks/useAvatarUrl'
 
 // Types
-export type * from './types/onboarding.types';
+export type * from './types/onboarding.types'
 
 // API
-export * from './api/onboardingApi';
-
+export * from './api/onboardingApi'

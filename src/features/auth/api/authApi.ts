@@ -1,40 +1,39 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase'
 export interface AuthData {
-  email: string;
-  password: string;
-  role?: string;
-
+  email: string
+  password: string
+  role?: string
 }
 
 export interface LoginData {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export interface AuthResponse {
-  user_id: string;
-  username: string;
-  display_name: string;
-  email: string;
-  role: string;
+  user_id: string
+  username: string
+  display_name: string
+  email: string
+  role: string
 }
 
 /**
  * Sign up a new user
  */
 export async function signUpUser(signUpData: AuthData): Promise<{
-  success: boolean;
-  user?: any;      // Supabase user object
-  session?: any;   // Supabase session object
-  error?: string | null;
+  success: boolean
+  user?: any // Supabase user object
+  session?: any // Supabase session object
+  error?: string | null
 }> {
   if (!signUpData.role) {
     return {
       success: false,
       user: null,
       session: null,
-      error: "Role must be set before signing up.",
-    };
+      error: 'Role must be set before signing up.',
+    }
   }
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -43,10 +42,10 @@ export async function signUpUser(signUpData: AuthData): Promise<{
       options: {
         emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
         data: {
-          role: signUpData.role, 
+          role: signUpData.role,
         },
       },
-    });
+    })
 
     if (error) {
       return {
@@ -54,7 +53,7 @@ export async function signUpUser(signUpData: AuthData): Promise<{
         user: null,
         session: null,
         error: error.message,
-      };
+      }
     }
 
     return {
@@ -62,12 +61,12 @@ export async function signUpUser(signUpData: AuthData): Promise<{
       user: data?.user ?? null,
       session: data?.session ?? null,
       error: null,
-    };
+    }
   } catch (err: any) {
     return {
       success: false,
-      error: err.message || "Unexpected error",
-    };
+      error: err.message || 'Unexpected error',
+    }
   }
 }
 
@@ -75,29 +74,28 @@ export async function signUpUser(signUpData: AuthData): Promise<{
  * Log in an existing user
  */
 export async function loginUser(loginData: AuthData): Promise<{
-  success: boolean;
-  user?: any;      // Supabase user object
-  session?: any;   // Supabase session object
-  error?: string | null;
+  success: boolean
+  user?: any // Supabase user object
+  session?: any // Supabase session object
+  error?: string | null
 }> {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: loginData.email,
       password: loginData.password,
-    });
-
+    })
 
     return {
       success: !error,
       user: data?.user ?? null,
       session: data?.session ?? null,
       error: error?.message ?? null,
-    };
+    }
   } catch (err: any) {
     return {
       success: false,
-      error: err.message || "Unexpected error",
-    };
+      error: err.message || 'Unexpected error',
+    }
   }
 }
 
@@ -108,18 +106,16 @@ export async function loginUser(loginData: AuthData): Promise<{
 export async function logoutUser(): Promise<void> {
   try {
     // Sign out from Supabase (clears Supabase session and cookies)
-    await supabase.auth.signOut();
-    
+    await supabase.auth.signOut()
+
     // Clear sessionStorage
-    sessionStorage.clear();
-    
-  
+    sessionStorage.clear()
   } catch (error) {
-    console.error('Error during logout:', error);
+    console.error('Error during logout:', error)
     // Even if there's an error, try to clear local storage
-    sessionStorage.clear();
-    localStorage.clear();
-    throw error;
+    sessionStorage.clear()
+    localStorage.clear()
+    throw error
   }
 }
 
@@ -128,7 +124,7 @@ export async function logoutUser(): Promise<void> {
  */
 export async function requestPasswordReset(email: string): Promise<void> {
   // TODO: Implement Supabase password reset request
-  console.log('Request password reset for:', email);
+  console.log('Request password reset for:', email)
 }
 
 /**
@@ -136,7 +132,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
  */
 export async function resetPassword(token: string, newPassword: string): Promise<void> {
   // TODO: Implement Supabase password reset
-  console.log('Reset password with token:', token, 'New password:', newPassword);
+  console.log('Reset password with token:', token, 'New password:', newPassword)
 }
 
 /**
@@ -144,7 +140,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
  */
 export async function verifyEmail(token: string): Promise<void> {
   // TODO: Implement Supabase email verification
-  console.log('Verify email with token:', token);
+  console.log('Verify email with token:', token)
 }
 
 /**
@@ -152,7 +148,7 @@ export async function verifyEmail(token: string): Promise<void> {
  */
 export async function getCurrentUser(): Promise<AuthResponse | null> {
   // TODO: Implement Supabase get current user
-  return null;
+  return null
 }
 
 /**
@@ -164,14 +160,14 @@ export async function getProfile(userId: string) {
     .from('profiles')
     .select('user_id, role, is_onboarded')
     .eq('user_id', userId)
-    .maybeSingle(); 
-  
+    .maybeSingle()
+
   if (error) {
-    console.error('Error fetching profile:', error);
-    throw error;
+    console.error('Error fetching profile:', error)
+    throw error
   }
-  
-  return data; // Will be null if profile doesn't exist
+
+  return data // Will be null if profile doesn't exist
 }
 
 /**
@@ -181,52 +177,60 @@ export async function getProfile(userId: string) {
 export async function getCompleteProfile(userId: string) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('user_id, username, display_name, avatar_url, email, description, role, is_onboarded, linkedin_url')
+    .select(
+      'user_id, username, display_name, avatar_url, email, description, role, is_onboarded, linkedin_url',
+    )
     .eq('user_id', userId)
-    .maybeSingle();
-  
+    .maybeSingle()
+
   if (error) {
-    console.error('Error fetching complete profile:', error);
-    throw error;
+    console.error('Error fetching complete profile:', error)
+    throw error
   }
-  
-  return data;
+
+  return data
 }
 
-export async function updateProfile(userId: string, payload: Partial<{ display_name: string; avatar_url: string; is_onboarded: boolean; linkedin_url: string; instagram_url: string; }>) {
+export async function updateProfile(
+  userId: string,
+  payload: Partial<{
+    display_name: string
+    avatar_url: string
+    is_onboarded: boolean
+    linkedin_url: string
+    instagram_url: string
+  }>,
+) {
   const { data, error } = await supabase
     .from('profiles')
     .update(payload)
     .eq('user_id', userId)
     .select()
-    .maybeSingle();
-  if (error) throw error;
-  return data;
+    .maybeSingle()
+  if (error) throw error
+  return data
 }
 
 export async function upsertProfile(
-  userId: string, 
-  payload: Partial<{ 
-    email: string;
-    username: string;
-    description: string;
-    display_name: string; 
-    avatar_url: string; 
-    is_onboarded: boolean; 
-    role: string | null;
-
-  }>
+  userId: string,
+  payload: Partial<{
+    email: string
+    username: string
+    description: string
+    display_name: string
+    avatar_url: string
+    is_onboarded: boolean
+    role: string | null
+  }>,
 ) {
   const { data, error } = await supabase
     .from('profiles')
     .upsert({ user_id: userId, ...payload }, { onConflict: 'user_id' })
     .select()
-    .single();
-  if (error) throw error;
-  return data;
+    .single()
+  if (error) throw error
+  return data
 }
-
-
 
 /**
  * Get user's first institution_id from user_institutions table
@@ -237,18 +241,18 @@ export async function getUserInstitutionId(userId: string): Promise<string | nul
     .select('institution_id')
     .eq('user_id', userId)
     .limit(1)
-    .maybeSingle();
-  
+    .maybeSingle()
+
   if (error) {
     // If no rows found, that's okay - user might not have an institution yet
     if (error.code === 'PGRST116') {
-      return null;
+      return null
     }
-    console.error('Error fetching user institution:', error);
-    return null;
+    console.error('Error fetching user institution:', error)
+    return null
   }
-  
-  return data?.institution_id || null;
+
+  return data?.institution_id || null
 }
 
 /**
@@ -256,11 +260,11 @@ export async function getUserInstitutionId(userId: string): Promise<string | nul
  */
 export async function createCourse(
   teacherId: string,
-  { title, description }: { title: string; description: string }
+  { title, description }: { title: string; description: string },
 ) {
   // Get teacher's institution_id
-  const institutionId = await getUserInstitutionId(teacherId);
-  
+  const institutionId = await getUserInstitutionId(teacherId)
+
   const { data, error } = await supabase
     .from('courses')
     .insert({
@@ -271,14 +275,14 @@ export async function createCourse(
       is_published: false,
     })
     .select()
-    .single();
-  
+    .single()
+
   if (error) {
-    console.error('Error creating course:', error);
-    throw error;
+    console.error('Error creating course:', error)
+    throw error
   }
-  
-  return data;
+
+  return data
 }
 
 /**
@@ -289,32 +293,28 @@ export async function getTeacherCourses(teacherId: string) {
     .from('courses')
     .select('*')
     .eq('teacher_id', teacherId)
-    .order('created_at', { ascending: false });
-  
+    .order('created_at', { ascending: false })
+
   if (error) {
-    console.error('Error fetching courses:', error);
-    throw error;
+    console.error('Error fetching courses:', error)
+    throw error
   }
-  
-  return data || [];
+
+  return data || []
 }
 
 /**
  * Get a single course by ID
  */
 export async function getCourseById(courseId: string) {
-  const { data, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('id', courseId)
-    .single();
-  
+  const { data, error } = await supabase.from('courses').select('*').eq('id', courseId).single()
+
   if (error) {
-    console.error('Error fetching course:', error);
-    throw error;
+    console.error('Error fetching course:', error)
+    throw error
   }
-  
-  return data;
+
+  return data
 }
 
 /**
@@ -322,42 +322,45 @@ export async function getCourseById(courseId: string) {
  */
 export async function updateCourse(
   courseId: string,
-  updates: { title?: string; description?: string; is_published?: boolean }
+  updates: { title?: string; description?: string; is_published?: boolean },
 ) {
   const { data, error } = await supabase
     .from('courses')
     .update(updates)
     .eq('id', courseId)
     .select()
-    .single();
-  
+    .single()
+
   if (error) {
-    console.error('Error updating course:', error);
-    throw error;
+    console.error('Error updating course:', error)
+    throw error
   }
-  
-  return data;
+
+  return data
 }
 
 /**
  * Delete a course
  */
 export async function deleteCourse(courseId: string) {
-  const { error } = await supabase
-    .from('courses')
-    .delete()
-    .eq('id', courseId);
-  
+  const { error } = await supabase.from('courses').delete().eq('id', courseId)
+
   if (error) {
-    console.error('Error deleting course:', error);
-    throw error;
+    console.error('Error deleting course:', error)
+    throw error
   }
 }
 
 // Dummy create function for institution (keep for now)
-export const createInstitution = async ({ title, description }: { title: string; description: string }) => {
+export const createInstitution = async ({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) => {
   // Replace with actual institution creation logic/API call
-  console.log("Creating Institution", { title, description });
+  console.log('Creating Institution', { title, description })
   // Simulate API delay
-  return Promise.resolve({ ok: true, id: Math.random().toString(36).substring(2) });
-};
+  return Promise.resolve({ ok: true, id: Math.random().toString(36).substring(2) })
+}

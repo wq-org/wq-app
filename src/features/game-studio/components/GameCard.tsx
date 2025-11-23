@@ -1,6 +1,6 @@
-import { Card } from '@/components/ui/card';
-import { ArrowRight, Coffee, CheckCircle, Flag } from 'lucide-react';
-import type { GameCardProps } from '../types/game-studio.types';
+import { Card } from '@/components/ui/card'
+import { ArrowRight, Coffee, CheckCircle, Flag } from 'lucide-react'
+import type { GameCardProps } from '../types/game-studio.types'
 
 export default function GameCard({
   id: _id,
@@ -11,9 +11,7 @@ export default function GameCard({
   onPlay,
 }: GameCardProps) {
   return (
-    <Card 
-      className="max-w-md rounded-4xl w-full p-8 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow"
-    >
+    <Card className="max-w-md rounded-4xl w-full p-8 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow">
       {/* Avatar Group */}
       <div className="relative h-40 mb-8">
         {/* Top Left - Avatar with coffee icon */}
@@ -55,8 +53,8 @@ export default function GameCard({
         </p>
         <button
           onClick={(e) => {
-            e.stopPropagation();
-            onPlay?.();
+            e.stopPropagation()
+            onPlay?.()
           }}
           className="inline-flex items-center gap-1 text-blue-500 hover:opacity-80 font-medium text-sm transition-opacity"
         >
@@ -65,5 +63,5 @@ export default function GameCard({
         </button>
       </div>
     </Card>
-  );
+  )
 }

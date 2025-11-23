@@ -1,22 +1,22 @@
 {
-    "mcpServers": {
-      "shadcn": {
-        "command": "npx",
-        "args": ["shadcn@latest", "mcp"]
-      },
-      "supabase": {
-        "url": "https://mcp.supabase.com/mcp"
-      },
-      "vercelmaps": {
-        "url": "https://mcp.vercel.com"
-      },
-      "github": {
-        "type": "http",
-        "url": "https://api.githubcopilot.com/mcp/"
-      },
-      "notion": {
-        "type": "sse",
-        "url": "https://api.notion.com/mcp/sse"
-      }
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    },
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp"
+    },
+    "vercelmaps": {
+      "url": "https://mcp.vercel.com"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "notion": {
+      "type": "sse",
+      "url": "https://api.notion.com/mcp/sse"
     }
   }
+}

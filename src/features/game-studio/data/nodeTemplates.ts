@@ -1,4 +1,3 @@
 export default function nodeTemplates(): any {
-  return [] as const;
+  return [] as const
 }
-

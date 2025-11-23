@@ -1,6 +1,6 @@
-import { Handle, Position } from '@xyflow/react';
-import { MapPin } from 'lucide-react';
-import type { GameImagePinNodeProps } from '../types/game-studio.types';
+import { Handle, Position } from '@xyflow/react'
+import { MapPin } from 'lucide-react'
+import type { GameImagePinNodeProps } from '../types/game-studio.types'
 
 export default function GameImagePinNode({ data, selected }: GameImagePinNodeProps) {
   return (
@@ -18,9 +18,7 @@ export default function GameImagePinNode({ data, selected }: GameImagePinNodePro
       <div className="p-2 rounded-lg border border-purple-500/20 bg-purple-500/10 flex items-center justify-center">
         <MapPin className="w-4 h-4 text-purple-500" />
       </div>
-      <span className="text-gray-900 font-medium">
-        {data?.label || 'Image and Pin'}
-      </span>
+      <span className="text-gray-900 font-medium">{data?.label || 'Image and Pin'}</span>
       <Handle
         type="source"
         position={Position.Right}
@@ -29,6 +27,5 @@ export default function GameImagePinNode({ data, selected }: GameImagePinNodePro
         onClick={(e) => e.stopPropagation()}
       />
     </div>
-  );
+  )
 }
-

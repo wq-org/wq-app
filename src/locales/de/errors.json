@@ -1,13 +1,13 @@
 {
-    "required": "This field is required",
-    "invalidEmail": "Please enter a valid email address",
-    "invalidPassword": "Incorrect password",
-    "passwordMin": "Password must be at least {{min}} characters long",
-    "passwordsDoNotMatch": "Passwords do not match",
-    "userNotFound": "No user found with this email",
-    "network": "Network error. Please try again.",
-    "unknown": "An unexpected error occurred",
-    "unauthorized": "You do not have permission to perform this action.",
-    "forbidden": "You are not authorized to access this page.",
-    "404": "Page not found"
+  "required": "This field is required",
+  "invalidEmail": "Please enter a valid email address",
+  "invalidPassword": "Incorrect password",
+  "passwordMin": "Password must be at least {{min}} characters long",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "userNotFound": "No user found with this email",
+  "network": "Network error. Please try again.",
+  "unknown": "An unexpected error occurred",
+  "unauthorized": "You do not have permission to perform this action.",
+  "forbidden": "You are not authorized to access this page.",
+  "404": "Page not found"
 }

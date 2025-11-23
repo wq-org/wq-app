@@ -1,41 +1,34 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import {
-    Field,
-    FieldDescription,
-    FieldGroup,
-    FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 export default function ResetPasswordPage() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get('token')
 
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const isFormValid =
-    newPassword.trim() !== '' &&
-    confirmPassword.trim() !== '' &&
-    newPassword === confirmPassword;
+    newPassword.trim() !== '' && confirmPassword.trim() !== '' && newPassword === confirmPassword
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     try {
       // TODO: Implement reset password API call
-      console.log('Reset password with token:', token);
-      navigate('/auth/login');
+      console.log('Reset password with token:', token)
+      navigate('/auth/login')
     } catch (error) {
-      console.error('Reset password error:', error);
+      console.error('Reset password error:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
@@ -47,12 +40,10 @@ export default function ResetPasswordPage() {
           <p className="text-muted-foreground mb-4">
             This password reset link is invalid or has expired.
           </p>
-          <Button onClick={() => navigate('/auth/forgot-password')}>
-            Request New Link
-          </Button>
+          <Button onClick={() => navigate('/auth/forgot-password')}>Request New Link</Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -83,9 +74,7 @@ export default function ResetPasswordPage() {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="confirm-password">
-                Confirm Password
-              </FieldLabel>
+              <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
               <Input
                 id="confirm-password"
                 type="password"
@@ -102,7 +91,10 @@ export default function ResetPasswordPage() {
             </Field>
 
             <Field>
-              <Button type="submit" disabled={!isFormValid || isLoading}>
+              <Button
+                type="submit"
+                disabled={!isFormValid || isLoading}
+              >
                 {isLoading ? 'Resetting...' : 'Reset Password'}
               </Button>
             </Field>
@@ -110,6 +102,5 @@ export default function ResetPasswordPage() {
         </div>
       </form>
     </div>
-  );
+  )
 }
-

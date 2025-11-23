@@ -1,5 +1,5 @@
 const CommandUploadForm = () => {
-    return <div></div>;
-};
+  return <div></div>
+}
 
-export default CommandUploadForm;
+export default CommandUploadForm

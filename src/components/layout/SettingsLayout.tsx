@@ -1,29 +1,29 @@
-import { useState, useEffect } from 'react';
-import Container from '../common/Container';
-import Navigation from '../common/Navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
-import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants';
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
-import type { Profile } from '@/contexts/user';
-import Spinner from '../ui/spinner';
-import AvatarDrawer from './AvatarDrawer';
+import { useState, useEffect } from 'react'
+import Container from '../common/Container'
+import Navigation from '../common/Navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '../ui/input'
+import { Textarea } from '../ui/textarea'
+import { Label } from '../ui/label'
+import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import type { Profile } from '@/contexts/user'
+import Spinner from '../ui/spinner'
+import AvatarDrawer from './AvatarDrawer'
 
 interface SettingsLayoutProps {
-  children?: React.ReactNode;
-  profile?: Profile | null;
-  loading?: boolean;
-  onNameChange?: (value: string) => void;
-  onLinkedInChange?: (value: string) => void;
-  onAboutMeChange?: (value: string) => void;
-  onSave?: () => void;
-  hasChanges?: boolean;
-  linkedInError?: string | null;
-  avatarOptions?: Array<{ name: string; src: string; emoji: string }>;
-  onAvatarSelect?: (avatarPath: string) => void;
-  linkedInValue?: string;
+  children?: React.ReactNode
+  profile?: Profile | null
+  loading?: boolean
+  onNameChange?: (value: string) => void
+  onLinkedInChange?: (value: string) => void
+  onAboutMeChange?: (value: string) => void
+  onSave?: () => void
+  hasChanges?: boolean
+  linkedInError?: string | null
+  avatarOptions?: Array<{ name: string; src: string; emoji: string }>
+  onAvatarSelect?: (avatarPath: string) => void
+  linkedInValue?: string
 }
 
 export default function SettingsLayout({
@@ -40,56 +40,60 @@ export default function SettingsLayout({
   onAvatarSelect,
   linkedInValue = '',
 }: SettingsLayoutProps) {
-  const [name, setName] = useState(profile?.display_name || '');
-  const [linkedIn, setLinkedIn] = useState(linkedInValue);
-  const [aboutMe, setAboutMe] = useState(profile?.description || '');
+  const [name, setName] = useState(profile?.display_name || '')
+  const [linkedIn, setLinkedIn] = useState(linkedInValue)
+  const [aboutMe, setAboutMe] = useState(profile?.description || '')
 
-  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '');
-  const avatarSrc = signedAvatarUrl || profile?.avatar_url || AVATAR_PLACEHOLDER_SRC;
-  const displayNameInitial = profile?.display_name?.charAt(0).toUpperCase() || 'A';
+  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const avatarSrc = signedAvatarUrl || profile?.avatar_url || AVATAR_PLACEHOLDER_SRC
+  const displayNameInitial = profile?.display_name?.charAt(0).toUpperCase() || 'A'
 
   // Update local state when profile changes
   useEffect(() => {
-    setName(profile?.display_name || '');
-    setLinkedIn(linkedInValue);
-    setAboutMe(profile?.description || '');
-  }, [profile, linkedInValue]);
+    setName(profile?.display_name || '')
+    setLinkedIn(linkedInValue)
+    setAboutMe(profile?.description || '')
+  }, [profile, linkedInValue])
 
   const handleNameChange = (value: string) => {
-    setName(value);
-    onNameChange?.(value);
-  };
+    setName(value)
+    onNameChange?.(value)
+  }
 
   const handleLinkedInChange = (value: string) => {
-    setLinkedIn(value);
-    onLinkedInChange?.(value);
-  };
+    setLinkedIn(value)
+    onLinkedInChange?.(value)
+  }
 
   const handleAboutMeChange = (value: string) => {
-    setAboutMe(value);
-    onAboutMeChange?.(value);
-  };
+    setAboutMe(value)
+    onAboutMeChange?.(value)
+  }
 
   const handleAvatarSelect = (avatarPath: string) => {
-    onAvatarSelect?.(avatarPath);
-  };
+    onAvatarSelect?.(avatarPath)
+  }
 
   const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (hasChanges && onSave) {
-      onSave();
+      onSave()
     }
-  };
+  }
 
   if (loading) {
     return (
       <>
         <Navigation />
         <div className="w-screen h-screen flex items-center justify-center">
-          <Spinner variant="gray" size="xl" speed={1750} />
+          <Spinner
+            variant="gray"
+            size="xl"
+            speed={1750}
+          />
         </div>
       </>
-    );
+    )
   }
 
   return (
@@ -107,7 +111,10 @@ export default function SettingsLayout({
                 onAvatarSelect={handleAvatarSelect}
               />
             </div>
-            <form onSubmit={handleSave} className="flex flex-col gap-4 w-[400px]">
+            <form
+              onSubmit={handleSave}
+              className="flex flex-col gap-4 w-[400px]"
+            >
               <div className="w-full flex flex-col gap-3">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -148,9 +155,7 @@ export default function SettingsLayout({
                   onChange={(e) => handleLinkedInChange(e.target.value)}
                   className={linkedInError ? 'border-red-500' : ''}
                 />
-                {linkedInError && (
-                  <p className="text-sm text-red-500">{linkedInError}</p>
-                )}
+                {linkedInError && <p className="text-sm text-red-500">{linkedInError}</p>}
               </div>
               <div className="w-full flex flex-col gap-3">
                 <Label htmlFor="description">About me</Label>
@@ -177,5 +182,5 @@ export default function SettingsLayout({
         {children}
       </div>
     </>
-  );
+  )
 }

@@ -7,12 +7,7 @@ type Props = {
   className?: string
 }
 
-export function QuoteOfTheDay({
-  quote,
-  author,
-  source,
-  className,
-}: Props) {
+export function QuoteOfTheDay({ quote, author, source, className }: Props) {
   return (
     <aside
       aria-label="Quote of the day"
@@ -27,7 +22,8 @@ export function QuoteOfTheDay({
           </p>
           {(author || source) && (
             <p className="text-gray-400 text-base font-light font-eb-garamond">
-              {author ? `— ${author}` : ''}{source ? (author ? `, ${source}` : source) : ''}
+              {author ? `— ${author}` : ''}
+              {source ? (author ? `, ${source}` : source) : ''}
             </p>
           )}
         </div>

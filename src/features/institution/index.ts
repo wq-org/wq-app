@@ -1,8 +1,8 @@
 // Components
-export { default as InstitutionProfileView } from './components/InstitutionProfileView';
+export { default as InstitutionProfileView } from './components/InstitutionProfileView'
 
 // Pages
-export { default as Institution } from './pages/institution';
+export { default as Institution } from './pages/institution'
 
 // Types
 // Add types when available
@@ -12,4 +12,3 @@ export { default as Institution } from './pages/institution';
 
 // Hooks
 // Add hooks exports when available
-

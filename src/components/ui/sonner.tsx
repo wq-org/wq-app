@@ -4,8 +4,8 @@ import {
   Loader2Icon,
   OctagonXIcon,
   TriangleAlertIcon,
-} from "lucide-react"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+} from 'lucide-react'
+import { Toaster as Sonner, type ToasterProps } from 'sonner'
 
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
@@ -21,16 +21,16 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       toastOptions={{
         classNames: {
-          toast: "bg-black text-white border-0 backdrop-blur-md", // <--- toast still blurred
-          title: "text-white",
-          description: "text-white/80",
-          actionButton: "hidden",
-          cancelButton: "hidden",
+          toast: 'bg-black text-white border-0 backdrop-blur-md', // <--- toast still blurred
+          title: 'text-white',
+          description: 'text-white/80',
+          actionButton: 'hidden',
+          cancelButton: 'hidden',
         },
         style: {
-          background: "#000000",
-          color: "#ffffff",
-          border: "none",
+          background: '#000000',
+          color: '#ffffff',
+          border: 'none',
         },
       }}
       {...props}

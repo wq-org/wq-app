@@ -1,70 +1,80 @@
 // src/features/command-palette/types/command-bar.types.ts
-import type { ComponentType } from 'react';
+import type { ComponentType } from 'react'
 
 /**
  * Known imperative actions triggered from the command bar.
  * Extend this union when new actions are introduced.
  */
-export type ActionId = 'search' | 'upload' | 'feedback' | 'backwards' | 'forwards' | 'add' | 'pan' | 'select' | 'undo' | 'redo';
+export type ActionId =
+  | 'search'
+  | 'upload'
+  | 'feedback'
+  | 'backwards'
+  | 'forwards'
+  | 'add'
+  | 'pan'
+  | 'select'
+  | 'undo'
+  | 'redo'
 
 /**
  * Single clickable element in the command bar.
  * Provide either `to` (navigation) or `actionId` (imperative), not both.
  */
 export type CommandBarItem = {
-    /** Stable programmatic id for the item. */
-    id: string;
-    /** i18n key used for the label, e.g., 'common.navigation.home'. */
-    labelKey: string;
-    /** Icon component (e.g., from lucide-react). */
-    icon: ComponentType<{ className?: string }>;
-    /** Route to navigate to when clicked. */
-    to?: string;
-    /** Imperative action identifier to execute when clicked. */
-    actionId?: ActionId;
-};
+  /** Stable programmatic id for the item. */
+  id: string
+  /** i18n key used for the label, e.g., 'common.navigation.home'. */
+  labelKey: string
+  /** Icon component (e.g., from lucide-react). */
+  icon: ComponentType<{ className?: string }>
+  /** Route to navigate to when clicked. */
+  to?: string
+  /** Imperative action identifier to execute when clicked. */
+  actionId?: ActionId
+}
 
 /**
  * Logical grouping of items in the bar.
  * Typical ids include a role group (e.g., 'teacher' | 'student'), 'general', and 'system'.
  */
 export type CommandBarGroup = {
-    id: string;
-    items: CommandBarItem[];
-};
+  id: string
+  items: CommandBarItem[]
+}
 
 export interface CommandPaletteProps {
-    children?: React.ReactNode;
-    role: string;
-    type?: string;
-    className?: string;
-    onCourseCreated?: () => void;
-    onFilesUploaded?: () => void;
+  children?: React.ReactNode
+  role: string
+  type?: string
+  className?: string
+  onCourseCreated?: () => void
+  onFilesUploaded?: () => void
 }
 
 export interface Game {
-    id: string;
-    title: string;
-    description: string;
-    teacher_id: string;
-    institution_id: string;
-    created_at: string;
-    updated_at: string;
+  id: string
+  title: string
+  description: string
+  teacher_id: string
+  institution_id: string
+  created_at: string
+  updated_at: string
 }
 
 export interface CreateGameData {
-    title: string;
-    description: string;
-    teacher_id: string;
-    institution_id?: string;
+  title: string
+  description: string
+  teacher_id: string
+  institution_id?: string
 }
 
 export interface UpdateGameData {
-    title?: string;
-    description?: string;
+  title?: string
+  description?: string
 }
 
 /**
  * Types of items that can be added via CommandAddDialog
  */
-export type AddType = "course" | "institution" | "game" | "node" | "notes";
+export type AddType = 'course' | 'institution' | 'game' | 'node' | 'notes'

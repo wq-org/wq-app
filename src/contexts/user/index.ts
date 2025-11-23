@@ -1,4 +1,3 @@
-export { UserContext, useUser } from './UserContext';
-export { UserProvider } from './UserProvider';
-export type { Profile, UserContextValue } from './UserContext';
-
+export { UserContext, useUser } from './UserContext'
+export { UserProvider } from './UserProvider'
+export type { Profile, UserContextValue } from './UserContext'

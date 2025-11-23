@@ -3,7 +3,5 @@ export default function GameStudioHeader() {
     <div>
       <h1>Game Studio Header</h1>
     </div>
-  );
+  )
 }
-
-

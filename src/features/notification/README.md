@@ -5,30 +5,33 @@ A complete notification system with panel, badge, and item components built with
 ## Components
 
 ### NotificationPanel
+
 Main notification panel with tabs (All, Following, Archive) and notification list.
 
 ```tsx
-import { NotificationPanel } from '@/features/notification';
+import { NotificationPanel } from '@/features/notification'
 
-<NotificationPanel />
+;<NotificationPanel />
 ```
 
 ### NotificationBadge
+
 Bell icon with notification count badge and popover.
 
 ```tsx
-import { NotificationBadge } from '@/features/notification';
+import { NotificationBadge } from '@/features/notification'
 
-<NotificationBadge count={8} />
+;<NotificationBadge count={8} />
 ```
 
 ### NotificationItem
+
 Individual notification item with avatar, message, timestamp, and optional actions.
 
 ```tsx
-import { NotificationItem } from '@/features/notification';
+import { NotificationItem } from '@/features/notification'
 
-<NotificationItem notification={notification} />
+;<NotificationItem notification={notification} />
 ```
 
 ## Features
@@ -45,20 +48,20 @@ import { NotificationItem } from '@/features/notification';
 ## Notification Types
 
 ```typescript
-type NotificationType = 'join' | 'mention' | 'request' | 'upload' | 'edit' | 'general';
+type NotificationType = 'join' | 'mention' | 'request' | 'upload' | 'edit' | 'general'
 ```
 
 ## Usage Example
 
 ```tsx
-import { NotificationBadge } from '@/features/notification';
+import { NotificationBadge } from '@/features/notification'
 
 export default function Navigation() {
-    return (
-        <nav>
-            <NotificationBadge count={8} />
-        </nav>
-    );
+  return (
+    <nav>
+      <NotificationBadge count={8} />
+    </nav>
+  )
 }
 ```
 

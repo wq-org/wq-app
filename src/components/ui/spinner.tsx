@@ -1,35 +1,32 @@
-import { cn } from '@/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-const spinnerVariants = cva(
-  'origin-center overflow-visible will-change-transform',
-  {
-    variants: {
-      variant: {
-        gray: '[--uib-color:theme(colors.gray.800)]',
-        light: '[--uib-color:theme(colors.gray.200)]',
-        white: '[--uib-color:theme(colors.white)]',
-        black: '[--uib-color:theme(colors.black)]',
-      },
-      size: {
-        sm: 'h-6 w-6 [--uib-size:24px] [--stroke-width:2px]',
-        md: 'h-10 w-10 [--uib-size:40px] [--stroke-width:3px]',
-        lg: 'h-16 w-16 [--uib-size:64px] [--stroke-width:4px]',
-        xl: 'h-24 w-24 [--uib-size:96px] [--stroke-width:5px]',
-      },
+const spinnerVariants = cva('origin-center overflow-visible will-change-transform', {
+  variants: {
+    variant: {
+      gray: '[--uib-color:theme(colors.gray.800)]',
+      light: '[--uib-color:theme(colors.gray.200)]',
+      white: '[--uib-color:theme(colors.white)]',
+      black: '[--uib-color:theme(colors.black)]',
     },
-    defaultVariants: {
-      variant: 'gray',
-      size: 'md',
+    size: {
+      sm: 'h-6 w-6 [--uib-size:24px] [--stroke-width:2px]',
+      md: 'h-10 w-10 [--uib-size:40px] [--stroke-width:3px]',
+      lg: 'h-16 w-16 [--uib-size:64px] [--stroke-width:4px]',
+      xl: 'h-24 w-24 [--uib-size:96px] [--stroke-width:5px]',
     },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'gray',
+    size: 'md',
+  },
+})
 
 export interface SpinnerProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof spinnerVariants> {
   /** Animation speed in milliseconds (default: 2000ms = 2s) */
-  speed?: number;
+  speed?: number
 }
 
 /**
@@ -45,12 +42,12 @@ export default function Spinner({
   speed = 2000,
   ...props
 }: SpinnerProps) {
-  const sizeValue = size === 'sm' ? 24 : size === 'lg' ? 64 : size === 'xl' ? 96 : 40;
-  const strokeWidth = size === 'sm' ? 2 : size === 'lg' ? 4 : size === 'xl' ? 5 : 3;
-  const radius = (sizeValue - strokeWidth) / 2;
-  const center = sizeValue / 2;
+  const sizeValue = size === 'sm' ? 24 : size === 'lg' ? 64 : size === 'xl' ? 96 : 40
+  const strokeWidth = size === 'sm' ? 2 : size === 'lg' ? 4 : size === 'xl' ? 5 : 3
+  const radius = (sizeValue - strokeWidth) / 2
+  const center = sizeValue / 2
   // Convert milliseconds to seconds for CSS animation
-  const speedInSeconds = speed / 1000;
+  const speedInSeconds = speed / 1000
 
   return (
     <>
@@ -133,5 +130,5 @@ export default function Spinner({
         </svg>
       </div>
     </>
-  );
+  )
 }

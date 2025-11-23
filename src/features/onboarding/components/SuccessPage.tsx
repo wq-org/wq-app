@@ -1,21 +1,21 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import confetti from 'canvas-confetti';
-import { Button } from '@/components/ui/button';
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import confetti from 'canvas-confetti'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useUser } from '@/contexts/user';
+} from '@/components/ui/dialog'
+import { useUser } from '@/contexts/user'
 
 interface SuccessPageProps {
-  isOpen: boolean;
-  title?: string;
-  description?: string;
-  onClickHandler?: () => void;
+  isOpen: boolean
+  title?: string
+  description?: string
+  onClickHandler?: () => void
 }
 
 export default function SuccessPage({
@@ -24,8 +24,8 @@ export default function SuccessPage({
   description = 'Your account has been set up successfully. You are now ready to start your journey with us.',
   onClickHandler,
 }: SuccessPageProps) {
-  const navigate = useNavigate();
-  const { profile, pendingRole } = useUser();
+  const navigate = useNavigate()
+  const { profile, pendingRole } = useUser()
 
   // Trigger confetti on open
   useEffect(() => {
@@ -34,28 +34,34 @@ export default function SuccessPage({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-      });
+      })
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   const handleDone = () => {
     // Navigate to role-specific dashboard
     // Use profile.role first (from refreshed profile), then fallback to pendingRole
-    const role = profile?.role || pendingRole;
-    
+    const role = profile?.role || pendingRole
+
     if (role) {
-      navigate(`/${role}/dashboard`);
+      navigate(`/${role}/dashboard`)
     } else if (onClickHandler) {
       // Fallback to onClickHandler if no role is available
-      onClickHandler();
+      onClickHandler()
     } else {
-      navigate('/');
+      navigate('/')
     }
-  };
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md text-center" showCloseButton={false}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {}}
+    >
+      <DialogContent
+        className="sm:max-w-md text-center"
+        showCloseButton={false}
+      >
         {/* Party Emoji */}
         <div className="flex justify-center py-4">
           <span className="text-6xl animate-bounce">🎉</span>
@@ -63,9 +69,7 @@ export default function SuccessPage({
 
         <DialogHeader>
           <DialogTitle className="text-2xl font-light">{title}</DialogTitle>
-          <DialogDescription className="text-base mt-2">
-            {description}
-          </DialogDescription>
+          <DialogDescription className="text-base mt-2">{description}</DialogDescription>
         </DialogHeader>
 
         {/* Done Button */}
@@ -82,6 +86,5 @@ export default function SuccessPage({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
-

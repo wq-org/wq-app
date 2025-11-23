@@ -1,75 +1,77 @@
-import { useState, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Spinner from '@/components/ui/spinner';
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl';
-import { fetchAvatars } from '../api/onboardingApi';
-import type { StepAccountProps, AvatarOption } from '../types/onboarding.types';
-import { validateUsername } from '@/lib/validations';
+import { useState, useEffect } from 'react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Spinner from '@/components/ui/spinner'
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { fetchAvatars } from '../api/onboardingApi'
+import type { StepAccountProps, AvatarOption } from '../types/onboarding.types'
+import { validateUsername } from '@/lib/validations'
 
 export default function StepAccount({ onNext, initialData }: StepAccountProps) {
-  const [username, setUsername] = useState(initialData?.username || '');
-  const [displayName, setDisplayName] = useState(initialData?.displayName || '');
-  const [description, setDescription] = useState(initialData?.description || '');
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(initialData?.avatarIndex || 0);
-  const [avatars, setAvatars] = useState<AvatarOption[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [usernameError, setUsernameError] = useState<string | null>(null);
-  
+  const [username, setUsername] = useState(initialData?.username || '')
+  const [displayName, setDisplayName] = useState(initialData?.displayName || '')
+  const [description, setDescription] = useState(initialData?.description || '')
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(initialData?.avatarIndex || 0)
+  const [avatars, setAvatars] = useState<AvatarOption[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [usernameError, setUsernameError] = useState<string | null>(null)
+
   // Calculate safe avatar index and get signed URL
   // Must be at the top level, before any conditional returns
-  const safeAvatarIndex = Math.min(selectedAvatarIndex, avatars.length - 1);
-  const selectedAvatar = avatars[safeAvatarIndex];
-  const { url: signedAvatarUrl } = useAvatarUrl(selectedAvatar?.src);
+  const safeAvatarIndex = Math.min(selectedAvatarIndex, avatars.length - 1)
+  const selectedAvatar = avatars[safeAvatarIndex]
+  const { url: signedAvatarUrl } = useAvatarUrl(selectedAvatar?.src)
 
   // Fetch avatars from API
   useEffect(() => {
     async function loadAvatars() {
       try {
-        const fetchedAvatars = await fetchAvatars();
-        setAvatars(fetchedAvatars);
+        const fetchedAvatars = await fetchAvatars()
+        setAvatars(fetchedAvatars)
       } catch (error) {
-        console.error('Error loading avatars:', error);
-        setAvatars([
-          { name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' },
-        ]);
+        console.error('Error loading avatars:', error)
+        setAvatars([{ name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' }])
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
 
-    loadAvatars();
-  }, []);
+    loadAvatars()
+  }, [])
 
   const handlePreviousAvatar = () => {
-    setSelectedAvatarIndex((prev) => (prev === 0 ? avatars.length - 1 : prev - 1));
-  };
+    setSelectedAvatarIndex((prev) => (prev === 0 ? avatars.length - 1 : prev - 1))
+  }
 
   const handleNextAvatar = () => {
-    setSelectedAvatarIndex((prev) => (prev === avatars.length - 1 ? 0 : prev + 1));
-  };
+    setSelectedAvatarIndex((prev) => (prev === avatars.length - 1 ? 0 : prev + 1))
+  }
 
-  const remainingChars = 120 - description.length;
+  const remainingChars = 120 - description.length
 
   const handleUsernameChange = (value: string) => {
-    const lowerValue = value.toLowerCase();
-    setUsername(lowerValue);
+    const lowerValue = value.toLowerCase()
+    setUsername(lowerValue)
     if (lowerValue.trim() && !validateUsername(lowerValue)) {
-      setUsernameError('Username must be 3-20 characters and contain only letters, numbers, and underscores');
+      setUsernameError(
+        'Username must be 3-20 characters and contain only letters, numbers, and underscores',
+      )
     } else {
-      setUsernameError(null);
+      setUsernameError(null)
     }
-  };
+  }
 
   const handleContinue = () => {
     // Validate before continuing
     if (!validateUsername(username)) {
-      setUsernameError('Username must be 3-20 characters and contain only letters, numbers, and underscores');
-      return;
+      setUsernameError(
+        'Username must be 3-20 characters and contain only letters, numbers, and underscores',
+      )
+      return
     }
 
     onNext({
@@ -77,20 +79,22 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       displayName,
       description,
       avatar: avatars[selectedAvatarIndex],
-    });
-  };
+    })
+  }
 
-  const isFormValid = 
-    validateUsername(username) && 
-    displayName.trim() !== '' && 
-    description.trim() !== '';
+  const isFormValid =
+    validateUsername(username) && displayName.trim() !== '' && description.trim() !== ''
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner variant="light" size="xl" speed={1750} />
+        <Spinner
+          variant="light"
+          size="xl"
+          speed={1750}
+        />
       </div>
-    );
+    )
   }
 
   // Check if avatars array is empty after loading
@@ -102,7 +106,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
           Please check your Supabase storage bucket: avatars/meta_data/ and avatars/faces/
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -130,16 +134,12 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
                 alt={selectedAvatar.name}
                 className="object-cover"
               />
-              <AvatarFallback>
-                {selectedAvatar.name.charAt(0)}
-              </AvatarFallback>
+              <AvatarFallback>{selectedAvatar.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{selectedAvatar.emoji}</span>
-                <span className="text-sm font-medium text-foreground">
-                  {selectedAvatar.name}
-                </span>
+                <span className="text-sm font-medium text-foreground">{selectedAvatar.name}</span>
               </div>
               {selectedAvatar.description && (
                 <p className="text-xs text-muted-foreground text-center max-w-xs">
@@ -168,9 +168,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
               type="button"
               onClick={() => setSelectedAvatarIndex(index)}
               className={`transition-all duration-200 ${
-                index === selectedAvatarIndex
-                  ? 'text-2xl'
-                  : 'text-lg opacity-40 hover:opacity-70'
+                index === selectedAvatarIndex ? 'text-2xl' : 'text-lg opacity-40 hover:opacity-70'
               }`}
             >
               {avatar.emoji}
@@ -182,7 +180,10 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       {/* Form Fields */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="username" className="font-light">
+          <Label
+            htmlFor="username"
+            className="font-light"
+          >
             Username
           </Label>
           <Input
@@ -193,13 +194,14 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             onChange={(e) => handleUsernameChange(e.target.value)}
             className={`text-base ${usernameError ? 'border-red-500' : ''}`}
           />
-          {usernameError && (
-            <p className="text-sm text-red-500">{usernameError}</p>
-          )}
+          {usernameError && <p className="text-sm text-red-500">{usernameError}</p>}
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="displayName" className="font-light">
+          <Label
+            htmlFor="displayName"
+            className="font-light"
+          >
             Display Name
           </Label>
           <Input
@@ -213,7 +215,10 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="description" className="font-light">
+          <Label
+            htmlFor="description"
+            className="font-light"
+          >
             Description
           </Label>
           <Textarea
@@ -222,7 +227,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             value={description}
             onChange={(e) => {
               if (e.target.value.length <= 120) {
-                setDescription(e.target.value);
+                setDescription(e.target.value)
               }
             }}
             maxLength={120}
@@ -251,6 +256,5 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
         </Button>
       </div>
     </div>
-  );
+  )
 }
-

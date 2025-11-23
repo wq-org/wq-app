@@ -1,5 +1,5 @@
 const CommandShortcut = () => {
-    return <div></div>;
-};
+  return <div></div>
+}
 
-export default CommandShortcut;
+export default CommandShortcut

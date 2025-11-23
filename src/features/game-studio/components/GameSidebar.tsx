@@ -1,15 +1,8 @@
-import { useState } from 'react';
-import {
-  Search,
-  Square,
-  StickyNote,
-  Image as ImageIcon,
-  MapPin,
-  GitBranch,
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import type { SidebarItem } from '../types/game-studio.types';
+import { useState } from 'react'
+import { Search, Square, StickyNote, Image as ImageIcon, MapPin, GitBranch } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+import type { SidebarItem } from '../types/game-studio.types'
 
 const nodeItems: SidebarItem[] = [
   {
@@ -40,7 +33,7 @@ const nodeItems: SidebarItem[] = [
     category: 'node',
     nodeType: 'gameImagePin',
   },
-];
+]
 
 const logicItems: SidebarItem[] = [
   {
@@ -50,27 +43,30 @@ const logicItems: SidebarItem[] = [
     category: 'logic',
     nodeType: 'gameIfElse',
   },
-];
+]
 
 export default function GameSidebar() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('')
 
   const onDragStart = (event: React.DragEvent, item: SidebarItem) => {
-    event.dataTransfer.setData('application/reactflow', JSON.stringify({
-      type: item.nodeType,
-      label: item.label,
-      nodeId: item.id,
-    }));
-    event.dataTransfer.effectAllowed = 'move';
-  };
+    event.dataTransfer.setData(
+      'application/reactflow',
+      JSON.stringify({
+        type: item.nodeType,
+        label: item.label,
+        nodeId: item.id,
+      }),
+    )
+    event.dataTransfer.effectAllowed = 'move'
+  }
 
   const filteredNodeItems = nodeItems.filter((item) =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    item.label.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   const filteredLogicItems = logicItems.filter((item) =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    item.label.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   return (
     <div className="absolute left-4 top-4 z-10 w-64">
@@ -99,9 +95,9 @@ export default function GameSidebar() {
               </h3>
               <div className="space-y-1">
                 {filteredNodeItems.map((item) => {
-                  const Icon = item.icon;
+                  const Icon = item.icon
                   // End node gets red, others get purple (matching node colors)
-                  const isEndNode = item.nodeType === 'gameEnd';
+                  const isEndNode = item.nodeType === 'gameEnd'
                   return (
                     <div
                       key={item.id}
@@ -110,20 +106,22 @@ export default function GameSidebar() {
                       className={cn(
                         'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
                         'cursor-grab active:cursor-grabbing hover:bg-accent transition-colors',
-                        'flex items-center'
+                        'flex items-center',
                       )}
                     >
-                      <div className={cn(
-                        'flex items-center justify-center h-8 w-8 rounded-full border',
-                        isEndNode
-                          ? 'text-red-500 bg-red-500/10 border-red-500/20'
-                          : 'text-purple-500 bg-purple-500/10 border-purple-500/20'
-                      )}>
+                      <div
+                        className={cn(
+                          'flex items-center justify-center h-8 w-8 rounded-full border',
+                          isEndNode
+                            ? 'text-red-500 bg-red-500/10 border-red-500/20'
+                            : 'text-purple-500 bg-purple-500/10 border-purple-500/20',
+                        )}
+                      >
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
                       <span className="text-foreground">{item.label}</span>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -137,7 +135,7 @@ export default function GameSidebar() {
               </h3>
               <div className="space-y-1">
                 {filteredLogicItems.map((item) => {
-                  const Icon = item.icon;
+                  const Icon = item.icon
                   return (
                     <div
                       key={item.id}
@@ -146,18 +144,20 @@ export default function GameSidebar() {
                       className={cn(
                         'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
                         'cursor-grab active:cursor-grabbing hover:bg-accent transition-colors',
-                        'flex items-center'
+                        'flex items-center',
                       )}
                     >
-                      <div className={cn(
-                        'flex items-center justify-center h-8 w-8 rounded-full border',
-                        'text-orange-500 bg-orange-500/10 border-orange-500/20'
-                      )}>
+                      <div
+                        className={cn(
+                          'flex items-center justify-center h-8 w-8 rounded-full border',
+                          'text-orange-500 bg-orange-500/10 border-orange-500/20',
+                        )}
+                      >
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
                       <span className="text-foreground">{item.label}</span>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -165,12 +165,10 @@ export default function GameSidebar() {
 
           {/* No Results */}
           {filteredNodeItems.length === 0 && filteredLogicItems.length === 0 && (
-            <div className="text-center py-8 text-sm text-muted-foreground">
-              No results found
-            </div>
+            <div className="text-center py-8 text-sm text-muted-foreground">No results found</div>
           )}
         </div>
       </div>
     </div>
-  );
+  )
 }

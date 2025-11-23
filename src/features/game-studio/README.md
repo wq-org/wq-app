@@ -36,20 +36,20 @@ src/
 
 ## 🧩 Components You Need
 
--   **GameEditorCanvas.tsx**: Renders `<ReactFlow />` component, manages node/edge state (core canvas)
--   **GameSidebar.tsx**: The draggable/insertion node list (like sidebar in your screenshot)
--   **Custom Node Components** (one per node type):
-    -   GameStartNode
-    -   GameAgentNode
-    -   GameIfElseNode
-    -   GameEndNode
-    -   GameFileNode
-    -   GameGuardrailNode
--   **GameNodeDialog.tsx**: Pop-up/modal for editing node properties (instructions, variables, etc.)
--   **GameNodeToolbar.tsx**: Per-node actions (delete, duplicate, settings)
--   **GameStudioHeader.tsx**: Title, controls, maybe "New Game", "Publish", "Preview", etc.
--   **GameMiniMap.tsx**: Optional, for big graphs (from React Flow)
--   **GamePublishDialog.tsx**: Publish/save/share dialog modal
+- **GameEditorCanvas.tsx**: Renders `<ReactFlow />` component, manages node/edge state (core canvas)
+- **GameSidebar.tsx**: The draggable/insertion node list (like sidebar in your screenshot)
+- **Custom Node Components** (one per node type):
+  - GameStartNode
+  - GameAgentNode
+  - GameIfElseNode
+  - GameEndNode
+  - GameFileNode
+  - GameGuardrailNode
+- **GameNodeDialog.tsx**: Pop-up/modal for editing node properties (instructions, variables, etc.)
+- **GameNodeToolbar.tsx**: Per-node actions (delete, duplicate, settings)
+- **GameStudioHeader.tsx**: Title, controls, maybe "New Game", "Publish", "Preview", etc.
+- **GameMiniMap.tsx**: Optional, for big graphs (from React Flow)
+- **GamePublishDialog.tsx**: Publish/save/share dialog modal
 
 ---
 
@@ -73,80 +73,82 @@ src/
 /_ Place this as `src/features/game-studio/pages/GameStudio.tsx` _/
 
 ```tsx
-import Container from '@/components/common/Container';
-import Navigation from '@/components/common/Navigation';
-import { CommandPalette } from '@/features/command-palette';
-import { Sparkles, PlusCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import GameStudioHeader from '../components/GameStudioHeader';
-import GameEditorCanvas from '../components/GameEditorCanvas';
-import GameSidebar from '../components/GameSidebar';
+import Container from '@/components/common/Container'
+import Navigation from '@/components/common/Navigation'
+import { CommandPalette } from '@/features/command-palette'
+import { Sparkles, PlusCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import GameStudioHeader from '../components/GameStudioHeader'
+import GameEditorCanvas from '../components/GameEditorCanvas'
+import GameSidebar from '../components/GameSidebar'
 
 export default function GameStudio() {
-    return (
-        <>
-            <Navigation />
-            <Container className="max-w-6xl">
-                <GameStudioHeader />
-                <div className="flex gap-8 mt-6">
-                    <GameSidebar />
-                    <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
-                        <GameEditorCanvas />
-                    </div>
-                </div>
-            </Container>
-            <CommandPalette role="teacher" />
-        </>
-    );
+  return (
+    <>
+      <Navigation />
+      <Container className="max-w-6xl">
+        <GameStudioHeader />
+        <div className="flex gap-8 mt-6">
+          <GameSidebar />
+          <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <GameEditorCanvas />
+          </div>
+        </div>
+      </Container>
+      <CommandPalette role="teacher" />
+    </>
+  )
 }
 
 // src/features/game-studio/components/GameStudioHeader.tsx
-import { Sparkles, PlusCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Sparkles, PlusCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function GameStudioHeader() {
-    return (
-        <div className="flex items-center justify-between">
-            <div>
-                <h1 className="text-5xl font-bold flex items-center gap-2">
-                    <Sparkles className="w-8 h-8 text-primary" />
-                    Game Studio
-                </h1>
-                <p className="text-muted-foreground mt-2">
-                    Build, manage and publish interactive educational games for
-                    your students.
-                </p>
-            </div>
-            <Button size="lg" className="flex gap-2 items-center">
-                <PlusCircle className="w-5 h-5" />
-                New Game
-            </Button>
-        </div>
-    );
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-5xl font-bold flex items-center gap-2">
+          <Sparkles className="w-8 h-8 text-primary" />
+          Game Studio
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Build, manage and publish interactive educational games for your students.
+        </p>
+      </div>
+      <Button
+        size="lg"
+        className="flex gap-2 items-center"
+      >
+        <PlusCircle className="w-5 h-5" />
+        New Game
+      </Button>
+    </div>
+  )
 }
 
 // src/features/game-studio/components/GameSidebar.tsx
-import { Puzzle, ListTree, Settings, Flag } from 'lucide-react';
+import { Puzzle, ListTree, Settings, Flag } from 'lucide-react'
 export default function GameSidebar() {
-    return (
-        <aside className="w-56 bg-gray-50 border rounded-2xl shadow flex flex-col px-4 py-6 gap-4">
-            <h3 className="text-lg font-semibold mb-2">Nodes</h3>
-            <div className="flex flex-col gap-4">
-                <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
-                    <Puzzle className="w-6 h-6 text-violet-500" /> Agent
-                </button>
-                <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
-                    <ListTree className="w-6 h-6 text-amber-500" /> If / Else
-                </button>
-                <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
-                    <Settings className="w-6 h-6 text-indigo-500" /> Guardrails
-                </button>
-                <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
-                    <Flag className="w-6 h-6 text-emerald-500" /> End
-                </button>
-            </div>
-        </aside>
-    );
+  return (
+    <aside className="w-56 bg-gray-50 border rounded-2xl shadow flex flex-col px-4 py-6 gap-4">
+      <h3 className="text-lg font-semibold mb-2">Nodes</h3>
+      <div className="flex flex-col gap-4">
+        <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
+          <Puzzle className="w-6 h-6 text-violet-500" /> Agent
+        </button>
+        <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
+          <ListTree className="w-6 h-6 text-amber-500" /> If / Else
+        </button>
+        <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
+          <Settings className="w-6 h-6 text-indigo-500" /> Guardrails
+        </button>
+        <button className="flex gap-2 items-center px-2 py-2 hover:bg-gray-100 rounded-xl">
+          <Flag className="w-6 h-6 text-emerald-500" /> End
+        </button>
+      </div>
+    </aside>
+  )
 }
 ```
 
@@ -154,11 +156,11 @@ export default function GameSidebar() {
 
 ## 🔑 Summary
 
--   **All your canvas/editor and related components** go in `src/features/game-studio/components/`
--   **Business logic hooks and types** in `hooks/` and `types/` in the same feature folder
--   **Page/route entry for studio**: `src/features/game-studio/pages/GameStudio.tsx`
--   **Workflow for creating games**: Sidebar → Drag nodes → Edit nodes → Connect → Preview → Publish
--   **UI stacks with shadcn, lucide, tailwind for a modern feel**
+- **All your canvas/editor and related components** go in `src/features/game-studio/components/`
+- **Business logic hooks and types** in `hooks/` and `types/` in the same feature folder
+- **Page/route entry for studio**: `src/features/game-studio/pages/GameStudio.tsx`
+- **Workflow for creating games**: Sidebar → Drag nodes → Edit nodes → Connect → Preview → Publish
+- **UI stacks with shadcn, lucide, tailwind for a modern feel**
 
 This setup will scale as you add game/block types, properties, and complex logic!
 

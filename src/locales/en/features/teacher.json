@@ -1,14 +1,14 @@
 {
-    "badges": {
-        "university": "Reutlingen University",
-        "contacts": "{{formattedCount}} Contacts"
-    },
-    "actions": {
-        "connect": "Connect",
-        "connectWith": "Connect with {{userName}}"
-    },
-    "roles": {
-        "teacher": "Your Role is Teacher",
-        "student": "Your Role is Student"
-    }
+  "badges": {
+    "university": "Reutlingen University",
+    "contacts": "{{formattedCount}} Contacts"
+  },
+  "actions": {
+    "connect": "Connect",
+    "connectWith": "Connect with {{userName}}"
+  },
+  "roles": {
+    "teacher": "Your Role is Teacher",
+    "student": "Your Role is Student"
+  }
 }

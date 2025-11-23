@@ -1,6 +1,6 @@
-import { Handle, Position } from '@xyflow/react';
-import { Image as ImageIcon } from 'lucide-react';
-import type { GameImageTermsNodeProps } from '../types/game-studio.types';
+import { Handle, Position } from '@xyflow/react'
+import { Image as ImageIcon } from 'lucide-react'
+import type { GameImageTermsNodeProps } from '../types/game-studio.types'
 
 export default function GameImageTermsNode({ data, selected }: GameImageTermsNodeProps) {
   return (
@@ -18,9 +18,7 @@ export default function GameImageTermsNode({ data, selected }: GameImageTermsNod
       <div className="p-2 rounded-lg border border-purple-500/20 bg-purple-500/10 flex items-center justify-center">
         <ImageIcon className="w-4 h-4 text-purple-500" />
       </div>
-      <span className="text-gray-900 font-medium">
-        {data?.label || 'Image and Terms'}
-      </span>
+      <span className="text-gray-900 font-medium">{data?.label || 'Image and Terms'}</span>
       <Handle
         type="source"
         position={Position.Right}
@@ -29,6 +27,5 @@ export default function GameImageTermsNode({ data, selected }: GameImageTermsNod
         onClick={(e) => e.stopPropagation()}
       />
     </div>
-  );
+  )
 }
-

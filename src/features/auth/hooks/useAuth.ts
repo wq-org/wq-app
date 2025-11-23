@@ -1,59 +1,59 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginUser as loginAPI, signUpUser, logoutUser } from '../api/authApi';
-import type { LoginData, SignUpData } from '../types/auth.types';
+import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { loginUser as loginAPI, signUpUser, logoutUser } from '../api/authApi'
+import type { LoginData, SignUpData } from '../types/auth.types'
 
 export default function useAuth() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const login = useCallback(async (data: LoginData): Promise<any | null> => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const response = await loginAPI(data);
-      return response;
+      const response = await loginAPI(data)
+      return response
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
-      setError(errorMessage);
-      return null;
+      const errorMessage = err instanceof Error ? err.message : 'Login failed'
+      setError(errorMessage)
+      return null
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, []);
+  }, [])
 
   const signUp = useCallback(async (data: SignUpData): Promise<any | null> => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const response = await signUpUser(data);
-      return response;
+      const response = await signUpUser(data)
+      return response
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Sign up failed';
-      setError(errorMessage);
-      return null;
+      const errorMessage = err instanceof Error ? err.message : 'Sign up failed'
+      setError(errorMessage)
+      return null
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, []);
+  }, [])
 
   const logout = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      await logoutUser();
-      navigate('/');
+      await logoutUser()
+      navigate('/')
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Logout failed';
-      setError(errorMessage);
+      const errorMessage = err instanceof Error ? err.message : 'Logout failed'
+      setError(errorMessage)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [navigate]);
+  }, [navigate])
 
   return {
     isLoading,
@@ -61,6 +61,5 @@ export default function useAuth() {
     login,
     signUp,
     logout,
-  };
+  }
 }
-

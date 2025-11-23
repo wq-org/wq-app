@@ -1,20 +1,17 @@
-import { cn } from '@/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-const imagePinVariants = cva(
-  'rounded-full border-2 border-white animate-pulse relative',
-  {
-    variants: {
-      variant: {
-        default: 'bg-black',
-        secondary: 'bg-[#052127]',
-      },
+const imagePinVariants = cva('rounded-full border-2 border-white animate-pulse relative', {
+  variants: {
+    variant: {
+      default: 'bg-black',
+      secondary: 'bg-[#052127]',
     },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+})
 
 const pingVariants = cva(
   'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
@@ -28,21 +25,16 @@ const pingVariants = cva(
     defaultVariants: {
       variant: 'default',
     },
-  }
-);
+  },
+)
 
 export interface ImagePinProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof imagePinVariants> {
-  size?: number;
+  size?: number
 }
 
-export default function ImagePin({
-  className,
-  variant,
-  size = 24,
-  ...props
-}: ImagePinProps) {
+export default function ImagePin({ className, variant, size = 24, ...props }: ImagePinProps) {
   return (
     <div
       data-pin
@@ -55,6 +47,5 @@ export default function ImagePin({
     >
       <span className={cn(pingVariants({ variant }))} />
     </div>
-  );
+  )
 }
-
