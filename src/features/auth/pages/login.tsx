@@ -79,7 +79,7 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
         return
       }
 
-      if (responseData.success && responseData.session) {
+      if (responseData.success && responseData.session && responseData.user) {
         try {
           const profile = await supabase
             .from('profiles')
