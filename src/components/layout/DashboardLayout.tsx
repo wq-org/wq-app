@@ -1,4 +1,5 @@
 import Navigation from '../common/Navigation'
+import { PageTitle } from './PageTitle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
@@ -69,7 +70,9 @@ export default function DashboardLayout({
 
   return (
     <div>
-      <Navigation />
+      <Navigation>
+        <PageTitle />
+      </Navigation>
       <div className="flex flex-col gap-8 mb-8">
         <section className="rounded-2xl  h-full">
           <Container className="flex flex-col gap-4">

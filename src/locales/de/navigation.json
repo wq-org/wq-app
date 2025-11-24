@@ -1,1 +1,27 @@
-{}
+{
+  "pages": {
+    "teacherDashboard": "Dashboard",
+    "teacherSettings": "Einstellungen",
+    "teacherGameStudio": "Spiel Studio",
+    "teacherCourse": "Kurs",
+    "teacherLesson": "Lektion",
+    "teacherView": "Profil",
+    "teacherChat": "Chat",
+    "teacherInstitution": "Institution",
+    "studentDashboard": "Dashboard",
+    "studentSettings": "Einstellungen",
+    "studentChat": "Chat",
+    "studentInstitution": "Institution",
+    "studentView": "Profil",
+    "adminDashboard": "Dashboard",
+    "profile": "Profil",
+    "institution": "Institution",
+    "onboarding": "Einführung",
+    "login": "Anmelden",
+    "signUp": "Registrieren",
+    "forgotPassword": "Passwort vergessen",
+    "resetPassword": "Passwort zurücksetzen",
+    "verifyEmail": "E-Mail bestätigen",
+    "default": "Seite"
+  }
+}

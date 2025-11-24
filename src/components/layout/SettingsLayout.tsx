@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Container from '../common/Container'
 import Navigation from '../common/Navigation'
+import { PageTitle } from './PageTitle'
 import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
@@ -84,7 +85,9 @@ export default function SettingsLayout({
   if (loading) {
     return (
       <>
-        <Navigation />
+        <Navigation>
+          <PageTitle />
+        </Navigation>
         <div className="w-screen h-screen flex items-center justify-center">
           <Spinner
             variant="gray"
@@ -98,7 +101,9 @@ export default function SettingsLayout({
 
   return (
     <>
-      <Navigation />
+      <Navigation>
+        <PageTitle />
+      </Navigation>
       <div className="w-screen h-screen">
         <section>
           <Container className="flex flex-col items-start w-full gap-3">

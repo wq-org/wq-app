@@ -15,7 +15,7 @@ interface NavigationProps {
   authenticated?: boolean
 }
 
-const Navigation = ({ currentPageName, className, authenticated = true }: NavigationProps) => {
+const Navigation = ({ currentPageName, children, className, authenticated = true }: NavigationProps) => {
   const navigate = useNavigate()
   const { logout } = useUser()
 
@@ -51,7 +51,9 @@ const Navigation = ({ currentPageName, className, authenticated = true }: Naviga
               <ChevronLeft className="h-5 w-5 text-gray-600" />
             </Button>
             <div className="h-6 w-px bg-border" />
-            <h1 className="text-lg font-normal text-gray-700">{currentPageName || 'Page Title'}</h1>
+            <h1 className="text-lg font-normal text-gray-700">
+              {children || currentPageName || 'Page Title'}
+            </h1>
           </div>
 
           {/* Right Section - Language Switcher, Notification and Logout */}

@@ -148,7 +148,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
     <AppWrapper
       role={appWrapperRole}
       authenticated={false}
-      currentPageName={t('login.title')}
     >
       <div className="w-full container mx-auto max-w-lg">
         <form

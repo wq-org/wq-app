@@ -2,6 +2,7 @@ import React from 'react'
 import Container from '../common/Container'
 import Navigation from '../common/Navigation'
 import CommandPalette from '@/features/command-palette/components/CommandPalette'
+import { PageTitle } from './PageTitle'
 import { cn } from '@/lib/utils'
 
 interface AppWrapperProps {
@@ -10,7 +11,6 @@ interface AppWrapperProps {
   className?: string
   commandPaletteRole?: 'teacher' | 'student' | 'admin' | 'game-studio'
   authenticated?: boolean
-  currentPageName?: string
 }
 
 function AppWrapper({
@@ -19,16 +19,14 @@ function AppWrapper({
   className,
   commandPaletteRole,
   authenticated = true,
-  currentPageName,
 }: AppWrapperProps) {
   const paletteRole = commandPaletteRole || role
 
   return (
     <>
-      <Navigation
-        authenticated={authenticated}
-        currentPageName={currentPageName}
-      />
+      <Navigation authenticated={authenticated}>
+        <PageTitle />
+      </Navigation>
       <Container className={cn(className)}>{children}</Container>
 
       {authenticated && <CommandPalette role={paletteRole} />}

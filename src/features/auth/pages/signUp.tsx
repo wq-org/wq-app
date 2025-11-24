@@ -105,7 +105,6 @@ export default function SignUpPage({ className }: React.ComponentProps<'form'>) 
     <AppWrapper
       role={appWrapperRole}
       authenticated={false}
-      currentPageName={t('signUp.title')}
     >
       <div className="w-full container mx-auto max-w-lg">
         <form

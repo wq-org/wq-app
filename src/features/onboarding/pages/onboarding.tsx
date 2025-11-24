@@ -17,6 +17,7 @@ import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import type { AccountData, Institution } from '../types/onboarding.types'
 import Navigation from '@/components/common/Navigation'
+import { PageTitle } from '@/components/layout/PageTitle'
 
 export default function Onboarding() {
   const navigate = useNavigate()
@@ -53,7 +54,9 @@ export default function Onboarding() {
 
   return (
     <div>
-      <Navigation />
+      <Navigation>
+        <PageTitle />
+      </Navigation>
       <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
         <Stepper
           value={step}
