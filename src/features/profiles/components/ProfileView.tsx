@@ -30,7 +30,12 @@ export function ProfileView() {
   const role = profile.role?.toLowerCase()
 
   if (role === 'teacher') {
-    return <TeacherProfileContent profile={profile} userId={profile.user_id} />
+    return (
+      <TeacherProfileContent
+        profile={profile}
+        userId={profile.user_id}
+      />
+    )
   }
 
   if (role === 'student') {
@@ -48,8 +53,3 @@ export function ProfileView() {
     </div>
   )
 }
-
-
-
-
-

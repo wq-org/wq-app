@@ -13,8 +13,3 @@ export default function ProfileViewPage() {
     </>
   )
 }
-
-
-
-
-

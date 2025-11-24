@@ -73,7 +73,12 @@ export function InstitutionProfileContent({ institutionId }: InstitutionProfileC
   const lighterSecond = ''
   const street = formatAddress(institution.address)
   const availableLinks = [
-    institution.website && { key: 'website', label: 'Website', url: institution.website, icon: Globe },
+    institution.website && {
+      key: 'website',
+      label: 'Website',
+      url: institution.website,
+      icon: Globe,
+    },
     institution.twitter_url && {
       key: 'twitter',
       label: 'Twitter',
@@ -191,4 +196,3 @@ export function InstitutionProfileContent({ institutionId }: InstitutionProfileC
     </div>
   )
 }
-

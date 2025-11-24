@@ -88,8 +88,3 @@ export function TeacherProfileContent({ profile, userId }: TeacherProfileContent
     </DashboardLayout>
   )
 }
-
-
-
-
-

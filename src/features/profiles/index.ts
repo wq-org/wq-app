@@ -6,8 +6,3 @@ export { ProfileCourseCard } from './components/ProfileCourseCard'
 export { ProfileCourseCardList } from './components/ProfileCourseCardList'
 export { useProfile } from './hooks/useProfile'
 export { useFollow } from './hooks/useFollow'
-
-
-
-
-

@@ -19,8 +19,3 @@ export function ProfileCourseCardList({ courses, onCourseJoin }: ProfileCourseCa
     </div>
   )
 }
-
-
-
-
-

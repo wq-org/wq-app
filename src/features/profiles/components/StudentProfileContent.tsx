@@ -41,10 +41,12 @@ async function getPublishedCourses(): Promise<
     throw error
   }
 
-  return (data || []).map((course: Course & { teacher?: { avatar_url?: string; display_name?: string } }) => ({
-    ...course,
-    teacher_profile: course.teacher,
-  })) as (Course & { teacher_profile?: { avatar_url?: string; display_name?: string } })[]
+  return (data || []).map(
+    (course: Course & { teacher?: { avatar_url?: string; display_name?: string } }) => ({
+      ...course,
+      teacher_profile: course.teacher,
+    }),
+  ) as (Course & { teacher_profile?: { avatar_url?: string; display_name?: string } })[]
 }
 
 // Fetch published games
@@ -201,8 +203,3 @@ export function StudentProfileContent({ profile }: StudentProfileContentProps) {
     </DashboardLayout>
   )
 }
-
-
-
-
-

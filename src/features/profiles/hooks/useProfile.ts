@@ -34,4 +34,3 @@ export function useProfile(userId: string | undefined) {
 
   return { profile, loading, error }
 }
-

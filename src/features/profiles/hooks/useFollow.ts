@@ -19,4 +19,3 @@ export function useFollow() {
 
   return { isFollowing, loading, toggleFollow }
 }
-
