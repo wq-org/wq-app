@@ -1,5 +1,4 @@
-const InstitutionProfileView = () => {
-  return <div></div>
+export default function InstitutionProfileView() {
+  return <div>
+  </div>
 }
-
-export default InstitutionProfileView

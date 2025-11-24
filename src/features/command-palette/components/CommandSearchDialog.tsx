@@ -31,13 +31,11 @@ export default function CommandSearch() {
   }, [searchQuery, items])
 
   const handleClickItem = (item: SearchItem) => {
-    // Navigate based on item type
-    if (item.type === 'student') {
-      navigate(`/student/view/${item.id}`)
-    } else if (item.type === 'teacher' || item.type === 'admin') {
-      navigate(`/teacher/view/${item.id}`)
+    // Navigate based on item type - all user profiles use /profile/:id
+    if (item.type === 'student' || item.type === 'teacher' || item.type === 'admin') {
+      navigate(`/profile/${item.id}`)
     } else if (item.type === 'institution') {
-      navigate(`/institution/view/${item.id}`)
+      navigate(`/institution/${item.id}`)
     }
   }
 

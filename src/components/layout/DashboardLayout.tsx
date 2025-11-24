@@ -5,7 +5,7 @@ import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
 import { Button } from '../ui/button'
 import Container from '../common/Container'
 import { useState } from 'react'
-import { getDashboardTabs } from '@/lib/dashboard-config'
+import { getDashboardTabs, type DashboardTab } from '@/lib/dashboard-config'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { QuoteOfTheDay } from '@/components/ui/quote'
 import { useTranslation } from 'react-i18next'
@@ -24,6 +24,7 @@ interface DashboardLayoutProps {
   onClickTab?: (tabId: string) => void
   contactsCount?: number
   universityName?: string
+  customTabs?: DashboardTab[] // Optional custom tabs to override default
 }
 
 export default function DashboardLayout({
@@ -40,9 +41,11 @@ export default function DashboardLayout({
   onClickTab,
   contactsCount = 1200,
   universityName,
+  customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
-  const dashboardTabs = getDashboardTabs(role as 'teacher' | 'student')
+  const defaultTabs = getDashboardTabs(role as 'teacher' | 'student')
+  const dashboardTabs = customTabs || defaultTabs
   const { t, i18n } = useTranslation('features.teacher')
 
   function handleTabClick(tabId: string) {

@@ -1,10 +1,11 @@
-import AppWrapper from '@/components/layout/AppWrapper'
-import StudentView from '../components/StudentView'
+import { ProfileView } from '@/features/profiles/components/ProfileView'
+import { CommandPalette } from '@/features/command-palette'
 
 export default function StudentViewPage() {
   return (
-    <AppWrapper role="student">
-      <StudentView />
-    </AppWrapper>
+    <>
+      <ProfileView />
+      <CommandPalette role="student" />
+    </>
   )
 }

@@ -13,15 +13,16 @@ import Test from './user/pages/test'
 import StudentDashboard from './features/student/pages/dashboard'
 import StudentSettings from './features/student/pages/settings'
 import StudentChat from './features/student/pages/chat'
-import StudentViewPage from './features/student/pages/view'
 import TeacherChat from './features/teacher/pages/chat'
 
 import TeacherDashboard from './features/teacher/pages/dashboard'
 import TeacherSettings from './features/teacher/pages/settings'
-import TeacherViewPage from './features/teacher/pages/view'
 import GameStudio from './features/teacher/pages/game-studio'
 import Course from './features/teacher/pages/course'
+import TeacherViewPage from './features/teacher/pages/view'
+import StudentViewPage from './features/student/pages/view'
 import InstitutionViewPage from './features/institution/pages/view'
+import ProfileViewPage from './features/profiles/pages/view'
 import Error404 from './components/404'
 import Lesson from './features/lessons/pages/lesson'
 import Onboarding from './features/onboarding/pages/onboarding'
@@ -262,18 +263,28 @@ function App() {
             </Route>
 
             {/* Institution Routes (require auth + onboarding) */}
-            <Route path="/institution">
-              <Route
-                path="view/:id"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <InstitutionViewPage />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
-            </Route>
+            <Route
+              path="/institution/:id"
+              element={
+                <RequireAuth>
+                  <RequireOnboarding>
+                    <InstitutionViewPage />
+                  </RequireOnboarding>
+                </RequireAuth>
+              }
+            />
+
+            {/* Centralized Profile Routes (require auth + onboarding) */}
+            <Route
+              path="/profile/:id"
+              element={
+                <RequireAuth>
+                  <RequireOnboarding>
+                    <ProfileViewPage />
+                  </RequireOnboarding>
+                </RequireAuth>
+              }
+            />
 
             {/* Catch-all 404 route - must be last */}
             <Route

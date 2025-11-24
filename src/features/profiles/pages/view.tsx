@@ -1,8 +1,8 @@
-import { ProfileView } from '@/features/profiles/components/ProfileView'
+import { ProfileView } from '../components/ProfileView'
 import { CommandPalette } from '@/features/command-palette'
 import { useUser } from '@/contexts/user'
 
-export default function InstitutionViewPage() {
+export default function ProfileViewPage() {
   const { getRole } = useUser()
   const role = getRole() || 'student'
 
@@ -13,3 +13,8 @@ export default function InstitutionViewPage() {
     </>
   )
 }
+
+
+
+
+
