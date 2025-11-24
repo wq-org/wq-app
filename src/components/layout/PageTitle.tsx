@@ -67,4 +67,3 @@ export function PageTitle() {
   // Fallback to default
   return <>{t('pages.default', { defaultValue: 'Page' })}</>
 }
-

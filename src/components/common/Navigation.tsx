@@ -15,7 +15,12 @@ interface NavigationProps {
   authenticated?: boolean
 }
 
-const Navigation = ({ currentPageName, children, className, authenticated = true }: NavigationProps) => {
+const Navigation = ({
+  currentPageName,
+  children,
+  className,
+  authenticated = true,
+}: NavigationProps) => {
   const navigate = useNavigate()
   const { logout } = useUser()
 
