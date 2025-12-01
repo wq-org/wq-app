@@ -4,12 +4,13 @@ import Navigation from '../common/Navigation'
 import CommandPalette from '@/features/command-palette/components/CommandPalette'
 import { PageTitle } from './PageTitle'
 import { cn } from '@/lib/utils'
+import type { Roles } from '@/lib/dashboard.types'
 
 interface AppWrapperProps {
   children: React.ReactNode
-  role: 'teacher' | 'student' | 'admin'
+  role: Roles
   className?: string
-  commandPaletteRole?: 'teacher' | 'student' | 'admin' | 'game-studio'
+  commandPaletteRole?: Roles | 'game-studio'
   authenticated?: boolean
 }
 

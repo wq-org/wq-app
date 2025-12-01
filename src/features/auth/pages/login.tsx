@@ -19,6 +19,7 @@ import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
 import AppWrapper from '@/components/layout/AppWrapper'
+import type { Roles } from '@/lib/dashboard.types'
 
 export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()
@@ -38,10 +39,7 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   const RoleIcon = role === 'teacher' ? Presentation : UserIcon
 
   // Determine role for AppWrapper (default to 'student' if no role)
-  const appWrapperRole = (role === 'teacher' ? 'teacher' : 'student') as
-    | 'teacher'
-    | 'student'
-    | 'admin'
+  const appWrapperRole = (role === 'teacher' ? 'teacher' : 'student') as Roles
 
   const goToSignUp = () => {
     navigate('/auth/signup')

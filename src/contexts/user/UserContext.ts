@@ -1,4 +1,4 @@
-import type { Roles } from '@/lib/dashboard-config'
+import type { Roles } from '@/lib/dashboard.types'
 import { createContext, useContext } from 'react'
 import type { Session } from '@supabase/supabase-js'
 

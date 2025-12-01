@@ -10,6 +10,7 @@ import {
   Users2,
   type LucideIcon,
 } from 'lucide-react'
+import type { Roles } from './dashboard.types'
 
 export interface DashboardTab {
   id: string
@@ -21,7 +22,7 @@ export const teacherDashboardTabs: DashboardTab[] = [
   { id: 'courses', label: 'Courses', icon: Shapes },
   { id: 'files', label: 'Files', icon: FolderOpen },
   { id: 'students', label: 'Students', icon: Users2 },
-  // { id: 'todos', label: 'Todos', icon: LayoutList },
+ { id: 'todos', label: 'Todos', icon: LayoutList },
 ]
 
 export const studentDashboardTabs: DashboardTab[] = [
@@ -29,27 +30,44 @@ export const studentDashboardTabs: DashboardTab[] = [
   { id: 'games', label: 'Games', icon: Gamepad2 },
   { id: 'todos', label: 'Todos', icon: LayoutList },
 ]
-export const adminDashboard: DashboardTab[] = [
+export const institutionAdminDashboardTabs: DashboardTab[] = [
   // { id: 'courses', label: 'Courses', icon: Shapes },
   // { id: 'games', label: 'Games', icon: Gamepad2 },
   // { id: 'teachers', label: 'Teachers', icon: GraduationCap },
   // { id: 'students', label: 'Students', icon: Users2 },
   // { id: 'todos', label: 'Todos', icon: LayoutList },
-  { id: 'forms', label: 'Forms', icon: Building2 },
   { id: 'database', label: 'Database', icon: HardDrive },
   { id: 'overview', label: 'Overview', icon: LayoutGrid },
   { id: 'analytics', label: 'Analytics', icon: BarChart },
 ]
 
-export type Roles = 'teacher' | 'student' | 'admin'
+export const superAdminDashboardTabs: DashboardTab[] = [
+  { id: 'forms', label: 'Forms', icon: Building2 },
+  { id: 'institutions', label: 'Institutions', icon: Building2 },
+  { id: 'overview', label: 'Overview', icon: LayoutGrid },
+  { id: 'analytics', label: 'Analytics', icon: BarChart },
+  { id: 'database', label: 'Database', icon: HardDrive },
+]
+
+// Re-export Roles type for convenience
+export type { Roles } from './dashboard.types'
 
 export function getDashboardTabs(role: Roles): DashboardTab[] {
   if (role === 'teacher') {
     return teacherDashboardTabs
-  } else if (role === 'student') {
-    return studentDashboardTabs
-  } else if (role === 'admin') {
-    return adminDashboard
   }
+
+  if (role === 'student') {
+    return studentDashboardTabs
+  }
+
+  if (role === 'institutionAdmin') {
+    return institutionAdminDashboardTabs
+  }
+
+  if (role === 'superAdmin') {
+    return superAdminDashboardTabs
+  }
+
   throw new Error('Invalid role')
 }

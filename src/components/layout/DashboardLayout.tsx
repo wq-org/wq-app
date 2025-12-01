@@ -10,6 +10,7 @@ import { getDashboardTabs, type DashboardTab } from '@/lib/dashboard-config'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { QuoteOfTheDay } from '@/components/ui/quote'
 import { useTranslation } from 'react-i18next'
+import type { Roles } from '@/lib/dashboard.types'
 
 interface DashboardLayoutProps {
   imageUrl?: string
@@ -45,7 +46,7 @@ export default function DashboardLayout({
   customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
-  const defaultTabs = getDashboardTabs(role as 'teacher' | 'student')
+  const defaultTabs = getDashboardTabs(role as Roles)
   const dashboardTabs = customTabs || defaultTabs
   const { t, i18n } = useTranslation('features.teacher')
 

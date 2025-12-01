@@ -139,7 +139,8 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       let normalizedRole = role.toLowerCase().trim()
       if (normalizedRole === 'teachers') normalizedRole = 'teacher'
       if (normalizedRole === 'students') normalizedRole = 'student'
-      if (normalizedRole === 'admins') normalizedRole = 'admin'
+      if (normalizedRole === 'admins' || normalizedRole === 'institutionadmins') normalizedRole = 'institutionAdmin'
+      if (normalizedRole === 'superadmins') normalizedRole = 'superAdmin'
 
       return {
         role: normalizedRole,

@@ -14,7 +14,8 @@ import { getBarGroups } from '../config/commandBarGroups'
 import type { CommandPaletteProps } from '../types/command-bar.types'
 import { getGroupById } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
-import type { Roles } from '@/lib/dashboard-config'
+import type { Roles } from '@/lib/dashboard.types'
+import { VALID_ROLES } from '@/lib/dashboard.types'
 import Container from '@/components/common/Container'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import CommandSearchDialog from './CommandSearchDialog'
@@ -43,7 +44,7 @@ export default function CommandPalette({
   const userRole: Roles = (contextRole || role) as Roles
 
   // Validate role exists - show restricted component if invalid
-  const isValidRole = userRole && ['teacher', 'student', 'admin'].includes(userRole)
+  const isValidRole = userRole && VALID_ROLES.includes(userRole)
 
   if (!isValidRole) {
     console.error('Invalid role provided to CommandPalette:', userRole)

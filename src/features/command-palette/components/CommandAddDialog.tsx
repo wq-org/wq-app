@@ -19,6 +19,12 @@ import {
   StickyNote,
 } from 'lucide-react'
 import type { AddType } from '../types/command-bar.types'
+import type { Roles } from '@/lib/dashboard.types'
+
+// Constants for role arrays to minimize duplication
+const ALL_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher', 'student']
+const ADMIN_AND_TEACHER_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher']
+const SUPER_ADMIN_ONLY: Roles[] = ['superAdmin']
 
 // This function calls create based on type
 const createByType = async (
@@ -75,7 +81,7 @@ interface AddOption {
   label: string
   description: string
   icon: typeof BookOpen
-  availableForRoles: ('admin' | 'teacher' | 'student')[]
+  availableForRoles: Roles[]
 }
 
 interface CommandAddDialogProps {
@@ -97,41 +103,41 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
       label: 'Add Course',
       description: 'Create a new course',
       icon: BookOpen,
-      availableForRoles: ['admin', 'teacher', 'student'],
+      availableForRoles: ALL_ROLES,
     },
     {
       type: 'institution',
       label: 'Add Institution',
       description: 'Create a new institution',
       icon: Building2,
-      availableForRoles: ['admin'],
+      availableForRoles: SUPER_ADMIN_ONLY,
     },
     {
       type: 'game',
       label: 'Add Game',
       description: 'Create a new educational game',
       icon: Gamepad2,
-      availableForRoles: ['admin', 'teacher'],
+      availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
     {
       type: 'node',
       label: 'Add Node',
       description: 'Add a new action node to the game flow',
       icon: Plus,
-      availableForRoles: ['admin', 'teacher'],
+      availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
     {
       type: 'notes',
       label: 'Add New Notes',
       description: 'Create a new note',
       icon: StickyNote,
-      availableForRoles: ['admin', 'teacher', 'student'],
+      availableForRoles: ALL_ROLES,
     },
   ]
 
   // Filter options based on role
   const availableOptions = addOptions.filter((option) =>
-    role ? option.availableForRoles.includes(role as 'admin' | 'teacher' | 'student') : true,
+    role ? option.availableForRoles.includes(role as Roles) : true,
   )
 
   const handleCreate = async () => {

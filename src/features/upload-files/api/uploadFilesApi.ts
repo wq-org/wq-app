@@ -184,7 +184,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
  *
  * @param files - Array of UploadedFile objects with metadata
  * @param teacherId - User ID for the upload path
- * @param role - Role for storage path (e.g., 'teachers', 'students', 'admins')
+ * @param role - Role for storage path (e.g., 'teachers', 'students', 'institutionAdmins', 'superAdmins')
  * @param onProgress - Optional progress callback
  * @returns Promise with array of upload results
  */
@@ -398,7 +398,7 @@ export async function renameFile(
  * Fetches all files from the storage bucket based on role and user ID
  * Path structure: {role}/{user_id}/
  *
- * @param role - User role (e.g., 'teacher', 'student', 'admin')
+ * @param role - User role (e.g., 'teacher', 'student', 'institutionAdmin', 'superAdmin')
  * @param userId - User ID
  * @param options - Optional fetch options (limit, sortBy)
  * @returns Promise with fetch result containing files array or error

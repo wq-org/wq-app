@@ -32,7 +32,7 @@ export default function CommandSearch() {
 
   const handleClickItem = (item: SearchItem) => {
     // Navigate based on item type - all user profiles use /profile/:id
-    if (item.type === 'student' || item.type === 'teacher' || item.type === 'admin') {
+    if (item.type === 'student' || item.type === 'teacher' || item.type === 'institutionAdmin' || item.type === 'superAdmin') {
       navigate(`/profile/${item.id}`)
     } else if (item.type === 'institution') {
       navigate(`/institution/${item.id}`)

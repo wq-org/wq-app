@@ -33,9 +33,17 @@ export interface Teacher extends BaseUser {
   permissions: string[]
 }
 
-// PrimeUser Interface (Admin)
-export interface Admin extends BaseUser {
-  role: 'admin'
+// InstitutionAdmin Interface (Admin for a single school/tenant)
+export interface InstitutionAdmin extends BaseUser {
+  role: 'institutionAdmin'
+  admin_level: number
+  permissions: string[]
+  institution_id: string
+}
+
+// SuperAdmin Interface (Platform-wide admin)
+export interface SuperAdmin extends BaseUser {
+  role: 'superAdmin'
   admin_level: number
   permissions: string[]
 }

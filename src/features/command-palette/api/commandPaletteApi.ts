@@ -104,7 +104,7 @@ export async function fetchProfilesForSearch() {
   const { data, error } = await supabase
     .from('profiles')
     .select('user_id, username, display_name, email, avatar_url, role')
-    .in('role', ['student', 'teacher'])
+    .in('role', ['student', 'teacher', 'institutionAdmin', 'superAdmin'])
 
   if (error) {
     console.error('Error fetching profiles:', error)
