@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import Container from '@/components/common/Container'
+import { Container, SelectTabs } from '@/components/shared'
+import type { TabItem } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Presentation, Users2, Globe, Twitter, Facebook, Instagram } from 'lucide-react'
-import SelectTabs from '@/components/common/SelectTabs'
-import type { TabItem } from '@/components/common/SelectTabs'
 import EmptyTeachersView from '@/features/institution/components/EmptyTeachersView'
 import EmptyStudentView from '@/features/student/components/EmptyStudentView'
 

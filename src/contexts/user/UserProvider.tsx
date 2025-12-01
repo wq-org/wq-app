@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getCompleteProfile, logoutUser } from '@/features/auth/api/authApi'
 import { UserContext, type Profile, type UserContextValue } from './UserContext'
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from '@/components/layout/config'
 import type { Session } from '@supabase/supabase-js'
 
 const PENDING_ROLE_KEY = 'wq_pending_role'

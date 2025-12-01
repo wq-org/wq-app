@@ -1,16 +1,16 @@
-import Navigation from '../common/Navigation'
+import { Navigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
 import { Button } from '../ui/button'
-import Container from '../common/Container'
+import { Container } from '@/components/shared'
 import { useState } from 'react'
-import { getDashboardTabs, type DashboardTab } from '@/lib/dashboard-config'
+import { getDashboardTabs, type DashboardTab } from './config'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { QuoteOfTheDay } from '@/components/ui/quote'
 import { useTranslation } from 'react-i18next'
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from './config'
 
 interface DashboardLayoutProps {
   imageUrl?: string

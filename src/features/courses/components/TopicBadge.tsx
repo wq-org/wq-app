@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Check, X, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ConfirmationDialog } from '@/components/common/ConfirmationDialog'
+import { ConfirmationDialog } from '@/components/shared'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

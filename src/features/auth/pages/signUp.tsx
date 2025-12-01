@@ -14,11 +14,11 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { signUpUser } from '../api/authApi'
 import { useUser } from '@/contexts/user'
-import DotWaveLoader from '@/components/common/DotWaveLoader'
+import { DotWaveLoader } from '@/components/shared'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
 import AppWrapper from '@/components/layout/AppWrapper'
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from '@/components/layout/config'
 
 export default function SignUpPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()

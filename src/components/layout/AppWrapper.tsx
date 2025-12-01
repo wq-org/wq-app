@@ -1,11 +1,9 @@
 import React from 'react'
-import Container from '../common/Container'
-import Navigation from '../common/Navigation'
+import { Container, Navigation } from '@/components/shared'
 import CommandPalette from '@/features/command-palette/components/CommandPalette'
 import { PageTitle } from './PageTitle'
 import { cn } from '@/lib/utils'
-import type { Roles } from '@/lib/dashboard.types'
-
+import type { Roles } from './config'
 interface AppWrapperProps {
   children: React.ReactNode
   role: Roles

@@ -1,5 +1,4 @@
-import Container from '@/components/common/Container'
-import PageWrapper from '@/components/common/PageWrapper'
+import { Container, PageWrapper } from '@/components/shared'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

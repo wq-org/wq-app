@@ -19,7 +19,7 @@ import {
   StickyNote,
 } from 'lucide-react'
 import type { AddType } from '../types/command-bar.types'
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from '@/components/layout/config'
 
 // Constants for role arrays to minimize duplication
 const ALL_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher', 'student']

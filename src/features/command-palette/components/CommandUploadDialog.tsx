@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import Container from '@/components/common/Container'
+import { Container } from '@/components/shared'
 import FileDropzone from '@/features/upload-files/components/FileDropzone'
 import FileStepperForm from '@/features/upload-files/components/FileStepperForm'
 import { useFileValidation } from '@/features/upload-files/hooks/useFileValidation'

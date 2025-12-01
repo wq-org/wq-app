@@ -13,7 +13,7 @@ import {
   UserStar,
 } from 'lucide-react'
 import type { CommandBarGroup } from '../types/command-bar.types'
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from '@/components/layout/config'
 
 /**
  * Get command bar groups with role-based routes

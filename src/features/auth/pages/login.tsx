@@ -12,14 +12,14 @@ import { Input } from '@/components/ui/input'
 import { Presentation, UserIcon } from 'lucide-react'
 import { useState } from 'react'
 import { loginUser } from '../api/authApi'
-import DotWaveLoader from '@/components/common/DotWaveLoader'
+import { DotWaveLoader } from '@/components/shared'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
 import AppWrapper from '@/components/layout/AppWrapper'
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from '@/components/layout/config'
 
 export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()

@@ -1,4 +1,4 @@
-import type { Roles } from '@/lib/dashboard.types'
+import type { Roles } from '@/components/layout/config'
 
 export interface User {
   id: string
