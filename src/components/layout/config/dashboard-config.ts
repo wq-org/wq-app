@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import type { Roles } from './dashboard.types'
-import i18n  from '@/locales/i18n'
+import i18n from '@/locales/i18n'
 
 export interface DashboardTab {
   id: string
