@@ -20,7 +20,7 @@ import { getFileBlobUrl, deleteFile, renameFile } from '../api/filesApi'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
-import {FailedToLoad} from '@/components'
+import { FailedToLoad } from '@/components'
 
 interface FilesCardProps {
   file: FileItem

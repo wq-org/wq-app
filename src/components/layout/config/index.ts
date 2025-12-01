@@ -8,4 +8,3 @@ export {
   superAdminDashboardTabs,
   getDashboardTabs,
 } from './dashboard-config'
-

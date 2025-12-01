@@ -46,4 +46,3 @@ const DotWaveLoader: React.FC<DotWaveLoaderProps> = ({ variant = 'default', size
 }
 
 export default DotWaveLoader
-

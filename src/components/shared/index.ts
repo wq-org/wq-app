@@ -25,4 +25,3 @@ export { LanguageSwitcher } from './i18n'
 
 // Wrappers
 export { PageWrapper } from './wrappers'
-
