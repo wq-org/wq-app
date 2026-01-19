@@ -65,7 +65,7 @@ export function TextEffect({
       {segments.map((segment, index) => (
         <motion.span
           key={index}
-          className="inline-block"
+          className="inline-block whitespace-pre"
           variants={variant}
           transition={{
             type: 'spring',
@@ -74,7 +74,7 @@ export function TextEffect({
           }}
         >
           {segment}
-          {per !== 'char' && index < segments.length - 1 && (per === 'line' ? <br /> : ' ')}
+          {per !== 'char' && index < segments.length - 1 && (per === 'line' ? <br /> : '\u00A0')}
         </motion.span>
       ))}
     </MotionComponent>
