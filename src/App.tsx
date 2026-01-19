@@ -9,6 +9,7 @@ import {
 } from './features/auth'
 import Institution from './features/institution/pages/institution'
 import Test from './user/pages/test'
+import Home from './user/pages/home'
 
 import StudentDashboard from './features/student/pages/dashboard'
 import StudentSettings from './features/student/pages/settings'
@@ -48,6 +49,10 @@ function App() {
           <Routes>
             <Route
               path="/"
+              element={<Home />}
+            />
+            <Route
+              path="/get-started"
               element={<RoleSelectionPage />}
             />
             <Route
