@@ -155,7 +155,8 @@ export function FooterSection() {
           <div className="order-last flex flex-col gap-2 text-center text-sm text-muted-foreground md:order-first">
             <span>© {new Date().getFullYear()} WQ Health, All rights reserved</span>
             <span className="text-xs">
-              Godfred Amoah Sefa - Developer in collaboration with Astrid Probst, M.Sc., APN Wound Management Kreiskliniken Reutlingen gGmbH - Gabriela Tullius - Reutlingen University
+              Godfred Amoah Sefa - Developer in collaboration with Astrid Probst, M.Sc., APN Wound
+              Management Kreiskliniken Reutlingen gGmbH - Gabriela Tullius - Reutlingen University
             </span>
           </div>
           <div className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">

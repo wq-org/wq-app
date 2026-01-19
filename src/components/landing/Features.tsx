@@ -1,4 +1,9 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Image as ImageIcon, MapPin, FileText, Workflow } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -44,7 +49,8 @@ export function Features() {
             The foundation for serious games
           </h2>
           <p>
-            WQ Health is more than just a platform. It supports educators and institutions with the tools needed to create engaging health education experiences.
+            WQ Health is more than just a platform. It supports educators and institutions with the
+            tools needed to create engaging health education experiences.
           </p>
         </div>
 
@@ -63,7 +69,8 @@ export function Features() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                Match medical and health terms with corresponding images. Perfect for visual learners studying anatomy, medical terminology, and health concepts.
+                Match medical and health terms with corresponding images. Perfect for visual
+                learners studying anatomy, medical terminology, and health concepts.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
@@ -74,7 +81,8 @@ export function Features() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                Drag and drop pins on images to mark specific anatomical locations, wound areas, or points of interest. Ideal for interactive anatomy lessons and clinical training.
+                Drag and drop pins on images to mark specific anatomical locations, wound areas, or
+                points of interest. Ideal for interactive anatomy lessons and clinical training.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
@@ -85,7 +93,9 @@ export function Features() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                Create interactive quizzes from health education paragraphs. Students select sentences and answer questions, making reading comprehension engaging and measurable.
+                Create interactive quizzes from health education paragraphs. Students select
+                sentences and answer questions, making reading comprehension engaging and
+                measurable.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
@@ -96,7 +106,8 @@ export function Features() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                Visual workflow builder with drag-and-drop nodes. Create custom game sequences, add logic branches, and publish interactive health education experiences.
+                Visual workflow builder with drag-and-drop nodes. Create custom game sequences, add
+                logic branches, and publish interactive health education experiences.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

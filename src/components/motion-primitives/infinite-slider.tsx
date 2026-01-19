@@ -19,7 +19,7 @@ export function InfiniteSlider({
 }: InfiniteSliderProps) {
   const [isHovered, setIsHovered] = React.useState(false)
   const childrenArray = React.Children.toArray(children)
-  
+
   // Duplicate children for seamless loop
   const duplicatedChildren = [...childrenArray, ...childrenArray]
 

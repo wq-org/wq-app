@@ -36,7 +36,7 @@ const transitionVariants = {
 
 export function HeroSection() {
   const [menuState, setMenuState] = useState(false)
-  
+
   return (
     <>
       <header>
@@ -141,7 +141,9 @@ export function HeroSection() {
                   as="p"
                   className="mt-8 max-w-2xl text-pretty text-lg"
                 >
-                  Build interactive health education games with Image Term Match, Image Pin Mark, and Paragraph Line Select. Create custom scenarios, track progress, and transform health literacy through serious games.
+                  Build interactive health education games with Image Term Match, Image Pin Mark,
+                  and Paragraph Line Select. Create custom scenarios, track progress, and transform
+                  health literacy through serious games.
                 </TextEffect>
 
                 <AnimatedGroup
@@ -200,7 +202,12 @@ export function HeroSection() {
                 ...transitionVariants,
               }}
             >
-              <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20" style={{ maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)' }}>
+              <div
+                className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20"
+                style={{
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
+                }}
+              >
                 <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border bg-background p-4 shadow-lg shadow-zinc-950/15 ring-1 ring-background">
                   <img
                     className="relative aspect-[15/8] w-full rounded-2xl border border-border/25 object-cover"

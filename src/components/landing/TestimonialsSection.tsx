@@ -7,7 +7,10 @@ export function TestimonialsSection() {
         <div className="mx-auto max-w-2xl text-center">
           <blockquote>
             <p className="text-lg font-medium sm:text-xl md:text-3xl">
-              "WQ Health has revolutionized how we teach anatomy and clinical skills. The interactive games, especially Image Pin Mark and Image Term Match, have dramatically improved student engagement and retention. Our students are more confident and better prepared for real-world clinical scenarios."
+              "WQ Health has revolutionized how we teach anatomy and clinical skills. The
+              interactive games, especially Image Pin Mark and Image Term Match, have dramatically
+              improved student engagement and retention. Our students are more confident and better
+              prepared for real-world clinical scenarios."
             </p>
 
             <div className="mt-12 flex items-center justify-center gap-6">
@@ -24,7 +27,9 @@ export function TestimonialsSection() {
 
               <div className="space-y-1 border-l pl-6">
                 <cite className="font-medium not-italic">Astrid Probst, M.Sc.</cite>
-                <span className="text-muted-foreground block text-sm">APN Wound Management, Kreiskliniken Reutlingen gGmbH</span>
+                <span className="text-muted-foreground block text-sm">
+                  APN Wound Management, Kreiskliniken Reutlingen gGmbH
+                </span>
               </div>
             </div>
           </blockquote>

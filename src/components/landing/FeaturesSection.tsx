@@ -2,7 +2,12 @@ import { Logo } from '@/components/ui/logo'
 import { Activity, Image as ImageIcon, MapPin } from 'lucide-react'
 import DottedMap from 'dotted-map'
 import { Area, AreaChart, CartesianGrid } from 'recharts'
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 
 const map = new DottedMap({ height: 55, grid: 'diagonal' })
 const points = map.getPoints()
@@ -204,7 +209,9 @@ export function FeaturesSection() {
               <div className="mb-1 ml-auto w-3/5 rounded-lg bg-blue-600 p-3 text-xs text-white">
                 📍 Pin placed correctly! Great work identifying the area.
               </div>
-              <span className="block text-right text-xs text-muted-foreground">Student Response</span>
+              <span className="block text-right text-xs text-muted-foreground">
+                Student Response
+              </span>
             </div>
           </div>
         </div>
@@ -220,9 +227,7 @@ export function FeaturesSection() {
 
             <p className="my-8 text-2xl font-semibold">
               Track learner progress in real-time.{' '}
-              <span className="text-muted-foreground">
-                Monitor game completion and engagement.
-              </span>
+              <span className="text-muted-foreground">Monitor game completion and engagement.</span>
             </p>
           </div>
           <MonitoringChart />
