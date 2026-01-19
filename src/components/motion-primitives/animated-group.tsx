@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import * as React from 'react'
 
@@ -6,18 +6,8 @@ interface AnimatedGroupProps {
   children: React.ReactNode
   className?: string
   variants?: {
-    container?: {
-      visible?: {
-        transition?: {
-          staggerChildren?: number
-          delayChildren?: number
-        }
-      }
-    }
-    item?: {
-      hidden?: Record<string, unknown>
-      visible?: Record<string, unknown>
-    }
+    container?: Variants
+    item?: Variants
   }
 }
 
