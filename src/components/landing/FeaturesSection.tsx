@@ -114,7 +114,12 @@ function MonitoringChart() {
         <ChartTooltip
           active
           cursor={false}
-          content={(props) => <ChartTooltipContent {...props} className="dark:bg-muted" />}
+          content={(props) => (
+            <ChartTooltipContent
+              {...props}
+              className="dark:bg-muted"
+            />
+          )}
         />
         <Area
           strokeWidth={2}

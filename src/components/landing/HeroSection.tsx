@@ -133,9 +133,7 @@ export function HeroSection() {
                 >
                   Motion Aware Learning for next Generation Health Education
                 </TextEffect>
-                <p
-                  className="mt-8 max-w-xl text-pretty text-lg"
-                >
+                <p className="mt-8 max-w-xl text-pretty text-lg">
                   Build interactive health education games with Image Term Match, Image Pin Mark,
                   and Paragraph Line Select. Create custom scenarios, track progress, and transform
                   health literacy through serious games.
