@@ -97,7 +97,7 @@ export default function AvatarDrawer({
           </div>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="h-[100vh] !w-[60vw] !max-w-2xl sm:!max-w-2xl">
+      <DrawerContent className="h-screen w-[60vw]! max-w-2xl! sm:max-w-2xl!">
         <DrawerHeader>
           <div className="flex items-center justify-between">
             <DrawerTitle>Choose Your Avatar</DrawerTitle>
