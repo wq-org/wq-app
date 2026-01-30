@@ -1,16 +1,28 @@
-import { useState } from 'react';
-import { CheckCircle2, X, Plus, Trash2, Save } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { CheckCircle2, X, Plus, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
 import { Card, CardContent } from '@/components/ui/card';
-import { useGameNodePoints } from '@/features/game-studio/contexts/GameNodePointsContext';
 
-const paragraph = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. Sometimes just going for a walk or drinking enough water can boost your energy levels. In my opinion, prioritizing sleep is just as crucial as staying active. Everyone has different routines, but finding what makes you feel your best is key. Taking care of your mental health is just as vital as taking care of your physical health, and it's perfectly okay to rest when you need it.`;
+/** Separator used in the paragraph to split text into separate questions. */
+export const QUESTION_SEPARATOR = '//';
+
+const DEFAULT_PARAGRAPH = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. // I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. // Sometimes just going for a walk or drinking enough water can boost your energy levels.`;
+
+/** Split paragraph by QUESTION_SEPARATOR to get one "question" (clickable unit) per segment. */
+function splitIntoQuestions(text: string): string[] {
+  return text
+    .split(QUESTION_SEPARATOR)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
 
 
 interface VotingOption {
@@ -23,6 +35,7 @@ interface SentenceConfig {
   sentenceNumber: number;
   sentenceText: string;
   options: VotingOption[];
+  pointsWhenCorrect?: number;
 }
 
 interface SelectedAnswer {
@@ -31,20 +44,17 @@ interface SelectedAnswer {
 }
 
 export default function ParagraphLineSelectGame() {
-  const { points, onPointsChange } = useGameNodePoints();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [paragraphText, setParagraphText] = useState<string>(DEFAULT_PARAGRAPH);
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null);
   const [sentenceConfigs, setSentenceConfigs] = useState<SentenceConfig[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswer[]>([]);
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
 
-  // Split paragraph into sentences
-  const sentences = paragraph
-    .split(/(?<=[.!?])\s+/)
-    .filter((s) => s.trim().length > 0)
-    .map((s) => s.trim());
+  // Derive questions (one per segment) by splitting on QUESTION_SEPARATOR
+  const sentences = useMemo(() => splitIntoQuestions(paragraphText), [paragraphText]);
 
   // Get config for a sentence
   const getSentenceConfig = (index: number): SentenceConfig | undefined => {
@@ -62,6 +72,7 @@ export default function ParagraphLineSelectGame() {
           sentenceNumber: index + 1,
           sentenceText: sentences[index],
           options: [],
+          pointsWhenCorrect: 10,
         },
       ]);
     }
@@ -84,6 +95,18 @@ export default function ParagraphLineSelectGame() {
       prev.map((c) =>
         c.sentenceNumber === sentenceIndex + 1
           ? { ...c, options: [...c.options, newOption] }
+          : c
+      )
+    );
+  };
+
+  // Update points when correct for a sentence
+  const handlePointsWhenCorrectChange = (sentenceIndex: number, value: number) => {
+    const clamped = Math.max(0, Math.min(1000, value));
+    setSentenceConfigs((prev) =>
+      prev.map((c) =>
+        c.sentenceNumber === sentenceIndex + 1
+          ? { ...c, pointsWhenCorrect: clamped }
           : c
       )
     );
@@ -119,16 +142,12 @@ export default function ParagraphLineSelectGame() {
     return answer ? answer.optionId : null;
   };
 
-  // Handle save - log everything as a single object
-  const handleSave = () => {
-    const gameData = {
-      title,
-      description,
-      paragraph,
-      sentenceConfigs,
-    };
-    console.log(gameData);
-  };
+  // Auto-calculated from per-question points
+  const totalPoints = sentenceConfigs.reduce(
+    (sum, c) => sum + (c.pointsWhenCorrect ?? 0),
+    0
+  );
+  const totalQuestions = sentences.length;
 
   const editorContent = (
     <div className="space-y-6">
@@ -137,13 +156,30 @@ export default function ParagraphLineSelectGame() {
         description={description}
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
-        points={points}
-        onPointsChange={onPointsChange}
       />
+
+      <div className="text-sm text-muted-foreground flex gap-4 flex-wrap">
+        <span>Total questions: {totalQuestions}</span>
+        <span>Total points: {totalPoints}</span>
+      </div>
 
       <Card>
         <CardContent className="p-6">
-          <Label className="text-base font-medium mb-4 block">Paragraph</Label>
+          <div className="space-y-2 mb-4">
+            <Label className="text-base font-medium">Paragraph</Label>
+            <p className="text-sm text-muted-foreground">
+              Paste or type your text below. Separate each question using the{' '}
+              <Badge variant="secondary" className="font-mono">//</Badge>{' '}
+              symbol—everything between two <Badge variant="outline" className="font-mono">//</Badge> marks (or before the first and after the last) is one question.
+            </p>
+          </div>
+          <Textarea
+            placeholder="Enter your text. Use // to separate questions. Example: First question here. // Second question here. // Third question."
+            value={paragraphText}
+            onChange={(e) => setParagraphText(e.target.value)}
+            className="min-h-[120px] mb-6"
+          />
+          <Label className="text-base font-medium mb-4 block">Questions (click to add options)</Label>
           <div className="space-y-2">
             {sentences.map((sentence, index) => {
               const isSelected = selectedSentenceIndex === index;
@@ -170,6 +206,20 @@ export default function ParagraphLineSelectGame() {
                   {/* Options for selected sentence */}
                   {isSelected && (
                     <div className="mt-3 ml-6 space-y-3 p-4 bg-gray-50 rounded-lg">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Points when correct</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={1000}
+                          value={config?.pointsWhenCorrect ?? 10}
+                          onChange={(e) => {
+                            const v = parseInt(e.target.value, 10);
+                            if (!isNaN(v)) handlePointsWhenCorrectChange(index, v);
+                          }}
+                          className="w-24"
+                        />
+                      </div>
                       <div className="flex items-center justify-between mb-2">
                         <Label className="text-sm font-medium">
                           Voting Options (max 3)
@@ -281,13 +331,6 @@ export default function ParagraphLineSelectGame() {
           </div>
         </CardContent>
       </Card>
-
-      <div className="flex justify-end">
-        <Button onClick={handleSave} className="flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          Save
-        </Button>
-      </div>
     </div>
   );
 
