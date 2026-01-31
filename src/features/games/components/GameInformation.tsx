@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 export interface GameInformationProps {
@@ -33,12 +34,12 @@ export default function GameInformation({
         </div>
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
-          <Input
+          <Textarea
             id="description"
-            type="text"
             placeholder="Enter game description"
             value={description}
             onChange={(e) => onDescriptionChange(e.target.value)}
+            className="min-h-[80px]"
           />
         </div>
       </CardContent>

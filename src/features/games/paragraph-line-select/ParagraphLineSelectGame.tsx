@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Check, CheckCircle2, X, Plus, Trash2, Pencil } from 'lucide-react';
+import { Check, CheckCircle2, X, Plus, Trash2, Pencil, ChevronDown, ChevronUp } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
@@ -15,18 +15,10 @@ import {
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
 import GameSummaryCard from '@/features/games/components/GameSummaryCard';
+import GameResultTable from '@/features/games/components/GameResultTable';
 import { useGameEditorContext } from '@/contexts/game-studio';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { DEFAULT_PARAGRAPH, QUESTION_SEPARATOR, MAX_PARAGRAPH_VOTING_OPTIONS } from '@/lib/constants';
 import type {
   VotingOption,
@@ -36,8 +28,10 @@ import type {
   ParagraphLineSelectGameProps,
   QuestionResult,
 } from './types/paragraphLineSelect.types';
+const PREVIEW_DESCRIPTION_TRUNCATE = 600;
 
 export type { ParagraphGameInitialData };
+
 
 /** Split paragraph by QUESTION_SEPARATOR to get one "question" (clickable unit) per segment. */
 function splitIntoQuestions(text: string): string[] {
@@ -79,6 +73,7 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
     optionId: string;
   } | null>(null);
   const [editOptionText, setEditOptionText] = useState('');
+  const [previewDescriptionExpanded, setPreviewDescriptionExpanded] = useState(false);
 
   const gameEditor = useGameEditorContext();
 
@@ -341,6 +336,7 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
             onChange={(e) => setParagraphText(e.target.value)}
             className="min-h-[120px] mb-6"
           />
+          <Separator className="my-6" />
           <Label className="text-base font-medium mb-4 block">Questions (click to add options)</Label>
           <div className="space-y-2">
             {sentences.map((sentence, index) => {
@@ -600,9 +596,21 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
         </CardContent>
       </Card>
 
-      <GameSummaryCard totalQuestions={totalQuestions} totalPoints={totalPoints} />
+      <GameSummaryCard
+        totalQuestions={totalQuestions}
+        totalPoints={totalPoints}
+        description={description}
+      />
     </div>
   );
+
+  const isPreviewDescriptionLong =
+    typeof description === 'string' && description.length > PREVIEW_DESCRIPTION_TRUNCATE;
+  const previewDescriptionDisplay =
+    description &&
+    (isPreviewDescriptionLong && !previewDescriptionExpanded
+      ? `${description.slice(0, PREVIEW_DESCRIPTION_TRUNCATE)}…`
+      : description);
 
   const previewContent = (
     <div className="space-y-6">
@@ -611,7 +619,30 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
           <h2 className="text-lg font-semibold">{title}</h2>
         )}
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">{previewDescriptionDisplay}</p>
+            {isPreviewDescriptionLong && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-muted-foreground hover:text-foreground"
+                onClick={() => setPreviewDescriptionExpanded((prev) => !prev)}
+              >
+                {previewDescriptionExpanded ? (
+                  <>
+                    <ChevronUp className="size-4" aria-hidden />
+                    Show less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="size-4" aria-hidden />
+                    Show more
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         )}
       </div>
       <Alert
@@ -720,90 +751,40 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
 
         let totalEarned = 0;
         let totalMax = 0;
+        const rows = configsWithOptions.map((config) => {
+          const sentenceNumber = config.sentenceNumber;
+          const multi = hasMultipleCorrectOptions(config);
+          const selectedIds = multi
+            ? getSelectedAnswers(sentenceNumber)
+            : getSelectedAnswer(sentenceNumber) != null
+              ? [getSelectedAnswer(sentenceNumber)!]
+              : [];
+          const result = getQuestionResult(config, selectedIds);
+          totalEarned += result.earned;
+          totalMax += result.max;
+          const statementTruncated =
+            config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
+              ? config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
+              : config.sentenceText;
+          const selectedAnswerTexts = selectedIds
+            .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
+            .filter(Boolean);
+          return {
+            key: config.sentenceNumber,
+            statementText: config.sentenceText,
+            statementTruncated,
+            selectedAnswerTexts,
+            earned: result.earned,
+            max: result.max,
+          };
+        });
 
         return (
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Selected Answers</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Statement</TableHead>
-                  <TableHead>Selected answers</TableHead>
-                  <TableHead>Result</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {configsWithOptions.map((config) => {
-                  const sentenceNumber = config.sentenceNumber;
-                  const multi = hasMultipleCorrectOptions(config);
-                  const selectedIds = multi
-                    ? getSelectedAnswers(sentenceNumber)
-                    : getSelectedAnswer(sentenceNumber) != null
-                      ? [getSelectedAnswer(sentenceNumber)!]
-                      : [];
-                  const result = getQuestionResult(config, selectedIds);
-                  totalEarned += result.earned;
-                  totalMax += result.max;
-
-                  const statementTruncated =
-                    config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
-                      ? config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
-                      : config.sentenceText;
-                  const selectedAnswerTexts = selectedIds
-                    .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
-                    .filter(Boolean);
-
-                  return (
-                    <TableRow key={config.sentenceNumber}>
-                      <TableCell className="max-w-[200px]">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="truncate block cursor-default">
-                              {statementTruncated}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-sm">
-                            {config.sentenceText}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell className="max-w-[200px]">
-                        {selectedAnswerTexts.length === 0 ? (
-                          '—'
-                        ) : (
-                          <div className="flex flex-col gap-1">
-                            {selectedAnswerTexts.map((text, i) => (
-                              <Tooltip key={i}>
-                                <TooltipTrigger asChild>
-                                  <span className="truncate block cursor-default">{text}</span>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-sm">
-                                  {text}
-                                </TooltipContent>
-                              </Tooltip>
-                            ))}
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-muted-foreground text-sm">
-                        {result.earned}/{result.max}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={2} className="font-medium">
-                    Overall
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {totalEarned}/{totalMax}
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </div>
+          <GameResultTable
+            rows={rows}
+            totalEarned={totalEarned}
+            totalMax={totalMax}
+          />
         );
       })()}
 
