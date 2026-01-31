@@ -1,36 +1,59 @@
-import { useState } from 'react';
-import { Plus, Trash, X, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, X, Check, CheckCircle2, Circle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerDescription,
-} from '@/components/ui/drawer';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
-import type { Term } from './types/imageTermMatch.types';
+import GameSummaryCard from '@/features/games/components/GameSummaryCard';
+import GameResultTable from '@/features/games/components/GameResultTable';
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
+import { MAX_IMAGE_TERM_OPTIONS } from '@/lib/constants';
+import { useGameEditorContext } from '@/contexts/game-studio';
+import type { Term, ImageTermMatchGameProps, ImageTermMatchGameData } from './types/imageTermMatch.types';
 
-export default function ImageTermMatchGame() {
-    const [title, setTitle] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
-    const [feedbackText, setFeedbackText] = useState<string>('');
+const STATEMENT_TRUNCATE_LENGTH = 60;
+
+function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined): Term[] {
+    const t = initialData?.terms;
+    if (Array.isArray(t) && t.length > 0) return t;
+    return [{ id: '1', value: '' }];
+}
+
+export default function ImageTermMatchGame({ initialData: initialDataProp, onDelete }: ImageTermMatchGameProps = {}) {
+    const initialData = initialDataProp as ImageTermMatchGameData | null | undefined;
+    const [title, setTitle] = useState<string>(initialData?.title ?? '');
+    const [description, setDescription] = useState<string>(initialData?.description ?? '');
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [terms, setTerms] = useState<Term[]>([
-        { id: '1', value: '' },
-    ]);
-    const [correctTermId, setCorrectTermId] = useState<string>('');
-    const [deleteConfirmText, setDeleteConfirmText] = useState<string>('');
-    const [showFeedbackDrawer, setShowFeedbackDrawer] = useState<boolean>(false);
+    const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null);
+    const [terms, setTerms] = useState<Term[]>(() => getInitialTerms(initialData));
+    const [previewSelectedTermIds, setPreviewSelectedTermIds] = useState<string[]>([]);
+    const [resultsRevealed, setResultsRevealed] = useState(false);
+    const [editingPoints, setEditingPoints] = useState<Record<string, string>>({});
+    const [previewDescriptionExpanded, setPreviewDescriptionExpanded] = useState(false);
+
+    const gameEditor = useGameEditorContext();
+
+    const correctTerms = terms.filter((t) => t.isCorrect);
+    const pointsWhenCorrect = correctTerms.reduce(
+        (sum, t) => sum + (t.points != null && t.points > 0 ? t.points : 1),
+        0
+    );
+
+    useEffect(() => {
+        if (!gameEditor?.registerGetGameData) return;
+        gameEditor.registerGetGameData(() => ({
+            title,
+            description,
+            imageFile: imageFile?.name ?? null,
+            imagePreview,
+            terms,
+        }));
+    }, [gameEditor, title, description, imageFile, imagePreview, terms]);
 
     const handleImageSelected = (files: File[]) => {
         if (files.length === 0) return;
@@ -61,22 +84,32 @@ export default function ImageTermMatchGame() {
     };
 
     const handleAddTerm = () => {
-        if (terms.length >= 4) return;
-        
+        if (terms.length >= MAX_IMAGE_TERM_OPTIONS) return;
+
         const newId = String(Date.now());
         setTerms([...terms, { id: newId, value: '' }]);
     };
 
+    const handleTermPointsChange = (termId: string, value: number) => {
+        const rounded = Math.round(value * 2) / 2;
+        const clamped = Math.max(0, Math.min(1000, rounded));
+        setTerms((prev) =>
+            prev.map((t) => (t.id === termId ? { ...t, points: clamped } : t))
+        );
+    };
+
     const handleRemoveTerm = (id: string) => {
         if (terms.length <= 1) return;
-        
-        const updatedTerms = terms.filter(term => term.id !== id);
-        setTerms(updatedTerms);
-        
-        // Clear correct selection if removed term was selected
-        if (correctTermId === id) {
-            setCorrectTermId('');
-        }
+        setTerms((prev) => prev.filter((term) => term.id !== id));
+        setPreviewSelectedTermIds((prev) => prev.filter((tid) => tid !== id));
+    };
+
+    const handleToggleCorrect = (termId: string) => {
+        setTerms((prev) =>
+            prev.map((t) =>
+                t.id === termId ? { ...t, isCorrect: !t.isCorrect } : t
+            )
+        );
     };
 
     const handleTermChange = (id: string, value: string) => {
@@ -134,82 +167,64 @@ export default function ImageTermMatchGame() {
                 </CardContent>
             </Card>
 
-            {/* Feedback Section */}
-            <Card>
-                <CardHeader>
-                    <Label>Feedback (shown when user selects wrong answer)</Label>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-2">
-                        <Textarea
-                            placeholder="Enter feedback text that will be shown when the user selects an incorrect answer..."
-                            value={feedbackText}
-                            onChange={(e) => {
-                                if (e.target.value.length <= 500) {
-                                    setFeedbackText(e.target.value);
-                                }
-                            }}
-                            rows={4}
-                            className="resize-none"
-                            maxLength={500}
-                        />
-                        <div className="flex justify-end">
-                            <span className={`text-xs ${
-                                feedbackText.length > 450 
-                                    ? 'text-orange-500' 
-                                    : 'text-gray-500'
-                            }`}>
-                                {feedbackText.length} / 500 characters
-                            </span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
             {/* Terms Section */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <Label>Terms (Select the correct one)</Label>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleAddTerm}
-                            disabled={terms.length >= 4}
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Term {terms.length < 4 && `(${terms.length}/4)`}
-                        </Button>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-base leading-none">Terms</h3>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-500">
+                                    {MAX_IMAGE_TERM_OPTIONS - terms.length}/{MAX_IMAGE_TERM_OPTIONS} slots left
+                                </span>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleAddTerm}
+                                    disabled={terms.length >= MAX_IMAGE_TERM_OPTIONS}
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Term
+                                </Button>
+                            </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                            Add up to four multiple choice options. Use the <Circle className="inline size-3.5 mx-0.5" aria-hidden /> / <CheckCircle2 className="inline size-3.5 mx-0.5" aria-hidden /> icon to mark which are correct, and set points for each correct option.
+                        </p>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <RadioGroup
-                        value={correctTermId}
-                        onValueChange={setCorrectTermId}
-                        className="space-y-3"
-                    >
+                    <div className="space-y-3">
                         {terms.map((term, index) => (
                             <Card
                                 key={term.id}
                                 className={`transition-shadow ${
-                                    correctTermId === term.id
-                                        ? 'border-primary shadow-md'
-                                        : ''
+                                    term.isCorrect ? 'border-primary shadow-md' : ''
                                 }`}
                             >
                                 <CardContent className="p-4">
-                                    <div className="flex items-center gap-3">
-                                        <RadioGroupItem
-                                            value={term.id}
-                                            id={term.id}
-                                            className="shrink-0"
-                                        />
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="shrink-0 h-9 w-9"
+                                            onClick={() => handleToggleCorrect(term.id)}
+                                            aria-label={term.isCorrect ? 'Mark as incorrect' : 'Mark as correct'}
+                                        >
+                                            {term.isCorrect ? (
+                                                <CheckCircle2 className="h-5 w-5 text-primary" />
+                                            ) : (
+                                                <Circle className="h-5 w-5 text-muted-foreground" />
+                                            )}
+                                        </Button>
                                         <Label
                                             htmlFor={term.id}
-                                            className="flex-1 cursor-pointer"
+                                            className="flex-1 cursor-pointer min-w-0"
                                         >
                                             <Input
+                                                id={term.id}
                                                 type="text"
                                                 placeholder={`Term ${index + 1}`}
                                                 value={term.value}
@@ -219,6 +234,39 @@ export default function ImageTermMatchGame() {
                                                 className="w-full"
                                             />
                                         </Label>
+                                        {term.isCorrect && (
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <Label className="text-xs text-muted-foreground whitespace-nowrap">Points</Label>
+                                                <Input
+                                                    type="text"
+                                                    inputMode="decimal"
+                                                    placeholder="pts"
+                                                    value={
+                                                        editingPoints[term.id] !== undefined
+                                                            ? editingPoints[term.id]
+                                                            : (term.points !== undefined && term.points !== null
+                                                                ? String(term.points)
+                                                                : '')
+                                                    }
+                                                    onChange={(e) => {
+                                                        setEditingPoints((prev) => ({ ...prev, [term.id]: e.target.value }));
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        const raw = e.target.value.trim();
+                                                        const v = raw === '' ? NaN : parseFloat(raw);
+                                                        if (!isNaN(v)) {
+                                                            handleTermPointsChange(term.id, Math.round(v * 2) / 2);
+                                                        }
+                                                        setEditingPoints((prev) => {
+                                                            const next = { ...prev };
+                                                            delete next[term.id];
+                                                            return next;
+                                                        });
+                                                    }}
+                                                    className="w-16 h-8 text-xs"
+                                                />
+                                            </div>
+                                        )}
                                         {terms.length > 1 && (
                                             <Button
                                                 type="button"
@@ -234,61 +282,77 @@ export default function ImageTermMatchGame() {
                                 </CardContent>
                             </Card>
                         ))}
-                    </RadioGroup>
+                    </div>
                 </CardContent>
             </Card>
 
-            {/* Save Button */}
-            <div className="flex justify-end">
-                <Button
-                    onClick={() => {
-                        const gameData = {
-                            title: title.trim() || null,
-                            description: description.trim() || null,
-                            feedbackText: feedbackText.trim() || null,
-                            filepath: imageFile?.name || null,
-                            imagePreview: imagePreview || null,
-                            answers: terms.map(term => ({
-                                id: term.id,
-                                value: term.value,
-                                isCorrect: term.id === correctTermId,
-                            })),
-                            correctAnswerId: correctTermId || null,
-                        };
-                        console.log('Game Data:', gameData);
-                    }}
-                    disabled={!title.trim() || !imagePreview || terms.some(term => !term.value.trim()) || !correctTermId}
-                >
-                    Save Game
-                </Button>
-            </div>
+            <GameSummaryCard totalQuestions={1} totalPoints={pointsWhenCorrect} />
         </div>
     );
 
     // Preview Content
+    const statementText = title?.trim() || 'Image term match';
+    const statementTruncated =
+        statementText.length > STATEMENT_TRUNCATE_LENGTH
+            ? statementText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
+            : statementText;
+
+    const PREVIEW_DESCRIPTION_TRUNCATE = 600;
+    const isPreviewDescriptionLong =
+        typeof description === 'string' && description.length > PREVIEW_DESCRIPTION_TRUNCATE;
+    const previewDescriptionDisplay =
+        description &&
+        (isPreviewDescriptionLong && !previewDescriptionExpanded
+            ? `${description.slice(0, PREVIEW_DESCRIPTION_TRUNCATE)}…`
+            : description);
+
     const previewContent = (
         <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <div className="flex items-start gap-3">
-                        <Avatar className="w-10 h-10 shrink-0">
-                            <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
-                            <AvatarFallback>Q</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                            <h2 className="text-xl font-semibold mb-1">
-                                {title || 'Game Preview'}
-                            </h2>
-                            {description && (
-                                <p className="text-sm text-gray-600">
-                                    {description}
-                                </p>
-                            )}
-                        </div>
+            <div className="space-y-2">
+                {title && (
+                    <h2 className="text-lg font-semibold">{title}</h2>
+                )}
+                {description && (
+                    <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">{previewDescriptionDisplay}</p>
+                        {isPreviewDescriptionLong && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="gap-2 text-muted-foreground hover:text-foreground"
+                                onClick={() => setPreviewDescriptionExpanded((prev) => !prev)}
+                            >
+                                {previewDescriptionExpanded ? (
+                                    <>
+                                        <ChevronUp className="size-4" aria-hidden />
+                                        Show less
+                                    </>
+                                ) : (
+                                    <>
+                                        <ChevronDown className="size-4" aria-hidden />
+                                        Show more
+                                    </>
+                                )}
+                            </Button>
+                        )}
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="w-full aspect-video rounded-2xl overflow-hidden border relative">
+                )}
+            </div>
+
+            <Alert
+                variant="default"
+                className="bg-slate-100 border-slate-200 text-slate-800 [&_[data-slot=alert-title]]:text-slate-900 [&_[data-slot=alert-description]]:text-slate-700"
+            >
+                <AlertTitle>Preview only</AlertTitle>
+                <AlertDescription>
+                    The correct/incorrect styling is for preview only and is hidden in production so players do not see it during play.
+                </AlertDescription>
+            </Alert>
+
+            <Card>
+                <CardContent className="p-6">
+                    <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
                         {imagePreview ? (
                             <img
                                 src={imagePreview}
@@ -305,40 +369,40 @@ export default function ImageTermMatchGame() {
             </Card>
 
             {/* Multiple Choice Answers Section */}
-            {terms.filter(term => term.value.trim()).length > 0 && (
+            {terms.filter((term) => term.value.trim()).length > 0 && (
                 <div className="grid grid-cols-2 gap-3">
                     {terms
-                        .filter(term => term.value.trim())
+                        .filter((term) => term.value.trim())
                         .map((term, index) => {
-                            const letter = String.fromCharCode(65 + index); // A, B, C, D
-                            const isCorrect = term.id === correctTermId;
-                            
+                            const letter = String.fromCharCode(65 + index);
+                            const isSelected = previewSelectedTermIds.includes(term.id);
+                            const isCorrect = term.isCorrect ?? false;
+
                             return (
                                 <Button
                                     key={term.id}
                                     variant="outline"
                                     className={`h-auto py-4 px-4 flex items-center justify-start gap-3 ${
-                                        isCorrect
-                                            ? 'text-blue-500 bg-blue-500/10 border-blue-500/20 hover:bg-blue-500/20'
+                                        isSelected ? 'ring-2 ring-primary/50' : ''
+                                    } ${
+                                        isSelected
+                                            ? isCorrect
+                                                ? 'text-blue-500 bg-blue-500/10 border-blue-500/20 hover:bg-blue-500/20'
+                                                : 'bg-white text-black border-gray-300 hover:bg-gray-50'
                                             : 'bg-white text-black border-gray-300 hover:bg-gray-50'
                                     }`}
                                     onClick={() => {
-                                        const wasCorrect = term.id === correctTermId;
-                                        setCorrectTermId(term.id);
-                                        // Show feedback drawer when correct answer is selected
-                                        if (wasCorrect) {
-                                            setShowFeedbackDrawer(true);
-                                        }
+                                        setPreviewSelectedTermIds((prev) =>
+                                            prev.includes(term.id)
+                                                ? prev.filter((id) => id !== term.id)
+                                                : [...prev, term.id]
+                                        );
                                     }}
                                 >
-                                    <span className={`font-semibold text-lg ${
-                                        isCorrect ? 'text-blue-500' : 'text-black'
-                                    }`}>
+                                    <span className={`font-semibold text-lg ${isSelected && isCorrect ? 'text-blue-500' : 'text-black'}`}>
                                         {letter}.
                                     </span>
-                                    <span className={`flex-1 text-left ${
-                                        isCorrect ? 'text-blue-500 font-medium' : 'text-black'
-                                    }`}>
+                                    <span className={`flex-1 text-left ${isSelected && isCorrect ? 'text-blue-500 font-medium' : 'text-black'}`}>
                                         {term.value}
                                     </span>
                                 </Button>
@@ -347,7 +411,50 @@ export default function ImageTermMatchGame() {
                 </div>
             )}
 
-            {(!imagePreview && terms.every(term => !term.value.trim())) && (
+            <Separator />
+
+            {resultsRevealed && (() => {
+                const selectedTexts = previewSelectedTermIds
+                    .map((id) => terms.find((t) => t.id === id)?.value ?? '')
+                    .filter(Boolean);
+                const earned = previewSelectedTermIds.reduce((sum, id) => {
+                    const term = terms.find((t) => t.id === id);
+                    if (!term?.isCorrect) return sum;
+                    const pts = term.points != null && term.points > 0 ? term.points : 1;
+                    return sum + pts;
+                }, 0);
+                const rows = [
+                    {
+                        key: 'image-term',
+                        statementText,
+                        statementTruncated,
+                        selectedAnswerTexts: selectedTexts,
+                        earned,
+                        max: pointsWhenCorrect,
+                    },
+                ];
+                return (
+                    <GameResultTable
+                        rows={rows}
+                        totalEarned={earned}
+                        totalMax={pointsWhenCorrect}
+                    />
+                );
+            })()}
+
+            <div className="flex items-center justify-start">
+                <Button
+                    type="button"
+                    onClick={() => setResultsRevealed(true)}
+                    disabled={previewSelectedTermIds.length === 0}
+                    className="gap-2"
+                >
+                    <Check className="size-4" />
+                    Check
+                </Button>
+            </div>
+
+            {!imagePreview && terms.every((term) => !term.value.trim()) && (
                 <div className="text-center text-gray-400 py-12">
                     <p>Complete the editor to see the preview</p>
                 </div>
@@ -357,127 +464,23 @@ export default function ImageTermMatchGame() {
 
     // Settings Content
     const settingsContent = (
-        <div className="space-y-6">
-            <div>
-                <h2 className="text-2xl font-bold mb-2">Game Settings</h2>
-                <p className="text-gray-600 text-sm">
-                    Configure game settings and preferences.
-                </p>
-            </div>
-            <Card>
-                <CardHeader>
-                    <Label>Game Data</Label>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Image:</span>
-                            <span className="font-medium">{imageFile?.name || 'Not uploaded'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Terms:</span>
-                            <span className="font-medium">{terms.filter(t => t.value.trim()).length} / 4</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Correct Answer:</span>
-                            <span className="font-medium">
-                                {correctTermId 
-                                    ? terms.find(t => t.id === correctTermId)?.value || 'Not selected'
-                                    : 'Not selected'}
-                            </span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Feedback:</span>
-                            <span className="font-medium">{feedbackText.trim() ? 'Set' : 'Not set'}</span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Delete Game Section */}
-            <Card>
-                <CardHeader>
-                    <Label className=" font-bold">Delete Game</Label>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="delete-confirm" className=" font-bold">
-                            Type <span className="text-red-500">delete-game-node</span> to confirm deletion
-                        </Label>
-                        <Input
-                            id="delete-confirm"
-                            type="text"
-                            placeholder="delete-game-node"
-                            value={deleteConfirmText}
-                            onChange={(e) => setDeleteConfirmText(e.target.value)}
-                            className="border-red-500/20 focus:border-red-500"
-                        />
-                    </div>
-                    {deleteConfirmText === 'delete-game-node' && (
-                        <Button
-                            variant="outline"
-                            className=" text-red-500 bg-red-500/10 border-red-500/20 hover:bg-red-500/20 hover:text-red-600"
-                            onClick={() => {
-                                // Handle delete logic here
-                                console.log('Game deleted');
-                                // Reset all state
-                                setTitle('');
-                                setDescription('');
-                                setFeedbackText('');
-                                setImageFile(null);
-                                setImagePreview(null);
-                                setTerms([{ id: '1', value: '' }]);
-                                setCorrectTermId('');
-                                setDeleteConfirmText('');
-                            }}
-                        >
-                            <Trash className="h-4 w-4 mr-2" />
-                            <span className="text-red-500">Delete Game</span>
-                        </Button>
-                    )}
-                </CardContent>
-            </Card>
+        <div className="p-6 flex flex-col gap-6">
+            {onDelete && (
+                <div>
+                    <p className="text-muted-foreground text-sm mb-3">
+                        Hold the button below for 3 seconds to delete this game node.
+                    </p>
+                    <HoldToDeleteButton onDelete={onDelete} holdDuration={3000} />
+                </div>
+            )}
         </div>
     );
 
     return (
-        <>
-            <GameLayout
-                editorContent={editorContent}
-                previewContent={previewContent}
-                settingsContent={settingsContent}
-            />
-            
-            {/* Feedback Drawer */}
-            <Drawer open={showFeedbackDrawer} onOpenChange={setShowFeedbackDrawer}>
-                <DrawerContent className="!h-[40vh]">
-                    <DrawerHeader className="text-center">
-                        {/* Checkmark Icon */}
-                        <div className="flex justify-center mb-4">
-                            <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center">
-                                <CheckCircle2 className="w-10 h-10 text-gray-600" />
-                            </div>
-                        </div>
-                        
-                        <DrawerTitle className="text-2xl font-bold text-gray-800">
-                            Hurra super gemacht.
-                        </DrawerTitle>
-                        
-                        <DrawerDescription className="text-base text-gray-600 mt-2">
-                            Dafür gibts einen Punkt. Nun weiter zum nächsten drücke
-                        </DrawerDescription>
-                    </DrawerHeader>
-                    
-                    <div className="p-4">
-                        <Button
-                            className="w-full bg-gray-800 text-white hover:bg-gray-700"
-                            onClick={() => setShowFeedbackDrawer(false)}
-                        >
-                            Okey
-                        </Button>
-                    </div>
-                </DrawerContent>
-            </Drawer>
-        </>
+        <GameLayout
+            editorContent={editorContent}
+            previewContent={previewContent}
+            settingsContent={settingsContent}
+        />
     );
 }

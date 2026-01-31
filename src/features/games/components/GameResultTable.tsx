@@ -22,6 +22,25 @@ export interface GameResultTableRow {
   max: number;
 }
 
+/** Optional column and footer labels for reuse across games. */
+export interface GameResultTableColumnLabels {
+  /** First column (question/expected). */
+  statement?: string;
+  /** Second column (user selection). */
+  selectedAnswers?: string;
+  /** Third column (earned/max). */
+  result?: string;
+  /** Footer row label. */
+  footer?: string;
+}
+
+const DEFAULT_COLUMN_LABELS: Required<GameResultTableColumnLabels> = {
+  statement: 'Statement',
+  selectedAnswers: 'Selected answers',
+  result: 'Result',
+  footer: 'Overall',
+};
+
 export interface GameResultTableProps {
   /** Pre-computed rows for display. */
   rows: GameResultTableRow[];
@@ -31,18 +50,23 @@ export interface GameResultTableProps {
   totalMax: number;
   /** Optional heading above the table. */
   title?: string;
+  /** Optional column/footer labels; omit to use defaults. */
+  columnLabels?: GameResultTableColumnLabels;
 }
 
 /**
- * Display-only table for game results: Statement, Selected answers, Result, and Overall.
+ * Display-only table for game results. Column headers and footer are configurable.
  */
 export default function GameResultTable({
   rows,
   totalEarned,
   totalMax,
   title = 'Selected Answers',
+  columnLabels,
 }: GameResultTableProps) {
   if (rows.length === 0) return null;
+
+  const labels = { ...DEFAULT_COLUMN_LABELS, ...columnLabels };
 
   return (
     <div className="space-y-2">
@@ -50,9 +74,9 @@ export default function GameResultTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Statement</TableHead>
-            <TableHead>Selected answers</TableHead>
-            <TableHead>Result</TableHead>
+            <TableHead>{labels.statement}</TableHead>
+            <TableHead>{labels.selectedAnswers}</TableHead>
+            <TableHead>{labels.result}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -99,7 +123,7 @@ export default function GameResultTable({
         <TableFooter>
           <TableRow>
             <TableCell colSpan={2} className="font-medium">
-              Overall
+              {labels.footer}
             </TableCell>
             <TableCell className="font-medium">
               {totalEarned}/{totalMax}

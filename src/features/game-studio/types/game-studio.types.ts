@@ -118,7 +118,11 @@ export interface GameNodeDialogProps {
   nodeType?: string;
   nodeId?: string;
   initialData?: unknown;
-  onSave?: (data: { points?: number; paragraphGameData?: unknown }) => void;
+  onSave?: (data: {
+    points?: number;
+    paragraphGameData?: unknown;
+    imageTermGameData?: unknown;
+  }) => void;
   onDelete?: () => void;
 }
 

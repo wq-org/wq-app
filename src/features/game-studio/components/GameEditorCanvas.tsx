@@ -691,7 +691,11 @@ export default function GameEditorCanvas() {
     }
   };
 
-  const handleGameNodeSave = (data: { points?: number; paragraphGameData?: unknown }) => {
+  const handleGameNodeSave = (data: {
+    points?: number;
+    paragraphGameData?: unknown;
+    imageTermGameData?: unknown;
+  }) => {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
         prevNodes.map((node) => {
@@ -699,6 +703,9 @@ export default function GameEditorCanvas() {
           const nextData = { ...node.data, points: data.points };
           if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
             Object.assign(nextData, data.paragraphGameData);
+          }
+          if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
+            Object.assign(nextData, data.imageTermGameData);
           }
           return { ...node, data: nextData };
         })

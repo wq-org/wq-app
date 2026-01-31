@@ -112,6 +112,8 @@ export default function GameNodeDialog({
       logColor('games', gamesPayload, 'db');
       logColor('game_sessions', gameSessionsPayload, 'react');
       onSave?.({ points, paragraphGameData: gameData });
+    } else if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
+      onSave?.({ points, imageTermGameData: gameData });
     } else {
       onSave?.({ points });
     }

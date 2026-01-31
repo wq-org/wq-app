@@ -7,4 +7,7 @@ export const QUESTION_SEPARATOR = '//';
 /** Max voting options per question in Paragraph Line Select game. */
 export const MAX_PARAGRAPH_VOTING_OPTIONS = 4;
 
+/** Max term options in Image Term Match game. */
+export const MAX_IMAGE_TERM_OPTIONS = 4;
+
 export const DEFAULT_PARAGRAPH = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. // I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. // Sometimes just going for a walk or drinking enough water can boost your energy levels.`;
