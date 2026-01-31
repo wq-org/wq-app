@@ -5,7 +5,10 @@ import { GameNodePointsContext } from '@/contexts/game-studio';
 
 interface GameNodeLayoutProps {
   nodeId?: string;
-  gameComponent?: React.ComponentType<{ initialData?: unknown }>;
+  gameComponent?: React.ComponentType<{
+    initialData?: unknown;
+    onDelete?: () => void;
+  }>;
   overviewContent?: React.ReactNode;
   initialData?: unknown;
   onDelete?: () => void;
@@ -23,6 +26,7 @@ export default function GameNodeLayout({
   points,
   onPointsChange,
   hideSettingsTab = false,
+  onDelete,
 }: GameNodeLayoutProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
 
@@ -67,7 +71,7 @@ export default function GameNodeLayout({
               <div>
                 {overviewContent && <div className="border-t pt-6 mt-6" />}
                 <GameNodePointsContext.Provider value={{ points, onPointsChange }}>
-                  <GameComponent initialData={initialData} />
+                  <GameComponent initialData={initialData} onDelete={onDelete} />
                 </GameNodePointsContext.Provider>
               </div>
             )}

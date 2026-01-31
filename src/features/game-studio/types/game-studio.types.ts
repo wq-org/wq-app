@@ -119,6 +119,7 @@ export interface GameNodeDialogProps {
   nodeId?: string;
   initialData?: unknown;
   onSave?: (data: { points?: number; paragraphGameData?: unknown }) => void;
+  onDelete?: () => void;
 }
 
 // ========== Drawer Props ==========

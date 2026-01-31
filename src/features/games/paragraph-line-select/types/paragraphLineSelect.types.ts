@@ -35,4 +35,5 @@ export interface QuestionResult {
 
 export interface ParagraphLineSelectGameProps {
   initialData?: unknown;
+  onDelete?: () => void;
 }

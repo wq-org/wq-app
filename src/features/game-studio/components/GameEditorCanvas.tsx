@@ -746,9 +746,9 @@ export default function GameEditorCanvas() {
       setNodes((prevNodes) => {
         const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId);
         if (!nodeToDelete) return prevNodes;
-        
+
         const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
-        
+
         // Remove edges connected to deleted node
         setEdges((prevEdges) => {
           const newEdges = prevEdges.filter(
@@ -757,11 +757,34 @@ export default function GameEditorCanvas() {
           saveToHistory(newNodes, newEdges);
           return newEdges;
         });
-        
+
         toast.success('If/Else node deleted');
         return newNodes;
       });
       setIsIfElseDialogOpen(false);
+    }
+  };
+
+  const handleGameNodeDelete = () => {
+    if (selectedNodeId) {
+      setNodes((prevNodes) => {
+        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId);
+        if (!nodeToDelete) return prevNodes;
+
+        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
+
+        setEdges((prevEdges) => {
+          const newEdges = prevEdges.filter(
+            (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
+          );
+          saveToHistory(newNodes, newEdges);
+          return newEdges;
+        });
+
+        toast.success('Game node deleted');
+        return newNodes;
+      });
+      setIsGameNodeDialogOpen(false);
     }
   };
 
@@ -993,6 +1016,7 @@ export default function GameEditorCanvas() {
             : undefined
         }
         onSave={handleGameNodeSave}
+        onDelete={handleGameNodeDelete}
       />
     </AppWrapper>
   );

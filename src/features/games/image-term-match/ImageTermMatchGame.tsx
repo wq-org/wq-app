@@ -17,7 +17,7 @@ import {
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
-import type { Term } from '../types/image-term-match.types';
+import type { Term } from './types/imageTermMatch.types';
 
 export default function ImageTermMatchGame() {
     const [title, setTitle] = useState<string>('');

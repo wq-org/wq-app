@@ -22,7 +22,7 @@ import RequireOnboarding from './components/auth/RequireOnboarding';
 import {Toaster} from './components/ui/sonner';
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
 import AdminDashboard from './features/admin/pages/dashboard';  
-import { ImageTermMatchGame } from './features/games/image-term-match';
+import ImageTermMatchGame from './features/games/image-term-match/ImageTermMatchGame';
 import ImagePinMarkGame from './features/games/image-pin-mark/ImagePinMarkGame';
 import ParagraphLineSelectGame from './features/games/paragraph-line-select/ParagraphLineSelectGame';
 

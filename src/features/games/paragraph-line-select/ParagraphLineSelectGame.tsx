@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import GameLayout from '@/components/layout/GameLayout';
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
 import GameInformation from '@/features/games/components/GameInformation';
 import GameSummaryCard from '@/features/games/components/GameSummaryCard';
 import GameResultTable from '@/features/games/components/GameResultTable';
@@ -52,7 +53,7 @@ function getQuestionMaxPoints(config: SentenceConfig): number {
   return sum > 0 ? sum : (config.pointsWhenCorrect ?? 0);
 }
 
-export default function ParagraphLineSelectGame({ initialData: initialDataProp }: ParagraphLineSelectGameProps = {}) {
+export default function ParagraphLineSelectGame({ initialData: initialDataProp, onDelete }: ParagraphLineSelectGameProps = {}) {
   const initialData = initialDataProp as ParagraphGameInitialData | null | undefined;
   const [title, setTitle] = useState<string>(initialData?.title ?? '');
   const [description, setDescription] = useState<string>(initialData?.description ?? '');
@@ -799,9 +800,15 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
   );
 
   const settingsContent = (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Settings</h2>
-      <p className="text-gray-600">Game settings will appear here.</p>
+    <div className="p-6 flex flex-col gap-6">
+      {onDelete && (
+        <div>
+          <p className="text-muted-foreground text-sm mb-3">
+            Hold the button below for 3 seconds to delete this game node.
+          </p>
+          <HoldToDeleteButton onDelete={onDelete} holdDuration={3000} />
+        </div>
+      )}
     </div>
   );
 

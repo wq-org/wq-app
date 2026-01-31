@@ -8,9 +8,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ImageTermMatchGame } from '@/features/games/image-term-match';
+import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame';
 import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
-import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame';
+import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame';
 import type { GameNodeDialogProps } from '../types/game-studio.types';
 import GameNodeLayout from './GameNodeLayout';
 import { GameEditorProvider } from '@/contexts/game-studio';
@@ -42,6 +42,7 @@ export default function GameNodeDialog({
   nodeId,
   initialData,
   onSave,
+  onDelete,
 }: GameNodeDialogProps) {
   const [points, setPoints] = useState(100);
   const getGameDataRef = useRef<(() => unknown) | null>(null);
@@ -140,6 +141,7 @@ export default function GameNodeDialog({
             points={points}
             onPointsChange={setPoints}
             hideSettingsTab={true}
+            onDelete={onDelete}
           />
         </GameEditorProvider>
         <DialogFooter>
