@@ -117,7 +117,8 @@ export interface GameNodeDialogProps {
   onOpenChange: (open: boolean) => void;
   nodeType?: string;
   nodeId?: string;
-  onSave?: (data: { points?: number }) => void;
+  initialData?: unknown;
+  onSave?: (data: { points?: number; paragraphGameData?: unknown }) => void;
 }
 
 // ========== Drawer Props ==========

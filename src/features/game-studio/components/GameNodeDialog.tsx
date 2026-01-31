@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,14 @@ import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
 import ParagraphLineSelectGame from '../../games/paragraph-line-select/ParagraphLineSelectGame';
 import type { GameNodeDialogProps } from '../types/game-studio.types';
 import GameNodeLayout from './GameNodeLayout';
+import { GameEditorProvider } from '@/contexts/game-studio';
+import { logColor } from '@/lib/utils';
 
-// Map node types to game components and titles
-const nodeTypeToGame: Record<string, { component: React.ComponentType; title: string }> = {
+// Map node types to game components and titles (components may accept initialData)
+const nodeTypeToGame: Record<
+  string,
+  { component: React.ComponentType<{ initialData?: unknown }>; title: string }
+> = {
   gameParagraph: {
     component: ParagraphLineSelectGame,
     title: 'Paragraph Line Select',
@@ -35,9 +40,11 @@ export default function GameNodeDialog({
   onOpenChange,
   nodeType,
   nodeId,
+  initialData,
   onSave,
 }: GameNodeDialogProps) {
   const [points, setPoints] = useState(100);
+  const getGameDataRef = useRef<(() => unknown) | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -53,7 +60,60 @@ export default function GameNodeDialog({
   const GameComponent = gameConfig.component;
 
   const handleSave = () => {
-    onSave?.({ points });
+    const gameData = getGameDataRef.current?.();
+
+    if (nodeType === 'gameParagraph' && gameData && typeof gameData === 'object') {
+      const data = gameData as {
+        title?: string;
+        description?: string;
+        paragraphText?: string;
+        sentenceConfigs?: Array<{
+          sentenceNumber: number;
+          sentenceText: string;
+          options: Array<{ id: string; text: string; isCorrect: boolean }>;
+          pointsWhenCorrect?: number;
+        }>;
+        selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>;
+      };
+
+      const gamesPayload = {
+        title: data.title ?? '',
+        description: data.description ?? '',
+        game_type: 'paragraph_line_select',
+        game_config: {
+          paragraphText: data.paragraphText ?? '',
+          questions: (data.sentenceConfigs ?? []).map((q) => ({
+            sentenceNumber: q.sentenceNumber,
+            sentenceText: q.sentenceText,
+            options: q.options.map((o) => ({ id: o.id, text: o.text, isCorrect: o.isCorrect })),
+            pointsWhenCorrect: q.pointsWhenCorrect,
+          })),
+        },
+        // Placeholders for DB fields
+        id: '(uuid)',
+        teacher_id: '(uuid)',
+        topic_id: '(uuid)',
+        status: 'draft',
+        version: 1,
+      };
+
+      const gameSessionsPayload = {
+        game_id: '(uuid)',
+        student_id: '(uuid)',
+        score: 0,
+        completed: false,
+        session_data: {
+          selectedAnswers: data.selectedAnswers ?? [],
+        },
+        progress_data: null,
+      };
+
+      logColor('games', gamesPayload, 'db');
+      logColor('game_sessions', gameSessionsPayload, 'react');
+      onSave?.({ points, paragraphGameData: gameData });
+    } else {
+      onSave?.({ points });
+    }
     onOpenChange(false);
   };
 
@@ -71,13 +131,17 @@ export default function GameNodeDialog({
             Configure {gameConfig.title} game node
           </DialogDescription>
         </DialogHeader>
-        <GameNodeLayout
-          nodeId={nodeId}
-          gameComponent={GameComponent}
-          points={points}
-          onPointsChange={setPoints}
-          hideSettingsTab={true}
-        />
+        <GameEditorProvider getGameDataRef={getGameDataRef}>
+          <GameNodeLayout
+            key={open ? nodeId ?? 'none' : 'closed'}
+            nodeId={nodeId}
+            gameComponent={GameComponent}
+            initialData={initialData}
+            points={points}
+            onPointsChange={setPoints}
+            hideSettingsTab={true}
+          />
+        </GameEditorProvider>
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
             Cancel

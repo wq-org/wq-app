@@ -691,14 +691,17 @@ export default function GameEditorCanvas() {
     }
   };
 
-  const handleGameNodeSave = (data: { points?: number }) => {
+  const handleGameNodeSave = (data: { points?: number; paragraphGameData?: unknown }) => {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
-        prevNodes.map((node) =>
-          node.id === selectedNodeId
-            ? { ...node, data: { ...node.data, points: data.points } }
-            : node
-        )
+        prevNodes.map((node) => {
+          if (node.id !== selectedNodeId) return node;
+          const nextData = { ...node.data, points: data.points };
+          if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
+            Object.assign(nextData, data.paragraphGameData);
+          }
+          return { ...node, data: nextData };
+        })
       );
       toast.success('Points saved');
     }
@@ -984,6 +987,11 @@ export default function GameEditorCanvas() {
         onOpenChange={setIsGameNodeDialogOpen}
         nodeType={selectedNodeType || undefined}
         nodeId={selectedNodeId || undefined}
+        initialData={
+          selectedNodeId
+            ? nodes.find((n) => n.id === selectedNodeId)?.data
+            : undefined
+        }
         onSave={handleGameNodeSave}
       />
     </AppWrapper>

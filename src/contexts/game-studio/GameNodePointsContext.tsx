@@ -11,4 +11,3 @@ export const GameNodePointsContext = createContext<GameNodePointsContextValue>({
 });
 
 export const useGameNodePoints = () => useContext(GameNodePointsContext);
-

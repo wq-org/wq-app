@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { CheckCircle2, X, Plus, Trash2 } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Check, CheckCircle2, X, Plus, Trash2, Pencil } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
@@ -7,14 +7,37 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
+import GameSummaryCard from '@/features/games/components/GameSummaryCard';
+import { useGameEditorContext } from '@/contexts/game-studio';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { DEFAULT_PARAGRAPH, QUESTION_SEPARATOR, MAX_PARAGRAPH_VOTING_OPTIONS } from '@/lib/constants';
+import type {
+  VotingOption,
+  SentenceConfig,
+  SelectedAnswer,
+  ParagraphGameInitialData,
+  ParagraphLineSelectGameProps,
+  QuestionResult,
+} from './types/paragraphLineSelect.types';
 
-/** Separator used in the paragraph to split text into separate questions. */
-export const QUESTION_SEPARATOR = '//';
-
-const DEFAULT_PARAGRAPH = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. // I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. // Sometimes just going for a walk or drinking enough water can boost your energy levels.`;
+export type { ParagraphGameInitialData };
 
 /** Split paragraph by QUESTION_SEPARATOR to get one "question" (clickable unit) per segment. */
 function splitIntoQuestions(text: string): string[] {
@@ -24,34 +47,59 @@ function splitIntoQuestions(text: string): string[] {
     .filter((s) => s.length > 0);
 }
 
-
-interface VotingOption {
-  id: string;
-  text: string;
-  isCorrect: boolean;
+function hasMultipleCorrectOptions(config: SentenceConfig): boolean {
+  return config.options.filter((o) => o.isCorrect).length > 1;
 }
 
-interface SentenceConfig {
-  sentenceNumber: number;
-  sentenceText: string;
-  options: VotingOption[];
-  pointsWhenCorrect?: number;
+function getQuestionMaxPoints(config: SentenceConfig): number {
+  const sum = config.options
+    .filter((o) => o.isCorrect)
+    .reduce((s, o) => s + (o.points ?? 0), 0);
+  return sum > 0 ? sum : (config.pointsWhenCorrect ?? 0);
 }
 
-interface SelectedAnswer {
-  sentenceNumber: number;
-  optionId: string;
-}
-
-export default function ParagraphLineSelectGame() {
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [paragraphText, setParagraphText] = useState<string>(DEFAULT_PARAGRAPH);
+export default function ParagraphLineSelectGame({ initialData: initialDataProp }: ParagraphLineSelectGameProps = {}) {
+  const initialData = initialDataProp as ParagraphGameInitialData | null | undefined;
+  const [title, setTitle] = useState<string>(initialData?.title ?? '');
+  const [description, setDescription] = useState<string>(initialData?.description ?? '');
+  const [paragraphText, setParagraphText] = useState<string>(
+    initialData?.paragraphText ?? DEFAULT_PARAGRAPH
+  );
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null);
-  const [sentenceConfigs, setSentenceConfigs] = useState<SentenceConfig[]>([]);
+  const [sentenceConfigs, setSentenceConfigs] = useState<SentenceConfig[]>(
+    initialData?.sentenceConfigs ?? []
+  );
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswer[]>([]);
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
+  const [resultsRevealed, setResultsRevealed] = useState(false);
+  const [editingPoints, setEditingPoints] = useState<Record<string, string>>({});
+  const [editingOption, setEditingOption] = useState<{
+    sentenceIndex: number;
+    optionId: string;
+  } | null>(null);
+  const [editOptionText, setEditOptionText] = useState('');
+
+  const gameEditor = useGameEditorContext();
+
+  // Register getGameData so GameNodeDialog can pull current state on Save
+  useEffect(() => {
+    if (!gameEditor?.registerGetGameData) return;
+    gameEditor.registerGetGameData(() => ({
+      title,
+      description,
+      paragraphText,
+      sentenceConfigs,
+      selectedAnswers,
+    }));
+  }, [
+    gameEditor,
+    title,
+    description,
+    paragraphText,
+    sentenceConfigs,
+    selectedAnswers,
+  ]);
 
   // Derive questions (one per segment) by splitting on QUESTION_SEPARATOR
   const sentences = useMemo(() => splitIntoQuestions(paragraphText), [paragraphText]);
@@ -83,7 +131,7 @@ export default function ParagraphLineSelectGame() {
     const config = getSentenceConfig(sentenceIndex);
     if (!config) return;
 
-    if (config.options.length >= 3) return;
+    if (config.options.length >= MAX_PARAGRAPH_VOTING_OPTIONS) return;
 
     const newOption: VotingOption = {
       id: `option-${Date.now()}`,
@@ -100,13 +148,19 @@ export default function ParagraphLineSelectGame() {
     );
   };
 
-  // Update points when correct for a sentence
-  const handlePointsWhenCorrectChange = (sentenceIndex: number, value: number) => {
-    const clamped = Math.max(0, Math.min(1000, value));
+  // Update points for a single correct option (whole and half decimals only); only used when option is correct.
+  const handleOptionPointsChange = (sentenceIndex: number, optionId: string, value: number) => {
+    const rounded = Math.round(value * 2) / 2;
+    const clamped = Math.max(0, Math.min(1000, rounded));
     setSentenceConfigs((prev) =>
       prev.map((c) =>
         c.sentenceNumber === sentenceIndex + 1
-          ? { ...c, pointsWhenCorrect: clamped }
+          ? {
+              ...c,
+              options: c.options.map((opt) =>
+                opt.id === optionId ? { ...opt, points: clamped } : opt
+              ),
+            }
           : c
       )
     );
@@ -121,12 +175,58 @@ export default function ParagraphLineSelectGame() {
           : c
       )
     );
+    if (editingOption?.optionId === optionId && editingOption.sentenceIndex === sentenceIndex) {
+      setEditingOption(null);
+    }
   };
 
-  // Handle answer selection in preview
+  // Update option text and isCorrect
+  const handleUpdateOption = (
+    sentenceIndex: number,
+    optionId: string,
+    newText: string,
+    isCorrect: boolean
+  ) => {
+    const trimmed = newText.trim();
+    if (!trimmed) return;
+    setSentenceConfigs((prev) =>
+      prev.map((c) =>
+        c.sentenceNumber === sentenceIndex + 1
+          ? {
+              ...c,
+              options: c.options.map((opt) =>
+                opt.id === optionId
+                  ? { ...opt, text: trimmed, isCorrect }
+                  : opt
+              ),
+            }
+          : c
+      )
+    );
+    setEditingOption(null);
+    setEditOptionText('');
+  };
+
+  // Handle answer selection in preview (toggle: same option again deselects)
   const handleAnswerSelect = (sentenceNumber: number, optionId: string) => {
+    const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber);
+    const multi = config ? hasMultipleCorrectOptions(config) : false;
     setSelectedAnswers((prev) => {
+      if (multi) {
+        const alreadySelected = prev.some(
+          (a) => a.sentenceNumber === sentenceNumber && a.optionId === optionId
+        );
+        if (alreadySelected) {
+          return prev.filter(
+            (a) => !(a.sentenceNumber === sentenceNumber && a.optionId === optionId)
+          );
+        }
+        return [...prev, { sentenceNumber, optionId }];
+      }
       const existing = prev.find((a) => a.sentenceNumber === sentenceNumber);
+      if (existing?.optionId === optionId) {
+        return prev.filter((a) => a.sentenceNumber !== sentenceNumber);
+      }
       if (existing) {
         return prev.map((a) =>
           a.sentenceNumber === sentenceNumber ? { ...a, optionId } : a
@@ -136,18 +236,85 @@ export default function ParagraphLineSelectGame() {
     });
   };
 
-  // Get selected answer for a sentence
+  // Get selected answer(s) for a sentence (single when multi off, array when multi on)
   const getSelectedAnswer = (sentenceNumber: number): string | null => {
     const answer = selectedAnswers.find((a) => a.sentenceNumber === sentenceNumber);
     return answer ? answer.optionId : null;
   };
 
-  // Auto-calculated from per-question points
-  const totalPoints = sentenceConfigs.reduce(
-    (sum, c) => sum + (c.pointsWhenCorrect ?? 0),
-    0
-  );
+  const getSelectedAnswers = (sentenceNumber: number): string[] => {
+    return selectedAnswers
+      .filter((a) => a.sentenceNumber === sentenceNumber)
+      .map((a) => a.optionId);
+  };
+
+  const handleCheckAnswers = () => {
+    setResultsRevealed(true);
+  };
+
+  const STATEMENT_TRUNCATE_LENGTH = 60;
+
+  function getQuestionResult(
+    config: SentenceConfig,
+    selectedIds: string[]
+  ): QuestionResult {
+    const correctOptions = config.options.filter((o) => o.isCorrect);
+    const max = getQuestionMaxPoints(config);
+    const maxPerOption = correctOptions.reduce((sum, o) => sum + (o.points ?? 0), 0);
+    const pointsPerCorrect =
+      correctOptions.length > 0 ? max / correctOptions.length : 0;
+
+    if (selectedIds.length === 0) {
+      return { status: 'false', earned: 0, max };
+    }
+
+    const correctSelectedIds = selectedIds.filter((id) => {
+      const opt = config.options.find((o) => o.id === id);
+      return opt?.isCorrect ?? false;
+    });
+    const correctSelected = correctSelectedIds.length;
+    const hasWrong = selectedIds.some((id) => {
+      const opt = config.options.find((o) => o.id === id);
+      return opt?.isCorrect === false;
+    });
+
+    const earned =
+      maxPerOption > 0
+        ? correctSelectedIds.reduce(
+            (sum, id) =>
+              sum + (config.options.find((o) => o.id === id)?.points ?? 0),
+            0
+          )
+        : correctSelected * pointsPerCorrect;
+
+    if (hasWrong) {
+      return { status: 'false', earned, max };
+    }
+    if (correctSelected === 0) {
+      return { status: 'false', earned: 0, max };
+    }
+
+    const numCorrect = correctOptions.length;
+    const multi = hasMultipleCorrectOptions(config);
+    if (multi) {
+      if (correctSelected === numCorrect) {
+        return { status: 'correct', earned, max };
+      }
+      return { status: 'partly correct', earned, max };
+    }
+
+    return { status: 'correct', earned, max };
+  }
+
+  const hasAtLeastOneSelection = selectedAnswers.length > 0;
+
   const totalQuestions = sentences.length;
+  const totalPoints = sentenceConfigs.reduce((sum, config) => {
+    const questionTotal = config.options
+      .filter((o) => o.isCorrect)
+      .reduce((s, o) => s + (o.points ?? 0), 0);
+    return sum + questionTotal;
+  }, 0);
 
   const editorContent = (
     <div className="space-y-6">
@@ -157,11 +324,6 @@ export default function ParagraphLineSelectGame() {
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
       />
-
-      <div className="text-sm text-muted-foreground flex gap-4 flex-wrap">
-        <span>Total questions: {totalQuestions}</span>
-        <span>Total points: {totalPoints}</span>
-      </div>
 
       <Card>
         <CardContent className="p-6">
@@ -206,54 +368,160 @@ export default function ParagraphLineSelectGame() {
                   {/* Options for selected sentence */}
                   {isSelected && (
                     <div className="mt-3 ml-6 space-y-3 p-4 bg-gray-50 rounded-lg">
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium">Points when correct</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={1000}
-                          value={config?.pointsWhenCorrect ?? 10}
-                          onChange={(e) => {
-                            const v = parseInt(e.target.value, 10);
-                            if (!isNaN(v)) handlePointsWhenCorrectChange(index, v);
-                          }}
-                          className="w-24"
-                        />
-                      </div>
+                      {config && hasMultipleCorrectOptions(config) && (
+                        <p className="text-sm text-muted-foreground">Multiple answers can be correct for this question.</p>
+                      )}
                       <div className="flex items-center justify-between mb-2">
                         <Label className="text-sm font-medium">
-                          Voting Options (max 3)
+                          Voting Options (max {MAX_PARAGRAPH_VOTING_OPTIONS})
                         </Label>
                         <span className="text-xs text-gray-500">
-                          {config?.options.length || 0}/3
+                          {config?.options.length || 0}/{MAX_PARAGRAPH_VOTING_OPTIONS}
                         </span>
                       </div>
 
                       {config?.options.map((option) => (
                         <div
                           key={option.id}
-                          className="flex items-center gap-2 p-2 bg-white rounded border"
+                          className="flex items-center gap-2 p-2 bg-white rounded border flex-wrap"
                         >
-                          <div className="flex items-center gap-2 flex-1">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
                             {option.isCorrect ? (
-                              <CheckCircle2 className="w-4 h-4 text-black" />
+                              <CheckCircle2 className="w-4 h-4 text-black shrink-0" />
                             ) : (
-                              <X className="w-4 h-4 text-black" />
+                              <X className="w-4 h-4 text-black shrink-0" />
                             )}
-                            <span className="text-sm">{option.text}</span>
+                            <span className="text-sm break-words">{option.text}</span>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleRemoveOption(index, option.id)}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
+                          <div className="flex items-center gap-2 shrink-0 ml-auto">
+                            {option.isCorrect && (
+                              <Input
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="pts"
+                                value={
+                                  editingPoints[option.id] !== undefined
+                                    ? editingPoints[option.id]
+                                    : (option.points !== undefined && option.points !== null
+                                        ? String(option.points)
+                                        : '')
+                                }
+                                onChange={(e) => {
+                                  setEditingPoints((prev) => ({ ...prev, [option.id]: e.target.value }));
+                                }}
+                                onBlur={(e) => {
+                                  const raw = e.target.value.trim();
+                                  const v = raw === '' ? NaN : parseFloat(raw);
+                                  if (!isNaN(v)) {
+                                    handleOptionPointsChange(index, option.id, Math.round(v * 2) / 2);
+                                  }
+                                  setEditingPoints((prev) => {
+                                    const next = { ...prev };
+                                    delete next[option.id];
+                                    return next;
+                                  });
+                                }}
+                                className="w-16 h-8 text-xs"
+                              />
+                            )}
+                            <Popover
+                              open={
+                                editingOption?.optionId === option.id &&
+                                editingOption?.sentenceIndex === index
+                              }
+                              onOpenChange={(open) => {
+                                if (!open) {
+                                  setEditingOption(null);
+                                  setEditOptionText('');
+                                }
+                              }}
+                            >
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 shrink-0"
+                                      onClick={() => {
+                                        setEditingOption({ sentenceIndex: index, optionId: option.id });
+                                        setEditOptionText(option.text);
+                                      }}
+                                    >
+                                      <Pencil className="w-3 h-3" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent>Edit option</TooltipContent>
+                              </Tooltip>
+                              <PopoverContent className="w-auto p-2" align="end">
+                                <div className="space-y-2">
+                                  <Input
+                                    placeholder="Option text"
+                                    value={editOptionText}
+                                    onChange={(e) => setEditOptionText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleUpdateOption(
+                                          index,
+                                          option.id,
+                                          editOptionText,
+                                          option.isCorrect
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleUpdateOption(index, option.id, editOptionText, true)
+                                      }
+                                      className="flex items-center gap-2"
+                                    >
+                                      <CheckCircle2 className="w-4 h-4 text-black" />
+                                      Correct
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleUpdateOption(index, option.id, editOptionText, false)
+                                      }
+                                      className="flex items-center gap-2"
+                                    >
+                                      <X className="w-4 h-4 text-black" />
+                                      False
+                                    </Button>
+                                  </div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0"
+                              onClick={() => handleRemoveOption(index, option.id)}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
 
-                      {(!config || config.options.length < 3) && (
+                      {config && config.options.some((o) => o.isCorrect) && (
+                        <div className="pt-2">
+                          <span className="text-sm text-muted-foreground mr-2">Total points:</span>
+                          <Badge variant="secondary">
+                            {config.options
+                              .filter((o) => o.isCorrect)
+                              .reduce((s, o) => s + (o.points ?? 0), 0)}
+                          </Badge>
+                        </div>
+                      )}
+
+                      {(!config || config.options.length < MAX_PARAGRAPH_VOTING_OPTIONS) && (
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
@@ -331,11 +599,30 @@ export default function ParagraphLineSelectGame() {
           </div>
         </CardContent>
       </Card>
+
+      <GameSummaryCard totalQuestions={totalQuestions} totalPoints={totalPoints} />
     </div>
   );
 
   const previewContent = (
     <div className="space-y-6">
+      <div className="space-y-2">
+        {title && (
+          <h2 className="text-lg font-semibold">{title}</h2>
+        )}
+        {description && (
+          <p className="text-sm text-muted-foreground">{description}</p>
+        )}
+      </div>
+      <Alert
+        variant="default"
+        className="bg-slate-100 border-slate-200 text-slate-800 [&_[data-slot=alert-title]]:text-slate-900 [&_[data-slot=alert-description]]:text-slate-700"
+      >
+        <AlertTitle>Preview only</AlertTitle>
+        <AlertDescription>
+          The correct/incorrect icons are for preview only and vanish in production so players do not see them during play.
+        </AlertDescription>
+      </Alert>
       <Card>
         <CardContent className="p-6">
           <div className="relative">
@@ -343,7 +630,10 @@ export default function ParagraphLineSelectGame() {
               {sentences.map((sentence, index) => {
                 const isHovered = hoveredIndex === index;
                 const config = getSentenceConfig(index);
-                const selectedOptionId = getSelectedAnswer(index + 1);
+                const sentenceNum = index + 1;
+                const selectedOptionIds = config && hasMultipleCorrectOptions(config)
+                  ? getSelectedAnswers(sentenceNum)
+                  : (getSelectedAnswer(sentenceNum) != null ? [getSelectedAnswer(sentenceNum)!] : []);
 
                 return (
                   <Popover
@@ -373,34 +663,40 @@ export default function ParagraphLineSelectGame() {
                       </span>
                     </PopoverTrigger>
                     {config && config.options.length > 0 && (
-                      <PopoverContent 
-                        className="w-auto p-2" 
+                      <PopoverContent
+                        className="w-full max-w-[700px] p-3 flex flex-col gap-2"
                         align="start"
                         onMouseEnter={() => setOpenPopoverIndex(index)}
                         onMouseLeave={() => setOpenPopoverIndex(null)}
                       >
-                        <div className="space-y-1">
+                        {config && hasMultipleCorrectOptions(config) && (
+                          <Badge className="shrink-0 w-fit bg-orange-100 text-orange-800 border-orange-200">
+                            Multiple answers can be correct here.
+                          </Badge>
+                        )}
+                        <div className="flex flex-wrap gap-2">
                           {config.options.map((option) => {
-                            const isOptionSelected = selectedOptionId === option.id;
+                            const isOptionSelected = selectedOptionIds.includes(option.id);
                             return (
                               <button
                                 key={option.id}
+                                type="button"
                                 onClick={() => {
-                                  handleAnswerSelect(index + 1, option.id);
+                                  handleAnswerSelect(sentenceNum, option.id);
                                   setOpenPopoverIndex(null);
                                 }}
-                                className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors min-w-0 shrink-0 ${
                                   isOptionSelected
                                     ? 'bg-black text-white'
                                     : 'bg-white border border-gray-300 hover:bg-gray-50'
                                 }`}
                               >
                                 {option.isCorrect ? (
-                                  <CheckCircle2 className="w-4 h-4" />
+                                  <CheckCircle2 className="w-4 h-4 shrink-0" />
                                 ) : (
-                                  <X className="w-4 h-4" />
+                                  <X className="w-4 h-4 shrink-0" />
                                 )}
-                                <span className="text-sm">{option.text}</span>
+                                <span className="text-sm truncate max-w-[600px]">{option.text}</span>
                               </button>
                             );
                           })}
@@ -417,45 +713,111 @@ export default function ParagraphLineSelectGame() {
 
       <Separator />
 
-      {/* Selected Answers List */}
-      {selectedAnswers.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">
-            Selected Answers
-          </h3>
-          <div className="space-y-1">
-            {selectedAnswers
-              .sort((a, b) => a.sentenceNumber - b.sentenceNumber)
-              .map((answer) => {
-                const config = sentenceConfigs.find(
-                  (c) => c.sentenceNumber === answer.sentenceNumber
-                );
-                const option = config?.options.find(
-                  (opt) => opt.id === answer.optionId
-                );
+      {/* Results table: only visible after user clicks Check */}
+      {resultsRevealed && (() => {
+        const configsWithOptions = sentenceConfigs.filter((c) => c.options.length > 0);
+        if (configsWithOptions.length === 0) return null;
 
-                if (!option) return null;
+        let totalEarned = 0;
+        let totalMax = 0;
 
-                return (
-                  <div
-                    key={answer.sentenceNumber}
-                    className="flex items-center gap-3 text-sm"
-                  >
-                    <span className="text-gray-500 min-w-[40px]">
-                      {answer.sentenceNumber}.
-                    </span>
-                    {option.isCorrect ? (
-                      <CheckCircle2 className="w-4 h-4 text-black flex-shrink-0" />
-                    ) : (
-                      <X className="w-4 h-4 text-black flex-shrink-0" />
-                    )}
-                    <span className="text-foreground">{option.text}</span>
-                  </div>
-                );
-              })}
+        return (
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Selected Answers</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Statement</TableHead>
+                  <TableHead>Selected answers</TableHead>
+                  <TableHead>Result</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {configsWithOptions.map((config) => {
+                  const sentenceNumber = config.sentenceNumber;
+                  const multi = hasMultipleCorrectOptions(config);
+                  const selectedIds = multi
+                    ? getSelectedAnswers(sentenceNumber)
+                    : getSelectedAnswer(sentenceNumber) != null
+                      ? [getSelectedAnswer(sentenceNumber)!]
+                      : [];
+                  const result = getQuestionResult(config, selectedIds);
+                  totalEarned += result.earned;
+                  totalMax += result.max;
+
+                  const statementTruncated =
+                    config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
+                      ? config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
+                      : config.sentenceText;
+                  const selectedAnswerTexts = selectedIds
+                    .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
+                    .filter(Boolean);
+
+                  return (
+                    <TableRow key={config.sentenceNumber}>
+                      <TableCell className="max-w-[200px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="truncate block cursor-default">
+                              {statementTruncated}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-sm">
+                            {config.sentenceText}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell className="max-w-[200px]">
+                        {selectedAnswerTexts.length === 0 ? (
+                          '—'
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {selectedAnswerTexts.map((text, i) => (
+                              <Tooltip key={i}>
+                                <TooltipTrigger asChild>
+                                  <span className="truncate block cursor-default">{text}</span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-sm">
+                                  {text}
+                                </TooltipContent>
+                              </Tooltip>
+                            ))}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-muted-foreground text-sm">
+                        {result.earned}/{result.max}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={2} className="font-medium">
+                    Overall
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {totalEarned}/{totalMax}
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
+      <div className="flex items-center justify-start">
+        <Button
+          type="button"
+          onClick={handleCheckAnswers}
+          disabled={!hasAtLeastOneSelection}
+          className="gap-2"
+        >
+          <Check className="size-4" />
+          Check
+        </Button>
+      </div>
     </div>
   );
 

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { LayoutDashboard, Settings } from 'lucide-react';
 import GameNodeSettings from './GameNodeSettings';
-import { Button } from '@/components/ui/button';
-import { GameNodePointsContext } from '../contexts/GameNodePointsContext';
+import { GameNodePointsContext } from '@/contexts/game-studio';
 
 interface GameNodeLayoutProps {
   nodeId?: string;
-  gameComponent?: React.ComponentType;
+  gameComponent?: React.ComponentType<{ initialData?: unknown }>;
   overviewContent?: React.ReactNode;
+  initialData?: unknown;
   onDelete?: () => void;
   showDelete?: boolean;
   points?: number;
@@ -19,8 +19,7 @@ export default function GameNodeLayout({
   nodeId,
   gameComponent: GameComponent,
   overviewContent,
-  onDelete,
-  showDelete = false,
+  initialData,
   points,
   onPointsChange,
   hideSettingsTab = false,
@@ -68,7 +67,7 @@ export default function GameNodeLayout({
               <div>
                 {overviewContent && <div className="border-t pt-6 mt-6" />}
                 <GameNodePointsContext.Provider value={{ points, onPointsChange }}>
-                  <GameComponent />
+                  <GameComponent initialData={initialData} />
                 </GameNodePointsContext.Provider>
               </div>
             )}
