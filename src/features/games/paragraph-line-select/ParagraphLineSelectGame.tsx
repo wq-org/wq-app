@@ -369,10 +369,10 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
                       )}
                       <div className="flex items-center justify-between mb-2">
                         <Label className="text-sm font-medium">
-                          Voting Options (max {MAX_PARAGRAPH_VOTING_OPTIONS})
+                          Voting Options
                         </Label>
                         <span className="text-xs text-gray-500">
-                          {config?.options.length || 0}/{MAX_PARAGRAPH_VOTING_OPTIONS}
+                          {MAX_PARAGRAPH_VOTING_OPTIONS - (config?.options.length || 0)}/{MAX_PARAGRAPH_VOTING_OPTIONS} slots left
                         </span>
                       </div>
 
@@ -596,11 +596,7 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp }
         </CardContent>
       </Card>
 
-      <GameSummaryCard
-        totalQuestions={totalQuestions}
-        totalPoints={totalPoints}
-        description={description}
-      />
+      <GameSummaryCard totalQuestions={totalQuestions} totalPoints={totalPoints} />
     </div>
   );
 
