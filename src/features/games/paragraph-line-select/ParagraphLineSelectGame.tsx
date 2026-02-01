@@ -24,6 +24,7 @@ import GameResultTable from '@/features/games/components/GameResultTable';
 import { useGameEditorContext } from '@/contexts/game-studio';
 import { Card, CardContent } from '@/components/ui/card';
 import { DEFAULT_PARAGRAPH, QUESTION_SEPARATOR, MAX_PARAGRAPH_VOTING_OPTIONS } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
 import type {
   VotingOption,
   SentenceConfig,
@@ -58,7 +59,9 @@ function getQuestionMaxPoints(config: SentenceConfig): number {
 export default function ParagraphLineSelectGame({ initialData: initialDataProp, onDelete }: ParagraphLineSelectGameProps = {}) {
   const initialData = initialDataProp as ParagraphGameInitialData | null | undefined;
   const [title, setTitle] = useState<string>(initialData?.title ?? '');
-  const [description, setDescription] = useState<string>(initialData?.description ?? '');
+  const [description, setDescription] = useState<string>(
+    constrainDescription(initialData?.description ?? '')
+  );
   const [paragraphText, setParagraphText] = useState<string>(
     initialData?.paragraphText ?? DEFAULT_PARAGRAPH
   );

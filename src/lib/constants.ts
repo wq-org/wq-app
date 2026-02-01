@@ -13,4 +13,7 @@ export const MAX_IMAGE_TERM_OPTIONS = 4;
 /** Max square markers in Image Pin Mark game. */
 export const MAX_IMAGE_PIN_SQUARES = 4;
 
+/** Max character length for game/node description fields. */
+export const MAX_DESCRIPTION_LENGTH = 1000;
+
 export const DEFAULT_PARAGRAPH = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. // I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. // Sometimes just going for a walk or drinking enough water can boost your energy levels.`;

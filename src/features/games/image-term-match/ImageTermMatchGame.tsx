@@ -16,6 +16,7 @@ import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel';
 import GameResultTable from '@/features/games/components/GameResultTable';
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
 import { MAX_IMAGE_TERM_OPTIONS } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
 import { useGameEditorContext } from '@/contexts/game-studio';
 import type { Term, ImageTermMatchGameProps, ImageTermMatchGameData } from './types/imageTermMatch.types';
 
@@ -30,7 +31,9 @@ function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined)
 export default function ImageTermMatchGame({ initialData: initialDataProp, onDelete }: ImageTermMatchGameProps = {}) {
     const initialData = initialDataProp as ImageTermMatchGameData | null | undefined;
     const [title, setTitle] = useState<string>(initialData?.title ?? '');
-    const [description, setDescription] = useState<string>(initialData?.description ?? '');
+    const [description, setDescription] = useState<string>(
+        constrainDescription(initialData?.description ?? '')
+    );
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null);
     const [terms, setTerms] = useState<Term[]>(() => getInitialTerms(initialData));

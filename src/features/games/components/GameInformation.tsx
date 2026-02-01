@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
 
 export interface GameInformationProps {
   title: string;
@@ -33,12 +35,18 @@ export default function GameInformation({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="description">Description</Label>
+            <span className="text-xs text-muted-foreground">
+              {description.length}/{MAX_DESCRIPTION_LENGTH}
+            </span>
+          </div>
           <Textarea
             id="description"
             placeholder="Enter game description"
             value={description}
-            onChange={(e) => onDescriptionChange(e.target.value)}
+            onChange={(e) => onDescriptionChange(constrainDescription(e.target.value))}
+            maxLength={MAX_DESCRIPTION_LENGTH}
             className="min-h-[80px]"
           />
         </div>

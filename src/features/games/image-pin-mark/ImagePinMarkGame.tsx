@@ -21,6 +21,10 @@ import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel';
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
 import { useGameEditorContext } from '@/contexts/game-studio';
 import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
+
+/** Default size (width/height) for new squares; matches SquareMarker DEFAULT_SIZE. */
+const DEFAULT_SQUARE_SIZE = 80;
 
 interface Square {
   id: number;
@@ -59,11 +63,13 @@ function DraggablePin({
   position,
   squareId,
   variant,
+  resultsRevealed,
 }: {
   id: string;
   position?: { x: number; y: number };
   squareId?: number;
   variant?: ImagePinVariant;
+  resultsRevealed?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -103,7 +109,7 @@ function DraggablePin({
       {...attributes}
       className={cn(
         'cursor-grab active:cursor-grabbing',
-        squareId && 'ring-4 ring-blue-500 rounded-full'
+        squareId && !resultsRevealed && 'ring-4 ring-blue-500 rounded-full'
       )}
     >
       <ImagePin variant={variant ?? 'default'} />
@@ -132,7 +138,9 @@ function DroppableArea({ children, id }: { children: React.ReactNode; id: string
 export default function ImagePinMarkGame({ initialData: initialDataProp, onDelete }: ImagePinMarkGameProps = {}) {
   const initialData = initialDataProp as ImagePinMarkInitialData | null | undefined;
   const [title, setTitle] = useState<string>(initialData?.title ?? '');
-  const [description, setDescription] = useState<string>(initialData?.description ?? '');
+  const [description, setDescription] = useState<string>(
+    constrainDescription(initialData?.description ?? '')
+  );
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null);
   const [squares, setSquares] = useState<Square[]>(initialData?.squares ?? []);
   const [pinPositions, setPinPositions] = useState<PinPosition[]>(initialData?.pinPositions ?? []);
@@ -197,27 +205,16 @@ export default function ImagePinMarkGame({ initialData: initialDataProp, onDelet
     const rect = imageContainerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const width = 80;
-    const height = 80;
     setRefDimensions((prev) => prev ?? { width: rect.width, height: rect.height });
 
     const newSquare: Square = {
       id: squares.length + 1,
       x,
       y,
-      width,
-      height,
+      width: DEFAULT_SQUARE_SIZE,
+      height: DEFAULT_SQUARE_SIZE,
       question: '',
     };
-
-    // Log square coordinates and dimensions
-    console.log('Square created:', {
-      id: newSquare.id,
-      x: newSquare.x,
-      y: newSquare.y,
-      width: newSquare.width,
-      height: newSquare.height,
-    });
 
     setSquares([...squares, newSquare]);
   };
@@ -254,15 +251,16 @@ export default function ImagePinMarkGame({ initialData: initialDataProp, onDelet
     0
   );
 
-  // Check if a point is within a square's bounds
+  /**
+   * Hit test: point (px, py) is inside the square.
+   * Square uses center-based rect, same geometry as SquareMarker (translate(-50%, -50%)).
+   * Bounds are inclusive so a point on the edge counts as inside.
+   */
   const isPointInSquare = (px: number, py: number, square: Square): boolean => {
-    // Square is centered at (square.x, square.y) with transform translate(-50%, -50%)
-    // So the actual bounds are:
     const left = square.x - square.width / 2;
     const right = square.x + square.width / 2;
     const top = square.y - square.height / 2;
     const bottom = square.y + square.height / 2;
-
     return px >= left && px <= right && py >= top && py <= bottom;
   };
 
@@ -295,93 +293,82 @@ export default function ImagePinMarkGame({ initialData: initialDataProp, onDelet
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
-    // Always clean up mouse listener
-    if ((window as any).__dragCleanup) {
-      (window as any).__dragCleanup();
+
+    const cleanup = (window as Window & { __dragCleanup?: () => void }).__dragCleanup;
+    if (cleanup) {
+      cleanup();
     }
-    
-    if (over && over.id === 'image-drop-area') {
-      if (previewImageRef.current) {
-        const rect = previewImageRef.current.getBoundingClientRect();
-        const existingPin = pinPositions.find((p) => p.id === active.id);
-        
-        let x: number;
-        let y: number;
 
-        // Get drop coordinates - use tracked drag position first
-        const finalPosition = dragPositionRef.current || dragPosition;
-        if (finalPosition) {
-          x = finalPosition.x;
-          y = finalPosition.y;
-        } else if (over.rect) {
-          // Fallback to center of drop zone
-          x = over.rect.left - rect.left + over.rect.width / 2;
-          y = over.rect.top - rect.top + over.rect.height / 2;
-        } else if (event.activatorEvent) {
-          // Use the mouse event coordinates
-          const mouseEvent = event.activatorEvent as MouseEvent;
-          x = mouseEvent.clientX - rect.left;
-          y = mouseEvent.clientY - rect.top;
-        } else if (existingPin && event.delta) {
-          // Update existing position with delta
-          x = existingPin.x + event.delta.x;
-          y = existingPin.y + event.delta.y;
-        } else {
-          console.warn('Could not determine drop position', { over, event, dragPosition });
-          setDragPosition(null);
-          return;
+    if (over && over.id === 'image-drop-area' && previewImageRef.current) {
+      const rect = previewImageRef.current.getBoundingClientRect();
+      const existingPin = pinPositions.find((p) => p.id === active.id);
+
+      // Refresh ref dimensions at drop so scaling stays accurate after resize
+      if (imageContainerRef.current) {
+        const editorRect = imageContainerRef.current.getBoundingClientRect();
+        if (editorRect.width > 0 && editorRect.height > 0) {
+          setRefDimensions({ width: editorRect.width, height: editorRect.height });
         }
-
-        // Clamp to image bounds
-        x = Math.max(0, Math.min(rect.width, x));
-        y = Math.max(0, Math.min(rect.height, y));
-
-        // Scale drop coords from preview image space to editor/reference space
-        // so isPointInSquare uses the same coordinate system as square.x, square.y
-        let hitX = x;
-        let hitY = y;
-        if (refDimensions && rect.width > 0 && rect.height > 0) {
-          hitX = x * (refDimensions.width / rect.width);
-          hitY = y * (refDimensions.height / rect.height);
-        }
-
-        console.log(`Pin ${active.id} dropped at:`, { x, y, hitX, hitY, rect: { width: rect.width, height: rect.height } });
-
-        // Check if pin is within any square
-        let squareId: number | undefined;
-        for (const square of squares) {
-          if (isPointInSquare(hitX, hitY, square)) {
-            squareId = square.id;
-            console.log(`✅ Pin ${active.id} placed in Square ${square.id}`, {
-              pinPosition: { x, y },
-              square: {
-                id: square.id,
-                x: square.x,
-                y: square.y,
-                width: square.width,
-                height: square.height,
-              },
-            });
-            break;
-          }
-        }
-
-        if (!squareId) {
-          console.log(`Pin ${active.id} placed outside all squares`);
-        }
-
-        // Add or update pin position (store display coords x,y for rendering)
-        setPinPositions((prev) => {
-          const existing = prev.find((p) => p.id === active.id);
-          if (existing) {
-            return prev.map((p) => (p.id === active.id ? { ...p, x, y, squareId } : p));
-          }
-          return [...prev, { id: active.id as string, x, y, squareId }];
-        });
       }
+
+      let dropX: number;
+      let dropY: number;
+      const finalPosition = dragPositionRef.current || dragPosition;
+      if (finalPosition) {
+        dropX = finalPosition.x;
+        dropY = finalPosition.y;
+      } else if (over.rect) {
+        dropX = over.rect.left - rect.left + over.rect.width / 2;
+        dropY = over.rect.top - rect.top + over.rect.height / 2;
+      } else if (event.activatorEvent) {
+        const mouseEvent = event.activatorEvent as MouseEvent;
+        dropX = mouseEvent.clientX - rect.left;
+        dropY = mouseEvent.clientY - rect.top;
+      } else if (existingPin && event.delta) {
+        dropX = existingPin.x + event.delta.x;
+        dropY = existingPin.y + event.delta.y;
+      } else {
+        setDragPosition(null);
+        return;
+      }
+
+      const clampedX = Math.max(0, Math.min(rect.width, dropX));
+      const clampedY = Math.max(0, Math.min(rect.height, dropY));
+
+      // Scale from preview image space to reference (editor) space for hit test
+      const canScale =
+        refDimensions &&
+        refDimensions.width > 0 &&
+        refDimensions.height > 0 &&
+        rect.width > 0 &&
+        rect.height > 0;
+      const hitX = canScale
+        ? clampedX * (refDimensions!.width / rect.width)
+        : clampedX;
+      const hitY = canScale
+        ? clampedY * (refDimensions!.height / rect.height)
+        : clampedY;
+
+      // Find which square contains the pin center; overlap resolved by first match in array order
+      let matchedSquareId: number | undefined;
+      for (const square of squares) {
+        if (isPointInSquare(hitX, hitY, square)) {
+          matchedSquareId = square.id;
+          break;
+        }
+      }
+
+      setPinPositions((prev) => {
+        const existing = prev.find((p) => p.id === active.id);
+        if (existing) {
+          return prev.map((p) =>
+            p.id === active.id ? { ...p, x: clampedX, y: clampedY, squareId: matchedSquareId } : p
+          );
+        }
+        return [...prev, { id: active.id as string, x: clampedX, y: clampedY, squareId: matchedSquareId }];
+      });
     }
-    
+
     setDragPosition(null);
   };
 
@@ -629,6 +616,7 @@ export default function ImagePinMarkGame({ initialData: initialDataProp, onDelet
                             <DraggablePin
                               key={pinId}
                               id={pinId}
+                              resultsRevealed={resultsRevealed}
                             />
                           );
                         })}

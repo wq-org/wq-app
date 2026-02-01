@@ -15,6 +15,8 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import type { IfElseGameDialogProps } from '../types/game-studio.types';
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
 import GameNodeLayout from './GameNodeLayout';
 
 export default function IfElseGameDialog({
@@ -109,15 +111,15 @@ export default function IfElseGameDialog({
                 <div className="flex items-center justify-between">
                   <Label htmlFor="description">Description</Label>
                   <span className="text-xs text-muted-foreground">
-                    {description.length}/1000
+                    {description.length}/{MAX_DESCRIPTION_LENGTH}
                   </span>
                 </div>
                 <Textarea
                   id="description"
                   placeholder="Describe the condition logic"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  maxLength={1000}
+                  onChange={(e) => setDescription(constrainDescription(e.target.value))}
+                  maxLength={MAX_DESCRIPTION_LENGTH}
                   rows={4}
                 />
               </div>

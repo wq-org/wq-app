@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import type { EndGameDialogProps } from '../types/game-studio.types';
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
 import GameNodeLayout from './GameNodeLayout';
 
 interface EndGameDialogPropsWithDelete extends EndGameDialogProps {
@@ -82,15 +84,15 @@ export default function EndGameDialog({
                 <div className="flex items-center justify-between">
                   <Label htmlFor="description">Description</Label>
                   <span className="text-xs text-muted-foreground">
-                    {description.length}/1000
+                    {description.length}/{MAX_DESCRIPTION_LENGTH}
                   </span>
                 </div>
                 <Textarea
                   id="description"
                   placeholder="Enter end message"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  maxLength={1000}
+                  onChange={(e) => setDescription(constrainDescription(e.target.value))}
+                  maxLength={MAX_DESCRIPTION_LENGTH}
                   rows={4}
                 />
               </div>

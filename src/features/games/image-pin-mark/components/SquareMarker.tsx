@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 const DEFAULT_SIZE = 80;
@@ -83,6 +83,7 @@ export default function SquareMarker({
     [pointerEvents, onDelete]
   );
 
+  // Bounds are center (x, y) ± half width/height; same geometry as hit test in ImagePinMarkGame
   return (
     <div
       className={cn(

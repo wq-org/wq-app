@@ -905,6 +905,11 @@ export default function GameEditorCanvas() {
         onOpenChange={setIsStartDialogOpen}
         onSave={handleStartSave}
         nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
+        initialData={
+          nodes.find((n) => n.type === 'gameStart')?.data as
+            | { title?: string; description?: string }
+            | undefined
+        }
       />
       <IfElseGameDialog
         open={isIfElseDialogOpen}
