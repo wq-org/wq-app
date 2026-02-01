@@ -135,7 +135,7 @@ export default function CommandPalette({
                                         const Icon = item.icon;
                                         return (
                                             <Tooltip.Root key={item.id}>
-                                                <Tooltip.Trigger asChild>
+                                                 <Tooltip.Trigger asChild>
                                                     <ToggleGroup.Item
                                                         value={item.id}
                                                         onClick={() =>
@@ -177,13 +177,12 @@ export default function CommandPalette({
                             </ToggleGroup.Root>
 
                             {/* Separator after third icon */}
-                            <Separator.Root
+                            {roleBasedUserCommands.slice(3).length !== 0 && (     
+                                <Separator.Root
                                 decorative
                                 orientation="vertical"
                                 className="mx-2 h-12 w-px bg-border"
-                            />
-
-                            {/* Remaining primary items */}
+                            />)}
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}
@@ -232,13 +231,14 @@ export default function CommandPalette({
                                     );
                                 })}
                             </ToggleGroup.Root>
-
                             {/* System group */}
-                            <Separator.Root
+                            {roleBasedUserCommands.slice(3).length !== 0 && (     
+                                <Separator.Root
                                 decorative
                                 orientation="vertical"
                                 className="mx-2 h-12 w-px bg-border"
-                            />
+                            />)}
+
                             <ToggleGroup.Root
                                 type="single"
                                 value={active}

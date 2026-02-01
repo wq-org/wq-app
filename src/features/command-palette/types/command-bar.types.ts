@@ -5,7 +5,7 @@ import type { ComponentType } from 'react';
  * Known imperative actions triggered from the command bar.
  * Extend this union when new actions are introduced.
  */
-export type ActionId = 'search' | 'upload' | 'feedback' | 'backwards' | 'forwards' | 'add' | 'pan' | 'select' | 'undo' | 'redo';
+export type ActionId = 'search' | 'upload' | 'feedback' | 'backwards' | 'forwards' | 'add' | 'pan' | 'select' ;
 
 /**
  * Single clickable element in the command bar.

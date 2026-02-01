@@ -11,19 +11,21 @@ interface AppWrapperProps {
     commandPaletteRole?: 'teacher' | 'student' | 'admin' | 'game-studio';
 }
 
-function AppWrapper({ children, role, className, commandPaletteRole }: AppWrapperProps) {
+function AppWrapper({
+    children,
+    role,
+    className,
+    commandPaletteRole,
+}: AppWrapperProps) {
     const paletteRole = commandPaletteRole || role;
-    
-    return (       
-        <>
-         <Navigation />
-        <Container className={cn(className)}>
-      {children}
-        </Container>
 
-        <CommandPalette role={paletteRole} />
+    return (
+        <>
+            <Navigation />
+            <Container className={cn(className)}>{children}</Container>
+            <CommandPalette role={paletteRole} />
         </>
-);
+    );
 }
 
 export default AppWrapper;
