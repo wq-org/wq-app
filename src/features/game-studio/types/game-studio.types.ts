@@ -164,6 +164,9 @@ export interface GameCardProps {
   route?: string;
   button: string;
   onPlay?: () => void;
+  /** Optional image URL for the top of the card. */
+  imageUrl?: string;
+
 }
 
 export interface GameCardListProps {
