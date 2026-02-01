@@ -114,6 +114,8 @@ export default function GameNodeDialog({
       onSave?.({ points, paragraphGameData: gameData });
     } else if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
       onSave?.({ points, imageTermGameData: gameData });
+    } else if (nodeType === 'gameImagePin' && gameData && typeof gameData === 'object') {
+      onSave?.({ points, imagePinGameData: gameData });
     } else {
       onSave?.({ points });
     }

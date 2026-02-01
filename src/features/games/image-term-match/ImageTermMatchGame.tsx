@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Plus, X, Check, CheckCircle2, Circle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, X, Check, CheckCircle2, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import FileDropzone from '@/features/upload-files/components/FileDropzone';
 import GameLayout from '@/components/layout/GameLayout';
 import GameInformation from '@/features/games/components/GameInformation';
+import GameInformationCard from '@/features/games/components/GameInformationCard';
+import GamePreviewAlert from '@/features/games/components/GamePreviewAlert';
 import GameSummaryCard from '@/features/games/components/GameSummaryCard';
+import PointsInput from '@/features/games/components/PointsInput';
+import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel';
 import GameResultTable from '@/features/games/components/GameResultTable';
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
 import { MAX_IMAGE_TERM_OPTIONS } from '@/lib/constants';
@@ -34,7 +37,6 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
     const [previewSelectedTermIds, setPreviewSelectedTermIds] = useState<string[]>([]);
     const [resultsRevealed, setResultsRevealed] = useState(false);
     const [editingPoints, setEditingPoints] = useState<Record<string, string>>({});
-    const [previewDescriptionExpanded, setPreviewDescriptionExpanded] = useState(false);
 
     const gameEditor = useGameEditorContext();
 
@@ -174,9 +176,7 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
                         <div className="flex items-center justify-between">
                             <h3 className="font-bold text-base leading-none">Terms</h3>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-500">
-                                    {MAX_IMAGE_TERM_OPTIONS - terms.length}/{MAX_IMAGE_TERM_OPTIONS} slots left
-                                </span>
+                                <SlotsLeftLabel current={terms.length} max={MAX_IMAGE_TERM_OPTIONS} />
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -237,10 +237,7 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
                                         {term.isCorrect && (
                                             <div className="flex items-center gap-2 shrink-0">
                                                 <Label className="text-xs text-muted-foreground whitespace-nowrap">Points</Label>
-                                                <Input
-                                                    type="text"
-                                                    inputMode="decimal"
-                                                    placeholder="pts"
+                                                <PointsInput
                                                     value={
                                                         editingPoints[term.id] !== undefined
                                                             ? editingPoints[term.id]
@@ -263,7 +260,6 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
                                                             return next;
                                                         });
                                                     }}
-                                                    className="w-16 h-8 text-xs"
                                                 />
                                             </div>
                                         )}
@@ -297,59 +293,10 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
             ? statementText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
             : statementText;
 
-    const PREVIEW_DESCRIPTION_TRUNCATE = 600;
-    const isPreviewDescriptionLong =
-        typeof description === 'string' && description.length > PREVIEW_DESCRIPTION_TRUNCATE;
-    const previewDescriptionDisplay =
-        description &&
-        (isPreviewDescriptionLong && !previewDescriptionExpanded
-            ? `${description.slice(0, PREVIEW_DESCRIPTION_TRUNCATE)}…`
-            : description);
-
     const previewContent = (
         <div className="space-y-6">
-            <div className="space-y-2">
-                {title && (
-                    <h2 className="text-lg font-semibold">{title}</h2>
-                )}
-                {description && (
-                    <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">{previewDescriptionDisplay}</p>
-                        {isPreviewDescriptionLong && (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2 text-muted-foreground hover:text-foreground"
-                                onClick={() => setPreviewDescriptionExpanded((prev) => !prev)}
-                            >
-                                {previewDescriptionExpanded ? (
-                                    <>
-                                        <ChevronUp className="size-4" aria-hidden />
-                                        Show less
-                                    </>
-                                ) : (
-                                    <>
-                                        <ChevronDown className="size-4" aria-hidden />
-                                        Show more
-                                    </>
-                                )}
-                            </Button>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            <Alert
-                variant="default"
-                className="bg-slate-100 border-slate-200 text-slate-800 [&_[data-slot=alert-title]]:text-slate-900 [&_[data-slot=alert-description]]:text-slate-700"
-            >
-                <AlertTitle>Preview only</AlertTitle>
-                <AlertDescription>
-                    The correct/incorrect styling is for preview only and is hidden in production so players do not see it during play.
-                </AlertDescription>
-            </Alert>
-
+            <GameInformationCard title={title} description={description} />
+            <GamePreviewAlert />
             <Card>
                 <CardContent className="p-6">
                     <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
@@ -464,7 +411,7 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
 
     // Settings Content
     const settingsContent = (
-        <div className="p-6 flex flex-col gap-6">
+        <div className="py-6 px-0 flex flex-col gap-6">
             {onDelete && (
                 <div>
                     <p className="text-muted-foreground text-sm mb-3">

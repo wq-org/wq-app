@@ -122,6 +122,7 @@ export interface GameNodeDialogProps {
     points?: number;
     paragraphGameData?: unknown;
     imageTermGameData?: unknown;
+    imagePinGameData?: unknown;
   }) => void;
   onDelete?: () => void;
 }

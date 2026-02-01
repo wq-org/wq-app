@@ -695,6 +695,7 @@ export default function GameEditorCanvas() {
     points?: number;
     paragraphGameData?: unknown;
     imageTermGameData?: unknown;
+    imagePinGameData?: unknown;
   }) => {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
@@ -707,10 +708,13 @@ export default function GameEditorCanvas() {
           if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
             Object.assign(nextData, data.imageTermGameData);
           }
+          if (data.imagePinGameData != null && typeof data.imagePinGameData === 'object') {
+            Object.assign(nextData, data.imagePinGameData);
+          }
           return { ...node, data: nextData };
         })
       );
-      toast.success('Points saved');
+      toast.success('Node saved');
     }
   };
 
