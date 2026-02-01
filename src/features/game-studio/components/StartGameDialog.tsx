@@ -22,11 +22,10 @@ export default function StartGameDialog({
 }: StartGameDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [rounds, setRounds] = useState('');
 
   const handleSave = () => {
-    if (title.trim() && description.trim() && rounds.trim()) {
-      onSave?.({ title, description, rounds });
+    if (title.trim() && description.trim()) {
+      onSave?.({ title, description });
       handleCancel();
     }
   };
@@ -34,7 +33,6 @@ export default function StartGameDialog({
   const handleCancel = () => {
     setTitle('');
     setDescription('');
-    setRounds('');
     onOpenChange(false);
   };
 
@@ -44,7 +42,7 @@ export default function StartGameDialog({
         <DialogHeader>
           <DialogTitle>Configure Start Node</DialogTitle>
           <DialogDescription className="sr-only">
-            Configure the start node with title, description, and number of rounds
+            Configure the start node with title and description
           </DialogDescription>
         </DialogHeader>
         <GameNodeLayout
@@ -76,16 +74,6 @@ export default function StartGameDialog({
               rows={4}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="rounds">Rounds</Label>
-            <Input
-              id="rounds"
-              type="number"
-              placeholder="Enter number of rounds"
-              value={rounds}
-              onChange={(e) => setRounds(e.target.value)}
-            />
-          </div>
         </div>
           }
         />
@@ -95,7 +83,7 @@ export default function StartGameDialog({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={!title.trim() || !description.trim() || !rounds.trim()}
+            disabled={!title.trim() || !description.trim()}
           >
             Save
           </Button>

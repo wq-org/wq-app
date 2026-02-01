@@ -93,6 +93,7 @@ export default function IfElseGameDialog({
         </DialogHeader>
         <GameNodeLayout
           nodeId={nodeId}
+          onDelete={onDelete ? handleDelete : undefined}
           overviewContent={
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
@@ -177,28 +178,16 @@ export default function IfElseGameDialog({
             </div>
           }
         />
-        <DialogFooter className="flex items-center border-t border-gray-200 pt-4 justify-between gap-4">
-          <div className="flex-shrink-0">
-            {onDelete && (
-              <Button
-                variant="delete"
-                onClick={handleDelete}
-              >
-                Delete Node
-              </Button>
-            )}
-          </div>
-          <div className="flex gap-2 ml-auto">
-            <Button variant="outline" onClick={handleCancel}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={!title.trim() || !description.trim()}
-            >
-              Save
-            </Button>
-          </div>
+        <DialogFooter className="flex items-center border-t border-gray-200 pt-4 gap-2 justify-end">
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={!title.trim() || !description.trim()}
+          >
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

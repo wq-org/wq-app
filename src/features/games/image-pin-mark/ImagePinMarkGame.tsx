@@ -138,7 +138,6 @@ export default function ImagePinMarkGame({ initialData: initialDataProp, onDelet
   const [pinPositions, setPinPositions] = useState<PinPosition[]>(initialData?.pinPositions ?? []);
   const [editingPoints, setEditingPoints] = useState<Record<number, string>>({});
   const [resultsRevealed, setResultsRevealed] = useState(false);
-  const [pinVariant] = useState<'default' | 'secondary'>('default');
   const [refDimensions, setRefDimensions] = useState<{ width: number; height: number } | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const previewImageRef = useRef<HTMLImageElement>(null);
@@ -675,7 +674,7 @@ export default function ImagePinMarkGame({ initialData: initialDataProp, onDelet
                     const statementText = square.question || 'No question set';
                     const statementTruncated =
                       statementText.length > STATEMENT_TRUNCATE_LENGTH
-                        ? statementText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
+                        ? `${statementText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
                         : statementText;
                     const placementText = pin
                       ? correct

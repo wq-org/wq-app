@@ -22,7 +22,6 @@ import AppWrapper from '@/components/layout/AppWrapper';
 import SettingsDrawer from './SettingsDrawer';
 import PreviewDrawer from './PreviewDrawer';
 import PublishDrawer from './PublishDrawer';
-import type { HistoryState } from '../types/game-studio.types';
 import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants';
 
 const nodeTypes = {
@@ -46,7 +45,7 @@ const initialEdges: Edge[] = [];
 
 export default function GameEditorCanvas() {
   // ========== Context & State Management ==========
-  const { nodes: contextNodes, setNodes: setContextNodes, addNode: addContextNode } = useGameStudioContext();
+  const { nodes: contextNodes, setNodes: setContextNodes, setEdges: setContextEdges, addNode: addContextNode } = useGameStudioContext();
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   
@@ -71,48 +70,7 @@ export default function GameEditorCanvas() {
   const isDroppingRef = useRef(false); // Prevent duplicate drop notifications
   const isSyncingRef = useRef(false);
   const setContextNodesRef = useRef(setContextNodes);
-  
-  // ========== History Management ==========
-  const [history, setHistory] = useState<HistoryState[]>([{ nodes: initialNodes, edges: initialEdges }]);
-  const [historyIndex, setHistoryIndex] = useState(0);
-
-  // ========== History Functions ==========
-  const saveToHistory = useCallback((newNodes: Node[], newEdges: Edge[]) => {
-    setHistory((prevHistory) => {
-      const currentIndex = historyIndex;
-      const newHistory = prevHistory.slice(0, currentIndex + 1);
-      newHistory.push({ 
-        nodes: JSON.parse(JSON.stringify(newNodes)), 
-        edges: JSON.parse(JSON.stringify(newEdges)) 
-      });
-      return newHistory.slice(-50); // Keep last 50 states
-    });
-    setHistoryIndex((prevIndex) => Math.min(prevIndex + 1, 49));
-  }, [historyIndex]);
-
-  const handleUndo = useCallback(() => {
-    if (historyIndex > 0) {
-      const prevState = history[historyIndex - 1];
-      setNodes(prevState.nodes);
-      setEdges(prevState.edges);
-      setHistoryIndex(historyIndex - 1);
-      toast.success('Undone');
-    } else {
-      toast.info('Nothing to undo');
-    }
-  }, [history, historyIndex]);
-
-  const handleRedo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      const nextState = history[historyIndex + 1];
-      setNodes(nextState.nodes);
-      setEdges(nextState.edges);
-      setHistoryIndex(historyIndex + 1);
-      toast.success('Redone');
-    } else {
-      toast.info('Nothing to redo');
-    }
-  }, [history, historyIndex]);
+  const setContextEdgesRef = useRef(setContextEdges);
 
   // ========== Validation Functions ==========
   const checkNodeConstraints = useCallback((newNodes: Node[]): { valid: boolean; reason?: string } => {
@@ -174,10 +132,6 @@ export default function GameEditorCanvas() {
       } else if (actionId === 'select') {
         setInteractionMode('select');
         toast.success('Select mode activated');
-      } else if (actionId === 'undo') {
-        handleUndo();
-      } else if (actionId === 'redo') {
-        handleRedo();
       }
     };
 
@@ -185,7 +139,7 @@ export default function GameEditorCanvas() {
     return () => {
       window.removeEventListener('command-action', handleCommandAction);
     };
-  }, [handleUndo, handleRedo]);
+  }, []);
 
   // Sync context nodes with React Flow nodes
   useEffect(() => {
@@ -250,22 +204,23 @@ export default function GameEditorCanvas() {
     }
   }, [contextNodes]);
 
-  // Keep ref updated
+  // Keep refs updated
   useEffect(() => {
     setContextNodesRef.current = setContextNodes;
-  }, [setContextNodes]);
+    setContextEdgesRef.current = setContextEdges;
+  }, [setContextNodes, setContextEdges]);
 
-  // Sync React Flow nodes back to context when they change
+  // Sync React Flow nodes and edges back to context when they change
   useEffect(() => {
     if (!isSyncingRef.current && nodes.length > 0) {
       isSyncingRef.current = true;
       setContextNodesRef.current(nodes);
-      // Reset flag after a short delay
+      setContextEdgesRef.current(edges);
       setTimeout(() => {
         isSyncingRef.current = false;
       }, 100);
     }
-  }, [nodes]);
+  }, [nodes, edges]);
 
   // ========== React Flow Handlers ==========
   const onNodesChange = useCallback(
@@ -300,15 +255,11 @@ export default function GameEditorCanvas() {
             }
             
             // Remove edges connected to deleted node
-            setEdges((prevEdges) => {
-              const newEdges = prevEdges.filter(
+            setEdges((prevEdges) =>
+              prevEdges.filter(
                 e => e.source !== change.id && e.target !== change.id
-              );
-              saveToHistory(newNodes, newEdges);
-              return newEdges;
-            });
-            
-            saveToHistory(newNodes, edges);
+              )
+            );
             toast.success('Node deleted');
             setSelectedNodeId(null);
             return newNodes;
@@ -392,31 +343,19 @@ export default function GameEditorCanvas() {
           return node;
         });
 
-        // Save to history only for significant changes (not just position updates)
-        if (hasNonPositionChanges && JSON.stringify(nodesSnapshot) !== JSON.stringify(nodesWithHandlers)) {
-          saveToHistory(nodesWithHandlers, edges);
-        }
-
         return nodesWithHandlers;
       });
     },
-    [nodes, edges, checkNodeConstraints, saveToHistory, createNodeClickHandler],
+    [nodes, edges, checkNodeConstraints, createNodeClickHandler],
   );
 
   const onEdgesChange = useCallback(
     (changes: any) => {
       setEdges((edgesSnapshot) => {
-        const updatedEdges = applyEdgeChanges(changes, edgesSnapshot);
-        
-        // Save to history if edges changed
-        if (JSON.stringify(edgesSnapshot) !== JSON.stringify(updatedEdges)) {
-          saveToHistory(nodes, updatedEdges);
-        }
-        
-        return updatedEdges;
+        return applyEdgeChanges(changes, edgesSnapshot);
       });
     },
-    [nodes, saveToHistory],
+    [],
   );
 
   const onConnect = useCallback(
@@ -505,12 +444,11 @@ export default function GameEditorCanvas() {
           }, 
           updatedEdges
         );
-        saveToHistory(nodes, newEdges);
         toast.success('Connection updated');
         return newEdges;
       });
     },
-    [nodes, edges, saveToHistory],
+    [nodes, edges],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -598,12 +536,6 @@ export default function GameEditorCanvas() {
             return prevNodes;
           }
           
-          // Get current edges from state
-          setEdges((prevEdges) => {
-            saveToHistory(testNodes, prevEdges);
-            return prevEdges;
-          });
-          
           // Reset flag after a short delay to allow state updates
           setTimeout(() => {
             isDroppingRef.current = false;
@@ -617,7 +549,7 @@ export default function GameEditorCanvas() {
         isDroppingRef.current = false;
       }
     },
-    [checkNodeConstraints, saveToHistory],
+    [checkNodeConstraints],
   );
 
 
@@ -663,8 +595,7 @@ export default function GameEditorCanvas() {
     }, 300);
   }, [nodes]);
 
-  const handleStartSave = (data: { title: string; description: string; rounds: string }) => {
-    console.log('Saved game data:', data);
+  const handleStartSave = (data: { title: string; description: string }) => {
     if (data.title) {
       setGameTitle(data.title);
     }
@@ -676,6 +607,7 @@ export default function GameEditorCanvas() {
             : node
         )
       );
+      toast.success('Node saved');
     }
   };
 
@@ -726,6 +658,7 @@ export default function GameEditorCanvas() {
           : node
       )
     );
+    toast.success('Node saved');
   };
 
   const handleEndDelete = () => {
@@ -737,14 +670,11 @@ export default function GameEditorCanvas() {
         const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
         
         // Remove edges connected to deleted node
-        setEdges((prevEdges) => {
-          const newEdges = prevEdges.filter(
+        setEdges((prevEdges) =>
+          prevEdges.filter(
             (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
-          );
-          saveToHistory(newNodes, newEdges);
-          return newEdges;
-        });
-        
+          )
+        );
         toast.success('End node deleted');
         return newNodes;
       });
@@ -761,14 +691,11 @@ export default function GameEditorCanvas() {
         const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
 
         // Remove edges connected to deleted node
-        setEdges((prevEdges) => {
-          const newEdges = prevEdges.filter(
+        setEdges((prevEdges) =>
+          prevEdges.filter(
             (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
-          );
-          saveToHistory(newNodes, newEdges);
-          return newEdges;
-        });
-
+          )
+        );
         toast.success('If/Else node deleted');
         return newNodes;
       });
@@ -784,14 +711,11 @@ export default function GameEditorCanvas() {
 
         const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
 
-        setEdges((prevEdges) => {
-          const newEdges = prevEdges.filter(
+        setEdges((prevEdges) =>
+          prevEdges.filter(
             (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
-          );
-          saveToHistory(newNodes, newEdges);
-          return newEdges;
-        });
-
+          )
+        );
         toast.success('Game node deleted');
         return newNodes;
       });

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LayoutDashboard, Settings } from 'lucide-react';
 import GameNodeSettings from './GameNodeSettings';
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
 import { GameNodePointsContext } from '@/contexts/game-studio';
 
 interface GameNodeLayoutProps {
@@ -83,6 +84,14 @@ export default function GameNodeLayout({
         {!hideSettingsTab && activeTab === 'settings' && (
           <div className="flex flex-col gap-4">
             <GameNodeSettings nodeId={nodeId} />
+            {onDelete && (
+              <div>
+                <p className="text-muted-foreground text-sm mb-3">
+                  Hold the button below for 3 seconds to delete this node.
+                </p>
+                <HoldToDeleteButton onDelete={onDelete} holdDuration={3000} />
+              </div>
+            )}
           </div>
         )}
       </div>

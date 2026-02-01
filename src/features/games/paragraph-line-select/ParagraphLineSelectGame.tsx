@@ -710,7 +710,7 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
           totalMax += result.max;
           const statementTruncated =
             config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
-              ? config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
+              ? `${config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
               : config.sentenceText;
           const selectedAnswerTexts = selectedIds
             .map((id) => config.options.find((o) => o.id === id)?.text ?? '')

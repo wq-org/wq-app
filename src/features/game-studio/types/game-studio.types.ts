@@ -28,7 +28,6 @@ export interface GameNodeData {
   onClick?: () => void;
   title?: string;
   description?: string;
-  rounds?: string;
   condition?: string;
   gameType?: string;
 }
@@ -37,6 +36,8 @@ export interface GameNodeData {
 export interface GameStartNodeProps {
   data?: {
     onClick?: () => void;
+    title?: string;
+    label?: string;
   };
   selected?: boolean;
 }
@@ -89,7 +90,7 @@ export interface GameImagePinNodeProps {
 export interface StartGameDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave?: (data: { title: string; description: string; rounds: string }) => void;
+  onSave?: (data: { title: string; description: string }) => void;
   nodeId?: string;
 }
 

@@ -290,7 +290,7 @@ export default function ImageTermMatchGame({ initialData: initialDataProp, onDel
     const statementText = title?.trim() || 'Image term match';
     const statementTruncated =
         statementText.length > STATEMENT_TRUNCATE_LENGTH
-            ? statementText.slice(0, STATEMENT_TRUNCATE_LENGTH) + '…'
+            ? `${statementText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
             : statementText;
 
     const previewContent = (
