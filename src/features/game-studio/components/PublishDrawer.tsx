@@ -109,12 +109,12 @@ export default function PublishDrawer({
         <DrawerHeader className="border-b flex-shrink-0">
           <div className="flex items-center justify-between">
             <DrawerTitle className="text-2xl font-bold">Publish Game</DrawerTitle>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <Button
+            variant="ghost"  size="icon"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="w-5 h-5" />
+          </Button>
           </div>
         </DrawerHeader>
         
