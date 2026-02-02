@@ -139,18 +139,27 @@ export interface GameNodeDialogProps {
     imagePinGameData?: unknown
   }) => void
   onDelete?: () => void
+  /** Upload image for game node; returns public URL or null. Used when saving image-term or image-pin nodes. */
+  onUploadImage?: (file: File, nodeId: string) => Promise<string | null>
 }
 
 // ========== Drawer Props ==========
 export interface SettingsDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  projectId?: string
+  title?: string
+  description?: string
+  version?: number
+  rollbackVersions?: { id: string; version: number }[]
+  onSave?: (payload: { title: string; description: string }) => void | Promise<void>
+  onRollback?: (versionId: string) => void | Promise<void>
+  onDelete?: () => void
 }
 
 export interface PreviewDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  nodes?: Node[]
 }
 
 export interface PublishDrawerProps {
@@ -158,6 +167,8 @@ export interface PublishDrawerProps {
   onOpenChange: (open: boolean) => void
   nodes?: Node[]
   gameTitle?: string
+  /** Called when user clicks Publish (after validation). Should save then publish. */
+  onPublish?: () => Promise<void>
 }
 
 // ========== Sidebar Types ==========
@@ -170,6 +181,13 @@ export interface SidebarItem {
 }
 
 // ========== Card Types ==========
+export interface GameProjectCardProps {
+  id?: string
+  title?: string
+  description?: string
+  onOpen?: () => void
+}
+
 export interface GameCardProps {
   id: string
   title: string
@@ -189,4 +207,28 @@ export interface GameCardListProps {
 // ========== Settings Types ==========
 export interface GameNodeSettingsProps {
   nodeId?: string
+}
+
+// ========== Flow game config (persisted in games.game_config) ==========
+/** Serializable node for persistence (no functions in data). */
+export interface SerializableNode {
+  id: string
+  type: string
+  position: { x: number; y: number }
+  data: Record<string, unknown>
+}
+
+/** Serializable edge for persistence. */
+export interface SerializableEdge {
+  id: string
+  source: string
+  target: string
+  sourceHandle?: string | null
+}
+
+/** Shape stored in games.game_config for flow/canvas projects. */
+export interface FlowGameConfig {
+  projectVersion: string
+  nodes: SerializableNode[]
+  edges: SerializableEdge[]
 }

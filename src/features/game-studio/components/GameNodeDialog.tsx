@@ -43,8 +43,10 @@ export default function GameNodeDialog({
   initialData,
   onSave,
   onDelete,
+  onUploadImage,
 }: GameNodeDialogProps) {
   const [points, setPoints] = useState(100)
+  const [saving, setSaving] = useState(false)
   const getGameDataRef = useRef<(() => unknown) | null>(null)
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function GameNodeDialog({
 
   const GameComponent = gameConfig.component
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const gameData = getGameDataRef.current?.()
 
     if (nodeType === 'gameParagraph' && gameData && typeof gameData === 'object') {
@@ -113,9 +115,49 @@ export default function GameNodeDialog({
       logColor('game_sessions', gameSessionsPayload, 'react')
       onSave?.({ points, paragraphGameData: gameData })
     } else if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
-      onSave?.({ points, imageTermGameData: gameData })
+      const data = gameData as {
+        imageFile?: File | null
+        imagePreview?: string | null
+        [key: string]: unknown
+      }
+      let imageTermGameData = { ...data }
+      if (data.imageFile && nodeId && onUploadImage) {
+        setSaving(true)
+        try {
+          const url = await onUploadImage(data.imageFile, nodeId)
+          if (url) {
+            imageTermGameData = { ...data, imagePreview: url, filepath: url }
+          }
+          delete imageTermGameData.imageFile
+        } finally {
+          setSaving(false)
+        }
+      } else if (data.imageFile) {
+        delete imageTermGameData.imageFile
+      }
+      onSave?.({ points, imageTermGameData })
     } else if (nodeType === 'gameImagePin' && gameData && typeof gameData === 'object') {
-      onSave?.({ points, imagePinGameData: gameData })
+      const data = gameData as {
+        imageFile?: File | null
+        imagePreview?: string | null
+        [key: string]: unknown
+      }
+      let imagePinGameData = { ...data }
+      if (data.imageFile && nodeId && onUploadImage) {
+        setSaving(true)
+        try {
+          const url = await onUploadImage(data.imageFile, nodeId)
+          if (url) {
+            imagePinGameData = { ...data, imagePreview: url }
+          }
+          delete imagePinGameData.imageFile
+        } finally {
+          setSaving(false)
+        }
+      } else if (data.imageFile) {
+        delete imagePinGameData.imageFile
+      }
+      onSave?.({ points, imagePinGameData })
     } else {
       onSave?.({ points })
     }
@@ -155,10 +197,16 @@ export default function GameNodeDialog({
           <Button
             variant="outline"
             onClick={handleCancel}
+            disabled={saving}
           >
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? 'Saving…' : 'Save'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

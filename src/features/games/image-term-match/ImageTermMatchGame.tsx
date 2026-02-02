@@ -61,7 +61,7 @@ export default function ImageTermMatchGame({
     gameEditor.registerGetGameData(() => ({
       title,
       description,
-      imageFile: imageFile?.name ?? null,
+      imageFile: imageFile ?? null,
       imagePreview,
       terms,
     }))

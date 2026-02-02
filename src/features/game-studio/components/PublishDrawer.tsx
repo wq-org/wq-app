@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { X, Trophy } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
@@ -92,7 +93,9 @@ export default function PublishDrawer({
   onOpenChange,
   nodes = [],
   gameTitle: propGameTitle,
+  onPublish,
 }: PublishDrawerProps) {
+  const [publishing, setPublishing] = useState(false)
   const startNode = nodes.find((n: Node) => n.type === 'gameStart')
   const gameTitle =
     propGameTitle || startNode?.data?.title || startNode?.data?.label || 'Untitled Game'
@@ -127,7 +130,7 @@ export default function PublishDrawer({
     return { valid: true }
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const validation = validateGameStructure()
 
     if (!validation.valid) {
@@ -135,9 +138,22 @@ export default function PublishDrawer({
       return
     }
 
-    // TODO: Implement publish functionality
-    toast.success('Game published successfully!')
-    console.log('Publishing game...', { gameTitle, nodes: gameNodes })
+    if (!onPublish) {
+      toast.error('Publish is not available. Save the project first.')
+      return
+    }
+
+    setPublishing(true)
+    try {
+      await onPublish()
+      toast.success('Game published successfully!')
+      onOpenChange(false)
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to publish game')
+    } finally {
+      setPublishing(false)
+    }
   }
 
   const validation = validateGameStructure()
@@ -215,9 +231,9 @@ export default function PublishDrawer({
             onClick={handlePublish}
             variant="default"
             className="rounded-lg w-full"
-            disabled={!canPublish}
+            disabled={!canPublish || publishing}
           >
-            Publish for Students
+            {publishing ? 'Publishing…' : 'Publish for Students'}
           </Button>
         </div>
       </DrawerContent>

@@ -156,6 +156,7 @@ export default function ImagePinMarkGame({
   const [description, setDescription] = useState<string>(
     constrainDescription(initialData?.description ?? ''),
   )
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null)
   const [squares, setSquares] = useState<Square[]>(initialData?.squares ?? [])
   const [pinPositions, setPinPositions] = useState<PinPosition[]>(initialData?.pinPositions ?? [])
@@ -173,11 +174,12 @@ export default function ImagePinMarkGame({
     gameEditor.registerGetGameData(() => ({
       title,
       description,
+      imageFile: imageFile ?? null,
       imagePreview,
       squares,
       pinPositions,
     }))
-  }, [gameEditor, title, description, imagePreview, squares, pinPositions])
+  }, [gameEditor, title, description, imageFile, imagePreview, squares, pinPositions])
 
   // Capture editor image dimensions when we have squares (e.g. from initialData) so drop hit-test can scale
   useEffect(() => {
@@ -206,6 +208,7 @@ export default function ImagePinMarkGame({
   const handleFileSelected = (files: File[]) => {
     if (files.length > 0) {
       const file = files[0]
+      setImageFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string)

@@ -17,6 +17,7 @@ import type {
 import '@xyflow/react/dist/style.css'
 import { Settings, Play } from 'lucide-react'
 import { toast } from 'sonner'
+import { useNavigate } from 'react-router-dom'
 import GameStartNode from './GameStartNode'
 import GameEndNode from './GameEndNode'
 import GameParagraphNode from './GameParagraphNode'
@@ -36,6 +37,11 @@ import PreviewDrawer from './PreviewDrawer'
 import PublishDrawer from './PublishDrawer'
 import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
 import type { GameNodeData } from '../types/game-studio.types'
+import { useUser } from '@/contexts/user'
+import { getGameForStudio, updateGameForStudio, publishGame } from '../api/gameStudioApi'
+import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
+import { uploadFile } from '@/features/upload-files/api/uploadFilesApi'
+import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -56,7 +62,11 @@ const initialNodes: Node[] = [
 ]
 const initialEdges: Edge[] = []
 
-export default function GameEditorCanvas() {
+export interface GameEditorCanvasProps {
+  projectId?: string
+}
+
+export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   // ========== Context & State Management ==========
   const {
     nodes: contextNodes,
@@ -64,8 +74,13 @@ export default function GameEditorCanvas() {
     setEdges: setContextEdges,
     addNode: addContextNode,
   } = useGameStudioContext()
+  const { getUserId } = useUser()
+  const navigate = useNavigate()
   const [nodes, setNodes] = useState<Node[]>(initialNodes)
   const [edges, setEdges] = useState<Edge[]>(initialEdges)
+  const [loadState, setLoadState] = useState<'idle' | 'loading' | 'loaded' | 'error'>(
+    projectId ? 'loading' : 'idle',
+  )
 
   // ========== UI State ==========
   const [isStartDialogOpen, setIsStartDialogOpen] = useState(false)
@@ -75,6 +90,7 @@ export default function GameEditorCanvas() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null)
   const [gameTitle, setGameTitle] = useState<string>('General')
+  const [projectVersion, setProjectVersion] = useState<number>(1)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false)
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
@@ -89,6 +105,45 @@ export default function GameEditorCanvas() {
   const isSyncingRef = useRef(false)
   const setContextNodesRef = useRef(setContextNodes)
   const setContextEdgesRef = useRef(setContextEdges)
+
+  // ========== Load project when projectId is set ==========
+  useEffect(() => {
+    if (!projectId) {
+      setLoadState('idle')
+      return
+    }
+    setLoadState('loading')
+    getGameForStudio(projectId)
+      .then((game) => {
+        if (!game?.game_config?.nodes?.length) {
+          setLoadState('loaded')
+          return
+        }
+        const config = game.game_config
+        const loadedNodes: Node[] = config.nodes.map((n) => ({
+          id: n.id,
+          type: n.type ?? 'default',
+          position: n.position ?? { x: 0, y: 0 },
+          data: { ...n.data },
+        }))
+        const loadedEdges: Edge[] = (config.edges ?? []).map((e) => ({
+          id: e.id,
+          source: e.source,
+          target: e.target,
+          sourceHandle: e.sourceHandle ?? undefined,
+        }))
+        setNodes(loadedNodes)
+        setEdges(loadedEdges)
+        setGameTitle(game.title || 'General')
+        setProjectVersion(game.version ?? 1)
+        setLoadState('loaded')
+      })
+      .catch((err) => {
+        console.error(err)
+        toast.error('Failed to load project')
+        setLoadState('error')
+      })
+  }, [projectId])
 
   // ========== Validation Functions ==========
   const checkNodeConstraints = useCallback(
@@ -634,11 +689,110 @@ export default function GameEditorCanvas() {
     [nodes],
   )
 
-  const handleSave = useCallback(() => {
-    console.log('Save — all nodes:', nodes)
-    console.log('Save — editor state:', { nodes, edges })
-    toast.success('Project saved.')
-  }, [nodes, edges])
+  const handleSave = useCallback(async () => {
+    if (!projectId) {
+      toast.error('Open a project from Game Studio to save.')
+      return
+    }
+    const teacherId = getUserId()
+    if (!teacherId) {
+      toast.error('You must be signed in to save.')
+      return
+    }
+    try {
+      const gameConfig = serializeFlowGameConfig(nodes, edges)
+      const description =
+        (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+          ?.description ?? ''
+      await updateGameForStudio(projectId, {
+        title: gameTitle,
+        description,
+        game_config: gameConfig,
+      })
+      toast.success('Project saved.')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to save project.')
+    }
+  }, [projectId, getUserId, nodes, edges, gameTitle])
+
+  const handlePublish = useCallback(async () => {
+    if (!projectId) {
+      toast.error('Open a project from Game Studio to publish.')
+      return
+    }
+    try {
+      const gameConfig = serializeFlowGameConfig(nodes, edges)
+      const description =
+        (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+          ?.description ?? ''
+      await updateGameForStudio(projectId, {
+        title: gameTitle,
+        description,
+        game_config: gameConfig,
+      })
+      await publishGame(projectId)
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  }, [projectId, nodes, edges, gameTitle])
+
+  // Handler for SettingsDrawer onSave
+  const handleSettingsSave = useCallback(
+    async (payload: { title: string; description: string }) => {
+      if (!projectId) {
+        toast.error('Open a project from Game Studio to save.')
+        return
+      }
+      try {
+        // Update game title and description in database
+        await updateGameForStudio(projectId, {
+          title: payload.title,
+          description: payload.description,
+        })
+
+        // Update local canvas state
+        setGameTitle(payload.title)
+
+        // Update Start node's description
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.type === 'gameStart'
+              ? { ...node, data: { ...node.data, description: payload.description } }
+              : node,
+          ),
+        )
+      } catch (err) {
+        console.error(err)
+        throw err
+      }
+    },
+    [projectId],
+  )
+
+  // Handler for SettingsDrawer onRollback
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSettingsRollback = useCallback(async (versionId: string) => {
+    // Rollback not yet implemented - versionId will be used when implementing version loading
+    toast.info(`Rolling back to version ${versionId}`)
+  }, [])
+
+  // Handler for SettingsDrawer onDelete  
+  const handleSettingsDelete = useCallback(async () => {
+    if (!projectId) {
+      toast.error('No project to delete')
+      return
+    }
+    try {
+      await deleteGame(projectId)
+      toast.success('Project deleted')
+      navigate('/teacher/game-studio')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to delete project')
+    }
+  }, [projectId, navigate])
 
   const handleStartSave = (data: { title: string; description: string }) => {
     if (data.title) {
@@ -848,6 +1002,11 @@ export default function GameEditorCanvas() {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-1 w-full relative">
+        {loadState === 'loading' && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
+            <p className="text-muted-foreground">Loading project…</p>
+          </div>
+        )}
         <GameSidebar />
         <div
           ref={containerRef}
@@ -943,17 +1102,27 @@ export default function GameEditorCanvas() {
       <SettingsDrawer
         open={isSettingsDrawerOpen}
         onOpenChange={setIsSettingsDrawerOpen}
+        projectId={projectId}
+        title={gameTitle}
+        description={
+          (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+            ?.description ?? ''
+        }
+        version={projectVersion}
+        rollbackVersions={[]}
+        onSave={handleSettingsSave}
+        onRollback={handleSettingsRollback}
+        onDelete={handleSettingsDelete}
       />
       <PreviewDrawer
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
-        nodes={nodes}
       />
       <PublishDrawer
         open={isPublishDrawerOpen}
-        onOpenChange={setIsPublishDrawerOpen}
-        nodes={nodes}
+        onOpenChange={setIsPublishDrawerOpen} 
         gameTitle={gameTitle}
+        onPublish={handlePublish}
       />
       <StartGameDialog
         open={isStartDialogOpen}
@@ -1013,6 +1182,22 @@ export default function GameEditorCanvas() {
         initialData={selectedNodeId ? nodes.find((n) => n.id === selectedNodeId)?.data : undefined}
         onSave={handleGameNodeSave}
         onDelete={handleGameNodeDelete}
+        onUploadImage={
+          projectId && getUserId()
+            ? async (file, nodeId) => {
+                const teacherId = getUserId()
+                if (!teacherId) return null
+                const title = `games_${projectId}_${nodeId}`
+                const result = await uploadFile({
+                  teacherId,
+                  file,
+                  title,
+                  role: 'teachers',
+                })
+                return result.success && result.publicUrl ? result.publicUrl : null
+              }
+            : undefined
+        }
       />
     </div>
   )

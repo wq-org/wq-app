@@ -1,4 +1,4 @@
-import GameCard from './GameCard'
+import { GameProjectCard } from './GameProjectCard'
 import type { GameCardListProps } from '../types/game-studio.types'
 
 export default function GameCardList({ games, onGamePlay }: GameCardListProps) {
@@ -9,9 +9,11 @@ export default function GameCardList({ games, onGamePlay }: GameCardListProps) {
           key={game.id}
           className="flex-1 min-w-[320px] max-w-[350px] flex justify-center"
         >
-          <GameCard
-            {...game}
-            onPlay={() => onGamePlay?.(game.route)}
+          <GameProjectCard
+            id={game.id}
+            title={game.title}
+            description={game.description}
+            onOpen={() => onGamePlay?.(game.route)}
           />
         </div>
       ))}

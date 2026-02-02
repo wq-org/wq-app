@@ -14,4 +14,11 @@ export { default as GameStudioView } from './pages/GameStudioView'
 export type * from './types/game-studio.types'
 
 // API
-// Add API exports when available
+export {
+  createGameForStudio,
+  updateGameForStudio,
+  publishGame,
+  getGameForStudio,
+  getTeacherFlowGames,
+} from './api/gameStudioApi'
+export type { GameForStudio, UpdateGameForStudioPayload } from './api/gameStudioApi'

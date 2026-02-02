@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import {
   LoginPage,
   SignUpPage,
@@ -36,6 +36,11 @@ import TeacherViewPage from './features/teacher/pages/view'
 import InstitutionViewPage from './features/institution/pages/view'
 import StudentViewPage from './features/student/pages/view'
 import ProfileViewPage from './features/profiles/pages/view'
+
+function GameEditorCanvasWithProjectId() {
+  const { id } = useParams<{ id: string }>()
+  return <GameEditorCanvas projectId={id ?? undefined} />
+}
 
 function App() {
   return (
@@ -163,7 +168,7 @@ function App() {
                 }
               />
               <Route
-                path="canvas"
+                path="canvas/:id"
                 element={
                   <RequireAuth>
                     <RequireOnboarding>
@@ -173,9 +178,22 @@ function App() {
                         className="flex flex-col h-screen"
                       >
                         <div className="flex-1 w-full">
-                          <GameEditorCanvas />
+                          <GameEditorCanvasWithProjectId />
                         </div>
                       </AppWrapper>
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="canvas"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <Navigate
+                        to="/teacher/game-studio"
+                        replace
+                      />
                     </RequireOnboarding>
                   </RequireAuth>
                 }
