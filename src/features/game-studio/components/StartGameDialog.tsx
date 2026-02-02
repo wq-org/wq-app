@@ -53,8 +53,7 @@ export default function StartGameDialog({
             Configure the start node with title and description
           </DialogDescription>
         </DialogHeader>
-        <GameNodeLayout
-          nodeId={nodeId}/>
+        <GameNodeLayout nodeId={nodeId} />
         <DialogFooter>
           <Button
             variant="outline"
