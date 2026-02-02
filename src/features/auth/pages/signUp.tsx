@@ -17,8 +17,6 @@ import { useUser } from '@/contexts/user'
 import { DotWaveLoader } from '@/components/shared'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
-import AppWrapper from '@/components/layout/AppWrapper'
-import type { Roles } from '@/components/layout/config'
 
 export default function SignUpPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()
@@ -34,9 +32,6 @@ export default function SignUpPage({ className }: React.ComponentProps<'form'>) 
   const [repeatPassword, setRepeatPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
-
-  // Determine role for AppWrapper (default to 'student' if no role)
-  const appWrapperRole = (role === 'teacher' ? 'teacher' : 'student') as Roles
 
   const goToLogin = () => {
     navigate('/auth/login')
@@ -100,10 +95,7 @@ export default function SignUpPage({ className }: React.ComponentProps<'form'>) 
   }
 
   return (
-    <AppWrapper
-      role={appWrapperRole}
-      authenticated={false}
-    >
+    <div className="min-h-screen flex flex-col justify-center px-4">
       <div className="w-full container mx-auto max-w-lg">
         <form
           onSubmit={handleOnSubmitSignUp}
@@ -196,6 +188,6 @@ export default function SignUpPage({ className }: React.ComponentProps<'form'>) 
           </div>
         </form>
       </div>
-    </AppWrapper>
+    </div>
   )
 }

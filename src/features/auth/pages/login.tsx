@@ -18,8 +18,6 @@ import { supabase } from '@/lib/supabase'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
-import AppWrapper from '@/components/layout/AppWrapper'
-import type { Roles } from '@/components/layout/config'
 
 export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()
@@ -37,9 +35,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
 
   // Select icon based on role
   const RoleIcon = role === 'teacher' ? Presentation : UserIcon
-
-  // Determine role for AppWrapper (default to 'student' if no role)
-  const appWrapperRole = (role === 'teacher' ? 'teacher' : 'student') as Roles
 
   const goToSignUp = () => {
     navigate('/auth/signup')
@@ -143,10 +138,7 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   }
 
   return (
-    <AppWrapper
-      role={appWrapperRole}
-      authenticated={false}
-    >
+    <div className="min-h-screen flex flex-col justify-center px-4">
       <div className="w-full container mx-auto max-w-lg">
         <form
           onSubmit={handleLogin}
@@ -230,6 +222,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
           </div>
         </form>
       </div>
-    </AppWrapper>
+    </div>
   )
 }
