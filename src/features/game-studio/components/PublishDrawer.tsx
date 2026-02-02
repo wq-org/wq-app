@@ -72,7 +72,11 @@ function hasParagraphPenalties(nodes: Node[]): boolean {
     if (node.type !== 'gameParagraph') return false
     const data = node.data as Record<string, unknown> | undefined
     const pg = data?.paragraphGameData as
-      | { sentenceConfigs?: Array<{ options?: Array<{ isCorrect?: boolean; pointsWhenWrong?: number }> }> }
+      | {
+          sentenceConfigs?: Array<{
+            options?: Array<{ isCorrect?: boolean; pointsWhenWrong?: number }>
+          }>
+        }
       | undefined
     if (!pg || !Array.isArray(pg.sentenceConfigs)) return false
     return pg.sentenceConfigs.some(

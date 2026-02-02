@@ -225,9 +225,7 @@ export default function ParagraphLineSelectGame({
     value: string,
   ) => {
     setSentenceConfigs((prev) =>
-      prev.map((c) =>
-        c.sentenceNumber === sentenceIndex + 1 ? { ...c, [field]: value } : c,
-      ),
+      prev.map((c) => (c.sentenceNumber === sentenceIndex + 1 ? { ...c, [field]: value } : c)),
     )
   }
 
@@ -305,10 +303,7 @@ export default function ParagraphLineSelectGame({
     const selectedWrongOptions = config.options.filter(
       (o) => !o.isCorrect && selectedIds.includes(o.id),
     )
-    const penaltySum = selectedWrongOptions.reduce(
-      (s, o) => s + (o.pointsWhenWrong ?? 0),
-      0,
-    )
+    const penaltySum = selectedWrongOptions.reduce((s, o) => s + (o.pointsWhenWrong ?? 0), 0)
     const earned = Math.max(0, correctEarned - penaltySum)
 
     if (hasWrong) {
@@ -444,7 +439,10 @@ export default function ParagraphLineSelectGame({
                                       <Plus />
                                     </Badge>
                                   </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-xs">
+                                  <TooltipContent
+                                    side="top"
+                                    className="max-w-xs"
+                                  >
                                     Points for correct answer.
                                   </TooltipContent>
                                 </Tooltip>
@@ -453,8 +451,8 @@ export default function ParagraphLineSelectGame({
                                     editingPoints[option.id] !== undefined
                                       ? editingPoints[option.id]
                                       : option.points !== undefined && option.points !== null
-                                      ? String(option.points)
-                                      : ''
+                                        ? String(option.points)
+                                        : ''
                                   }
                                   onChange={(e) => {
                                     setEditingPoints((prev) => ({
@@ -483,14 +481,18 @@ export default function ParagraphLineSelectGame({
                             )}
                             {!option.isCorrect && (
                               <div className="flex items-center gap-1.5 shrink-0">
-                               <Tooltip>
+                                <Tooltip>
                                   <TooltipTrigger asChild>
-                                 <Badge variant="outline">
-                                  <Minus/>
-                                  </Badge>
+                                    <Badge variant="outline">
+                                      <Minus />
+                                    </Badge>
                                   </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-xs">
-                                    Wrong Answer penalty. Score never goes below zero. Applied when the answer is wrong.
+                                  <TooltipContent
+                                    side="top"
+                                    className="max-w-xs"
+                                  >
+                                    Wrong Answer penalty. Score never goes below zero. Applied when
+                                    the answer is wrong.
                                   </TooltipContent>
                                 </Tooltip>
                                 <PointsInput
@@ -525,7 +527,6 @@ export default function ParagraphLineSelectGame({
                                     })
                                   }}
                                 />
-                            
                               </div>
                             )}
                             <Popover
@@ -632,7 +633,9 @@ export default function ParagraphLineSelectGame({
                       )}
 
                       {config &&
-                        config.options.some((o) => !o.isCorrect && (o.pointsWhenWrong ?? 0) > 0) && (
+                        config.options.some(
+                          (o) => !o.isCorrect && (o.pointsWhenWrong ?? 0) > 0,
+                        ) && (
                           <p className="pt-2 text-xs text-muted-foreground">
                             Score never goes below zero.
                           </p>

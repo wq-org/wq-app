@@ -7,9 +7,9 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -54,19 +54,22 @@ export default function IfElseGameDialog({
   }, [nodeId, nodes, edges])
 
   useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title || '')
-      setDescription(initialData.description || '')
-      setCondition(initialData.condition || '')
-      setCorrectPath(initialData.correctPath || 'A')
+    if (open && initialData) {
+      setTitle(initialData.title ?? initialData.label ?? '')
+      setDescription(initialData.description ?? '')
+      setCondition(initialData.condition ?? '')
+      setCorrectPath(initialData.correctPath ?? 'A')
     }
   }, [initialData, open])
 
   const handleSave = () => {
-    if (title.trim() && description.trim()) {
-      onSave?.({ title, description, condition: condition.trim() || undefined, correctPath })
-      handleCancel()
-    }
+    onSave?.({
+      title: title.trim() || undefined,
+      description: description.trim() || undefined,
+      condition: condition.trim() || undefined,
+      correctPath,
+    })
+    handleCancel()
   }
 
   const handleCancel = () => {
@@ -93,7 +96,7 @@ export default function IfElseGameDialog({
         <DialogHeader>
           <DialogTitle>Configure If/Else Node</DialogTitle>
           <DialogDescription className="sr-only">
-            Configure the if/else node with title, description, and condition
+            Configure the if/else node title, description, condition, and correct path
           </DialogDescription>
         </DialogHeader>
         <GameNodeLayout
@@ -102,33 +105,31 @@ export default function IfElseGameDialog({
           overviewContent={
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="ifelse-title">Title</Label>
                 <Input
-                  id="title"
-                  placeholder="Enter title"
+                  id="ifelse-title"
+                  placeholder="Enter node title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="ifelse-description">Description</Label>
                   <span className="text-xs text-muted-foreground">
                     {description.length}/{MAX_DESCRIPTION_LENGTH}
                   </span>
                 </div>
                 <Textarea
-                  id="description"
-                  placeholder="Describe the condition logic"
+                  id="ifelse-description"
+                  placeholder="Enter node description"
                   value={description}
                   onChange={(e) => setDescription(constrainDescription(e.target.value))}
                   maxLength={MAX_DESCRIPTION_LENGTH}
-                  rows={4}
+                  rows={3}
                 />
               </div>
-
               <Separator />
-
               <div className="flex flex-col gap-2">
                 <Label>Incoming Node</Label>
                 <div>
@@ -194,10 +195,7 @@ export default function IfElseGameDialog({
           >
             Cancel
           </Button>
-          <Button
-            onClick={handleSave}
-            disabled={!title.trim() || !description.trim()}
-          >
+          <Button onClick={handleSave}>
             Save
           </Button>
         </DialogFooter>

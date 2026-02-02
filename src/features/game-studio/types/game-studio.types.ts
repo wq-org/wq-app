@@ -53,6 +53,7 @@ export interface GameEndNodeProps {
 export interface GameIfElseNodeProps {
   data?: {
     label?: string
+    title?: string
     onClick?: () => void
     condition?: string
   }
@@ -107,13 +108,14 @@ export interface IfElseGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave?: (data: {
-    title: string
-    description: string
+    title?: string
+    description?: string
     condition?: string
     correctPath?: 'A' | 'B'
   }) => void
   initialData?: {
     title?: string
+    label?: string
     description?: string
     condition?: string
     correctPath?: 'A' | 'B'
@@ -148,6 +150,7 @@ export interface SettingsDrawerProps {
 export interface PreviewDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  nodes?: Node[]
 }
 
 export interface PublishDrawerProps {

@@ -415,6 +415,12 @@ export default function GameEditorCanvas() {
         return
       }
 
+      // Prevent Start node from connecting to If/Else node
+      if (sourceNode.type === 'gameStart' && targetNode.type === 'gameIfElse') {
+        toast.error('Cannot connect Start node to If/Else node')
+        return
+      }
+
       setEdges((prevEdges) => {
         let updatedEdges = [...prevEdges]
 
@@ -628,6 +634,11 @@ export default function GameEditorCanvas() {
     [nodes],
   )
 
+  const handleSave = useCallback(() => {
+    console.log('Save — all nodes:', nodes)
+    console.log('Save — editor state:', { nodes, edges })
+  }, [nodes, edges])
+
   const handleStartSave = (data: { title: string; description: string }) => {
     if (data.title) {
       setGameTitle(data.title)
@@ -643,19 +654,24 @@ export default function GameEditorCanvas() {
   }
 
   const handleIfElseSave = (data: {
-    title: string
-    description: string
+    title?: string
+    description?: string
     condition?: string
     correctPath?: 'A' | 'B'
   }) => {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
-        prevNodes.map((node) =>
-          node.id === selectedNodeId
-            ? { ...node, data: { ...node.data, label: data.title, ...data } }
-            : node,
-        ),
+        prevNodes.map((node) => {
+          if (node.id !== selectedNodeId) return node
+          const nextData = { ...node.data }
+          if (data.title !== undefined) nextData.label = data.title
+          if (data.description !== undefined) nextData.description = data.description
+          if (data.condition !== undefined) nextData.condition = data.condition
+          if (data.correctPath !== undefined) nextData.correctPath = data.correctPath
+          return { ...node, data: nextData }
+        }),
       )
+      toast.success('Node saved')
     }
   }
 
@@ -881,6 +897,12 @@ export default function GameEditorCanvas() {
             </Button>
             <Button
               variant="outline"
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setIsPreviewDrawerOpen(true)}
             >
               <Play className="h-4 w-4 mr-2" />
@@ -924,6 +946,7 @@ export default function GameEditorCanvas() {
       <PreviewDrawer
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
+        nodes={nodes}
       />
       <PublishDrawer
         open={isPublishDrawerOpen}
@@ -951,6 +974,7 @@ export default function GameEditorCanvas() {
             ? (nodes.find((n) => n.id === selectedNodeId)?.data as
                 | {
                     title?: string
+                    label?: string
                     description?: string
                     condition?: string
                     correctPath?: 'A' | 'B'

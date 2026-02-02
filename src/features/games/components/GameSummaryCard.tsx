@@ -37,9 +37,7 @@ export default function GameSummaryCard({
               Total {pointsLabel || 'points'}: {totalPoints}
             </span>
           </div>
-          {pointsSubtitle && (
-            <p className="text-xs text-muted-foreground">{pointsSubtitle}</p>
-          )}
+          {pointsSubtitle && <p className="text-xs text-muted-foreground">{pointsSubtitle}</p>}
         </div>
       </CardContent>
     </Card>

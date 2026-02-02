@@ -6,11 +6,7 @@ interface FeedbackDisplayProps {
   className?: string
 }
 
-export default function FeedbackDisplay({
-  feedback,
-  variant,
-  className,
-}: FeedbackDisplayProps) {
+export default function FeedbackDisplay({ feedback, variant, className }: FeedbackDisplayProps) {
   if (feedback === undefined || feedback.trim() === '') {
     return <span className="text-muted-foreground">—</span>
   }
