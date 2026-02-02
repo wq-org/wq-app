@@ -4,6 +4,8 @@ export interface VotingOption {
   isCorrect: boolean
   /** Points for this option when correct; only used when isCorrect is true. */
   points?: number
+  /** Penalty (stored as non-negative, e.g. 20 → applied as -20); only used when isCorrect is false. */
+  pointsWhenWrong?: number
 }
 
 export interface SentenceConfig {
@@ -11,6 +13,10 @@ export interface SentenceConfig {
   sentenceText: string
   options: VotingOption[]
   pointsWhenCorrect?: number
+  /** Shown after Check when the answer is correct (or partly correct). */
+  feedbackWhenCorrect?: string
+  /** Shown after Check when the answer is false. */
+  feedbackWhenWrong?: string
 }
 
 export interface SelectedAnswer {

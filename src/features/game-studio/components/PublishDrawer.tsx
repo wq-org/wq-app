@@ -66,6 +66,23 @@ function getPointsForNode(node: Node): number {
   return 100
 }
 
+/** Check if any paragraph node has wrong-answer penalties (pointsWhenWrong > 0). */
+function hasParagraphPenalties(nodes: Node[]): boolean {
+  return nodes.some((node) => {
+    if (node.type !== 'gameParagraph') return false
+    const data = node.data as Record<string, unknown> | undefined
+    const pg = data?.paragraphGameData as
+      | { sentenceConfigs?: Array<{ options?: Array<{ isCorrect?: boolean; pointsWhenWrong?: number }> }> }
+      | undefined
+    if (!pg || !Array.isArray(pg.sentenceConfigs)) return false
+    return pg.sentenceConfigs.some(
+      (config) =>
+        Array.isArray(config.options) &&
+        config.options.some((o) => !o.isCorrect && (o.pointsWhenWrong ?? 0) > 0),
+    )
+  })
+}
+
 export default function PublishDrawer({
   open,
   onOpenChange,
@@ -83,6 +100,7 @@ export default function PublishDrawer({
 
   const totalNodes = gameNodes.length
   const totalPoints = nodes.reduce((sum, node) => sum + getPointsForNode(node), 0)
+  const showFloorNote = hasParagraphPenalties(nodes)
 
   // Validation function to check required nodes
   const validateGameStructure = (): { valid: boolean; error?: string } => {
@@ -160,14 +178,21 @@ export default function PublishDrawer({
                       {String(totalNodes)}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">
-                      Total Points to Achieve:
-                    </span>
-                    <Badge variant="secondary">
-                      <Trophy className="w-3 h-3 mr-1" />
-                      {totalPoints.toFixed(1)} points
-                    </Badge>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        Total Points to Achieve:
+                      </span>
+                      <Badge variant="secondary">
+                        <Trophy className="w-3 h-3 mr-1" />
+                        {totalPoints.toFixed(1)} points
+                      </Badge>
+                    </div>
+                    {showFloorNote && (
+                      <p className="text-xs text-muted-foreground">
+                        Wrong-answer penalties may apply; score never below 0.
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Check, CheckCircle2, X, Plus, Trash2, Pencil } from 'lucide-react'
+import { Check, CheckCircle2, X, Plus, Trash2, Pencil, Minus, CircleX } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
@@ -17,6 +17,7 @@ import GameSummaryCard from '@/features/games/components/GameSummaryCard'
 import PointsInput from '@/features/games/components/PointsInput'
 import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
 import GameResultTable from '@/features/games/components/GameResultTable'
+import FeedbackInput from '@/features/games/components/FeedbackInput'
 import { useGameEditorContext } from '@/contexts/game-studio'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -74,6 +75,7 @@ export default function ParagraphLineSelectGame({
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null)
   const [resultsRevealed, setResultsRevealed] = useState(false)
   const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
+  const [editingPenalty, setEditingPenalty] = useState<Record<string, string>>({})
   const [editingOption, setEditingOption] = useState<{
     sentenceIndex: number
     optionId: string
@@ -114,6 +116,8 @@ export default function ParagraphLineSelectGame({
           sentenceText: sentences[index],
           options: [],
           pointsWhenCorrect: 10,
+          feedbackWhenCorrect: '',
+          feedbackWhenWrong: '',
         },
       ])
     }
@@ -150,6 +154,24 @@ export default function ParagraphLineSelectGame({
               ...c,
               options: c.options.map((opt) =>
                 opt.id === optionId ? { ...opt, points: clamped } : opt,
+              ),
+            }
+          : c,
+      ),
+    )
+  }
+
+  // Update penalty for a single wrong option (stored as non-negative; applied as negative).
+  const handleWrongPointsChange = (sentenceIndex: number, optionId: string, value: number) => {
+    const rounded = Math.round(value * 2) / 2
+    const clamped = Math.max(0, Math.min(1000, rounded))
+    setSentenceConfigs((prev) =>
+      prev.map((c) =>
+        c.sentenceNumber === sentenceIndex + 1
+          ? {
+              ...c,
+              options: c.options.map((opt) =>
+                opt.id === optionId ? { ...opt, pointsWhenWrong: clamped } : opt,
               ),
             }
           : c,
@@ -194,6 +216,19 @@ export default function ParagraphLineSelectGame({
     )
     setEditingOption(null)
     setEditOptionText('')
+  }
+
+  // Update feedback text for a sentence (correct or wrong)
+  const handleFeedbackChange = (
+    sentenceIndex: number,
+    field: 'feedbackWhenCorrect' | 'feedbackWhenWrong',
+    value: string,
+  ) => {
+    setSentenceConfigs((prev) =>
+      prev.map((c) =>
+        c.sentenceNumber === sentenceIndex + 1 ? { ...c, [field]: value } : c,
+      ),
+    )
   }
 
   // Handle answer selection in preview (toggle: same option again deselects)
@@ -259,13 +294,22 @@ export default function ParagraphLineSelectGame({
       return opt?.isCorrect === false
     })
 
-    const earned =
+    const correctEarned =
       maxPerOption > 0
         ? correctSelectedIds.reduce(
             (sum, id) => sum + (config.options.find((o) => o.id === id)?.points ?? 0),
             0,
           )
         : correctSelected * pointsPerCorrect
+
+    const selectedWrongOptions = config.options.filter(
+      (o) => !o.isCorrect && selectedIds.includes(o.id),
+    )
+    const penaltySum = selectedWrongOptions.reduce(
+      (s, o) => s + (o.pointsWhenWrong ?? 0),
+      0,
+    )
+    const earned = Math.max(0, correctEarned - penaltySum)
 
     if (hasWrong) {
       return { status: 'false', earned, max }
@@ -294,6 +338,12 @@ export default function ParagraphLineSelectGame({
       .filter((o) => o.isCorrect)
       .reduce((s, o) => s + (o.points ?? 0), 0)
     return sum + questionTotal
+  }, 0)
+  const totalMaxPenalty = sentenceConfigs.reduce((sum, config) => {
+    const questionPenalty = config.options
+      .filter((o) => !o.isCorrect)
+      .reduce((s, o) => s + (o.pointsWhenWrong ?? 0), 0)
+    return sum + questionPenalty
   }, 0)
 
   const editorContent = (
@@ -387,37 +437,96 @@ export default function ParagraphLineSelectGame({
                           </div>
                           <div className="flex items-center gap-2 shrink-0 ml-auto">
                             {option.isCorrect && (
-                              <PointsInput
-                                value={
-                                  editingPoints[option.id] !== undefined
-                                    ? editingPoints[option.id]
-                                    : option.points !== undefined && option.points !== null
+                              <div className="flex items-center gap-2">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Badge variant="outline">
+                                      <Plus />
+                                    </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-xs">
+                                    Points for correct answer.
+                                  </TooltipContent>
+                                </Tooltip>
+                                <PointsInput
+                                  value={
+                                    editingPoints[option.id] !== undefined
+                                      ? editingPoints[option.id]
+                                      : option.points !== undefined && option.points !== null
                                       ? String(option.points)
                                       : ''
-                                }
-                                onChange={(e) => {
-                                  setEditingPoints((prev) => ({
-                                    ...prev,
-                                    [option.id]: e.target.value,
-                                  }))
-                                }}
-                                onBlur={(e) => {
-                                  const raw = e.target.value.trim()
-                                  const v = raw === '' ? NaN : parseFloat(raw)
-                                  if (!isNaN(v)) {
-                                    handleOptionPointsChange(
-                                      index,
-                                      option.id,
-                                      Math.round(v * 2) / 2,
-                                    )
                                   }
-                                  setEditingPoints((prev) => {
-                                    const next = { ...prev }
-                                    delete next[option.id]
-                                    return next
-                                  })
-                                }}
-                              />
+                                  onChange={(e) => {
+                                    setEditingPoints((prev) => ({
+                                      ...prev,
+                                      [option.id]: e.target.value,
+                                    }))
+                                  }}
+                                  onBlur={(e) => {
+                                    const raw = e.target.value.trim()
+                                    const v = raw === '' ? NaN : parseFloat(raw)
+                                    if (!isNaN(v)) {
+                                      handleOptionPointsChange(
+                                        index,
+                                        option.id,
+                                        Math.round(v * 2) / 2,
+                                      )
+                                    }
+                                    setEditingPoints((prev) => {
+                                      const next = { ...prev }
+                                      delete next[option.id]
+                                      return next
+                                    })
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {!option.isCorrect && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                               <Tooltip>
+                                  <TooltipTrigger asChild>
+                                 <Badge variant="outline">
+                                  <Minus/>
+                                  </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-xs">
+                                    Wrong Answer penalty. Score never goes below zero. Applied when the answer is wrong.
+                                  </TooltipContent>
+                                </Tooltip>
+                                <PointsInput
+                                  value={
+                                    editingPenalty[option.id] !== undefined
+                                      ? editingPenalty[option.id]
+                                      : option.pointsWhenWrong !== undefined &&
+                                          option.pointsWhenWrong !== null
+                                        ? String(option.pointsWhenWrong)
+                                        : ''
+                                  }
+                                  onChange={(e) => {
+                                    setEditingPenalty((prev) => ({
+                                      ...prev,
+                                      [option.id]: e.target.value,
+                                    }))
+                                  }}
+                                  onBlur={(e) => {
+                                    const raw = e.target.value.trim()
+                                    const v = raw === '' ? NaN : parseFloat(raw)
+                                    if (!isNaN(v)) {
+                                      handleWrongPointsChange(
+                                        index,
+                                        option.id,
+                                        Math.round(v * 2) / 2,
+                                      )
+                                    }
+                                    setEditingPenalty((prev) => {
+                                      const next = { ...prev }
+                                      delete next[option.id]
+                                      return next
+                                    })
+                                  }}
+                                />
+                            
+                              </div>
                             )}
                             <Popover
                               open={
@@ -492,8 +601,8 @@ export default function ParagraphLineSelectGame({
                                       }
                                       className="flex items-center gap-2"
                                     >
-                                      <X className="w-4 h-4 text-black" />
-                                      False
+                                      <CircleX className="w-4 h-4 text-black" />
+                                      Wrong
                                     </Button>
                                   </div>
                                 </div>
@@ -521,6 +630,13 @@ export default function ParagraphLineSelectGame({
                           </Badge>
                         </div>
                       )}
+
+                      {config &&
+                        config.options.some((o) => !o.isCorrect && (o.pointsWhenWrong ?? 0) > 0) && (
+                          <p className="pt-2 text-xs text-muted-foreground">
+                            Score never goes below zero.
+                          </p>
+                        )}
 
                       {(!config || config.options.length < MAX_PARAGRAPH_VOTING_OPTIONS) && (
                         <Popover>
@@ -595,6 +711,29 @@ export default function ParagraphLineSelectGame({
                           </PopoverContent>
                         </Popover>
                       )}
+
+                      <Separator className="my-4" />
+                      <Label className="text-sm font-medium block mb-2">
+                        Feedback (shown after Check)
+                      </Label>
+                      <div className="space-y-3">
+                        <FeedbackInput
+                          label="When correct"
+                          value={config?.feedbackWhenCorrect ?? ''}
+                          onChange={(e) =>
+                            handleFeedbackChange(index, 'feedbackWhenCorrect', e.target.value)
+                          }
+                          placeholder="Optional message when the answer is correct"
+                        />
+                        <FeedbackInput
+                          label="When wrong"
+                          value={config?.feedbackWhenWrong ?? ''}
+                          onChange={(e) =>
+                            handleFeedbackChange(index, 'feedbackWhenWrong', e.target.value)
+                          }
+                          placeholder="Optional message when the answer is wrong"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -607,6 +746,11 @@ export default function ParagraphLineSelectGame({
       <GameSummaryCard
         totalQuestions={totalQuestions}
         totalPoints={totalPoints}
+        pointsSubtitle={
+          totalMaxPenalty > 0
+            ? `Points range: 0–${totalPoints}. Wrong-answer penalties apply; score never below 0.`
+            : undefined
+        }
       />
     </div>
   )
@@ -739,6 +883,12 @@ export default function ParagraphLineSelectGame({
             const selectedAnswerTexts = selectedIds
               .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
               .filter(Boolean)
+            const feedback =
+              result.status === 'false'
+                ? (config.feedbackWhenWrong ?? '')
+                : (config.feedbackWhenCorrect ?? '')
+            const feedbackVariant =
+              result.status === 'false' ? ('wrong' as const) : ('correct' as const)
             return {
               key: config.sentenceNumber,
               statementText: config.sentenceText,
@@ -746,6 +896,8 @@ export default function ParagraphLineSelectGame({
               selectedAnswerTexts,
               earned: result.earned,
               max: result.max,
+              feedback,
+              feedbackVariant,
             }
           })
 
