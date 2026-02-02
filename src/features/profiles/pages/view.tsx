@@ -9,7 +9,7 @@ export default function ProfileViewPage() {
   return (
     <>
       <ProfileView />
-      <CommandPalette role={role} />
+      <CommandPalette commandBarContext={role} />
     </>
   )
 }

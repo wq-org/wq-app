@@ -5,7 +5,7 @@ export default function TeacherViewPage() {
   return (
     <>
       <ProfileView />
-      <CommandPalette role="teacher" />
+      <CommandPalette commandBarContext="teacher" />
     </>
   )
 }

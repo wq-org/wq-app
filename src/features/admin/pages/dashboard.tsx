@@ -30,14 +30,14 @@ export default function AdminDashboard() {
         email={profile?.email || undefined}
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to the admin dashboard'}
-        role="admin"
+        role="institutionAdmin"
         onClickTab={() => {}}
       >
         <div className="w-full py-8">
           <InstitutionForm />
         </div>
       </DashboardLayout>
-      <CommandPalette role="admin" />
+      <CommandPalette commandBarContext="institutionAdmin" />
     </div>
   )
 }

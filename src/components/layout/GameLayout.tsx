@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Edit, Eye, Settings } from 'lucide-react'
-import Container from '../common/Container'
-import SelectTabs, { type TabItem } from '../common/SelectTabs'
+import { Container, SelectTabs } from '@/components/shared'
+import type { TabItem } from '@/components/shared'
 
 interface GameLayoutProps {
   children?: React.ReactNode

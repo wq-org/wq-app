@@ -52,7 +52,7 @@ export default function VerifyEmailPage() {
             <p className="text-muted-foreground mb-6">
               Your email has been successfully verified. You can now log in to your account.
             </p>
-            <Button onClick={() => navigate('/auth/login')}>Go to Login</Button>
+            <Button onClick={() => navigate('/')}>Go to Login</Button>
           </>
         ) : (
           <>

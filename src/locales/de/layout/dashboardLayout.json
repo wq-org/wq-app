@@ -1,1 +1,14 @@
-{}
+{
+  "tabs": {
+    "courses": "Kurse",
+    "files": "Dateien",
+    "students": "Schüler",
+    "todos": "Aufgaben",
+    "games": "Spiele",
+    "database": "Datenbank",
+    "overview": "Übersicht",
+    "analytics": "Analysen",
+    "forms": "Formulare",
+    "institutions": "Institutionen"
+  }
+}

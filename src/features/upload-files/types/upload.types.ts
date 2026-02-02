@@ -144,7 +144,7 @@ export interface FileUploadOptions {
   teacherId: string
   file: File
   title?: string
-  role: string // Role for storage path (e.g., 'teachers', 'students', 'admins')
+  role: string // Role for storage path (e.g., 'teachers', 'students', 'institutionAdmins', 'superAdmins')
   onProgress?: (progress: number) => void
 }
 

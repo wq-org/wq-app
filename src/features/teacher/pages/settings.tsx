@@ -185,7 +185,7 @@ export default function Settings() {
         linkedInValue={linkedIn}
       />
 
-      <CommandPalette role="teacher" />
+      <CommandPalette commandBarContext="teacher" />
     </>
   )
 }

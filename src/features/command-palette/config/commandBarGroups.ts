@@ -7,13 +7,11 @@ import {
   Upload,
   Hand,
   MousePointer2,
-  Undo2,
-  Redo2,
   MessagesSquare,
   UserStar,
 } from 'lucide-react'
 import type { CommandBarGroup } from '../types/command-bar.types'
-import type { Roles } from '@/lib/dashboard-config'
+import type { Roles } from '@/components'
 
 /**
  * Get command bar groups with role-based routes
@@ -118,27 +116,15 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
       items: [
         {
           id: 'pan',
-          labelKey: 'actions.pan',
+          labelKey: 'navigation.pan',
           icon: Hand,
           actionId: 'pan',
         },
         {
           id: 'select',
-          labelKey: 'actions.select',
+          labelKey: 'navigation.select',
           icon: MousePointer2,
           actionId: 'select',
-        },
-        {
-          id: 'undo',
-          labelKey: 'actions.undo',
-          icon: Undo2,
-          actionId: 'undo',
-        },
-        {
-          id: 'redo',
-          labelKey: 'actions.redo',
-          icon: Redo2,
-          actionId: 'redo',
         },
       ],
     },

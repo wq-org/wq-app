@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardDescription } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useUser } from '@/contexts/user'
-import type { Roles } from '@/lib/dashboard-config'
+import type { Roles } from '@/components/layout/config'
 
 export default function RoleSelectionPage() {
   const [selectedRole, setSelectedRole] = useState<string>('')

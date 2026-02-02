@@ -16,7 +16,7 @@ import StepFinish from '../components/StepFinish'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import type { AccountData, Institution } from '../types/onboarding.types'
-import Navigation from '@/components/common/Navigation'
+import { Navigation } from '@/components/shared'
 import { PageTitle } from '@/components/layout/PageTitle'
 
 export default function Onboarding() {

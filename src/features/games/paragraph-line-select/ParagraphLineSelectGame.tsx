@@ -1,49 +1,101 @@
-import { useState } from 'react'
-import { CheckCircle2, X, Plus, Trash2, Save } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Check, CheckCircle2, X, Plus, Trash2, Pencil } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import GameLayout from '@/components/layout/GameLayout'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import GameInformation from '@/features/games/components/GameInformation'
+import GameInformationCard from '@/features/games/components/GameInformationCard'
+import GamePreviewAlert from '@/features/games/components/GamePreviewAlert'
+import GameSummaryCard from '@/features/games/components/GameSummaryCard'
+import PointsInput from '@/features/games/components/PointsInput'
+import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
+import GameResultTable from '@/features/games/components/GameResultTable'
+import { useGameEditorContext } from '@/contexts/game-studio'
 import { Card, CardContent } from '@/components/ui/card'
-import { useGameNodePoints } from '@/features/game-studio/contexts/GameNodePointsContext'
+import {
+  DEFAULT_PARAGRAPH,
+  QUESTION_SEPARATOR,
+  MAX_PARAGRAPH_VOTING_OPTIONS,
+} from '@/lib/constants'
+import { constrainDescription } from '@/lib/validations'
+import type {
+  VotingOption,
+  SentenceConfig,
+  SelectedAnswer,
+  ParagraphGameInitialData,
+  ParagraphLineSelectGameProps,
+  QuestionResult,
+} from './types/paragraphLineSelect.types'
 
-const paragraph = `Maintaining good health is one of the most important things in life. Regular exercise not only benefits your body but also helps elevate your mood and reduce stress. I believe eating a balanced diet, filled with fruits and vegetables, can make a big difference in how you feel every day. Sometimes just going for a walk or drinking enough water can boost your energy levels. In my opinion, prioritizing sleep is just as crucial as staying active. Everyone has different routines, but finding what makes you feel your best is key. Taking care of your mental health is just as vital as taking care of your physical health, and it's perfectly okay to rest when you need it.`
+export type { ParagraphGameInitialData }
 
-interface VotingOption {
-  id: string
-  text: string
-  isCorrect: boolean
+/** Split paragraph by QUESTION_SEPARATOR to get one "question" (clickable unit) per segment. */
+function splitIntoQuestions(text: string): string[] {
+  return text
+    .split(QUESTION_SEPARATOR)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
 }
 
-interface SentenceConfig {
-  sentenceNumber: number
-  sentenceText: string
-  options: VotingOption[]
+function hasMultipleCorrectOptions(config: SentenceConfig): boolean {
+  return config.options.filter((o) => o.isCorrect).length > 1
 }
 
-interface SelectedAnswer {
-  sentenceNumber: number
-  optionId: string
+function getQuestionMaxPoints(config: SentenceConfig): number {
+  const sum = config.options.filter((o) => o.isCorrect).reduce((s, o) => s + (o.points ?? 0), 0)
+  return sum > 0 ? sum : (config.pointsWhenCorrect ?? 0)
 }
 
-export default function ParagraphLineSelectGame() {
-  const { points, onPointsChange } = useGameNodePoints()
-  const [title, setTitle] = useState<string>('')
-  const [description, setDescription] = useState<string>('')
+export default function ParagraphLineSelectGame({
+  initialData: initialDataProp,
+  onDelete,
+}: ParagraphLineSelectGameProps = {}) {
+  const initialData = initialDataProp as ParagraphGameInitialData | null | undefined
+  const [title, setTitle] = useState<string>(initialData?.title ?? '')
+  const [description, setDescription] = useState<string>(
+    constrainDescription(initialData?.description ?? ''),
+  )
+  const [paragraphText, setParagraphText] = useState<string>(
+    initialData?.paragraphText ?? DEFAULT_PARAGRAPH,
+  )
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null)
-  const [sentenceConfigs, setSentenceConfigs] = useState<SentenceConfig[]>([])
+  const [sentenceConfigs, setSentenceConfigs] = useState<SentenceConfig[]>(
+    initialData?.sentenceConfigs ?? [],
+  )
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswer[]>([])
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null)
+  const [resultsRevealed, setResultsRevealed] = useState(false)
+  const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
+  const [editingOption, setEditingOption] = useState<{
+    sentenceIndex: number
+    optionId: string
+  } | null>(null)
+  const [editOptionText, setEditOptionText] = useState('')
 
-  // Split paragraph into sentences
-  const sentences = paragraph
-    .split(/(?<=[.!?])\s+/)
-    .filter((s) => s.trim().length > 0)
-    .map((s) => s.trim())
+  const gameEditor = useGameEditorContext()
+
+  // Register getGameData so GameNodeDialog can pull current state on Save
+  useEffect(() => {
+    if (!gameEditor?.registerGetGameData) return
+    gameEditor.registerGetGameData(() => ({
+      title,
+      description,
+      paragraphText,
+      sentenceConfigs,
+      selectedAnswers,
+    }))
+  }, [gameEditor, title, description, paragraphText, sentenceConfigs, selectedAnswers])
+
+  // Derive questions (one per segment) by splitting on QUESTION_SEPARATOR
+  const sentences = useMemo(() => splitIntoQuestions(paragraphText), [paragraphText])
 
   // Get config for a sentence
   const getSentenceConfig = (index: number): SentenceConfig | undefined => {
@@ -61,6 +113,7 @@ export default function ParagraphLineSelectGame() {
           sentenceNumber: index + 1,
           sentenceText: sentences[index],
           options: [],
+          pointsWhenCorrect: 10,
         },
       ])
     }
@@ -71,7 +124,7 @@ export default function ParagraphLineSelectGame() {
     const config = getSentenceConfig(sentenceIndex)
     if (!config) return
 
-    if (config.options.length >= 3) return
+    if (config.options.length >= MAX_PARAGRAPH_VOTING_OPTIONS) return
 
     const newOption: VotingOption = {
       id: `option-${Date.now()}`,
@@ -86,6 +139,24 @@ export default function ParagraphLineSelectGame() {
     )
   }
 
+  // Update points for a single correct option (whole and half decimals only); only used when option is correct.
+  const handleOptionPointsChange = (sentenceIndex: number, optionId: string, value: number) => {
+    const rounded = Math.round(value * 2) / 2
+    const clamped = Math.max(0, Math.min(1000, rounded))
+    setSentenceConfigs((prev) =>
+      prev.map((c) =>
+        c.sentenceNumber === sentenceIndex + 1
+          ? {
+              ...c,
+              options: c.options.map((opt) =>
+                opt.id === optionId ? { ...opt, points: clamped } : opt,
+              ),
+            }
+          : c,
+      ),
+    )
+  }
+
   // Remove voting option
   const handleRemoveOption = (sentenceIndex: number, optionId: string) => {
     setSentenceConfigs((prev) =>
@@ -95,12 +166,56 @@ export default function ParagraphLineSelectGame() {
           : c,
       ),
     )
+    if (editingOption?.optionId === optionId && editingOption.sentenceIndex === sentenceIndex) {
+      setEditingOption(null)
+    }
   }
 
-  // Handle answer selection in preview
+  // Update option text and isCorrect
+  const handleUpdateOption = (
+    sentenceIndex: number,
+    optionId: string,
+    newText: string,
+    isCorrect: boolean,
+  ) => {
+    const trimmed = newText.trim()
+    if (!trimmed) return
+    setSentenceConfigs((prev) =>
+      prev.map((c) =>
+        c.sentenceNumber === sentenceIndex + 1
+          ? {
+              ...c,
+              options: c.options.map((opt) =>
+                opt.id === optionId ? { ...opt, text: trimmed, isCorrect } : opt,
+              ),
+            }
+          : c,
+      ),
+    )
+    setEditingOption(null)
+    setEditOptionText('')
+  }
+
+  // Handle answer selection in preview (toggle: same option again deselects)
   const handleAnswerSelect = (sentenceNumber: number, optionId: string) => {
+    const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
+    const multi = config ? hasMultipleCorrectOptions(config) : false
     setSelectedAnswers((prev) => {
+      if (multi) {
+        const alreadySelected = prev.some(
+          (a) => a.sentenceNumber === sentenceNumber && a.optionId === optionId,
+        )
+        if (alreadySelected) {
+          return prev.filter(
+            (a) => !(a.sentenceNumber === sentenceNumber && a.optionId === optionId),
+          )
+        }
+        return [...prev, { sentenceNumber, optionId }]
+      }
       const existing = prev.find((a) => a.sentenceNumber === sentenceNumber)
+      if (existing?.optionId === optionId) {
+        return prev.filter((a) => a.sentenceNumber !== sentenceNumber)
+      }
       if (existing) {
         return prev.map((a) => (a.sentenceNumber === sentenceNumber ? { ...a, optionId } : a))
       }
@@ -108,22 +223,78 @@ export default function ParagraphLineSelectGame() {
     })
   }
 
-  // Get selected answer for a sentence
+  // Get selected answer(s) for a sentence (single when multi off, array when multi on)
   const getSelectedAnswer = (sentenceNumber: number): string | null => {
     const answer = selectedAnswers.find((a) => a.sentenceNumber === sentenceNumber)
     return answer ? answer.optionId : null
   }
 
-  // Handle save - log everything as a single object
-  const handleSave = () => {
-    const gameData = {
-      title,
-      description,
-      paragraph,
-      sentenceConfigs,
-    }
-    console.log(gameData)
+  const getSelectedAnswers = (sentenceNumber: number): string[] => {
+    return selectedAnswers.filter((a) => a.sentenceNumber === sentenceNumber).map((a) => a.optionId)
   }
+
+  const handleCheckAnswers = () => {
+    setResultsRevealed(true)
+  }
+
+  const STATEMENT_TRUNCATE_LENGTH = 60
+
+  function getQuestionResult(config: SentenceConfig, selectedIds: string[]): QuestionResult {
+    const correctOptions = config.options.filter((o) => o.isCorrect)
+    const max = getQuestionMaxPoints(config)
+    const maxPerOption = correctOptions.reduce((sum, o) => sum + (o.points ?? 0), 0)
+    const pointsPerCorrect = correctOptions.length > 0 ? max / correctOptions.length : 0
+
+    if (selectedIds.length === 0) {
+      return { status: 'false', earned: 0, max }
+    }
+
+    const correctSelectedIds = selectedIds.filter((id) => {
+      const opt = config.options.find((o) => o.id === id)
+      return opt?.isCorrect ?? false
+    })
+    const correctSelected = correctSelectedIds.length
+    const hasWrong = selectedIds.some((id) => {
+      const opt = config.options.find((o) => o.id === id)
+      return opt?.isCorrect === false
+    })
+
+    const earned =
+      maxPerOption > 0
+        ? correctSelectedIds.reduce(
+            (sum, id) => sum + (config.options.find((o) => o.id === id)?.points ?? 0),
+            0,
+          )
+        : correctSelected * pointsPerCorrect
+
+    if (hasWrong) {
+      return { status: 'false', earned, max }
+    }
+    if (correctSelected === 0) {
+      return { status: 'false', earned: 0, max }
+    }
+
+    const numCorrect = correctOptions.length
+    const multi = hasMultipleCorrectOptions(config)
+    if (multi) {
+      if (correctSelected === numCorrect) {
+        return { status: 'correct', earned, max }
+      }
+      return { status: 'partly correct', earned, max }
+    }
+
+    return { status: 'correct', earned, max }
+  }
+
+  const hasAtLeastOneSelection = selectedAnswers.length > 0
+
+  const totalQuestions = sentences.length
+  const totalPoints = sentenceConfigs.reduce((sum, config) => {
+    const questionTotal = config.options
+      .filter((o) => o.isCorrect)
+      .reduce((s, o) => s + (o.points ?? 0), 0)
+    return sum + questionTotal
+  }, 0)
 
   const editorContent = (
     <div className="space-y-6">
@@ -132,13 +303,40 @@ export default function ParagraphLineSelectGame() {
         description={description}
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
-        points={points}
-        onPointsChange={onPointsChange}
       />
 
       <Card>
         <CardContent className="p-6">
-          <Label className="text-base font-medium mb-4 block">Paragraph</Label>
+          <div className="space-y-2 mb-4">
+            <Label className="text-base font-medium">Paragraph</Label>
+            <p className="text-sm text-muted-foreground">
+              Paste or type your text below. Separate each question using the{' '}
+              <Badge
+                variant="secondary"
+                className="font-mono"
+              >
+                //
+              </Badge>{' '}
+              symbol—everything between two{' '}
+              <Badge
+                variant="outline"
+                className="font-mono"
+              >
+                //
+              </Badge>{' '}
+              marks (or before the first and after the last) is one question.
+            </p>
+          </div>
+          <Textarea
+            placeholder="Enter your text. Use // to separate questions. Example: First question here. // Second question here. // Third question."
+            value={paragraphText}
+            onChange={(e) => setParagraphText(e.target.value)}
+            className="min-h-[120px] mb-6"
+          />
+          <Separator className="my-6" />
+          <Label className="text-base font-medium mb-4 block">
+            Questions (click to add options)
+          </Label>
           <div className="space-y-2">
             {sentences.map((sentence, index) => {
               const isSelected = selectedSentenceIndex === index
@@ -161,38 +359,170 @@ export default function ParagraphLineSelectGame() {
                   {/* Options for selected sentence */}
                   {isSelected && (
                     <div className="mt-3 ml-6 space-y-3 p-4 bg-gray-50 rounded-lg">
+                      {config && hasMultipleCorrectOptions(config) && (
+                        <p className="text-sm text-muted-foreground">
+                          Multiple answers can be correct for this question.
+                        </p>
+                      )}
                       <div className="flex items-center justify-between mb-2">
-                        <Label className="text-sm font-medium">Voting Options (max 3)</Label>
-                        <span className="text-xs text-gray-500">
-                          {config?.options.length || 0}/3
-                        </span>
+                        <Label className="text-sm font-medium">Voting Options</Label>
+                        <SlotsLeftLabel
+                          current={config?.options.length ?? 0}
+                          max={MAX_PARAGRAPH_VOTING_OPTIONS}
+                        />
                       </div>
 
                       {config?.options.map((option) => (
                         <div
                           key={option.id}
-                          className="flex items-center gap-2 p-2 bg-white rounded border"
+                          className="flex items-center gap-2 p-2 bg-white rounded border flex-wrap"
                         >
-                          <div className="flex items-center gap-2 flex-1">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
                             {option.isCorrect ? (
-                              <CheckCircle2 className="w-4 h-4 text-black" />
+                              <CheckCircle2 className="w-4 h-4 text-black shrink-0" />
                             ) : (
-                              <X className="w-4 h-4 text-black" />
+                              <X className="w-4 h-4 text-black shrink-0" />
                             )}
-                            <span className="text-sm">{option.text}</span>
+                            <span className="text-sm wrap-break-word">{option.text}</span>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleRemoveOption(index, option.id)}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
+                          <div className="flex items-center gap-2 shrink-0 ml-auto">
+                            {option.isCorrect && (
+                              <PointsInput
+                                value={
+                                  editingPoints[option.id] !== undefined
+                                    ? editingPoints[option.id]
+                                    : option.points !== undefined && option.points !== null
+                                      ? String(option.points)
+                                      : ''
+                                }
+                                onChange={(e) => {
+                                  setEditingPoints((prev) => ({
+                                    ...prev,
+                                    [option.id]: e.target.value,
+                                  }))
+                                }}
+                                onBlur={(e) => {
+                                  const raw = e.target.value.trim()
+                                  const v = raw === '' ? NaN : parseFloat(raw)
+                                  if (!isNaN(v)) {
+                                    handleOptionPointsChange(
+                                      index,
+                                      option.id,
+                                      Math.round(v * 2) / 2,
+                                    )
+                                  }
+                                  setEditingPoints((prev) => {
+                                    const next = { ...prev }
+                                    delete next[option.id]
+                                    return next
+                                  })
+                                }}
+                              />
+                            )}
+                            <Popover
+                              open={
+                                editingOption?.optionId === option.id &&
+                                editingOption?.sentenceIndex === index
+                              }
+                              onOpenChange={(open) => {
+                                if (!open) {
+                                  setEditingOption(null)
+                                  setEditOptionText('')
+                                }
+                              }}
+                            >
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 shrink-0"
+                                      onClick={() => {
+                                        setEditingOption({
+                                          sentenceIndex: index,
+                                          optionId: option.id,
+                                        })
+                                        setEditOptionText(option.text)
+                                      }}
+                                    >
+                                      <Pencil className="w-3 h-3" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent>Edit option</TooltipContent>
+                              </Tooltip>
+                              <PopoverContent
+                                className="w-auto p-2"
+                                align="end"
+                              >
+                                <div className="space-y-2">
+                                  <Input
+                                    placeholder="Option text"
+                                    value={editOptionText}
+                                    onChange={(e) => setEditOptionText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleUpdateOption(
+                                          index,
+                                          option.id,
+                                          editOptionText,
+                                          option.isCorrect,
+                                        )
+                                      }
+                                    }}
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleUpdateOption(index, option.id, editOptionText, true)
+                                      }
+                                      className="flex items-center gap-2"
+                                    >
+                                      <CheckCircle2 className="w-4 h-4 text-black" />
+                                      Correct
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleUpdateOption(index, option.id, editOptionText, false)
+                                      }
+                                      className="flex items-center gap-2"
+                                    >
+                                      <X className="w-4 h-4 text-black" />
+                                      False
+                                    </Button>
+                                  </div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0"
+                              onClick={() => handleRemoveOption(index, option.id)}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
 
-                      {(!config || config.options.length < 3) && (
+                      {config && config.options.some((o) => o.isCorrect) && (
+                        <div className="pt-2">
+                          <span className="text-sm text-muted-foreground mr-2">Total points:</span>
+                          <Badge variant="secondary">
+                            {config.options
+                              .filter((o) => o.isCorrect)
+                              .reduce((s, o) => s + (o.points ?? 0), 0)}
+                          </Badge>
+                        </div>
+                      )}
+
+                      {(!config || config.options.length < MAX_PARAGRAPH_VOTING_OPTIONS) && (
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
@@ -274,20 +604,20 @@ export default function ParagraphLineSelectGame() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button
-          onClick={handleSave}
-          className="flex items-center gap-2"
-        >
-          <Save className="w-4 h-4" />
-          Save
-        </Button>
-      </div>
+      <GameSummaryCard
+        totalQuestions={totalQuestions}
+        totalPoints={totalPoints}
+      />
     </div>
   )
 
   const previewContent = (
     <div className="space-y-6">
+      <GameInformationCard
+        title={title}
+        description={description}
+      />
+      <GamePreviewAlert />
       <Card>
         <CardContent className="p-6">
           <div className="relative">
@@ -295,7 +625,13 @@ export default function ParagraphLineSelectGame() {
               {sentences.map((sentence, index) => {
                 const isHovered = hoveredIndex === index
                 const config = getSentenceConfig(index)
-                const selectedOptionId = getSelectedAnswer(index + 1)
+                const sentenceNum = index + 1
+                const selectedOptionIds =
+                  config && hasMultipleCorrectOptions(config)
+                    ? getSelectedAnswers(sentenceNum)
+                    : getSelectedAnswer(sentenceNum) != null
+                      ? [getSelectedAnswer(sentenceNum)!]
+                      : []
 
                 return (
                   <Popover
@@ -326,33 +662,41 @@ export default function ParagraphLineSelectGame() {
                     </PopoverTrigger>
                     {config && config.options.length > 0 && (
                       <PopoverContent
-                        className="w-auto p-2"
+                        className="w-full max-w-[700px] p-3 flex flex-col gap-2"
                         align="start"
                         onMouseEnter={() => setOpenPopoverIndex(index)}
                         onMouseLeave={() => setOpenPopoverIndex(null)}
                       >
-                        <div className="space-y-1">
+                        {config && hasMultipleCorrectOptions(config) && (
+                          <Badge className="shrink-0 w-fit bg-orange-100 text-orange-800 border-orange-200">
+                            Multiple answers can be correct here.
+                          </Badge>
+                        )}
+                        <div className="flex flex-wrap gap-2">
                           {config.options.map((option) => {
-                            const isOptionSelected = selectedOptionId === option.id
+                            const isOptionSelected = selectedOptionIds.includes(option.id)
                             return (
                               <button
                                 key={option.id}
+                                type="button"
                                 onClick={() => {
-                                  handleAnswerSelect(index + 1, option.id)
+                                  handleAnswerSelect(sentenceNum, option.id)
                                   setOpenPopoverIndex(null)
                                 }}
-                                className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors min-w-0 shrink-0 ${
                                   isOptionSelected
                                     ? 'bg-black text-white'
                                     : 'bg-white border border-gray-300 hover:bg-gray-50'
                                 }`}
                               >
                                 {option.isCorrect ? (
-                                  <CheckCircle2 className="w-4 h-4" />
+                                  <CheckCircle2 className="w-4 h-4 shrink-0" />
                                 ) : (
-                                  <X className="w-4 h-4" />
+                                  <X className="w-4 h-4 shrink-0" />
                                 )}
-                                <span className="text-sm">{option.text}</span>
+                                <span className="text-sm truncate max-w-[600px]">
+                                  {option.text}
+                                </span>
                               </button>
                             )
                           })}
@@ -369,46 +713,78 @@ export default function ParagraphLineSelectGame() {
 
       <Separator />
 
-      {/* Selected Answers List */}
-      {selectedAnswers.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Selected Answers</h3>
-          <div className="space-y-1">
-            {selectedAnswers
-              .sort((a, b) => a.sentenceNumber - b.sentenceNumber)
-              .map((answer) => {
-                const config = sentenceConfigs.find(
-                  (c) => c.sentenceNumber === answer.sentenceNumber,
-                )
-                const option = config?.options.find((opt) => opt.id === answer.optionId)
+      {/* Results table: only visible after user clicks Check */}
+      {resultsRevealed &&
+        (() => {
+          const configsWithOptions = sentenceConfigs.filter((c) => c.options.length > 0)
+          if (configsWithOptions.length === 0) return null
 
-                if (!option) return null
+          let totalEarned = 0
+          let totalMax = 0
+          const rows = configsWithOptions.map((config) => {
+            const sentenceNumber = config.sentenceNumber
+            const multi = hasMultipleCorrectOptions(config)
+            const selectedIds = multi
+              ? getSelectedAnswers(sentenceNumber)
+              : getSelectedAnswer(sentenceNumber) != null
+                ? [getSelectedAnswer(sentenceNumber)!]
+                : []
+            const result = getQuestionResult(config, selectedIds)
+            totalEarned += result.earned
+            totalMax += result.max
+            const statementTruncated =
+              config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
+                ? `${config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
+                : config.sentenceText
+            const selectedAnswerTexts = selectedIds
+              .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
+              .filter(Boolean)
+            return {
+              key: config.sentenceNumber,
+              statementText: config.sentenceText,
+              statementTruncated,
+              selectedAnswerTexts,
+              earned: result.earned,
+              max: result.max,
+            }
+          })
 
-                return (
-                  <div
-                    key={answer.sentenceNumber}
-                    className="flex items-center gap-3 text-sm"
-                  >
-                    <span className="text-gray-500 min-w-[40px]">{answer.sentenceNumber}.</span>
-                    {option.isCorrect ? (
-                      <CheckCircle2 className="w-4 h-4 text-black flex-shrink-0" />
-                    ) : (
-                      <X className="w-4 h-4 text-black flex-shrink-0" />
-                    )}
-                    <span className="text-foreground">{option.text}</span>
-                  </div>
-                )
-              })}
-          </div>
-        </div>
-      )}
+          return (
+            <GameResultTable
+              rows={rows}
+              totalEarned={totalEarned}
+              totalMax={totalMax}
+            />
+          )
+        })()}
+
+      <div className="flex items-center justify-start">
+        <Button
+          type="button"
+          onClick={handleCheckAnswers}
+          disabled={!hasAtLeastOneSelection}
+          className="gap-2"
+        >
+          <Check className="size-4" />
+          Check
+        </Button>
+      </div>
     </div>
   )
 
   const settingsContent = (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Settings</h2>
-      <p className="text-gray-600">Game settings will appear here.</p>
+    <div className="py-6 px-0 flex flex-col gap-6">
+      {onDelete && (
+        <div>
+          <p className="text-muted-foreground text-sm mb-3">
+            Hold the button below for 3 seconds to delete this game node.
+          </p>
+          <HoldToDeleteButton
+            onDelete={onDelete}
+            holdDuration={3000}
+          />
+        </div>
+      )}
     </div>
   )
 

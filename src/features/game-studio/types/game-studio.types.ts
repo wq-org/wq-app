@@ -28,7 +28,6 @@ export interface GameNodeData {
   onClick?: () => void
   title?: string
   description?: string
-  rounds?: string
   condition?: string
   gameType?: string
 }
@@ -37,6 +36,8 @@ export interface GameNodeData {
 export interface GameStartNodeProps {
   data?: {
     onClick?: () => void
+    title?: string
+    label?: string
   }
   selected?: boolean
 }
@@ -89,8 +90,9 @@ export interface GameImagePinNodeProps {
 export interface StartGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave?: (data: { title: string; description: string; rounds: string }) => void
+  onSave?: (data: { title: string; description: string }) => void
   nodeId?: string
+  initialData?: { title?: string; description?: string }
 }
 
 export interface EndGameDialogProps {
@@ -127,7 +129,14 @@ export interface GameNodeDialogProps {
   onOpenChange: (open: boolean) => void
   nodeType?: string
   nodeId?: string
-  onSave?: (data: { points?: number }) => void
+  initialData?: unknown
+  onSave?: (data: {
+    points?: number
+    paragraphGameData?: unknown
+    imageTermGameData?: unknown
+    imagePinGameData?: unknown
+  }) => void
+  onDelete?: () => void
 }
 
 // ========== Drawer Props ==========
@@ -163,7 +172,10 @@ export interface GameCardProps {
   title: string
   description: string
   route?: string
+  button: string
   onPlay?: () => void
+  /** Optional image URL for the top of the card. */
+  imageUrl?: string
 }
 
 export interface GameCardListProps {

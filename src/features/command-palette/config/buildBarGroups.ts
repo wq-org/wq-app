@@ -1,5 +1,5 @@
 import { getBarGroups } from './commandBarGroups'
-import type { Roles } from '@/lib/dashboard-config'
+import type { Roles } from '@/components/layout/config'
 import type { CommandBarGroup } from '../types/command-bar.types'
 
 type ActionMap = {

@@ -142,6 +142,9 @@ i18n.use(initReactI18next).init({
   defaultNS: 'common',
   interpolation: { escapeValue: false },
 })
+
+export default i18n
+
 /**
  * Clean-coding checklist:
  *

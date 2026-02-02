@@ -1,9 +1,11 @@
+import type { Roles } from '@/components/layout/config'
+
 export interface User {
   id: string
   userName: string
   name: string
   email: string
-  role: 'student' | 'teacher' | 'admin'
+  role: Roles
 }
 
 export interface SignUpData {

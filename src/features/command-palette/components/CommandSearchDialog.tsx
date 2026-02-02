@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
-import DotWaveLoader from '@/components/common/DotWaveLoader'
+import { DotWaveLoader } from '@/components/shared'
 
 export default function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -32,7 +32,12 @@ export default function CommandSearch() {
 
   const handleClickItem = (item: SearchItem) => {
     // Navigate based on item type - all user profiles use /profile/:id
-    if (item.type === 'student' || item.type === 'teacher' || item.type === 'admin') {
+    if (
+      item.type === 'student' ||
+      item.type === 'teacher' ||
+      item.type === 'institutionAdmin' ||
+      item.type === 'superAdmin'
+    ) {
       navigate(`/profile/${item.id}`)
     } else if (item.type === 'institution') {
       navigate(`/institution/${item.id}`)

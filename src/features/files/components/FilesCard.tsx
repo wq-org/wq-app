@@ -11,10 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { ConfirmationDialog } from '@/components/common/ConfirmationDialog'
-import FailedToLoad from '@/components/common/FailedToLoad'
-import SimplePDFViewer from '@/components/common/SimplePDFViewer'
-import SimpleVideoPlayer from '@/components/common/SimpleVideoPlayer'
+import { ConfirmationDialog, SimplePDFViewer, SimpleVideoPlayer } from '@/components/shared'
 import FileDropzone from '@/features/upload-files/components/FileDropzone'
 import { uploadFile } from '@/features/upload-files/api/uploadFilesApi'
 import { useUser } from '@/contexts/user'
@@ -23,6 +20,7 @@ import { getFileBlobUrl, deleteFile, renameFile } from '../api/filesApi'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
+import { FailedToLoad } from '@/components'
 
 interface FilesCardProps {
   file: FileItem
@@ -139,7 +137,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       let normalizedRole = role.toLowerCase().trim()
       if (normalizedRole === 'teachers') normalizedRole = 'teacher'
       if (normalizedRole === 'students') normalizedRole = 'student'
-      if (normalizedRole === 'admins') normalizedRole = 'admin'
+      if (normalizedRole === 'admins' || normalizedRole === 'institutionadmins')
+        normalizedRole = 'institutionAdmin'
+      if (normalizedRole === 'superadmins') normalizedRole = 'superAdmin'
 
       return {
         role: normalizedRole,

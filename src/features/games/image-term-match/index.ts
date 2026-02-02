@@ -1,8 +1,8 @@
 // Pages
-export { default as ImageTermMatchGame } from './pages/ImageTermMatchGame'
+export { default as ImageTermMatchGame } from './ImageTermMatchGame'
 
 // Types
-export type * from './types/image-term-match.types'
+export type * from './types/imageTermMatch.types'
 
 // Components
 // Add component exports when available

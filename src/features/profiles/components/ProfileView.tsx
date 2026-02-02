@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import DotWaveLoader from '@/components/common/DotWaveLoader'
+import { DotWaveLoader } from '@/components/shared'
 import { useProfile } from '../hooks/useProfile'
 import { TeacherProfileContent } from './TeacherProfileContent'
 import { StudentProfileContent } from './StudentProfileContent'
@@ -26,7 +26,7 @@ export function ProfileView() {
   }
 
   // Route to appropriate content component based on role
-  // Ignore admin role - treat it as teacher
+  // institutionAdmin and superAdmin roles - treat as teacher for now
   const role = profile.role?.toLowerCase()
 
   if (role === 'teacher') {

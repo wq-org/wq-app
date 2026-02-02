@@ -20,11 +20,7 @@ import TeacherDashboard from './features/teacher/pages/dashboard'
 import TeacherSettings from './features/teacher/pages/settings'
 import GameStudio from './features/teacher/pages/game-studio'
 import Course from './features/teacher/pages/course'
-import TeacherViewPage from './features/teacher/pages/view'
-import StudentViewPage from './features/student/pages/view'
-import InstitutionViewPage from './features/institution/pages/view'
-import ProfileViewPage from './features/profiles/pages/view'
-import Error404 from './components/404'
+import { Error404 } from './components'
 import Lesson from './features/lessons/pages/lesson'
 import Onboarding from './features/onboarding/pages/onboarding'
 
@@ -34,11 +30,13 @@ import { LessonProvider } from './contexts/lesson'
 import RequireAuth from './components/auth/RequireAuth'
 import RequireOnboarding from './components/auth/RequireOnboarding'
 import { Toaster } from './components/ui/sonner'
+import AppWrapper from './components/layout/AppWrapper'
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
 import AdminDashboard from './features/admin/pages/dashboard'
-import { ImageTermMatchGame } from './features/games/image-term-match'
-import ImagePinMarkGame from './features/games/image-pin-mark/ImagePinMarkGame'
-import ParagraphLineSelectGame from './features/games/paragraph-line-select/ParagraphLineSelectGame'
+import TeacherViewPage from './features/teacher/pages/view'
+import InstitutionViewPage from './features/institution/pages/view'
+import StudentViewPage from './features/student/pages/view'
+import ProfileViewPage from './features/profiles/pages/view'
 
 function App() {
   return (
@@ -58,18 +56,6 @@ function App() {
             <Route
               path="/test"
               element={<Test />}
-            />
-            <Route
-              path="/game-studio/image-term-match"
-              element={<ImageTermMatchGame />}
-            />
-            <Route
-              path="/game-studio/image-pin-mark"
-              element={<ImagePinMarkGame />}
-            />
-            <Route
-              path="/game-studio/paragraph-line-select"
-              element={<ParagraphLineSelectGame />}
             />
 
             {/* Auth Routes */}
@@ -186,7 +172,15 @@ function App() {
                 element={
                   <RequireAuth>
                     <RequireOnboarding>
-                      <GameEditorCanvas />
+                      <AppWrapper
+                        role="teacher"
+                        commandBarContext="game-studio"
+                        className="flex flex-col h-screen"
+                      >
+                        <div className="flex-1 w-full">
+                          <GameEditorCanvas />
+                        </div>
+                      </AppWrapper>
                     </RequireOnboarding>
                   </RequireAuth>
                 }

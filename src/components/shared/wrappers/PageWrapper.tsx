@@ -1,6 +1,6 @@
-import Navigation from '@/components/common/Navigation'
-import { PageTitle } from '../layout/PageTitle'
-import Container from './Container'
+import { Navigation } from '../navigation'
+import { PageTitle } from '@/components/layout/PageTitle'
+import { Container } from '../container'
 import { cn } from '@/lib/utils'
 
 export default function PageWrapper({

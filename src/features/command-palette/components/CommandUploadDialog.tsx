@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import Container from '@/components/common/Container'
+import { Container } from '@/components/shared'
 import FileDropzone from '@/features/upload-files/components/FileDropzone'
 import FileStepperForm from '@/features/upload-files/components/FileStepperForm'
 import { useFileValidation } from '@/features/upload-files/hooks/useFileValidation'
@@ -112,9 +112,12 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
     } else if (normalizedRole === 'students') {
       console.error('ERROR: Role is plural "students" in database - should be "student"')
       normalizedRole = 'student' // Fix it
-    } else if (normalizedRole === 'admins') {
-      console.error('ERROR: Role is plural "admins" in database - should be "admin"')
-      normalizedRole = 'admin' // Fix it
+    } else if (normalizedRole === 'admins' || normalizedRole === 'institutionadmins') {
+      console.error('ERROR: Role is plural in database - should be "institutionAdmin"')
+      normalizedRole = 'institutionAdmin' // Fix it
+    } else if (normalizedRole === 'superadmins') {
+      console.error('ERROR: Role is plural in database - should be "superAdmin"')
+      normalizedRole = 'superAdmin' // Fix it
     }
 
     if (uploadedFiles.length === 0) {

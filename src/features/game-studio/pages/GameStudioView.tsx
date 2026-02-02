@@ -5,7 +5,7 @@ export default function GameStudioView() {
   return (
     <AppWrapper
       role="teacher"
-      commandPaletteRole="game-studio"
+      commandBarContext="game-studio"
       className="flex flex-col h-screen"
     >
       <div className="flex-1 w-full">

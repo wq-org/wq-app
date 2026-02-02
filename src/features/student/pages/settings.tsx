@@ -24,7 +24,7 @@ export default function Settings() {
         profile={profile}
         loading={loading}
       />
-      <CommandPalette role="student" />
+      <CommandPalette commandBarContext="student" />
     </>
   )
 }

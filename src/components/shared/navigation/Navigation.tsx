@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useNavigate } from 'react-router'
 import { cn } from '@/lib/utils'
 import NotificationPanel from '@/features/notification/components/NotificationPanel'
-import { LanguageSwitcher } from './LanguageSwitcher'
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 

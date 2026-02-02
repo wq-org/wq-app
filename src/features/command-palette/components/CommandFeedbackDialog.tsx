@@ -11,7 +11,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import Container from '@/components/common/Container'
+import { Container } from '@/components/shared'
 
 const FEEDBACK_TYPES = [
   { value: 'feedback', label: 'Feedback' },

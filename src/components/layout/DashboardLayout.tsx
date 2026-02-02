@@ -1,15 +1,16 @@
-import Navigation from '../common/Navigation'
+import { Navigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
 import { Button } from '../ui/button'
-import Container from '../common/Container'
+import { Container } from '@/components/shared'
 import { useState } from 'react'
-import { getDashboardTabs, type DashboardTab } from '@/lib/dashboard-config'
+import { getDashboardTabs, type DashboardTab } from './config'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { QuoteOfTheDay } from '@/components/ui/quote'
 import { useTranslation } from 'react-i18next'
+import type { Roles } from './config'
 
 interface DashboardLayoutProps {
   imageUrl?: string
@@ -45,7 +46,7 @@ export default function DashboardLayout({
   customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
-  const defaultTabs = getDashboardTabs(role as 'teacher' | 'student')
+  const defaultTabs = getDashboardTabs(role as Roles)
   const dashboardTabs = customTabs || defaultTabs
   const { t, i18n } = useTranslation('features.teacher')
 

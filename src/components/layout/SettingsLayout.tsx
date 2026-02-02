@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import Container from '../common/Container'
-import Navigation from '../common/Navigation'
+import { Container, Navigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
