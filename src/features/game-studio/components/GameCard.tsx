@@ -1,25 +1,18 @@
-import { Card, CardFooter } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { ArrowRight, Plus } from 'lucide-react';
-import type { GameCardProps } from '../types/game-studio.types';
-import {Button} from '@/components/ui/button';
+import { Card, CardFooter } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { ArrowRight, Plus } from 'lucide-react'
+import type { GameCardProps } from '../types/game-studio.types'
+import { Button } from '@/components/ui/button'
 
-export default function GameCard({
-  id: _id,
-  title,
-  description,
-  imageUrl,
-  route: _route,
-  onPlay,
-}: GameCardProps) {
+export default function GameCard({ title, description, imageUrl, onPlay }: GameCardProps) {
   return (
     <Card className="relative max-w-md rounded-4xl w-full overflow-hidden shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow">
       {/* Top-right create button */}
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation();
-          onPlay?.();
+          e.stopPropagation()
+          onPlay?.()
         }}
         className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 border border-gray-200 hover:bg-accent transition-colors"
         aria-label="Create game"

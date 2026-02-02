@@ -7,4 +7,4 @@ export type Roles = 'superAdmin' | 'institutionAdmin' | 'teacher' | 'student'
 export type CommandBarView = 'game-studio'
 
 /** Role-based or view-based context for the command bar. Use role for default bar, view for screen-specific bar. */
-export type CommandBarContext = Roles | CommandBarView 
+export type CommandBarContext = Roles | CommandBarView

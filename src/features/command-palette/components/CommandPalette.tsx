@@ -8,7 +8,12 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import type { CommandBarItem, CommandBarGroup, ActionId, CommandPaletteProps } from '../types/command-bar.types'
+import type {
+  CommandBarItem,
+  CommandBarGroup,
+  ActionId,
+  CommandPaletteProps,
+} from '../types/command-bar.types'
 import { getBarGroups, getGroupById } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
 import type { Roles, CommandBarContext, CommandBarView } from '@/components/layout/config'
@@ -181,13 +186,13 @@ export default function CommandPalette({
 
               {/* Separator after third icon */}
               {roleBasedUserCommands.slice(3).length > 0 && (
-              <Separator.Root
-                decorative
-                orientation="vertical"
-                className={cn(
-                  'mx-2 h-12 w-px bg-border',
-                  roleBasedUserCommands.slice(3).length > 0 ? 'mx-2' : 'mx-0',
-                )}
+                <Separator.Root
+                  decorative
+                  orientation="vertical"
+                  className={cn(
+                    'mx-2 h-12 w-px bg-border',
+                    roleBasedUserCommands.slice(3).length > 0 ? 'mx-2' : 'mx-0',
+                  )}
                 />
               )}
 
@@ -237,16 +242,14 @@ export default function CommandPalette({
                 })}
               </ToggleGroup.Root>
 
-
               {roleBasedUserCommands.slice(3).length > 0 && (
-              
                 <Separator.Root
                   decorative
                   orientation="vertical"
                   className="mx-2 h-12 w-px bg-border"
                 />
               )}
-            
+
               {/* System group */}
               <ToggleGroup.Root
                 type="single"

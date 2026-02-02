@@ -6,15 +6,15 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import type { EndGameDialogProps } from '../types/game-studio.types';
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
-import { constrainDescription } from '@/lib/validations';
-import GameNodeLayout from './GameNodeLayout';
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import type { EndGameDialogProps } from '../types/game-studio.types'
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
+import { constrainDescription } from '@/lib/validations'
+import GameNodeLayout from './GameNodeLayout'
 
 interface EndGameDialogPropsWithDelete extends EndGameDialogProps {
   onDelete?: () => void
@@ -52,14 +52,15 @@ export default function EndGameDialog({
   }
 
   const handleDelete = () => {
-    if (onDelete) {
-      onDelete()
-      handleCancel()
-    }
+    onDelete?.()
+    handleCancel()
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw]! max-w-[1080px]!">
         <DialogHeader>
           <DialogTitle>Configure End Node</DialogTitle>
@@ -69,6 +70,7 @@ export default function EndGameDialog({
         </DialogHeader>
         <GameNodeLayout
           nodeId={nodeId}
+          onDelete={onDelete ? handleDelete : undefined}
           overviewContent={
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
@@ -100,7 +102,10 @@ export default function EndGameDialog({
           }
         />
         <DialogFooter className="flex items-center border-t border-gray-200 pt-4 gap-2 justify-end">
-          <Button variant="outline" onClick={handleCancel}>
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
           <Button

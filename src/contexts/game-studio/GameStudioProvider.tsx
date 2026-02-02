@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from 'react';
-import type { Node, Edge } from '@xyflow/react';
-import { GameStudioContext, type GameStudioContextValue, type GameNode } from './GameStudioContext';
+import React, { useState, useCallback } from 'react'
+import type { Node, Edge } from '@xyflow/react'
+import { GameStudioContext, type GameStudioContextValue, type GameNode } from './GameStudioContext'
 
 export const GameStudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedNode, setSelectedNode] = useState<GameNode | null>(null);
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [selectedNode, setSelectedNode] = useState<GameNode | null>(null)
+  const [nodes, setNodes] = useState<Node[]>([])
+  const [edges, setEdges] = useState<Edge[]>([])
 
   const addNode = useCallback(
     (position: { x: number; y: number }, data?: { title?: string; description?: string }) => {

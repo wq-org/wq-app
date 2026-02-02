@@ -1,11 +1,11 @@
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 interface PointsInputProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  className?: string;
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
+  className?: string
 }
 
 export default function PointsInput({ value, onChange, onBlur, className }: PointsInputProps) {
@@ -19,5 +19,5 @@ export default function PointsInput({ value, onChange, onBlur, className }: Poin
       onBlur={onBlur}
       className={cn('w-16 h-8 text-xs', className)}
     />
-  );
+  )
 }

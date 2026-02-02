@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'
 
 interface SlotsLeftLabelProps {
-  current: number;
-  max: number;
-  className?: string;
+  current: number
+  max: number
+  className?: string
 }
 
 export default function SlotsLeftLabel({ current, max, className }: SlotsLeftLabelProps) {
@@ -11,5 +11,5 @@ export default function SlotsLeftLabel({ current, max, className }: SlotsLeftLab
     <span className={cn('text-xs text-gray-500', className)}>
       {max - current}/{max} slots left
     </span>
-  );
+  )
 }

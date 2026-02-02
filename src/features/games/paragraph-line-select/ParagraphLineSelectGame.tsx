@@ -1,30 +1,30 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Check, CheckCircle2, X, Plus, Trash2, Pencil } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { useState, useMemo, useEffect } from 'react'
+import { Check, CheckCircle2, X, Plus, Trash2, Pencil } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import GameLayout from '@/components/layout/GameLayout'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
+import GameInformation from '@/features/games/components/GameInformation'
+import GameInformationCard from '@/features/games/components/GameInformationCard'
+import GamePreviewAlert from '@/features/games/components/GamePreviewAlert'
+import GameSummaryCard from '@/features/games/components/GameSummaryCard'
+import PointsInput from '@/features/games/components/PointsInput'
+import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
+import GameResultTable from '@/features/games/components/GameResultTable'
+import { useGameEditorContext } from '@/contexts/game-studio'
+import { Card, CardContent } from '@/components/ui/card'
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import GameLayout from '@/components/layout/GameLayout';
-import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
-import GameInformation from '@/features/games/components/GameInformation';
-import GameInformationCard from '@/features/games/components/GameInformationCard';
-import GamePreviewAlert from '@/features/games/components/GamePreviewAlert';
-import GameSummaryCard from '@/features/games/components/GameSummaryCard';
-import PointsInput from '@/features/games/components/PointsInput';
-import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel';
-import GameResultTable from '@/features/games/components/GameResultTable';
-import { useGameEditorContext } from '@/contexts/game-studio';
-import { Card, CardContent } from '@/components/ui/card';
-import { DEFAULT_PARAGRAPH, QUESTION_SEPARATOR, MAX_PARAGRAPH_VOTING_OPTIONS } from '@/lib/constants';
-import { constrainDescription } from '@/lib/validations';
+  DEFAULT_PARAGRAPH,
+  QUESTION_SEPARATOR,
+  MAX_PARAGRAPH_VOTING_OPTIONS,
+} from '@/lib/constants'
+import { constrainDescription } from '@/lib/validations'
 import type {
   VotingOption,
   SentenceConfig,
@@ -32,78 +32,70 @@ import type {
   ParagraphGameInitialData,
   ParagraphLineSelectGameProps,
   QuestionResult,
-} from './types/paragraphLineSelect.types';
+} from './types/paragraphLineSelect.types'
 
-export type { ParagraphGameInitialData };
-
-
+export type { ParagraphGameInitialData }
 
 /** Split paragraph by QUESTION_SEPARATOR to get one "question" (clickable unit) per segment. */
 function splitIntoQuestions(text: string): string[] {
   return text
     .split(QUESTION_SEPARATOR)
     .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+    .filter((s) => s.length > 0)
 }
 
 function hasMultipleCorrectOptions(config: SentenceConfig): boolean {
-  return config.options.filter((o) => o.isCorrect).length > 1;
+  return config.options.filter((o) => o.isCorrect).length > 1
 }
 
 function getQuestionMaxPoints(config: SentenceConfig): number {
-  const sum = config.options
-    .filter((o) => o.isCorrect)
-    .reduce((s, o) => s + (o.points ?? 0), 0);
-  return sum > 0 ? sum : (config.pointsWhenCorrect ?? 0);
+  const sum = config.options.filter((o) => o.isCorrect).reduce((s, o) => s + (o.points ?? 0), 0)
+  return sum > 0 ? sum : (config.pointsWhenCorrect ?? 0)
 }
 
-export default function ParagraphLineSelectGame({ initialData: initialDataProp, onDelete }: ParagraphLineSelectGameProps = {}) {
-  const initialData = initialDataProp as ParagraphGameInitialData | null | undefined;
-  const [title, setTitle] = useState<string>(initialData?.title ?? '');
+export default function ParagraphLineSelectGame({
+  initialData: initialDataProp,
+  onDelete,
+}: ParagraphLineSelectGameProps = {}) {
+  const initialData = initialDataProp as ParagraphGameInitialData | null | undefined
+  const [title, setTitle] = useState<string>(initialData?.title ?? '')
   const [description, setDescription] = useState<string>(
-    constrainDescription(initialData?.description ?? '')
-  );
+    constrainDescription(initialData?.description ?? ''),
+  )
   const [paragraphText, setParagraphText] = useState<string>(
-    initialData?.paragraphText ?? DEFAULT_PARAGRAPH
-  );
-  const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null);
+    initialData?.paragraphText ?? DEFAULT_PARAGRAPH,
+  )
+  const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null)
   const [sentenceConfigs, setSentenceConfigs] = useState<SentenceConfig[]>(
-    initialData?.sentenceConfigs ?? []
-  );
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswer[]>([]);
-  const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
-  const [resultsRevealed, setResultsRevealed] = useState(false);
-  const [editingPoints, setEditingPoints] = useState<Record<string, string>>({});
+    initialData?.sentenceConfigs ?? [],
+  )
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswer[]>([])
+  const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null)
+  const [resultsRevealed, setResultsRevealed] = useState(false)
+  const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
   const [editingOption, setEditingOption] = useState<{
-    sentenceIndex: number;
-    optionId: string;
-  } | null>(null);
-  const [editOptionText, setEditOptionText] = useState('');
+    sentenceIndex: number
+    optionId: string
+  } | null>(null)
+  const [editOptionText, setEditOptionText] = useState('')
 
-  const gameEditor = useGameEditorContext();
+  const gameEditor = useGameEditorContext()
 
   // Register getGameData so GameNodeDialog can pull current state on Save
   useEffect(() => {
-    if (!gameEditor?.registerGetGameData) return;
+    if (!gameEditor?.registerGetGameData) return
     gameEditor.registerGetGameData(() => ({
       title,
       description,
       paragraphText,
       sentenceConfigs,
       selectedAnswers,
-    }));
-  }, [
-    gameEditor,
-    title,
-    description,
-    paragraphText,
-    sentenceConfigs,
-    selectedAnswers,
-  ]);
+    }))
+  }, [gameEditor, title, description, paragraphText, sentenceConfigs, selectedAnswers])
 
   // Derive questions (one per segment) by splitting on QUESTION_SEPARATOR
-  const sentences = useMemo(() => splitIntoQuestions(paragraphText), [paragraphText]);
+  const sentences = useMemo(() => splitIntoQuestions(paragraphText), [paragraphText])
 
   // Get config for a sentence
   const getSentenceConfig = (index: number): SentenceConfig | undefined => {
@@ -132,7 +124,7 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
     const config = getSentenceConfig(sentenceIndex)
     if (!config) return
 
-    if (config.options.length >= MAX_PARAGRAPH_VOTING_OPTIONS) return;
+    if (config.options.length >= MAX_PARAGRAPH_VOTING_OPTIONS) return
 
     const newOption: VotingOption = {
       id: `option-${Date.now()}`,
@@ -149,21 +141,21 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
 
   // Update points for a single correct option (whole and half decimals only); only used when option is correct.
   const handleOptionPointsChange = (sentenceIndex: number, optionId: string, value: number) => {
-    const rounded = Math.round(value * 2) / 2;
-    const clamped = Math.max(0, Math.min(1000, rounded));
+    const rounded = Math.round(value * 2) / 2
+    const clamped = Math.max(0, Math.min(1000, rounded))
     setSentenceConfigs((prev) =>
       prev.map((c) =>
         c.sentenceNumber === sentenceIndex + 1
           ? {
               ...c,
               options: c.options.map((opt) =>
-                opt.id === optionId ? { ...opt, points: clamped } : opt
+                opt.id === optionId ? { ...opt, points: clamped } : opt,
               ),
             }
-          : c
-      )
-    );
-  };
+          : c,
+      ),
+    )
+  }
 
   // Remove voting option
   const handleRemoveOption = (sentenceIndex: number, optionId: string) => {
@@ -171,60 +163,58 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
       prev.map((c) =>
         c.sentenceNumber === sentenceIndex + 1
           ? { ...c, options: c.options.filter((opt) => opt.id !== optionId) }
-          : c
-      )
-    );
+          : c,
+      ),
+    )
     if (editingOption?.optionId === optionId && editingOption.sentenceIndex === sentenceIndex) {
-      setEditingOption(null);
+      setEditingOption(null)
     }
-  };
+  }
 
   // Update option text and isCorrect
   const handleUpdateOption = (
     sentenceIndex: number,
     optionId: string,
     newText: string,
-    isCorrect: boolean
+    isCorrect: boolean,
   ) => {
-    const trimmed = newText.trim();
-    if (!trimmed) return;
+    const trimmed = newText.trim()
+    if (!trimmed) return
     setSentenceConfigs((prev) =>
       prev.map((c) =>
         c.sentenceNumber === sentenceIndex + 1
           ? {
               ...c,
               options: c.options.map((opt) =>
-                opt.id === optionId
-                  ? { ...opt, text: trimmed, isCorrect }
-                  : opt
+                opt.id === optionId ? { ...opt, text: trimmed, isCorrect } : opt,
               ),
             }
-          : c
-      )
-    );
-    setEditingOption(null);
-    setEditOptionText('');
-  };
+          : c,
+      ),
+    )
+    setEditingOption(null)
+    setEditOptionText('')
+  }
 
   // Handle answer selection in preview (toggle: same option again deselects)
   const handleAnswerSelect = (sentenceNumber: number, optionId: string) => {
-    const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber);
-    const multi = config ? hasMultipleCorrectOptions(config) : false;
+    const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
+    const multi = config ? hasMultipleCorrectOptions(config) : false
     setSelectedAnswers((prev) => {
       if (multi) {
         const alreadySelected = prev.some(
-          (a) => a.sentenceNumber === sentenceNumber && a.optionId === optionId
-        );
+          (a) => a.sentenceNumber === sentenceNumber && a.optionId === optionId,
+        )
         if (alreadySelected) {
           return prev.filter(
-            (a) => !(a.sentenceNumber === sentenceNumber && a.optionId === optionId)
-          );
+            (a) => !(a.sentenceNumber === sentenceNumber && a.optionId === optionId),
+          )
         }
-        return [...prev, { sentenceNumber, optionId }];
+        return [...prev, { sentenceNumber, optionId }]
       }
-      const existing = prev.find((a) => a.sentenceNumber === sentenceNumber);
+      const existing = prev.find((a) => a.sentenceNumber === sentenceNumber)
       if (existing?.optionId === optionId) {
-        return prev.filter((a) => a.sentenceNumber !== sentenceNumber);
+        return prev.filter((a) => a.sentenceNumber !== sentenceNumber)
       }
       if (existing) {
         return prev.map((a) => (a.sentenceNumber === sentenceNumber ? { ...a, optionId } : a))
@@ -240,78 +230,71 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
   }
 
   const getSelectedAnswers = (sentenceNumber: number): string[] => {
-    return selectedAnswers
-      .filter((a) => a.sentenceNumber === sentenceNumber)
-      .map((a) => a.optionId);
-  };
+    return selectedAnswers.filter((a) => a.sentenceNumber === sentenceNumber).map((a) => a.optionId)
+  }
 
   const handleCheckAnswers = () => {
-    setResultsRevealed(true);
-  };
+    setResultsRevealed(true)
+  }
 
-  const STATEMENT_TRUNCATE_LENGTH = 60;
+  const STATEMENT_TRUNCATE_LENGTH = 60
 
-  function getQuestionResult(
-    config: SentenceConfig,
-    selectedIds: string[]
-  ): QuestionResult {
-    const correctOptions = config.options.filter((o) => o.isCorrect);
-    const max = getQuestionMaxPoints(config);
-    const maxPerOption = correctOptions.reduce((sum, o) => sum + (o.points ?? 0), 0);
-    const pointsPerCorrect =
-      correctOptions.length > 0 ? max / correctOptions.length : 0;
+  function getQuestionResult(config: SentenceConfig, selectedIds: string[]): QuestionResult {
+    const correctOptions = config.options.filter((o) => o.isCorrect)
+    const max = getQuestionMaxPoints(config)
+    const maxPerOption = correctOptions.reduce((sum, o) => sum + (o.points ?? 0), 0)
+    const pointsPerCorrect = correctOptions.length > 0 ? max / correctOptions.length : 0
 
     if (selectedIds.length === 0) {
-      return { status: 'false', earned: 0, max };
+      return { status: 'false', earned: 0, max }
     }
 
     const correctSelectedIds = selectedIds.filter((id) => {
-      const opt = config.options.find((o) => o.id === id);
-      return opt?.isCorrect ?? false;
-    });
-    const correctSelected = correctSelectedIds.length;
+      const opt = config.options.find((o) => o.id === id)
+      return opt?.isCorrect ?? false
+    })
+    const correctSelected = correctSelectedIds.length
     const hasWrong = selectedIds.some((id) => {
-      const opt = config.options.find((o) => o.id === id);
-      return opt?.isCorrect === false;
-    });
+      const opt = config.options.find((o) => o.id === id)
+      return opt?.isCorrect === false
+    })
 
     const earned =
       maxPerOption > 0
         ? correctSelectedIds.reduce(
-            (sum, id) =>
-              sum + (config.options.find((o) => o.id === id)?.points ?? 0),
-            0
+            (sum, id) => sum + (config.options.find((o) => o.id === id)?.points ?? 0),
+            0,
           )
-        : correctSelected * pointsPerCorrect;
+        : correctSelected * pointsPerCorrect
 
     if (hasWrong) {
-      return { status: 'false', earned, max };
+      return { status: 'false', earned, max }
     }
     if (correctSelected === 0) {
-      return { status: 'false', earned: 0, max };
+      return { status: 'false', earned: 0, max }
     }
 
-    const numCorrect = correctOptions.length;
-    const multi = hasMultipleCorrectOptions(config);
+    const numCorrect = correctOptions.length
+    const multi = hasMultipleCorrectOptions(config)
     if (multi) {
       if (correctSelected === numCorrect) {
-        return { status: 'correct', earned, max };
+        return { status: 'correct', earned, max }
       }
-      return { status: 'partly correct', earned, max };
+      return { status: 'partly correct', earned, max }
     }
 
-    return { status: 'correct', earned, max };
+    return { status: 'correct', earned, max }
   }
 
-  const hasAtLeastOneSelection = selectedAnswers.length > 0;
+  const hasAtLeastOneSelection = selectedAnswers.length > 0
 
-  const totalQuestions = sentences.length;
+  const totalQuestions = sentences.length
   const totalPoints = sentenceConfigs.reduce((sum, config) => {
     const questionTotal = config.options
       .filter((o) => o.isCorrect)
-      .reduce((s, o) => s + (o.points ?? 0), 0);
-    return sum + questionTotal;
-  }, 0);
+      .reduce((s, o) => s + (o.points ?? 0), 0)
+    return sum + questionTotal
+  }, 0)
 
   const editorContent = (
     <div className="space-y-6">
@@ -328,8 +311,20 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
             <Label className="text-base font-medium">Paragraph</Label>
             <p className="text-sm text-muted-foreground">
               Paste or type your text below. Separate each question using the{' '}
-              <Badge variant="secondary" className="font-mono">//</Badge>{' '}
-              symbol—everything between two <Badge variant="outline" className="font-mono">//</Badge> marks (or before the first and after the last) is one question.
+              <Badge
+                variant="secondary"
+                className="font-mono"
+              >
+                //
+              </Badge>{' '}
+              symbol—everything between two{' '}
+              <Badge
+                variant="outline"
+                className="font-mono"
+              >
+                //
+              </Badge>{' '}
+              marks (or before the first and after the last) is one question.
             </p>
           </div>
           <Textarea
@@ -339,7 +334,9 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
             className="min-h-[120px] mb-6"
           />
           <Separator className="my-6" />
-          <Label className="text-base font-medium mb-4 block">Questions (click to add options)</Label>
+          <Label className="text-base font-medium mb-4 block">
+            Questions (click to add options)
+          </Label>
           <div className="space-y-2">
             {sentences.map((sentence, index) => {
               const isSelected = selectedSentenceIndex === index
@@ -363,13 +360,16 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                   {isSelected && (
                     <div className="mt-3 ml-6 space-y-3 p-4 bg-gray-50 rounded-lg">
                       {config && hasMultipleCorrectOptions(config) && (
-                        <p className="text-sm text-muted-foreground">Multiple answers can be correct for this question.</p>
+                        <p className="text-sm text-muted-foreground">
+                          Multiple answers can be correct for this question.
+                        </p>
                       )}
                       <div className="flex items-center justify-between mb-2">
-                        <Label className="text-sm font-medium">
-                          Voting Options
-                        </Label>
-                        <SlotsLeftLabel current={config?.options.length ?? 0} max={MAX_PARAGRAPH_VOTING_OPTIONS} />
+                        <Label className="text-sm font-medium">Voting Options</Label>
+                        <SlotsLeftLabel
+                          current={config?.options.length ?? 0}
+                          max={MAX_PARAGRAPH_VOTING_OPTIONS}
+                        />
                       </div>
 
                       {config?.options.map((option) => (
@@ -391,24 +391,31 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                                 value={
                                   editingPoints[option.id] !== undefined
                                     ? editingPoints[option.id]
-                                    : (option.points !== undefined && option.points !== null
-                                        ? String(option.points)
-                                        : '')
+                                    : option.points !== undefined && option.points !== null
+                                      ? String(option.points)
+                                      : ''
                                 }
                                 onChange={(e) => {
-                                  setEditingPoints((prev) => ({ ...prev, [option.id]: e.target.value }));
+                                  setEditingPoints((prev) => ({
+                                    ...prev,
+                                    [option.id]: e.target.value,
+                                  }))
                                 }}
                                 onBlur={(e) => {
-                                  const raw = e.target.value.trim();
-                                  const v = raw === '' ? NaN : parseFloat(raw);
+                                  const raw = e.target.value.trim()
+                                  const v = raw === '' ? NaN : parseFloat(raw)
                                   if (!isNaN(v)) {
-                                    handleOptionPointsChange(index, option.id, Math.round(v * 2) / 2);
+                                    handleOptionPointsChange(
+                                      index,
+                                      option.id,
+                                      Math.round(v * 2) / 2,
+                                    )
                                   }
                                   setEditingPoints((prev) => {
-                                    const next = { ...prev };
-                                    delete next[option.id];
-                                    return next;
-                                  });
+                                    const next = { ...prev }
+                                    delete next[option.id]
+                                    return next
+                                  })
                                 }}
                               />
                             )}
@@ -419,8 +426,8 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                               }
                               onOpenChange={(open) => {
                                 if (!open) {
-                                  setEditingOption(null);
-                                  setEditOptionText('');
+                                  setEditingOption(null)
+                                  setEditOptionText('')
                                 }
                               }}
                             >
@@ -432,8 +439,11 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                                       size="icon"
                                       className="h-6 w-6 shrink-0"
                                       onClick={() => {
-                                        setEditingOption({ sentenceIndex: index, optionId: option.id });
-                                        setEditOptionText(option.text);
+                                        setEditingOption({
+                                          sentenceIndex: index,
+                                          optionId: option.id,
+                                        })
+                                        setEditOptionText(option.text)
                                       }}
                                     >
                                       <Pencil className="w-3 h-3" />
@@ -442,7 +452,10 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                                 </TooltipTrigger>
                                 <TooltipContent>Edit option</TooltipContent>
                               </Tooltip>
-                              <PopoverContent className="w-auto p-2" align="end">
+                              <PopoverContent
+                                className="w-auto p-2"
+                                align="end"
+                              >
                                 <div className="space-y-2">
                                   <Input
                                     placeholder="Option text"
@@ -454,8 +467,8 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                                           index,
                                           option.id,
                                           editOptionText,
-                                          option.isCorrect
-                                        );
+                                          option.isCorrect,
+                                        )
                                       }
                                     }}
                                   />
@@ -591,25 +604,34 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
         </CardContent>
       </Card>
 
-      <GameSummaryCard totalQuestions={totalQuestions} totalPoints={totalPoints} />
+      <GameSummaryCard
+        totalQuestions={totalQuestions}
+        totalPoints={totalPoints}
+      />
     </div>
   )
 
   const previewContent = (
     <div className="space-y-6">
-      <GameInformationCard title={title} description={description} />
+      <GameInformationCard
+        title={title}
+        description={description}
+      />
       <GamePreviewAlert />
       <Card>
         <CardContent className="p-6">
           <div className="relative">
             <p className="text-base leading-[2.5]">
               {sentences.map((sentence, index) => {
-                const isHovered = hoveredIndex === index;
-                const config = getSentenceConfig(index);
-                const sentenceNum = index + 1;
-                const selectedOptionIds = config && hasMultipleCorrectOptions(config)
-                  ? getSelectedAnswers(sentenceNum)
-                  : (getSelectedAnswer(sentenceNum) != null ? [getSelectedAnswer(sentenceNum)!] : []);
+                const isHovered = hoveredIndex === index
+                const config = getSentenceConfig(index)
+                const sentenceNum = index + 1
+                const selectedOptionIds =
+                  config && hasMultipleCorrectOptions(config)
+                    ? getSelectedAnswers(sentenceNum)
+                    : getSelectedAnswer(sentenceNum) != null
+                      ? [getSelectedAnswer(sentenceNum)!]
+                      : []
 
                 return (
                   <Popover
@@ -652,14 +674,14 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                         )}
                         <div className="flex flex-wrap gap-2">
                           {config.options.map((option) => {
-                            const isOptionSelected = selectedOptionIds.includes(option.id);
+                            const isOptionSelected = selectedOptionIds.includes(option.id)
                             return (
                               <button
                                 key={option.id}
                                 type="button"
                                 onClick={() => {
-                                  handleAnswerSelect(sentenceNum, option.id);
-                                  setOpenPopoverIndex(null);
+                                  handleAnswerSelect(sentenceNum, option.id)
+                                  setOpenPopoverIndex(null)
                                 }}
                                 className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors min-w-0 shrink-0 ${
                                   isOptionSelected
@@ -672,7 +694,9 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
                                 ) : (
                                   <X className="w-4 h-4 shrink-0" />
                                 )}
-                                <span className="text-sm truncate max-w-[600px]">{option.text}</span>
+                                <span className="text-sm truncate max-w-[600px]">
+                                  {option.text}
+                                </span>
                               </button>
                             )
                           })}
@@ -690,48 +714,49 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
       <Separator />
 
       {/* Results table: only visible after user clicks Check */}
-      {resultsRevealed && (() => {
-        const configsWithOptions = sentenceConfigs.filter((c) => c.options.length > 0);
-        if (configsWithOptions.length === 0) return null;
+      {resultsRevealed &&
+        (() => {
+          const configsWithOptions = sentenceConfigs.filter((c) => c.options.length > 0)
+          if (configsWithOptions.length === 0) return null
 
-        let totalEarned = 0;
-        let totalMax = 0;
-        const rows = configsWithOptions.map((config) => {
-          const sentenceNumber = config.sentenceNumber;
-          const multi = hasMultipleCorrectOptions(config);
-          const selectedIds = multi
-            ? getSelectedAnswers(sentenceNumber)
-            : getSelectedAnswer(sentenceNumber) != null
-              ? [getSelectedAnswer(sentenceNumber)!]
-              : [];
-          const result = getQuestionResult(config, selectedIds);
-          totalEarned += result.earned;
-          totalMax += result.max;
-          const statementTruncated =
-            config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
-              ? `${config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
-              : config.sentenceText;
-          const selectedAnswerTexts = selectedIds
-            .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
-            .filter(Boolean);
-          return {
-            key: config.sentenceNumber,
-            statementText: config.sentenceText,
-            statementTruncated,
-            selectedAnswerTexts,
-            earned: result.earned,
-            max: result.max,
-          };
-        });
+          let totalEarned = 0
+          let totalMax = 0
+          const rows = configsWithOptions.map((config) => {
+            const sentenceNumber = config.sentenceNumber
+            const multi = hasMultipleCorrectOptions(config)
+            const selectedIds = multi
+              ? getSelectedAnswers(sentenceNumber)
+              : getSelectedAnswer(sentenceNumber) != null
+                ? [getSelectedAnswer(sentenceNumber)!]
+                : []
+            const result = getQuestionResult(config, selectedIds)
+            totalEarned += result.earned
+            totalMax += result.max
+            const statementTruncated =
+              config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
+                ? `${config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
+                : config.sentenceText
+            const selectedAnswerTexts = selectedIds
+              .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
+              .filter(Boolean)
+            return {
+              key: config.sentenceNumber,
+              statementText: config.sentenceText,
+              statementTruncated,
+              selectedAnswerTexts,
+              earned: result.earned,
+              max: result.max,
+            }
+          })
 
-        return (
-          <GameResultTable
-            rows={rows}
-            totalEarned={totalEarned}
-            totalMax={totalMax}
-          />
-        );
-      })()}
+          return (
+            <GameResultTable
+              rows={rows}
+              totalEarned={totalEarned}
+              totalMax={totalMax}
+            />
+          )
+        })()}
 
       <div className="flex items-center justify-start">
         <Button
@@ -754,7 +779,10 @@ export default function ParagraphLineSelectGame({ initialData: initialDataProp, 
           <p className="text-muted-foreground text-sm mb-3">
             Hold the button below for 3 seconds to delete this game node.
           </p>
-          <HoldToDeleteButton onDelete={onDelete} holdDuration={3000} />
+          <HoldToDeleteButton
+            onDelete={onDelete}
+            holdDuration={3000}
+          />
         </div>
       )}
     </div>

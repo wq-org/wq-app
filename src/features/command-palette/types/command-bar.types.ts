@@ -6,7 +6,15 @@ import type { CommandBarContext } from '@/components/layout/config'
  * Known imperative actions triggered from the command bar.
  * Extend this union when new actions are introduced.
  */
-export type ActionId = 'search' | 'upload' | 'feedback' | 'backwards' | 'forwards' | 'add' | 'pan' | 'select';
+export type ActionId =
+  | 'search'
+  | 'upload'
+  | 'feedback'
+  | 'backwards'
+  | 'forwards'
+  | 'add'
+  | 'pan'
+  | 'select'
 
 /**
  * Single clickable element in the command bar.

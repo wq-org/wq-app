@@ -1,17 +1,17 @@
 import {
-    Home,
-    Search as SearchIcon,
-    Plus,
-    Settings as SettingsIcon,
-    SplinePointer,
-    Upload,
-    Hand,
-    MousePointer2,
-    MessagesSquare,
-    UserStar,
-} from 'lucide-react';
-import type { CommandBarGroup } from '../types/command-bar.types';
-import type {Roles} from '@/components';
+  Home,
+  Search as SearchIcon,
+  Plus,
+  Settings as SettingsIcon,
+  SplinePointer,
+  Upload,
+  Hand,
+  MousePointer2,
+  MessagesSquare,
+  UserStar,
+} from 'lucide-react'
+import type { CommandBarGroup } from '../types/command-bar.types'
+import type { Roles } from '@/components'
 
 /**
  * Get command bar groups with role-based routes
@@ -112,21 +112,21 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
       ],
     },
     {
-        id: 'game-studio',
-        items: [
-            {
-                id: 'pan',
-                labelKey: 'navigation.pan',
-                icon: Hand,
-                actionId: 'pan',
-            },
-            {
-                id: 'select',
-                labelKey: 'navigation.select',
-                icon: MousePointer2,
-                actionId: 'select',
-            },
-        ],
+      id: 'game-studio',
+      items: [
+        {
+          id: 'pan',
+          labelKey: 'navigation.pan',
+          icon: Hand,
+          actionId: 'pan',
+        },
+        {
+          id: 'select',
+          labelKey: 'navigation.select',
+          icon: MousePointer2,
+          actionId: 'select',
+        },
+      ],
     },
   ]
 }

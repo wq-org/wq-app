@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -6,15 +6,15 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import type { StartGameDialogProps } from '../types/game-studio.types';
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
-import { constrainDescription } from '@/lib/validations';
-import GameNodeLayout from './GameNodeLayout';
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import type { StartGameDialogProps } from '../types/game-studio.types'
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
+import { constrainDescription } from '@/lib/validations'
+import GameNodeLayout from './GameNodeLayout'
 
 export default function StartGameDialog({
   open,
@@ -23,28 +23,28 @@ export default function StartGameDialog({
   nodeId,
   initialData,
 }: StartGameDialogProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
 
   useEffect(() => {
     if (open && initialData) {
-      setTitle(initialData.title ?? '');
-      setDescription(initialData.description ?? '');
+      setTitle(initialData.title ?? '')
+      setDescription(initialData.description ?? '')
     }
-  }, [open, initialData]);
+  }, [open, initialData])
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {
-      onSave?.({ title, description });
-      handleCancel();
+      onSave?.({ title, description })
+      handleCancel()
     }
   }
 
   const handleCancel = () => {
-    setTitle('');
-    setDescription('');
-    onOpenChange(false);
-  };
+    setTitle('')
+    setDescription('')
+    onOpenChange(false)
+  }
 
   return (
     <Dialog
@@ -62,32 +62,32 @@ export default function StartGameDialog({
           nodeId={nodeId}
           overviewContent={
             <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Enter title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="description">Description</Label>
-                <span className="text-xs text-muted-foreground">
-                  {description.length}/{MAX_DESCRIPTION_LENGTH}
-                </span>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  placeholder="Enter title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
               </div>
-              <Textarea
-                id="description"
-                placeholder="Describe how the game is going to work"
-                value={description}
-                onChange={(e) => setDescription(constrainDescription(e.target.value))}
-                maxLength={MAX_DESCRIPTION_LENGTH}
-                rows={4}
-              />
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="description">Description</Label>
+                  <span className="text-xs text-muted-foreground">
+                    {description.length}/{MAX_DESCRIPTION_LENGTH}
+                  </span>
+                </div>
+                <Textarea
+                  id="description"
+                  placeholder="Describe how the game is going to work"
+                  value={description}
+                  onChange={(e) => setDescription(constrainDescription(e.target.value))}
+                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  rows={4}
+                />
+              </div>
             </div>
-        </div>
           }
         />
         <DialogFooter>

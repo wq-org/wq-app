@@ -1,28 +1,41 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, SelectionMode } from '@xyflow/react';
-import type { Node, Edge, Connection, ReactFlowInstance, NodeChange, EdgeChange } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { Settings, Play } from 'lucide-react';
-import { toast } from 'sonner';
-import GameStartNode from './GameStartNode';
-import GameEndNode from './GameEndNode';
-import GameParagraphNode from './GameParagraphNode';
-import GameImageTermsNode from './GameImageTermsNode';
-import GameImagePinNode from './GameImagePinNode';
-import GameIfElseNode from './GameIfElseNode';
-import StartGameDialog from './StartGameDialog';
-import GameNodeDialog from './GameNodeDialog';
-import IfElseGameDialog from './IfElseGameDialog';
-import EndGameDialog from './EndGameDialog';
-import GameSidebar from './GameSidebar';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useGameStudioContext } from '@/contexts/game-studio';
-import SettingsDrawer from './SettingsDrawer';
-import PreviewDrawer from './PreviewDrawer';
-import PublishDrawer from './PublishDrawer';
-import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants';
-import type { GameNodeData } from '../types/game-studio.types';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
+import {
+  ReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
+  addEdge,
+  SelectionMode,
+} from '@xyflow/react'
+import type {
+  Node,
+  Edge,
+  Connection,
+  ReactFlowInstance,
+  NodeChange,
+  EdgeChange,
+} from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
+import { Settings, Play } from 'lucide-react'
+import { toast } from 'sonner'
+import GameStartNode from './GameStartNode'
+import GameEndNode from './GameEndNode'
+import GameParagraphNode from './GameParagraphNode'
+import GameImageTermsNode from './GameImageTermsNode'
+import GameImagePinNode from './GameImagePinNode'
+import GameIfElseNode from './GameIfElseNode'
+import StartGameDialog from './StartGameDialog'
+import GameNodeDialog from './GameNodeDialog'
+import IfElseGameDialog from './IfElseGameDialog'
+import EndGameDialog from './EndGameDialog'
+import GameSidebar from './GameSidebar'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { useGameStudioContext } from '@/contexts/game-studio'
+import SettingsDrawer from './SettingsDrawer'
+import PreviewDrawer from './PreviewDrawer'
+import PublishDrawer from './PublishDrawer'
+import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
+import type { GameNodeData } from '../types/game-studio.types'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -45,10 +58,15 @@ const initialEdges: Edge[] = []
 
 export default function GameEditorCanvas() {
   // ========== Context & State Management ==========
-  const { nodes: contextNodes, setNodes: setContextNodes, setEdges: setContextEdges, addNode: addContextNode } = useGameStudioContext();
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
-  
+  const {
+    nodes: contextNodes,
+    setNodes: setContextNodes,
+    setEdges: setContextEdges,
+    addNode: addContextNode,
+  } = useGameStudioContext()
+  const [nodes, setNodes] = useState<Node[]>(initialNodes)
+  const [edges, setEdges] = useState<Edge[]>(initialEdges)
+
   // ========== UI State ==========
   const [isStartDialogOpen, setIsStartDialogOpen] = useState(false)
   const [isGameNodeDialogOpen, setIsGameNodeDialogOpen] = useState(false)
@@ -64,13 +82,13 @@ export default function GameEditorCanvas() {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   // ========== Refs ==========
-  const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const isDroppingRef = useRef(false); // Prevent duplicate drop notifications
-  const isSyncingRef = useRef(false);
-  const setContextNodesRef = useRef(setContextNodes);
-  const setContextEdgesRef = useRef(setContextEdges);
+  const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLDivElement>(null)
+  const isDroppingRef = useRef(false) // Prevent duplicate drop notifications
+  const isSyncingRef = useRef(false)
+  const setContextNodesRef = useRef(setContextNodes)
+  const setContextEdgesRef = useRef(setContextEdges)
 
   // ========== Validation Functions ==========
   const checkNodeConstraints = useCallback(
@@ -135,16 +153,16 @@ export default function GameEditorCanvas() {
         setInteractionMode('pan')
         toast.success('Pan mode activated')
       } else if (actionId === 'select') {
-        setInteractionMode('select');
-        toast.success('Select mode activated');
+        setInteractionMode('select')
+        toast.success('Select mode activated')
       }
     }
 
     window.addEventListener('command-action', handleCommandAction)
     return () => {
-      window.removeEventListener('command-action', handleCommandAction);
-    };
-  }, []);
+      window.removeEventListener('command-action', handleCommandAction)
+    }
+  }, [])
 
   // Sync context nodes with React Flow nodes
   useEffect(() => {
@@ -211,21 +229,21 @@ export default function GameEditorCanvas() {
 
   // Keep refs updated
   useEffect(() => {
-    setContextNodesRef.current = setContextNodes;
-    setContextEdgesRef.current = setContextEdges;
-  }, [setContextNodes, setContextEdges]);
+    setContextNodesRef.current = setContextNodes
+    setContextEdgesRef.current = setContextEdges
+  }, [setContextNodes, setContextEdges])
 
   // Sync React Flow nodes and edges back to context when they change
   useEffect(() => {
     if (!isSyncingRef.current && nodes.length > 0) {
-      isSyncingRef.current = true;
-      setContextNodesRef.current(nodes);
-      setContextEdgesRef.current(edges);
+      isSyncingRef.current = true
+      setContextNodesRef.current(nodes)
+      setContextEdgesRef.current(edges)
       setTimeout(() => {
         isSyncingRef.current = false
       }, 100)
     }
-  }, [nodes, edges]);
+  }, [nodes, edges])
 
   // ========== React Flow Handlers ==========
   const onNodesChange = useCallback(
@@ -267,15 +285,13 @@ export default function GameEditorCanvas() {
 
             // Remove edges connected to deleted node
             setEdges((prevEdges) =>
-              prevEdges.filter(
-                e => e.source !== change.id && e.target !== change.id
-              )
-            );
-            toast.success('Node deleted');
-            setSelectedNodeId(null);
-            return newNodes;
-          });
-          return; // Exit early after deletion
+              prevEdges.filter((e) => e.source !== change.id && e.target !== change.id),
+            )
+            toast.success('Node deleted')
+            setSelectedNodeId(null)
+            return newNodes
+          })
+          return // Exit early after deletion
         }
       }
 
@@ -354,20 +370,17 @@ export default function GameEditorCanvas() {
           return node
         })
 
-        return nodesWithHandlers;
-      });
+        return nodesWithHandlers
+      })
     },
-    [nodes, edges, checkNodeConstraints, createNodeClickHandler],
-  );
+    [nodes, checkNodeConstraints, createNodeClickHandler],
+  )
 
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) => {
-      setEdges((edgesSnapshot) => {
-        return applyEdgeChanges(changes, edgesSnapshot);
-      });
-    },
-    [],
-  );
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    setEdges((edgesSnapshot) => {
+      return applyEdgeChanges(changes, edgesSnapshot)
+    })
+  }, [])
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -459,15 +472,15 @@ export default function GameEditorCanvas() {
             ...params,
             source: params.source!,
             target: params.target!,
-          }, 
-          updatedEdges
-        );
-        toast.success('Connection updated');
-        return newEdges;
-      });
+          },
+          updatedEdges,
+        )
+        toast.success('Connection updated')
+        return newEdges
+      })
     },
-    [nodes, edges],
-  );
+    [nodes],
+  )
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault()
@@ -553,7 +566,7 @@ export default function GameEditorCanvas() {
             isDroppingRef.current = false
             return prevNodes
           }
-          
+
           // Reset flag after a short delay to allow state updates
           setTimeout(() => {
             isDroppingRef.current = false
@@ -568,8 +581,7 @@ export default function GameEditorCanvas() {
       }
     },
     [checkNodeConstraints],
-  );
-
+  )
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
@@ -623,12 +635,10 @@ export default function GameEditorCanvas() {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
         prevNodes.map((node) =>
-          node.id === selectedNodeId
-            ? { ...node, data: { ...node.data, ...data } }
-            : node
-        )
-      );
-      toast.success('Node saved');
+          node.id === selectedNodeId ? { ...node, data: { ...node.data, ...data } } : node,
+        ),
+      )
+      toast.success('Node saved')
     }
   }
 
@@ -650,29 +660,29 @@ export default function GameEditorCanvas() {
   }
 
   const handleGameNodeSave = (data: {
-    points?: number;
-    paragraphGameData?: unknown;
-    imageTermGameData?: unknown;
-    imagePinGameData?: unknown;
+    points?: number
+    paragraphGameData?: unknown
+    imageTermGameData?: unknown
+    imagePinGameData?: unknown
   }) => {
     if (selectedNodeId) {
       setNodes((prevNodes) =>
         prevNodes.map((node) => {
-          if (node.id !== selectedNodeId) return node;
-          const nextData = { ...node.data, points: data.points };
+          if (node.id !== selectedNodeId) return node
+          const nextData = { ...node.data, points: data.points }
           if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
-            Object.assign(nextData, data.paragraphGameData);
+            Object.assign(nextData, data.paragraphGameData)
           }
           if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
-            Object.assign(nextData, data.imageTermGameData);
+            Object.assign(nextData, data.imageTermGameData)
           }
           if (data.imagePinGameData != null && typeof data.imagePinGameData === 'object') {
-            Object.assign(nextData, data.imagePinGameData);
+            Object.assign(nextData, data.imagePinGameData)
           }
-          return { ...node, data: nextData };
-        })
-      );
-      toast.success('Node saved');
+          return { ...node, data: nextData }
+        }),
+      )
+      toast.success('Node saved')
     }
   }
 
@@ -681,11 +691,11 @@ export default function GameEditorCanvas() {
       prevNodes.map((node) =>
         node.type === 'gameEnd'
           ? { ...node, data: { ...node.data, label: data.title, ...data } }
-          : node
-      )
-    );
-    toast.success('Node saved');
-  };
+          : node,
+      ),
+    )
+    toast.success('Node saved')
+  }
 
   const handleEndDelete = () => {
     if (selectedNodeId) {
@@ -697,57 +707,51 @@ export default function GameEditorCanvas() {
 
         // Remove edges connected to deleted node
         setEdges((prevEdges) =>
-          prevEdges.filter(
-            (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
-          )
-        );
-        toast.success('End node deleted');
-        return newNodes;
-      });
-      setIsEndDialogOpen(false);
+          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
+        )
+        toast.success('End node deleted')
+        return newNodes
+      })
+      setIsEndDialogOpen(false)
     }
   }
 
   const handleIfElseDelete = () => {
     if (selectedNodeId) {
       setNodes((prevNodes) => {
-        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId);
-        if (!nodeToDelete) return prevNodes;
+        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId)
+        if (!nodeToDelete) return prevNodes
 
-        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
+        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId)
 
         // Remove edges connected to deleted node
         setEdges((prevEdges) =>
-          prevEdges.filter(
-            (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
-          )
-        );
-        toast.success('If/Else node deleted');
-        return newNodes;
-      });
-      setIsIfElseDialogOpen(false);
+          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
+        )
+        toast.success('If/Else node deleted')
+        return newNodes
+      })
+      setIsIfElseDialogOpen(false)
     }
   }
 
   const handleGameNodeDelete = () => {
     if (selectedNodeId) {
       setNodes((prevNodes) => {
-        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId);
-        if (!nodeToDelete) return prevNodes;
+        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId)
+        if (!nodeToDelete) return prevNodes
 
-        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId);
+        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId)
 
         setEdges((prevEdges) =>
-          prevEdges.filter(
-            (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
-          )
-        );
-        toast.success('Game node deleted');
-        return newNodes;
-      });
-      setIsGameNodeDialogOpen(false);
+          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
+        )
+        toast.success('Game node deleted')
+        return newNodes
+      })
+      setIsGameNodeDialogOpen(false)
     }
-  };
+  }
 
   // Sync contentEditable element with gameTitle state
   useEffect(() => {
@@ -825,9 +829,7 @@ export default function GameEditorCanvas() {
   }, [nodes, createNodeClickHandler])
 
   return (
-    <div
-      className="flex flex-col h-screen"
-    >
+    <div className="flex flex-col h-screen">
       <div className="flex-1 w-full relative">
         <GameSidebar />
         <div
@@ -983,11 +985,7 @@ export default function GameEditorCanvas() {
         onOpenChange={setIsGameNodeDialogOpen}
         nodeType={selectedNodeType || undefined}
         nodeId={selectedNodeId || undefined}
-        initialData={
-          selectedNodeId
-            ? nodes.find((n) => n.id === selectedNodeId)?.data
-            : undefined
-        }
+        initialData={selectedNodeId ? nodes.find((n) => n.id === selectedNodeId)?.data : undefined}
         onSave={handleGameNodeSave}
         onDelete={handleGameNodeDelete}
       />

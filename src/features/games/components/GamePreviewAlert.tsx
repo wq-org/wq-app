@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 export default function GamePreviewAlert() {
   return (
@@ -8,8 +8,9 @@ export default function GamePreviewAlert() {
     >
       <AlertTitle>Preview only</AlertTitle>
       <AlertDescription>
-        The correct/incorrect icons are for preview only and vanish in production so players do not see them during play.
+        The correct/incorrect icons are for preview only and vanish in production so players do not
+        see them during play.
       </AlertDescription>
     </Alert>
-  );
+  )
 }

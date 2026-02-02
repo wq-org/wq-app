@@ -1,23 +1,19 @@
 import { cn } from '@/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-const imagePinVariants = cva(
-  'rounded-full border-2 border-white animate-pulse relative',
-  {
-    variants: {
-      variant: {
-        default: 'bg-black',
-        secondary: 'bg-[#052127]',
-        correct: 'bg-blue-400',
-        wrong: 'bg-orange-400',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
+const imagePinVariants = cva('rounded-full border-2 border-white animate-pulse relative', {
+  variants: {
+    variant: {
+      default: 'bg-black',
+      secondary: 'bg-[#052127]',
+      correct: 'bg-blue-400',
+      wrong: 'bg-orange-400',
     },
   },
-)
-
+  defaultVariants: {
+    variant: 'default',
+  },
+})
 
 const pingVariants = cva(
   'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',

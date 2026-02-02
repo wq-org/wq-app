@@ -1,11 +1,11 @@
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
 
 /**
  * Constrains description input to the max allowed length.
  * Use in description Textarea onChange to enforce limit.
  */
 export function constrainDescription(value: string): string {
-  return value.slice(0, MAX_DESCRIPTION_LENGTH);
+  return value.slice(0, MAX_DESCRIPTION_LENGTH)
 }
 
 /**

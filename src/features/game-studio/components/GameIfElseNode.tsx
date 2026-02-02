@@ -1,10 +1,10 @@
-import { Handle, Position } from '@xyflow/react';
-import { GitBranch } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { GameIfElseNodeProps } from '../types/game-studio.types';
+import { Handle, Position } from '@xyflow/react'
+import { GitBranch } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import type { GameIfElseNodeProps } from '../types/game-studio.types'
 
 export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
-  const label = data?.label || 'If / else';
+  const label = data?.label || 'If / else'
 
   return (
     <div
@@ -26,11 +26,12 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
       <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="text-gray-900 font-medium truncate block">
-              {label}
-            </span>
+            <span className="text-gray-900 font-medium truncate block">{label}</span>
           </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={6}>
+          <TooltipContent
+            side="top"
+            sideOffset={6}
+          >
             {label}
           </TooltipContent>
         </Tooltip>
@@ -39,7 +40,10 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
             <TooltipTrigger asChild>
               <span className="text-xs text-gray-500 truncate block">{data.condition}</span>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={6}>
+            <TooltipContent
+              side="top"
+              sideOffset={6}
+            >
               {data.condition}
             </TooltipContent>
           </Tooltip>

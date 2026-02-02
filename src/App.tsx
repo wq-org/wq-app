@@ -15,23 +15,23 @@ import StudentSettings from './features/student/pages/settings'
 import StudentChat from './features/student/pages/chat'
 import TeacherChat from './features/teacher/pages/chat'
 
-import TeacherDashboard from './features/teacher/pages/dashboard';
-import TeacherSettings from './features/teacher/pages/settings';
-import GameStudio from './features/teacher/pages/game-studio';
-import Course from './features/teacher/pages/course';
+import TeacherDashboard from './features/teacher/pages/dashboard'
+import TeacherSettings from './features/teacher/pages/settings'
+import GameStudio from './features/teacher/pages/game-studio'
+import Course from './features/teacher/pages/course'
 import { Error404 } from './components'
-import Lesson from './features/lessons/pages/lesson';
-import Onboarding from './features/onboarding/pages/onboarding';
+import Lesson from './features/lessons/pages/lesson'
+import Onboarding from './features/onboarding/pages/onboarding'
 
-import {UserProvider} from './contexts/user';
-import {CourseProvider} from './contexts/course';
-import {LessonProvider} from './contexts/lesson';
-import RequireAuth from './components/auth/RequireAuth';
-import RequireOnboarding from './components/auth/RequireOnboarding';
-import {Toaster} from './components/ui/sonner';
-import AppWrapper from './components/layout/AppWrapper';
-import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas';
-import AdminDashboard from './features/admin/pages/dashboard';  
+import { UserProvider } from './contexts/user'
+import { CourseProvider } from './contexts/course'
+import { LessonProvider } from './contexts/lesson'
+import RequireAuth from './components/auth/RequireAuth'
+import RequireOnboarding from './components/auth/RequireOnboarding'
+import { Toaster } from './components/ui/sonner'
+import AppWrapper from './components/layout/AppWrapper'
+import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
+import AdminDashboard from './features/admin/pages/dashboard'
 import TeacherViewPage from './features/teacher/pages/view'
 import InstitutionViewPage from './features/institution/pages/view'
 import StudentViewPage from './features/student/pages/view'
@@ -167,7 +167,11 @@ function App() {
                 element={
                   <RequireAuth>
                     <RequireOnboarding>
-                      <AppWrapper role="teacher" commandBarContext="game-studio" className="flex flex-col h-screen">
+                      <AppWrapper
+                        role="teacher"
+                        commandBarContext="game-studio"
+                        className="flex flex-col h-screen"
+                      >
                         <div className="flex-1 w-full">
                           <GameEditorCanvas />
                         </div>

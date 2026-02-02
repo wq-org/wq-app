@@ -14,12 +14,7 @@ interface AppWrapperProps {
   authenticated?: boolean
 }
 
-function AppWrapper({
-  children,
-  role,
-  className,
-  commandBarContext,
-}: AppWrapperProps) {
+function AppWrapper({ children, role, className, commandBarContext }: AppWrapperProps) {
   const effectiveContext: CommandBarContext = commandBarContext ?? role
 
   return (

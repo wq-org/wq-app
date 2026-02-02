@@ -6,32 +6,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 export interface GameResultTableRow {
-  key: string | number;
-  statementText: string;
-  statementTruncated: string;
-  selectedAnswerTexts: string[];
-  earned: number;
-  max: number;
+  key: string | number
+  statementText: string
+  statementTruncated: string
+  selectedAnswerTexts: string[]
+  earned: number
+  max: number
 }
 
 /** Optional column and footer labels for reuse across games. */
 export interface GameResultTableColumnLabels {
   /** First column (question/expected). */
-  statement?: string;
+  statement?: string
   /** Second column (user selection). */
-  selectedAnswers?: string;
+  selectedAnswers?: string
   /** Third column (earned/max). */
-  result?: string;
+  result?: string
   /** Footer row label. */
-  footer?: string;
+  footer?: string
 }
 
 const DEFAULT_COLUMN_LABELS: Required<GameResultTableColumnLabels> = {
@@ -39,19 +35,19 @@ const DEFAULT_COLUMN_LABELS: Required<GameResultTableColumnLabels> = {
   selectedAnswers: 'Selected answers',
   result: 'Result',
   footer: 'Overall',
-};
+}
 
 export interface GameResultTableProps {
   /** Pre-computed rows for display. */
-  rows: GameResultTableRow[];
+  rows: GameResultTableRow[]
   /** Total earned across all rows. */
-  totalEarned: number;
+  totalEarned: number
   /** Total max across all rows. */
-  totalMax: number;
+  totalMax: number
   /** Optional heading above the table. */
-  title?: string;
+  title?: string
   /** Optional column/footer labels; omit to use defaults. */
-  columnLabels?: GameResultTableColumnLabels;
+  columnLabels?: GameResultTableColumnLabels
 }
 
 /**
@@ -64,9 +60,9 @@ export default function GameResultTable({
   title = 'Selected Answers',
   columnLabels,
 }: GameResultTableProps) {
-  if (rows.length === 0) return null;
+  if (rows.length === 0) return null
 
-  const labels = { ...DEFAULT_COLUMN_LABELS, ...columnLabels };
+  const labels = { ...DEFAULT_COLUMN_LABELS, ...columnLabels }
 
   return (
     <div className="space-y-2">
@@ -85,11 +81,12 @@ export default function GameResultTable({
               <TableCell className="max-w-[200px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="truncate block cursor-default">
-                      {row.statementTruncated}
-                    </span>
+                    <span className="truncate block cursor-default">{row.statementTruncated}</span>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-sm">
+                  <TooltipContent
+                    side="top"
+                    className="max-w-sm"
+                  >
                     {row.statementText}
                   </TooltipContent>
                 </Tooltip>
@@ -102,11 +99,12 @@ export default function GameResultTable({
                     {row.selectedAnswerTexts.map((text, i) => (
                       <Tooltip key={i}>
                         <TooltipTrigger asChild>
-                          <span className="truncate block cursor-default">
-                            {text}
-                          </span>
+                          <span className="truncate block cursor-default">{text}</span>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm">
+                        <TooltipContent
+                          side="top"
+                          className="max-w-sm"
+                        >
                           {text}
                         </TooltipContent>
                       </Tooltip>
@@ -122,7 +120,10 @@ export default function GameResultTable({
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={2} className="font-medium">
+            <TableCell
+              colSpan={2}
+              className="font-medium"
+            >
               {labels.footer}
             </TableCell>
             <TableCell className="font-medium">
@@ -132,5 +133,5 @@ export default function GameResultTable({
         </TableFooter>
       </Table>
     </div>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -6,15 +6,15 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame';
-import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame';
-import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame';
-import type { GameNodeDialogProps } from '../types/game-studio.types';
-import GameNodeLayout from './GameNodeLayout';
-import { GameEditorProvider } from '@/contexts/game-studio';
-import { logColor } from '@/lib/utils';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame'
+import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame'
+import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame'
+import type { GameNodeDialogProps } from '../types/game-studio.types'
+import GameNodeLayout from './GameNodeLayout'
+import { GameEditorProvider } from '@/contexts/game-studio'
+import { logColor } from '@/lib/utils'
 
 // Map node types to game components and titles (components may accept initialData)
 const nodeTypeToGame: Record<
@@ -44,8 +44,8 @@ export default function GameNodeDialog({
   onSave,
   onDelete,
 }: GameNodeDialogProps) {
-  const [points, setPoints] = useState(100);
-  const getGameDataRef = useRef<(() => unknown) | null>(null);
+  const [points, setPoints] = useState(100)
+  const getGameDataRef = useRef<(() => unknown) | null>(null)
 
   useEffect(() => {
     if (!open) {
@@ -61,21 +61,21 @@ export default function GameNodeDialog({
   const GameComponent = gameConfig.component
 
   const handleSave = () => {
-    const gameData = getGameDataRef.current?.();
+    const gameData = getGameDataRef.current?.()
 
     if (nodeType === 'gameParagraph' && gameData && typeof gameData === 'object') {
       const data = gameData as {
-        title?: string;
-        description?: string;
-        paragraphText?: string;
+        title?: string
+        description?: string
+        paragraphText?: string
         sentenceConfigs?: Array<{
-          sentenceNumber: number;
-          sentenceText: string;
-          options: Array<{ id: string; text: string; isCorrect: boolean }>;
-          pointsWhenCorrect?: number;
-        }>;
-        selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>;
-      };
+          sentenceNumber: number
+          sentenceText: string
+          options: Array<{ id: string; text: string; isCorrect: boolean }>
+          pointsWhenCorrect?: number
+        }>
+        selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>
+      }
 
       const gamesPayload = {
         title: data.title ?? '',
@@ -96,7 +96,7 @@ export default function GameNodeDialog({
         topic_id: '(uuid)',
         status: 'draft',
         version: 1,
-      };
+      }
 
       const gameSessionsPayload = {
         game_id: '(uuid)',
@@ -107,20 +107,20 @@ export default function GameNodeDialog({
           selectedAnswers: data.selectedAnswers ?? [],
         },
         progress_data: null,
-      };
+      }
 
-      logColor('games', gamesPayload, 'db');
-      logColor('game_sessions', gameSessionsPayload, 'react');
-      onSave?.({ points, paragraphGameData: gameData });
+      logColor('games', gamesPayload, 'db')
+      logColor('game_sessions', gameSessionsPayload, 'react')
+      onSave?.({ points, paragraphGameData: gameData })
     } else if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
-      onSave?.({ points, imageTermGameData: gameData });
+      onSave?.({ points, imageTermGameData: gameData })
     } else if (nodeType === 'gameImagePin' && gameData && typeof gameData === 'object') {
-      onSave?.({ points, imagePinGameData: gameData });
+      onSave?.({ points, imagePinGameData: gameData })
     } else {
-      onSave?.({ points });
+      onSave?.({ points })
     }
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   const handleCancel = () => {
     setPoints(100)
@@ -128,7 +128,10 @@ export default function GameNodeDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw]! max-w-[1080px]!">
         <DialogHeader>
           <DialogTitle>{gameConfig.title}</DialogTitle>
@@ -138,7 +141,7 @@ export default function GameNodeDialog({
         </DialogHeader>
         <GameEditorProvider getGameDataRef={getGameDataRef}>
           <GameNodeLayout
-            key={open ? nodeId ?? 'none' : 'closed'}
+            key={open ? (nodeId ?? 'none') : 'closed'}
             nodeId={nodeId}
             gameComponent={GameComponent}
             initialData={initialData}

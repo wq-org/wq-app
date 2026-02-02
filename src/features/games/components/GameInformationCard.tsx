@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
-const DEFAULT_TRUNCATE_LENGTH = 600;
+const DEFAULT_TRUNCATE_LENGTH = 600
 
 export interface GameInformationCardProps {
-  title?: string;
-  description?: string;
-  truncateLength?: number;
+  title?: string
+  description?: string
+  truncateLength?: number
 }
 
 export default function GameInformationCard({
@@ -15,21 +15,15 @@ export default function GameInformationCard({
   description,
   truncateLength = DEFAULT_TRUNCATE_LENGTH,
 }: GameInformationCardProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
 
-  const isLong =
-    typeof description === 'string' && description.length > truncateLength;
+  const isLong = typeof description === 'string' && description.length > truncateLength
   const displayText =
-    description &&
-    (isLong && !expanded
-      ? `${description.slice(0, truncateLength)}…`
-      : description);
+    description && (isLong && !expanded ? `${description.slice(0, truncateLength)}…` : description)
 
   return (
     <div className="space-y-2">
-      {title && (
-        <h2 className="text-lg font-semibold">{title}</h2>
-      )}
+      {title && <h2 className="text-lg font-semibold">{title}</h2>}
       {description && (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">{displayText}</p>
@@ -43,12 +37,18 @@ export default function GameInformationCard({
             >
               {expanded ? (
                 <>
-                  <ChevronUp className="size-4" aria-hidden />
+                  <ChevronUp
+                    className="size-4"
+                    aria-hidden
+                  />
                   Show less
                 </>
               ) : (
                 <>
-                  <ChevronDown className="size-4" aria-hidden />
+                  <ChevronDown
+                    className="size-4"
+                    aria-hidden
+                  />
                   Show more
                 </>
               )}
@@ -57,5 +57,5 @@ export default function GameInformationCard({
         </div>
       )}
     </div>
-  );
+  )
 }

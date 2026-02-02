@@ -6,18 +6,18 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import type { IfElseGameDialogProps } from '../types/game-studio.types';
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
-import { constrainDescription } from '@/lib/validations';
-import GameNodeLayout from './GameNodeLayout';
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
+import { Badge } from '@/components/ui/badge'
+import type { IfElseGameDialogProps } from '../types/game-studio.types'
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
+import { constrainDescription } from '@/lib/validations'
+import GameNodeLayout from './GameNodeLayout'
 
 export default function IfElseGameDialog({
   open,
@@ -188,7 +188,10 @@ export default function IfElseGameDialog({
           }
         />
         <DialogFooter className="flex items-center border-t border-gray-200 pt-4 gap-2 justify-end">
-          <Button variant="outline" onClick={handleCancel}>
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
           <Button

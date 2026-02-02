@@ -1,15 +1,15 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants';
-import { constrainDescription } from '@/lib/validations';
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
+import { constrainDescription } from '@/lib/validations'
 
 export interface GameInformationProps {
-  title: string;
-  description: string;
-  onTitleChange: (title: string) => void;
-  onDescriptionChange: (description: string) => void;
+  title: string
+  description: string
+  onTitleChange: (title: string) => void
+  onDescriptionChange: (description: string) => void
 }
 
 export default function GameInformation({
