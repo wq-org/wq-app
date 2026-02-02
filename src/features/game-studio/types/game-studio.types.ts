@@ -24,21 +24,22 @@ export interface HistoryState {
 
 // ========== Node Data Types ==========
 export interface GameNodeData {
-  label?: string
-  onClick?: () => void
-  title?: string
-  description?: string
-  rounds?: string
-  condition?: string
-  gameType?: string
+  label?: string;
+  onClick?: () => void;
+  title?: string;
+  description?: string;
+  condition?: string;
+  gameType?: string;
 }
 
 // ========== Node Component Props ==========
 export interface GameStartNodeProps {
   data?: {
-    onClick?: () => void
-  }
-  selected?: boolean
+    onClick?: () => void;
+    title?: string;
+    label?: string;
+  };
+  selected?: boolean;
 }
 
 export interface GameEndNodeProps {
@@ -87,10 +88,11 @@ export interface GameImagePinNodeProps {
 
 // ========== Dialog Props ==========
 export interface StartGameDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave?: (data: { title: string; description: string; rounds: string }) => void
-  nodeId?: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave?: (data: { title: string; description: string }) => void;
+  nodeId?: string;
+  initialData?: { title?: string; description?: string };
 }
 
 export interface EndGameDialogProps {
@@ -123,11 +125,18 @@ export interface IfElseGameDialogProps {
 }
 
 export interface GameNodeDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  nodeType?: string
-  nodeId?: string
-  onSave?: (data: { points?: number }) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  nodeType?: string;
+  nodeId?: string;
+  initialData?: unknown;
+  onSave?: (data: {
+    points?: number;
+    paragraphGameData?: unknown;
+    imageTermGameData?: unknown;
+    imagePinGameData?: unknown;
+  }) => void;
+  onDelete?: () => void;
 }
 
 // ========== Drawer Props ==========
@@ -159,11 +168,15 @@ export interface SidebarItem {
 
 // ========== Card Types ==========
 export interface GameCardProps {
-  id: string
-  title: string
-  description: string
-  route?: string
-  onPlay?: () => void
+  id: string;
+  title: string;
+  description: string;
+  route?: string;
+  button: string;
+  onPlay?: () => void;
+  /** Optional image URL for the top of the card. */
+  imageUrl?: string;
+
 }
 
 export interface GameCardListProps {

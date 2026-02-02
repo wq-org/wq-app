@@ -1,8 +1,11 @@
-import { Handle, Position } from '@xyflow/react'
-import { GitBranch } from 'lucide-react'
-import type { GameIfElseNodeProps } from '../types/game-studio.types'
+import { Handle, Position } from '@xyflow/react';
+import { GitBranch } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import type { GameIfElseNodeProps } from '../types/game-studio.types';
 
 export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
+  const label = data?.label || 'If / else';
+
   return (
     <div
       className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow ${
@@ -13,21 +16,39 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
+        className="w-3! h-3! bg-orange-500! border-2! border-white!"
         id="left"
         onClick={(e) => e.stopPropagation()}
       />
-      <div className="p-2 rounded-lg border border-orange-500/20 bg-orange-500/10 flex items-center justify-center">
+      <div className="p-2 rounded-lg border border-orange-500/20 bg-orange-500/10 flex items-center justify-center shrink-0">
         <GitBranch className="w-4 h-4 text-orange-500" />
       </div>
-      <div className="flex flex-col">
-        <span className="text-gray-900 font-medium">{data?.label || 'If / else'}</span>
-        {data?.condition && <span className="text-xs text-gray-500">{data.condition}</span>}
+      <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="text-gray-900 font-medium truncate block">
+              {label}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={6}>
+            {label}
+          </TooltipContent>
+        </Tooltip>
+        {data?.condition && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-xs text-gray-500 truncate block">{data.condition}</span>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={6}>
+              {data.condition}
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
+        className="w-3! h-3! bg-orange-500! border-2! border-white!"
         id="right-top"
         onClick={(e) => e.stopPropagation()}
         style={{ top: '30%' }}
@@ -35,7 +56,7 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
+        className="w-3! h-3! bg-orange-500! border-2! border-white!"
         id="right-bottom"
         onClick={(e) => e.stopPropagation()}
         style={{ top: '70%' }}

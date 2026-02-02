@@ -11,7 +11,7 @@ export default function GameStartNode({ data, selected }: GameStartNodeProps) {
       <div className="p-2 rounded-lg border border-blue-500/20 bg-blue-500/10 flex items-center justify-center">
         <Play className="w-4 h-4 text-blue-500" />
       </div>
-      <span className="text-gray-900 font-medium">Start</span>
+      <span className="text-gray-900 font-medium">{data?.title || data?.label || 'Start'}</span>
       <Handle
         type="source"
         position={Position.Right}

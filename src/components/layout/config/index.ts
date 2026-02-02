@@ -1,4 +1,4 @@
-export type { Roles } from './dashboard.types'
+export type { Roles, CommandBarView, CommandBarContext } from './dashboard.types'
 export type { DashboardTab } from './dashboard-config'
 export {
   VALID_ROLES,

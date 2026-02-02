@@ -1,8 +1,8 @@
 // Pages
-export { default as ImageTermMatchGame } from './ImageTermMatchGame';
+export { default as ParagraphLineSelectGame } from './ParagraphLineSelectGame';
 
 // Types
-export type * from './types/imageTermMatch.types';
+export type * from './types/paragraphLineSelect.types';
 
 // Components
 // Add component exports when available
@@ -12,3 +12,4 @@ export type * from './types/imageTermMatch.types';
 
 // API
 // Add API exports when available
+

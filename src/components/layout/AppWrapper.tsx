@@ -1,14 +1,16 @@
 import React from 'react'
 import { Container, Navigation } from '@/components/shared'
 import CommandPalette from '@/features/command-palette/components/CommandPalette'
-import { PageTitle } from './PageTitle'
 import { cn } from '@/lib/utils'
-import type { Roles } from './config'
+import type { Roles, CommandBarContext } from './config'
+
 interface AppWrapperProps {
   children: React.ReactNode
+  /** User role for layout/navigation; required. */
   role: Roles
   className?: string
-  commandPaletteRole?: Roles | 'game-studio'
+  /** Override which command bar to show (role-based or view-based). When not set, uses `role`. */
+  commandBarContext?: CommandBarContext
   authenticated?: boolean
 }
 
@@ -16,19 +18,15 @@ function AppWrapper({
   children,
   role,
   className,
-  commandPaletteRole,
-  authenticated = true,
+  commandBarContext,
 }: AppWrapperProps) {
-  const paletteRole = commandPaletteRole || role
+  const effectiveContext: CommandBarContext = commandBarContext ?? role
 
   return (
     <>
-      <Navigation authenticated={authenticated}>
-        <PageTitle />
-      </Navigation>
+      <Navigation />
       <Container className={cn(className)}>{children}</Container>
-
-      {authenticated && <CommandPalette role={paletteRole} />}
+      <CommandPalette commandBarContext={effectiveContext} />
     </>
   )
 }

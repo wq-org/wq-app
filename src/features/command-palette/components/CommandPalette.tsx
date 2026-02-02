@@ -8,13 +8,10 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import type { CommandBarItem, CommandBarGroup, ActionId } from '../types/command-bar.types'
-import { getBarGroups } from '../config/commandBarGroups'
-
-import type { CommandPaletteProps } from '../types/command-bar.types'
-import { getGroupById } from '../config/commandBarGroups'
+import type { CommandBarItem, CommandBarGroup, ActionId, CommandPaletteProps } from '../types/command-bar.types'
+import { getBarGroups, getGroupById } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
-import type { Roles } from '@/components/layout/config'
+import type { Roles, CommandBarContext, CommandBarView } from '@/components/layout/config'
 import { VALID_ROLES } from '@/components/layout/config'
 import { Container } from '@/components/shared'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -24,30 +21,38 @@ import CommandUploadDialog from './CommandUploadDialog'
 import CommandAddDialog from './CommandAddDialog'
 import RestrictedCommandPalette from './RestrictedCommandPalette'
 
+/** View ids that have a dedicated command bar group in commandBarGroups. */
+const COMMAND_BAR_VIEW_IDS: CommandBarView[] = ['game-studio']
+
+function isCommandBarView(context: CommandBarContext): context is CommandBarView {
+  return COMMAND_BAR_VIEW_IDS.includes(context as CommandBarView)
+}
+
 export default function CommandPalette({
-  role,
+  commandBarContext,
   className,
   onCourseCreated,
   onFilesUploaded,
 }: CommandPaletteProps) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
-  // Track which dialog component to render when opened
   const [activeDialog, setActiveDialog] = useState<ActionId | undefined>(undefined)
 
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.commandPalette')
 
-  // Get role from context or fallback to prop, ensure it's a valid Roles type
-  const contextRole = getRole()
-  const userRole: Roles = (contextRole || role) as Roles
+  // Resolve effective user role: when context is a view (e.g. game-studio), use user role for 'user' group
+  const effectiveRole: Roles = isCommandBarView(commandBarContext)
+    ? (getRole() as Roles) || 'teacher'
+    : (commandBarContext as Roles)
 
-  // Validate role exists - show restricted component if invalid
-  const isValidRole = userRole && VALID_ROLES.includes(userRole)
+  const isValidContext =
+    commandBarContext &&
+    (VALID_ROLES.includes(commandBarContext as Roles) || isCommandBarView(commandBarContext))
 
-  if (!isValidRole) {
-    console.error('Invalid role provided to CommandPalette:', userRole)
+  if (!isValidContext) {
+    console.error('Invalid commandBarContext provided to CommandPalette:', commandBarContext)
     return <RestrictedCommandPalette />
   }
 
@@ -61,7 +66,15 @@ export default function CommandPalette({
     forwards: () => window.history.forward(),
   }
 
-  const commandBarGroup: CommandBarGroup[] = getBarGroups(userRole)
+  const commandBarGroup: CommandBarGroup[] = getBarGroups(effectiveRole)
+
+  // When context is a view (e.g. game-studio), use that view's group; otherwise use role group
+  const primaryGroup = isCommandBarView(commandBarContext)
+    ? (getGroupById(commandBarContext, effectiveRole) ?? commandBarGroup[0])
+    : (getGroupById(commandBarContext as Roles, commandBarContext as Roles) ?? commandBarGroup[0])
+  const defaultUserCommands = getGroupById('user', effectiveRole)
+  const userItems = defaultUserCommands?.items ?? []
+  const roleBasedUserCommands = primaryGroup?.items ?? []
 
   function handleOnClickSearchDialog() {
     setActiveDialog('search')
@@ -86,11 +99,6 @@ export default function CommandPalette({
     setOpen(true)
     console.log('Add new dialog triggered')
   }
-
-  const primaryGroup = getGroupById(userRole, userRole) ?? commandBarGroup[0]
-  const defaultUserCommands = getGroupById('user', userRole)
-  const userItems = defaultUserCommands?.items ?? []
-  const roleBasedUserCommands = primaryGroup?.items ?? []
 
   const handleItemClick = (item: CommandBarItem) => {
     // Dispatch custom event for pan/select actions
@@ -172,11 +180,16 @@ export default function CommandPalette({
               </ToggleGroup.Root>
 
               {/* Separator after third icon */}
+              {roleBasedUserCommands.slice(3).length > 0 && (
               <Separator.Root
                 decorative
                 orientation="vertical"
-                className="mx-2 h-12 w-px bg-border"
-              />
+                className={cn(
+                  'mx-2 h-12 w-px bg-border',
+                  roleBasedUserCommands.slice(3).length > 0 ? 'mx-2' : 'mx-0',
+                )}
+                />
+              )}
 
               {/* Remaining primary items */}
               <ToggleGroup.Root
@@ -224,12 +237,17 @@ export default function CommandPalette({
                 })}
               </ToggleGroup.Root>
 
+
+              {roleBasedUserCommands.slice(3).length > 0 && (
+              
+                <Separator.Root
+                  decorative
+                  orientation="vertical"
+                  className="mx-2 h-12 w-px bg-border"
+                />
+              )}
+            
               {/* System group */}
-              <Separator.Root
-                decorative
-                orientation="vertical"
-                className="mx-2 h-12 w-px bg-border"
-              />
               <ToggleGroup.Root
                 type="single"
                 value={active}
@@ -304,7 +322,7 @@ export default function CommandPalette({
                 {activeDialog === 'feedback' && <CommandFeedbackDialog />}
                 {activeDialog === 'add' && (
                   <CommandAddDialog
-                    role={role}
+                    role={effectiveRole}
                     onSuccess={onCourseCreated}
                   />
                 )}

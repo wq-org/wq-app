@@ -187,7 +187,7 @@ export default function Dashboard() {
       </DashboardLayout>
 
       <CommandPalette
-        role="teacher"
+        commandBarContext="teacher"
         onCourseCreated={fetchCourses}
         onFilesUploaded={loadFiles}
       />

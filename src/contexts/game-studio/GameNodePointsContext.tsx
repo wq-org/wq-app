@@ -8,6 +8,6 @@ interface GameNodePointsContextValue {
 export const GameNodePointsContext = createContext<GameNodePointsContextValue>({
   points: undefined,
   onPointsChange: undefined,
-})
+});
 
-export const useGameNodePoints = () => useContext(GameNodePointsContext)
+export const useGameNodePoints = () => useContext(GameNodePointsContext);

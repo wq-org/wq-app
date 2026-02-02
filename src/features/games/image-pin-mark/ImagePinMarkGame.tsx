@@ -1,33 +1,39 @@
-import { useState, useRef } from 'react'
-import {
-  DndContext,
-  useDraggable,
-  useDroppable,
-  MouseSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
-import { cn } from '@/lib/utils'
-import GameLayout from '@/components/layout/GameLayout'
-import ImagePin from './components/ImagePin'
-import SquareMarker from './components/SquareMarker'
-import GameInformation from '@/features/games/components/GameInformation'
-import { useGameNodePoints } from '@/features/game-studio/contexts/GameNodePointsContext'
-import FileDropzone from '@/features/upload-files/components/FileDropzone'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { X } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react';
+import { DndContext, useDraggable, useDroppable, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import { cn } from '@/lib/utils';
+import GameLayout from '@/components/layout/GameLayout';
+import ImagePin from './components/ImagePin';
+import SquareMarker from './components/SquareMarker';
+import GameInformation from '@/features/games/components/GameInformation';
+import GameInformationCard from '@/features/games/components/GameInformationCard';
+import GamePreviewAlert from '@/features/games/components/GamePreviewAlert';
+import FileDropzone from '@/features/upload-files/components/FileDropzone';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Check, Plus, X } from 'lucide-react';
+import GameSummaryCard from '@/features/games/components/GameSummaryCard';
+import GameResultTable from '@/features/games/components/GameResultTable';
+import PointsInput from '@/features/games/components/PointsInput';
+import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel';
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
+import { useGameEditorContext } from '@/contexts/game-studio';
+import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants';
+import { constrainDescription } from '@/lib/validations';
+
+/** Default size (width/height) for new squares; matches SquareMarker DEFAULT_SIZE. */
+const DEFAULT_SQUARE_SIZE = 80;
 
 interface Square {
-  id: number
-  x: number
-  y: number
-  width: number
-  height: number
-  question: string
+  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  question: string;
+  points?: number;
 }
 
 interface PinPosition {
@@ -37,14 +43,33 @@ interface PinPosition {
   squareId?: number // Track which square the pin is in
 }
 
+export interface ImagePinMarkInitialData {
+  title?: string;
+  description?: string;
+  imagePreview?: string | null;
+  squares?: Square[];
+  pinPositions?: PinPosition[];
+}
+
+export interface ImagePinMarkGameProps {
+  initialData?: unknown;
+  onDelete?: () => void;
+}
+
+type ImagePinVariant = 'default' | 'secondary' | 'correct' | 'wrong';
+
 function DraggablePin({
   id,
   position,
   squareId,
+  variant,
+  resultsRevealed,
 }: {
-  id: string
-  position?: { x: number; y: number }
-  squareId?: number
+  id: string;
+  position?: { x: number; y: number };
+  squareId?: number;
+  variant?: ImagePinVariant;
+  resultsRevealed?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -85,10 +110,10 @@ function DraggablePin({
       {...attributes}
       className={cn(
         'cursor-grab active:cursor-grabbing',
-        squareId && 'ring-4 ring-blue-500 rounded-full',
+        squareId && !resultsRevealed && 'ring-4 ring-blue-500 rounded-full'
       )}
     >
-      <ImagePin variant="default" />
+      <ImagePin variant={variant ?? 'default'} />
     </div>
   )
 }
@@ -108,16 +133,50 @@ function DroppableArea({ children, id }: { children: React.ReactNode; id: string
   )
 }
 
-export default function ImagePinMarkGame() {
-  const { points, onPointsChange } = useGameNodePoints()
-  const [title, setTitle] = useState<string>('')
-  const [description, setDescription] = useState<string>('')
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [squares, setSquares] = useState<Square[]>([])
-  const [pinPositions, setPinPositions] = useState<PinPosition[]>([])
-  const [pinVariant] = useState<'default' | 'secondary'>('default')
-  const imageContainerRef = useRef<HTMLDivElement>(null)
-  const previewImageRef = useRef<HTMLImageElement>(null)
+export default function ImagePinMarkGame({ initialData: initialDataProp, onDelete }: ImagePinMarkGameProps = {}) {
+  const initialData = initialDataProp as ImagePinMarkInitialData | null | undefined;
+  const [title, setTitle] = useState<string>(initialData?.title ?? '');
+  const [description, setDescription] = useState<string>(
+    constrainDescription(initialData?.description ?? '')
+  );
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null);
+  const [squares, setSquares] = useState<Square[]>(initialData?.squares ?? []);
+  const [pinPositions, setPinPositions] = useState<PinPosition[]>(initialData?.pinPositions ?? []);
+  const [editingPoints, setEditingPoints] = useState<Record<number, string>>({});
+  const [resultsRevealed, setResultsRevealed] = useState(false);
+  const [refDimensions, setRefDimensions] = useState<{ width: number; height: number } | null>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const previewImageRef = useRef<HTMLImageElement>(null);
+
+  const gameEditor = useGameEditorContext();
+
+  // Register getGameData so GameNodeDialog can pull current state on Save
+  useEffect(() => {
+    if (!gameEditor?.registerGetGameData) return;
+    gameEditor.registerGetGameData(() => ({
+      title,
+      description,
+      imagePreview,
+      squares,
+      pinPositions,
+    }));
+  }, [gameEditor, title, description, imagePreview, squares, pinPositions]);
+
+  // Capture editor image dimensions when we have squares (e.g. from initialData) so drop hit-test can scale
+  useEffect(() => {
+    if (!imagePreview || squares.length === 0) return;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (imageContainerRef.current) {
+          const rect = imageContainerRef.current.getBoundingClientRect();
+          if (rect.width > 0 && rect.height > 0) {
+            setRefDimensions((prev) => prev ?? { width: rect.width, height: rect.height });
+          }
+        }
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [imagePreview, squares.length]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -139,34 +198,24 @@ export default function ImagePinMarkGame() {
   }
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageContainerRef.current || squares.length >= 4) return
+    if (!imageContainerRef.current || squares.length >= MAX_IMAGE_PIN_SQUARES) return;
 
-    const rect = imageContainerRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const width = 80 // w-20 = 80px
-    const height = 80 // h-20 = 80px
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setRefDimensions((prev) => prev ?? { width: rect.width, height: rect.height });
 
     const newSquare: Square = {
       id: squares.length + 1,
       x,
       y,
-      width,
-      height,
+      width: DEFAULT_SQUARE_SIZE,
+      height: DEFAULT_SQUARE_SIZE,
       question: '',
     }
 
-    // Log square coordinates and dimensions
-    console.log('Square created:', {
-      id: newSquare.id,
-      x: newSquare.x,
-      y: newSquare.y,
-      width: newSquare.width,
-      height: newSquare.height,
-    })
-
-    setSquares([...squares, newSquare])
-  }
+    setSquares([...squares, newSquare]);
+  };
 
   const handleSquareDelete = (id: number) => {
     const updatedSquares = squares
@@ -176,20 +225,42 @@ export default function ImagePinMarkGame() {
   }
 
   const handleSquareQuestionChange = (id: number, question: string) => {
-    setSquares(squares.map((sq) => (sq.id === id ? { ...sq, question } : sq)))
-  }
+    setSquares((prev) => prev.map((sq) => (sq.id === id ? { ...sq, question } : sq)));
+  };
 
-  // Check if a point is within a square's bounds
+  const handleSquarePositionChange = (id: number, x: number, y: number) => {
+    setSquares((prev) => prev.map((sq) => (sq.id === id ? { ...sq, x, y } : sq)));
+  };
+
+  const handleSquarePointsChange = (id: number, value: number) => {
+    const rounded = Math.round(value * 2) / 2;
+    const clamped = Math.max(0, Math.min(1000, rounded));
+    setSquares((prev) => prev.map((sq) => (sq.id === id ? { ...sq, points: clamped } : sq)));
+  };
+
+  const handleCheckAnswers = () => {
+    setResultsRevealed(true);
+  };
+
+  const STATEMENT_TRUNCATE_LENGTH = 60;
+
+  const totalPoints = squares.reduce(
+    (sum, sq) => sum + (sq.points != null && sq.points > 0 ? sq.points : 1),
+    0
+  );
+
+  /**
+   * Hit test: point (px, py) is inside the square.
+   * Square uses center-based rect, same geometry as SquareMarker (translate(-50%, -50%)).
+   * Bounds are inclusive so a point on the edge counts as inside.
+   */
   const isPointInSquare = (px: number, py: number, square: Square): boolean => {
-    // Square is centered at (square.x, square.y) with transform translate(-50%, -50%)
-    // So the actual bounds are:
-    const left = square.x - square.width / 2
-    const right = square.x + square.width / 2
-    const top = square.y - square.height / 2
-    const bottom = square.y + square.height / 2
-
-    return px >= left && px <= right && py >= top && py <= bottom
-  }
+    const left = square.x - square.width / 2;
+    const right = square.x + square.width / 2;
+    const top = square.y - square.height / 2;
+    const bottom = square.y + square.height / 2;
+    return px >= left && px <= right && py >= top && py <= bottom;
+  };
 
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null)
   const dragPositionRef = useRef<{ x: number; y: number } | null>(null)
@@ -220,91 +291,85 @@ export default function ImagePinMarkGame() {
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+    const { active, over } = event;
 
-    // Always clean up mouse listener
-    if (dragCleanupRef.current) {
-      dragCleanupRef.current()
+    const cleanup = (window as Window & { __dragCleanup?: () => void }).__dragCleanup;
+    if (cleanup) {
+      cleanup();
     }
 
-    if (over && over.id === 'image-drop-area') {
-      if (previewImageRef.current) {
-        const rect = previewImageRef.current.getBoundingClientRect()
-        const existingPin = pinPositions.find((p) => p.id === active.id)
+    if (over && over.id === 'image-drop-area' && previewImageRef.current) {
+      const rect = previewImageRef.current.getBoundingClientRect();
+      const existingPin = pinPositions.find((p) => p.id === active.id);
 
-        let x: number
-        let y: number
-
-        // Get drop coordinates - use tracked drag position first
-        const finalPosition = dragPositionRef.current || dragPosition
-        if (finalPosition) {
-          x = finalPosition.x
-          y = finalPosition.y
-        } else if (over.rect) {
-          // Fallback to center of drop zone
-          x = over.rect.left - rect.left + over.rect.width / 2
-          y = over.rect.top - rect.top + over.rect.height / 2
-        } else if (event.activatorEvent) {
-          // Use the mouse event coordinates
-          const mouseEvent = event.activatorEvent as MouseEvent
-          x = mouseEvent.clientX - rect.left
-          y = mouseEvent.clientY - rect.top
-        } else if (existingPin && event.delta) {
-          // Update existing position with delta
-          x = existingPin.x + event.delta.x
-          y = existingPin.y + event.delta.y
-        } else {
-          console.warn('Could not determine drop position', { over, event, dragPosition })
-          setDragPosition(null)
-          return
+      // Refresh ref dimensions at drop so scaling stays accurate after resize
+      if (imageContainerRef.current) {
+        const editorRect = imageContainerRef.current.getBoundingClientRect();
+        if (editorRect.width > 0 && editorRect.height > 0) {
+          setRefDimensions({ width: editorRect.width, height: editorRect.height });
         }
-
-        // Clamp to image bounds
-        x = Math.max(0, Math.min(rect.width, x))
-        y = Math.max(0, Math.min(rect.height, y))
-
-        console.log(`Pin ${active.id} dropped at:`, {
-          x,
-          y,
-          rect: { width: rect.width, height: rect.height },
-        })
-
-        // Check if pin is within any square
-        let squareId: number | undefined
-        for (const square of squares) {
-          if (isPointInSquare(x, y, square)) {
-            squareId = square.id
-            console.log(`✅ Pin ${active.id} placed in Square ${square.id}`, {
-              pinPosition: { x, y },
-              square: {
-                id: square.id,
-                x: square.x,
-                y: square.y,
-                width: square.width,
-                height: square.height,
-              },
-            })
-            break
-          }
-        }
-
-        if (!squareId) {
-          console.log(`Pin ${active.id} placed outside all squares`)
-        }
-
-        // Add or update pin position
-        setPinPositions((prev) => {
-          const existing = prev.find((p) => p.id === active.id)
-          if (existing) {
-            return prev.map((p) => (p.id === active.id ? { ...p, x, y, squareId } : p))
-          }
-          return [...prev, { id: active.id as string, x, y, squareId }]
-        })
       }
+
+      let dropX: number;
+      let dropY: number;
+      const finalPosition = dragPositionRef.current || dragPosition;
+      if (finalPosition) {
+        dropX = finalPosition.x;
+        dropY = finalPosition.y;
+      } else if (over.rect) {
+        dropX = over.rect.left - rect.left + over.rect.width / 2;
+        dropY = over.rect.top - rect.top + over.rect.height / 2;
+      } else if (event.activatorEvent) {
+        const mouseEvent = event.activatorEvent as MouseEvent;
+        dropX = mouseEvent.clientX - rect.left;
+        dropY = mouseEvent.clientY - rect.top;
+      } else if (existingPin && event.delta) {
+        dropX = existingPin.x + event.delta.x;
+        dropY = existingPin.y + event.delta.y;
+      } else {
+        setDragPosition(null);
+        return;
+      }
+
+      const clampedX = Math.max(0, Math.min(rect.width, dropX));
+      const clampedY = Math.max(0, Math.min(rect.height, dropY));
+
+      // Scale from preview image space to reference (editor) space for hit test
+      const canScale =
+        refDimensions &&
+        refDimensions.width > 0 &&
+        refDimensions.height > 0 &&
+        rect.width > 0 &&
+        rect.height > 0;
+      const hitX = canScale
+        ? clampedX * (refDimensions!.width / rect.width)
+        : clampedX;
+      const hitY = canScale
+        ? clampedY * (refDimensions!.height / rect.height)
+        : clampedY;
+
+      // Find which square contains the pin center; overlap resolved by first match in array order
+      let matchedSquareId: number | undefined;
+      for (const square of squares) {
+        if (isPointInSquare(hitX, hitY, square)) {
+          matchedSquareId = square.id;
+          break;
+        }
+      }
+
+      setPinPositions((prev) => {
+        const existing = prev.find((p) => p.id === active.id);
+        if (existing) {
+          return prev.map((p) =>
+            p.id === active.id ? { ...p, x: clampedX, y: clampedY, squareId: matchedSquareId } : p
+          );
+        }
+        return [...prev, { id: active.id as string, x: clampedX, y: clampedY, squareId: matchedSquareId }];
+      });
     }
 
-    setDragPosition(null)
-  }
+    setDragPosition(null);
+  };
 
   const editorContent = (
     <div className="space-y-6">
@@ -313,13 +378,19 @@ export default function ImagePinMarkGame() {
         description={description}
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
-        points={points}
-        onPointsChange={onPointsChange}
       />
 
       <Card>
         <CardHeader>
-          <Label>Upload Image</Label>
+          <CardTitle>Upload Image</CardTitle>
+          <CardDescription>
+            Upload an image and start clicking on the areas you want to highlight. Your cursor turns into 
+            "<span className="text-slate-500 inline-flex align-middle mx-1"><Plus /></span>" 
+            icon when you hover over the uploaded image.
+          </CardDescription>
+          <CardAction>
+            <SlotsLeftLabel current={squares.length} max={MAX_IMAGE_PIN_SQUARES} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           {!imagePreview ? (
@@ -329,16 +400,23 @@ export default function ImagePinMarkGame() {
             />
           ) : (
             <div className="space-y-4">
-              <div className="relative">
+              <div className="relative w-full">
                 <div
                   ref={imageContainerRef}
-                  className="relative w-full cursor-crosshair"
+                  className="relative w-full cursor-crosshair min-h-[200px]"
                   onClick={handleImageClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
+                  }}
+                  aria-label="Click on the image to add a marker square"
                 >
                   <img
                     src={imagePreview}
                     alt="Game image"
-                    className="w-full h-auto rounded-lg"
+                    className="w-full h-auto rounded-lg block pointer-events-none select-none"
+                    draggable={false}
                   />
                   {squares.map((square) => (
                     <SquareMarker
@@ -346,13 +424,14 @@ export default function ImagePinMarkGame() {
                       number={square.id}
                       x={square.x}
                       y={square.y}
+                      width={square.width}
+                      height={square.height}
+                      containerRef={imageContainerRef}
+                      onPositionChange={(x, y) => handleSquarePositionChange(square.id, x, y)}
                       onDelete={() => handleSquareDelete(square.id)}
                     />
                   ))}
                 </div>
-                {squares.length >= 4 && (
-                  <p className="text-sm text-gray-500 mt-2">Maximum of 4 squares reached</p>
-                )}
               </div>
               <Button
                 variant="outline"
@@ -377,26 +456,68 @@ export default function ImagePinMarkGame() {
           </CardHeader>
           <CardContent className="space-y-4">
             {squares.map((square) => (
-              <div
-                key={square.id}
-                className="space-y-2"
-              >
-                <Label>Square {square.id} Question</Label>
-                <Input
-                  value={square.question}
-                  onChange={(e) => handleSquareQuestionChange(square.id, e.target.value)}
-                  placeholder={`Enter question for square ${square.id}...`}
-                />
+              <div key={square.id} className="space-y-3 p-3 rounded-lg border bg-muted/30">
+                <Label>Square {square.id}</Label>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Question</Label>
+                  <Textarea
+                    value={square.question}
+                    onChange={(e) =>
+                      handleSquareQuestionChange(square.id, e.target.value)
+                    }
+                    placeholder={`Enter question for square ${square.id}...`}
+                    className="min-h-20"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-4 items-end">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Points</Label>
+                    <PointsInput
+                      value={
+                        editingPoints[square.id] !== undefined
+                          ? editingPoints[square.id]
+                          : (square.points !== undefined && square.points !== null
+                              ? String(square.points)
+                              : '')
+                      }
+                      onChange={(e) => {
+                        setEditingPoints((prev) => ({ ...prev, [square.id]: e.target.value }));
+                      }}
+                      onBlur={(e) => {
+                        const raw = e.target.value.trim();
+                        const v = raw === '' ? NaN : parseFloat(raw);
+                        if (!isNaN(v)) {
+                          handleSquarePointsChange(square.id, Math.round(v * 2) / 2);
+                        }
+                        setEditingPoints((prev) => {
+                          const next = { ...prev };
+                          delete next[square.id];
+                          return next;
+                        });
+                      }}
+                      className="w-20 h-8 text-xs"
+                    />
+                  </div>
+                </div>
               </div>
             ))}
           </CardContent>
         </Card>
+      )}
+
+      {squares.length > 0 && (
+        <GameSummaryCard
+          totalQuestions={squares.length}
+          totalPoints={totalPoints}
+        />
       )}
     </div>
   )
 
   const previewContent = (
     <div className="space-y-6">
+      <GameInformationCard title={title} description={description} />
+      <GamePreviewAlert />
       <Card>
         <CardHeader>
           <Label>Preview</Label>
@@ -447,19 +568,68 @@ export default function ImagePinMarkGame() {
                         number={square.id}
                         x={square.x}
                         y={square.y}
+                        width={square.width}
+                        height={square.height}
                         pointerEvents="none"
                       />
                     ))}
-                    {pinPositions.map((pin) => (
-                      <DraggablePin
-                        key={pin.id}
-                        id={pin.id}
-                        position={{ x: pin.x, y: pin.y }}
-                        squareId={pin.squareId}
-                      />
-                    ))}
+                    {pinPositions.map((pin) => {
+                      const expectedSquareId = parseInt(String(pin.id).replace(/^pin-/, ''), 10);
+                      const pinSquareId = pin.squareId != null ? Number(pin.squareId) : NaN;
+                      const correct =
+                        !Number.isNaN(expectedSquareId) &&
+                        !Number.isNaN(pinSquareId) &&
+                        pinSquareId === expectedSquareId;
+                      const displayVariant: ImagePinVariant = resultsRevealed
+                        ? correct
+                          ? 'correct'
+                          : 'wrong'
+                        : 'default';
+                      return (
+                        <DraggablePin
+                          key={pin.id}
+                          id={pin.id}
+                          position={{ x: pin.x, y: pin.y }}
+                          squareId={pin.squareId}
+                          variant={displayVariant}
+                        />
+                      );
+                    })}
                   </div>
                 </DroppableArea>
+
+                {squares.length > 0 && (
+                  <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-4">
+                      Drag pins onto the image above:
+                    </p>
+                    <div className="flex gap-4 flex-wrap">
+                      {squares
+                        .filter((square) => {
+                          const pinId = `pin-${square.id}`;
+                          return !pinPositions.some((p) => p.id === pinId);
+                        })
+                        .map((square) => {
+                          const pinId = `pin-${square.id}`;
+                          return (
+                            <DraggablePin
+                              key={pinId}
+                              id={pinId}
+                              resultsRevealed={resultsRevealed}
+                            />
+                          );
+                        })}
+                    </div>
+                    {squares.filter((square) => {
+                      const pinId = `pin-${square.id}`;
+                      return !pinPositions.some((p) => p.id === pinId);
+                    }).length === 0 && (
+                      <p className="text-sm text-gray-500 text-center mt-4">
+                        All pins have been placed on the image
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {squares.length > 0 && (
                   <div className="space-y-4">
@@ -470,7 +640,7 @@ export default function ImagePinMarkGame() {
                           key={square.id}
                           className="flex gap-2"
                         >
-                          <span className="font-medium min-w-[80px]">Square {square.id}:</span>
+                          <span className="font-medium min-w-20">Square {square.id}:</span>
                           <span>{square.question || 'No question set'}</span>
                         </div>
                       ))}
@@ -478,34 +648,65 @@ export default function ImagePinMarkGame() {
                   </div>
                 )}
 
-                <div className="mt-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-4">Drag pins onto the image above:</p>
-                  <div className="flex gap-4 flex-wrap">
-                    {squares
-                      .filter((square) => {
-                        // Only show pins that haven't been placed yet
-                        const pinId = `pin-${square.id}`
-                        return !pinPositions.some((p) => p.id === pinId)
-                      })
-                      .map((square) => {
-                        const pinId = `pin-${square.id}`
-                        return (
-                          <DraggablePin
-                            key={pinId}
-                            id={pinId}
-                          />
-                        )
-                      })}
+                {resultsRevealed && squares.length > 0 && (() => {
+                  let totalEarned = 0;
+                  let totalMax = 0;
+                  const rows = squares.map((square) => {
+                    const pinId = `pin-${square.id}`;
+                    const pin = pinPositions.find((p) => p.id === pinId);
+                    const max = square.points != null && square.points > 0 ? square.points : 1;
+                    const correct = pin?.squareId === square.id;
+                    const earned = correct ? max : 0;
+                    totalEarned += earned;
+                    totalMax += max;
+                    const statementText = square.question || 'No question set';
+                    const statementTruncated =
+                      statementText.length > STATEMENT_TRUNCATE_LENGTH
+                        ? `${statementText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
+                        : statementText;
+                    const placementText = pin
+                      ? correct
+                        ? 'Correct'
+                        : 'Wrong square'
+                      : 'Not placed';
+                    return {
+                      key: square.id,
+                      statementText,
+                      statementTruncated,
+                      selectedAnswerTexts: [placementText],
+                      earned,
+                      max,
+                    };
+                  });
+                  return (
+                    <GameResultTable
+                      rows={rows}
+                      totalEarned={totalEarned}
+                      totalMax={totalMax}
+                      title="Results"
+                      columnLabels={{
+                        statement: 'Question',
+                        selectedAnswers: 'Placement',
+                        result: 'Result',
+                        footer: 'Overall',
+                      }}
+                    />
+                  );
+                })()}
+
+                {squares.length > 0 && (
+                  <div className="flex items-center justify-start">
+                    <Button
+                      type="button"
+                      onClick={handleCheckAnswers}
+                      disabled={pinPositions.length === 0}
+                      className="gap-2"
+                    >
+                      <Check className="size-4" />
+                      Check
+                    </Button>
                   </div>
-                  {squares.filter((square) => {
-                    const pinId = `pin-${square.id}`
-                    return !pinPositions.some((p) => p.id === pinId)
-                  }).length === 0 && (
-                    <p className="text-sm text-gray-500 text-center mt-4">
-                      All pins have been placed on the image
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
             </DndContext>
           ) : (
@@ -520,27 +721,14 @@ export default function ImagePinMarkGame() {
 
   const settingsContent = (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <Label>Settings</Label>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Pin Variant:</span>
-              <span className="font-medium capitalize">{pinVariant}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Squares:</span>
-              <span className="font-medium">{squares.length} / 4</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Placed Pins:</span>
-              <span className="font-medium">{pinPositions.length}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {onDelete && (
+        <div>
+          <p className="text-muted-foreground text-sm mb-3">
+            Hold the button below for 3 seconds to delete this game node.
+          </p>
+          <HoldToDeleteButton onDelete={onDelete} holdDuration={3000} />
+        </div>
+      )}
     </div>
   )
 

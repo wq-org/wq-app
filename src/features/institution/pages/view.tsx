@@ -9,7 +9,7 @@ export default function InstitutionViewPage() {
   return (
     <>
       <ProfileView />
-      <CommandPalette role={role} />
+      <CommandPalette commandBarContext={role} />
     </>
   )
 }

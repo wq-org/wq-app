@@ -1,21 +1,12 @@
 // src/features/command-palette/types/command-bar.types.ts
 import type { ComponentType } from 'react'
+import type { CommandBarContext } from '@/components/layout/config'
 
 /**
  * Known imperative actions triggered from the command bar.
  * Extend this union when new actions are introduced.
  */
-export type ActionId =
-  | 'search'
-  | 'upload'
-  | 'feedback'
-  | 'backwards'
-  | 'forwards'
-  | 'add'
-  | 'pan'
-  | 'select'
-  | 'undo'
-  | 'redo'
+export type ActionId = 'search' | 'upload' | 'feedback' | 'backwards' | 'forwards' | 'add' | 'pan' | 'select';
 
 /**
  * Single clickable element in the command bar.
@@ -45,7 +36,8 @@ export type CommandBarGroup = {
 
 export interface CommandPaletteProps {
   children?: React.ReactNode
-  role: string
+  /** Which command bar to show: a role (teacher, student, …) or a view (e.g. game-studio). */
+  commandBarContext: CommandBarContext
   type?: string
   className?: string
   onCourseCreated?: () => void

@@ -37,7 +37,7 @@ export default function AdminDashboard() {
           <InstitutionForm />
         </div>
       </DashboardLayout>
-      <CommandPalette role="institutionAdmin" />
+      <CommandPalette commandBarContext="institutionAdmin" />
     </div>
   )
 }

@@ -44,7 +44,7 @@ export default function Dashboard() {
         {selectedTab === 'todos' && <EmptyTodosView />}
       </DashboardLayout>
 
-      <CommandPalette role="student" />
+      <CommandPalette commandBarContext="student" />
     </>
   )
 }

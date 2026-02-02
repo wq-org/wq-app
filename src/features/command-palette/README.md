@@ -478,7 +478,7 @@ export const CommandPalette = () => {
                     )}
                 >
                     {/* Header with Icon */}
-                    <div className="flex items-center gap-3 px-4 py-3 border-b bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+                    <div className="flex items-center gap-3 px-4 py-3 border-b bg-linear-to-r from-blue-500/10 to-purple-500/10">
                         <CommandIcon className="h-5 w-5 text-primary" />
                         <h2 className="font-semibold text-lg">Command Bar</h2>
                     </div>

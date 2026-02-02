@@ -1,24 +1,33 @@
-import { useState } from 'react'
-import { LayoutDashboard, Settings } from 'lucide-react'
-import GameNodeSettings from './GameNodeSettings'
-import { GameNodePointsContext } from '../contexts/GameNodePointsContext'
+import { useState } from 'react';
+import { LayoutDashboard, Settings } from 'lucide-react';
+import GameNodeSettings from './GameNodeSettings';
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton';
+import { GameNodePointsContext } from '@/contexts/game-studio';
 
 interface GameNodeLayoutProps {
-  nodeId?: string
-  gameComponent?: React.ComponentType
-  overviewContent?: React.ReactNode
-  points?: number
-  onPointsChange?: (points: number) => void
-  hideSettingsTab?: boolean
+  nodeId?: string;
+  gameComponent?: React.ComponentType<{
+    initialData?: unknown;
+    onDelete?: () => void;
+  }>;
+  overviewContent?: React.ReactNode;
+  initialData?: unknown;
+  onDelete?: () => void;
+  showDelete?: boolean;
+  points?: number;
+  onPointsChange?: (points: number) => void;
+  hideSettingsTab?: boolean;
 }
 
 export default function GameNodeLayout({
   nodeId,
   gameComponent: GameComponent,
   overviewContent,
+  initialData,
   points,
   onPointsChange,
   hideSettingsTab = false,
+  onDelete,
 }: GameNodeLayoutProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
@@ -63,7 +72,7 @@ export default function GameNodeLayout({
               <div>
                 {overviewContent && <div className="border-t pt-6 mt-6" />}
                 <GameNodePointsContext.Provider value={{ points, onPointsChange }}>
-                  <GameComponent />
+                  <GameComponent initialData={initialData} onDelete={onDelete} />
                 </GameNodePointsContext.Provider>
               </div>
             )}
@@ -75,6 +84,14 @@ export default function GameNodeLayout({
         {!hideSettingsTab && activeTab === 'settings' && (
           <div className="flex flex-col gap-4">
             <GameNodeSettings nodeId={nodeId} />
+            {onDelete && (
+              <div>
+                <p className="text-muted-foreground text-sm mb-3">
+                  Hold the button below for 3 seconds to delete this node.
+                </p>
+                <HoldToDeleteButton onDelete={onDelete} holdDuration={3000} />
+              </div>
+            )}
           </div>
         )}
       </div>
