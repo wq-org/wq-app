@@ -40,9 +40,7 @@ export default function SettingsDrawer({ open, onOpenChange }: SettingsDrawerPro
           >
             Rollback version
           </Button>
-          <HoldToDeleteButton onDelete={handleClose}>
-            Hold to Delete
-          </HoldToDeleteButton>
+          <HoldToDeleteButton onDelete={handleClose}>Hold to Delete</HoldToDeleteButton>
         </div>
       </DrawerContent>
     </Drawer>

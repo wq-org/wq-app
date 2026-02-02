@@ -7,13 +7,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import type { StartGameDialogProps } from '../types/game-studio.types'
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
-import { constrainDescription } from '@/lib/validations'
 import GameNodeLayout from './GameNodeLayout'
 
 export default function StartGameDialog({
@@ -59,37 +54,7 @@ export default function StartGameDialog({
           </DialogDescription>
         </DialogHeader>
         <GameNodeLayout
-          nodeId={nodeId}
-          overviewContent={
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  placeholder="Enter title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="description">Description</Label>
-                  <span className="text-xs text-muted-foreground">
-                    {description.length}/{MAX_DESCRIPTION_LENGTH}
-                  </span>
-                </div>
-                <Textarea
-                  id="description"
-                  placeholder="Describe how the game is going to work"
-                  value={description}
-                  onChange={(e) => setDescription(constrainDescription(e.target.value))}
-                  maxLength={MAX_DESCRIPTION_LENGTH}
-                  rows={4}
-                />
-              </div>
-            </div>
-          }
-        />
+          nodeId={nodeId}/>
         <DialogFooter>
           <Button
             variant="outline"

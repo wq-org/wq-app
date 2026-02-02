@@ -8,15 +8,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import type { IfElseGameDialogProps } from '../types/game-studio.types'
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
-import { constrainDescription } from '@/lib/validations'
 import GameNodeLayout from './GameNodeLayout'
 
 export default function IfElseGameDialog({
@@ -104,31 +100,6 @@ export default function IfElseGameDialog({
           onDelete={onDelete ? handleDelete : undefined}
           overviewContent={
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="ifelse-title">Title</Label>
-                <Input
-                  id="ifelse-title"
-                  placeholder="Enter node title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="ifelse-description">Description</Label>
-                  <span className="text-xs text-muted-foreground">
-                    {description.length}/{MAX_DESCRIPTION_LENGTH}
-                  </span>
-                </div>
-                <Textarea
-                  id="ifelse-description"
-                  placeholder="Enter node description"
-                  value={description}
-                  onChange={(e) => setDescription(constrainDescription(e.target.value))}
-                  maxLength={MAX_DESCRIPTION_LENGTH}
-                  rows={3}
-                />
-              </div>
               <Separator />
               <div className="flex flex-col gap-2">
                 <Label>Incoming Node</Label>
@@ -188,16 +159,14 @@ export default function IfElseGameDialog({
             </div>
           }
         />
-        <DialogFooter className="flex items-center border-t border-gray-200 pt-4 gap-2 justify-end">
+        <DialogFooter className="flex  border-t border-gray-200 pt-4 gap-2 justify-end">
           <Button
             variant="outline"
             onClick={handleCancel}
           >
             Cancel
           </Button>
-          <Button onClick={handleSave}>
-            Save
-          </Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

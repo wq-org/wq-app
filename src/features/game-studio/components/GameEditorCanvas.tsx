@@ -637,6 +637,7 @@ export default function GameEditorCanvas() {
   const handleSave = useCallback(() => {
     console.log('Save — all nodes:', nodes)
     console.log('Save — editor state:', { nodes, edges })
+    toast.success('Project saved.')
   }, [nodes, edges])
 
   const handleStartSave = (data: { title: string; description: string }) => {
