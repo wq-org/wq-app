@@ -7,10 +7,110 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { PublishDrawerProps } from '../types/game-studio.types'
-import type { Node } from '@xyflow/react'
+import type { Node, Edge } from '@xyflow/react'
 import { toast } from 'sonner'
 
 const GAME_NODE_TYPES = ['gameParagraph', 'gameImageTerms', 'gameImagePin', 'gameIfElse'] as const
+
+/** Get node label for error messages. */
+function getNodeLabel(node: Node): string {
+  const d = node.data as Record<string, unknown> | undefined
+  const label = (d?.label ?? d?.title ?? node.id) as string
+  return typeof label === 'string' && label.trim() ? label : node.id
+}
+
+/** Reachable node ids from start via forward edges (BFS). Includes start. */
+function getReachableFromStart(nodes: Node[], edges: Edge[]): Set<string> {
+  const start = nodes.find((n) => n.type === 'gameStart')
+  if (!start) return new Set()
+  const out = new Set<string>()
+  const queue: string[] = [start.id]
+  while (queue.length) {
+    const id = queue.shift()!
+    if (out.has(id)) continue
+    out.add(id)
+    edges.filter((e) => e.source === id).forEach((e) => queue.push(e.target))
+  }
+  return out
+}
+
+/** Node ids that can reach End via backward traversal (BFS). Includes end. */
+function getReachableToEnd(nodes: Node[], edges: Edge[]): Set<string> {
+  const end = nodes.find((n) => n.type === 'gameEnd')
+  if (!end) return new Set()
+  const out = new Set<string>()
+  const queue: string[] = [end.id]
+  while (queue.length) {
+    const id = queue.shift()!
+    if (out.has(id)) continue
+    out.add(id)
+    edges.filter((e) => e.target === id).forEach((e) => queue.push(e.source))
+  }
+  return out
+}
+
+/** Check if node is minimally filled for play. Returns error message or null. */
+function getMinimallyFilledError(node: Node): string | null {
+  const type = node.type
+  const data = node.data as Record<string, unknown> | undefined
+  const label = getNodeLabel(node)
+
+  if (type === 'gameStart') {
+    const title = (data?.title ?? data?.label ?? '') as string
+    const description = (data?.description ?? '') as string
+    if (!String(title).trim()) return `Start node "${label}" is missing a title`
+    if (!String(description).trim()) return `Start node "${label}" is missing a description`
+    return null
+  }
+
+  if (type === 'gameEnd') {
+    const title = (data?.title ?? data?.label ?? '') as string
+    const description = (data?.description ?? '') as string
+    if (!String(title).trim()) return `End node "${label}" is missing a title`
+    if (!String(description).trim()) return `End node "${label}" is missing a description`
+    return null
+  }
+
+  if (type === 'gameIfElse') {
+    const condition = (data?.condition ?? '') as string
+    if (!String(condition).trim()) return `If/Else node "${label}" is missing a condition`
+    return null
+  }
+
+  if (type === 'gameParagraph') {
+    const pg = data?.paragraphGameData as { sentenceConfigs?: unknown[] } | undefined
+    const configs = Array.isArray(pg?.sentenceConfigs) ? pg.sentenceConfigs : []
+    if (configs.length === 0)
+      return `Paragraph node "${label}" has no sentence content (add at least one)`
+    return null
+  }
+
+  if (type === 'gameImageTerms') {
+    const tg = data?.imageTermGameData as { imagePreview?: string; filepath?: string; terms?: unknown[] } | undefined
+    const hasImage = Boolean(
+      (typeof tg?.imagePreview === 'string' && tg.imagePreview.trim()) ||
+        (typeof tg?.filepath === 'string' && tg.filepath.trim()),
+    )
+    const terms = Array.isArray(tg?.terms) ? tg.terms : []
+    if (!hasImage) return `Image and Terms node "${label}" is missing an image`
+    if (terms.length === 0) return `Image and Terms node "${label}" has no terms`
+    return null
+  }
+
+  if (type === 'gameImagePin') {
+    const pin = data?.imagePinGameData as { imagePreview?: string; filepath?: string; squares?: unknown[] } | undefined
+    const hasImage = Boolean(
+      (typeof pin?.imagePreview === 'string' && pin.imagePreview.trim()) ||
+        (typeof pin?.filepath === 'string' && pin.filepath.trim()),
+    )
+    const squares = Array.isArray(pin?.squares) ? pin.squares : []
+    if (!hasImage) return `Image and Pin node "${label}" is missing an image`
+    if (squares.length === 0) return `Image and Pin node "${label}" has no pin regions`
+    return null
+  }
+
+  return null
+}
 
 /** Get points contribution from a single node (from data.points or nested game data). */
 function getPointsForNode(node: Node): number {
@@ -92,49 +192,70 @@ export default function PublishDrawer({
   open,
   onOpenChange,
   nodes = [],
+  edges = [],
   gameTitle: propGameTitle,
   onPublish,
 }: PublishDrawerProps) {
   const [publishing, setPublishing] = useState(false)
   const startNode = nodes.find((n: Node) => n.type === 'gameStart')
   const gameTitle =
-    propGameTitle || startNode?.data?.title || startNode?.data?.label || 'Untitled Game'
+    propGameTitle || (startNode?.data?.title as string) || (startNode?.data?.label as string) || 'Untitled Game'
 
   const gameNodes = nodes.filter(
     (n: Node) => n.type && GAME_NODE_TYPES.includes(n.type as (typeof GAME_NODE_TYPES)[number]),
   )
   const endNode = nodes.find((n: Node) => n.type === 'gameEnd')
 
-  const totalNodes = gameNodes.length
+  const totalNodesCount = nodes.length
   const totalPoints = nodes.reduce((sum, node) => sum + getPointsForNode(node), 0)
   const showFloorNote = hasParagraphPenalties(nodes)
 
-  // Validation function to check required nodes
-  const validateGameStructure = (): { valid: boolean; error?: string } => {
-    // Check for required nodes
+  /** Returns list of requirement errors (empty if valid). */
+  function getValidationErrors(): string[] {
+    const errors: string[] = []
+
     if (!startNode) {
-      return { valid: false, error: 'At least one Start node is required' }
+      errors.push('At least one Start node is required')
     }
 
     if (gameNodes.length === 0) {
-      return {
-        valid: false,
-        error: 'At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required',
-      }
+      errors.push('At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required')
     }
 
     if (!endNode) {
-      return { valid: false, error: 'At least one End node is required' }
+      errors.push('At least one End node is required')
     }
 
-    return { valid: true }
+    if (startNode && endNode && nodes.length > 0) {
+      const fromStart = getReachableFromStart(nodes, edges)
+      const toEnd = getReachableToEnd(nodes, edges)
+      const disconnected: string[] = []
+      nodes.forEach((n) => {
+        if (!fromStart.has(n.id)) {
+          disconnected.push(getNodeLabel(n))
+        } else if (!toEnd.has(n.id)) {
+          disconnected.push(getNodeLabel(n))
+        }
+      })
+      if (disconnected.length) {
+        errors.push(`All nodes must be connected from Start to End. Disconnected or unreachable: ${disconnected.join(', ')}`)
+      }
+    }
+
+    nodes.forEach((node) => {
+      const err = getMinimallyFilledError(node)
+      if (err) errors.push(err)
+    })
+
+    return errors
   }
 
-  const handlePublish = async () => {
-    const validation = validateGameStructure()
+  const validationErrors = getValidationErrors()
+  const canPublish = validationErrors.length === 0
 
-    if (!validation.valid) {
-      toast.error(validation.error || 'Cannot publish game')
+  const handlePublish = async () => {
+    if (validationErrors.length > 0) {
+      toast.error(validationErrors[0] ?? 'Cannot publish game')
       return
     }
 
@@ -155,9 +276,6 @@ export default function PublishDrawer({
       setPublishing(false)
     }
   }
-
-  const validation = validateGameStructure()
-  const canPublish = validation.valid
 
   return (
     <Drawer
@@ -195,7 +313,7 @@ export default function PublishDrawer({
                       variant="outline"
                       className="text-sm"
                     >
-                      {String(totalNodes)}
+                      {String(totalNodesCount)}
                     </Badge>
                   </div>
                   <div className="flex flex-col gap-1">
@@ -222,9 +340,14 @@ export default function PublishDrawer({
 
         {/* Publish Button - Always at bottom */}
         <div className="p-6 border-t shrink-0">
-          {!canPublish && validation.error && (
+          {validationErrors.length > 0 && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{validation.error}</p>
+              <p className="text-sm font-medium text-red-700 mb-1">Requirements not met:</p>
+              <ul className="list-disc list-inside text-sm text-red-600 space-y-0.5">
+                {validationErrors.map((msg, i) => (
+                  <li key={i}>{msg}</li>
+                ))}
+              </ul>
             </div>
           )}
           <Button

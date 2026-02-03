@@ -13,6 +13,8 @@ export default function GameCardList({ games, onGamePlay }: GameCardListProps) {
             id={game.id}
             title={game.title}
             description={game.description}
+            version={game.version}
+            status={game.status}
             onOpen={() => onGamePlay?.(game.route)}
           />
         </div>

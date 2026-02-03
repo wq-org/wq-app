@@ -139,8 +139,11 @@ export interface GameNodeDialogProps {
     imagePinGameData?: unknown
   }) => void
   onDelete?: () => void
-  /** Upload image for game node; returns public URL or null. Used when saving image-term or image-pin nodes. */
-  onUploadImage?: (file: File, nodeId: string) => Promise<string | null>
+  /** Upload image for game node; returns storage path and public URL or null. Used when saving image-term or image-pin nodes. */
+  onUploadImage?: (
+    file: File,
+    nodeId: string,
+  ) => Promise<{ path: string; publicUrl: string | null } | null>
 }
 
 // ========== Drawer Props ==========
@@ -166,6 +169,7 @@ export interface PublishDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   nodes?: Node[]
+  edges?: Edge[]
   gameTitle?: string
   /** Called when user clicks Publish (after validation). Should save then publish. */
   onPublish?: () => Promise<void>
@@ -185,6 +189,8 @@ export interface GameProjectCardProps {
   id?: string
   title?: string
   description?: string
+  version?: number
+  status?: 'draft' | 'published'
   onOpen?: () => void
 }
 
@@ -197,6 +203,8 @@ export interface GameCardProps {
   onPlay?: () => void
   /** Optional image URL for the top of the card. */
   imageUrl?: string
+  version?: number
+  status?: 'draft' | 'published'
 }
 
 export interface GameCardListProps {

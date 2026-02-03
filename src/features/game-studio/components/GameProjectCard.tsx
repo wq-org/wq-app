@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Tooltip,
   TooltipContent,
@@ -164,6 +165,8 @@ function generateNonOverlappingPositions(
 export function GameProjectCard({
   title = 'Untitled Project',
   description = 'No description',
+  version,
+  status,
   onOpen,
 }: GameProjectCardProps) {
   // Generate random non-overlapping positions once on mount
@@ -181,7 +184,15 @@ export function GameProjectCard({
   const centerPosition = avatarPositions[7]
 
   return (
-    <Card className="w-[400px] mx-auto rounded-4xl">
+    <Card className="relative w-[400px] mx-auto rounded-4xl hover:shadow-lg transition-shadow">
+      {/* Publish status badge - top left */}
+      {status && (
+        <div className="absolute top-3 left-3 z-10">
+          <Badge variant={status === 'published' ? 'default' : 'secondary'}>
+            {status === 'published' ? 'Published' : 'Draft'}
+          </Badge>
+        </div>
+      )}
       <CardContent className="pt-6">
         {/* Avatar orbital display */}
         <div className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden">
@@ -235,10 +246,16 @@ export function GameProjectCard({
         {/* Card content */}
         <TooltipProvider>
           <div className="space-y-4">
+            {/* Version badge above title */}
+            {version != null && (
+              <Badge variant="outline" className="text-xs">
+                Version : {version}
+              </Badge>
+            )}
             <div className="space-y-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <h3 className="text-xl font-semibold truncate cursor-default">
+                  <h3 className="text-xl font-semibold truncate cursor-default block">
                     {title}
                   </h3>
                 </TooltipTrigger>
@@ -248,7 +265,7 @@ export function GameProjectCard({
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <p className="text-muted-foreground truncate cursor-default">
+                  <p className="text-muted-foreground line-clamp-3 cursor-default">
                     {description}
                   </p>
                 </TooltipTrigger>

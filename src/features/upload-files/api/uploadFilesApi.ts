@@ -10,9 +10,16 @@ import type {
 
 const BUCKET_NAME = 'files'
 
+/** Only teachers → teacher for storage path; all other roles stay as passed. */
+function pathRole(role: string): string {
+  const r = role.trim()
+  if (r.toLowerCase() === 'teachers') return 'teacher'
+  return r
+}
+
 /**
  * Uploads a single file to Supabase storage
- * Path structure: {role}/{user_id}/filename.filetype
+ * Path structure: {role}/{user_id}/filename.filetype (teachers becomes teacher; other roles unchanged)
  *
  * @param options - Upload options including teacherId, file, role, and optional metadata
  * @returns Promise with upload result containing path, publicUrl, or error
@@ -54,8 +61,8 @@ export async function uploadFile({
     const sanitizedBaseName = baseFileName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '_')
     const sanitizedFileName = `${sanitizedBaseName}.${fileExtension}`
 
-    // Construct storage path: {role}/{user_id}/filename.filetype
-    const storagePath = `${role}/${teacherId}/${sanitizedFileName}`
+    // Construct storage path: {role}/{user_id}/filename.filetype (role singular for storage)
+    const storagePath = `${pathRole(role)}/${teacherId}/${sanitizedFileName}`
 
     console.log('Uploading file:', {
       originalFileName: file.name,
@@ -424,8 +431,8 @@ export async function fetchFilesByRole(
       }
     }
 
-    // Construct storage path: {role}/{user_id}/
-    const storagePath = `${role}/${userId}/`
+    // Construct storage path: {role}/{user_id}/ (role singular for storage)
+    const storagePath = `${pathRole(role)}/${userId}/`
 
     console.log('Fetching files:', {
       role,

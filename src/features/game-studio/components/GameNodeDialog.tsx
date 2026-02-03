@@ -73,8 +73,16 @@ export default function GameNodeDialog({
         sentenceConfigs?: Array<{
           sentenceNumber: number
           sentenceText: string
-          options: Array<{ id: string; text: string; isCorrect: boolean }>
+          options: Array<{
+            id: string
+            text: string
+            isCorrect: boolean
+            points?: number
+            pointsWhenWrong?: number
+          }>
           pointsWhenCorrect?: number
+          feedbackWhenCorrect?: string
+          feedbackWhenWrong?: string
         }>
         selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>
       }
@@ -88,8 +96,16 @@ export default function GameNodeDialog({
           questions: (data.sentenceConfigs ?? []).map((q) => ({
             sentenceNumber: q.sentenceNumber,
             sentenceText: q.sentenceText,
-            options: q.options.map((o) => ({ id: o.id, text: o.text, isCorrect: o.isCorrect })),
+            options: q.options.map((o) => ({
+              id: o.id,
+              text: o.text,
+              isCorrect: o.isCorrect,
+              points: o.points,
+              pointsWhenWrong: o.pointsWhenWrong,
+            })),
             pointsWhenCorrect: q.pointsWhenCorrect,
+            feedbackWhenCorrect: q.feedbackWhenCorrect,
+            feedbackWhenWrong: q.feedbackWhenWrong,
           })),
         },
         // Placeholders for DB fields
@@ -124,9 +140,13 @@ export default function GameNodeDialog({
       if (data.imageFile && nodeId && onUploadImage) {
         setSaving(true)
         try {
-          const url = await onUploadImage(data.imageFile, nodeId)
-          if (url) {
-            imageTermGameData = { ...data, imagePreview: url, filepath: url }
+          const result = await onUploadImage(data.imageFile, nodeId)
+          if (result) {
+            imageTermGameData = {
+              ...data,
+              imagePreview: result.publicUrl,
+              filepath: result.path,
+            }
           }
           delete imageTermGameData.imageFile
         } finally {
@@ -146,9 +166,13 @@ export default function GameNodeDialog({
       if (data.imageFile && nodeId && onUploadImage) {
         setSaving(true)
         try {
-          const url = await onUploadImage(data.imageFile, nodeId)
-          if (url) {
-            imagePinGameData = { ...data, imagePreview: url }
+          const result = await onUploadImage(data.imageFile, nodeId)
+          if (result) {
+            imagePinGameData = {
+              ...data,
+              imagePreview: result.publicUrl,
+              filepath: result.path,
+            }
           }
           delete imagePinGameData.imageFile
         } finally {

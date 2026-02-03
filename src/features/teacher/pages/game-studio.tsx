@@ -11,6 +11,7 @@ import {
   getTeacherFlowGames,
 } from '@/features/game-studio/api/gameStudioApi'
 import { toast } from 'sonner'
+import DotWaveLoader from '@/components/shared/loaders/DotWaveLoader'
 
 export default function GameStudio() {
   const navigate = useNavigate()
@@ -31,9 +32,11 @@ export default function GameStudio() {
           data.map((g) => ({
             id: g.id,
             title: g.title || 'Untitled Game',
-            description: g.description || 'No description',
+            description: g.description ?? 'No description',
             route: `/teacher/canvas/${g.id}`,
             button: 'Open',
+            version: g.version ?? undefined,
+            status: g.status === 'published' ? 'published' : 'draft',
           })),
         )
       })
@@ -85,7 +88,9 @@ export default function GameStudio() {
       </div>
       <div className="pb-14">
         {loading ? (
-          <p className="text-muted-foreground">Loading games…</p>
+          <div className="flex items-center justify-center py-12">
+            <DotWaveLoader variant="default" size={48} />
+          </div>
         ) : games.length === 0 ? (
           <EmptyGamesView />
         ) : (

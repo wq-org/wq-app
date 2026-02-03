@@ -21,12 +21,13 @@ export default function StartGameDialog({
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
+  // Sync from initialData only when dialog opens, so parent re-renders don't overwrite user input
   useEffect(() => {
-    if (open && initialData) {
-      setTitle(initialData.title ?? '')
-      setDescription(initialData.description ?? '')
-    }
-  }, [open, initialData])
+    if (!open) return
+    const d = initialData as { title?: string; description?: string; label?: string } | undefined
+    setTitle((d?.title ?? d?.label ?? '') ?? '')
+    setDescription((d?.description ?? '') ?? '')
+  }, [open])
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {

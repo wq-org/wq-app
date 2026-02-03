@@ -33,7 +33,9 @@ import GameResultTable from '@/features/games/components/GameResultTable'
 import PointsInput from '@/features/games/components/PointsInput'
 import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
+import Spinner from '@/components/ui/spinner'
 import { useGameEditorContext } from '@/contexts/game-studio'
+import { getFileBlobUrl } from '@/features/files/api/filesApi'
 import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 
@@ -61,6 +63,7 @@ export interface ImagePinMarkInitialData {
   title?: string
   description?: string
   imagePreview?: string | null
+  filepath?: string | null
   squares?: Square[]
   pinPositions?: PinPosition[]
 }
@@ -158,6 +161,9 @@ export default function ImagePinMarkGame({
   )
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null)
+  const [resolvedImageUrl, setResolvedImageUrl] = useState<string | null>(null)
+  const [imageLoading, setImageLoading] = useState(false)
+  const blobUrlRef = useRef<string | null>(null)
   const [squares, setSquares] = useState<Square[]>(initialData?.squares ?? [])
   const [pinPositions, setPinPositions] = useState<PinPosition[]>(initialData?.pinPositions ?? [])
   const [editingPoints, setEditingPoints] = useState<Record<number, string>>({})
@@ -168,6 +174,42 @@ export default function ImagePinMarkGame({
 
   const gameEditor = useGameEditorContext()
 
+  const displayUrl =
+    imageFile && imagePreview ? imagePreview : resolvedImageUrl ?? imagePreview
+
+  // Resolve storage path to blob URL when opening saved node (like Files feature)
+  const filepath = initialData?.filepath
+  const isStoragePath =
+    typeof filepath === 'string' && filepath.trim() !== '' && !filepath.startsWith('http')
+  useEffect(() => {
+    if (!isStoragePath) {
+      setResolvedImageUrl(null)
+      return
+    }
+    setImageLoading(true)
+    getFileBlobUrl(filepath)
+      .then((url) => {
+        if (url) {
+          if (blobUrlRef.current) {
+            URL.revokeObjectURL(blobUrlRef.current)
+          }
+          blobUrlRef.current = url
+          setResolvedImageUrl(url)
+        } else {
+          setResolvedImageUrl(null)
+        }
+      })
+      .catch(() => setResolvedImageUrl(null))
+      .finally(() => setImageLoading(false))
+
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+        blobUrlRef.current = null
+      }
+    }
+  }, [filepath, isStoragePath])
+
   // Register getGameData so GameNodeDialog can pull current state on Save
   useEffect(() => {
     if (!gameEditor?.registerGetGameData) return
@@ -176,14 +218,29 @@ export default function ImagePinMarkGame({
       description,
       imageFile: imageFile ?? null,
       imagePreview,
+      filepath: imageFile
+        ? undefined
+        : resolvedImageUrl != null || imagePreview != null
+          ? (initialData?.filepath ?? null)
+          : null,
       squares,
       pinPositions,
     }))
-  }, [gameEditor, title, description, imageFile, imagePreview, squares, pinPositions])
+  }, [
+    gameEditor,
+    title,
+    description,
+    imageFile,
+    imagePreview,
+    resolvedImageUrl,
+    initialData?.filepath,
+    squares,
+    pinPositions,
+  ])
 
   // Capture editor image dimensions when we have squares (e.g. from initialData) so drop hit-test can scale
   useEffect(() => {
-    if (!imagePreview || squares.length === 0) return
+    if (!displayUrl || squares.length === 0) return
     const id = requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (imageContainerRef.current) {
@@ -418,7 +475,11 @@ export default function ImagePinMarkGame({
           </CardAction>
         </CardHeader>
         <CardContent>
-          {!imagePreview ? (
+          {imageLoading ? (
+            <div className="w-full min-h-[200px] rounded-lg border bg-gray-100 flex items-center justify-center">
+              <Spinner variant="gray" size="xl" speed={1750} />
+            </div>
+          ) : !displayUrl ? (
             <FileDropzone
               onFilesSelected={handleFileSelected}
               accept="image/*"
@@ -438,7 +499,7 @@ export default function ImagePinMarkGame({
                   aria-label="Click on the image to add a marker square"
                 >
                   <img
-                    src={imagePreview}
+                    src={displayUrl}
                     alt="Game image"
                     className="w-full h-auto rounded-lg block pointer-events-none select-none"
                     draggable={false}
@@ -552,7 +613,7 @@ export default function ImagePinMarkGame({
           <Label>Preview</Label>
         </CardHeader>
         <CardContent>
-          {imagePreview ? (
+          {displayUrl ? (
             <DndContext
               sensors={sensors}
               onDragStart={handleDragStart}
@@ -579,7 +640,7 @@ export default function ImagePinMarkGame({
                   >
                     <img
                       ref={previewImageRef}
-                      src={imagePreview}
+                      src={displayUrl}
                       alt="Game preview"
                       className="w-full h-auto rounded-lg pointer-events-none select-none"
                       draggable={false}

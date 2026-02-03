@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Plus, X, Check, CheckCircle2, Circle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Plus, Minus, X, Check, CheckCircle2, Circle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -14,7 +14,11 @@ import GameSummaryCard from '@/features/games/components/GameSummaryCard'
 import PointsInput from '@/features/games/components/PointsInput'
 import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
 import GameResultTable from '@/features/games/components/GameResultTable'
+import FeedbackInput from '@/features/games/components/FeedbackInput'
+import { Badge } from '@/components/ui/badge'
+import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
+import { getFileBlobUrl } from '@/features/files/api/filesApi'
 import { MAX_IMAGE_TERM_OPTIONS } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 import { useGameEditorContext } from '@/contexts/game-studio'
@@ -43,18 +47,64 @@ export default function ImageTermMatchGame({
   )
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null)
+  const [resolvedImageUrl, setResolvedImageUrl] = useState<string | null>(null)
+  const [imageLoading, setImageLoading] = useState(false)
+  const blobUrlRef = useRef<string | null>(null)
   const [terms, setTerms] = useState<Term[]>(() => getInitialTerms(initialData))
   const [previewSelectedTermIds, setPreviewSelectedTermIds] = useState<string[]>([])
   const [resultsRevealed, setResultsRevealed] = useState(false)
   const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
+  const [editingPenalty, setEditingPenalty] = useState<Record<string, string>>({})
+  const [feedbackWhenCorrect, setFeedbackWhenCorrect] = useState<string>(
+    initialData?.feedbackWhenCorrect ?? '',
+  )
+  const [feedbackWhenWrong, setFeedbackWhenWrong] = useState<string>(
+    initialData?.feedbackWhenWrong ?? '',
+  )
 
   const gameEditor = useGameEditorContext()
+
+  const displayUrl =
+    imageFile && imagePreview ? imagePreview : resolvedImageUrl ?? imagePreview
 
   const correctTerms = terms.filter((t) => t.isCorrect)
   const pointsWhenCorrect = correctTerms.reduce(
     (sum, t) => sum + (t.points != null && t.points > 0 ? t.points : 1),
     0,
   )
+
+  // Resolve storage path to blob URL when opening saved node (like Files feature)
+  const filepath = initialData?.filepath
+  const isStoragePath =
+    typeof filepath === 'string' && filepath.trim() !== '' && !filepath.startsWith('http')
+  useEffect(() => {
+    if (!isStoragePath) {
+      setResolvedImageUrl(null)
+      return
+    }
+    setImageLoading(true)
+    getFileBlobUrl(filepath)
+      .then((url) => {
+        if (url) {
+          if (blobUrlRef.current) {
+            URL.revokeObjectURL(blobUrlRef.current)
+          }
+          blobUrlRef.current = url
+          setResolvedImageUrl(url)
+        } else {
+          setResolvedImageUrl(null)
+        }
+      })
+      .catch(() => setResolvedImageUrl(null))
+      .finally(() => setImageLoading(false))
+
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+        blobUrlRef.current = null
+      }
+    }
+  }, [filepath, isStoragePath])
 
   useEffect(() => {
     if (!gameEditor?.registerGetGameData) return
@@ -63,9 +113,27 @@ export default function ImageTermMatchGame({
       description,
       imageFile: imageFile ?? null,
       imagePreview,
+      filepath: imageFile
+        ? undefined
+        : resolvedImageUrl != null || imagePreview != null
+          ? (initialData?.filepath ?? null)
+          : null,
       terms,
+      feedbackWhenCorrect,
+      feedbackWhenWrong,
     }))
-  }, [gameEditor, title, description, imageFile, imagePreview, terms])
+  }, [
+    gameEditor,
+    title,
+    description,
+    imageFile,
+    imagePreview,
+    resolvedImageUrl,
+    initialData?.filepath,
+    terms,
+    feedbackWhenCorrect,
+    feedbackWhenWrong,
+  ])
 
   const handleImageSelected = (files: File[]) => {
     if (files.length === 0) return
@@ -108,6 +176,14 @@ export default function ImageTermMatchGame({
     setTerms((prev) => prev.map((t) => (t.id === termId ? { ...t, points: clamped } : t)))
   }
 
+  const handleTermPenaltyChange = (termId: string, value: number) => {
+    const rounded = Math.round(value * 2) / 2
+    const clamped = Math.max(0, Math.min(1000, rounded))
+    setTerms((prev) =>
+      prev.map((t) => (t.id === termId ? { ...t, pointsWhenWrong: clamped } : t)),
+    )
+  }
+
   const handleRemoveTerm = (id: string) => {
     if (terms.length <= 1) return
     setTerms((prev) => prev.filter((term) => term.id !== id))
@@ -139,11 +215,15 @@ export default function ImageTermMatchGame({
           <Label>Image</Label>
         </CardHeader>
         <CardContent>
-          {imagePreview ? (
+          {imageLoading ? (
+            <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+              <Spinner variant="gray" size="xl" speed={1750} />
+            </div>
+          ) : displayUrl ? (
             <div className="space-y-2">
               <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
                 <img
-                  src={imagePreview}
+                  src={displayUrl}
                   alt="Game image"
                   className="w-full h-full object-cover"
                 />
@@ -154,6 +234,7 @@ export default function ImageTermMatchGame({
                 onClick={() => {
                   setImageFile(null)
                   setImagePreview(null)
+                  setResolvedImageUrl(null)
                 }}
                 className="w-full"
               >
@@ -247,9 +328,10 @@ export default function ImageTermMatchGame({
                     </Label>
                     {term.isCorrect && (
                       <div className="flex items-center gap-2 shrink-0">
-                        <Label className="text-xs text-muted-foreground whitespace-nowrap">
-                          Points
-                        </Label>
+                          <Badge variant="outline" className="shrink-0">
+                          <Plus className="size-3" />
+                        </Badge>
+                    
                         <PointsInput
                           value={
                             editingPoints[term.id] !== undefined
@@ -268,6 +350,38 @@ export default function ImageTermMatchGame({
                               handleTermPointsChange(term.id, Math.round(v * 2) / 2)
                             }
                             setEditingPoints((prev) => {
+                              const next = { ...prev }
+                              delete next[term.id]
+                              return next
+                            })
+                          }}
+                        />
+                      </div>
+                    )}
+                    {!term.isCorrect && (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="outline" className="shrink-0">
+                          <Minus className="size-3" />
+                        </Badge>
+                     
+                        <PointsInput
+                          value={
+                            editingPenalty[term.id] !== undefined
+                              ? editingPenalty[term.id]
+                              : term.pointsWhenWrong !== undefined && term.pointsWhenWrong !== null
+                                ? String(term.pointsWhenWrong)
+                                : ''
+                          }
+                          onChange={(e) => {
+                            setEditingPenalty((prev) => ({ ...prev, [term.id]: e.target.value }))
+                          }}
+                          onBlur={(e) => {
+                            const raw = e.target.value.trim()
+                            const v = raw === '' ? NaN : parseFloat(raw)
+                            if (!isNaN(v)) {
+                              handleTermPenaltyChange(term.id, Math.round(v * 2) / 2)
+                            }
+                            setEditingPenalty((prev) => {
                               const next = { ...prev }
                               delete next[term.id]
                               return next
@@ -295,6 +409,21 @@ export default function ImageTermMatchGame({
         </CardContent>
       </Card>
 
+      <div className="space-y-4">
+        <FeedbackInput
+          label="When correct feedback"
+          value={feedbackWhenCorrect}
+          onChange={(e) => setFeedbackWhenCorrect(e.target.value)}
+          placeholder="Optional feedback shown after Check when the answer is correct"
+        />
+        <FeedbackInput
+          label="When wrong feedback"
+          value={feedbackWhenWrong}
+          onChange={(e) => setFeedbackWhenWrong(e.target.value)}
+          placeholder="Optional feedback shown after Check when the answer is wrong"
+        />
+      </div>
+
       <GameSummaryCard
         totalQuestions={1}
         totalPoints={pointsWhenCorrect}
@@ -319,9 +448,9 @@ export default function ImageTermMatchGame({
       <Card>
         <CardContent className="p-6">
           <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
-            {imagePreview ? (
+            {displayUrl ? (
               <img
-                src={imagePreview}
+                src={displayUrl}
                 alt="Game image"
                 className="w-full h-full object-cover"
               />
@@ -388,12 +517,25 @@ export default function ImageTermMatchGame({
           const selectedTexts = previewSelectedTermIds
             .map((id) => terms.find((t) => t.id === id)?.value ?? '')
             .filter(Boolean)
-          const earned = previewSelectedTermIds.reduce((sum, id) => {
+          const correctEarned = previewSelectedTermIds.reduce((sum, id) => {
             const term = terms.find((t) => t.id === id)
             if (!term?.isCorrect) return sum
             const pts = term.points != null && term.points > 0 ? term.points : 1
             return sum + pts
           }, 0)
+          const penaltySum = previewSelectedTermIds.reduce((sum, id) => {
+            const term = terms.find((t) => t.id === id)
+            if (term?.isCorrect) return sum
+            return sum + (term?.pointsWhenWrong ?? 0)
+          }, 0)
+          const earned = Math.max(0, correctEarned - penaltySum)
+          const hasWrongSelection = previewSelectedTermIds.some((id) => {
+            const term = terms.find((t) => t.id === id)
+            return term && !term.isCorrect
+          })
+          const isFullyCorrect =
+            previewSelectedTermIds.length > 0 &&
+            previewSelectedTermIds.every((id) => terms.find((t) => t.id === id)?.isCorrect)
           const rows = [
             {
               key: 'image-term',
@@ -405,11 +547,19 @@ export default function ImageTermMatchGame({
             },
           ]
           return (
-            <GameResultTable
-              rows={rows}
-              totalEarned={earned}
-              totalMax={pointsWhenCorrect}
-            />
+            <div className="space-y-4">
+              <GameResultTable
+                rows={rows}
+                totalEarned={earned}
+                totalMax={pointsWhenCorrect}
+              />
+              {isFullyCorrect && feedbackWhenCorrect?.trim() && (
+                <p className="text-sm text-muted-foreground">{feedbackWhenCorrect}</p>
+              )}
+              {hasWrongSelection && feedbackWhenWrong?.trim() && (
+                <p className="text-sm text-muted-foreground">{feedbackWhenWrong}</p>
+              )}
+            </div>
           )
         })()}
 
@@ -425,7 +575,7 @@ export default function ImageTermMatchGame({
         </Button>
       </div>
 
-      {!imagePreview && terms.every((term) => !term.value.trim()) && (
+      {!displayUrl && terms.every((term) => !term.value.trim()) && (
         <div className="text-center text-gray-400 py-12">
           <p>Complete the editor to see the preview</p>
         </div>

@@ -15,7 +15,7 @@ import type {
   EdgeChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Settings, Play } from 'lucide-react'
+import { Settings, Play, DoorOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import GameStartNode from './GameStartNode'
@@ -42,6 +42,7 @@ import { getGameForStudio, updateGameForStudio, publishGame } from '../api/gameS
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { uploadFile } from '@/features/upload-files/api/uploadFilesApi'
 import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
+import { CircularDotPattern } from '@/components/shared/loaders/CircularDotPattern'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -105,6 +106,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const isSyncingRef = useRef(false)
   const setContextNodesRef = useRef(setContextNodes)
   const setContextEdgesRef = useRef(setContextEdges)
+  const pendingEndSavePersistRef = useRef(false)
 
   // ========== Load project when projectId is set ==========
   useEffect(() => {
@@ -126,6 +128,17 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           position: n.position ?? { x: 0, y: 0 },
           data: { ...n.data },
         }))
+        // Merge top-level game description into Start node when node has none (e.g. old save or Settings-only edit)
+        const gameDescription = game.description?.trim()
+        if (gameDescription) {
+          const startNode = loadedNodes.find((n) => n.type === 'gameStart')
+          if (startNode) {
+            const desc = (startNode.data as Record<string, unknown>)?.description
+            if (desc == null || String(desc).trim() === '') {
+              startNode.data = { ...startNode.data, description: gameDescription } as Record<string, unknown>
+            }
+          }
+        }
         const loadedEdges: Edge[] = (config.edges ?? []).map((e) => ({
           id: e.id,
           source: e.source,
@@ -716,6 +729,15 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [projectId, getUserId, nodes, edges, gameTitle])
 
+  const handleLeaveProject = useCallback(async () => {
+    try {
+      await handleSave()
+    } catch (err) {
+      toast.error('Failed to save project before leaving.')
+    }
+    navigate('/teacher/game-studio')
+  }, [navigate, handleSave])
+
   const handlePublish = useCallback(async () => {
     if (!projectId) {
       toast.error('Open a project from Game Studio to publish.')
@@ -857,16 +879,44 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }
 
-  const handleEndSave = (data: { title: string; description: string }) => {
+  const handleEndSave = useCallback((data: { title: string; description: string }) => {
+    const targetId = selectedNodeId
+    if (!targetId) {
+      toast.error('No node selected')
+      return
+    }
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
-        node.type === 'gameEnd'
-          ? { ...node, data: { ...node.data, label: data.title, ...data } }
+        node.id === targetId && node.type === 'gameEnd'
+          ? { ...node, data: { ...node.data, label: data.title, title: data.title, description: data.description } }
           : node,
       ),
     )
+    pendingEndSavePersistRef.current = true
     toast.success('Node saved')
-  }
+  }, [selectedNodeId])
+
+  // After End node dialog save, persist project so changes are stored
+  useEffect(() => {
+    if (!pendingEndSavePersistRef.current || !projectId) return
+    const teacherId = getUserId()
+    if (!teacherId) return
+    pendingEndSavePersistRef.current = false
+    const gameConfig = serializeFlowGameConfig(nodes, edges)
+    const description =
+      (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+        ?.description ?? ''
+    updateGameForStudio(projectId, {
+      title: gameTitle,
+      description,
+      game_config: gameConfig,
+    }).then(() => {
+      toast.success('Project saved.')
+    }).catch((err) => {
+      console.error(err)
+      toast.error('Failed to save project.')
+    })
+  }, [nodes, edges, gameTitle, projectId, getUserId])
 
   const handleEndDelete = () => {
     if (selectedNodeId) {
@@ -1004,7 +1054,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       <div className="flex-1 w-full relative">
         {loadState === 'loading' && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
-            <p className="text-muted-foreground">Loading project…</p>
+            <CircularDotPattern />
           </div>
         )}
         <GameSidebar />
@@ -1049,13 +1099,6 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           {/* Top Right Controls */}
           <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSettingsDrawerOpen(true)}
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
-            <Button
               variant="outline"
               onClick={handleSave}
             >
@@ -1068,7 +1111,21 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               <Play className="h-4 w-4 mr-2" />
               Preview
             </Button>
+            <Button
+              variant="outline"
+              onClick={handleLeaveProject}
+            >
+              <DoorOpen className="h-4 w-4 mr-2" />
+              Leave 
+            </Button>
             <Button onClick={() => setIsPublishDrawerOpen(true)}>Publish</Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSettingsDrawerOpen(true)}
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
           </div>
 
           {dimensions.width > 0 && dimensions.height > 0 && (
@@ -1120,7 +1177,9 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       />
       <PublishDrawer
         open={isPublishDrawerOpen}
-        onOpenChange={setIsPublishDrawerOpen} 
+        onOpenChange={setIsPublishDrawerOpen}
+        nodes={nodes}
+        edges={edges}
         gameTitle={gameTitle}
         onPublish={handlePublish}
       />
@@ -1194,7 +1253,9 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
                   title,
                   role: 'teachers',
                 })
-                return result.success && result.publicUrl ? result.publicUrl : null
+                return result.success && result.path
+                  ? { path: result.path, publicUrl: result.publicUrl ?? null }
+                  : null
               }
             : undefined
         }
