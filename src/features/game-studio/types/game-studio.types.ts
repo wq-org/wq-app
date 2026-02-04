@@ -144,6 +144,8 @@ export interface GameNodeDialogProps {
     file: File,
     nodeId: string,
   ) => Promise<{ path: string; publicUrl: string | null } | null>
+  /** Remove image from storage when user clears the image in editor. Called with storage path. */
+  onRemoveImage?: (path: string) => void | Promise<void>
 }
 
 // ========== Drawer Props ==========
@@ -199,7 +201,8 @@ export interface GameCardProps {
   title: string
   description: string
   route?: string
-  button: string
+  /** Button label (e.g. "Play"); optional for cards that use a default. */
+  button?: string
   onPlay?: () => void
   /** Optional image URL for the top of the card. */
   imageUrl?: string
