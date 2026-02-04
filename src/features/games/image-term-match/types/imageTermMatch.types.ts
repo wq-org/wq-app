@@ -7,11 +7,17 @@ export interface Term {
   points?: number
   /** Wrong-answer penalty (applied when this term is selected but is incorrect). */
   pointsWhenWrong?: number
+  /** Feedback shown after Check when this correct term is part of the selection. */
+  feedbackWhenCorrect?: string
+  /** Feedback shown after Check when this incorrect term is selected. */
+  feedbackWhenWrong?: string
 }
 
 export interface ImageTermMatchGameProps {
   initialData?: unknown
   onDelete?: () => void
+  /** Called when user removes the image and it was stored at this path (so caller can delete from storage). */
+  onRemoveImage?: (path: string) => void | Promise<void>
 }
 
 export interface ImageTermMatchGameData {
@@ -20,8 +26,24 @@ export interface ImageTermMatchGameData {
   filepath: string | null
   imagePreview: string | null
   terms: Term[]
-  /** Feedback shown after Check when the answer is correct. */
-  feedbackWhenCorrect?: string
-  /** Feedback shown after Check when the answer is wrong. */
-  feedbackWhenWrong?: string
 }
+
+export interface Term {
+  id: string
+  value: string
+}
+
+export interface ImageTermMatchGameData {
+  title: string | null
+  description: string | null
+  feedbackText: string | null
+  filepath: string | null
+  imagePreview: string | null
+  answers: Array<{
+    id: string
+    value: string
+    isCorrect: boolean
+  }>
+  correctAnswerId: string | null
+}
+ 

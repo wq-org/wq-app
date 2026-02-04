@@ -44,6 +44,7 @@ export default function GameNodeDialog({
   onSave,
   onDelete,
   onUploadImage,
+  onRemoveImage,
 }: GameNodeDialogProps) {
   const [points, setPoints] = useState(100)
   const [saving, setSaving] = useState(false)
@@ -215,6 +216,7 @@ export default function GameNodeDialog({
             onPointsChange={setPoints}
             hideSettingsTab={true}
             onDelete={onDelete}
+            onRemoveImage={onRemoveImage}
           />
         </GameEditorProvider>
         <DialogFooter>

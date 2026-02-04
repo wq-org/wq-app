@@ -9,10 +9,12 @@ interface GameNodeLayoutProps {
   gameComponent?: React.ComponentType<{
     initialData?: unknown
     onDelete?: () => void
+    onRemoveImage?: (path: string) => void | Promise<void>
   }>
   overviewContent?: React.ReactNode
   initialData?: unknown
   onDelete?: () => void
+  onRemoveImage?: (path: string) => void | Promise<void>
   showDelete?: boolean
   points?: number
   onPointsChange?: (points: number) => void
@@ -28,6 +30,7 @@ export default function GameNodeLayout({
   onPointsChange,
   hideSettingsTab = false,
   onDelete,
+  onRemoveImage,
 }: GameNodeLayoutProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
@@ -75,6 +78,7 @@ export default function GameNodeLayout({
                   <GameComponent
                     initialData={initialData}
                     onDelete={onDelete}
+                    onRemoveImage={onRemoveImage}
                   />
                 </GameNodePointsContext.Provider>
               </div>

@@ -40,7 +40,8 @@ import type { GameNodeData } from '../types/game-studio.types'
 import { useUser } from '@/contexts/user'
 import { getGameForStudio, updateGameForStudio, publishGame } from '../api/gameStudioApi'
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
-import { uploadFile } from '@/features/upload-files/api/uploadFilesApi'
+import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { deleteFile } from '@/features/files/api/filesApi'
 import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
 import { CircularDotPattern } from '@/components/shared/loaders/CircularDotPattern'
 
@@ -876,6 +877,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         }),
       )
       toast.success('Node saved')
+      pendingEndSavePersistRef.current = true
     }
   }
 
@@ -1065,10 +1067,10 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           onDrop={onDrop}
         >
           {/* Top Center Badge */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 max-w-[240px] w-full min-w-0">
             <Badge
               variant="outline"
-              className="px-4 py-2 text-sm cursor-text bg-white"
+              className="px-4 py-2 text-sm cursor-text bg-white w-full min-w-0 max-w-full"
               asChild
             >
               <div
@@ -1089,7 +1091,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
                     e.currentTarget.blur()
                   }
                 }}
-                className="outline-none focus:ring-2 focus:ring-ring rounded-full"
+                className="outline-none focus:ring-2 focus:ring-ring rounded-full truncate min-w-0 block"
               >
                 {gameTitle}
               </div>
@@ -1259,6 +1261,9 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               }
             : undefined
         }
+        onRemoveImage={async (path) => {
+          await deleteFile(path)
+        }}
       />
     </div>
   )

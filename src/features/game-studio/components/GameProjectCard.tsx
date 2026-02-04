@@ -4,12 +4,6 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from '@/components/ui/tooltip'
 import { ArrowRight } from 'lucide-react'
 import type { GameProjectCardProps } from '../types/game-studio.types'
 
@@ -244,8 +238,7 @@ export function GameProjectCard({
         </div>
 
         {/* Card content */}
-        <TooltipProvider>
-          <div className="space-y-4">
+        <div className="space-y-4">
             {/* Version badge above title */}
             {version != null && (
               <Badge variant="outline" className="text-xs">
@@ -253,26 +246,12 @@ export function GameProjectCard({
               </Badge>
             )}
             <div className="space-y-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <h3 className="text-xl font-semibold truncate cursor-default block">
-                    {title}
-                  </h3>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {title}
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-muted-foreground line-clamp-3 cursor-default">
-                    {description}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  {description}
-                </TooltipContent>
-              </Tooltip>
+              <h3 className="text-xl font-semibold truncate cursor-default block">
+                {title}
+              </h3>
+              <p className="text-muted-foreground line-clamp-3 cursor-default">
+                {description}
+              </p>
             </div>
             <div className="flex justify-end">
               <Button
@@ -289,8 +268,7 @@ export function GameProjectCard({
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </div>
-          </div>
-        </TooltipProvider>
+        </div>
       </CardContent>
     </Card>
   )

@@ -15,7 +15,7 @@ import SquareMarker from './components/SquareMarker'
 import GameInformation from '@/features/games/components/GameInformation'
 import GameInformationCard from '@/features/games/components/GameInformationCard'
 import GamePreviewAlert from '@/features/games/components/GamePreviewAlert'
-import FileDropzone from '@/features/upload-files/components/FileDropzone'
+import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
 import {
   Card,
   CardContent,
@@ -27,15 +27,21 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Check, Plus, X } from 'lucide-react'
+import { Check, Minus, Plus, X } from 'lucide-react'
 import GameSummaryCard from '@/features/games/components/GameSummaryCard'
 import GameResultTable from '@/features/games/components/GameResultTable'
 import PointsInput from '@/features/games/components/PointsInput'
 import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
+import FeedbackInput from '@/features/games/components/FeedbackInput'
+import { Badge } from '@/components/ui/badge'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { useGameEditorContext } from '@/contexts/game-studio'
+import { useUser } from '@/contexts/user'
 import { getFileBlobUrl } from '@/features/files/api/filesApi'
+import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { ImageGallery } from '@/components/shared/media'
+import type { GalleryImage } from '@/components/shared/media'
 import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 
@@ -50,6 +56,9 @@ interface Square {
   height: number
   question: string
   points?: number
+  pointsWhenWrong?: number
+  feedbackWhenCorrect?: string
+  feedbackWhenWrong?: string
 }
 
 interface PinPosition {
@@ -66,11 +75,15 @@ export interface ImagePinMarkInitialData {
   filepath?: string | null
   squares?: Square[]
   pinPositions?: PinPosition[]
+  feedbackWhenCorrect?: string
+  feedbackWhenWrong?: string
 }
 
 export interface ImagePinMarkGameProps {
   initialData?: unknown
   onDelete?: () => void
+  /** Called when user removes the image and it was stored at this path (so caller can delete from storage). */
+  onRemoveImage?: (path: string) => void | Promise<void>
 }
 
 type ImagePinVariant = 'default' | 'secondary' | 'correct' | 'wrong'
@@ -153,6 +166,7 @@ function DroppableArea({ children, id }: { children: React.ReactNode; id: string
 export default function ImagePinMarkGame({
   initialData: initialDataProp,
   onDelete,
+  onRemoveImage: _onRemoveImage,
 }: ImagePinMarkGameProps = {}) {
   const initialData = initialDataProp as ImagePinMarkInitialData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -160,34 +174,45 @@ export default function ImagePinMarkGame({
     constrainDescription(initialData?.description ?? ''),
   )
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [resolvedImageUrl, setResolvedImageUrl] = useState<string | null>(null)
   const [imageLoading, setImageLoading] = useState(false)
+  const [imageRemovedByUser, setImageRemovedByUser] = useState(false)
+  const [selectedStoragePath, setSelectedStoragePath] = useState<string | null>(null)
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [galleryLoading, setGalleryLoading] = useState(false)
   const blobUrlRef = useRef<string | null>(null)
   const [squares, setSquares] = useState<Square[]>(initialData?.squares ?? [])
   const [pinPositions, setPinPositions] = useState<PinPosition[]>(initialData?.pinPositions ?? [])
   const [editingPoints, setEditingPoints] = useState<Record<number, string>>({})
+  const [editingPointsWhenWrong, setEditingPointsWhenWrong] = useState<Record<number, string>>({})
   const [resultsRevealed, setResultsRevealed] = useState(false)
   const [refDimensions, setRefDimensions] = useState<{ width: number; height: number } | null>(null)
   const imageContainerRef = useRef<HTMLDivElement>(null)
   const previewImageRef = useRef<HTMLImageElement>(null)
 
   const gameEditor = useGameEditorContext()
+  const { getUserId, getRole } = useUser()
 
-  const displayUrl =
-    imageFile && imagePreview ? imagePreview : resolvedImageUrl ?? imagePreview
-
-  // Resolve storage path to blob URL when opening saved node (like Files feature)
-  const filepath = initialData?.filepath
+  const effectiveFilepath =
+    imageRemovedByUser ? null : selectedStoragePath ?? initialData?.filepath ?? null
   const isStoragePath =
-    typeof filepath === 'string' && filepath.trim() !== '' && !filepath.startsWith('http')
+    typeof effectiveFilepath === 'string' &&
+    effectiveFilepath.trim() !== '' &&
+    !effectiveFilepath.startsWith('http')
+
+  const localDataUrl =
+    imageFile && imagePreview && imagePreview.startsWith('data:') ? imagePreview : null
+  const displayUrl: string | null = localDataUrl ?? resolvedImageUrl ?? null
+
+  // Resolve storage path to blob URL when opening saved node or after gallery selection
   useEffect(() => {
-    if (!isStoragePath) {
+    if (!isStoragePath || !effectiveFilepath) {
       setResolvedImageUrl(null)
       return
     }
     setImageLoading(true)
-    getFileBlobUrl(filepath)
+    getFileBlobUrl(effectiveFilepath)
       .then((url) => {
         if (url) {
           if (blobUrlRef.current) {
@@ -208,7 +233,7 @@ export default function ImagePinMarkGame({
         blobUrlRef.current = null
       }
     }
-  }, [filepath, isStoragePath])
+  }, [effectiveFilepath, isStoragePath])
 
   // Register getGameData so GameNodeDialog can pull current state on Save
   useEffect(() => {
@@ -220,9 +245,9 @@ export default function ImagePinMarkGame({
       imagePreview,
       filepath: imageFile
         ? undefined
-        : resolvedImageUrl != null || imagePreview != null
-          ? (initialData?.filepath ?? null)
-          : null,
+        : imageRemovedByUser
+          ? null
+          : selectedStoragePath ?? initialData?.filepath ?? null,
       squares,
       pinPositions,
     }))
@@ -232,11 +257,45 @@ export default function ImagePinMarkGame({
     description,
     imageFile,
     imagePreview,
-    resolvedImageUrl,
+    imageRemovedByUser,
+    selectedStoragePath,
     initialData?.filepath,
     squares,
     pinPositions,
   ])
+
+  // Fetch image-type files for gallery (teacher dashboard pattern)
+  const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
+  useEffect(() => {
+    const userId = getUserId()
+    const role = getRole()?.toLowerCase()
+    if (!userId || !role) return
+    setGalleryLoading(true)
+    const pathRole = role === 'teachers' ? 'teacher' : role
+    fetchFilesByRole(role, userId, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } })
+      .then((result) => {
+        if (!result.success || !result.files) {
+          setGalleryImages([])
+          return
+        }
+        const imageFiles = result.files.filter((file) => {
+          const ext = file.name.split('.').pop()?.toUpperCase() ?? ''
+          return IMAGE_EXTENSIONS.includes(ext)
+        })
+        return Promise.all(
+          imageFiles.map(async (file) => {
+            const storagePath = `${pathRole}/${userId}/${file.name}`
+            const url = await getFileBlobUrl(storagePath)
+            return { url: url ?? '', title: file.name, storagePath }
+          }),
+        )
+      })
+      .then((items) => {
+        if (items) setGalleryImages(items.filter((i) => i.url))
+      })
+      .catch(() => setGalleryImages([]))
+      .finally(() => setGalleryLoading(false))
+  }, [getUserId, getRole])
 
   // Capture editor image dimensions when we have squares (e.g. from initialData) so drop hit-test can scale
   useEffect(() => {
@@ -266,6 +325,8 @@ export default function ImagePinMarkGame({
     if (files.length > 0) {
       const file = files[0]
       setImageFile(file)
+      setSelectedStoragePath(null)
+      setImageRemovedByUser(false)
       const reader = new FileReader()
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string)
@@ -289,6 +350,8 @@ export default function ImagePinMarkGame({
       width: DEFAULT_SQUARE_SIZE,
       height: DEFAULT_SQUARE_SIZE,
       question: '',
+      feedbackWhenCorrect: '',
+      feedbackWhenWrong: '',
     }
 
     setSquares([...squares, newSquare])
@@ -313,6 +376,26 @@ export default function ImagePinMarkGame({
     const rounded = Math.round(value * 2) / 2
     const clamped = Math.max(0, Math.min(1000, rounded))
     setSquares((prev) => prev.map((sq) => (sq.id === id ? { ...sq, points: clamped } : sq)))
+  }
+
+  const handleSquarePointsWhenWrongChange = (id: number, value: number) => {
+    const rounded = Math.round(value * 2) / 2
+    const clamped = Math.max(0, Math.min(1000, rounded))
+    setSquares((prev) =>
+      prev.map((sq) => (sq.id === id ? { ...sq, pointsWhenWrong: clamped } : sq)),
+    )
+  }
+
+  const handleSquareFeedbackWhenCorrectChange = (id: number, value: string) => {
+    setSquares((prev) =>
+      prev.map((sq) => (sq.id === id ? { ...sq, feedbackWhenCorrect: value } : sq)),
+    )
+  }
+
+  const handleSquareFeedbackWhenWrongChange = (id: number, value: string) => {
+    setSquares((prev) =>
+      prev.map((sq) => (sq.id === id ? { ...sq, feedbackWhenWrong: value } : sq)),
+    )
   }
 
   const handleCheckAnswers = () => {
@@ -474,16 +557,17 @@ export default function ImagePinMarkGame({
             />
           </CardAction>
         </CardHeader>
-        <CardContent>
-          {imageLoading ? (
-            <div className="w-full min-h-[200px] rounded-lg border bg-gray-100 flex items-center justify-center">
-              <Spinner variant="gray" size="xl" speed={1750} />
-            </div>
-          ) : !displayUrl ? (
+        <CardContent className="space-y-4">
+          {/* Top slot: dropzone when no image, or selected image with squares when one is chosen */}
+          {!displayUrl ? (
             <FileDropzone
               onFilesSelected={handleFileSelected}
               accept="image/*"
             />
+          ) : imageLoading ? (
+            <div className="w-full min-h-[200px] rounded-lg border bg-gray-100 flex items-center justify-center">
+              <Spinner variant="gray" size="xl" speed={1750} />
+            </div>
           ) : (
             <div className="space-y-4">
               <div className="relative w-full">
@@ -522,7 +606,11 @@ export default function ImagePinMarkGame({
               <Button
                 variant="outline"
                 onClick={() => {
+                  setImageFile(null)
                   setImagePreview(null)
+                  setResolvedImageUrl(null)
+                  setImageRemovedByUser(true)
+                  setSelectedStoragePath(null)
                   setSquares([])
                   setPinPositions([])
                 }}
@@ -530,6 +618,26 @@ export default function ImagePinMarkGame({
                 <X className="w-4 h-4 mr-2" />
                 Remove Image
               </Button>
+            </div>
+          )}
+          {/* Gallery below: alternative way to pick or switch image */}
+          {galleryLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <Spinner variant="gray" size="lg" />
+            </div>
+          ) : (
+            <div className="min-w-0 max-w-full">
+              <ImageGallery
+                images={galleryImages}
+                onSelect={(img) => {
+                  if (img.storagePath) {
+                    setSelectedStoragePath(img.storagePath)
+                    setImageRemovedByUser(false)
+                    setImageFile(null)
+                    setImagePreview(null)
+                  }
+                }}
+              />
             </div>
           )}
         </CardContent>
@@ -553,38 +661,98 @@ export default function ImagePinMarkGame({
                     value={square.question}
                     onChange={(e) => handleSquareQuestionChange(square.id, e.target.value)}
                     placeholder={`Enter question for square ${square.id}...`}
-                    className="min-h-20"
+                    className="min-h-20 w-full"
                   />
                 </div>
-                <div className="flex flex-wrap gap-4 items-end">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Points</Label>
-                    <PointsInput
-                      value={
-                        editingPoints[square.id] !== undefined
-                          ? editingPoints[square.id]
-                          : square.points !== undefined && square.points !== null
-                            ? String(square.points)
-                            : ''
-                      }
-                      onChange={(e) => {
-                        setEditingPoints((prev) => ({ ...prev, [square.id]: e.target.value }))
-                      }}
-                      onBlur={(e) => {
-                        const raw = e.target.value.trim()
-                        const v = raw === '' ? NaN : parseFloat(raw)
-                        if (!isNaN(v)) {
-                          handleSquarePointsChange(square.id, Math.round(v * 2) / 2)
+                <div className="flex flex-wrap gap-4 items-end justify-between">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="shrink-0">
+                      <Plus className="size-3" />
+                    </Badge>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Points</Label>
+                      <PointsInput
+                        value={
+                          editingPoints[square.id] !== undefined
+                            ? editingPoints[square.id]
+                            : square.points !== undefined && square.points !== null
+                              ? String(square.points)
+                              : ''
                         }
-                        setEditingPoints((prev) => {
-                          const next = { ...prev }
-                          delete next[square.id]
-                          return next
-                        })
-                      }}
-                      className="w-20 h-8 text-xs"
-                    />
+                        onChange={(e) => {
+                          setEditingPoints((prev) => ({ ...prev, [square.id]: e.target.value }))
+                        }}
+                        onBlur={(e) => {
+                          const raw = e.target.value.trim()
+                          const v = raw === '' ? NaN : parseFloat(raw)
+                          if (!isNaN(v)) {
+                            handleSquarePointsChange(square.id, Math.round(v * 2) / 2)
+                          }
+                          setEditingPoints((prev) => {
+                            const next = { ...prev }
+                            delete next[square.id]
+                            return next
+                          })
+                        }}
+                        className="w-20 h-8 text-xs"
+                      />
+                    </div>
                   </div>
+                  <div className="flex  items-center gap-2">
+                    <Badge variant="outline" className="shrink-0">
+                      <Minus className="size-3" />
+                    </Badge>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Points when wrong</Label>
+                      <PointsInput
+                        value={
+                          editingPointsWhenWrong[square.id] !== undefined
+                            ? editingPointsWhenWrong[square.id]
+                            : square.pointsWhenWrong !== undefined &&
+                                square.pointsWhenWrong !== null
+                              ? String(square.pointsWhenWrong)
+                              : ''
+                        }
+                        onChange={(e) => {
+                          setEditingPointsWhenWrong((prev) => ({
+                            ...prev,
+                            [square.id]: e.target.value,
+                          }))
+                        }}
+                        onBlur={(e) => {
+                          const raw = e.target.value.trim()
+                          const v = raw === '' ? NaN : parseFloat(raw)
+                          if (!isNaN(v)) {
+                            handleSquarePointsWhenWrongChange(square.id, Math.round(v * 2) / 2)
+                          }
+                          setEditingPointsWhenWrong((prev) => {
+                            const next = { ...prev }
+                            delete next[square.id]
+                            return next
+                          })
+                        }}
+                        className="w-20 h-8 text-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4 pt-2 border-t">
+                  <FeedbackInput
+                    label="When correct"
+                    value={square.feedbackWhenCorrect ?? ''}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      handleSquareFeedbackWhenCorrectChange(square.id, e.target.value)
+                    }
+                    placeholder="Optional message when the answer is correct"
+                  />
+                  <FeedbackInput
+                    label="When wrong"
+                    value={square.feedbackWhenWrong ?? ''}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      handleSquareFeedbackWhenWrongChange(square.id, e.target.value)
+                    }
+                    placeholder="Optional message when the answer is wrong"
+                  />
                 </div>
               </div>
             ))}
@@ -746,7 +914,8 @@ export default function ImagePinMarkGame({
                       const pin = pinPositions.find((p) => p.id === pinId)
                       const max = square.points != null && square.points > 0 ? square.points : 1
                       const correct = pin?.squareId === square.id
-                      const earned = correct ? max : 0
+                      const penalty = square.pointsWhenWrong ?? 0
+                      const earned = correct ? max : -penalty
                       totalEarned += earned
                       totalMax += max
                       const statementText = square.question || 'No question set'
@@ -759,6 +928,9 @@ export default function ImagePinMarkGame({
                           ? 'Correct'
                           : 'Wrong square'
                         : 'Not placed'
+                      const feedbackText = correct
+                        ? square.feedbackWhenCorrect?.trim()
+                        : square.feedbackWhenWrong?.trim()
                       return {
                         key: square.id,
                         statementText,
@@ -766,21 +938,25 @@ export default function ImagePinMarkGame({
                         selectedAnswerTexts: [placementText],
                         earned,
                         max,
+                        feedback: feedbackText || undefined,
+                        feedbackVariant: correct ? ('correct' as const) : ('wrong' as const),
                       }
                     })
                     return (
-                      <GameResultTable
-                        rows={rows}
-                        totalEarned={totalEarned}
-                        totalMax={totalMax}
-                        title="Results"
-                        columnLabels={{
-                          statement: 'Question',
-                          selectedAnswers: 'Placement',
-                          result: 'Result',
-                          footer: 'Overall',
-                        }}
-                      />
+                      <>
+                        <GameResultTable
+                          rows={rows}
+                          totalEarned={totalEarned}
+                          totalMax={totalMax}
+                          title="Results"
+                          columnLabels={{
+                            statement: 'Question',
+                            selectedAnswers: 'Placement',
+                            result: 'Result',
+                            footer: 'Overall',
+                          }}
+                        />
+                      </>
                     )
                   })()}
 

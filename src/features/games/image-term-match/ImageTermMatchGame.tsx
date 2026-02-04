@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import FileDropzone from '@/features/upload-files/components/FileDropzone'
+import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
 import GameLayout from '@/components/layout/GameLayout'
 import GameInformation from '@/features/games/components/GameInformation'
 import GameInformationCard from '@/features/games/components/GameInformationCard'
@@ -19,6 +19,10 @@ import { Badge } from '@/components/ui/badge'
 import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { getFileBlobUrl } from '@/features/files/api/filesApi'
+import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { ImageGallery } from '@/components/shared/media'
+import type { GalleryImage } from '@/components/shared/media'
+import { useUser } from '@/contexts/user'
 import { MAX_IMAGE_TERM_OPTIONS } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 import { useGameEditorContext } from '@/contexts/game-studio'
@@ -39,6 +43,7 @@ function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined)
 export default function ImageTermMatchGame({
   initialData: initialDataProp,
   onDelete,
+  onRemoveImage: _onRemoveImage,
 }: ImageTermMatchGameProps = {}) {
   const initialData = initialDataProp as ImageTermMatchGameData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -46,26 +51,34 @@ export default function ImageTermMatchGame({
     constrainDescription(initialData?.description ?? ''),
   )
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePreview ?? null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [resolvedImageUrl, setResolvedImageUrl] = useState<string | null>(null)
   const [imageLoading, setImageLoading] = useState(false)
+  const [imageRemovedByUser, setImageRemovedByUser] = useState(false)
+  const [selectedStoragePath, setSelectedStoragePath] = useState<string | null>(null)
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [galleryLoading, setGalleryLoading] = useState(false)
   const blobUrlRef = useRef<string | null>(null)
   const [terms, setTerms] = useState<Term[]>(() => getInitialTerms(initialData))
   const [previewSelectedTermIds, setPreviewSelectedTermIds] = useState<string[]>([])
   const [resultsRevealed, setResultsRevealed] = useState(false)
   const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
   const [editingPenalty, setEditingPenalty] = useState<Record<string, string>>({})
-  const [feedbackWhenCorrect, setFeedbackWhenCorrect] = useState<string>(
-    initialData?.feedbackWhenCorrect ?? '',
-  )
-  const [feedbackWhenWrong, setFeedbackWhenWrong] = useState<string>(
-    initialData?.feedbackWhenWrong ?? '',
-  )
 
   const gameEditor = useGameEditorContext()
+  const { getUserId, getRole } = useUser()
 
-  const displayUrl =
-    imageFile && imagePreview ? imagePreview : resolvedImageUrl ?? imagePreview
+  const effectiveFilepath =
+    imageRemovedByUser ? null : selectedStoragePath ?? initialData?.filepath ?? null
+  const isStoragePath =
+    typeof effectiveFilepath === 'string' &&
+    effectiveFilepath.trim() !== '' &&
+    !effectiveFilepath.startsWith('http')
+
+  // Display: only local data URL (from FileReader) or resolved blob URL — never public URL (files architecture)
+  const localDataUrl =
+    imageFile && imagePreview && imagePreview.startsWith('data:') ? imagePreview : null
+  const displayUrl: string | null = localDataUrl ?? resolvedImageUrl ?? null
 
   const correctTerms = terms.filter((t) => t.isCorrect)
   const pointsWhenCorrect = correctTerms.reduce(
@@ -73,17 +86,14 @@ export default function ImageTermMatchGame({
     0,
   )
 
-  // Resolve storage path to blob URL when opening saved node (like Files feature)
-  const filepath = initialData?.filepath
-  const isStoragePath =
-    typeof filepath === 'string' && filepath.trim() !== '' && !filepath.startsWith('http')
+  // Resolve storage path to blob URL when opening saved node or after gallery selection
   useEffect(() => {
-    if (!isStoragePath) {
+    if (!isStoragePath || !effectiveFilepath) {
       setResolvedImageUrl(null)
       return
     }
     setImageLoading(true)
-    getFileBlobUrl(filepath)
+    getFileBlobUrl(effectiveFilepath)
       .then((url) => {
         if (url) {
           if (blobUrlRef.current) {
@@ -104,7 +114,7 @@ export default function ImageTermMatchGame({
         blobUrlRef.current = null
       }
     }
-  }, [filepath, isStoragePath])
+  }, [effectiveFilepath, isStoragePath])
 
   useEffect(() => {
     if (!gameEditor?.registerGetGameData) return
@@ -115,12 +125,10 @@ export default function ImageTermMatchGame({
       imagePreview,
       filepath: imageFile
         ? undefined
-        : resolvedImageUrl != null || imagePreview != null
-          ? (initialData?.filepath ?? null)
-          : null,
+        : imageRemovedByUser
+          ? null
+          : selectedStoragePath ?? initialData?.filepath ?? null,
       terms,
-      feedbackWhenCorrect,
-      feedbackWhenWrong,
     }))
   }, [
     gameEditor,
@@ -128,12 +136,43 @@ export default function ImageTermMatchGame({
     description,
     imageFile,
     imagePreview,
-    resolvedImageUrl,
+    imageRemovedByUser,
+    selectedStoragePath,
     initialData?.filepath,
     terms,
-    feedbackWhenCorrect,
-    feedbackWhenWrong,
   ])
+
+  const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
+  useEffect(() => {
+    const userId = getUserId()
+    const role = getRole()?.toLowerCase()
+    if (!userId || !role) return
+    setGalleryLoading(true)
+    const pathRole = role === 'teachers' ? 'teacher' : role
+    fetchFilesByRole(role, userId, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } })
+      .then((result) => {
+        if (!result.success || !result.files) {
+          setGalleryImages([])
+          return
+        }
+        const imageFiles = result.files.filter((file) => {
+          const ext = file.name.split('.').pop()?.toUpperCase() ?? ''
+          return IMAGE_EXTENSIONS.includes(ext)
+        })
+        return Promise.all(
+          imageFiles.map(async (file) => {
+            const storagePath = `${pathRole}/${userId}/${file.name}`
+            const url = await getFileBlobUrl(storagePath)
+            return { url: url ?? '', title: file.name, storagePath }
+          }),
+        )
+      })
+      .then((items) => {
+        if (items) setGalleryImages(items.filter((i) => i.url))
+      })
+      .catch(() => setGalleryImages([]))
+      .finally(() => setGalleryLoading(false))
+  }, [getUserId, getRole])
 
   const handleImageSelected = (files: File[]) => {
     if (files.length === 0) return
@@ -151,6 +190,8 @@ export default function ImageTermMatchGame({
     }
 
     setImageFile(selectedFile)
+    setSelectedStoragePath(null)
+    setImageRemovedByUser(false)
 
     // Create preview
     const reader = new FileReader()
@@ -194,6 +235,18 @@ export default function ImageTermMatchGame({
     setTerms((prev) => prev.map((t) => (t.id === termId ? { ...t, isCorrect: !t.isCorrect } : t)))
   }
 
+  const handleTermFeedbackWhenCorrectChange = (termId: string, value: string) => {
+    setTerms((prev) =>
+      prev.map((t) => (t.id === termId ? { ...t, feedbackWhenCorrect: value } : t)),
+    )
+  }
+
+  const handleTermFeedbackWhenWrongChange = (termId: string, value: string) => {
+    setTerms((prev) =>
+      prev.map((t) => (t.id === termId ? { ...t, feedbackWhenWrong: value } : t)),
+    )
+  }
+
   const handleTermChange = (id: string, value: string) => {
     setTerms(terms.map((term) => (term.id === id ? { ...term, value } : term)))
   }
@@ -214,12 +267,19 @@ export default function ImageTermMatchGame({
         <CardHeader>
           <Label>Image</Label>
         </CardHeader>
-        <CardContent>
-          {imageLoading ? (
+        <CardContent className="space-y-4">
+          {/* Top slot: dropzone when no image, or selected image when one is chosen */}
+          {!displayUrl ? (
+            <FileDropzone
+              onFilesSelected={handleImageSelected}
+              disabled={false}
+              accept="image/jpeg,image/jpg,image/png"
+            />
+          ) : imageLoading ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
               <Spinner variant="gray" size="xl" speed={1750} />
             </div>
-          ) : displayUrl ? (
+          ) : (
             <div className="space-y-2">
               <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
                 <img
@@ -235,6 +295,8 @@ export default function ImageTermMatchGame({
                   setImageFile(null)
                   setImagePreview(null)
                   setResolvedImageUrl(null)
+                  setImageRemovedByUser(true)
+                  setSelectedStoragePath(null)
                 }}
                 className="w-full"
               >
@@ -242,12 +304,26 @@ export default function ImageTermMatchGame({
                 Remove Image
               </Button>
             </div>
+          )}
+          {/* Gallery below: alternative way to pick or switch image */}
+          {galleryLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <Spinner variant="gray" size="lg" />
+            </div>
           ) : (
-            <FileDropzone
-              onFilesSelected={handleImageSelected}
-              disabled={false}
-              accept="image/jpeg,image/jpg,image/png"
-            />
+            <div className="min-w-0 max-w-full">
+              <ImageGallery
+                images={galleryImages}
+                onSelect={(img) => {
+                  if (img.storagePath) {
+                    setSelectedStoragePath(img.storagePath)
+                    setImageRemovedByUser(false)
+                    setImageFile(null)
+                    setImagePreview(null)
+                  }
+                }}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -402,27 +478,37 @@ export default function ImageTermMatchGame({
                       </Button>
                     )}
                   </div>
+                  {term.isCorrect ? (
+                    <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
+              
+                      <FeedbackInput
+                        label="When correct feedback"
+                        value={term.feedbackWhenCorrect ?? ''}
+                        onChange={(e) =>
+                          handleTermFeedbackWhenCorrectChange(term.id, e.target.value)
+                        }
+                        placeholder="Optional feedback when this option is selected and correct"
+                      />
+                    </div>
+                  ) : (
+                    <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
+             
+                      <FeedbackInput
+                        label="When wrong feedback"
+                        value={term.feedbackWhenWrong ?? ''}
+                        onChange={(e) =>
+                          handleTermFeedbackWhenWrongChange(term.id, e.target.value)
+                        }
+                        placeholder="Optional feedback when this option is selected and wrong"
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
         </CardContent>
       </Card>
-
-      <div className="space-y-4">
-        <FeedbackInput
-          label="When correct feedback"
-          value={feedbackWhenCorrect}
-          onChange={(e) => setFeedbackWhenCorrect(e.target.value)}
-          placeholder="Optional feedback shown after Check when the answer is correct"
-        />
-        <FeedbackInput
-          label="When wrong feedback"
-          value={feedbackWhenWrong}
-          onChange={(e) => setFeedbackWhenWrong(e.target.value)}
-          placeholder="Optional feedback shown after Check when the answer is wrong"
-        />
-      </div>
 
       <GameSummaryCard
         totalQuestions={1}
@@ -465,48 +551,62 @@ export default function ImageTermMatchGame({
 
       {/* Multiple Choice Answers Section */}
       {terms.filter((term) => term.value.trim()).length > 0 && (
-        <div className="grid grid-cols-2 gap-3">
-          {terms
-            .filter((term) => term.value.trim())
-            .map((term, index) => {
-              const letter = String.fromCharCode(65 + index)
-              const isSelected = previewSelectedTermIds.includes(term.id)
-              const isCorrect = term.isCorrect ?? false
+        <div className="space-y-3">
+          {correctTerms.length > 1 && (
+            <Badge
+              variant="outline"
+              className="text-orange-500 bg-orange-500/10 border-orange-500/20"
+            >
+              Multiple answers can be correct
+            </Badge>
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            {terms
+              .filter((term) => term.value.trim())
+              .map((term, index) => {
+                const letter = String.fromCharCode(65 + index)
+                const isSelected = previewSelectedTermIds.includes(term.id)
+                const singleCorrect = correctTerms.length === 1
 
-              return (
-                <Button
-                  key={term.id}
-                  variant="outline"
-                  className={`h-auto py-4 px-4 flex items-center justify-start gap-3 ${
-                    isSelected ? 'ring-2 ring-primary/50' : ''
-                  } ${
-                    isSelected
-                      ? isCorrect
-                        ? 'text-blue-500 bg-blue-500/10 border-blue-500/20 hover:bg-blue-500/20'
-                        : 'bg-white text-black border-gray-300 hover:bg-gray-50'
-                      : 'bg-white text-black border-gray-300 hover:bg-gray-50'
-                  }`}
-                  onClick={() => {
-                    setPreviewSelectedTermIds((prev) =>
-                      prev.includes(term.id)
-                        ? prev.filter((id) => id !== term.id)
-                        : [...prev, term.id],
-                    )
-                  }}
-                >
+                return (
+                  <Button
+                    key={term.id}
+                    variant="outline"
+                    className={`h-auto py-4 px-4 flex items-center justify-start gap-3 ${
+                      isSelected ? 'ring-2 ring-primary/50 bg-muted/50 border-primary/30' : ''
+                    } ${
+                      !isSelected
+                        ? 'bg-white text-black border-gray-300 hover:bg-gray-50 dark:bg-input/30 dark:border-input dark:hover:bg-input/50'
+                        : ''
+                    }`}
+                    onClick={() => {
+                      if (singleCorrect) {
+                        setPreviewSelectedTermIds((prev) =>
+                          prev.includes(term.id) ? [] : [term.id],
+                        )
+                      } else {
+                        setPreviewSelectedTermIds((prev) =>
+                          prev.includes(term.id)
+                            ? prev.filter((id) => id !== term.id)
+                            : [...prev, term.id],
+                        )
+                      }
+                    }}
+                  >
                   <span
-                    className={`font-semibold text-lg ${isSelected && isCorrect ? 'text-blue-500' : 'text-black'}`}
+                    className={`font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
                   >
                     {letter}.
                   </span>
                   <span
-                    className={`flex-1 text-left ${isSelected && isCorrect ? 'text-blue-500 font-medium' : 'text-black'}`}
+                    className={`flex-1 text-left ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
                   >
                     {term.value}
                   </span>
                 </Button>
               )
             })}
+          </div>
         </div>
       )}
 
@@ -536,7 +636,35 @@ export default function ImageTermMatchGame({
           const isFullyCorrect =
             previewSelectedTermIds.length > 0 &&
             previewSelectedTermIds.every((id) => terms.find((t) => t.id === id)?.isCorrect)
-          const rows = [
+          const firstCorrectSelected = previewSelectedTermIds.find((id) =>
+            terms.find((t) => t.id === id)?.isCorrect,
+          )
+          const firstWrongSelected = previewSelectedTermIds.find((id) => {
+            const t = terms.find((x) => x.id === id)
+            return t && !t.isCorrect
+          })
+          const feedbackText = isFullyCorrect
+            ? terms.find((t) => t.id === firstCorrectSelected)?.feedbackWhenCorrect?.trim() ??
+              undefined
+            : hasWrongSelection
+              ? terms.find((t) => t.id === firstWrongSelected)?.feedbackWhenWrong?.trim() ??
+                undefined
+              : undefined
+          const feedbackVariant: 'correct' | 'wrong' | undefined = isFullyCorrect
+            ? 'correct'
+            : hasWrongSelection
+              ? 'wrong'
+              : undefined
+          const rows: Array<{
+            key: string
+            statementText: string
+            statementTruncated: string
+            selectedAnswerTexts: string[]
+            earned: number
+            max: number
+            feedback?: string
+            feedbackVariant?: 'correct' | 'wrong'
+          }> = [
             {
               key: 'image-term',
               statementText,
@@ -544,6 +672,8 @@ export default function ImageTermMatchGame({
               selectedAnswerTexts: selectedTexts,
               earned,
               max: pointsWhenCorrect,
+              feedback: feedbackText,
+              feedbackVariant,
             },
           ]
           return (
@@ -553,12 +683,6 @@ export default function ImageTermMatchGame({
                 totalEarned={earned}
                 totalMax={pointsWhenCorrect}
               />
-              {isFullyCorrect && feedbackWhenCorrect?.trim() && (
-                <p className="text-sm text-muted-foreground">{feedbackWhenCorrect}</p>
-              )}
-              {hasWrongSelection && feedbackWhenWrong?.trim() && (
-                <p className="text-sm text-muted-foreground">{feedbackWhenWrong}</p>
-              )}
             </div>
           )
         })()}

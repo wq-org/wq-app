@@ -14,8 +14,8 @@ import Spinner from '@/components/ui/spinner'
 import { useNavigate } from 'react-router-dom'
 import { DotWaveLoader } from '@/components/shared'
 import type { FileItem } from '@/features/files/types/files.types'
-import type { FileListItem } from '@/features/upload-files/types/upload.types'
-import { fetchFilesByRole } from '@/features/upload-files/api/uploadFilesApi'
+import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
+import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {

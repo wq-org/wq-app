@@ -8,7 +8,8 @@ export { Container } from './container'
 export { DotWaveLoader } from './loaders'
 
 // Media
-export { SimplePDFViewer, SimpleVideoPlayer } from './media'
+export { SimplePDFViewer, SimpleVideoPlayer, ImageGallery } from './media'
+export type { GalleryImage, ImageGalleryItem, ImageGalleryProps } from './media'
 
 // Dialogs
 export { ConfirmationDialog } from './dialogs'

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FileText, MoreVertical, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getFileTypeConfig } from '@/features/upload-files/types/upload.types'
+import { getFileTypeConfig } from '@/components/shared/upload-files/types/upload.types'
 
 interface UploadedFileItemProps {
   file: File

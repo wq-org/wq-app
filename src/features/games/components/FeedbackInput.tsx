@@ -24,7 +24,7 @@ export default function FeedbackInput({
   }
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('w-full space-y-2', className)}>
       {label && (
         <div className="flex items-center justify-between">
           <Label className="text-sm font-medium">{label}</Label>
@@ -38,7 +38,7 @@ export default function FeedbackInput({
         onChange={handleChange}
         placeholder={placeholder}
         maxLength={MAX_DESCRIPTION_LENGTH}
-        className="min-h-16 text-sm"
+        className="min-h-16 text-sm w-full"
       />
     </div>
   )
