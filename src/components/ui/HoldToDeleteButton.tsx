@@ -9,8 +9,7 @@ import { buttonVariants } from '@/components/ui/button-variants'
 
 type HoldToDeleteVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
-interface HoldToDeleteButtonProps
-  extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
+interface HoldToDeleteButtonProps extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
   onDelete?: () => void
   holdDuration?: number
   variant?: HoldToDeleteVariant

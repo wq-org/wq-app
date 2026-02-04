@@ -9,8 +9,7 @@ import { buttonVariants } from '@/components/ui/button-variants'
 
 type HoldConfirmVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
-interface HoldConfirmButtonProps
-  extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
+interface HoldConfirmButtonProps extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
   /** Called when the user holds long enough to confirm. */
   onConfirm?: () => void
   holdDuration?: number

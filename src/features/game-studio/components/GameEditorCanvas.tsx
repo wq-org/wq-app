@@ -895,14 +895,14 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         prevNodes.map((node) =>
           node.id === targetId && node.type === 'gameEnd'
             ? {
-              ...node,
-              data: {
-                ...node.data,
-                label: data.title,
-                title: data.title,
-                description: data.description,
-              },
-            }
+                ...node,
+                data: {
+                  ...node.data,
+                  label: data.title,
+                  title: data.title,
+                  description: data.description,
+                },
+              }
             : node,
         ),
       )
@@ -1072,7 +1072,11 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       <div className="flex-1 w-full relative">
         {loadState === 'loading' && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
-            <Spinner variant="gray" size="md" speed={1750} />
+            <Spinner
+              variant="gray"
+              size="md"
+              speed={1750}
+            />
             <p className="text-sm text-gray-500">Project Loading...</p>
           </div>
         )}
@@ -1209,8 +1213,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
         initialData={
           nodes.find((n) => n.type === 'gameStart')?.data as
-          | { title?: string; description?: string }
-          | undefined
+            | { title?: string; description?: string }
+            | undefined
         }
       />
       <IfElseGameDialog
@@ -1220,14 +1224,14 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         initialData={
           selectedNodeId
             ? (nodes.find((n) => n.id === selectedNodeId)?.data as
-              | {
-                title?: string
-                label?: string
-                description?: string
-                condition?: string
-                correctPath?: 'A' | 'B'
-              }
-              | undefined)
+                | {
+                    title?: string
+                    label?: string
+                    description?: string
+                    condition?: string
+                    correctPath?: 'A' | 'B'
+                  }
+                | undefined)
             : undefined
         }
         nodeId={selectedNodeId || undefined}
@@ -1243,11 +1247,11 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         initialData={
           selectedNodeId
             ? (nodes.find((n) => n.id === selectedNodeId)?.data as
-              | {
-                title?: string
-                description?: string
-              }
-              | undefined)
+                | {
+                    title?: string
+                    description?: string
+                  }
+                | undefined)
             : undefined
         }
         onDelete={handleEndDelete}
@@ -1263,19 +1267,19 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         onUploadImage={
           projectId && getUserId()
             ? async (file, nodeId) => {
-              const teacherId = getUserId()
-              if (!teacherId) return null
-              const title = `games_${projectId}_${nodeId}`
-              const result = await uploadFile({
-                teacherId,
-                file,
-                title,
-                role: 'teachers',
-              })
-              return result.success && result.path
-                ? { path: result.path, publicUrl: result.publicUrl ?? null }
-                : null
-            }
+                const teacherId = getUserId()
+                if (!teacherId) return null
+                const title = `games_${projectId}_${nodeId}`
+                const result = await uploadFile({
+                  teacherId,
+                  file,
+                  title,
+                  role: 'teachers',
+                })
+                return result.success && result.path
+                  ? { path: result.path, publicUrl: result.publicUrl ?? null }
+                  : null
+              }
             : undefined
         }
         onRemoveImage={async (path) => {
