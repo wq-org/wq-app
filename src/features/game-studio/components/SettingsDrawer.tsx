@@ -79,7 +79,7 @@ export default function SettingsDrawer({
       onOpenChange={onOpenChange}
       direction="right"
     >
-      <DrawerContent className="!w-[50vw] !max-w-none !h-[100vh]">
+      <DrawerContent className="w-[50vw]! max-w-none! h-screen!">
         <DrawerHeader>
           <div className="flex items-center justify-between w-full">
             <DrawerTitle>Settings</DrawerTitle>

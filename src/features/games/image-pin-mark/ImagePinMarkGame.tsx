@@ -266,6 +266,15 @@ export default function ImagePinMarkGame({
     pinPositions,
   ])
 
+  // Sync selectedStoragePath from saved data when dialog opens so save/reopen and gallery selection stay consistent
+  useEffect(() => {
+    if (imageRemovedByUser) return
+    const path = initialData?.filepath
+    if (typeof path === 'string' && path.trim() !== '') {
+      setSelectedStoragePath(path)
+    }
+  }, [initialData?.filepath, imageRemovedByUser])
+
   // Fetch image-type files for gallery (teacher dashboard pattern)
   useEffect(() => {
     const userId = getUserId()
@@ -672,7 +681,7 @@ export default function ImagePinMarkGame({
                     className="min-h-20 w-full"
                   />
                 </div>
-                <div className="flex flex-wrap gap-4 items-end justify-between">
+                <div className="flex flex-wrap gap-4 items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
@@ -709,7 +718,7 @@ export default function ImagePinMarkGame({
                       />
                     </div>
                   </div>
-                  <div className="flex  items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
                       className="shrink-0"
@@ -717,7 +726,7 @@ export default function ImagePinMarkGame({
                       <Minus className="size-3" />
                     </Badge>
                     <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Points when wrong</Label>
+                      <Label className="text-xs text-muted-foreground">Wrong</Label>
                       <PointsInput
                         value={
                           editingPointsWhenWrong[square.id] !== undefined
@@ -752,7 +761,7 @@ export default function ImagePinMarkGame({
                 </div>
                 <div className="space-y-4 pt-2 border-t">
                   <FeedbackInput
-                    label="When correct"
+                    label="Correct"
                     value={square.feedbackWhenCorrect ?? ''}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                       handleSquareFeedbackWhenCorrectChange(square.id, e.target.value)
@@ -760,7 +769,7 @@ export default function ImagePinMarkGame({
                     placeholder="Optional message when the answer is correct"
                   />
                   <FeedbackInput
-                    label="When wrong"
+                    label="Wrong"
                     value={square.feedbackWhenWrong ?? ''}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                       handleSquareFeedbackWhenWrongChange(square.id, e.target.value)

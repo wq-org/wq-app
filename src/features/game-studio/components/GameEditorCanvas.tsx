@@ -43,7 +43,7 @@ import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { deleteFile } from '@/features/files/api/filesApi'
 import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
-import { CircularDotPattern } from '@/components/shared/loaders/CircularDotPattern'
+import Spinner from '@/components/ui/spinner'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -895,14 +895,14 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         prevNodes.map((node) =>
           node.id === targetId && node.type === 'gameEnd'
             ? {
-                ...node,
-                data: {
-                  ...node.data,
-                  label: data.title,
-                  title: data.title,
-                  description: data.description,
-                },
-              }
+              ...node,
+              data: {
+                ...node.data,
+                label: data.title,
+                title: data.title,
+                description: data.description,
+              },
+            }
             : node,
         ),
       )
@@ -1072,7 +1072,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       <div className="flex-1 w-full relative">
         {loadState === 'loading' && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
-            <CircularDotPattern />
+            <Spinner variant="gray" size="md" speed={1750} />
+            <p className="text-sm text-gray-500">Project Loading...</p>
           </div>
         )}
         <GameSidebar />
@@ -1083,7 +1084,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           onDrop={onDrop}
         >
           {/* Top Center Badge */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 max-w-[240px] w-full min-w-0">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 max-w-60 w-full min-w-0">
             <Badge
               variant="outline"
               className="px-4 py-2 text-sm cursor-text bg-white w-full min-w-0 max-w-full"
@@ -1208,8 +1209,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
         initialData={
           nodes.find((n) => n.type === 'gameStart')?.data as
-            | { title?: string; description?: string }
-            | undefined
+          | { title?: string; description?: string }
+          | undefined
         }
       />
       <IfElseGameDialog
@@ -1219,14 +1220,14 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         initialData={
           selectedNodeId
             ? (nodes.find((n) => n.id === selectedNodeId)?.data as
-                | {
-                    title?: string
-                    label?: string
-                    description?: string
-                    condition?: string
-                    correctPath?: 'A' | 'B'
-                  }
-                | undefined)
+              | {
+                title?: string
+                label?: string
+                description?: string
+                condition?: string
+                correctPath?: 'A' | 'B'
+              }
+              | undefined)
             : undefined
         }
         nodeId={selectedNodeId || undefined}
@@ -1242,11 +1243,11 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         initialData={
           selectedNodeId
             ? (nodes.find((n) => n.id === selectedNodeId)?.data as
-                | {
-                    title?: string
-                    description?: string
-                  }
-                | undefined)
+              | {
+                title?: string
+                description?: string
+              }
+              | undefined)
             : undefined
         }
         onDelete={handleEndDelete}
@@ -1262,19 +1263,19 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         onUploadImage={
           projectId && getUserId()
             ? async (file, nodeId) => {
-                const teacherId = getUserId()
-                if (!teacherId) return null
-                const title = `games_${projectId}_${nodeId}`
-                const result = await uploadFile({
-                  teacherId,
-                  file,
-                  title,
-                  role: 'teachers',
-                })
-                return result.success && result.path
-                  ? { path: result.path, publicUrl: result.publicUrl ?? null }
-                  : null
-              }
+              const teacherId = getUserId()
+              if (!teacherId) return null
+              const title = `games_${projectId}_${nodeId}`
+              const result = await uploadFile({
+                teacherId,
+                file,
+                title,
+                role: 'teachers',
+              })
+              return result.success && result.path
+                ? { path: result.path, publicUrl: result.publicUrl ?? null }
+                : null
+            }
             : undefined
         }
         onRemoveImage={async (path) => {

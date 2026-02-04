@@ -1,56 +1,38 @@
 'use client'
 
 import * as React from 'react'
-import { Trash2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import type { VariantProps } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-variants'
 
-type HoldToDeleteVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
+type HoldConfirmVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
-interface HoldToDeleteButtonProps
+interface HoldConfirmButtonProps
   extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
-  onDelete?: () => void
+  /** Called when the user holds long enough to confirm. */
+  onConfirm?: () => void
   holdDuration?: number
-  variant?: HoldToDeleteVariant
-  /** Optional icon (e.g. Check for confirm). Defaults to Trash2. */
+  variant?: HoldConfirmVariant
+  /** Optional icon. Defaults to Check. */
   icon?: React.ReactNode
 }
 
-const progressFillClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
-  default: 'bg-primary/30',
-  destructive: 'bg-destructive/40',
-  outline: 'bg-destructive/20',
-  secondary: 'bg-destructive/20',
-  ghost: 'bg-destructive/20',
-  link: 'bg-destructive/20',
-  delete: 'bg-red-200',
-  confirm: 'bg-blue-200',
-}
+/** Blue-only progress and hold text (confirm semantics). */
+const CONFIRM_PROGRESS_CLASS = 'bg-blue-200'
+const CONFIRM_CONTENT_HOLD_CLASS = 'text-blue-600'
 
-/** Text + icon color when holding (contrasts with progress fill) */
-const contentHoldClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
-  default: 'text-primary-foreground',
-  destructive: 'text-white',
-  outline: 'text-destructive',
-  secondary: 'text-destructive',
-  ghost: 'text-destructive',
-  link: 'text-destructive',
-  delete: 'text-red-600',
-  confirm: 'text-blue-600',
-}
-
-function HoldToDeleteButton({
+function HoldConfirmButton({
   className,
-  variant = 'secondary',
+  variant = 'confirm',
   size = 'default',
-  onDelete,
+  onConfirm,
   holdDuration = 3000,
   children,
   icon,
   ...props
-}: HoldToDeleteButtonProps) {
+}: HoldConfirmButtonProps) {
   const [isHolding, setIsHolding] = React.useState(false)
   const [progress, setProgress] = React.useState(0)
   const holdStartRef = React.useRef<number | null>(null)
@@ -78,7 +60,7 @@ function HoldToDeleteButton({
       setProgress(newProgress)
 
       if (newProgress >= 100) {
-        onDelete?.()
+        onConfirm?.()
         resetHold()
       } else {
         animationFrameRef.current = requestAnimationFrame(animate)
@@ -86,7 +68,7 @@ function HoldToDeleteButton({
     }
 
     animationFrameRef.current = requestAnimationFrame(animate)
-  }, [holdDuration, onDelete, resetHold])
+  }, [holdDuration, onConfirm, resetHold])
 
   React.useEffect(() => {
     return () => {
@@ -95,9 +77,6 @@ function HoldToDeleteButton({
       }
     }
   }, [])
-
-  const progressClass = progressFillClass[variant] ?? progressFillClass.secondary
-  const contentWhenHoldingClass = contentHoldClass[variant] ?? contentHoldClass.secondary
 
   return (
     <Button
@@ -113,11 +92,10 @@ function HoldToDeleteButton({
       onTouchCancel={resetHold}
       {...props}
     >
-      {/* Progress fill background */}
       <span
         className={cn(
           'absolute inset-0 origin-left',
-          progressClass,
+          CONFIRM_PROGRESS_CLASS,
           isHolding ? 'transition-none' : 'transition-transform duration-300 ease-out',
         )}
         style={{
@@ -125,19 +103,18 @@ function HoldToDeleteButton({
         }}
       />
 
-      {/* Content: text and icon adapt color when holding */}
       <span
         className={cn(
           'relative z-10 flex items-center gap-2 transition-colors duration-150',
-          isHolding && contentWhenHoldingClass,
+          isHolding && CONFIRM_CONTENT_HOLD_CLASS,
         )}
       >
-        {icon ?? <Trash2 className="size-5 shrink-0" />}
-        <span>{children ?? 'Hold to Delete'}</span>
+        {icon ?? <Check className="size-5 shrink-0" />}
+        <span>{children ?? 'Hold to Confirm'}</span>
       </span>
     </Button>
   )
 }
 
-export { HoldToDeleteButton }
-export type { HoldToDeleteButtonProps, HoldToDeleteVariant }
+export { HoldConfirmButton }
+export type { HoldConfirmButtonProps, HoldConfirmVariant }
