@@ -100,7 +100,7 @@ export interface EndGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave?: (data: { title: string; description: string }) => void
-  initialData?: { title?: string; description?: string }
+  initialData?: { title?: string; label?: string; description?: string }
   nodeId?: string
 }
 

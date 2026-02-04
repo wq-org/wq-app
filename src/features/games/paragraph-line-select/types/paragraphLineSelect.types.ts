@@ -37,6 +37,10 @@ export interface QuestionResult {
   status: QuestionResultStatus
   earned: number
   max: number
+  /** Points earned from correct options only (before penalty). Used for overall total. */
+  correctEarned?: number
+  /** Penalty applied for wrong selections. Used for overall total. */
+  penaltyApplied?: number
 }
 
 export interface ParagraphLineSelectGameProps {

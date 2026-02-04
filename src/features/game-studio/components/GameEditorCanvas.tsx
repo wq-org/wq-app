@@ -35,7 +35,7 @@ import { useGameStudioContext } from '@/contexts/game-studio'
 import SettingsDrawer from './SettingsDrawer'
 import PreviewDrawer from './PreviewDrawer'
 import PublishDrawer from './PublishDrawer'
-import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
+import { DEFAULT_PARAGRAPH, MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
 import type { GameNodeData } from '../types/game-studio.types'
 import { useUser } from '@/contexts/user'
 import { getGameForStudio, updateGameForStudio, publishGame } from '../api/gameStudioApi'
@@ -619,14 +619,20 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           }
         }
 
+        const baseData: Record<string, unknown> = {
+          label: nodeData.label,
+          onClick: onClickHandler,
+        }
+        if (nodeData.type === 'gameParagraph') {
+          baseData.paragraphText = DEFAULT_PARAGRAPH
+          baseData.title = ''
+          baseData.description = ''
+        }
         const newNode: Node = {
           id: newNodeId,
           type: nodeData.type,
           position,
-          data: {
-            label: nodeData.label,
-            onClick: onClickHandler,
-          },
+          data: baseData,
         }
 
         // Check constraints and add node

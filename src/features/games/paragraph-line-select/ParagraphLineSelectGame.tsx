@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { Check, CheckCircle2, X, Plus, Trash2, Pencil, Minus, CircleX } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
@@ -83,6 +83,15 @@ export default function ParagraphLineSelectGame({
   const [editOptionText, setEditOptionText] = useState('')
 
   const gameEditor = useGameEditorContext()
+  const configAndAnswersRef = useRef({ sentenceConfigs: [] as SentenceConfig[], selectedAnswers: [] as SelectedAnswer[] })
+  configAndAnswersRef.current = { sentenceConfigs, selectedAnswers }
+
+  // Sync from initialData when it changes (e.g. different node opened or node data updated) so state is not stale
+  useEffect(() => {
+    setTitle(initialData?.title ?? '')
+    setDescription(constrainDescription(initialData?.description ?? ''))
+    setParagraphText(initialData?.paragraphText ?? DEFAULT_PARAGRAPH)
+  }, [initialData?.title, initialData?.description, initialData?.paragraphText])
 
   // Register getGameData so GameNodeDialog can pull current state on Save
   useEffect(() => {
@@ -98,6 +107,42 @@ export default function ParagraphLineSelectGame({
 
   // Derive questions (one per segment) by splitting on QUESTION_SEPARATOR
   const sentences = useMemo(() => splitIntoQuestions(paragraphText), [paragraphText])
+
+  // When paragraph text changes, sync sentenceConfigs and selectedAnswers so no abandoned questions
+  // appear in the preview: keep only configs for current positions, renumber, and update sentenceText.
+  useEffect(() => {
+    const currentSentences = splitIntoQuestions(paragraphText)
+    const n = currentSentences.length
+    const { sentenceConfigs: configs, selectedAnswers: answers } = configAndAnswersRef.current
+
+    if (n === 0) {
+      setSentenceConfigs([])
+      setSelectedAnswers([])
+      setSelectedSentenceIndex(null)
+      return
+    }
+
+    const sorted = [...configs].sort((a, b) => a.sentenceNumber - b.sentenceNumber)
+    const kept = sorted.slice(0, n)
+    const oldToNew: Record<number, number> = {}
+    kept.forEach((c, i) => {
+      oldToNew[c.sentenceNumber] = i + 1
+    })
+
+    setSentenceConfigs(
+      kept.map((c, i) => ({
+        ...c,
+        sentenceNumber: i + 1,
+        sentenceText: currentSentences[i] ?? c.sentenceText,
+      })),
+    )
+    setSelectedAnswers(
+      answers
+        .filter((a) => oldToNew[a.sentenceNumber] != null)
+        .map((a) => ({ ...a, sentenceNumber: oldToNew[a.sentenceNumber]! })),
+    )
+    setSelectedSentenceIndex((idx) => (idx !== null && idx >= n ? null : idx))
+  }, [paragraphText])
 
   // Get config for a sentence
   const getSentenceConfig = (index: number): SentenceConfig | undefined => {
@@ -279,7 +324,7 @@ export default function ParagraphLineSelectGame({
     const pointsPerCorrect = correctOptions.length > 0 ? max / correctOptions.length : 0
 
     if (selectedIds.length === 0) {
-      return { status: 'false', earned: 0, max }
+      return { status: 'false', earned: 0, max, correctEarned: 0, penaltyApplied: 0 }
     }
 
     const correctSelectedIds = selectedIds.filter((id) => {
@@ -304,25 +349,26 @@ export default function ParagraphLineSelectGame({
       (o) => !o.isCorrect && selectedIds.includes(o.id),
     )
     const penaltySum = selectedWrongOptions.reduce((s, o) => s + (o.pointsWhenWrong ?? 0), 0)
+    // Apply wrong-answer penalty: subtract from correct earned; score for this question never below 0
     const earned = Math.max(0, correctEarned - penaltySum)
 
     if (hasWrong) {
-      return { status: 'false', earned, max }
+      return { status: 'false', earned, max, correctEarned, penaltyApplied: penaltySum }
     }
     if (correctSelected === 0) {
-      return { status: 'false', earned: 0, max }
+      return { status: 'false', earned: 0, max, correctEarned: 0, penaltyApplied: penaltySum }
     }
 
     const numCorrect = correctOptions.length
     const multi = hasMultipleCorrectOptions(config)
     if (multi) {
       if (correctSelected === numCorrect) {
-        return { status: 'correct', earned, max }
+        return { status: 'correct', earned, max, correctEarned, penaltyApplied: 0 }
       }
-      return { status: 'partly correct', earned, max }
+      return { status: 'partly correct', earned, max, correctEarned, penaltyApplied: 0 }
     }
 
-    return { status: 'correct', earned, max }
+    return { status: 'correct', earned, max, correctEarned, penaltyApplied: 0 }
   }
 
   const hasAtLeastOneSelection = selectedAnswers.length > 0
@@ -866,7 +912,8 @@ export default function ParagraphLineSelectGame({
           const configsWithOptions = sentenceConfigs.filter((c) => c.options.length > 0)
           if (configsWithOptions.length === 0) return null
 
-          let totalEarned = 0
+          let totalCorrectEarned = 0
+          let totalPenaltyApplied = 0
           let totalMax = 0
           const rows = configsWithOptions.map((config) => {
             const sentenceNumber = config.sentenceNumber
@@ -877,7 +924,8 @@ export default function ParagraphLineSelectGame({
                 ? [getSelectedAnswer(sentenceNumber)!]
                 : []
             const result = getQuestionResult(config, selectedIds)
-            totalEarned += result.earned
+            totalCorrectEarned += result.correctEarned ?? result.earned
+            totalPenaltyApplied += result.penaltyApplied ?? 0
             totalMax += result.max
             const statementTruncated =
               config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
@@ -903,6 +951,8 @@ export default function ParagraphLineSelectGame({
               feedbackVariant,
             }
           })
+
+          const totalEarned = Math.max(0, totalCorrectEarned - totalPenaltyApplied)
 
           return (
             <GameResultTable
