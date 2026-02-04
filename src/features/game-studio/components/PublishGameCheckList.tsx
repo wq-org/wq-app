@@ -20,9 +20,12 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
     <Card className="border-slate-200">
       <CardHeader className="">
         <CardTitle className="text-base text-slate-800 flex gap-2 items-center">
-          {hasAnyErrors ? <X className="size-4 text-slate-600 shrink-0" /> : <Check className="size-4 text-slate-600 shrink-0" />}
+          {hasAnyErrors ? (
+            <X className="size-4 text-slate-600 shrink-0" />
+          ) : (
+            <Check className="size-4 text-slate-600 shrink-0" />
+          )}
           Requirements {hasAnyErrors ? 'not met' : 'met'}
-
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
@@ -59,10 +62,16 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
                 key={`${item.node.id}-${i}`}
                 className="flex items-center gap-2 flex-wrap text-sm text-slate-700"
               >
-                <Badge variant="secondary" className="text-slate-800">
+                <Badge
+                  variant="secondary"
+                  className="text-slate-800"
+                >
                   {displayName}
                 </Badge>
-                <Separator orientation="vertical" className="h-4 bg-slate-300" />
+                <Separator
+                  orientation="vertical"
+                  className="h-4 bg-slate-300"
+                />
                 <span>{err}</span>
               </div>
             ))

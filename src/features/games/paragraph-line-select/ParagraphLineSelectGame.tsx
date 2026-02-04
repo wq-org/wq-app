@@ -83,7 +83,10 @@ export default function ParagraphLineSelectGame({
   const [editOptionText, setEditOptionText] = useState('')
 
   const gameEditor = useGameEditorContext()
-  const configAndAnswersRef = useRef({ sentenceConfigs: [] as SentenceConfig[], selectedAnswers: [] as SelectedAnswer[] })
+  const configAndAnswersRef = useRef({
+    sentenceConfigs: [] as SentenceConfig[],
+    selectedAnswers: [] as SelectedAnswer[],
+  })
   configAndAnswersRef.current = { sentenceConfigs, selectedAnswers }
 
   // Sync from initialData when it changes (e.g. different node opened or node data updated) so state is not stale

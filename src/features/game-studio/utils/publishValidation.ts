@@ -87,8 +87,7 @@ export function getNodeValidationErrors(node: Node): string[] {
       )
       return correct.length >= 1 && wrong.length >= 1 && correctWithPoints && wrongWithPoints
     })
-    if (!hasValidQuestion)
-      errors.push('Need 1 correct + 1 wrong option with points')
+    if (!hasValidQuestion) errors.push('Need 1 correct + 1 wrong option with points')
     return errors
   }
 
@@ -108,8 +107,8 @@ export function getNodeValidationErrors(node: Node): string[] {
       return errors
     }
     // Treat isCorrect as truthy/falsy so we accept boolean, 1/0, or string forms from JSON/DB
-    const correct = terms.filter((t: Record<string, unknown>) => Boolean(t.isCorrect))
-    const wrong = terms.filter((t: Record<string, unknown>) => !Boolean(t.isCorrect))
+    const correct = terms.filter((t: Record<string, unknown>) => !!t.isCorrect)
+    const wrong = terms.filter((t: Record<string, unknown>) => !t.isCorrect)
     const correctWithPoints = correct.some(
       (t: Record<string, unknown>) => typeof t.points === 'number' && t.points >= 0,
     )
@@ -145,8 +144,8 @@ export function getNodeValidationErrors(node: Node): string[] {
         (typeof s.pointsWhenWrong === 'number' || s.pointsWhenWrong === undefined),
     )
     if (!hasValidSquare) {
-      const hasQuestion = squares.some((s: Record<string, unknown>) =>
-        String(s.question ?? '').trim() !== '',
+      const hasQuestion = squares.some(
+        (s: Record<string, unknown>) => String(s.question ?? '').trim() !== '',
       )
       const hasPoints = squares.some(
         (s: Record<string, unknown>) =>
@@ -184,7 +183,9 @@ export function getValidationResult(nodes: Node[], edges: Edge[]): ValidationRes
 
   if (!startNode) globalErrors.push('At least one Start node is required')
   if (gameNodes.length === 0)
-    globalErrors.push('At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required')
+    globalErrors.push(
+      'At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required',
+    )
   if (!endNode) globalErrors.push('At least one End node is required')
 
   if (startNode && endNode && nodes.length > 0) {
@@ -226,7 +227,7 @@ export function getPointsForNode(node: Node): number {
             s + (typeof o.points === 'number' ? o.points : 0),
           0,
         )
-        return sum + (optSum > 0 ? optSum : (config.pointsWhenCorrect as number) ?? 0)
+        return sum + (optSum > 0 ? optSum : ((config.pointsWhenCorrect as number) ?? 0))
       }, 0) || 0
     )
   }
@@ -234,7 +235,11 @@ export function getPointsForNode(node: Node): number {
     const terms = Array.isArray(data.terms) ? data.terms : []
     return terms
       .filter((t: Record<string, unknown>) => t.isCorrect === true)
-      .reduce((s: number, t: Record<string, unknown>) => s + (typeof t.points === 'number' ? t.points : 1), 0)
+      .reduce(
+        (s: number, t: Record<string, unknown>) =>
+          s + (typeof t.points === 'number' ? t.points : 1),
+        0,
+      )
   }
   if (type === 'gameImagePin' && data) {
     const squares = Array.isArray(data.squares) ? data.squares : []
@@ -257,7 +262,7 @@ export function hasParagraphPenalties(nodes: Node[]): boolean {
         Array.isArray(config.options) &&
         config.options.some(
           (o: Record<string, unknown>) =>
-            o.isCorrect !== true && (Number(o.pointsWhenWrong ?? 0) > 0),
+            o.isCorrect !== true && Number(o.pointsWhenWrong ?? 0) > 0,
         ),
     )
   })
