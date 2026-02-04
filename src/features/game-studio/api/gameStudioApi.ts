@@ -121,11 +121,7 @@ export async function publishGame(gameId: string): Promise<GameForStudio> {
  * Get a single game by ID (full row including game_config for loading canvas).
  */
 export async function getGameForStudio(gameId: string): Promise<GameForStudio | null> {
-  const { data, error } = await supabase
-    .from('games')
-    .select('*')
-    .eq('id', gameId)
-    .single()
+  const { data, error } = await supabase.from('games').select('*').eq('id', gameId).single()
 
   if (error) {
     if (error.code === 'PGRST116') return null

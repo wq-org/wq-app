@@ -33,6 +33,7 @@ import type {
 } from './types/imageTermMatch.types'
 
 const STATEMENT_TRUNCATE_LENGTH = 60
+const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
 
 function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined): Term[] {
   const t = initialData?.terms
@@ -43,7 +44,6 @@ function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined)
 export default function ImageTermMatchGame({
   initialData: initialDataProp,
   onDelete,
-  onRemoveImage: _onRemoveImage,
 }: ImageTermMatchGameProps = {}) {
   const initialData = initialDataProp as ImageTermMatchGameData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -68,8 +68,9 @@ export default function ImageTermMatchGame({
   const gameEditor = useGameEditorContext()
   const { getUserId, getRole } = useUser()
 
-  const effectiveFilepath =
-    imageRemovedByUser ? null : selectedStoragePath ?? initialData?.filepath ?? null
+  const effectiveFilepath = imageRemovedByUser
+    ? null
+    : (selectedStoragePath ?? initialData?.filepath ?? null)
   const isStoragePath =
     typeof effectiveFilepath === 'string' &&
     effectiveFilepath.trim() !== '' &&
@@ -127,7 +128,7 @@ export default function ImageTermMatchGame({
         ? undefined
         : imageRemovedByUser
           ? null
-          : selectedStoragePath ?? initialData?.filepath ?? null,
+          : (selectedStoragePath ?? initialData?.filepath ?? null),
       terms,
     }))
   }, [
@@ -142,7 +143,6 @@ export default function ImageTermMatchGame({
     terms,
   ])
 
-  const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
   useEffect(() => {
     const userId = getUserId()
     const role = getRole()?.toLowerCase()
@@ -220,9 +220,7 @@ export default function ImageTermMatchGame({
   const handleTermPenaltyChange = (termId: string, value: number) => {
     const rounded = Math.round(value * 2) / 2
     const clamped = Math.max(0, Math.min(1000, rounded))
-    setTerms((prev) =>
-      prev.map((t) => (t.id === termId ? { ...t, pointsWhenWrong: clamped } : t)),
-    )
+    setTerms((prev) => prev.map((t) => (t.id === termId ? { ...t, pointsWhenWrong: clamped } : t)))
   }
 
   const handleRemoveTerm = (id: string) => {
@@ -242,9 +240,7 @@ export default function ImageTermMatchGame({
   }
 
   const handleTermFeedbackWhenWrongChange = (termId: string, value: string) => {
-    setTerms((prev) =>
-      prev.map((t) => (t.id === termId ? { ...t, feedbackWhenWrong: value } : t)),
-    )
+    setTerms((prev) => prev.map((t) => (t.id === termId ? { ...t, feedbackWhenWrong: value } : t)))
   }
 
   const handleTermChange = (id: string, value: string) => {
@@ -277,7 +273,11 @@ export default function ImageTermMatchGame({
             />
           ) : imageLoading ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
-              <Spinner variant="gray" size="xl" speed={1750} />
+              <Spinner
+                variant="gray"
+                size="xl"
+                speed={1750}
+              />
             </div>
           ) : (
             <div className="space-y-2">
@@ -308,7 +308,10 @@ export default function ImageTermMatchGame({
           {/* Gallery below: alternative way to pick or switch image */}
           {galleryLoading ? (
             <div className="flex items-center justify-center py-6">
-              <Spinner variant="gray" size="lg" />
+              <Spinner
+                variant="gray"
+                size="lg"
+              />
             </div>
           ) : (
             <div className="min-w-0 max-w-full">
@@ -404,10 +407,13 @@ export default function ImageTermMatchGame({
                     </Label>
                     {term.isCorrect && (
                       <div className="flex items-center gap-2 shrink-0">
-                          <Badge variant="outline" className="shrink-0">
+                        <Badge
+                          variant="outline"
+                          className="shrink-0"
+                        >
                           <Plus className="size-3" />
                         </Badge>
-                    
+
                         <PointsInput
                           value={
                             editingPoints[term.id] !== undefined
@@ -436,10 +442,13 @@ export default function ImageTermMatchGame({
                     )}
                     {!term.isCorrect && (
                       <div className="flex items-center gap-2 shrink-0">
-                        <Badge variant="outline" className="shrink-0">
+                        <Badge
+                          variant="outline"
+                          className="shrink-0"
+                        >
                           <Minus className="size-3" />
                         </Badge>
-                     
+
                         <PointsInput
                           value={
                             editingPenalty[term.id] !== undefined
@@ -480,7 +489,6 @@ export default function ImageTermMatchGame({
                   </div>
                   {term.isCorrect ? (
                     <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
-              
                       <FeedbackInput
                         label="When correct feedback"
                         value={term.feedbackWhenCorrect ?? ''}
@@ -492,13 +500,10 @@ export default function ImageTermMatchGame({
                     </div>
                   ) : (
                     <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
-             
                       <FeedbackInput
                         label="When wrong feedback"
                         value={term.feedbackWhenWrong ?? ''}
-                        onChange={(e) =>
-                          handleTermFeedbackWhenWrongChange(term.id, e.target.value)
-                        }
+                        onChange={(e) => handleTermFeedbackWhenWrongChange(term.id, e.target.value)}
                         placeholder="Optional feedback when this option is selected and wrong"
                       />
                     </div>
@@ -593,19 +598,19 @@ export default function ImageTermMatchGame({
                       }
                     }}
                   >
-                  <span
-                    className={`font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
-                  >
-                    {letter}.
-                  </span>
-                  <span
-                    className={`flex-1 text-left ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
-                  >
-                    {term.value}
-                  </span>
-                </Button>
-              )
-            })}
+                    <span
+                      className={`font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
+                    >
+                      {letter}.
+                    </span>
+                    <span
+                      className={`flex-1 text-left ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
+                    >
+                      {term.value}
+                    </span>
+                  </Button>
+                )
+              })}
           </div>
         </div>
       )}
@@ -636,19 +641,19 @@ export default function ImageTermMatchGame({
           const isFullyCorrect =
             previewSelectedTermIds.length > 0 &&
             previewSelectedTermIds.every((id) => terms.find((t) => t.id === id)?.isCorrect)
-          const firstCorrectSelected = previewSelectedTermIds.find((id) =>
-            terms.find((t) => t.id === id)?.isCorrect,
+          const firstCorrectSelected = previewSelectedTermIds.find(
+            (id) => terms.find((t) => t.id === id)?.isCorrect,
           )
           const firstWrongSelected = previewSelectedTermIds.find((id) => {
             const t = terms.find((x) => x.id === id)
             return t && !t.isCorrect
           })
           const feedbackText = isFullyCorrect
-            ? terms.find((t) => t.id === firstCorrectSelected)?.feedbackWhenCorrect?.trim() ??
-              undefined
+            ? (terms.find((t) => t.id === firstCorrectSelected)?.feedbackWhenCorrect?.trim() ??
+              undefined)
             : hasWrongSelection
-              ? terms.find((t) => t.id === firstWrongSelected)?.feedbackWhenWrong?.trim() ??
-                undefined
+              ? (terms.find((t) => t.id === firstWrongSelected)?.feedbackWhenWrong?.trim() ??
+                undefined)
               : undefined
           const feedbackVariant: 'correct' | 'wrong' | undefined = isFullyCorrect
             ? 'correct'

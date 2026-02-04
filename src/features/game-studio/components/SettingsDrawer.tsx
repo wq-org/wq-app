@@ -96,7 +96,10 @@ export default function SettingsDrawer({
         <div className="p-4 flex flex-col gap-6 h-full overflow-y-auto">
           {/* Project Title */}
           <div className="space-y-2">
-            <label htmlFor="project-title" className="text-sm font-medium">
+            <label
+              htmlFor="project-title"
+              className="text-sm font-medium"
+            >
               Project Title
             </label>
             <Input
@@ -109,7 +112,10 @@ export default function SettingsDrawer({
 
           {/* Project Description */}
           <div className="space-y-2">
-            <label htmlFor="project-description" className="text-sm font-medium">
+            <label
+              htmlFor="project-description"
+              className="text-sm font-medium"
+            >
               Project Description
             </label>
             <Textarea
@@ -156,10 +162,11 @@ export default function SettingsDrawer({
 
           {/* Bottom Actions */}
           <div className="flex flex-col gap-3 pt-4 border-t">
-            <HoldToDeleteButton onDelete={handleDelete}>
-              Hold to Delete
-            </HoldToDeleteButton>
-            <Button onClick={handleSave} disabled={isSaving}>
+            <HoldToDeleteButton onDelete={handleDelete}>Hold to Delete</HoldToDeleteButton>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+            >
               {isSaving ? 'Saving...' : 'Save'}
             </Button>
           </div>

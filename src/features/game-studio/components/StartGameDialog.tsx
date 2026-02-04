@@ -25,9 +25,9 @@ export default function StartGameDialog({
   useEffect(() => {
     if (!open) return
     const d = initialData as { title?: string; description?: string; label?: string } | undefined
-    setTitle((d?.title ?? d?.label ?? '') ?? '')
-    setDescription((d?.description ?? '') ?? '')
-  }, [open])
+    setTitle(d?.title ?? d?.label ?? '')
+    setDescription(d?.description ?? '')
+  }, [open, initialData])
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {

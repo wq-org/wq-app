@@ -70,7 +70,7 @@ interface AvatarPosition {
 function generateNonOverlappingPositions(
   containerWidth: number = 350,
   containerHeight: number = 197, // aspect-video: 350 * 9/16 ≈ 197
-  scatteredCount: number = 7
+  scatteredCount: number = 7,
 ): AvatarPosition[] {
   const positions: AvatarPosition[] = []
   const maxAttempts = 1000
@@ -85,9 +85,9 @@ function generateNonOverlappingPositions(
       attempts++
       // Generate random position with padding from edges
       // Padding accounts for avatar size (half size + some margin)
-      const padding = (SCATTERED_AVATAR_SIZE / 2 + 10) / containerHeight * 100
+      const padding = ((SCATTERED_AVATAR_SIZE / 2 + 10) / containerHeight) * 100
       const top = padding + Math.random() * (100 - 2 * padding)
-      const leftPadding = (SCATTERED_AVATAR_SIZE / 2 + 10) / containerWidth * 100
+      const leftPadding = ((SCATTERED_AVATAR_SIZE / 2 + 10) / containerWidth) * 100
       const left = leftPadding + Math.random() * (100 - 2 * leftPadding)
 
       position = { top, left }
@@ -96,8 +96,8 @@ function generateNonOverlappingPositions(
       // Check overlap with existing positions
       for (const existingPos of positions) {
         const distance = Math.sqrt(
-          Math.pow((position.top - existingPos.top) * containerHeight / 100, 2) +
-          Math.pow((position.left - existingPos.left) * containerWidth / 100, 2)
+          Math.pow(((position.top - existingPos.top) * containerHeight) / 100, 2) +
+            Math.pow(((position.left - existingPos.left) * containerWidth) / 100, 2),
         )
         if (distance < MIN_DISTANCE) {
           isValid = false
@@ -111,8 +111,8 @@ function generateNonOverlappingPositions(
     } else {
       // Fallback: use a safe position if max attempts reached
       positions.push({
-        top: 10 + (i * 12) % 80,
-        left: 10 + (i * 15) % 80,
+        top: 10 + ((i * 12) % 80),
+        left: 10 + ((i * 15) % 80),
       })
     }
   }
@@ -124,9 +124,9 @@ function generateNonOverlappingPositions(
 
   while (!centerValid && centerAttempts < maxAttempts) {
     centerAttempts++
-    const padding = (CENTER_AVATAR_SIZE / 2 + 10) / containerHeight * 100
+    const padding = ((CENTER_AVATAR_SIZE / 2 + 10) / containerHeight) * 100
     const top = padding + Math.random() * (100 - 2 * padding)
-    const leftPadding = (CENTER_AVATAR_SIZE / 2 + 10) / containerWidth * 100
+    const leftPadding = ((CENTER_AVATAR_SIZE / 2 + 10) / containerWidth) * 100
     const left = leftPadding + Math.random() * (100 - 2 * leftPadding)
 
     centerPosition = { top, left }
@@ -135,8 +135,8 @@ function generateNonOverlappingPositions(
     // Check overlap with scattered avatars
     for (const existingPos of positions) {
       const distance = Math.sqrt(
-        Math.pow((centerPosition.top - existingPos.top) * containerHeight / 100, 2) +
-        Math.pow((centerPosition.left - existingPos.left) * containerWidth / 100, 2)
+        Math.pow(((centerPosition.top - existingPos.top) * containerHeight) / 100, 2) +
+          Math.pow(((centerPosition.left - existingPos.left) * containerWidth) / 100, 2),
       )
       // Center avatar is larger, so need more distance
       if (distance < MIN_DISTANCE + 20) {
@@ -239,35 +239,34 @@ export function GameProjectCard({
 
         {/* Card content */}
         <div className="space-y-4">
-            {/* Version badge above title */}
-            {version != null && (
-              <Badge variant="outline" className="text-xs">
-                Version : {version}
-              </Badge>
-            )}
-            <div className="space-y-1">
-              <h3 className="text-xl font-semibold truncate cursor-default block">
-                {title}
-              </h3>
-              <p className="text-muted-foreground line-clamp-3 cursor-default">
-                {description}
-              </p>
-            </div>
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                size="lg"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onOpen?.()
-                }}
-                className="text-blue-500 hover:opacity-80 hover:bg-transparent text-base gap-2"
-              >
-                <p>Open</p>
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </div>
+          {/* Version badge above title */}
+          {version != null && (
+            <Badge
+              variant="outline"
+              className="text-xs"
+            >
+              Version : {version}
+            </Badge>
+          )}
+          <div className="space-y-1">
+            <h3 className="text-xl font-semibold truncate cursor-default block">{title}</h3>
+            <p className="text-muted-foreground line-clamp-3 cursor-default">{description}</p>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="ghost"
+              size="lg"
+              onClick={(e) => {
+                e.stopPropagation()
+                onOpen?.()
+              }}
+              className="text-blue-500 hover:opacity-80 hover:bg-transparent text-base gap-2"
+            >
+              <p>Open</p>
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

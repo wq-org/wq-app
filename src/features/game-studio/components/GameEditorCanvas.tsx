@@ -136,7 +136,10 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           if (startNode) {
             const desc = (startNode.data as Record<string, unknown>)?.description
             if (desc == null || String(desc).trim() === '') {
-              startNode.data = { ...startNode.data, description: gameDescription } as Record<string, unknown>
+              startNode.data = { ...startNode.data, description: gameDescription } as Record<
+                string,
+                unknown
+              >
             }
           }
         }
@@ -733,7 +736,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const handleLeaveProject = useCallback(async () => {
     try {
       await handleSave()
-    } catch (err) {
+    } catch {
       toast.error('Failed to save project before leaving.')
     }
     navigate('/teacher/game-studio')
@@ -795,13 +798,13 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   )
 
   // Handler for SettingsDrawer onRollback
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const handleSettingsRollback = useCallback(async (versionId: string) => {
     // Rollback not yet implemented - versionId will be used when implementing version loading
     toast.info(`Rolling back to version ${versionId}`)
   }, [])
 
-  // Handler for SettingsDrawer onDelete  
+  // Handler for SettingsDrawer onDelete
   const handleSettingsDelete = useCallback(async () => {
     if (!projectId) {
       toast.error('No project to delete')
@@ -881,22 +884,33 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }
 
-  const handleEndSave = useCallback((data: { title: string; description: string }) => {
-    const targetId = selectedNodeId
-    if (!targetId) {
-      toast.error('No node selected')
-      return
-    }
-    setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === targetId && node.type === 'gameEnd'
-          ? { ...node, data: { ...node.data, label: data.title, title: data.title, description: data.description } }
-          : node,
-      ),
-    )
-    pendingEndSavePersistRef.current = true
-    toast.success('Node saved')
-  }, [selectedNodeId])
+  const handleEndSave = useCallback(
+    (data: { title: string; description: string }) => {
+      const targetId = selectedNodeId
+      if (!targetId) {
+        toast.error('No node selected')
+        return
+      }
+      setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+          node.id === targetId && node.type === 'gameEnd'
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  label: data.title,
+                  title: data.title,
+                  description: data.description,
+                },
+              }
+            : node,
+        ),
+      )
+      pendingEndSavePersistRef.current = true
+      toast.success('Node saved')
+    },
+    [selectedNodeId],
+  )
 
   // After End node dialog save, persist project so changes are stored
   useEffect(() => {
@@ -912,12 +926,14 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       title: gameTitle,
       description,
       game_config: gameConfig,
-    }).then(() => {
-      toast.success('Project saved.')
-    }).catch((err) => {
-      console.error(err)
-      toast.error('Failed to save project.')
     })
+      .then(() => {
+        toast.success('Project saved.')
+      })
+      .catch((err) => {
+        console.error(err)
+        toast.error('Failed to save project.')
+      })
   }, [nodes, edges, gameTitle, projectId, getUserId])
 
   const handleEndDelete = () => {
@@ -1118,7 +1134,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               onClick={handleLeaveProject}
             >
               <DoorOpen className="h-4 w-4 mr-2" />
-              Leave 
+              Leave
             </Button>
             <Button onClick={() => setIsPublishDrawerOpen(true)}>Publish</Button>
             <Button

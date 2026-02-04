@@ -163,10 +163,11 @@ function DroppableArea({ children, id }: { children: React.ReactNode; id: string
   )
 }
 
+const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
+
 export default function ImagePinMarkGame({
   initialData: initialDataProp,
   onDelete,
-  onRemoveImage: _onRemoveImage,
 }: ImagePinMarkGameProps = {}) {
   const initialData = initialDataProp as ImagePinMarkInitialData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -194,8 +195,9 @@ export default function ImagePinMarkGame({
   const gameEditor = useGameEditorContext()
   const { getUserId, getRole } = useUser()
 
-  const effectiveFilepath =
-    imageRemovedByUser ? null : selectedStoragePath ?? initialData?.filepath ?? null
+  const effectiveFilepath = imageRemovedByUser
+    ? null
+    : (selectedStoragePath ?? initialData?.filepath ?? null)
   const isStoragePath =
     typeof effectiveFilepath === 'string' &&
     effectiveFilepath.trim() !== '' &&
@@ -247,7 +249,7 @@ export default function ImagePinMarkGame({
         ? undefined
         : imageRemovedByUser
           ? null
-          : selectedStoragePath ?? initialData?.filepath ?? null,
+          : (selectedStoragePath ?? initialData?.filepath ?? null),
       squares,
       pinPositions,
     }))
@@ -265,7 +267,6 @@ export default function ImagePinMarkGame({
   ])
 
   // Fetch image-type files for gallery (teacher dashboard pattern)
-  const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
   useEffect(() => {
     const userId = getUserId()
     const role = getRole()?.toLowerCase()
@@ -311,7 +312,7 @@ export default function ImagePinMarkGame({
       })
     })
     return () => cancelAnimationFrame(id)
-  }, [imagePreview, squares.length])
+  }, [displayUrl, squares.length])
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -566,7 +567,11 @@ export default function ImagePinMarkGame({
             />
           ) : imageLoading ? (
             <div className="w-full min-h-[200px] rounded-lg border bg-gray-100 flex items-center justify-center">
-              <Spinner variant="gray" size="xl" speed={1750} />
+              <Spinner
+                variant="gray"
+                size="xl"
+                speed={1750}
+              />
             </div>
           ) : (
             <div className="space-y-4">
@@ -623,7 +628,10 @@ export default function ImagePinMarkGame({
           {/* Gallery below: alternative way to pick or switch image */}
           {galleryLoading ? (
             <div className="flex items-center justify-center py-6">
-              <Spinner variant="gray" size="lg" />
+              <Spinner
+                variant="gray"
+                size="lg"
+              />
             </div>
           ) : (
             <div className="min-w-0 max-w-full">
@@ -666,7 +674,10 @@ export default function ImagePinMarkGame({
                 </div>
                 <div className="flex flex-wrap gap-4 items-end justify-between">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="shrink-0">
+                    <Badge
+                      variant="outline"
+                      className="shrink-0"
+                    >
                       <Plus className="size-3" />
                     </Badge>
                     <div className="space-y-1">
@@ -699,7 +710,10 @@ export default function ImagePinMarkGame({
                     </div>
                   </div>
                   <div className="flex  items-center gap-2">
-                    <Badge variant="outline" className="shrink-0">
+                    <Badge
+                      variant="outline"
+                      className="shrink-0"
+                    >
                       <Minus className="size-3" />
                     </Badge>
                     <div className="space-y-1">

@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useRef } from "react"
-import { cn } from "@/lib/utils"
+import { useRef } from 'react'
+import { cn } from '@/lib/utils'
 
 export interface GalleryImage {
   url: string
@@ -25,14 +25,14 @@ export interface ImageGalleryProps {
 
 function normalizeImages(images: ImageGalleryItem[]): GalleryImage[] {
   return images.map((item) =>
-    typeof item === "string"
-      ? { url: item, title: "" }
-      : { url: item.url, title: item.title ?? "", storagePath: item.storagePath }
+    typeof item === 'string'
+      ? { url: item, title: '' }
+      : { url: item.url, title: item.title ?? '', storagePath: item.storagePath },
   )
 }
 
 function truncateTitle(title: string, maxLength: number): string {
-  if (!title.trim()) return ""
+  if (!title.trim()) return ''
   if (title.length <= maxLength) return title
   return `${title.slice(0, maxLength).trim()}…`
 }
@@ -51,12 +51,7 @@ export function ImageGallery({
   }
 
   return (
-    <div
-      className={cn(
-        "w-full min-w-0 max-w-[700px] overflow-hidden",
-        className,
-      )}
-    >
+    <div className={cn('w-full min-w-0 max-w-[700px] overflow-hidden', className)}>
       <div
         ref={scrollRef}
         className="flex -ml-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
@@ -70,8 +65,8 @@ export function ImageGallery({
           >
             <div className="overflow-hidden rounded-md">
               <img
-                src={image.url || "/placeholder.svg"}
-                alt={image.title || "Gallery image"}
+                src={image.url || '/placeholder.svg'}
+                alt={image.title || 'Gallery image'}
                 className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 crossOrigin="anonymous"
               />

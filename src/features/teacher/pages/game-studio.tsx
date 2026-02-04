@@ -6,10 +6,7 @@ import EmptyGamesView from '@/features/game-studio/components/EmptyGamesView'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Button } from '@/components/ui/button'
-import {
-  createGameForStudio,
-  getTeacherFlowGames,
-} from '@/features/game-studio/api/gameStudioApi'
+import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { toast } from 'sonner'
 import DotWaveLoader from '@/components/shared/loaders/DotWaveLoader'
 
@@ -89,7 +86,10 @@ export default function GameStudio() {
       <div className="pb-14">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <DotWaveLoader variant="default" size={48} />
+            <DotWaveLoader
+              variant="default"
+              size={48}
+            />
           </div>
         ) : games.length === 0 ? (
           <EmptyGamesView />

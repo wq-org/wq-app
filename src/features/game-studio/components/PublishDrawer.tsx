@@ -86,7 +86,9 @@ function getMinimallyFilledError(node: Node): string | null {
   }
 
   if (type === 'gameImageTerms') {
-    const tg = data?.imageTermGameData as { imagePreview?: string; filepath?: string; terms?: unknown[] } | undefined
+    const tg = data?.imageTermGameData as
+      | { imagePreview?: string; filepath?: string; terms?: unknown[] }
+      | undefined
     const hasImage = Boolean(
       (typeof tg?.imagePreview === 'string' && tg.imagePreview.trim()) ||
         (typeof tg?.filepath === 'string' && tg.filepath.trim()),
@@ -98,7 +100,9 @@ function getMinimallyFilledError(node: Node): string | null {
   }
 
   if (type === 'gameImagePin') {
-    const pin = data?.imagePinGameData as { imagePreview?: string; filepath?: string; squares?: unknown[] } | undefined
+    const pin = data?.imagePinGameData as
+      | { imagePreview?: string; filepath?: string; squares?: unknown[] }
+      | undefined
     const hasImage = Boolean(
       (typeof pin?.imagePreview === 'string' && pin.imagePreview.trim()) ||
         (typeof pin?.filepath === 'string' && pin.filepath.trim()),
@@ -199,7 +203,10 @@ export default function PublishDrawer({
   const [publishing, setPublishing] = useState(false)
   const startNode = nodes.find((n: Node) => n.type === 'gameStart')
   const gameTitle =
-    propGameTitle || (startNode?.data?.title as string) || (startNode?.data?.label as string) || 'Untitled Game'
+    propGameTitle ||
+    (startNode?.data?.title as string) ||
+    (startNode?.data?.label as string) ||
+    'Untitled Game'
 
   const gameNodes = nodes.filter(
     (n: Node) => n.type && GAME_NODE_TYPES.includes(n.type as (typeof GAME_NODE_TYPES)[number]),
@@ -219,7 +226,9 @@ export default function PublishDrawer({
     }
 
     if (gameNodes.length === 0) {
-      errors.push('At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required')
+      errors.push(
+        'At least one game node (Paragraph, Image Terms, Image Pin, or If/Else) is required',
+      )
     }
 
     if (!endNode) {
@@ -238,7 +247,9 @@ export default function PublishDrawer({
         }
       })
       if (disconnected.length) {
-        errors.push(`All nodes must be connected from Start to End. Disconnected or unreachable: ${disconnected.join(', ')}`)
+        errors.push(
+          `All nodes must be connected from Start to End. Disconnected or unreachable: ${disconnected.join(', ')}`,
+        )
       }
     }
 

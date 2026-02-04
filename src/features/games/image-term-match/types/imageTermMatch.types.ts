@@ -46,4 +46,3 @@ export interface ImageTermMatchGameData {
   }>
   correctAnswerId: string | null
 }
- 
