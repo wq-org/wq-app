@@ -93,7 +93,7 @@ export interface StartGameDialogProps {
   onOpenChange: (open: boolean) => void
   onSave?: (data: { title: string; description: string }) => void
   nodeId?: string
-  initialData?: { title?: string; description?: string }
+  initialData?: { title?: string; label?: string; description?: string }
 }
 
 export interface EndGameDialogProps {
@@ -112,7 +112,7 @@ export interface IfElseGameDialogProps {
     description?: string
     condition?: string
     correctPath?: 'A' | 'B'
-  }) => void
+  }, nodeId?: string) => void
   initialData?: {
     title?: string
     label?: string
@@ -137,7 +137,7 @@ export interface GameNodeDialogProps {
     paragraphGameData?: unknown
     imageTermGameData?: unknown
     imagePinGameData?: unknown
-  }) => void
+  }, nodeId?: string) => void
   onDelete?: () => void
   /** Upload image for game node; returns storage path and public URL or null. Used when saving image-term or image-pin nodes. */
   onUploadImage?: (

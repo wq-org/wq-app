@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -8,8 +8,22 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import type { StartGameDialogProps } from '../types/game-studio.types'
-import GameNodeLayout from './GameNodeLayout'
+
+function getTitleFromData(initialData: StartGameDialogProps['initialData']): string {
+  if (!initialData) return ''
+  if (typeof initialData.title === 'string' && initialData.title.trim()) return initialData.title
+  if (typeof initialData.label === 'string' && initialData.label.trim()) return initialData.label
+  return ''
+}
+
+function getDescriptionFromData(initialData: StartGameDialogProps['initialData']): string {
+  if (!initialData || typeof initialData.description !== 'string') return ''
+  return initialData.description
+}
 
 export default function StartGameDialog({
   open,
@@ -20,20 +34,28 @@ export default function StartGameDialog({
 }: StartGameDialogProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const prevOpenRef = useRef(false)
 
-  // Sync from initialData only when dialog opens, so parent re-renders don't overwrite user input
+  // Sync from node data only when dialog opens so we show persisted values and don't overwrite edits
   useEffect(() => {
-    if (!open) return
-    const d = initialData as { title?: string; description?: string; label?: string } | undefined
-    setTitle(d?.title ?? d?.label ?? '')
-    setDescription(d?.description ?? '')
+    const justOpened = open && !prevOpenRef.current
+    prevOpenRef.current = open
+
+    if (open) {
+      if (justOpened && initialData) {
+        setTitle(getTitleFromData(initialData))
+        setDescription(getDescriptionFromData(initialData))
+      }
+    } else {
+      setTitle('')
+      setDescription('')
+    }
   }, [open, initialData])
 
   const handleSave = () => {
-    if (title.trim() && description.trim()) {
-      onSave?.({ title, description })
-      handleCancel()
-    }
+    if (!title.trim() || !description.trim()) return
+    onSave?.({ title: title.trim(), description: description.trim() })
+    onOpenChange(false)
   }
 
   const handleCancel = () => {
@@ -54,7 +76,29 @@ export default function StartGameDialog({
             Configure the start node with title and description
           </DialogDescription>
         </DialogHeader>
-        <GameNodeLayout nodeId={nodeId} />
+
+        <div className="mt-4 flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="start-node-title">Title</Label>
+            <Input
+              id="start-node-title"
+              placeholder="Enter game title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="start-node-description">Description</Label>
+            <Textarea
+              id="start-node-description"
+              placeholder="Enter game description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+            />
+          </div>
+        </div>
+
         <DialogFooter>
           <Button
             variant="outline"

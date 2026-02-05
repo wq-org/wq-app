@@ -59,12 +59,15 @@ export default function IfElseGameDialog({
   }, [initialData, open])
 
   const handleSave = () => {
-    onSave?.({
-      title: title.trim() || undefined,
-      description: description.trim() || undefined,
-      condition: condition.trim() || undefined,
-      correctPath,
-    })
+    onSave?.(
+      {
+        title: title.trim() || undefined,
+        description: description.trim() || undefined,
+        condition: condition.trim() || undefined,
+        correctPath,
+      },
+      nodeId,
+    )
     handleCancel()
   }
 

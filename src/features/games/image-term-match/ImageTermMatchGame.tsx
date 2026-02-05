@@ -87,6 +87,26 @@ export default function ImageTermMatchGame({
     0,
   )
 
+  // Sync from initialData when it changes (e.g. different node opened or node data updated after save) so state is not stale
+  useEffect(() => {
+    setTitle(initialData?.title ?? '')
+    setDescription(constrainDescription(initialData?.description ?? ''))
+    if (typeof initialData?.filepath === 'string' && initialData.filepath.trim() !== '') {
+      setSelectedStoragePath(initialData.filepath)
+      setImageFile(null)
+      setImageRemovedByUser(false)
+    }
+    if (Array.isArray(initialData?.terms)) {
+      setTerms(initialData.terms.length > 0 ? initialData.terms : [{ id: '1', value: '' }])
+    }
+  }, [
+    initialData?.title,
+    initialData?.description,
+    initialData?.filepath,
+    initialData?.terms?.length ?? 0,
+    initialData?.terms?.map((t) => t.id).join(',') ?? '',
+  ])
+
   // Resolve storage path to blob URL when opening saved node or after gallery selection
   useEffect(() => {
     if (!isStoragePath || !effectiveFilepath) {

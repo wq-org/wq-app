@@ -628,6 +628,16 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           baseData.title = ''
           baseData.description = ''
         }
+        if (nodeData.type === 'gameImageTerms') {
+          baseData.title = ''
+          baseData.description = ''
+          baseData.terms = [{ id: '1', value: '' }]
+        }
+        if (nodeData.type === 'gameImagePin') {
+          baseData.title = ''
+          baseData.description = ''
+          baseData.squares = []
+        }
         const newNode: Node = {
           id: newNodeId,
           type: nodeData.type,
@@ -827,76 +837,107 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [projectId, navigate])
 
   const handleStartSave = (data: { title: string; description: string }) => {
+    const startNodeId = nodes.find((n) => n.type === 'gameStart')?.id
+    if (!startNodeId) {
+      toast.error('Cannot save: no Start node in this project.')
+      return
+    }
     if (data.title) {
       setGameTitle(data.title)
     }
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) =>
-          node.id === selectedNodeId ? { ...node, data: { ...node.data, ...data } } : node,
-        ),
-      )
-      toast.success('Node saved')
-    }
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === startNodeId && node.type === 'gameStart'
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                label: data.title,
+                title: data.title,
+                description: data.description,
+              },
+            }
+          : node,
+      ),
+    )
+    pendingEndSavePersistRef.current = true
+    toast.success('Node saved')
   }
 
-  const handleIfElseSave = (data: {
-    title?: string
-    description?: string
-    condition?: string
-    correctPath?: 'A' | 'B'
-  }) => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) => {
-          if (node.id !== selectedNodeId) return node
-          const nextData = { ...node.data }
-          if (data.title !== undefined) nextData.label = data.title
-          if (data.description !== undefined) nextData.description = data.description
-          if (data.condition !== undefined) nextData.condition = data.condition
-          if (data.correctPath !== undefined) nextData.correctPath = data.correctPath
-          return { ...node, data: nextData }
-        }),
-      )
-      toast.success('Node saved')
+  const handleIfElseSave = (
+    data: {
+      title?: string
+      description?: string
+      condition?: string
+      correctPath?: 'A' | 'B'
+    },
+    nodeId?: string,
+  ) => {
+    const targetId = nodeId ?? selectedNodeId
+    if (!targetId) {
+      toast.error('No node selected. Please open the node again and try saving.')
+      return
     }
+    setNodes((prevNodes) =>
+      prevNodes.map((node) => {
+        if (node.id !== targetId) return node
+        const nextData = { ...node.data }
+        if (data.title !== undefined) nextData.label = data.title
+        if (data.description !== undefined) nextData.description = data.description
+        if (data.condition !== undefined) nextData.condition = data.condition
+        if (data.correctPath !== undefined) nextData.correctPath = data.correctPath
+        return { ...node, data: nextData }
+      }),
+    )
+    toast.success('Node saved')
   }
 
-  const handleGameNodeSave = (data: {
-    points?: number
-    paragraphGameData?: unknown
-    imageTermGameData?: unknown
-    imagePinGameData?: unknown
-  }) => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) => {
-          if (node.id !== selectedNodeId) return node
-          const nextData = { ...node.data, points: data.points }
-          if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
-            Object.assign(nextData, data.paragraphGameData)
-          }
-          if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
-            Object.assign(nextData, data.imageTermGameData)
-          }
-          if (data.imagePinGameData != null && typeof data.imagePinGameData === 'object') {
-            Object.assign(nextData, data.imagePinGameData)
-          }
-          return { ...node, data: nextData }
-        }),
-      )
-      toast.success('Node saved')
-      pendingEndSavePersistRef.current = true
+  const handleGameNodeSave = (
+    data: {
+      points?: number
+      paragraphGameData?: unknown
+      imageTermGameData?: unknown
+      imagePinGameData?: unknown
+    },
+    nodeId?: string,
+  ) => {
+    const targetId = nodeId ?? selectedNodeId
+    if (!targetId) {
+      toast.error('No node selected. Please open the node again and try saving.')
+      return
     }
+    setNodes((prevNodes) =>
+      prevNodes.map((node) => {
+        if (node.id !== targetId) return node
+        const nextData = { ...node.data, points: data.points }
+        if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
+          Object.assign(nextData, data.paragraphGameData)
+        }
+        if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
+          Object.assign(nextData, data.imageTermGameData)
+        }
+        if (data.imagePinGameData != null && typeof data.imagePinGameData === 'object') {
+          Object.assign(nextData, data.imagePinGameData)
+        }
+        return { ...node, data: nextData }
+      }),
+    )
+    toast.success('Node saved')
+    pendingEndSavePersistRef.current = true
   }
 
   const handleEndSave = useCallback(
     (data: { title: string; description: string }) => {
-      const targetId = selectedNodeId
-      if (!targetId) {
-        toast.error('No node selected')
+      if (!String(data?.title ?? '').trim() || !String(data?.description ?? '').trim()) {
+        toast.error('Title and description are required.')
         return
       }
+      const endNode = nodes.find((n) => n.type === 'gameEnd')
+      if (!endNode) {
+        toast.error('Cannot save: no End node in this project.')
+        return
+      }
+      const targetId = endNode.id
       setNodes((prevNodes) =>
         prevNodes.map((node) =>
           node.id === targetId && node.type === 'gameEnd'
@@ -915,7 +956,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       pendingEndSavePersistRef.current = true
       toast.success('Node saved')
     },
-    [selectedNodeId],
+    [nodes],
   )
 
   // After End node dialog save, persist project so changes are stored
@@ -1219,7 +1260,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
         initialData={
           nodes.find((n) => n.type === 'gameStart')?.data as
-            | { title?: string; description?: string }
+            | { title?: string; label?: string; description?: string }
             | undefined
         }
       />

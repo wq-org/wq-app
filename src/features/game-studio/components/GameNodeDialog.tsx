@@ -130,7 +130,7 @@ export default function GameNodeDialog({
 
       logColor('games', gamesPayload, 'db')
       logColor('game_sessions', gameSessionsPayload, 'react')
-      onSave?.({ points, paragraphGameData: gameData })
+      onSave?.({ points, paragraphGameData: gameData }, nodeId)
     } else if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
       const data = gameData as {
         imageFile?: File | null
@@ -156,7 +156,7 @@ export default function GameNodeDialog({
       } else if (data.imageFile) {
         delete imageTermGameData.imageFile
       }
-      onSave?.({ points, imageTermGameData })
+      onSave?.({ points, imageTermGameData }, nodeId)
     } else if (nodeType === 'gameImagePin' && gameData && typeof gameData === 'object') {
       const data = gameData as {
         imageFile?: File | null
@@ -182,9 +182,9 @@ export default function GameNodeDialog({
       } else if (data.imageFile) {
         delete imagePinGameData.imageFile
       }
-      onSave?.({ points, imagePinGameData })
+      onSave?.({ points, imagePinGameData }, nodeId)
     } else {
-      onSave?.({ points })
+      onSave?.({ points }, nodeId)
     }
     onOpenChange(false)
   }
