@@ -525,8 +525,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         }
         // Assign handle if not provided (e.g. drag from node body)
         if (!params.sourceHandle) {
-          params.sourceHandle =
-            existingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom'
+          params.sourceHandle = existingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom'
         }
       }
 

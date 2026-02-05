@@ -60,13 +60,14 @@ export function PreviewStartEndSlide({
       ref={containerRef}
       className="flex flex-col gap-4 p-6 justify-center min-h-full"
     >
-      {label && (
-        <p className="text-sm font-medium text-muted-foreground">{label}</p>
-      )}
+      {label && <p className="text-sm font-medium text-muted-foreground">{label}</p>}
       {titleWords.length > 0 && (
         <h2 className="text-xl font-semibold leading-tight">
           {titleWords.map((word, i) => (
-            <span key={i} className="word inline">
+            <span
+              key={i}
+              className="word inline"
+            >
               {word}{' '}
             </span>
           ))}
@@ -75,7 +76,10 @@ export function PreviewStartEndSlide({
       {descWords.length > 0 && (
         <p className="text-muted-foreground text-sm leading-relaxed">
           {descWords.map((word, i) => (
-            <span key={i} className="word inline">
+            <span
+              key={i}
+              className="word inline"
+            >
               {word}{' '}
             </span>
           ))}

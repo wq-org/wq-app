@@ -100,12 +100,7 @@ export default function ImageTermMatchGame({
     if (Array.isArray(initialData?.terms)) {
       setTerms(initialData.terms.length > 0 ? initialData.terms : [{ id: '1', value: '' }])
     }
-  }, [
-    initialData?.title,
-    initialData?.description,
-    initialData?.filepath,
-    initialData?.terms,
-  ])
+  }, [initialData?.title, initialData?.description, initialData?.filepath, initialData?.terms])
 
   // Resolve storage path to blob URL when opening saved node or after gallery selection
   useEffect(() => {

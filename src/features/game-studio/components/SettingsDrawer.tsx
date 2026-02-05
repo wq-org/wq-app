@@ -152,9 +152,7 @@ export default function SettingsDrawer({
             <Label className="text-sm font-medium">Publish status</Label>
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium">
-                  {isPublished ? 'Published' : 'Draft'}
-                </p>
+                <p className="text-sm font-medium">{isPublished ? 'Published' : 'Draft'}</p>
                 <p className="text-xs text-muted-foreground">
                   {isPublished
                     ? 'Students can play this game. Turn off to unpublish and hide it from the list.'

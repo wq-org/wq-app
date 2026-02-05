@@ -95,7 +95,10 @@ export function getPreviewPath(nodes: Node[], edges: Edge[]): PreviewPathResult 
 
     let nextEdge: Edge | null = null
     if (node?.type === 'gameIfElse') {
-      const correctPath = (node.data as Record<string, unknown>)?.correctPath as 'A' | 'B' | undefined
+      const correctPath = (node.data as Record<string, unknown>)?.correctPath as
+        | 'A'
+        | 'B'
+        | undefined
       const wantHandle = correctPath === 'B' ? IF_ELSE_HANDLE_B : IF_ELSE_HANDLE_A
       nextEdge = nextEdges.find((e) => (e.sourceHandle ?? '') === wantHandle) ?? nextEdges[0]
     } else {

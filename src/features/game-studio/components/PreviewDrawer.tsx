@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import type { PreviewDrawerProps } from '../types/game-studio.types'
 import { ContainerSlider } from '@/components/shared'
 import { StatsDisplay } from '@/features/games/components/StatsDisplay'
-import { NODE_TYPE_TO_GAME } from '@/features/games/components/GameModus'
+import { NODE_TYPE_TO_GAME } from '@/features/games/components/nodeTypeToGame'
 import { getPreviewPath } from '../utils/flowOrder'
 import { PreviewStartEndSlide } from './PreviewStartEndSlide'
 import type { Node } from '@xyflow/react'
@@ -33,8 +33,7 @@ export default function PreviewDrawer({
   const path = useMemo(() => getPreviewPath(nodes, edges), [nodes, edges])
   const { startNode, playableNodes, endNode } = path
 
-  const slideCount =
-    (startNode ? 1 : 0) + playableNodes.length + (endNode ? 1 : 0)
+  const slideCount = (startNode ? 1 : 0) + playableNodes.length + (endNode ? 1 : 0)
   const startActive = startNode ? currentIndex === 0 : false
   const endActive = endNode ? currentIndex === slideCount - 1 : false
 
@@ -43,7 +42,10 @@ export default function PreviewDrawer({
 
   if (slideCount === 0) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog
+        open={open}
+        onOpenChange={onOpenChange}
+      >
         <DialogContent
           showCloseButton
           className="fixed top-[50%] left-[50%] z-50 w-[70vw]! max-w-none! h-[95vh]! max-h-[95vh]! -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4 flex flex-col gap-4 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
@@ -60,7 +62,10 @@ export default function PreviewDrawer({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent
         showCloseButton
         className="fixed top-[50%] left-[50%] z-50 w-[70vw]! max-w-none! h-[95vh]! max-h-[95vh]! -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4 flex flex-col gap-4 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
@@ -70,7 +75,11 @@ export default function PreviewDrawer({
         </DialogHeader>
         <div className={cn('overflow-auto flex-1 flex flex-col min-h-0 p-4 space-y-4')}>
           <div className="flex justify-center shrink-0">
-            <StatsDisplay correctAnswers={0} wrongAnswers={0} score={0} />
+            <StatsDisplay
+              correctAnswers={0}
+              wrongAnswers={0}
+              score={0}
+            />
           </div>
           <ContainerSlider
             fillHeight
@@ -90,8 +99,14 @@ export default function PreviewDrawer({
               const GameComponent = NODE_TYPE_TO_GAME[node.type ?? '']
               if (!GameComponent) return null
               return (
-                <div key={node.id} className="p-4">
-                  <GameComponent initialData={node.data} previewOnly />
+                <div
+                  key={node.id}
+                  className="p-4"
+                >
+                  <GameComponent
+                    initialData={node.data}
+                    previewOnly
+                  />
                 </div>
               )
             })}

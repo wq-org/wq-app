@@ -64,8 +64,7 @@ export default function GameNodeDialog({
 
   const GameComponent = gameConfig.component
 
-  const SAVE_ERROR_MESSAGE =
-    'Something went wrong. Please try again in a few seconds.'
+  const SAVE_ERROR_MESSAGE = 'Something went wrong. Please try again in a few seconds.'
 
   const handleSave = async () => {
     try {

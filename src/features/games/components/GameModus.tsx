@@ -1,20 +1,8 @@
-import type { ComponentType } from 'react'
 import type { Node } from '@xyflow/react'
 import { cn } from '@/lib/utils'
 import { ContainerSlider } from '@/components/shared'
 import { StatsDisplay } from '@/features/games/components/StatsDisplay'
-import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame'
-import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame'
-import ImagePinMarkGame from '@/features/games/image-pin-mark/ImagePinMarkGame'
-
-export const NODE_TYPE_TO_GAME: Record<
-  string,
-  ComponentType<{ initialData?: unknown; previewOnly?: boolean }>
-> = {
-  gameParagraph: ParagraphLineSelectGame,
-  gameImageTerms: ImageTermMatchGame,
-  gameImagePin: ImagePinMarkGame,
-}
+import { NODE_TYPE_TO_GAME } from './nodeTypeToGame'
 
 export interface GameModusProps {
   /** Playable game nodes only (gameParagraph, gameImageTerms, gameImagePin), in flow order. */
