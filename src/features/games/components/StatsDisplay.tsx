@@ -1,6 +1,6 @@
 'use client'
 
-import React from "react"
+import React from 'react'
 
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { Check, X, Trophy } from 'lucide-react'
@@ -63,7 +63,10 @@ export function StatsDisplay({
         label="Correct Answers"
       />
 
-      <Separator orientation="vertical" className="h-8" />
+      <Separator
+        orientation="vertical"
+        className="h-8"
+      />
 
       <StatItem
         icon={<X className="h-5 w-5" />}
@@ -71,7 +74,10 @@ export function StatsDisplay({
         label="Wrong Answers"
       />
 
-      <Separator orientation="vertical" className="h-8" />
+      <Separator
+        orientation="vertical"
+        className="h-8"
+      />
 
       <StatItem
         icon={<Trophy className="h-5 w-5" />}

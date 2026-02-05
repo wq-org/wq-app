@@ -30,8 +30,7 @@ const videoPlayerVariants = cva(
 )
 
 export interface VideoPlayerProps
-  extends
-    Omit<React.VideoHTMLAttributes<HTMLVideoElement>, 'controls'>,
+  extends Omit<React.VideoHTMLAttributes<HTMLVideoElement>, 'controls'>,
     VariantProps<typeof videoPlayerVariants> {
   src: string
   poster?: string

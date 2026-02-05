@@ -7,7 +7,7 @@ import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/Para
 import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame'
 import ImagePinMarkGame from '@/features/games/image-pin-mark/ImagePinMarkGame'
 
-const NODE_TYPE_TO_GAME: Record<
+export const NODE_TYPE_TO_GAME: Record<
   string,
   ComponentType<{ initialData?: unknown; previewOnly?: boolean }>
 > = {
@@ -34,14 +34,21 @@ export function GameModus({ nodes, className }: GameModusProps) {
   return (
     <div className={cn('flex flex-col gap-6 flex-1 min-h-0', className)}>
       <div className="flex justify-center shrink-0">
-        <StatsDisplay correctAnswers={0} wrongAnswers={0} score={0} />
+        <StatsDisplay
+          correctAnswers={0}
+          wrongAnswers={0}
+          score={0}
+        />
       </div>
       <ContainerSlider fillHeight>
         {nodes.map((node) => {
           const GameComponent = NODE_TYPE_TO_GAME[node.type ?? '']
           if (!GameComponent) return null
           return (
-            <div key={node.id} className="p-4">
+            <div
+              key={node.id}
+              className="p-4"
+            >
               <GameComponent
                 initialData={node.data}
                 previewOnly

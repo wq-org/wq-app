@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -29,6 +31,7 @@ export default function IfElseGameDialog({
   const [description, setDescription] = useState('')
   const [condition, setCondition] = useState('')
   const [correctPath, setCorrectPath] = useState<'A' | 'B'>('A')
+  const prevOpenRef = useRef(false)
 
   // Find incoming and outgoing nodes
   const { incomingNode, outgoingNodes } = useMemo(() => {
@@ -49,14 +52,25 @@ export default function IfElseGameDialog({
     return { incomingNode, outgoingNodes }
   }, [nodeId, nodes, edges])
 
+  // Sync from node data only when dialog opens (open: false -> true) so we show persisted values and don't overwrite in-progress edits
   useEffect(() => {
-    if (open && initialData) {
-      setTitle(initialData.title ?? initialData.label ?? '')
-      setDescription(initialData.description ?? '')
-      setCondition(initialData.condition ?? '')
-      setCorrectPath(initialData.correctPath ?? 'A')
+    const justOpened = open && !prevOpenRef.current
+    prevOpenRef.current = open
+
+    if (open) {
+      if (justOpened && initialData) {
+        setTitle(initialData.title ?? initialData.label ?? '')
+        setDescription(initialData.description ?? '')
+        setCondition(initialData.condition ?? '')
+        setCorrectPath(initialData.correctPath ?? 'A')
+      }
+    } else {
+      setTitle('')
+      setDescription('')
+      setCondition('')
+      setCorrectPath('A')
     }
-  }, [initialData, open])
+  }, [open, initialData])
 
   const handleSave = () => {
     onSave?.(
@@ -101,6 +115,29 @@ export default function IfElseGameDialog({
         <GameNodeLayout
           nodeId={nodeId}
           onDelete={onDelete ? handleDelete : undefined}
+          settingsContent={
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="ifelse-node-title">Title</Label>
+                <Input
+                  id="ifelse-node-title"
+                  placeholder="Enter node title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="ifelse-node-description">Description</Label>
+                <Textarea
+                  id="ifelse-node-description"
+                  placeholder="Enter node description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                />
+              </div>
+            </div>
+          }
           overviewContent={
             <div className="flex flex-col gap-4">
               <Separator />

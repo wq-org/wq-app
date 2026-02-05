@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import type { SettingsDrawerProps } from '../types/game-studio.types'
 
@@ -19,10 +21,13 @@ export default function SettingsDrawer({
   onSave,
   onRollback,
   onDelete,
+  isPublished = false,
+  onUnpublish,
 }: SettingsDrawerProps) {
   const [localTitle, setLocalTitle] = useState(initialTitle)
   const [localDescription, setLocalDescription] = useState(initialDescription)
   const [isSaving, setIsSaving] = useState(false)
+  const [isUnpublishing, setIsUnpublishing] = useState(false)
 
   // Update local state when props change (e.g., when drawer opens with new data)
   useEffect(() => {
@@ -71,6 +76,21 @@ export default function SettingsDrawer({
 
     onDelete()
     handleClose()
+  }
+
+  const handleUnpublishToggle = async (checked: boolean) => {
+    if (checked) return
+    if (!onUnpublish) return
+    setIsUnpublishing(true)
+    try {
+      await onUnpublish()
+      toast.success('Game unpublished')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to unpublish')
+    } finally {
+      setIsUnpublishing(false)
+    }
   }
 
   return (
@@ -125,6 +145,28 @@ export default function SettingsDrawer({
               placeholder="Enter project description"
               rows={4}
             />
+          </div>
+
+          {/* Publish status */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Publish status</Label>
+            <div className="flex items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">
+                  {isPublished ? 'Published' : 'Draft'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isPublished
+                    ? 'Students can play this game. Turn off to unpublish and hide it from the list.'
+                    : 'Use the Publish button in the toolbar to publish this game for students.'}
+                </p>
+              </div>
+              <Switch
+                checked={isPublished}
+                onCheckedChange={handleUnpublishToggle}
+                disabled={!isPublished || isUnpublishing}
+              />
+            </div>
           </div>
 
           {/* Version Badge */}

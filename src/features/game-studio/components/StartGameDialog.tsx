@@ -29,7 +29,6 @@ export default function StartGameDialog({
   open,
   onOpenChange,
   onSave,
-  nodeId,
   initialData,
 }: StartGameDialogProps) {
   const [title, setTitle] = useState('')

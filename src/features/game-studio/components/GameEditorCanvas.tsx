@@ -38,7 +38,12 @@ import PublishDrawer from './PublishDrawer'
 import { DEFAULT_PARAGRAPH, MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
 import type { GameNodeData } from '../types/game-studio.types'
 import { useUser } from '@/contexts/user'
-import { getGameForStudio, updateGameForStudio, publishGame } from '../api/gameStudioApi'
+import {
+  getGameForStudio,
+  updateGameForStudio,
+  publishGame,
+  unpublishGame,
+} from '../api/gameStudioApi'
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { deleteFile } from '@/features/files/api/filesApi'
@@ -93,6 +98,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null)
   const [gameTitle, setGameTitle] = useState<string>('General')
   const [projectVersion, setProjectVersion] = useState<number>(1)
+  const [isPublished, setIsPublished] = useState(false)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false)
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
@@ -118,6 +124,9 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     setLoadState('loading')
     getGameForStudio(projectId)
       .then((game) => {
+        if (game) {
+          setIsPublished(game.status === 'published')
+        }
         if (!game?.game_config?.nodes?.length) {
           setLoadState('loaded')
           return
@@ -493,6 +502,34 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         return
       }
 
+      // Prevent If/else node from connecting to End node
+      if (sourceNode.type === 'gameIfElse' && targetNode.type === 'gameEnd') {
+        toast.error('Cannot connect If/else node to End node')
+        return
+      }
+
+      // If/else: max 2 outgoing edges, one per handle (right-top, right-bottom)
+      if (sourceNode.type === 'gameIfElse') {
+        const existingIfElseEdges = edges.filter((e) => e.source === params.source)
+        if (existingIfElseEdges.length >= 2) {
+          toast.error('If/else node can only have 2 outgoing connections (one per branch)')
+          return
+        }
+        const sourceHandle = params.sourceHandle ?? ''
+        if (
+          sourceHandle &&
+          existingIfElseEdges.some((e) => (e.sourceHandle ?? '') === sourceHandle)
+        ) {
+          toast.error('This branch already has a connection')
+          return
+        }
+        // Assign handle if not provided (e.g. drag from node body)
+        if (!params.sourceHandle) {
+          params.sourceHandle =
+            existingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom'
+        }
+      }
+
       setEdges((prevEdges) => {
         let updatedEdges = [...prevEdges]
 
@@ -500,26 +537,6 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         const singleOutgoingTypes = ['gameStart', 'gameParagraph', 'gameImageTerms', 'gameImagePin']
         if (singleOutgoingTypes.includes(sourceNode.type || '')) {
           updatedEdges = updatedEdges.filter((e) => e.source !== params.source)
-        }
-
-        // For If/Else node, handle the two outputs
-        if (sourceNode.type === 'gameIfElse') {
-          const existingIfElseEdges = updatedEdges.filter((e) => e.source === params.source)
-          if (existingIfElseEdges.length >= 2) {
-            // If connecting to same target, replace that specific edge
-            const existingToSameTarget = existingIfElseEdges.find((e) => e.target === params.target)
-            if (existingToSameTarget) {
-              updatedEdges = updatedEdges.filter((e) => e.id !== existingToSameTarget.id)
-            } else {
-              // If both handles are used, replace the first one
-              updatedEdges = updatedEdges.filter((e) => e.id !== existingIfElseEdges[0].id)
-            }
-          }
-
-          // Use handle ID to distinguish between the two outputs
-          const remainingIfElseEdges = updatedEdges.filter((e) => e.source === params.source)
-          const handleId = remainingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom'
-          params.sourceHandle = handleId
         }
 
         // For nodes that can only have one incoming connection (except End which can have up to 10)
@@ -557,7 +574,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         return newEdges
       })
     },
-    [nodes],
+    [nodes, edges],
   )
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -774,6 +791,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         game_config: gameConfig,
       })
       await publishGame(projectId)
+      setIsPublished(true)
     } catch (err) {
       console.error(err)
       throw err
@@ -836,6 +854,20 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [projectId, navigate])
 
+  const handleUnpublish = useCallback(async () => {
+    if (!projectId) {
+      toast.error('No project to unpublish')
+      return
+    }
+    try {
+      await unpublishGame(projectId)
+      setIsPublished(false)
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  }, [projectId])
+
   const handleStartSave = (data: { title: string; description: string }) => {
     const startNodeId = nodes.find((n) => n.type === 'gameStart')?.id
     if (!startNodeId) {
@@ -889,6 +921,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         return { ...node, data: nextData }
       }),
     )
+    pendingEndSavePersistRef.current = true
     toast.success('Node saved')
   }
 
@@ -1003,22 +1036,15 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }
 
   const handleIfElseDelete = () => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) => {
-        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId)
-        if (!nodeToDelete) return prevNodes
-
-        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId)
-
-        // Remove edges connected to deleted node
-        setEdges((prevEdges) =>
-          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
-        )
-        toast.success('If/Else node deleted')
-        return newNodes
-      })
-      setIsIfElseDialogOpen(false)
-    }
+    if (!selectedNodeId) return
+    const nodeIdToRemove = selectedNodeId
+    setEdges((prevEdges) =>
+      prevEdges.filter((e) => e.source !== nodeIdToRemove && e.target !== nodeIdToRemove),
+    )
+    setNodes((prevNodes) => prevNodes.filter((n) => n.id !== nodeIdToRemove))
+    toast.success('If/Else node deleted')
+    setIsIfElseDialogOpen(false)
+    setSelectedNodeId(null)
   }
 
   const handleGameNodeDelete = () => {
@@ -1240,6 +1266,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         onSave={handleSettingsSave}
         onRollback={handleSettingsRollback}
         onDelete={handleSettingsDelete}
+        isPublished={isPublished}
+        onUnpublish={handleUnpublish}
       />
       <PreviewDrawer
         open={isPreviewDrawerOpen}

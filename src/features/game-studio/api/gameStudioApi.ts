@@ -92,8 +92,8 @@ export async function updateGameForStudio(
 }
 
 /**
- * Publish a game: save latest state then set status to published.
- * Does not create a new version.
+ * Publish a game: set status to published. Caller must save the game first
+ * (e.g. updateGameForStudio) before calling. Does not create a new version.
  */
 export async function publishGame(gameId: string): Promise<GameForStudio> {
   const now = new Date().toISOString()
@@ -111,6 +111,30 @@ export async function publishGame(gameId: string): Promise<GameForStudio> {
 
   if (error) {
     console.error('Error publishing game:', error)
+    throw error
+  }
+
+  return data as GameForStudio
+}
+
+/**
+ * Unpublish a game: set status back to draft so it is hidden from students.
+ */
+export async function unpublishGame(gameId: string): Promise<GameForStudio> {
+  const { data, error } = await supabase
+    .from('games')
+    .update({
+      status: 'draft',
+      is_draft: true,
+      published_at: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', gameId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error unpublishing game:', error)
     throw error
   }
 

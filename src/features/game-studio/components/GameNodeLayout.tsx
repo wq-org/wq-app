@@ -12,6 +12,8 @@ interface GameNodeLayoutProps {
     onRemoveImage?: (path: string) => void | Promise<void>
   }>
   overviewContent?: React.ReactNode
+  /** When provided, rendered in the Settings tab instead of GameNodeSettings (so the parent can control title/description state for save). */
+  settingsContent?: React.ReactNode
   initialData?: unknown
   onDelete?: () => void
   onRemoveImage?: (path: string) => void | Promise<void>
@@ -25,6 +27,7 @@ export default function GameNodeLayout({
   nodeId,
   gameComponent: GameComponent,
   overviewContent,
+  settingsContent,
   initialData,
   points,
   onPointsChange,
@@ -90,7 +93,7 @@ export default function GameNodeLayout({
         )}
         {!hideSettingsTab && activeTab === 'settings' && (
           <div className="flex flex-col gap-4">
-            <GameNodeSettings nodeId={nodeId} />
+            {settingsContent ?? <GameNodeSettings nodeId={nodeId} />}
             {onDelete && (
               <div>
                 <p className="text-muted-foreground text-sm mb-3">

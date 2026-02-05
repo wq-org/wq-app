@@ -1,18 +1,31 @@
-import { useState, Children } from 'react'
+import { useState, Children, useEffect } from 'react'
+import { MoveLeft, MoveRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface ContainerSliderProps {
   children: React.ReactNode
   className?: string
   /** When true, the slider grows to fill remaining height in a flex container. */
   fillHeight?: boolean
+  /** Called when the current slide index changes (e.g. for animating Start/End slides). */
+  onIndexChange?: (index: number) => void
 }
 
-export function ContainerSlider({ children, className, fillHeight }: ContainerSliderProps) {
+export function ContainerSlider({
+  children,
+  className,
+  fillHeight,
+  onIndexChange,
+}: ContainerSliderProps) {
   const slides = Children.toArray(children)
   const [current, setCurrent] = useState(0)
   const count = slides.length
   const index = count > 0 ? Math.min(current, count - 1) : 0
+
+  useEffect(() => {
+    onIndexChange?.(index)
+  }, [index, onIndexChange])
 
   const scrollTo = (i: number) => {
     setCurrent(Math.max(0, Math.min(i, count - 1)))
@@ -40,7 +53,9 @@ export function ContainerSlider({ children, className, fillHeight }: ContainerSl
             className={cn(
               'absolute inset-0 transition-opacity duration-500 overflow-auto',
               fillHeight && 'flex flex-col min-h-0',
-              i === index ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none',
+              i === index
+                ? 'opacity-100 z-10 pointer-events-auto'
+                : 'opacity-0 z-0 pointer-events-none',
             )}
           >
             {slide}
@@ -50,6 +65,17 @@ export function ContainerSlider({ children, className, fillHeight }: ContainerSl
 
       {count > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            onClick={() => scrollTo(index - 1)}
+            disabled={index <= 0}
+            aria-label="Previous slide"
+          >
+            <MoveLeft className="h-4 w-4" />
+          </Button>
           {slides.map((_, i) => (
             <button
               key={i}
@@ -65,6 +91,17 @@ export function ContainerSlider({ children, className, fillHeight }: ContainerSl
               aria-current={i === index ? 'true' : 'false'}
             />
           ))}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            onClick={() => scrollTo(index + 1)}
+            disabled={index >= count - 1}
+            aria-label="Next slide"
+          >
+            <MoveRight className="h-4 w-4" />
+          </Button>
         </div>
       )}
     </div>

@@ -107,12 +107,15 @@ export interface EndGameDialogProps {
 export interface IfElseGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave?: (data: {
-    title?: string
-    description?: string
-    condition?: string
-    correctPath?: 'A' | 'B'
-  }, nodeId?: string) => void
+  onSave?: (
+    data: {
+      title?: string
+      description?: string
+      condition?: string
+      correctPath?: 'A' | 'B'
+    },
+    nodeId?: string,
+  ) => void
   initialData?: {
     title?: string
     label?: string
@@ -132,12 +135,15 @@ export interface GameNodeDialogProps {
   nodeType?: string
   nodeId?: string
   initialData?: unknown
-  onSave?: (data: {
-    points?: number
-    paragraphGameData?: unknown
-    imageTermGameData?: unknown
-    imagePinGameData?: unknown
-  }, nodeId?: string) => void
+  onSave?: (
+    data: {
+      points?: number
+      paragraphGameData?: unknown
+      imageTermGameData?: unknown
+      imagePinGameData?: unknown
+    },
+    nodeId?: string,
+  ) => void
   onDelete?: () => void
   /** Upload image for game node; returns storage path and public URL or null. Used when saving image-term or image-pin nodes. */
   onUploadImage?: (
@@ -160,6 +166,10 @@ export interface SettingsDrawerProps {
   onSave?: (payload: { title: string; description: string }) => void | Promise<void>
   onRollback?: (versionId: string) => void | Promise<void>
   onDelete?: () => void
+  /** Whether the game is published (visible to students). */
+  isPublished?: boolean
+  /** Called when user unpublishes the game (switch off). */
+  onUnpublish?: () => void | Promise<void>
 }
 
 export interface PreviewDrawerProps {

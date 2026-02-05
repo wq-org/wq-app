@@ -15,6 +15,7 @@ import type { GameNodeDialogProps } from '../types/game-studio.types'
 import GameNodeLayout from './GameNodeLayout'
 import { GameEditorProvider } from '@/contexts/game-studio'
 import { logColor } from '@/lib/utils'
+import { toast } from 'sonner'
 
 // Map node types to game components and titles (components may accept initialData)
 const nodeTypeToGame: Record<
@@ -63,130 +64,158 @@ export default function GameNodeDialog({
 
   const GameComponent = gameConfig.component
 
+  const SAVE_ERROR_MESSAGE =
+    'Something went wrong. Please try again in a few seconds.'
+
   const handleSave = async () => {
-    const gameData = getGameDataRef.current?.()
+    try {
+      const gameData = getGameDataRef.current?.()
 
-    if (nodeType === 'gameParagraph' && gameData && typeof gameData === 'object') {
-      const data = gameData as {
-        title?: string
-        description?: string
-        paragraphText?: string
-        sentenceConfigs?: Array<{
-          sentenceNumber: number
-          sentenceText: string
-          options: Array<{
-            id: string
-            text: string
-            isCorrect: boolean
-            points?: number
-            pointsWhenWrong?: number
+      if (nodeType === 'gameParagraph' && gameData && typeof gameData === 'object') {
+        const data = gameData as {
+          title?: string
+          description?: string
+          paragraphText?: string
+          sentenceConfigs?: Array<{
+            sentenceNumber: number
+            sentenceText: string
+            options: Array<{
+              id: string
+              text: string
+              isCorrect: boolean
+              points?: number
+              pointsWhenWrong?: number
+            }>
+            pointsWhenCorrect?: number
+            feedbackWhenCorrect?: string
+            feedbackWhenWrong?: string
           }>
-          pointsWhenCorrect?: number
-          feedbackWhenCorrect?: string
-          feedbackWhenWrong?: string
-        }>
-        selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>
-      }
+          selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>
+        }
 
-      const gamesPayload = {
-        title: data.title ?? '',
-        description: data.description ?? '',
-        game_type: 'paragraph_line_select',
-        game_config: {
-          paragraphText: data.paragraphText ?? '',
-          questions: (data.sentenceConfigs ?? []).map((q) => ({
-            sentenceNumber: q.sentenceNumber,
-            sentenceText: q.sentenceText,
-            options: q.options.map((o) => ({
-              id: o.id,
-              text: o.text,
-              isCorrect: o.isCorrect,
-              points: o.points,
-              pointsWhenWrong: o.pointsWhenWrong,
+        const gamesPayload = {
+          title: data.title ?? '',
+          description: data.description ?? '',
+          game_type: 'paragraph_line_select',
+          game_config: {
+            paragraphText: data.paragraphText ?? '',
+            questions: (data.sentenceConfigs ?? []).map((q) => ({
+              sentenceNumber: q.sentenceNumber,
+              sentenceText: q.sentenceText,
+              options: q.options.map((o) => ({
+                id: o.id,
+                text: o.text,
+                isCorrect: o.isCorrect,
+                points: o.points,
+                pointsWhenWrong: o.pointsWhenWrong,
+              })),
+              pointsWhenCorrect: q.pointsWhenCorrect,
+              feedbackWhenCorrect: q.feedbackWhenCorrect,
+              feedbackWhenWrong: q.feedbackWhenWrong,
             })),
-            pointsWhenCorrect: q.pointsWhenCorrect,
-            feedbackWhenCorrect: q.feedbackWhenCorrect,
-            feedbackWhenWrong: q.feedbackWhenWrong,
-          })),
-        },
-        // Placeholders for DB fields
-        id: '(uuid)',
-        teacher_id: '(uuid)',
-        topic_id: '(uuid)',
-        status: 'draft',
-        version: 1,
+          },
+          // Placeholders for DB fields
+          id: '(uuid)',
+          teacher_id: '(uuid)',
+          topic_id: '(uuid)',
+          status: 'draft',
+          version: 1,
+        }
+
+        const gameSessionsPayload = {
+          game_id: '(uuid)',
+          student_id: '(uuid)',
+          score: 0,
+          completed: false,
+          session_data: {
+            selectedAnswers: data.selectedAnswers ?? [],
+          },
+          progress_data: null,
+        }
+
+        logColor('games', gamesPayload, 'db')
+        logColor('game_sessions', gameSessionsPayload, 'react')
+        onSave?.({ points, paragraphGameData: gameData }, nodeId)
+        onOpenChange(false)
+        return
       }
 
-      const gameSessionsPayload = {
-        game_id: '(uuid)',
-        student_id: '(uuid)',
-        score: 0,
-        completed: false,
-        session_data: {
-          selectedAnswers: data.selectedAnswers ?? [],
-        },
-        progress_data: null,
-      }
-
-      logColor('games', gamesPayload, 'db')
-      logColor('game_sessions', gameSessionsPayload, 'react')
-      onSave?.({ points, paragraphGameData: gameData }, nodeId)
-    } else if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
-      const data = gameData as {
-        imageFile?: File | null
-        imagePreview?: string | null
-        [key: string]: unknown
-      }
-      let imageTermGameData = { ...data }
-      if (data.imageFile && nodeId && onUploadImage) {
-        setSaving(true)
-        try {
-          const result = await onUploadImage(data.imageFile, nodeId)
-          if (result) {
+      if (nodeType === 'gameImageTerms' && gameData && typeof gameData === 'object') {
+        const data = gameData as {
+          imageFile?: File | null
+          imagePreview?: string | null
+          [key: string]: unknown
+        }
+        let imageTermGameData = { ...data }
+        if (data.imageFile && nodeId && onUploadImage) {
+          setSaving(true)
+          try {
+            const result = await onUploadImage(data.imageFile, nodeId)
+            if (!result) {
+              toast.error(SAVE_ERROR_MESSAGE)
+              return
+            }
             imageTermGameData = {
               ...data,
               imagePreview: result.publicUrl,
               filepath: result.path,
             }
+            delete imageTermGameData.imageFile
+          } catch {
+            toast.error(SAVE_ERROR_MESSAGE)
+            return
+          } finally {
+            setSaving(false)
           }
+        } else if (data.imageFile) {
           delete imageTermGameData.imageFile
-        } finally {
-          setSaving(false)
         }
-      } else if (data.imageFile) {
-        delete imageTermGameData.imageFile
+        onSave?.({ points, imageTermGameData }, nodeId)
+        onOpenChange(false)
+        return
       }
-      onSave?.({ points, imageTermGameData }, nodeId)
-    } else if (nodeType === 'gameImagePin' && gameData && typeof gameData === 'object') {
-      const data = gameData as {
-        imageFile?: File | null
-        imagePreview?: string | null
-        [key: string]: unknown
-      }
-      let imagePinGameData = { ...data }
-      if (data.imageFile && nodeId && onUploadImage) {
-        setSaving(true)
-        try {
-          const result = await onUploadImage(data.imageFile, nodeId)
-          if (result) {
+
+      if (nodeType === 'gameImagePin' && gameData && typeof gameData === 'object') {
+        const data = gameData as {
+          imageFile?: File | null
+          imagePreview?: string | null
+          [key: string]: unknown
+        }
+        let imagePinGameData = { ...data }
+        if (data.imageFile && nodeId && onUploadImage) {
+          setSaving(true)
+          try {
+            const result = await onUploadImage(data.imageFile, nodeId)
+            if (!result) {
+              toast.error(SAVE_ERROR_MESSAGE)
+              return
+            }
             imagePinGameData = {
               ...data,
               imagePreview: result.publicUrl,
               filepath: result.path,
             }
+            delete imagePinGameData.imageFile
+          } catch {
+            toast.error(SAVE_ERROR_MESSAGE)
+            return
+          } finally {
+            setSaving(false)
           }
+        } else if (data.imageFile) {
           delete imagePinGameData.imageFile
-        } finally {
-          setSaving(false)
         }
-      } else if (data.imageFile) {
-        delete imagePinGameData.imageFile
+        onSave?.({ points, imagePinGameData }, nodeId)
+        onOpenChange(false)
+        return
       }
-      onSave?.({ points, imagePinGameData }, nodeId)
-    } else {
+
       onSave?.({ points }, nodeId)
+      onOpenChange(false)
+    } catch {
+      toast.error(SAVE_ERROR_MESSAGE)
+      setSaving(false)
     }
-    onOpenChange(false)
   }
 
   const handleCancel = () => {

@@ -104,8 +104,7 @@ export default function ImageTermMatchGame({
     initialData?.title,
     initialData?.description,
     initialData?.filepath,
-    initialData?.terms?.length ?? 0,
-    initialData?.terms?.map((t) => t.id).join(',') ?? '',
+    initialData?.terms,
   ])
 
   // Resolve storage path to blob URL when opening saved node or after gallery selection

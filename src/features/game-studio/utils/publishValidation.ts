@@ -59,8 +59,9 @@ export function getNodeValidationErrors(node: Node): string[] {
   }
 
   if (type === 'gameIfElse') {
-    const condition = (data?.condition ?? '') as string
-    if (!String(condition).trim()) errors.push('Missing condition')
+    // Branching is always defined: correctPath is 'A' or 'B' (default 'A'). If nothing is selected
+    // at runtime, the flow branches by default (e.g. to Node B). The condition field is optional
+    // descriptive text only; no validation required for publish.
     return errors
   }
 
