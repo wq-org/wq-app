@@ -44,6 +44,7 @@ function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined)
 export default function ImageTermMatchGame({
   initialData: initialDataProp,
   onDelete,
+  previewOnly,
 }: ImageTermMatchGameProps = {}) {
   const initialData = initialDataProp as ImageTermMatchGameData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -754,6 +755,7 @@ export default function ImageTermMatchGame({
       editorContent={editorContent}
       previewContent={previewContent}
       settingsContent={settingsContent}
+      previewOnly={previewOnly}
     />
   )
 }

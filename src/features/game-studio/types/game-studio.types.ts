@@ -165,6 +165,8 @@ export interface SettingsDrawerProps {
 export interface PreviewDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  nodes?: Node[]
+  edges?: Edge[]
 }
 
 export interface PublishDrawerProps {

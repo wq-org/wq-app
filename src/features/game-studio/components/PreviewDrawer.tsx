@@ -1,40 +1,29 @@
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import type { PreviewDrawerProps } from '../types/game-studio.types'
-import { Button } from '@/components/ui/button'
-import { X } from 'lucide-react'
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import { InfoIcon } from 'lucide-react'
+import { GameModus } from '@/features/games/components/GameModus'
+import { getOrderedPlayableNodes } from '../utils/flowOrder'
 
-export default function PreviewDrawer({ open, onOpenChange }: PreviewDrawerProps) {
+export default function PreviewDrawer({ open, onOpenChange, nodes = [], edges = [] }: PreviewDrawerProps) {
+  const playableNodes = getOrderedPlayableNodes(nodes, edges)
+
   return (
-    <Drawer
-      open={open}
-      onOpenChange={onOpenChange}
-      direction="right"
-    >
-      <DrawerContent className="w-screen! max-w-none! h-screen!">
-        <DrawerHeader>
-          <div className="flex items-center justify-between">
-            <DrawerTitle>Preview</DrawerTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
-        </DrawerHeader>
-        <div className="p-4 space-y-4">
-          <Alert className="bg-slate-100 border border-slate-200">
-            <InfoIcon className="text-slate-500" />
-            <AlertTitle className="text-slate-800 font-semibold">Game Simulation</AlertTitle>
-            <AlertDescription className="text-slate-700">
-              This is where you’ll preview and test how your game works for players.
-            </AlertDescription>
-          </Alert>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton
+        className="fixed top-[50%] left-[50%] z-50 w-[70vw]! max-w-none! h-[95vh]! max-h-[95vh]! -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4 flex flex-col gap-4 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
+      >
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pr-10">
+          <DialogTitle>Game Simulation</DialogTitle>
+        </DialogHeader>
+        <div className="overflow-auto flex-1 flex flex-col min-h-0 p-4 space-y-4">
+          <GameModus nodes={playableNodes} className="flex-1 min-h-0" />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   )
 }

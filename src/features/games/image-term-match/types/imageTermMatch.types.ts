@@ -18,6 +18,8 @@ export interface ImageTermMatchGameProps {
   onDelete?: () => void
   /** Called when user removes the image and it was stored at this path (so caller can delete from storage). */
   onRemoveImage?: (path: string) => void | Promise<void>
+  /** When true, only the playable preview content is rendered (no editor/settings tabs). */
+  previewOnly?: boolean
 }
 
 export interface ImageTermMatchGameData {

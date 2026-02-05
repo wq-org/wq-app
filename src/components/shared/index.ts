@@ -3,6 +3,7 @@ export { Navigation } from './navigation'
 
 // Container
 export { Container } from './container'
+export { ContainerSlider } from './container-slider'
 
 // Loaders
 export { DotWaveLoader } from './loaders'

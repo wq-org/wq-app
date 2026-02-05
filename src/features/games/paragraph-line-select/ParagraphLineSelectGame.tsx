@@ -57,6 +57,7 @@ function getQuestionMaxPoints(config: SentenceConfig): number {
 export default function ParagraphLineSelectGame({
   initialData: initialDataProp,
   onDelete,
+  previewOnly,
 }: ParagraphLineSelectGameProps = {}) {
   const initialData = initialDataProp as ParagraphGameInitialData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -1001,6 +1002,7 @@ export default function ParagraphLineSelectGame({
       editorContent={editorContent}
       previewContent={previewContent}
       settingsContent={settingsContent}
+      previewOnly={previewOnly}
     />
   )
 }

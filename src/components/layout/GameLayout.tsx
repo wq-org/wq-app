@@ -8,6 +8,7 @@ interface GameLayoutProps {
   editorContent?: React.ReactNode
   previewContent?: React.ReactNode
   settingsContent?: React.ReactNode
+  previewOnly?: boolean
 }
 type TabType = 'editor' | 'preview' | 'settings'
 
@@ -16,8 +17,13 @@ export default function GameLayout({
   editorContent,
   previewContent,
   settingsContent,
+  previewOnly = false,
 }: GameLayoutProps) {
   const [activeTab, setActiveTab] = useState<TabType>('editor')
+
+  if (previewOnly) {
+    return <Container className="flex flex-col gap-6 w-full">{previewContent}</Container>
+  }
 
   const tabs: TabItem[] = [
     { id: 'editor', icon: Edit, title: 'Editor' },

@@ -84,6 +84,8 @@ export interface ImagePinMarkGameProps {
   onDelete?: () => void
   /** Called when user removes the image and it was stored at this path (so caller can delete from storage). */
   onRemoveImage?: (path: string) => void | Promise<void>
+  /** When true, only the playable preview content is rendered (no editor/settings tabs). */
+  previewOnly?: boolean
 }
 
 type ImagePinVariant = 'default' | 'secondary' | 'correct' | 'wrong'
@@ -168,6 +170,7 @@ const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
 export default function ImagePinMarkGame({
   initialData: initialDataProp,
   onDelete,
+  previewOnly,
 }: ImagePinMarkGameProps = {}) {
   const initialData = initialDataProp as ImagePinMarkInitialData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -1029,6 +1032,7 @@ export default function ImagePinMarkGame({
       editorContent={editorContent}
       previewContent={previewContent}
       settingsContent={settingsContent}
+      previewOnly={previewOnly}
     />
   )
 }

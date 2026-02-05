@@ -1244,6 +1244,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       <PreviewDrawer
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
+        nodes={nodes}
+        edges={edges}
       />
       <PublishDrawer
         open={isPublishDrawerOpen}

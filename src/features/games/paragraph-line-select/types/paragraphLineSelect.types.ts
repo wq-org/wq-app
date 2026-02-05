@@ -46,4 +46,6 @@ export interface QuestionResult {
 export interface ParagraphLineSelectGameProps {
   initialData?: unknown
   onDelete?: () => void
+  /** When true, only the playable preview content is rendered (no editor/settings tabs). */
+  previewOnly?: boolean
 }
