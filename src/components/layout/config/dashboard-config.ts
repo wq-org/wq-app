@@ -26,6 +26,7 @@ const getTabLabel = (tabId: string): string => {
 const createTeacherTabs = (): DashboardTab[] => [
   { id: 'courses', label: getTabLabel('courses'), icon: Shapes },
   { id: 'files', label: getTabLabel('files'), icon: FolderOpen },
+  { id: 'games', label: getTabLabel('games'), icon: Gamepad2 },
   { id: 'students', label: getTabLabel('students'), icon: Users2 },
   { id: 'todos', label: getTabLabel('todos'), icon: LayoutList },
 ]

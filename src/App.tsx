@@ -19,6 +19,7 @@ import TeacherDashboard from './features/teacher/pages/dashboard'
 import TeacherSettings from './features/teacher/pages/settings'
 import GameStudio from './features/teacher/pages/game-studio'
 import Course from './features/teacher/pages/course'
+import PlayGamePage from './features/game-play/pages/PlayGamePage'
 import { Error404 } from './components'
 import Lesson from './features/lessons/pages/lesson'
 import Onboarding from './features/onboarding/pages/onboarding'
@@ -194,6 +195,21 @@ function App() {
                         to="/teacher/game-studio"
                         replace
                       />
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="play/:gameId"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <AppWrapper
+                        role="teacher"
+                        className="flex flex-col h-screen"
+                      >
+                        <PlayGamePage />
+                      </AppWrapper>
                     </RequireOnboarding>
                   </RequireAuth>
                 }

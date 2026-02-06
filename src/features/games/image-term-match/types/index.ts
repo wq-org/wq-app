@@ -20,6 +20,12 @@ export interface ImageTermMatchGameProps {
   onRemoveImage?: (path: string) => void | Promise<void>
   /** When true, only the playable preview content is rendered (no editor/settings tabs). */
   previewOnly?: boolean
+  /** When true, game is played for real (no alert, no correct/incorrect icons on options). */
+  playMode?: boolean
+  /** Called when user clicks Check with (correct, wrong, score). Used in game-play to aggregate stats. */
+  onResultsRevealed?: (correct: number, wrong: number, score: number) => void
+  /** When true and results are revealed, user cannot change selection (play mode). */
+  lockSelectionAfterReveal?: boolean
 }
 
 export interface ImageTermMatchGameData {

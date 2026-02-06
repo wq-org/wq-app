@@ -53,6 +53,9 @@ export default function ParagraphLineSelectGame({
   initialData: initialDataProp,
   onDelete,
   previewOnly,
+  playMode,
+  onResultsRevealed,
+  lockSelectionAfterReveal = false,
 }: ParagraphLineSelectGameProps = {}) {
   const initialData = initialDataProp as ParagraphGameInitialData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -275,6 +278,7 @@ export default function ParagraphLineSelectGame({
 
   // Handle answer selection in preview (toggle: same option again deselects)
   const handleAnswerSelect = (sentenceNumber: number, optionId: string) => {
+    if (lockSelectionAfterReveal && resultsRevealed) return
     const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
     const multi = config ? hasMultipleCorrectOptions(config) : false
     setSelectedAnswers((prev) => {
@@ -311,6 +315,13 @@ export default function ParagraphLineSelectGame({
   }
 
   const handleCheckAnswers = () => {
+    const { totalEarned, totalMax } = computeParagraphResults(
+      sentenceConfigs,
+      getSelectedIdsForScoring,
+    )
+    const correct = totalMax > 0 && totalEarned === totalMax ? 1 : 0
+    const wrong = 1 - correct
+    onResultsRevealed?.(correct, wrong, totalEarned)
     setResultsRevealed(true)
   }
 
@@ -797,7 +808,7 @@ export default function ParagraphLineSelectGame({
         title={title}
         description={description}
       />
-      <GamePreviewAlert />
+      {previewOnly && !playMode && <GamePreviewAlert />}
       <Card>
         <CardContent className="p-6">
           <div className="relative">
@@ -827,7 +838,11 @@ export default function ParagraphLineSelectGame({
                       <Text
                         as="span"
                         variant="small"
-                        className={`relative inline transition-all duration-200 cursor-pointer ${
+                        className={`relative inline transition-all duration-200 ${
+                          lockSelectionAfterReveal && resultsRevealed
+                            ? 'cursor-default'
+                            : 'cursor-pointer'
+                        } ${
                           isHovered
                             ? 'opacity-100 scale-[1.02]'
                             : hoveredIndex !== null
@@ -837,6 +852,7 @@ export default function ParagraphLineSelectGame({
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                         onClick={() => {
+                          if (lockSelectionAfterReveal && resultsRevealed) return
                           if (config && config.options.length > 0) {
                             setOpenPopoverIndex(index)
                           }
@@ -875,11 +891,12 @@ export default function ParagraphLineSelectGame({
                                     : 'bg-white border border-gray-300 hover:bg-gray-50'
                                 }`}
                               >
-                                {option.isCorrect ? (
-                                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                                ) : (
-                                  <X className="w-4 h-4 shrink-0" />
-                                )}
+                                {previewOnly &&
+                                  (option.isCorrect ? (
+                                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                                  ) : (
+                                    <X className="w-4 h-4 shrink-0" />
+                                  ))}
                                 <Text
                                   as="span"
                                   variant="small"
@@ -960,6 +977,7 @@ export default function ParagraphLineSelectGame({
       previewContent={previewContent}
       settingsContent={settingsContent}
       previewOnly={previewOnly}
+      playMode={playMode}
     />
   )
 }

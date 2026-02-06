@@ -1,10 +1,11 @@
 import { useState, Children, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { MoveLeft, MoveRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 interface ContainerSliderProps {
-  children: React.ReactNode
+  children: ReactNode
   className?: string
   /** When true, the slider grows to fill remaining height in a flex container. */
   fillHeight?: boolean

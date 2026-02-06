@@ -6,6 +6,7 @@ import TableView from '@/features/files/components/FilesTableView'
 import { useState, useEffect, useCallback } from 'react'
 import { StudentCardList } from '@/features/student'
 import { EmptyCourseView } from '@/features/courses'
+import { GamePlayList } from '@/features/game-play'
 import { useUser } from '@/contexts/user'
 import { useCourse } from '@/contexts/course'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
@@ -183,6 +184,7 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
+        {selectedTab === 'games' && <GamePlayList />}
         {selectedTab === 'students' && <StudentCardList students={[]} />}
       </DashboardLayout>
 
