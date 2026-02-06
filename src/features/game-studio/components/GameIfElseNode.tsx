@@ -2,6 +2,7 @@ import { Handle, Position } from '@xyflow/react'
 import { GitBranch } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { GameIfElseNodeProps } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 const MAX_LABEL_LENGTH = 24
 
@@ -30,12 +31,12 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
       <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
         <Tooltip>
           <TooltipTrigger asChild>
-            <span
+            <Text as="span" variant="small"
               className="text-gray-900 font-medium truncate block"
               title={fullLabel}
             >
               {displayLabel}
-            </span>
+            </Text>
           </TooltipTrigger>
           <TooltipContent
             side="top"
@@ -47,7 +48,7 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
         {data?.condition && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-xs text-gray-500 truncate block">{data.condition}</span>
+              <Text as="span" variant="small" className="text-xs text-gray-500 truncate block">{data.condition}</Text>
             </TooltipTrigger>
             <TooltipContent
               side="top"

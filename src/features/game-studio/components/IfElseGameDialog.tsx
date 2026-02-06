@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { Text } from '@/components/ui/text'
 import {
   Dialog,
   DialogContent,
@@ -139,9 +140,9 @@ export default function IfElseGameDialog({
               </div>
               {onDelete && (
                 <div>
-                  <p className="text-muted-foreground text-sm mb-3">
+                  <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
                     Hold the button below for 3 seconds to delete this node.
-                  </p>
+                  </Text>
                   <HoldToDeleteButton
                     onDelete={handleDelete}
                     holdDuration={3000}
@@ -163,7 +164,7 @@ export default function IfElseGameDialog({
                       )}
                     </Badge>
                   ) : (
-                    <span className="text-sm text-muted-foreground">No incoming node</span>
+                    <Text as="span" variant="small" className="text-sm text-muted-foreground">No incoming node</Text>
                   )}
                 </div>
               </div>
@@ -191,7 +192,7 @@ export default function IfElseGameDialog({
                       )
                     })
                   ) : (
-                    <span className="text-sm text-muted-foreground">No outgoing nodes</span>
+                    <Text as="span" variant="small" className="text-sm text-muted-foreground">No outgoing nodes</Text>
                   )}
                 </div>
               </div>
@@ -205,7 +206,7 @@ export default function IfElseGameDialog({
                     checked={correctPath === 'A'}
                     onCheckedChange={(checked) => setCorrectPath(checked ? 'A' : 'B')}
                   />
-                  <span className="text-sm">{correctPath === 'A' ? 'Node A' : 'Node B'}</span>
+                  <Text as="span" variant="small" className="text-sm">{correctPath === 'A' ? 'Node A' : 'Node B'}</Text>
                 </div>
               </div>
             </div>

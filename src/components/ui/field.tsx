@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { Text } from '@/components/ui/text'
 
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
@@ -129,7 +130,7 @@ function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
 
 function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
-    <p
+    <Text as="p" variant="body"
       data-slot="field-description"
       className={cn(
         'text-muted-foreground text-sm leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance',
@@ -161,12 +162,12 @@ function FieldSeparator({
     >
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
-        <span
+        <Text as="span" variant="small"
           className="bg-background text-muted-foreground relative mx-auto block w-fit px-2"
           data-slot="field-separator-content"
         >
           {children}
-        </span>
+        </Text>
       )}
     </div>
   )

@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 interface ImageUploadProps {
   value?: string // Can be URL or data URL
@@ -183,9 +184,9 @@ export default function ImageUpload({
               <Upload className="w-6 h-6 text-primary" />
             </div>
             <div className="text-center space-y-1">
-              <p className="text-sm text-gray-600 font-medium">Drag & drop an image here</p>
-              <p className="text-xs text-gray-400">or click to browse</p>
-              <p className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP. Max {maxSizeMB}MB</p>
+              <Text as="p" variant="body" className="text-sm text-gray-600 font-medium">Drag & drop an image here</Text>
+              <Text as="p" variant="body" className="text-xs text-gray-400">or click to browse</Text>
+              <Text as="p" variant="body" className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP. Max {maxSizeMB}MB</Text>
             </div>
           </div>
         </div>
@@ -195,7 +196,7 @@ export default function ImageUpload({
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
           <div className="flex-1 h-px bg-gray-200"></div>
-          <span className="text-xs text-gray-400 px-2">OR</span>
+          <Text as="span" variant="small" className="text-xs text-gray-400 px-2">OR</Text>
           <div className="flex-1 h-px bg-gray-200"></div>
         </div>
         <div className="flex gap-2">

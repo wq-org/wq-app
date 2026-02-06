@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import ImageUpload from '@/components/ui/image-upload'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
 
 interface SocialLinks {
   linkedin?: string
@@ -110,9 +111,9 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
       >
         <CardHeader className="pb-4">
           <CardTitle className="text-2xl font-semibold text-gray-900">Create Institution</CardTitle>
-          <p className="text-sm text-gray-500 mt-2 font-normal">
+          <Text as="p" variant="body" className="text-sm text-gray-500 mt-2 font-normal">
             Add a new institution to the system.
-          </p>
+          </Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-6">
@@ -121,7 +122,7 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
               htmlFor="institution-name"
               className="font-normal text-gray-700"
             >
-              Institution Name <span className="text-red-500">*</span>
+              Institution Name <Text as="span" variant="small" className="text-red-500">*</Text>
             </Label>
             <Input
               id="institution-name"
@@ -138,7 +139,7 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
               htmlFor="institution-description"
               className="font-normal text-gray-700"
             >
-              Description <span className="text-red-500">*</span>
+              Description <Text as="span" variant="small" className="text-red-500">*</Text>
             </Label>
             <Textarea
               id="institution-description"
@@ -156,7 +157,7 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
               htmlFor="institution-address"
               className="font-normal text-gray-700"
             >
-              Address <span className="text-red-500">*</span>
+              Address <Text as="span" variant="small" className="text-red-500">*</Text>
             </Label>
             <Input
               id="institution-address"
@@ -249,9 +250,9 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
               accept="image/*"
               maxSizeMB={20}
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <Text as="p" variant="body" className="text-xs text-gray-400 mt-1">
               Optional: Upload an image or enter an image URL
-            </p>
+            </Text>
           </div>
         </CardContent>
 

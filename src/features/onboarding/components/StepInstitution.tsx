@@ -8,6 +8,7 @@ import EmptyInstitutionView from './EmptyInstitutionView'
 import Spinner from '@/components/ui/spinner'
 import { fetchInstitutions } from '../api/onboardingApi'
 import type { StepInstitutionProps, Institution } from '../types/onboarding.types'
+import { Text } from '@/components/ui/text'
 
 export default function StepInstitution({ onNext, onBack, initialData }: StepInstitutionProps) {
   const [searchTerm, setSearchTerm] = useState('')
@@ -66,10 +67,10 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
     return (
       <div className="flex flex-col gap-8">
         <div className="text-center">
-          <h2 className="text-3xl font-light mb-2">Follow Institutions</h2>
-          <p className="text-muted-foreground text-sm">
+          <Text as="h2" variant="h2" className="text-3xl font-light mb-2">Follow Institutions</Text>
+          <Text as="p" variant="body" className="text-muted-foreground text-sm">
             Select institutions to follow and get all updates
-          </p>
+          </Text>
         </div>
         <EmptyInstitutionView />
         <div className="flex justify-between gap-4 py-11">
@@ -96,10 +97,10 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
   return (
     <div className="flex flex-col gap-8">
       <div className="text-center">
-        <h2 className="text-3xl font-light mb-2">Follow Institutions</h2>
-        <p className="text-muted-foreground text-sm">
+        <Text as="h2" variant="h2" className="text-3xl font-light mb-2">Follow Institutions</Text>
+        <Text as="p" variant="body" className="text-muted-foreground text-sm">
           Select institutions to follow and get all updates
-        </p>
+        </Text>
       </div>
 
       {/* Search Input */}
@@ -164,10 +165,10 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                   {institution.email && (
-                    <p className="text-xs text-muted-foreground">✉️ {institution.email}</p>
+                    <Text as="p" variant="body" className="text-xs text-muted-foreground">✉️ {institution.email}</Text>
                   )}
                   {institution.website && (
-                    <p className="text-xs text-muted-foreground">🌐 {institution.website}</p>
+                    <Text as="p" variant="body" className="text-xs text-muted-foreground">🌐 {institution.website}</Text>
                   )}
                 </CardContent>
               </Card>

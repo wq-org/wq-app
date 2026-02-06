@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import { Trash2, Loader2 } from 'lucide-react'
 import Spinner from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
 
 interface CourseSettingsProps {
   courseId: string
@@ -121,8 +122,8 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
   return (
     <div className="flex flex-col gap-6 pb-12">
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold">Course Settings</h2>
-        <p className="text-muted-foreground text-sm">Manage your course details and settings</p>
+        <Text as="h2" variant="h2" className="text-2xl font-semibold">Course Settings</Text>
+        <Text as="p" variant="body" className="text-muted-foreground text-sm">Manage your course details and settings</Text>
       </div>
 
       <div className="flex flex-col gap-6">
@@ -161,7 +162,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             >
               Published
             </Label>
-            <p className="text-sm text-muted-foreground">Make this course visible to students</p>
+            <Text as="p" variant="body" className="text-sm text-muted-foreground">Make this course visible to students</Text>
           </div>
           <Switch
             id="published"

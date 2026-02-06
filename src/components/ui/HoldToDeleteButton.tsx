@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import type { VariantProps } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-variants'
+import { Text } from '@/components/ui/text'
 
 type HoldToDeleteVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
@@ -113,7 +114,7 @@ function HoldToDeleteButton({
       {...props}
     >
       {/* Progress fill background */}
-      <span
+      <Text as="span" variant="small"
         className={cn(
           'absolute inset-0 origin-left',
           progressClass,
@@ -125,15 +126,15 @@ function HoldToDeleteButton({
       />
 
       {/* Content: text and icon adapt color when holding */}
-      <span
+      <Text as="span" variant="small"
         className={cn(
           'relative z-10 flex items-center gap-2 transition-colors duration-150',
           isHolding && contentWhenHoldingClass,
         )}
       >
         {icon ?? <Trash2 className="size-5 shrink-0" />}
-        <span>{children ?? 'Hold to Delete'}</span>
-      </span>
+        <Text as="span" variant="small">{children ?? 'Hold to Delete'}</Text>
+      </Text>
     </Button>
   )
 }

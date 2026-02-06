@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 
 interface InstitutionLinks {
   website?: string
@@ -56,16 +57,16 @@ export default function Institution({
           <AvatarFallback>{'WQ'}</AvatarFallback>
         </Avatar>
         <div className="text-6xl w-fit">
-          <span className="pr-2">{titleText}</span>
-          <span className="text-gray-300">{lighterFirst}</span>
-          <span className="px-2">{lighterSecond}</span>
+          <Text as="span" variant="small" className="pr-2">{titleText}</Text>
+          <Text as="span" variant="small" className="text-gray-300">{lighterFirst}</Text>
+          <Text as="span" variant="small" className="px-2">{lighterSecond}</Text>
         </div>
         <Badge
           variant="secondary"
           className="flex py-2 px-3"
         >
           <MapPin className=" h-4 w-4" />
-          <p>{street}</p>
+          <Text as="p" variant="body">{street}</Text>
         </Badge>
 
         {availableLinks.length > 0 && (
@@ -101,11 +102,11 @@ export default function Institution({
       <Container className="flex flex-col gap-4 w-full border min-h-[400px] rounded-3xl">
         <div className="grid grid-cols-2 gap-8 w-full">
           <div className="flex flex-col gap-2">
-            <h3 className="text-xl text-center">Teachers</h3>
+            <Text as="h3" variant="h3" className="text-xl text-center">Teachers</Text>
             <div>{/* Teachers content can be passed as children or props */}</div>
           </div>
           <div className="flex flex-col gap-2">
-            <h3 className="text-xl text-center">Students</h3>
+            <Text as="h3" variant="h3" className="text-xl text-center">Students</Text>
             <div>{/* Students content can be passed as children or props */}</div>
           </div>
         </div>

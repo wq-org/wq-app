@@ -1,6 +1,7 @@
 import { AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
+import { Text } from '@/components/ui/text'
 
 /**
  * Fallback component displayed when user role is invalid or missing
@@ -18,9 +19,9 @@ export default function RestrictedCommandPalette() {
       <div className="flex items-center gap-3 rounded-full border bg-background/80 backdrop-blur shadow-xl px-6 py-3">
         <AlertCircle className="h-5 w-5 text-amber-500" />
         <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">
+          <Text as="span" variant="small" className="text-sm text-muted-foreground">
             No features available due to role error. Please consider logging in.
-          </span>
+          </Text>
           <Button
             variant="outline"
             size="sm"

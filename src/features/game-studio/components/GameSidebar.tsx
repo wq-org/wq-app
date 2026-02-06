@@ -3,6 +3,7 @@ import { Search, Square, StickyNote, Image as ImageIcon, MapPin, GitBranch } fro
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import type { SidebarItem } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 const nodeItems: SidebarItem[] = [
   {
@@ -90,9 +91,9 @@ export default function GameSidebar() {
           {/* Nodes Section */}
           {filteredNodeItems.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <Text as="h3" variant="h3" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Nodes
-              </h3>
+              </Text>
               <div className="space-y-1">
                 {filteredNodeItems.map((item) => {
                   const Icon = item.icon
@@ -119,7 +120,7 @@ export default function GameSidebar() {
                       >
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
-                      <span className="text-foreground">{item.label}</span>
+                      <Text as="span" variant="small" className="text-foreground">{item.label}</Text>
                     </div>
                   )
                 })}
@@ -130,9 +131,9 @@ export default function GameSidebar() {
           {/* Logic Section */}
           {filteredLogicItems.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <Text as="h3" variant="h3" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Logic
-              </h3>
+              </Text>
               <div className="space-y-1">
                 {filteredLogicItems.map((item) => {
                   const Icon = item.icon
@@ -155,7 +156,7 @@ export default function GameSidebar() {
                       >
                         <Icon className="h-4 w-4 flex-shrink-0" />
                       </div>
-                      <span className="text-foreground">{item.label}</span>
+                      <Text as="span" variant="small" className="text-foreground">{item.label}</Text>
                     </div>
                   )
                 })}

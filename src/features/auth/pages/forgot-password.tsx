@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { MoveLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { Text } from '@/components/ui/text'
 
 export default function ForgotPasswordPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()
@@ -46,15 +47,15 @@ export default function ForgotPasswordPage({ className }: React.ComponentProps<'
             type="button"
           >
             <MoveLeft />
-            <span className="sr-only">Back</span>
+            <Text as="span" variant="small" className="sr-only">Back</Text>
           </Button>
 
           <FieldGroup>
             <div className="flex flex-col items-center gap-1 text-center">
-              <h1 className="text-2xl font-light">Forgot Password</h1>
-              <p className="text-muted-foreground text-sm text-balance">
+              <Text as="h1" variant="h1" className="text-2xl font-light">Forgot Password</Text>
+              <Text as="p" variant="body" className="text-muted-foreground text-sm text-balance">
                 Enter your email address and we'll send you a reset link
-              </p>
+              </Text>
             </div>
 
             {!isSubmitted ? (

@@ -4,6 +4,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Text } from '@/components/ui/text'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -36,10 +37,10 @@ export default function ResetPasswordPage() {
     return (
       <div className="w-full container mx-auto max-w-lg h-screen flex items-center justify-center">
         <div className="border p-8 rounded-3xl shadow-lg text-center">
-          <h1 className="text-2xl font-light mb-4">Invalid Reset Link</h1>
-          <p className="text-muted-foreground mb-4">
+          <Text as="h1" variant="h1" className="text-2xl font-light mb-4">Invalid Reset Link</Text>
+          <Text as="p" variant="body" className="text-muted-foreground mb-4">
             This password reset link is invalid or has expired.
-          </p>
+          </Text>
           <Button onClick={() => navigate('/auth/forgot-password')}>Request New Link</Button>
         </div>
       </div>
@@ -55,10 +56,10 @@ export default function ResetPasswordPage() {
         <div className="border p-8 rounded-3xl shadow-lg">
           <FieldGroup>
             <div className="flex flex-col items-center gap-1 text-center">
-              <h1 className="text-2xl font-light">Reset Password</h1>
-              <p className="text-muted-foreground text-sm text-balance">
+              <Text as="h1" variant="h1" className="text-2xl font-light">Reset Password</Text>
+              <Text as="p" variant="body" className="text-muted-foreground text-sm text-balance">
                 Enter your new password below
-              </p>
+              </Text>
             </div>
 
             <Field>

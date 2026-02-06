@@ -14,6 +14,7 @@ import { EmptyLessonsView } from '@/features/lessons/components/EmptyLessonsView
 import type { Lesson } from '@/features/lessons/types/lesson.types'
 import { getLessonsByTopicId } from '@/features/lessons/api/lessonsApi'
 import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/courses/api/coursesApi'
+import { Text } from '@/components/ui/text'
 export default function Course() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -147,7 +148,7 @@ export default function Course() {
         </Button>
       </div>
 
-      <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl">Themen</p>
+      <Text as="p" variant="body" className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl">Themen</Text>
 
       {/* Empty state when no topics */}
       {topics.length === 0 ? (
@@ -172,10 +173,10 @@ export default function Course() {
       {selectedTopic && (
         <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <Text as="h2" variant="h2" className="text-2xl font-semibold text-gray-900">
               Lessons for: {selectedTopic.name}
-            </h2>
-            <p className="text-gray-500 mt-1">Explore the available lessons for this topic</p>
+            </Text>
+            <Text as="p" variant="body" className="text-gray-500 mt-1">Explore the available lessons for this topic</Text>
           </div>
 
           <div className="mb-6">

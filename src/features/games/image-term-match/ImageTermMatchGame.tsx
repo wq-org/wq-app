@@ -28,6 +28,7 @@ import { constrainDescription } from '@/lib/validations'
 import { useGameEditorContext } from '@/contexts/game-studio'
 import type { Term, ImageTermMatchGameProps, ImageTermMatchGameData } from './types'
 import { computeImageTermResults } from '@/features/games/image-term-match/utils/imageTermScoring'
+import { Text } from '@/components/ui/text'
 
 const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
 
@@ -347,7 +348,7 @@ export default function ImageTermMatchGame({
         <CardHeader>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base leading-none">Terms</h3>
+              <Text as="h3" variant="h3" className="font-bold text-base leading-none">Terms</Text>
               <div className="flex items-center gap-2">
                 <SlotsLeftLabel
                   current={terms.length}
@@ -365,7 +366,7 @@ export default function ImageTermMatchGame({
                 </Button>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <Text as="p" variant="body" className="text-sm text-muted-foreground">
               Add up to four multiple choice options. Use the{' '}
               <Circle
                 className="inline size-3.5 mx-0.5"
@@ -377,7 +378,7 @@ export default function ImageTermMatchGame({
                 aria-hidden
               />{' '}
               icon to mark which are correct, and set points for each correct option.
-            </p>
+            </Text>
           </div>
         </CardHeader>
         <CardContent>
@@ -552,7 +553,7 @@ export default function ImageTermMatchGame({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <p className="text-gray-500 text-sm">No image uploaded</p>
+                <Text as="p" variant="body" className="text-gray-500 text-sm">No image uploaded</Text>
               </div>
             )}
           </div>
@@ -603,16 +604,16 @@ export default function ImageTermMatchGame({
                       }
                     }}
                   >
-                    <span
+                    <Text as="span" variant="small"
                       className={`font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
                     >
                       {letter}.
-                    </span>
-                    <span
+                    </Text>
+                    <Text as="span" variant="small"
                       className={`flex-1 text-left ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
                     >
                       {term.value}
-                    </span>
+                    </Text>
                   </Button>
                 )
               })}
@@ -662,7 +663,7 @@ export default function ImageTermMatchGame({
 
       {!displayUrl && terms.every((term) => !term.value.trim()) && (
         <div className="text-center text-gray-400 py-12">
-          <p>Complete the editor to see the preview</p>
+          <Text as="p" variant="body">Complete the editor to see the preview</Text>
         </div>
       )}
     </div>
@@ -673,9 +674,9 @@ export default function ImageTermMatchGame({
     <div className="py-6 px-0 flex flex-col gap-6">
       {onDelete && (
         <div>
-          <p className="text-muted-foreground text-sm mb-3">
+          <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
             Hold the button below for 3 seconds to delete this node.
-          </p>
+          </Text>
           <HoldToDeleteButton
             onDelete={onDelete}
             holdDuration={3000}

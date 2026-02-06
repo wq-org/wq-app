@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+
+import { Text } from '@/components/ui/text'
+
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from '@/components/ui/field'
+} from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Presentation, GraduationCap } from 'lucide-react'
@@ -111,8 +114,8 @@ export default function SignUpPage({ className }: React.ComponentProps<'form'>) 
                 </div>
               )}
               <div className="flex flex-col items-center gap-1 text-center">
-                <h1 className="text-2xl font-light">{t('signUp.title')}</h1>
-                <p className="text-muted-foreground text-sm text-balance">{t('signUp.subtitle')}</p>
+                <Text as="h1" variant="h1" className="text-2xl font-light">{t('signUp.title')}</Text>
+                <Text as="p" variant="body" className="text-muted-foreground text-sm text-balance">{t('signUp.subtitle')}</Text>
               </div>
 
               <Field>

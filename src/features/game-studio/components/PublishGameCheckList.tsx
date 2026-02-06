@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import type { ValidationResult } from '../utils/publishValidation'
 import { getDisplayNameForNodeType } from '../utils/publishValidation'
 import { Separator } from '@/components/ui/separator'
+import { Text } from '@/components/ui/text'
 
 export interface PublishGameCheckListProps {
   validationResult: ValidationResult
@@ -51,7 +52,7 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
               className="flex items-center gap-2 flex-wrap text-sm text-slate-700"
             >
               <X className="size-4 text-slate-600 shrink-0" />
-              <span>{msg}</span>
+              <Text as="span" variant="small">{msg}</Text>
             </div>
           ))}
           {nodeItems.map((item) => {
@@ -72,7 +73,7 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
                   orientation="vertical"
                   className="h-4 bg-slate-300"
                 />
-                <span>{err}</span>
+                <Text as="span" variant="small">{err}</Text>
               </div>
             ))
           })}

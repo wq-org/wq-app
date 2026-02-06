@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import type { Chat } from '../types/chat.types'
+import { Text } from '@/components/ui/text'
 
 interface ChatSidebarProps {
   chats: Chat[]
@@ -43,7 +44,7 @@ export function ChatSidebar({ chats, selectedChatId, onChatSelect }: ChatSidebar
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{chat.user.name}</p>
+                    <Text as="p" variant="body" className="text-sm font-medium truncate">{chat.user.name}</Text>
                   </div>
                 </div>
               </button>

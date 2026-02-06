@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import type { VariantProps } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-variants'
+import { Text } from '@/components/ui/text'
 
 type HoldConfirmVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
@@ -91,7 +92,7 @@ function HoldConfirmButton({
       onTouchCancel={resetHold}
       {...props}
     >
-      <span
+      <Text as="span" variant="small"
         className={cn(
           'absolute inset-0 origin-left',
           CONFIRM_PROGRESS_CLASS,
@@ -102,15 +103,15 @@ function HoldConfirmButton({
         }}
       />
 
-      <span
+      <Text as="span" variant="small"
         className={cn(
           'relative z-10 flex items-center gap-2 transition-colors duration-150',
           isHolding && CONFIRM_CONTENT_HOLD_CLASS,
         )}
       >
         {icon ?? <Check className="size-5 shrink-0" />}
-        <span>{children ?? 'Hold to Confirm'}</span>
-      </span>
+        <Text as="span" variant="small">{children ?? 'Hold to Confirm'}</Text>
+      </Text>
     </Button>
   )
 }

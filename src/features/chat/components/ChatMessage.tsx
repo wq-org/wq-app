@@ -3,6 +3,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { MoreVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ChatMessage as ChatMessageType } from '../types/chat.types'
+import { Text } from '@/components/ui/text'
 
 interface ChatMessageProps {
   message: ChatMessageType
@@ -12,14 +13,14 @@ interface ChatMessageProps {
 export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
   return (
     <div className={cn('group flex items-start gap-3 mb-4', isOwnMessage && 'flex-row-reverse')}>
-      <span
+      <Text as="span" variant="small"
         className={cn(
           'text-xs text-muted-foreground shrink-0 w-16',
           isOwnMessage ? 'text-right' : 'text-left',
         )}
       >
         {message.timestamp}
-      </span>
+      </Text>
       <div className="flex items-start gap-2 flex-1 max-w-[70%]">
         <div className={cn('flex flex-col gap-1', isOwnMessage && 'items-end')}>
           <Badge

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 import {
   Stepper,
   StepperItem,
@@ -191,16 +192,16 @@ export default function FileStepperForm({
               </div>
             ) : (
               <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-xs text-gray-500">
+                <Text as="span" variant="small" className="text-xs text-gray-500">
                   {currentFile.file.name.split('.').pop()?.toUpperCase()}
-                </span>
+                </Text>
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{currentFile.file.name}</p>
-              <p className="text-xs text-gray-500">
+              <Text as="p" variant="body" className="text-sm font-medium text-gray-900 truncate">{currentFile.file.name}</Text>
+              <Text as="p" variant="body" className="text-xs text-gray-500">
                 {(currentFile.file.size / 1024 / 1024).toFixed(2)} MB
-              </p>
+              </Text>
             </div>
           </div>
 

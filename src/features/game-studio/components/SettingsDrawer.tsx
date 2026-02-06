@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import type { SettingsDrawerProps } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 export default function SettingsDrawer({
   open,
@@ -152,12 +153,12 @@ export default function SettingsDrawer({
             <Label className="text-sm font-medium">Publish status</Label>
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium">{isPublished ? 'Published' : 'Draft'}</p>
-                <p className="text-xs text-muted-foreground">
+                <Text as="p" variant="body" className="text-sm font-medium">{isPublished ? 'Published' : 'Draft'}</Text>
+                <Text as="p" variant="body" className="text-xs text-muted-foreground">
                   {isPublished
                     ? 'Students can play this game. Turn off to unpublish and hide it from the list.'
                     : 'Use the Publish button in the toolbar to publish this game for students.'}
-                </p>
+                </Text>
               </div>
               <Switch
                 checked={isPublished}
@@ -193,7 +194,7 @@ export default function SettingsDrawer({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No previous versions</p>
+              <Text as="p" variant="body" className="text-sm text-muted-foreground">No previous versions</Text>
             )}
           </div>
 

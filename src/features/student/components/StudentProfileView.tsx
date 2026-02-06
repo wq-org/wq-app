@@ -20,6 +20,7 @@ import { EmptyCourseView } from '@/features/courses'
 import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 // Modified CourseCard for profile view - shows "Join" instead of "View" and no published badge
 function ProfileCourseCard({
@@ -58,12 +59,12 @@ function ProfileCourseCard({
           <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
             <Tooltip>
               <TooltipTrigger asChild>
-                <h3 className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+                <Text as="h3" variant="h3" className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
                   {title}
-                </h3>
+                </Text>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="max-w-xs">{title}</p>
+                <Text as="p" variant="body" className="max-w-xs">{title}</Text>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -71,9 +72,9 @@ function ProfileCourseCard({
 
         {/* Description area */}
         <div className="flex flex-col gap-3">
-          <p className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
+          <Text as="p" variant="body" className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
             {description}
-          </p>
+          </Text>
           {/* Join Button */}
           <div className="flex items-center gap-2 mt-auto">
             <Button
@@ -83,7 +84,7 @@ function ProfileCourseCard({
               }}
               className="text-blue-500 hover:opacity-80 h-auto"
             >
-              <p>Join</p>
+              <Text as="p" variant="body">Join</Text>
               <UserPlus className="w-4 h-4" />
             </Button>
           </div>
@@ -264,7 +265,7 @@ const StudentProfileView = () => {
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">Student not found</p>
+        <Text as="p" variant="body" className="text-gray-500">Student not found</Text>
       </div>
     )
   }

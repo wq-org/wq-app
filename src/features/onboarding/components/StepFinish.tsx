@@ -12,6 +12,7 @@ import type { StepFinishProps } from '../types/onboarding.types'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 
 export default function StepFinish({
   onBack,
@@ -93,8 +94,8 @@ export default function StepFinish({
 
       <div className="flex flex-col gap-8">
         <div className="text-center">
-          <h2 className="text-3xl font-light mb-2">{t('finish.header.title')}</h2>
-          <p className="text-muted-foreground text-sm">{t('finish.header.subtitle')}</p>
+          <Text as="h2" variant="h2" className="text-3xl font-light mb-2">{t('finish.header.title')}</Text>
+          <Text as="p" variant="body" className="text-muted-foreground text-sm">{t('finish.header.subtitle')}</Text>
         </div>
 
         {/* Summary Card */}
@@ -112,9 +113,9 @@ export default function StepFinish({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-2xl">{accountData.displayName}</CardTitle>
-                  <span className="text-xl">{accountData.avatar.emoji}</span>
+                  <Text as="span" variant="small" className="text-xl">{accountData.avatar.emoji}</Text>
                 </div>
-                <p className="text-muted-foreground">@{accountData.username}</p>
+                <Text as="p" variant="body" className="text-muted-foreground">@{accountData.username}</Text>
               </div>
             </div>
           </CardHeader>
@@ -122,15 +123,15 @@ export default function StepFinish({
           <CardContent className="flex flex-col gap-6">
             {/* Description */}
             <div>
-              <h3 className="font-semibold mb-2">{t('finish.about.title')}</h3>
-              <p className="text-muted-foreground text-sm">{accountData.description}</p>
+              <Text as="h3" variant="h3" className="font-semibold mb-2">{t('finish.about.title')}</Text>
+              <Text as="p" variant="body" className="text-muted-foreground text-sm">{accountData.description}</Text>
             </div>
 
             <Separator />
 
             {/* Institutions */}
             <div>
-              <h3 className="font-semibold mb-3">Following Institutions ({institutions.length})</h3>
+              <Text as="h3" variant="h3" className="font-semibold mb-3">Following Institutions ({institutions.length})</Text>
               <div className="flex flex-wrap gap-2">
                 {institutions.map((institution) => (
                   <Badge
@@ -149,18 +150,18 @@ export default function StepFinish({
             {/* Account Details */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground mb-1">Username</p>
-                <p className="font-medium">@{accountData.username}</p>
+                <Text as="p" variant="body" className="text-muted-foreground mb-1">Username</Text>
+                <Text as="p" variant="body" className="font-medium">@{accountData.username}</Text>
               </div>
               <div>
-                <p className="text-muted-foreground mb-1">Display Name</p>
-                <p className="font-medium">{accountData.displayName}</p>
+                <Text as="p" variant="body" className="text-muted-foreground mb-1">Display Name</Text>
+                <Text as="p" variant="body" className="font-medium">{accountData.displayName}</Text>
               </div>
               <div className="col-span-2">
-                <p className="text-muted-foreground mb-1">Avatar</p>
-                <p className="font-medium">
+                <Text as="p" variant="body" className="text-muted-foreground mb-1">Avatar</Text>
+                <Text as="p" variant="body" className="font-medium">
                   {accountData.avatar.name} {accountData.avatar.emoji}
-                </p>
+                </Text>
               </div>
             </div>
           </CardContent>

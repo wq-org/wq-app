@@ -9,6 +9,7 @@ import { PreviewStartEndSlide } from './PreviewStartEndSlide'
 import { PreviewIfElseSlide } from './PreviewIfElseSlide'
 import type { Node, Edge } from '@xyflow/react'
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 function getTitleAndDescription(data: Record<string, unknown> | undefined): {
   title: string
@@ -78,7 +79,7 @@ export default function PreviewDrawer({
             <DialogTitle>Game Simulation</DialogTitle>
           </DialogHeader>
           <div className="flex flex-1 items-center justify-center p-4 text-muted-foreground">
-            <p>Add a Start node, game nodes, and an End node connected in a path to preview.</p>
+            <Text as="p" variant="body">Add a Start node, game nodes, and an End node connected in a path to preview.</Text>
           </div>
         </DialogContent>
       </Dialog>

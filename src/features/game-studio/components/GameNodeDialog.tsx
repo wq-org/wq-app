@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react'
+import { Text } from '@/components/ui/text'
 import {
   Dialog,
   DialogContent,
@@ -274,7 +275,7 @@ export default function GameNodeDialog({
               size="md"
               speed={1750}
             />
-            <p className="text-sm text-gray-500">Project Loading...</p>
+            <Text as="p" variant="body" className="text-sm text-gray-500">Project Loading...</Text>
           </div>
         )}
         <DialogFooter>

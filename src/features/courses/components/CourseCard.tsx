@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react'
 import { DEFAULT_COURSE_IMAGE } from '@/lib/constants'
 import type { CourseCardProps } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
+import { Text } from '@/components/ui/text'
 
 export default function CourseCard({
   id,
@@ -57,7 +58,7 @@ export default function CourseCard({
                 </CardTitle>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="max-w-xs">{title}</p>
+                <Text as="p" variant="body" className="max-w-xs">{title}</Text>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -75,9 +76,9 @@ export default function CourseCard({
               onClick={() => {
                 onView?.(id)
               }}
-              className="text-blue-500 hover:opacity-80 h-auto"
+              className="text-blue-500 border-0  hover:bg-blue-100 hover:text-blue-500 hover:duration-200 h-auto"
             >
-              <p>View</p>
+              <Text as="p" variant="body">View</Text>
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>

@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { ChatMessage } from './ChatMessage'
 import type { Chat, ChatMessage as ChatMessageType } from '../types/chat.types'
+import { Text } from '@/components/ui/text'
 
 interface ChatViewProps {
   chat: Chat | null
@@ -14,7 +15,7 @@ export function ChatView({ chat, messages, currentUserId }: ChatViewProps) {
   if (!chat) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
-        <p>Select a chat to start messaging</p>
+        <Text as="p" variant="body">Select a chat to start messaging</Text>
       </div>
     )
   }
@@ -37,8 +38,8 @@ export function ChatView({ chat, messages, currentUserId }: ChatViewProps) {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <p className="font-medium">{chat.user.name}</p>
-          <p className="text-sm text-muted-foreground">{chat.user.email}</p>
+          <Text as="p" variant="body" className="font-medium">{chat.user.name}</Text>
+          <Text as="p" variant="body" className="text-sm text-muted-foreground">{chat.user.email}</Text>
         </div>
         <Popover>
           <PopoverTrigger asChild>

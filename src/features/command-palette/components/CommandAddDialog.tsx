@@ -12,6 +12,7 @@ import { useGameStudioContext } from '@/contexts/game-studio'
 import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, StickyNote } from 'lucide-react'
 import type { AddType } from '../types/command-bar.types'
 import type { Roles } from '@/components/layout/config'
+import { Text } from '@/components/ui/text'
 
 // Constants for role arrays to minimize duplication
 const ADMIN_AND_TEACHER_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher']
@@ -166,7 +167,7 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
       <Card className="max-w-md mx-auto border-0 shadow-none">
         <CardHeader className="items-center p-0">
           <CardTitle className="text-xl text-gray-900">Add New</CardTitle>
-          <p className="text-sm text-gray-500 mt-2 font-normal">Choose what you want to create.</p>
+          <Text as="p" variant="body" className="text-sm text-gray-500 mt-2 font-normal">Choose what you want to create.</Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-3 w-full px-0 mt-6">
@@ -221,9 +222,9 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
               Add New {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}
             </CardTitle>
           </div>
-          <p className="text-sm text-gray-500 mt-2 font-normal">
+          <Text as="p" variant="body" className="text-sm text-gray-500 mt-2 font-normal">
             Create a new {selectedType} to get started.
-          </p>
+          </Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-8 w-full px-0">

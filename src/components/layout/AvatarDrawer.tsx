@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Edit2Icon, X } from 'lucide-react'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { Text } from '@/components/ui/text'
 import {
   Drawer,
   DrawerContent,
@@ -41,7 +42,7 @@ function AvatarOptionItem({ avatar, onSelect }: AvatarOptionItemProps) {
         />
         <AvatarFallback className="text-lg">{avatar.emoji}</AvatarFallback>
       </Avatar>
-      <span className="text-xs text-center">{avatar.name}</span>
+      <Text as="span" variant="small" className="text-xs text-center">{avatar.name}</Text>
     </button>
   )
 }

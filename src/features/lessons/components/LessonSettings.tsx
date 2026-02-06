@@ -11,6 +11,7 @@ import { ConfirmationDialog } from '@/components/shared'
 import { AlertTriangle } from 'lucide-react'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
+import { Text } from '@/components/ui/text'
 
 interface LessonSettingsProps {
   lessonId: string
@@ -117,12 +118,12 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
     <>
       <div className="flex flex-col gap-6 pb-12">
         <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold">
+          <Text as="h2" variant="h2" className="text-2xl font-semibold">
             {t('settings.title', { defaultValue: 'Lesson Settings' })}
-          </h2>
-          <p className="text-muted-foreground text-sm">
+          </Text>
+          <Text as="p" variant="body" className="text-muted-foreground text-sm">
             {t('settings.subtitle', { defaultValue: 'Manage your lesson details' })}
-          </p>
+          </Text>
         </div>
 
         <div className="flex flex-col gap-6">

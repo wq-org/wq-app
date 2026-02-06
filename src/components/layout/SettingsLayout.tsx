@@ -10,6 +10,7 @@ import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import type { Profile } from '@/contexts/user'
 import Spinner from '../ui/spinner'
 import AvatarDrawer from './AvatarDrawer'
+import { Text } from '@/components/ui/text'
 
 interface SettingsLayoutProps {
   children?: React.ReactNode
@@ -159,7 +160,7 @@ export default function SettingsLayout({
                   onChange={(e) => handleLinkedInChange(e.target.value)}
                   className={linkedInError ? 'border-red-500' : ''}
                 />
-                {linkedInError && <p className="text-sm text-red-500">{linkedInError}</p>}
+                {linkedInError && <Text as="p" variant="body" className="text-sm text-red-500">{linkedInError}</Text>}
               </div>
               <div className="w-full flex flex-col gap-3">
                 <Label htmlFor="description">About me</Label>

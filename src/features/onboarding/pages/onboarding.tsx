@@ -1,5 +1,6 @@
-import {
-  Stepper,
+
+import { Text } from '@/components/ui/text'
+import {  Stepper,
   StepperItem,
   StepperTrigger,
   StepperIndicator,
@@ -66,7 +67,7 @@ export default function Onboarding() {
           <StepperItem step={1}>
             <StepperTrigger onClick={() => step > 1 && setStep(1)}>
               <StepperIndicator>
-                {step > 1 ? <CheckIcon className="w-5 h-5" /> : <span>1</span>}
+                {step > 1 ? <CheckIcon className="w-5 h-5" /> : <Text as="span" variant="small">1</Text>}
               </StepperIndicator>
               <div>
                 <StepperTitle>Account</StepperTitle>
@@ -78,7 +79,7 @@ export default function Onboarding() {
           <StepperItem step={2}>
             <StepperTrigger onClick={() => step > 2 && setStep(2)}>
               <StepperIndicator>
-                {step > 2 ? <CheckIcon className="w-5 h-5" /> : <span>2</span>}
+                {step > 2 ? <CheckIcon className="w-5 h-5" /> : <Text as="span" variant="small">2</Text>}
               </StepperIndicator>
               <div>
                 <StepperTitle>Institution</StepperTitle>
@@ -90,7 +91,7 @@ export default function Onboarding() {
           <StepperItem step={3}>
             <StepperTrigger onClick={() => step > 3 && setStep(3)}>
               <StepperIndicator>
-                <span>3</span>
+                <Text as="span" variant="small">3</Text>
               </StepperIndicator>
               <div>
                 <StepperTitle>Finish</StepperTitle>

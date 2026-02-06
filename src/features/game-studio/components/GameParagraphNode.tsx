@@ -1,6 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { StickyNote } from 'lucide-react'
 import type { GameParagraphNodeProps } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 export default function GameParagraphNode({ data, selected }: GameParagraphNodeProps) {
   return (
@@ -18,7 +19,7 @@ export default function GameParagraphNode({ data, selected }: GameParagraphNodeP
       <div className="p-2 rounded-lg border border-blue-500/20 bg-blue-500/10 flex items-center justify-center">
         <StickyNote className="w-4 h-4 text-blue-500" />
       </div>
-      <span className="text-gray-900 font-medium">{data?.label || 'Paragraph'}</span>
+      <Text as="span" variant="small" className="text-gray-900 font-medium">{data?.label || 'Paragraph'}</Text>
       <Handle
         type="source"
         position={Position.Right}

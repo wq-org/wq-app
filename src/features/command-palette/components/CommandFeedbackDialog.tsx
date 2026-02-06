@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 import {
   Select,
   SelectTrigger,
@@ -50,10 +51,10 @@ export default function CommandFeedbackForm() {
       <Card className="w-full shadow-none border-0 px-0 py-0">
         <CardHeader className="pb-2">
           <div className="flex-1">
-            <h2 className="text-xl font-light leading-none">Send Feedback</h2>
-            <p className="text-sm text-muted-foreground mt-1 font-light">
+            <Text as="h2" variant="h2" className="text-xl font-light leading-none">Send Feedback</Text>
+            <Text as="p" variant="body" className="text-sm text-muted-foreground mt-1 font-light">
               Tell us what’s on your mind. We read every message.
-            </p>
+            </Text>
           </div>
         </CardHeader>
         <CardContent>

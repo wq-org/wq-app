@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
+import { Text } from '@/components/ui/text'
 
 export interface PreviewStartEndSlideProps {
   title: string
@@ -60,30 +61,30 @@ export function PreviewStartEndSlide({
       ref={containerRef}
       className="flex flex-col gap-4 p-6 justify-center min-h-full"
     >
-      {label && <p className="text-sm font-medium text-muted-foreground">{label}</p>}
+      {label && <Text as="p" variant="body" className="text-sm font-medium text-muted-foreground">{label}</Text>}
       {titleWords.length > 0 && (
-        <h2 className="text-xl font-semibold leading-tight">
+        <Text as="h2" variant="h2" className="text-xl font-semibold leading-tight">
           {titleWords.map((word, i) => (
-            <span
+            <Text as="span" variant="small"
               key={i}
               className="word inline"
             >
               {word}{' '}
-            </span>
+            </Text>
           ))}
-        </h2>
+        </Text>
       )}
       {descWords.length > 0 && (
-        <p className="text-muted-foreground text-sm leading-relaxed">
+        <Text as="p" variant="body" className="text-muted-foreground text-sm leading-relaxed">
           {descWords.map((word, i) => (
-            <span
+            <Text as="span" variant="small"
               key={i}
               className="word inline"
             >
               {word}{' '}
-            </span>
+            </Text>
           ))}
-        </p>
+        </Text>
       )}
     </div>
   )

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, Loader2 } from 'lucide-react'
 import { useLesson } from '@/contexts/lesson'
 import { Textarea } from '@/components/ui/textarea'
+import { Text } from '@/components/ui/text'
 
 interface CreateLessonFormProps {
   topicId?: string
