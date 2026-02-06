@@ -124,11 +124,11 @@ export default function GameResultTable({
               <TableCell className="whitespace-nowrap text-muted-foreground text-sm">
                 {row.earned}/{row.max}
               </TableCell>
-              <TableCell className="max-w-[240px] min-w-0 break-words whitespace-normal">
+              <TableCell className="max-w-60 min-w-0 wrap-break-word whitespace-normal">
                 <FeedbackDisplay
                   feedback={row.feedback}
                   variant={row.feedbackVariant}
-                  className="min-h-0 border-0 bg-transparent px-0 py-0 break-words"
+                  className="min-h-0 border-0 bg-transparent px-0 py-0 wrap-break-word"
                 />
               </TableCell>
             </TableRow>
