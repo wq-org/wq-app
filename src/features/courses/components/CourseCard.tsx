@@ -31,8 +31,8 @@ export default function CourseCard({
           className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
         />
         <Badge
-          variant="secondary"
-          className="absolute top-3 left-3 backdrop-blur-sm bg-white/80 dark:bg-black/80 border-white/20"
+          variant={is_published ? 'default' : 'secondary'}
+          className="absolute top-3 left-3 "
         >
           {is_published ? t('card.published') : t('card.unpublished')}
         </Badge>
@@ -76,13 +76,13 @@ export default function CourseCard({
             {description}
           </CardDescription>
           {/* Button */}
-          <div className="flex items-center gap-2 mt-auto">
+          <div className="flex items-center justify-end gap-2 mt-auto">
             <Button
               variant="ghost"
               onClick={() => {
                 onView?.(id)
               }}
-              className="text-blue-500 border-0  hover:bg-blue-100 hover:text-blue-500 hover:duration-200 h-auto"
+              className="text-blue-500 border-0  hover:bg-blue-100 hover:text-blue-500 hover:duration-200 "
             >
               <Text
                 as="p"

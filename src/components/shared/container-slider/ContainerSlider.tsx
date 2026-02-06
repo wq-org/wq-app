@@ -11,6 +11,8 @@ interface ContainerSliderProps {
   fillHeight?: boolean
   /** Called when the current slide index changes (e.g. for animating Start/End slides). */
   onIndexChange?: (index: number) => void
+  /** When true, show previous/next buttons on the left and right of the slide area (for play view). */
+  showSideArrows?: boolean
 }
 
 export function ContainerSlider({
@@ -18,6 +20,7 @@ export function ContainerSlider({
   className,
   fillHeight,
   onIndexChange,
+  showSideArrows = false,
 }: ContainerSliderProps) {
   const slides = Children.toArray(children)
   const [current, setCurrent] = useState(0)
@@ -34,6 +37,33 @@ export function ContainerSlider({
 
   if (count === 0) return null
 
+  const slideArea = (
+    <div
+      className={cn(
+        'relative overflow-hidden rounded-2xl flex-1 min-w-0 flex flex-col',
+        fillHeight ? 'min-h-0' : 'min-h-[400px]',
+      )}
+    >
+      {slides.map((slide, i) => (
+        <div
+          key={i}
+          className={cn(
+            'absolute inset-0 transition-opacity duration-500 overflow-auto',
+            fillHeight && 'flex flex-col min-h-0',
+            i === index
+              ? 'opacity-100 z-10 pointer-events-auto'
+              : 'opacity-0 z-0 pointer-events-none',
+          )}
+        >
+          {slide}
+        </div>
+      ))}
+    </div>
+  )
+
+  const sideArrowClass =
+    'shrink-0 rounded-full bg-background/80 shadow-md border border-gray-200 hover:bg-accent dark:border-gray-700 self-center'
+
   return (
     <div
       className={cn(
@@ -42,27 +72,60 @@ export function ContainerSlider({
         className,
       )}
     >
-      <div
-        className={cn(
-          'relative w-full overflow-hidden rounded-2xl',
-          fillHeight ? 'flex-1 min-h-0 flex flex-col' : 'min-h-[400px]',
-        )}
-      >
-        {slides.map((slide, i) => (
-          <div
-            key={i}
-            className={cn(
-              'absolute inset-0 transition-opacity duration-500 overflow-auto',
-              fillHeight && 'flex flex-col min-h-0',
-              i === index
-                ? 'opacity-100 z-10 pointer-events-auto'
-                : 'opacity-0 z-0 pointer-events-none',
-            )}
+      {showSideArrows && count > 1 ? (
+        <div
+          className={cn(
+            'flex items-stretch gap-2 w-full',
+            fillHeight ? 'flex-1 min-h-0' : '',
+          )}
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={sideArrowClass}
+            onClick={() => scrollTo(index - 1)}
+            disabled={index <= 0}
+            aria-label="Previous slide"
           >
-            {slide}
-          </div>
-        ))}
-      </div>
+            <MoveLeft className="h-4 w-4" />
+          </Button>
+          {slideArea}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={sideArrowClass}
+            onClick={() => scrollTo(index + 1)}
+            disabled={index >= count - 1}
+            aria-label="Next slide"
+          >
+            <MoveRight className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <div
+          className={cn(
+            'relative w-full overflow-hidden rounded-2xl',
+            fillHeight ? 'flex-1 min-h-0 flex flex-col' : 'min-h-[400px]',
+          )}
+        >
+          {slides.map((slide, i) => (
+            <div
+              key={i}
+              className={cn(
+                'absolute inset-0 transition-opacity duration-500 overflow-auto',
+                fillHeight && 'flex flex-col min-h-0',
+                i === index
+                  ? 'opacity-100 z-10 pointer-events-auto'
+                  : 'opacity-0 z-0 pointer-events-none',
+              )}
+            >
+              {slide}
+            </div>
+          ))}
+        </div>
+      )}
 
       {count > 1 && (
         <div className="flex items-center justify-center gap-12 mt-6 sm:mt-8">

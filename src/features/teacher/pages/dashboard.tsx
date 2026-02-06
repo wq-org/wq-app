@@ -6,7 +6,6 @@ import TableView from '@/features/files/components/FilesTableView'
 import { useState, useEffect, useCallback } from 'react'
 import { StudentCardList } from '@/features/student'
 import { EmptyCourseView } from '@/features/courses'
-import { GamePlayList } from '@/features/game-play'
 import { useUser } from '@/contexts/user'
 import { useCourse } from '@/contexts/course'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
@@ -17,6 +16,7 @@ import { DotWaveLoader } from '@/components/shared'
 import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { GamePlayList } from '@/features/game-play'
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -169,6 +169,8 @@ export default function Dashboard() {
             />
           ))}
 
+        {selectedTab === 'games' && <GamePlayList />}
+
         {selectedTab === 'files' &&
           (filesLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -184,7 +186,6 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-        {selectedTab === 'games' && <GamePlayList />}
         {selectedTab === 'students' && <StudentCardList students={[]} />}
       </DashboardLayout>
 

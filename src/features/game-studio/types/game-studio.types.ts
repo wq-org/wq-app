@@ -227,6 +227,17 @@ export interface GameCardListProps {
   onGamePlay?: (route?: string) => void
 }
 
+export interface GameProjectCardListProps {
+  projects: Array<{
+    id: string
+    title?: string
+    description?: string
+    version?: number
+    status?: 'draft' | 'published'
+  }>
+  onOpen?: (projectId: string) => void
+}
+
 // ========== Settings Types ==========
 export interface GameNodeSettingsProps {
   nodeId?: string

@@ -150,7 +150,7 @@ export function GameCard({
   const centerPosition = avatarPositions[7]
 
   return (
-    <Card className="relative w-[400px] mx-auto rounded-4xl hover:shadow-lg transition-shadow">
+    <Card className="relative w-[350px] mx-auto rounded-4xl hover:shadow-lg transition-shadow">
       {status && (
         <div className="absolute top-3 left-3 z-10">
           <Badge variant={status === 'published' ? 'default' : 'secondary'}>
@@ -214,7 +214,9 @@ export function GameCard({
           )}
           <div className="space-y-1">
             <h3 className="text-xl font-semibold truncate cursor-default block">{title}</h3>
-            <p className="text-muted-foreground line-clamp-3 cursor-default">{description}</p>
+            <p className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1 cursor-default">
+              {description}
+            </p>
           </div>
           <div className="flex justify-end">
             <Button

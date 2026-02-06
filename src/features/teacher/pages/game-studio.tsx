@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import AppWrapper from '@/components/layout/AppWrapper'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
-import EmptyGamesView from '@/features/game-studio/components/EmptyGamesView'
-import GameCardList from '@/features/game-studio/components/GameCardList'
-import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
+import EmptyProjectsView from '@/features/game-studio/components/EmptyProjectsView'
+import GameProjectCardList from '@/features/game-studio/components/GameProjectCardList'
+import type { GameProjectCardListProps } from '@/features/game-studio/types/game-studio.types'
 import { Button } from '@/components/ui/button'
 import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { toast } from 'sonner'
@@ -14,7 +14,9 @@ import { Text } from '@/components/ui/text'
 export default function GameStudio() {
   const navigate = useNavigate()
   const { getUserId } = useUser()
-  const [games, setGames] = useState<GameCardProps[]>([])
+  const [projects, setProjects] = useState<
+    GameProjectCardListProps['projects']
+  >([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
 
@@ -26,13 +28,11 @@ export default function GameStudio() {
     }
     getTeacherFlowGames(teacherId)
       .then((data) => {
-        setGames(
+        setProjects(
           data.map((g) => ({
             id: g.id,
             title: g.title || 'Untitled Game',
             description: g.description ?? 'No description',
-            route: `/teacher/canvas/${g.id}`,
-            button: 'Open',
             version: g.version ?? undefined,
             status: g.status === 'published' ? 'published' : 'draft',
           })),
@@ -104,12 +104,12 @@ export default function GameStudio() {
               size={48}
             />
           </div>
-        ) : games.length === 0 ? (
-          <EmptyGamesView />
+        ) : projects.length === 0 ? (
+          <EmptyProjectsView />
         ) : (
-          <GameCardList
-            games={games}
-            onGamePlay={(route) => route && navigate(route)}
+          <GameProjectCardList
+            projects={projects}
+            onOpen={(id) => navigate(`/teacher/canvas/${id}`)}
           />
         )}
       </div>

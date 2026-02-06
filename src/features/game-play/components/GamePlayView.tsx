@@ -9,6 +9,8 @@ import { PreviewIfElseSlide } from '@/features/game-studio/components/PreviewIfE
 import { useGamePlay } from '@/contexts/game-play'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { Button } from '@/components/ui/button'
+import { DoorOpen } from 'lucide-react'
 
 export interface GamePlayViewProps {
   nodes: Node[]
@@ -16,6 +18,8 @@ export interface GamePlayViewProps {
   correctAnswers?: number
   wrongAnswers?: number
   score?: number
+  /** When set, a Leave button is shown on the left of the stats row (e.g. from PlayGamePage). */
+  onBack?: () => void
 }
 
 function getTitleAndDescription(data: Record<string, unknown> | undefined): {
@@ -60,6 +64,7 @@ export function GamePlayView({
   correctAnswers: correctProp = 0,
   wrongAnswers: wrongProp = 0,
   score: scoreProp = 0,
+  onBack,
 }: GamePlayViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const gamePlay = useGamePlay()
@@ -93,17 +98,32 @@ export function GamePlayView({
 
   return (
     <div className={cn('flex flex-1 flex-col min-h-0 p-4 space-y-4')}>
-      <div className="flex justify-center shrink-0">
-        <StatsDisplay
-          correctAnswers={correctAnswers}
-          wrongAnswers={wrongAnswers}
-          score={score}
-        />
+      <div className="flex items-center gap-4 shrink-0">
+        {onBack && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBack}
+            className="gap-2 shrink-0"
+          >
+            <DoorOpen className="h-4 w-4 mr-2" />
+            Leave
+          </Button>
+        )}
+        <div className="flex-1 flex justify-center min-w-0">
+          <StatsDisplay
+            correctAnswers={correctAnswers}
+            wrongAnswers={wrongAnswers}
+            score={score}
+          />
+        </div>
+        {onBack && <div className="w-[88px] shrink-0" aria-hidden />}
       </div>
       <ContainerSlider
         fillHeight
         onIndexChange={setCurrentIndex}
         className="flex-1 min-h-0"
+        showSideArrows
       >
         {startNode && (
           <PreviewStartEndSlide

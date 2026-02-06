@@ -114,21 +114,11 @@ export default function PlayGamePage() {
   return (
     <GamePlayProvider>
       <div className="flex flex-col h-full min-h-0">
-        <div className="shrink-0 flex items-center gap-4 border-b px-4 py-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/teacher/dashboard')}
-            className="gap-2"
-          >
-            <ArrowLeft className="size-4" />
-            Back
-          </Button>
-        </div>
         <div className="flex-1 flex flex-col min-h-0 overflow-auto">
           <GamePlayView
             nodes={nodes}
             edges={edges}
+            onBack={() => navigate('/teacher/dashboard')}
           />
         </div>
       </div>
