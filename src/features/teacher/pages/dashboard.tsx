@@ -149,6 +149,7 @@ export default function Dashboard() {
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to your dashboard'}
         role="teacher"
+        contactsCount={profile?.follow_count ?? 0}
         onClickTab={(tabId: string) => handleClickTab(tabId)}
       >
         {selectedTab === 'courses' &&

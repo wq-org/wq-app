@@ -12,6 +12,7 @@ export interface Profile {
   email: string | null
   description: string | null
   linkedin_url: string | null
+  follow_count?: number | null
 }
 
 export interface UserContextValue {

@@ -24,6 +24,7 @@ interface DashboardLayoutProps {
   linkedInUrl?: string
   handleFollowClick?: () => void
   handleMailClick?: () => void
+  connectButtonLabel?: string
   onClickTab?: (tabId: string) => void
   contactsCount?: number
   universityName?: string
@@ -41,8 +42,9 @@ export default function DashboardLayout({
   linkedInUrl,
   handleFollowClick,
   handleMailClick,
+  connectButtonLabel,
   onClickTab,
-  contactsCount = 1200,
+  contactsCount,
   universityName,
   customTabs,
 }: DashboardLayoutProps) {
@@ -65,10 +67,15 @@ export default function DashboardLayout({
     source: 'Anecdotal',
   }
 
-  // Format contacts count based on locale
-  const formattedContactsCount = contactsCount.toLocaleString(
-    i18n.language === 'de' ? 'de-DE' : 'en-US',
-  )
+  // Contacts badge: teachers show real follower count (default 0), others show "-"
+  const contactsBadgeText =
+    role?.toLowerCase() === 'teacher'
+      ? t('badges.contacts', {
+          formattedCount: (contactsCount ?? 0).toLocaleString(
+            i18n.language === 'de' ? 'de-DE' : 'en-US',
+          ),
+        })
+      : '-'
 
   return (
     <div>
@@ -122,9 +129,7 @@ export default function DashboardLayout({
             </div>
             <div className="flex gap-4">
               <Badge variant="secondary">{universityName || t('badges.university')}</Badge>
-              <Badge variant="secondary">
-                {t('badges.contacts', { formattedCount: formattedContactsCount })}
-              </Badge>
+              <Badge variant="secondary">{contactsBadgeText}</Badge>
             </div>
             <div className="flex items-center gap-4">
               <Tooltip>
@@ -134,7 +139,7 @@ export default function DashboardLayout({
                     className="gap-2"
                     onClick={handleFollowClick}
                   >
-                    {t('actions.connect')}
+                    {connectButtonLabel ?? t('actions.connect')}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>{t('actions.connectWith', { userName })}</TooltipContent>

@@ -5,6 +5,7 @@
   },
   "actions": {
     "connect": "Connect",
+    "connected": "Connected",
     "connectWith": "Connect with {{userName}}"
   },
   "roles": {
