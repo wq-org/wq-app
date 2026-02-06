@@ -76,7 +76,7 @@ export function ContainerSlider({
           >
             <MoveLeft className="h-4 w-4" />
           </Button>
-        <div className="flex items-center justify-center gap-2 ">
+          <div className="flex items-center justify-center gap-2 ">
             {slides.map((_, i) => (
               <button
                 key={i}
@@ -102,7 +102,7 @@ export function ContainerSlider({
             disabled={index >= count - 1}
             aria-label="Next slide"
           >
-            <MoveRight  className="h-4 w-4" />
+            <MoveRight className="h-4 w-4" />
           </Button>
         </div>
       )}
