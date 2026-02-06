@@ -8,6 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import FeedbackDisplay from './FeedbackDisplay'
 
 export interface GameResultTableRow {
   key: string | number
@@ -16,6 +17,10 @@ export interface GameResultTableRow {
   selectedAnswerTexts: string[]
   earned: number
   max: number
+  /** Optional feedback shown for this row (e.g. when correct/wrong). */
+  feedback?: string
+  /** Optional variant for feedback styling. */
+  feedbackVariant?: 'correct' | 'wrong'
 }
 
 /** Optional column and footer labels for reuse across games. */
@@ -26,6 +31,8 @@ export interface GameResultTableColumnLabels {
   selectedAnswers?: string
   /** Third column (earned/max). */
   result?: string
+  /** Fourth column (feedback). */
+  feedback?: string
   /** Footer row label. */
   footer?: string
 }
@@ -34,6 +41,7 @@ const DEFAULT_COLUMN_LABELS: Required<GameResultTableColumnLabels> = {
   statement: 'Statement',
   selectedAnswers: 'Selected answers',
   result: 'Result',
+  feedback: 'Feedback',
   footer: 'Overall',
 }
 
@@ -73,6 +81,7 @@ export default function GameResultTable({
             <TableHead>{labels.statement}</TableHead>
             <TableHead>{labels.selectedAnswers}</TableHead>
             <TableHead>{labels.result}</TableHead>
+            <TableHead>{labels.feedback}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -115,6 +124,13 @@ export default function GameResultTable({
               <TableCell className="whitespace-nowrap text-muted-foreground text-sm">
                 {row.earned}/{row.max}
               </TableCell>
+              <TableCell className="max-w-60 min-w-0 wrap-break-word whitespace-normal">
+                <FeedbackDisplay
+                  feedback={row.feedback}
+                  variant={row.feedbackVariant}
+                  className="min-h-0 border-0 bg-transparent px-0 py-0 wrap-break-word"
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -129,6 +145,7 @@ export default function GameResultTable({
             <TableCell className="font-medium">
               {totalEarned}/{totalMax}
             </TableCell>
+            <TableCell />
           </TableRow>
         </TableFooter>
       </Table>

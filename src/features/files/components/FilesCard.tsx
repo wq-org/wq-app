@@ -12,8 +12,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { ConfirmationDialog, SimplePDFViewer, SimpleVideoPlayer } from '@/components/shared'
-import FileDropzone from '@/features/upload-files/components/FileDropzone'
-import { uploadFile } from '@/features/upload-files/api/uploadFilesApi'
+import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
+import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { useUser } from '@/contexts/user'
 import type { FileItem } from '../types/files.types'
 import { getFileBlobUrl, deleteFile, renameFile } from '../api/filesApi'
@@ -271,9 +271,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
         open={open}
         onOpenChange={onOpenChange}
       >
-        <DrawerContent className="h-[100vh] !w-[60vw] !max-w-2xl sm:!max-w-2xl">
+        <DrawerContent className="h-screen w-[60vw]! max-w-2xl! sm:max-w-2xl!">
           <div className="flex flex-col h-full w-full">
-            <DrawerHeader className="flex-shrink-0">
+            <DrawerHeader className="shrink-0">
               <div className="flex items-center justify-between">
                 <DrawerTitle>File Details</DrawerTitle>
                 <Button
@@ -291,7 +291,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
 
             <div className="flex flex-col flex-1 overflow-hidden">
               {/* Tabs */}
-              <div className="flex border-b px-6 pt-4 flex-shrink-0">
+              <div className="flex border-b px-6 pt-4 shrink-0">
                 <Button
                   variant="ghost"
                   onClick={() => setActiveTab('overview')}
@@ -346,7 +346,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       </div>
                     )}
                     {isPDF && (
-                      <div className="w-full aspect-[9/16] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+                      <div className="w-full aspect-9/16 rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
                         {fileUrl ? (
                           <SimplePDFViewer
                             pdfUrl={fileUrl}

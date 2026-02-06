@@ -3,8 +3,12 @@ import { GitBranch } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { GameIfElseNodeProps } from '../types/game-studio.types'
 
+const MAX_LABEL_LENGTH = 24
+
 export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
-  const label = data?.label || 'If / else'
+  const fullLabel = data?.label || (data as GameIfElseNodeProps['data'])?.title || 'If / else'
+  const displayLabel =
+    fullLabel.length > MAX_LABEL_LENGTH ? `${fullLabel.slice(0, MAX_LABEL_LENGTH)}…` : fullLabel
 
   return (
     <div
@@ -26,13 +30,18 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
       <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="text-gray-900 font-medium truncate block">{label}</span>
+            <span
+              className="text-gray-900 font-medium truncate block"
+              title={fullLabel}
+            >
+              {displayLabel}
+            </span>
           </TooltipTrigger>
           <TooltipContent
             side="top"
             sideOffset={6}
           >
-            {label}
+            {fullLabel}
           </TooltipContent>
         </Tooltip>
         {data?.condition && (

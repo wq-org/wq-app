@@ -53,6 +53,7 @@ export interface GameEndNodeProps {
 export interface GameIfElseNodeProps {
   data?: {
     label?: string
+    title?: string
     onClick?: () => void
     condition?: string
   }
@@ -92,28 +93,32 @@ export interface StartGameDialogProps {
   onOpenChange: (open: boolean) => void
   onSave?: (data: { title: string; description: string }) => void
   nodeId?: string
-  initialData?: { title?: string; description?: string }
+  initialData?: { title?: string; label?: string; description?: string }
 }
 
 export interface EndGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave?: (data: { title: string; description: string }) => void
-  initialData?: { title?: string; description?: string }
+  initialData?: { title?: string; label?: string; description?: string }
   nodeId?: string
 }
 
 export interface IfElseGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave?: (data: {
-    title: string
-    description: string
-    condition?: string
-    correctPath?: 'A' | 'B'
-  }) => void
+  onSave?: (
+    data: {
+      title?: string
+      description?: string
+      condition?: string
+      correctPath?: 'A' | 'B'
+    },
+    nodeId?: string,
+  ) => void
   initialData?: {
     title?: string
+    label?: string
     description?: string
     condition?: string
     correctPath?: 'A' | 'B'
@@ -130,31 +135,58 @@ export interface GameNodeDialogProps {
   nodeType?: string
   nodeId?: string
   initialData?: unknown
-  onSave?: (data: {
-    points?: number
-    paragraphGameData?: unknown
-    imageTermGameData?: unknown
-    imagePinGameData?: unknown
-  }) => void
+  onSave?: (
+    data: {
+      points?: number
+      paragraphGameData?: unknown
+      imageTermGameData?: unknown
+      imagePinGameData?: unknown
+    },
+    nodeId?: string,
+  ) => void
   onDelete?: () => void
+  /** Upload image for game node; returns storage path and public URL or null. Used when saving image-term or image-pin nodes. */
+  onUploadImage?: (
+    file: File,
+    nodeId: string,
+  ) => Promise<{ path: string; publicUrl: string | null } | null>
+  /** Remove image from storage when user clears the image in editor. Called with storage path. */
+  onRemoveImage?: (path: string) => void | Promise<void>
 }
 
 // ========== Drawer Props ==========
 export interface SettingsDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  projectId?: string
+  title?: string
+  description?: string
+  version?: number
+  rollbackVersions?: { id: string; version: number }[]
+  onSave?: (payload: { title: string; description: string }) => void | Promise<void>
+  onRollback?: (versionId: string) => void | Promise<void>
+  onDelete?: () => void
+  /** Whether the game is published (visible to students). */
+  isPublished?: boolean
+  /** Called when user unpublishes the game (switch off). */
+  onUnpublish?: () => void | Promise<void>
 }
 
 export interface PreviewDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  nodes?: Node[]
+  edges?: Edge[]
 }
 
 export interface PublishDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   nodes?: Node[]
+  edges?: Edge[]
   gameTitle?: string
+  /** Called when user clicks Publish (after validation). Should save then publish. */
+  onPublish?: () => Promise<void>
 }
 
 // ========== Sidebar Types ==========
@@ -167,15 +199,27 @@ export interface SidebarItem {
 }
 
 // ========== Card Types ==========
+export interface GameProjectCardProps {
+  id?: string
+  title?: string
+  description?: string
+  version?: number
+  status?: 'draft' | 'published'
+  onOpen?: () => void
+}
+
 export interface GameCardProps {
   id: string
   title: string
   description: string
   route?: string
-  button: string
+  /** Button label (e.g. "Play"); optional for cards that use a default. */
+  button?: string
   onPlay?: () => void
   /** Optional image URL for the top of the card. */
   imageUrl?: string
+  version?: number
+  status?: 'draft' | 'published'
 }
 
 export interface GameCardListProps {
@@ -186,4 +230,28 @@ export interface GameCardListProps {
 // ========== Settings Types ==========
 export interface GameNodeSettingsProps {
   nodeId?: string
+}
+
+// ========== Flow game config (persisted in games.game_config) ==========
+/** Serializable node for persistence (no functions in data). */
+export interface SerializableNode {
+  id: string
+  type: string
+  position: { x: number; y: number }
+  data: Record<string, unknown>
+}
+
+/** Serializable edge for persistence. */
+export interface SerializableEdge {
+  id: string
+  source: string
+  target: string
+  sourceHandle?: string | null
+}
+
+/** Shape stored in games.game_config for flow/canvas projects. */
+export interface FlowGameConfig {
+  projectVersion: string
+  nodes: SerializableNode[]
+  edges: SerializableEdge[]
 }

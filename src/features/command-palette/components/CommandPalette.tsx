@@ -79,6 +79,10 @@ export default function CommandPalette({
     : (getGroupById(commandBarContext as Roles, commandBarContext as Roles) ?? commandBarGroup[0])
   const defaultUserCommands = getGroupById('user', effectiveRole)
   const userItems = defaultUserCommands?.items ?? []
+  const displayedUserItems =
+    isCommandBarView(commandBarContext) && commandBarContext === 'game-studio'
+      ? userItems.filter((item) => item.id !== 'settings')
+      : userItems
   const roleBasedUserCommands = primaryGroup?.items ?? []
 
   function handleOnClickSearchDialog() {
@@ -259,7 +263,7 @@ export default function CommandPalette({
                 aria-label="system actions"
                 className="flex items-center gap-3"
               >
-                {userItems.map((item) => {
+                {displayedUserItems.map((item) => {
                   const Icon = item.icon
                   return (
                     <Tooltip.Root key={item.id}>

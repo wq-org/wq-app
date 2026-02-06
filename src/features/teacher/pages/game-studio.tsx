@@ -1,14 +1,69 @@
+import { useEffect, useState } from 'react'
 import AppWrapper from '@/components/layout/AppWrapper'
 import { useNavigate } from 'react-router-dom'
+import { useUser } from '@/contexts/user'
 import EmptyGamesView from '@/features/game-studio/components/EmptyGamesView'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Button } from '@/components/ui/button'
-
-const GAMES: GameCardProps[] = []
+import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
+import { toast } from 'sonner'
+import DotWaveLoader from '@/components/shared/loaders/DotWaveLoader'
 
 export default function GameStudio() {
   const navigate = useNavigate()
+  const { getUserId } = useUser()
+  const [games, setGames] = useState<GameCardProps[]>([])
+  const [loading, setLoading] = useState(true)
+  const [creating, setCreating] = useState(false)
+
+  useEffect(() => {
+    const teacherId = getUserId()
+    if (!teacherId) {
+      setLoading(false)
+      return
+    }
+    getTeacherFlowGames(teacherId)
+      .then((data) => {
+        setGames(
+          data.map((g) => ({
+            id: g.id,
+            title: g.title || 'Untitled Game',
+            description: g.description ?? 'No description',
+            route: `/teacher/canvas/${g.id}`,
+            button: 'Open',
+            version: g.version ?? undefined,
+            status: g.status === 'published' ? 'published' : 'draft',
+          })),
+        )
+      })
+      .catch((err) => {
+        console.error(err)
+        toast.error('Failed to load games')
+      })
+      .finally(() => setLoading(false))
+  }, [getUserId])
+
+  const handleCreateGame = async () => {
+    const teacherId = getUserId()
+    if (!teacherId) {
+      toast.error('You must be signed in to create a game')
+      return
+    }
+    setCreating(true)
+    try {
+      const created = await createGameForStudio(teacherId, {
+        title: 'Untitled Game',
+        description: '',
+      })
+      navigate(`/teacher/canvas/${created.id}`)
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to create game')
+    } finally {
+      setCreating(false)
+    }
+  }
 
   return (
     <AppWrapper
@@ -20,19 +75,27 @@ export default function GameStudio() {
         <p className="text-gray-500 mt-2">Create and manage educational games for your students.</p>
         <div className="flex justify-end w-full">
           <Button
-            onClick={() => navigate('/teacher/canvas')}
+            onClick={handleCreateGame}
             variant="default"
+            disabled={creating || loading}
           >
-            Create game
+            {creating ? 'Creating…' : 'Create game'}
           </Button>
         </div>
       </div>
       <div className="pb-14">
-        {GAMES.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <DotWaveLoader
+              variant="default"
+              size={48}
+            />
+          </div>
+        ) : games.length === 0 ? (
           <EmptyGamesView />
         ) : (
           <GameCardList
-            games={GAMES}
+            games={games}
             onGamePlay={(route) => route && navigate(route)}
           />
         )}

@@ -15,8 +15,9 @@ import type {
   EdgeChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Settings, Play } from 'lucide-react'
+import { Settings, Play, DoorOpen } from 'lucide-react'
 import { toast } from 'sonner'
+import { useNavigate } from 'react-router-dom'
 import GameStartNode from './GameStartNode'
 import GameEndNode from './GameEndNode'
 import GameParagraphNode from './GameParagraphNode'
@@ -34,8 +35,20 @@ import { useGameStudioContext } from '@/contexts/game-studio'
 import SettingsDrawer from './SettingsDrawer'
 import PreviewDrawer from './PreviewDrawer'
 import PublishDrawer from './PublishDrawer'
-import { MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
+import { DEFAULT_PARAGRAPH, MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
 import type { GameNodeData } from '../types/game-studio.types'
+import { useUser } from '@/contexts/user'
+import {
+  getGameForStudio,
+  updateGameForStudio,
+  publishGame,
+  unpublishGame,
+} from '../api/gameStudioApi'
+import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
+import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { deleteFile } from '@/features/files/api/filesApi'
+import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
+import Spinner from '@/components/ui/spinner'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -56,7 +69,11 @@ const initialNodes: Node[] = [
 ]
 const initialEdges: Edge[] = []
 
-export default function GameEditorCanvas() {
+export interface GameEditorCanvasProps {
+  projectId?: string
+}
+
+export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   // ========== Context & State Management ==========
   const {
     nodes: contextNodes,
@@ -64,8 +81,13 @@ export default function GameEditorCanvas() {
     setEdges: setContextEdges,
     addNode: addContextNode,
   } = useGameStudioContext()
+  const { getUserId } = useUser()
+  const navigate = useNavigate()
   const [nodes, setNodes] = useState<Node[]>(initialNodes)
   const [edges, setEdges] = useState<Edge[]>(initialEdges)
+  const [loadState, setLoadState] = useState<'idle' | 'loading' | 'loaded' | 'error'>(
+    projectId ? 'loading' : 'idle',
+  )
 
   // ========== UI State ==========
   const [isStartDialogOpen, setIsStartDialogOpen] = useState(false)
@@ -75,6 +97,8 @@ export default function GameEditorCanvas() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null)
   const [gameTitle, setGameTitle] = useState<string>('General')
+  const [projectVersion, setProjectVersion] = useState<number>(1)
+  const [isPublished, setIsPublished] = useState(false)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false)
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
@@ -89,6 +113,63 @@ export default function GameEditorCanvas() {
   const isSyncingRef = useRef(false)
   const setContextNodesRef = useRef(setContextNodes)
   const setContextEdgesRef = useRef(setContextEdges)
+  const pendingEndSavePersistRef = useRef(false)
+
+  // ========== Load project when projectId is set ==========
+  useEffect(() => {
+    if (!projectId) {
+      setLoadState('idle')
+      return
+    }
+    setLoadState('loading')
+    getGameForStudio(projectId)
+      .then((game) => {
+        if (game) {
+          setIsPublished(game.status === 'published')
+        }
+        if (!game?.game_config?.nodes?.length) {
+          setLoadState('loaded')
+          return
+        }
+        const config = game.game_config
+        const loadedNodes: Node[] = config.nodes.map((n) => ({
+          id: n.id,
+          type: n.type ?? 'default',
+          position: n.position ?? { x: 0, y: 0 },
+          data: { ...n.data },
+        }))
+        // Merge top-level game description into Start node when node has none (e.g. old save or Settings-only edit)
+        const gameDescription = game.description?.trim()
+        if (gameDescription) {
+          const startNode = loadedNodes.find((n) => n.type === 'gameStart')
+          if (startNode) {
+            const desc = (startNode.data as Record<string, unknown>)?.description
+            if (desc == null || String(desc).trim() === '') {
+              startNode.data = { ...startNode.data, description: gameDescription } as Record<
+                string,
+                unknown
+              >
+            }
+          }
+        }
+        const loadedEdges: Edge[] = (config.edges ?? []).map((e) => ({
+          id: e.id,
+          source: e.source,
+          target: e.target,
+          sourceHandle: e.sourceHandle ?? undefined,
+        }))
+        setNodes(loadedNodes)
+        setEdges(loadedEdges)
+        setGameTitle(game.title || 'General')
+        setProjectVersion(game.version ?? 1)
+        setLoadState('loaded')
+      })
+      .catch((err) => {
+        console.error(err)
+        toast.error('Failed to load project')
+        setLoadState('error')
+      })
+  }, [projectId])
 
   // ========== Validation Functions ==========
   const checkNodeConstraints = useCallback(
@@ -415,6 +496,39 @@ export default function GameEditorCanvas() {
         return
       }
 
+      // Prevent Start node from connecting to If/Else node
+      if (sourceNode.type === 'gameStart' && targetNode.type === 'gameIfElse') {
+        toast.error('Cannot connect Start node to If/Else node')
+        return
+      }
+
+      // Prevent If/else node from connecting to End node
+      if (sourceNode.type === 'gameIfElse' && targetNode.type === 'gameEnd') {
+        toast.error('Cannot connect If/else node to End node')
+        return
+      }
+
+      // If/else: max 2 outgoing edges, one per handle (right-top, right-bottom)
+      if (sourceNode.type === 'gameIfElse') {
+        const existingIfElseEdges = edges.filter((e) => e.source === params.source)
+        if (existingIfElseEdges.length >= 2) {
+          toast.error('If/else node can only have 2 outgoing connections (one per branch)')
+          return
+        }
+        const sourceHandle = params.sourceHandle ?? ''
+        if (
+          sourceHandle &&
+          existingIfElseEdges.some((e) => (e.sourceHandle ?? '') === sourceHandle)
+        ) {
+          toast.error('This branch already has a connection')
+          return
+        }
+        // Assign handle if not provided (e.g. drag from node body)
+        if (!params.sourceHandle) {
+          params.sourceHandle = existingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom'
+        }
+      }
+
       setEdges((prevEdges) => {
         let updatedEdges = [...prevEdges]
 
@@ -422,26 +536,6 @@ export default function GameEditorCanvas() {
         const singleOutgoingTypes = ['gameStart', 'gameParagraph', 'gameImageTerms', 'gameImagePin']
         if (singleOutgoingTypes.includes(sourceNode.type || '')) {
           updatedEdges = updatedEdges.filter((e) => e.source !== params.source)
-        }
-
-        // For If/Else node, handle the two outputs
-        if (sourceNode.type === 'gameIfElse') {
-          const existingIfElseEdges = updatedEdges.filter((e) => e.source === params.source)
-          if (existingIfElseEdges.length >= 2) {
-            // If connecting to same target, replace that specific edge
-            const existingToSameTarget = existingIfElseEdges.find((e) => e.target === params.target)
-            if (existingToSameTarget) {
-              updatedEdges = updatedEdges.filter((e) => e.id !== existingToSameTarget.id)
-            } else {
-              // If both handles are used, replace the first one
-              updatedEdges = updatedEdges.filter((e) => e.id !== existingIfElseEdges[0].id)
-            }
-          }
-
-          // Use handle ID to distinguish between the two outputs
-          const remainingIfElseEdges = updatedEdges.filter((e) => e.source === params.source)
-          const handleId = remainingIfElseEdges.length === 0 ? 'right-top' : 'right-bottom'
-          params.sourceHandle = handleId
         }
 
         // For nodes that can only have one incoming connection (except End which can have up to 10)
@@ -479,7 +573,7 @@ export default function GameEditorCanvas() {
         return newEdges
       })
     },
-    [nodes],
+    [nodes, edges],
   )
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -541,14 +635,30 @@ export default function GameEditorCanvas() {
           }
         }
 
+        const baseData: Record<string, unknown> = {
+          label: nodeData.label,
+          onClick: onClickHandler,
+        }
+        if (nodeData.type === 'gameParagraph') {
+          baseData.paragraphText = DEFAULT_PARAGRAPH
+          baseData.title = ''
+          baseData.description = ''
+        }
+        if (nodeData.type === 'gameImageTerms') {
+          baseData.title = ''
+          baseData.description = ''
+          baseData.terms = [{ id: '1', value: '' }]
+        }
+        if (nodeData.type === 'gameImagePin') {
+          baseData.title = ''
+          baseData.description = ''
+          baseData.squares = []
+        }
         const newNode: Node = {
           id: newNodeId,
           type: nodeData.type,
           position,
-          data: {
-            label: nodeData.label,
-            onClick: onClickHandler,
-          },
+          data: baseData,
         }
 
         // Check constraints and add node
@@ -628,74 +738,282 @@ export default function GameEditorCanvas() {
     [nodes],
   )
 
+  const handleSave = useCallback(async () => {
+    if (!projectId) {
+      toast.error('Open a project from Game Studio to save.')
+      return
+    }
+    const teacherId = getUserId()
+    if (!teacherId) {
+      toast.error('You must be signed in to save.')
+      return
+    }
+    try {
+      const gameConfig = serializeFlowGameConfig(nodes, edges)
+      const description =
+        (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+          ?.description ?? ''
+      await updateGameForStudio(projectId, {
+        title: gameTitle,
+        description,
+        game_config: gameConfig,
+      })
+      toast.success('Project saved.')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to save project.')
+    }
+  }, [projectId, getUserId, nodes, edges, gameTitle])
+
+  const handleLeaveProject = useCallback(async () => {
+    try {
+      await handleSave()
+    } catch {
+      toast.error('Failed to save project before leaving.')
+    }
+    navigate('/teacher/game-studio')
+  }, [navigate, handleSave])
+
+  const handlePublish = useCallback(async () => {
+    if (!projectId) {
+      toast.error('Open a project from Game Studio to publish.')
+      return
+    }
+    try {
+      const gameConfig = serializeFlowGameConfig(nodes, edges)
+      const description =
+        (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+          ?.description ?? ''
+      await updateGameForStudio(projectId, {
+        title: gameTitle,
+        description,
+        game_config: gameConfig,
+      })
+      await publishGame(projectId)
+      setIsPublished(true)
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  }, [projectId, nodes, edges, gameTitle])
+
+  // Handler for SettingsDrawer onSave
+  const handleSettingsSave = useCallback(
+    async (payload: { title: string; description: string }) => {
+      if (!projectId) {
+        toast.error('Open a project from Game Studio to save.')
+        return
+      }
+      try {
+        // Update game title and description in database
+        await updateGameForStudio(projectId, {
+          title: payload.title,
+          description: payload.description,
+        })
+
+        // Update local canvas state
+        setGameTitle(payload.title)
+
+        // Update Start node's description
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.type === 'gameStart'
+              ? { ...node, data: { ...node.data, description: payload.description } }
+              : node,
+          ),
+        )
+      } catch (err) {
+        console.error(err)
+        throw err
+      }
+    },
+    [projectId],
+  )
+
+  // Handler for SettingsDrawer onRollback
+
+  const handleSettingsRollback = useCallback(async (versionId: string) => {
+    // Rollback not yet implemented - versionId will be used when implementing version loading
+    toast.info(`Rolling back to version ${versionId}`)
+  }, [])
+
+  // Handler for SettingsDrawer onDelete
+  const handleSettingsDelete = useCallback(async () => {
+    if (!projectId) {
+      toast.error('No project to delete')
+      return
+    }
+    try {
+      await deleteGame(projectId)
+      toast.success('Project deleted')
+      navigate('/teacher/game-studio')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to delete project')
+    }
+  }, [projectId, navigate])
+
+  const handleUnpublish = useCallback(async () => {
+    if (!projectId) {
+      toast.error('No project to unpublish')
+      return
+    }
+    try {
+      await unpublishGame(projectId)
+      setIsPublished(false)
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  }, [projectId])
+
   const handleStartSave = (data: { title: string; description: string }) => {
+    const startNodeId = nodes.find((n) => n.type === 'gameStart')?.id
+    if (!startNodeId) {
+      toast.error('Cannot save: no Start node in this project.')
+      return
+    }
     if (data.title) {
       setGameTitle(data.title)
     }
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) =>
-          node.id === selectedNodeId ? { ...node, data: { ...node.data, ...data } } : node,
-        ),
-      )
-      toast.success('Node saved')
-    }
-  }
-
-  const handleIfElseSave = (data: {
-    title: string
-    description: string
-    condition?: string
-    correctPath?: 'A' | 'B'
-  }) => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) =>
-          node.id === selectedNodeId
-            ? { ...node, data: { ...node.data, label: data.title, ...data } }
-            : node,
-        ),
-      )
-    }
-  }
-
-  const handleGameNodeSave = (data: {
-    points?: number
-    paragraphGameData?: unknown
-    imageTermGameData?: unknown
-    imagePinGameData?: unknown
-  }) => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) => {
-          if (node.id !== selectedNodeId) return node
-          const nextData = { ...node.data, points: data.points }
-          if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
-            Object.assign(nextData, data.paragraphGameData)
-          }
-          if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
-            Object.assign(nextData, data.imageTermGameData)
-          }
-          if (data.imagePinGameData != null && typeof data.imagePinGameData === 'object') {
-            Object.assign(nextData, data.imagePinGameData)
-          }
-          return { ...node, data: nextData }
-        }),
-      )
-      toast.success('Node saved')
-    }
-  }
-
-  const handleEndSave = (data: { title: string; description: string }) => {
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
-        node.type === 'gameEnd'
-          ? { ...node, data: { ...node.data, label: data.title, ...data } }
+        node.id === startNodeId && node.type === 'gameStart'
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                label: data.title,
+                title: data.title,
+                description: data.description,
+              },
+            }
           : node,
       ),
     )
+    pendingEndSavePersistRef.current = true
     toast.success('Node saved')
   }
+
+  const handleIfElseSave = (
+    data: {
+      title?: string
+      description?: string
+      condition?: string
+      correctPath?: 'A' | 'B'
+    },
+    nodeId?: string,
+  ) => {
+    const targetId = nodeId ?? selectedNodeId
+    if (!targetId) {
+      toast.error('No node selected. Please open the node again and try saving.')
+      return
+    }
+    setNodes((prevNodes) =>
+      prevNodes.map((node) => {
+        if (node.id !== targetId) return node
+        const nextData = { ...node.data }
+        if (data.title !== undefined) nextData.label = data.title
+        if (data.description !== undefined) nextData.description = data.description
+        if (data.condition !== undefined) nextData.condition = data.condition
+        if (data.correctPath !== undefined) nextData.correctPath = data.correctPath
+        return { ...node, data: nextData }
+      }),
+    )
+    pendingEndSavePersistRef.current = true
+    toast.success('Node saved')
+  }
+
+  const handleGameNodeSave = (
+    data: {
+      points?: number
+      paragraphGameData?: unknown
+      imageTermGameData?: unknown
+      imagePinGameData?: unknown
+    },
+    nodeId?: string,
+  ) => {
+    const targetId = nodeId ?? selectedNodeId
+    if (!targetId) {
+      toast.error('No node selected. Please open the node again and try saving.')
+      return
+    }
+    setNodes((prevNodes) =>
+      prevNodes.map((node) => {
+        if (node.id !== targetId) return node
+        const nextData = { ...node.data, points: data.points }
+        if (data.paragraphGameData != null && typeof data.paragraphGameData === 'object') {
+          Object.assign(nextData, data.paragraphGameData)
+        }
+        if (data.imageTermGameData != null && typeof data.imageTermGameData === 'object') {
+          Object.assign(nextData, data.imageTermGameData)
+        }
+        if (data.imagePinGameData != null && typeof data.imagePinGameData === 'object') {
+          Object.assign(nextData, data.imagePinGameData)
+        }
+        return { ...node, data: nextData }
+      }),
+    )
+    toast.success('Node saved')
+    pendingEndSavePersistRef.current = true
+  }
+
+  const handleEndSave = useCallback(
+    (data: { title: string; description: string }) => {
+      if (!String(data?.title ?? '').trim() || !String(data?.description ?? '').trim()) {
+        toast.error('Title and description are required.')
+        return
+      }
+      const endNode = nodes.find((n) => n.type === 'gameEnd')
+      if (!endNode) {
+        toast.error('Cannot save: no End node in this project.')
+        return
+      }
+      const targetId = endNode.id
+      setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+          node.id === targetId && node.type === 'gameEnd'
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  label: data.title,
+                  title: data.title,
+                  description: data.description,
+                },
+              }
+            : node,
+        ),
+      )
+      pendingEndSavePersistRef.current = true
+      toast.success('Node saved')
+    },
+    [nodes],
+  )
+
+  // After End node dialog save, persist project so changes are stored
+  useEffect(() => {
+    if (!pendingEndSavePersistRef.current || !projectId) return
+    const teacherId = getUserId()
+    if (!teacherId) return
+    pendingEndSavePersistRef.current = false
+    const gameConfig = serializeFlowGameConfig(nodes, edges)
+    const description =
+      (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+        ?.description ?? ''
+    updateGameForStudio(projectId, {
+      title: gameTitle,
+      description,
+      game_config: gameConfig,
+    })
+      .then(() => {
+        toast.success('Project saved.')
+      })
+      .catch((err) => {
+        console.error(err)
+        toast.error('Failed to save project.')
+      })
+  }, [nodes, edges, gameTitle, projectId, getUserId])
 
   const handleEndDelete = () => {
     if (selectedNodeId) {
@@ -717,39 +1035,34 @@ export default function GameEditorCanvas() {
   }
 
   const handleIfElseDelete = () => {
-    if (selectedNodeId) {
-      setNodes((prevNodes) => {
-        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId)
-        if (!nodeToDelete) return prevNodes
-
-        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId)
-
-        // Remove edges connected to deleted node
-        setEdges((prevEdges) =>
-          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
-        )
-        toast.success('If/Else node deleted')
-        return newNodes
-      })
-      setIsIfElseDialogOpen(false)
-    }
+    if (!selectedNodeId) return
+    const nodeIdToRemove = selectedNodeId
+    setEdges((prevEdges) =>
+      prevEdges.filter((e) => e.source !== nodeIdToRemove && e.target !== nodeIdToRemove),
+    )
+    setNodes((prevNodes) => prevNodes.filter((n) => n.id !== nodeIdToRemove))
+    toast.success('If/Else node deleted')
+    setIsIfElseDialogOpen(false)
+    setSelectedNodeId(null)
   }
 
-  const handleGameNodeDelete = () => {
-    if (selectedNodeId) {
+  const handleGameNodeDelete = (nodeIdOverride?: string) => {
+    const nodeIdToDelete = nodeIdOverride ?? selectedNodeId
+    if (nodeIdToDelete) {
       setNodes((prevNodes) => {
-        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId)
+        const nodeToDelete = prevNodes.find((n) => n.id === nodeIdToDelete)
         if (!nodeToDelete) return prevNodes
 
-        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId)
+        const newNodes = prevNodes.filter((n) => n.id !== nodeIdToDelete)
 
         setEdges((prevEdges) =>
-          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
+          prevEdges.filter((e) => e.source !== nodeIdToDelete && e.target !== nodeIdToDelete),
         )
         toast.success('Game node deleted')
         return newNodes
       })
       setIsGameNodeDialogOpen(false)
+      setSelectedNodeId(null)
     }
   }
 
@@ -831,6 +1144,16 @@ export default function GameEditorCanvas() {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-1 w-full relative">
+        {loadState === 'loading' && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
+            <Spinner
+              variant="gray"
+              size="md"
+              speed={1750}
+            />
+            <p className="text-sm text-gray-500">Project Loading...</p>
+          </div>
+        )}
         <GameSidebar />
         <div
           ref={containerRef}
@@ -839,10 +1162,10 @@ export default function GameEditorCanvas() {
           onDrop={onDrop}
         >
           {/* Top Center Badge */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 max-w-60 w-full min-w-0">
             <Badge
               variant="outline"
-              className="px-4 py-2 text-sm cursor-text bg-white"
+              className="px-4 py-2 text-sm cursor-text bg-white w-full min-w-0 max-w-full"
               asChild
             >
               <div
@@ -863,7 +1186,7 @@ export default function GameEditorCanvas() {
                     e.currentTarget.blur()
                   }
                 }}
-                className="outline-none focus:ring-2 focus:ring-ring rounded-full"
+                className="outline-none focus:ring-2 focus:ring-ring rounded-full truncate min-w-0 block"
               >
                 {gameTitle}
               </div>
@@ -873,11 +1196,10 @@ export default function GameEditorCanvas() {
           {/* Top Right Controls */}
           <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSettingsDrawerOpen(true)}
+              variant="outline"
+              onClick={handleSave}
             >
-              <Settings className="h-5 w-5" />
+              Save
             </Button>
             <Button
               variant="outline"
@@ -886,7 +1208,21 @@ export default function GameEditorCanvas() {
               <Play className="h-4 w-4 mr-2" />
               Preview
             </Button>
+            <Button
+              variant="outline"
+              onClick={handleLeaveProject}
+            >
+              <DoorOpen className="h-4 w-4 mr-2" />
+              Leave
+            </Button>
             <Button onClick={() => setIsPublishDrawerOpen(true)}>Publish</Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSettingsDrawerOpen(true)}
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
           </div>
 
           {dimensions.width > 0 && dimensions.height > 0 && (
@@ -920,16 +1256,33 @@ export default function GameEditorCanvas() {
       <SettingsDrawer
         open={isSettingsDrawerOpen}
         onOpenChange={setIsSettingsDrawerOpen}
+        projectId={projectId}
+        title={gameTitle}
+        description={
+          (nodes.find((n) => n.type === 'gameStart')?.data as { description?: string } | undefined)
+            ?.description ?? ''
+        }
+        version={projectVersion}
+        rollbackVersions={[]}
+        onSave={handleSettingsSave}
+        onRollback={handleSettingsRollback}
+        onDelete={handleSettingsDelete}
+        isPublished={isPublished}
+        onUnpublish={handleUnpublish}
       />
       <PreviewDrawer
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
+        nodes={nodes}
+        edges={edges}
       />
       <PublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
         nodes={nodes}
+        edges={edges}
         gameTitle={gameTitle}
+        onPublish={handlePublish}
       />
       <StartGameDialog
         open={isStartDialogOpen}
@@ -938,7 +1291,7 @@ export default function GameEditorCanvas() {
         nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
         initialData={
           nodes.find((n) => n.type === 'gameStart')?.data as
-            | { title?: string; description?: string }
+            | { title?: string; label?: string; description?: string }
             | undefined
         }
       />
@@ -951,6 +1304,7 @@ export default function GameEditorCanvas() {
             ? (nodes.find((n) => n.id === selectedNodeId)?.data as
                 | {
                     title?: string
+                    label?: string
                     description?: string
                     condition?: string
                     correctPath?: 'A' | 'B'
@@ -987,7 +1341,28 @@ export default function GameEditorCanvas() {
         nodeId={selectedNodeId || undefined}
         initialData={selectedNodeId ? nodes.find((n) => n.id === selectedNodeId)?.data : undefined}
         onSave={handleGameNodeSave}
-        onDelete={handleGameNodeDelete}
+        onDelete={selectedNodeId ? () => handleGameNodeDelete(selectedNodeId) : undefined}
+        onUploadImage={
+          projectId && getUserId()
+            ? async (file, nodeId) => {
+                const teacherId = getUserId()
+                if (!teacherId) return null
+                const title = `games_${projectId}_${nodeId}`
+                const result = await uploadFile({
+                  teacherId,
+                  file,
+                  title,
+                  role: 'teachers',
+                })
+                return result.success && result.path
+                  ? { path: result.path, publicUrl: result.publicUrl ?? null }
+                  : null
+              }
+            : undefined
+        }
+        onRemoveImage={async (path) => {
+          await deleteFile(path)
+        }}
       />
     </div>
   )

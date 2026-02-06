@@ -3,17 +3,51 @@
 import * as React from 'react'
 import { Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import type { VariantProps } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button-variants'
 
-interface HoldToDeleteButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type HoldToDeleteVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
+
+interface HoldToDeleteButtonProps extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
   onDelete?: () => void
   holdDuration?: number
+  variant?: HoldToDeleteVariant
+  /** Optional icon (e.g. Check for confirm). Defaults to Trash2. */
+  icon?: React.ReactNode
+}
+
+const progressFillClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
+  default: 'bg-primary/30',
+  destructive: 'bg-destructive/40',
+  outline: 'bg-destructive/20',
+  secondary: 'bg-destructive/20',
+  ghost: 'bg-destructive/20',
+  link: 'bg-destructive/20',
+  delete: 'bg-red-200',
+  confirm: 'bg-blue-200',
+}
+
+/** Text + icon color when holding (contrasts with progress fill) */
+const contentHoldClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
+  default: 'text-primary-foreground',
+  destructive: 'text-white',
+  outline: 'text-destructive',
+  secondary: 'text-destructive',
+  ghost: 'text-destructive',
+  link: 'text-destructive',
+  delete: 'text-red-600',
+  confirm: 'text-blue-600',
 }
 
 function HoldToDeleteButton({
   className,
+  variant = 'secondary',
+  size = 'default',
   onDelete,
   holdDuration = 3000,
   children,
+  icon,
   ...props
 }: HoldToDeleteButtonProps) {
   const [isHolding, setIsHolding] = React.useState(false)
@@ -61,21 +95,15 @@ function HoldToDeleteButton({
     }
   }, [])
 
+  const progressClass = progressFillClass[variant] ?? progressFillClass.secondary
+  const contentWhenHoldingClass = contentHoldClass[variant] ?? contentHoldClass.secondary
+
   return (
-    <button
+    <Button
       type="button"
-      className={cn(
-        'relative inline-flex items-center justify-center gap-2 overflow-hidden',
-        'h-14 px-8 rounded-full',
-        'bg-gray-100 text-red-500',
-        'font-medium text-lg',
-        'select-none cursor-pointer',
-        'transition-shadow duration-200',
-        'hover:shadow-md',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2',
-        'disabled:pointer-events-none disabled:opacity-50',
-        className,
-      )}
+      variant={variant}
+      size={size}
+      className={cn('relative overflow-hidden select-none', className)}
       onMouseDown={startHold}
       onMouseUp={resetHold}
       onMouseLeave={resetHold}
@@ -87,7 +115,8 @@ function HoldToDeleteButton({
       {/* Progress fill background */}
       <span
         className={cn(
-          'absolute inset-0 bg-red-200 origin-left',
+          'absolute inset-0 origin-left',
+          progressClass,
           isHolding ? 'transition-none' : 'transition-transform duration-300 ease-out',
         )}
         style={{
@@ -95,13 +124,19 @@ function HoldToDeleteButton({
         }}
       />
 
-      {/* Content */}
-      <span className="relative z-10 flex items-center gap-2">
-        <Trash2 className="size-5" />
+      {/* Content: text and icon adapt color when holding */}
+      <span
+        className={cn(
+          'relative z-10 flex items-center gap-2 transition-colors duration-150',
+          isHolding && contentWhenHoldingClass,
+        )}
+      >
+        {icon ?? <Trash2 className="size-5 shrink-0" />}
         <span>{children ?? 'Hold to Delete'}</span>
       </span>
-    </button>
+    </Button>
   )
 }
 
 export { HoldToDeleteButton }
+export type { HoldToDeleteButtonProps, HoldToDeleteVariant }

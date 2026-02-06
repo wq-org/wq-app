@@ -9,10 +9,14 @@ interface GameNodeLayoutProps {
   gameComponent?: React.ComponentType<{
     initialData?: unknown
     onDelete?: () => void
+    onRemoveImage?: (path: string) => void | Promise<void>
   }>
   overviewContent?: React.ReactNode
+  /** When provided, rendered in the Settings tab instead of GameNodeSettings (so the parent can control title/description state for save). */
+  settingsContent?: React.ReactNode
   initialData?: unknown
   onDelete?: () => void
+  onRemoveImage?: (path: string) => void | Promise<void>
   showDelete?: boolean
   points?: number
   onPointsChange?: (points: number) => void
@@ -23,11 +27,13 @@ export default function GameNodeLayout({
   nodeId,
   gameComponent: GameComponent,
   overviewContent,
+  settingsContent,
   initialData,
   points,
   onPointsChange,
   hideSettingsTab = false,
   onDelete,
+  onRemoveImage,
 }: GameNodeLayoutProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
@@ -75,6 +81,7 @@ export default function GameNodeLayout({
                   <GameComponent
                     initialData={initialData}
                     onDelete={onDelete}
+                    onRemoveImage={onRemoveImage}
                   />
                 </GameNodePointsContext.Provider>
               </div>
@@ -86,8 +93,8 @@ export default function GameNodeLayout({
         )}
         {!hideSettingsTab && activeTab === 'settings' && (
           <div className="flex flex-col gap-4">
-            <GameNodeSettings nodeId={nodeId} />
-            {onDelete && (
+            {settingsContent ?? <GameNodeSettings nodeId={nodeId} />}
+            {onDelete && settingsContent == null && (
               <div>
                 <p className="text-muted-foreground text-sm mb-3">
                   Hold the button below for 3 seconds to delete this node.

@@ -11,18 +11,18 @@ export default function GameImageTermsNode({ data, selected }: GameImageTermsNod
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-3 !h-3 !bg-purple-500 !border-2 !border-white"
+        className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white"
         id="left"
         onClick={(e) => e.stopPropagation()}
       />
-      <div className="p-2 rounded-lg border border-purple-500/20 bg-purple-500/10 flex items-center justify-center">
-        <ImageIcon className="w-4 h-4 text-purple-500" />
+      <div className="p-2 rounded-lg border border-blue-500/20 bg-blue-500/10 flex items-center justify-center">
+        <ImageIcon className="w-4 h-4 text-blue-500" />
       </div>
       <span className="text-gray-900 font-medium">{data?.label || 'Image and Terms'}</span>
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-3 !h-3 !bg-purple-500 !border-2 !border-white"
+        className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white"
         id="right"
         onClick={(e) => e.stopPropagation()}
       />

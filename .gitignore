@@ -40,3 +40,5 @@ dist-ssr
 .env.test.local.backup.7
 .env.test.local.backup.8
 *.sql
+
+.cursor/rules/db-schema-wq.mdc

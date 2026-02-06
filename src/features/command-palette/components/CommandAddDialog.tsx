@@ -9,22 +9,14 @@ import { createInstitution } from '@/features/auth/api/authApi'
 import { createGame } from '@/features/command-palette/api/commandPaletteApi'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
-import {
-  BookOpen,
-  Building2,
-  Gamepad2,
-  ChevronRight,
-  MoveLeft,
-  Plus,
-  StickyNote,
-} from 'lucide-react'
+import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, StickyNote } from 'lucide-react'
 import type { AddType } from '../types/command-bar.types'
 import type { Roles } from '@/components/layout/config'
 
 // Constants for role arrays to minimize duplication
-const ALL_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher', 'student']
 const ADMIN_AND_TEACHER_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher']
 const SUPER_ADMIN_ONLY: Roles[] = ['superAdmin']
+const TEACHER_AND_STUDENT_ROLES: Roles[] = ['teacher', 'student']
 
 // This function calls create based on type
 const createByType = async (
@@ -103,7 +95,7 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
       label: 'Add Course',
       description: 'Create a new course',
       icon: BookOpen,
-      availableForRoles: ALL_ROLES,
+      availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
     {
       type: 'institution',
@@ -114,24 +106,17 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
     },
     {
       type: 'game',
-      label: 'Add Game',
+      label: 'New Game',
       description: 'Create a new educational game',
       icon: Gamepad2,
       availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
     {
-      type: 'node',
-      label: 'Add Node',
-      description: 'Add a new action node to the game flow',
-      icon: Plus,
-      availableForRoles: ADMIN_AND_TEACHER_ROLES,
-    },
-    {
       type: 'notes',
-      label: 'Add New Notes',
+      label: 'New Notes',
       description: 'Create a new note',
       icon: StickyNote,
-      availableForRoles: ALL_ROLES,
+      availableForRoles: TEACHER_AND_STUDENT_ROLES,
     },
   ]
 

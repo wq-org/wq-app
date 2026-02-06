@@ -16,7 +16,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import TableEmptyView from '@/features/files/components/TableEmptyView'
+import TableEmptyView from '@/features/files/components/FilesTableEmptyView'
 import type { FileItem } from '../types/files.types'
 import { FILE_TYPE_CONFIG } from '../types/files.types'
 import FilesCard from './FilesCard'
@@ -90,7 +90,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-gray-400 font-light w-[60px]">#</TableHead>
+              <TableHead className="text-center text-gray-400 font-light w-[60px]">Type</TableHead>
               <TableHead className="text-left text-gray-400 font-light">Filename</TableHead>
               <TableHead className="text-center text-gray-400 font-light">Size</TableHead>
             </TableRow>
@@ -115,7 +115,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
                     </div>
                   </TableCell>
                   <TableCell className="text-left">
-                    <div className="flex items-center gap-3 h-10 min-h-[40px]">{file.filename}</div>
+                    <div className="flex items-center gap-3 h-10 min-h-10">{file.filename}</div>
                   </TableCell>
                   <TableCell className="text-center">{file.size}</TableCell>
                 </TableRow>

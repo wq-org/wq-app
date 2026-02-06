@@ -1,6 +1,6 @@
 import { Files, Upload } from 'lucide-react'
 
-export default function TableEmptyView() {
+export default function FilesTableEmptyView() {
   return (
     <div className="w-full animate-fade-in slide-in-from-bottom-5 duration-300 flex flex-col items-center justify-center p-12 border border-dashed border-gray-200 rounded-xl">
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
@@ -8,7 +8,7 @@ export default function TableEmptyView() {
       </div>
       <p className="mt-3 text-gray-500 text-center text-sm">No files found</p>
       <p className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2">
-        Upload your first file to get starte use the command palette to upload files.
+        Upload your first file to get start use the command palette to upload files.
         <Upload className="w-4 h-4 text-gray-400" />
       </p>
     </div>

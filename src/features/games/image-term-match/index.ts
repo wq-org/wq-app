@@ -2,7 +2,7 @@
 export { default as ImageTermMatchGame } from './ImageTermMatchGame'
 
 // Types
-export type * from './types/imageTermMatch.types'
+export type * from './types'
 
 // Components
 // Add component exports when available
