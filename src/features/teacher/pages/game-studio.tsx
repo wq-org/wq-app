@@ -14,9 +14,7 @@ import { Text } from '@/components/ui/text'
 export default function GameStudio() {
   const navigate = useNavigate()
   const { getUserId } = useUser()
-  const [projects, setProjects] = useState<
-    GameProjectCardListProps['projects']
-  >([])
+  const [projects, setProjects] = useState<GameProjectCardListProps['projects']>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
 

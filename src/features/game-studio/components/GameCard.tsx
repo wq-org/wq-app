@@ -17,7 +17,7 @@ function getCirclePositions(
   const positions: { left: number; top: number }[] = []
   for (let i = 0; i < count; i++) {
     const baseAngle = (2 * Math.PI * i) / count + angleOffsetRad
-    const angleNudge = (Math.sin(i * 1.7) * 0.2 + Math.cos(i * 0.9) * 0.15)
+    const angleNudge = Math.sin(i * 1.7) * 0.2 + Math.cos(i * 0.9) * 0.15
     const radiusNudge = 2 * (Math.sin(i * 2.1) - 0.5)
     const angle = baseAngle + angleNudge
     const radius = radiusPercent + radiusNudge
@@ -30,13 +30,34 @@ function getCirclePositions(
 }
 
 const avatars = [
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_french_01.png', name: 'French' },
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_italian_01.png', name: 'Italian' },
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_teacher_01.png', name: 'Teacher' },
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_turkey_01.png', name: 'Turkey' },
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_brazil_01.png', name: 'Brazil' },
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_german_01.png', name: 'German' },
-  { url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_Igptq_01.png', name: 'Igptq' },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_french_01.png',
+    name: 'French',
+  },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_italian_01.png',
+    name: 'Italian',
+  },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_teacher_01.png',
+    name: 'Teacher',
+  },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_female_turkey_01.png',
+    name: 'Turkey',
+  },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_brazil_01.png',
+    name: 'Brazil',
+  },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_german_01.png',
+    name: 'German',
+  },
+  {
+    url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_Igptq_01.png',
+    name: 'Igptq',
+  },
   { url: 'https://github.com/shadcn.png', name: 'Shadcn' },
   { url: 'https://github.com/hngngn.png', name: 'Hngngn' },
 ]
@@ -44,17 +65,8 @@ const avatars = [
 const CENTER_AVATAR_INDEX = 7
 const ORBITAL_AVATAR_COUNT = 7
 
-export default function GameCard({
-  title,
-  description,
-  version,
-  status,
-  onPlay,
-}: GameCardProps) {
-  const orbitalPositions = useMemo(
-    () => getCirclePositions(ORBITAL_AVATAR_COUNT),
-    [],
-  )
+export default function GameCard({ title, description, version, status, onPlay }: GameCardProps) {
+  const orbitalPositions = useMemo(() => getCirclePositions(ORBITAL_AVATAR_COUNT), [])
 
   return (
     <Card className="relative w-[350px] mx-auto rounded-4xl hover:shadow-lg transition-shadow">
@@ -108,14 +120,15 @@ export default function GameCard({
         {/* Card content: version, title, description, button */}
         <div className="space-y-4">
           {version != null && (
-            <Badge variant="outline" className="text-xs">
+            <Badge
+              variant="outline"
+              className="text-xs"
+            >
               Version : {version}
             </Badge>
           )}
           <div className="space-y-1">
-            <h3 className="text-xl font-semibold truncate cursor-default block">
-              {title}
-            </h3>
+            <h3 className="text-xl font-semibold truncate cursor-default block">{title}</h3>
             <p className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1 cursor-default">
               {description}
             </p>
@@ -131,7 +144,10 @@ export default function GameCard({
               }}
               className="text-blue-500 border-0 hover:bg-blue-100 hover:text-blue-500 hover:duration-200"
             >
-              <Text as="p" variant="body">
+              <Text
+                as="p"
+                variant="body"
+              >
                 Play
               </Text>
               <ArrowRight className="w-5 h-5" />

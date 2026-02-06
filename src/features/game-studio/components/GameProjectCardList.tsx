@@ -1,10 +1,7 @@
 import { GameProjectCard } from './GameProjectCard'
 import type { GameProjectCardListProps } from '../types/game-studio.types'
 
-export default function GameProjectCardList({
-  projects,
-  onOpen,
-}: GameProjectCardListProps) {
+export default function GameProjectCardList({ projects, onOpen }: GameProjectCardListProps) {
   return (
     <div className="flex flex-wrap gap-6">
       {projects.map((project) => (

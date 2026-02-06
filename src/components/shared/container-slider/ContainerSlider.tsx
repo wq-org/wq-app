@@ -73,12 +73,7 @@ export function ContainerSlider({
       )}
     >
       {showSideArrows && count > 1 ? (
-        <div
-          className={cn(
-            'flex items-stretch gap-2 w-full',
-            fillHeight ? 'flex-1 min-h-0' : '',
-          )}
-        >
+        <div className={cn('flex items-stretch gap-2 w-full', fillHeight ? 'flex-1 min-h-0' : '')}>
           <Button
             type="button"
             variant="ghost"

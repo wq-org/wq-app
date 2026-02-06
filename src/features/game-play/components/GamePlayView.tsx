@@ -117,7 +117,12 @@ export function GamePlayView({
             score={score}
           />
         </div>
-        {onBack && <div className="w-[88px] shrink-0" aria-hidden />}
+        {onBack && (
+          <div
+            className="w-[88px] shrink-0"
+            aria-hidden
+          />
+        )}
       </div>
       <ContainerSlider
         fillHeight

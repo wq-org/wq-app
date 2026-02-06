@@ -211,26 +211,26 @@ export default function CommandPalette({
             role="region"
             aria-label="Quick actions"
           >
-          <Toolbar.Root className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              {/* First group: first three items */}
-              <ToggleGroup.Root
-                type="single"
-                value={active}
-                onValueChange={(v) => setActive(v || '')}
-                orientation="horizontal"
-                aria-label="primary actions"
-                className="flex items-center gap-3"
-              >
-                {roleBasedUserCommands.slice(0, 3).map((item) => {
-                  const Icon = item.icon
-                  return (
-                    <Tooltip.Root key={item.id}>
-                      <Tooltip.Trigger asChild>
-                        <ToggleGroup.Item
-                          value={item.id}
-                          onClick={() => handleItemClick(item)}
-                          className="
+            <Toolbar.Root className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
+                {/* First group: first three items */}
+                <ToggleGroup.Root
+                  type="single"
+                  value={active}
+                  onValueChange={(v) => setActive(v || '')}
+                  orientation="horizontal"
+                  aria-label="primary actions"
+                  className="flex items-center gap-3"
+                >
+                  {roleBasedUserCommands.slice(0, 3).map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Tooltip.Root key={item.id}>
+                        <Tooltip.Trigger asChild>
+                          <ToggleGroup.Item
+                            value={item.id}
+                            onClick={() => handleItemClick(item)}
+                            className="
                                                         cursor-pointer
                                                         inline-flex h-14 w-14 items-center justify-center
                                                         rounded-full border
@@ -238,57 +238,57 @@ export default function CommandPalette({
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                          aria-label={t(item.labelKey)}
-                        >
-                          <Icon className="h-6 w-6" />
-                          <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
-                        </ToggleGroup.Item>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          side="top"
-                          sideOffset={8}
-                          className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
-                        >
-                          {t(item.labelKey)}
-                          <Tooltip.Arrow className="fill-popover" />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  )
-                })}
-              </ToggleGroup.Root>
+                            aria-label={t(item.labelKey)}
+                          >
+                            <Icon className="h-6 w-6" />
+                            <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
+                          </ToggleGroup.Item>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={8}
+                            className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
+                          >
+                            {t(item.labelKey)}
+                            <Tooltip.Arrow className="fill-popover" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    )
+                  })}
+                </ToggleGroup.Root>
 
-              {/* Separator after third icon */}
-              {roleBasedUserCommands.slice(3).length > 0 && (
-                <Separator.Root
-                  decorative
-                  orientation="vertical"
-                  className={cn(
-                    'mx-2 h-12 w-px bg-border',
-                    roleBasedUserCommands.slice(3).length > 0 ? 'mx-2' : 'mx-0',
-                  )}
-                />
-              )}
+                {/* Separator after third icon */}
+                {roleBasedUserCommands.slice(3).length > 0 && (
+                  <Separator.Root
+                    decorative
+                    orientation="vertical"
+                    className={cn(
+                      'mx-2 h-12 w-px bg-border',
+                      roleBasedUserCommands.slice(3).length > 0 ? 'mx-2' : 'mx-0',
+                    )}
+                  />
+                )}
 
-              {/* Remaining primary items */}
-              <ToggleGroup.Root
-                type="single"
-                value={active}
-                onValueChange={(v) => setActive(v || '')}
-                orientation="horizontal"
-                aria-label="primary actions continued"
-                className="flex items-center gap-3"
-              >
-                {roleBasedUserCommands.slice(3).map((item) => {
-                  const Icon = item.icon
-                  return (
-                    <Tooltip.Root key={item.id}>
-                      <Tooltip.Trigger asChild>
-                        <ToggleGroup.Item
-                          value={item.id}
-                          onClick={() => handleItemClick(item)}
-                          className="
+                {/* Remaining primary items */}
+                <ToggleGroup.Root
+                  type="single"
+                  value={active}
+                  onValueChange={(v) => setActive(v || '')}
+                  orientation="horizontal"
+                  aria-label="primary actions continued"
+                  className="flex items-center gap-3"
+                >
+                  {roleBasedUserCommands.slice(3).map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Tooltip.Root key={item.id}>
+                        <Tooltip.Trigger asChild>
+                          <ToggleGroup.Item
+                            value={item.id}
+                            onClick={() => handleItemClick(item)}
+                            className="
                                                         cursor-pointer
                                                         inline-flex h-14 w-14 items-center justify-center
                                                         rounded-full border
@@ -296,53 +296,53 @@ export default function CommandPalette({
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                          aria-label={t(item.labelKey)}
-                        >
-                          <Icon className="h-6 w-6" />
-                          <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
-                        </ToggleGroup.Item>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          side="top"
-                          sideOffset={8}
-                          className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
-                        >
-                          {t(item.labelKey)}
-                          <Tooltip.Arrow className="fill-popover" />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  )
-                })}
-              </ToggleGroup.Root>
+                            aria-label={t(item.labelKey)}
+                          >
+                            <Icon className="h-6 w-6" />
+                            <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
+                          </ToggleGroup.Item>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={8}
+                            className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
+                          >
+                            {t(item.labelKey)}
+                            <Tooltip.Arrow className="fill-popover" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    )
+                  })}
+                </ToggleGroup.Root>
 
-              {roleBasedUserCommands.slice(3).length > 0 && (
-                <Separator.Root
-                  decorative
-                  orientation="vertical"
-                  className="mx-2 h-12 w-px bg-border"
-                />
-              )}
+                {roleBasedUserCommands.slice(3).length > 0 && (
+                  <Separator.Root
+                    decorative
+                    orientation="vertical"
+                    className="mx-2 h-12 w-px bg-border"
+                  />
+                )}
 
-              {/* System group */}
-              <ToggleGroup.Root
-                type="single"
-                value={active}
-                onValueChange={(v) => setActive(v || '')}
-                orientation="horizontal"
-                aria-label="system actions"
-                className="flex items-center gap-3"
-              >
-                {displayedUserItems.map((item) => {
-                  const Icon = item.icon
-                  return (
-                    <Tooltip.Root key={item.id}>
-                      <Tooltip.Trigger asChild>
-                        <ToggleGroup.Item
-                          value={item.id}
-                          onClick={() => handleItemClick(item)}
-                          className="
+                {/* System group */}
+                <ToggleGroup.Root
+                  type="single"
+                  value={active}
+                  onValueChange={(v) => setActive(v || '')}
+                  orientation="horizontal"
+                  aria-label="system actions"
+                  className="flex items-center gap-3"
+                >
+                  {displayedUserItems.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Tooltip.Root key={item.id}>
+                        <Tooltip.Trigger asChild>
+                          <ToggleGroup.Item
+                            value={item.id}
+                            onClick={() => handleItemClick(item)}
+                            className="
                                                         cursor-pointer
                                                         inline-flex h-14 w-14 items-center justify-center
                                                         rounded-full border
@@ -350,28 +350,28 @@ export default function CommandPalette({
                                                         transition-colors
                                                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                                                     "
-                          aria-label={t(item.labelKey)}
-                        >
-                          <Icon className="h-6 w-6" />
-                          <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
-                        </ToggleGroup.Item>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          side="top"
-                          sideOffset={8}
-                          className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
-                        >
-                          {t(item.labelKey)}
-                          <Tooltip.Arrow className="fill-popover" />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  )
-                })}
-              </ToggleGroup.Root>
-            </div>
-          </Toolbar.Root>
+                            aria-label={t(item.labelKey)}
+                          >
+                            <Icon className="h-6 w-6" />
+                            <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
+                          </ToggleGroup.Item>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={8}
+                            className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
+                          >
+                            {t(item.labelKey)}
+                            <Tooltip.Arrow className="fill-popover" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    )
+                  })}
+                </ToggleGroup.Root>
+              </div>
+            </Toolbar.Root>
           </div>
         </Tooltip.Provider>
       </div>
