@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 
 const DEFAULT_TRUNCATE_LENGTH = 600
 
@@ -23,10 +24,24 @@ export default function GameInformationCard({
 
   return (
     <div className="space-y-2">
-      {title && <h2 className="text-lg font-semibold">{title}</h2>}
+      {title && (
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-lg font-semibold"
+        >
+          {title}
+        </Text>
+      )}
       {description && (
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">{displayText}</p>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground"
+          >
+            {displayText}
+          </Text>
           {isLong && (
             <Button
               type="button"

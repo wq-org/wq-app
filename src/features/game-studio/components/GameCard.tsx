@@ -3,6 +3,7 @@ import { Separator } from '@/components/ui/separator'
 import { ArrowRight, Plus } from 'lucide-react'
 import type { GameCardProps } from '../types/game-studio.types'
 import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 
 export default function GameCard({ title, description, imageUrl, onPlay }: GameCardProps) {
   return (
@@ -30,7 +31,13 @@ export default function GameCard({ title, description, imageUrl, onPlay }: GameC
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-blue-50 to-purple-50">
-            <span className="text-4xl opacity-60">🎮</span>
+            <Text
+              as="span"
+              variant="small"
+              className="text-4xl opacity-60"
+            >
+              🎮
+            </Text>
           </div>
         )}
       </div>
@@ -39,12 +46,20 @@ export default function GameCard({ title, description, imageUrl, onPlay }: GameC
 
       {/* Content: title, description, button (same style as provided) */}
       <CardFooter className="p-6 space-y-4">
-        <h2 className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0"
+        >
           {title}
-        </h2>
-        <p className="text-gray-500 text-left min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-500 text-left min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1"
+        >
           {description}
-        </p>
+        </Text>
         <Button
           type="button"
           onClick={(e) => {
@@ -53,7 +68,12 @@ export default function GameCard({ title, description, imageUrl, onPlay }: GameC
           }}
           className="text-blue-500 hover:opacity-80 h-auto"
         >
-          <p>Play</p>
+          <Text
+            as="p"
+            variant="body"
+          >
+            Play
+          </Text>
           <ArrowRight className="w-4 h-4" />
         </Button>
       </CardFooter>

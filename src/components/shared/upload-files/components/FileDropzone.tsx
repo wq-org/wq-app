@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ALL_ALLOWED_TYPES } from '../types/upload.types'
+import { Text } from '@/components/ui/text'
 
 interface FileDropzoneProps {
   onFilesSelected: (files: File[]) => void
@@ -96,11 +97,21 @@ export default function FileDropzone({
           Upload Files
         </Button>
         <div className="text-center space-y-1">
-          <p className="text-gray-600 text-sm">Choose files or drag & drop them here.</p>
-          <p className="text-gray-400 text-xs">
+          <Text
+            as="p"
+            variant="body"
+            className="text-gray-600 text-sm"
+          >
+            Choose files or drag & drop them here.
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-gray-400 text-xs"
+          >
             Images (except WebP), PDF, MP4 videos (max 60s), Word (docx), PowerPoint (pptx/ppt). Max
             20 MB per file.
-          </p>
+          </Text>
         </div>
       </div>
     </div>

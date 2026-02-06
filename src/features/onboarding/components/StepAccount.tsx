@@ -10,6 +10,7 @@ import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { fetchAvatars } from '../api/onboardingApi'
 import type { StepAccountProps, AvatarOption } from '../types/onboarding.types'
 import { validateUsername } from '@/lib/validations'
+import { Text } from '@/components/ui/text'
 
 export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   const [username, setUsername] = useState(initialData?.username || '')
@@ -101,10 +102,20 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   if (!avatars || avatars.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 gap-4">
-        <p className="text-muted-foreground">No avatars available.</p>
-        <p className="text-sm text-gray-500">
+        <Text
+          as="p"
+          variant="body"
+          className="text-muted-foreground"
+        >
+          No avatars available.
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm text-gray-500"
+        >
           Please check your Supabase storage bucket: avatars/meta_data/ and avatars/faces/
-        </p>
+        </Text>
       </div>
     )
   }
@@ -114,7 +125,13 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       {/* Avatar Selection */}
       <div className="flex flex-col items-center gap-4">
         <Label className="text-base font-light">
-          <h2 className="text-3xl font-light mb-2">Choose Your Avatar</h2>
+          <Text
+            as="h2"
+            variant="h2"
+            className="text-3xl font-light mb-2"
+          >
+            Choose Your Avatar
+          </Text>
         </Label>
         <div className="flex items-center gap-6">
           <Button
@@ -138,13 +155,29 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             </Avatar>
             <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">{selectedAvatar.emoji}</span>
-                <span className="text-sm font-medium text-foreground">{selectedAvatar.name}</span>
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-2xl"
+                >
+                  {selectedAvatar.emoji}
+                </Text>
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-sm font-medium text-foreground"
+                >
+                  {selectedAvatar.name}
+                </Text>
               </div>
               {selectedAvatar.description && (
-                <p className="text-xs text-muted-foreground text-center max-w-xs">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-xs text-muted-foreground text-center max-w-xs"
+                >
                   {selectedAvatar.description}
-                </p>
+                </Text>
               )}
             </div>
           </div>
@@ -194,7 +227,15 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             onChange={(e) => handleUsernameChange(e.target.value)}
             className={`text-base ${usernameError ? 'border-red-500' : ''}`}
           />
-          {usernameError && <p className="text-sm text-red-500">{usernameError}</p>}
+          {usernameError && (
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-red-500"
+            >
+              {usernameError}
+            </Text>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -234,13 +275,15 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             className="resize-none"
             rows={3}
           />
-          <p
+          <Text
+            as="p"
+            variant="body"
             className={`text-xs text-right ${
               remainingChars < 20 ? 'text-orange-500' : 'text-muted-foreground'
             }`}
           >
             {remainingChars} characters remaining
-          </p>
+          </Text>
         </div>
       </div>
 

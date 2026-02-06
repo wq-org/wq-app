@@ -11,6 +11,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 import { QuoteOfTheDay } from '@/components/ui/quote'
 import { useTranslation } from 'react-i18next'
 import type { Roles } from './config'
+import { Text } from '@/components/ui/text'
 
 interface DashboardLayoutProps {
   imageUrl?: string
@@ -84,9 +85,29 @@ export default function DashboardLayout({
                   <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-1">
-                  <p className="text-5xl">{userName}</p>
-                  {username && <p className="text-sm text-muted-foreground">@{username}</p>}
-                  <p className="text-muted-foreground">{description}</p>
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-5xl"
+                  >
+                    {userName}
+                  </Text>
+                  {username && (
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-sm text-muted-foreground"
+                    >
+                      @{username}
+                    </Text>
+                  )}
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-muted-foreground"
+                  >
+                    {description}
+                  </Text>
                 </div>
               </div>
               {/* Quote of the Day - aligned to the right */}
@@ -190,7 +211,9 @@ export default function DashboardLayout({
                   {dashboardTabs.map((tab) => {
                     const Icon = tab.icon
                     return (
-                      <span
+                      <Text
+                        as="span"
+                        variant="small"
                         key={tab.id}
                         onClick={() => handleTabClick(tab.id)}
                         className={`text-xl border-b-2  flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
@@ -200,8 +223,13 @@ export default function DashboardLayout({
                         }`}
                       >
                         <Icon />
-                        <p>{tab.label}</p>
-                      </span>
+                        <Text
+                          as="p"
+                          variant="body"
+                        >
+                          {tab.label}
+                        </Text>
+                      </Text>
                     )
                   })}
                 </div>

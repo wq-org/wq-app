@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 const flags: Record<string, string> = {
   US: '🇺🇸',
@@ -33,7 +34,13 @@ export function LanguageSwitcher() {
           size="icon"
           className="h-10 w-10 rounded-full hover:bg-accent gap-1"
         >
-          <span className="text-base">{flags[currentLanguage.flag]}</span>
+          <Text
+            as="span"
+            variant="small"
+            className="text-base"
+          >
+            {flags[currentLanguage.flag]}
+          </Text>
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -50,8 +57,18 @@ export function LanguageSwitcher() {
                 i18n.language === lang.code && 'bg-accent',
               )}
             >
-              <span>{flags[lang.flag]}</span>
-              <span>{lang.name}</span>
+              <Text
+                as="span"
+                variant="small"
+              >
+                {flags[lang.flag]}
+              </Text>
+              <Text
+                as="span"
+                variant="small"
+              >
+                {lang.name}
+              </Text>
             </button>
           ))}
         </div>

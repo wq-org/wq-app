@@ -10,6 +10,7 @@ import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
 import { DotWaveLoader } from '@/components/shared'
+import { Text } from '@/components/ui/text'
 
 export default function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -99,8 +100,20 @@ export default function CommandSearch() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col gap-1">
-                      <span className="text-sm font-medium">{item.title}</span>
-                      <span className="text-xs text-gray-400">{item.email || 'No email'}</span>
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-sm font-medium"
+                      >
+                        {item.title}
+                      </Text>
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-xs text-gray-400"
+                      >
+                        {item.email || 'No email'}
+                      </Text>
                       <Badge
                         variant="secondary"
                         className="text-[10px] px-1.5 py-0 w-fit"

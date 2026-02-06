@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 interface SlotsLeftLabelProps {
   current: number
@@ -8,8 +9,12 @@ interface SlotsLeftLabelProps {
 
 export default function SlotsLeftLabel({ current, max, className }: SlotsLeftLabelProps) {
   return (
-    <span className={cn('text-xs text-gray-500', className)}>
+    <Text
+      as="span"
+      variant="small"
+      className={cn('text-xs text-gray-500', className)}
+    >
       {max - current}/{max} slots left
-    </span>
+    </Text>
   )
 }

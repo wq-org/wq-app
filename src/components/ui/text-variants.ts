@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 export const textVariants = cva('font-sans', {
   variants: {
     size: {
-      xxs: 'text-[10px] leading-[14px]',
+      xxs: 'text-[10px] leading-3.5',
       xs: 'text-xs',
       sm: 'text-sm',
       base: 'text-base',

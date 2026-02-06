@@ -2,6 +2,7 @@ import { Ghost, ArrowLeft, HomeIcon, LogIn } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Text } from '@/components/ui/text'
 
 const Error404 = () => {
   const navigate = useNavigate()
@@ -32,14 +33,30 @@ const Error404 = () => {
           strokeWidth={1.5}
         />
 
-        <h1 className="text-6xl  text-black mb-4">404</h1>
+        <Text
+          as="h1"
+          variant="h1"
+          className="text-6xl  text-black mb-4"
+        >
+          404
+        </Text>
 
-        <h2 className="text-2xl font-semibold text-black mb-6">Page Not Found</h2>
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-2xl font-semibold text-black mb-6"
+        >
+          Page Not Found
+        </Text>
 
-        <p className="text-gray-700 mb-8 px-4">
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-700 mb-8 px-4"
+        >
           Oops! Looks like you've ventured into uncharted territory. The page you're looking for
           seems to have gone exploring.
-        </p>
+        </Text>
 
         {/* Navigation options with circular icon buttons */}
         <div className="flex items-center justify-center gap-6">
@@ -55,7 +72,12 @@ const Error404 = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Go Back</p>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Go Back
+              </Text>
             </TooltipContent>
           </Tooltip>
 
@@ -71,7 +93,12 @@ const Error404 = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Go to Dashboard</p>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Go to Dashboard
+              </Text>
             </TooltipContent>
           </Tooltip>
 
@@ -87,7 +114,12 @@ const Error404 = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Go to Login</p>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Go to Login
+              </Text>
             </TooltipContent>
           </Tooltip>
         </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Text } from '@/components/ui/text'
 
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -25,7 +26,13 @@ export default function NotificationPanel() {
         style={{ backgroundClip: 'padding-box' }}
       >
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl  text-gray-900">Notifications</h1>
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-xl  text-gray-900"
+          >
+            Notifications
+          </Text>
         </div>
         {/* Tabs */}
         <div className="flex items-center gap-4">
@@ -59,7 +66,13 @@ export default function NotificationPanel() {
           >
             <div className="flex items-center gap-1.5">
               Following
-              <span className="text-xs text-gray-400">6</span>
+              <Text
+                as="span"
+                variant="small"
+                className="text-xs text-gray-400"
+              >
+                6
+              </Text>
             </div>
             {activeTab === 'following' && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black" />
@@ -77,8 +90,20 @@ export default function NotificationPanel() {
             <div>
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <p className="text-gray-500 text-base">No notifications</p>
-                  <p className="text-gray-400 text-sm mt-1">You're all caught up!</p>
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-gray-500 text-base"
+                  >
+                    No notifications
+                  </Text>
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-gray-400 text-sm mt-1"
+                  >
+                    You're all caught up!
+                  </Text>
                 </div>
               ) : (
                 notifications.map((notification) => (
@@ -93,10 +118,20 @@ export default function NotificationPanel() {
 
           {activeTab === 'following' && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-gray-500 text-base">No following notifications</p>
-              <p className="text-gray-400 text-sm mt-1">
+              <Text
+                as="p"
+                variant="body"
+                className="text-gray-500 text-base"
+              >
+                No following notifications
+              </Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-gray-400 text-sm mt-1"
+              >
                 Notifications from people you follow will appear here
-              </p>
+              </Text>
             </div>
           )}
         </ScrollArea>

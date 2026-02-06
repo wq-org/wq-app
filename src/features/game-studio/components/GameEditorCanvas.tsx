@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
+import { Text } from '@/components/ui/text'
 import {
   ReactFlow,
   applyNodeChanges,
@@ -1151,7 +1152,13 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               size="md"
               speed={1750}
             />
-            <p className="text-sm text-gray-500">Project Loading...</p>
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-gray-500"
+            >
+              Project Loading...
+            </Text>
           </div>
         )}
         <GameSidebar />

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { toast } from 'sonner'
 import DotWaveLoader from '@/components/shared/loaders/DotWaveLoader'
+import { Text } from '@/components/ui/text'
 
 export default function GameStudio() {
   const navigate = useNavigate()
@@ -71,8 +72,20 @@ export default function GameStudio() {
       role="teacher"
     >
       <div className="flex flex-col gap-2">
-        <h1 className="text-6xl">Game Studio</h1>
-        <p className="text-gray-500 mt-2">Create and manage educational games for your students.</p>
+        <Text
+          as="h1"
+          variant="h1"
+          className="text-6xl"
+        >
+          Game Studio
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-500 mt-2"
+        >
+          Create and manage educational games for your students.
+        </Text>
         <div className="flex justify-end w-full">
           <Button
             onClick={handleCreateGame}

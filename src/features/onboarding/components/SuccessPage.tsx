@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
 import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 import {
   Dialog,
   DialogContent,
@@ -64,7 +65,13 @@ export default function SuccessPage({
       >
         {/* Party Emoji */}
         <div className="flex justify-center py-4">
-          <span className="text-6xl animate-bounce">🎉</span>
+          <Text
+            as="span"
+            variant="small"
+            className="text-6xl animate-bounce"
+          >
+            🎉
+          </Text>
         </div>
 
         <DialogHeader>

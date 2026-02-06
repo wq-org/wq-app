@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ConfirmationDialog } from '@/components/shared'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Text } from '@/components/ui/text'
 
 export interface Topic {
   id: string
@@ -53,7 +54,13 @@ export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: Top
             <Check className="w-4 h-4 text-white" />
           </Badge>
         )}
-        <span className="animate-in fade-in slide-in-from-top-1 duration-200">{topic.name}</span>
+        <Text
+          as="span"
+          variant="small"
+          className="animate-in fade-in slide-in-from-top-1 duration-200"
+        >
+          {topic.name}
+        </Text>
         <Separator
           orientation="vertical"
           className="h-full bg-gray-300"

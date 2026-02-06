@@ -7,6 +7,7 @@ import { Card, CardHeader, CardDescription } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useUser } from '@/contexts/user'
 import type { Roles } from '@/components/layout/config'
+import { Text } from '@/components/ui/text'
 
 export default function RoleSelectionPage() {
   const [selectedRole, setSelectedRole] = useState<string>('')
@@ -23,17 +24,34 @@ export default function RoleSelectionPage() {
 
   return (
     <div className="w-screen h-screen container flex mx-auto flex-col items-center justify-center gap-8">
-      <h1 className="text-4xl font-light">
+      <Text
+        as="h1"
+        variant="h1"
+        className="text-4xl font-light"
+      >
         {t('title')}{' '}
         {selectedRole && (
-          <span>
-            <span className="mr-2.5">{t('asA')}</span>
-            <span className="bg-gray-100 text-black rounded-2xl px-4 py-2 capitalize">
+          <Text
+            as="span"
+            variant="small"
+          >
+            <Text
+              as="span"
+              variant="small"
+              className="mr-2.5"
+            >
+              {t('asA')}
+            </Text>
+            <Text
+              as="span"
+              variant="small"
+              className="bg-gray-100 text-black rounded-2xl px-4 py-2 capitalize"
+            >
               {selectedRole}
-            </span>
-          </span>
+            </Text>
+          </Text>
         )}
-      </h1>
+      </Text>
 
       <RadioGroup
         className="flex gap-4"
@@ -57,7 +75,13 @@ export default function RoleSelectionPage() {
             <div className="inline-flex p-3 bg-gray-100 rounded-lg w-fit">
               <GraduationCap className="h-8 w-8 text-gray-600" />
             </div>
-            <p className="text-3xl">{t('student.title')}</p>
+            <Text
+              as="p"
+              variant="body"
+              className="text-3xl"
+            >
+              {t('student.title')}
+            </Text>
             <CardDescription>{t('student.desc')}</CardDescription>
           </CardHeader>
         </Card>
@@ -79,7 +103,13 @@ export default function RoleSelectionPage() {
             <div className="inline-flex p-3 bg-gray-100 rounded-lg w-fit">
               <Presentation className="h-8 w-8 text-gray-600" />
             </div>
-            <p className="text-3xl">{t('teacher.title')}</p>
+            <Text
+              as="p"
+              variant="body"
+              className="text-3xl"
+            >
+              {t('teacher.title')}
+            </Text>
             <CardDescription>{t('teacher.desc')}</CardDescription>
           </CardHeader>
         </Card>

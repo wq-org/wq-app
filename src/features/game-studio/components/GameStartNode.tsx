@@ -1,6 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { Play } from 'lucide-react'
 import type { GameStartNodeProps } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 export default function GameStartNode({ data, selected }: GameStartNodeProps) {
   return (
@@ -11,7 +12,13 @@ export default function GameStartNode({ data, selected }: GameStartNodeProps) {
       <div className="p-2 rounded-lg border border-gray-500/20 bg-gray-500/10 flex items-center justify-center">
         <Play className="w-4 h-4 text-gray-500" />
       </div>
-      <span className="text-gray-900 font-medium">{data?.title || data?.label || 'Start'}</span>
+      <Text
+        as="span"
+        variant="small"
+        className="text-gray-900 font-medium"
+      >
+        {data?.title || data?.label || 'Start'}
+      </Text>
       <Handle
         type="source"
         position={Position.Right}

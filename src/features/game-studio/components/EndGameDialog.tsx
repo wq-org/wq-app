@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Text } from '@/components/ui/text'
 import {
   Dialog,
   DialogContent,
@@ -114,9 +115,13 @@ export default function EndGameDialog({
 
           {onDelete && (
             <div>
-              <p className="text-muted-foreground text-sm mb-3">
+              <Text
+                as="p"
+                variant="body"
+                className="text-muted-foreground text-sm mb-3"
+              >
                 Hold the button below for 3 seconds to delete this node.
-              </p>
+              </Text>
               <HoldToDeleteButton
                 onDelete={handleDelete}
                 holdDuration={3000}

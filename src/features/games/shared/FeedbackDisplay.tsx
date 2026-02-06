@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 interface FeedbackDisplayProps {
   feedback: string | undefined
@@ -8,7 +9,15 @@ interface FeedbackDisplayProps {
 
 export default function FeedbackDisplay({ feedback, variant, className }: FeedbackDisplayProps) {
   if (feedback === undefined || feedback.trim() === '') {
-    return <span className="text-muted-foreground">—</span>
+    return (
+      <Text
+        as="span"
+        variant="small"
+        className="text-muted-foreground"
+      >
+        —
+      </Text>
+    )
   }
 
   return (

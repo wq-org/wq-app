@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
+import { Text } from '@/components/ui/text'
 
 export interface GameInformationProps {
   title: string
@@ -37,9 +38,13 @@ export default function GameInformation({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="description">Description</Label>
-            <span className="text-xs text-muted-foreground">
+            <Text
+              as="span"
+              variant="small"
+              className="text-xs text-muted-foreground"
+            >
               {description.length}/{MAX_DESCRIPTION_LENGTH}
-            </span>
+            </Text>
           </div>
           <Textarea
             id="description"

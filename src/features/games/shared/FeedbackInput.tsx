@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
+import { Text } from '@/components/ui/text'
 
 interface FeedbackInputProps {
   label?: string
@@ -28,9 +29,13 @@ export default function FeedbackInput({
       {label && (
         <div className="flex items-center justify-between">
           <Label className="text-sm font-medium">{label}</Label>
-          <span className="text-xs text-muted-foreground">
+          <Text
+            as="span"
+            variant="small"
+            className="text-xs text-muted-foreground"
+          >
             {value.length}/{MAX_DESCRIPTION_LENGTH}
-          </span>
+          </Text>
         </div>
       )}
       <Textarea

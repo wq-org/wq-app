@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { Text } from '@/components/ui/text'
 
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { Check, X, Trophy } from 'lucide-react'
@@ -27,7 +28,13 @@ function StatItem({ icon, value, label }: StatItemProps) {
         <Tooltip.Trigger asChild>
           <div className="flex items-center gap-1.5 px-2">
             <div className="text-muted-foreground">{icon}</div>
-            <span className="text-lg font-medium tabular-nums">{value}</span>
+            <Text
+              as="span"
+              variant="small"
+              className="text-lg font-medium tabular-nums"
+            >
+              {value}
+            </Text>
           </div>
         </Tooltip.Trigger>
         <Tooltip.Portal>

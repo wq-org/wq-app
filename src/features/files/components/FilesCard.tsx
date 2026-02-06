@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { LayoutDashboard, Settings, Trash2, X } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 import {
   Drawer,
   DrawerContent,
@@ -304,7 +305,12 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   <LayoutDashboard
                     className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
                   />
-                  <span>Overview</span>
+                  <Text
+                    as="span"
+                    variant="small"
+                  >
+                    Overview
+                  </Text>
                 </Button>
                 <Button
                   variant="ghost"
@@ -316,7 +322,12 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   }`}
                 >
                   <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-                  <span>Settings</span>
+                  <Text
+                    as="span"
+                    variant="small"
+                  >
+                    Settings
+                  </Text>
                 </Button>
               </div>
 
@@ -392,15 +403,33 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <Label className="text-xs text-gray-500">Filename</Label>
-                          <p className="text-sm font-medium">{file.filename}</p>
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="text-sm font-medium"
+                          >
+                            {file.filename}
+                          </Text>
                         </div>
                         <div className="flex items-center justify-between">
                           <Label className="text-xs text-gray-500">Size</Label>
-                          <p className="text-sm font-medium">{file.size}</p>
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="text-sm font-medium"
+                          >
+                            {file.size}
+                          </Text>
                         </div>
                         <div className="flex items-center justify-between">
                           <Label className="text-xs text-gray-500">Type</Label>
-                          <p className="text-sm font-medium">{file.type}</p>
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="text-sm font-medium"
+                          >
+                            {file.type}
+                          </Text>
                         </div>
                       </div>
                     </div>
@@ -446,10 +475,20 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       ) : newFile ? (
                         <div className="space-y-2">
                           <div className="p-4 border rounded-lg bg-gray-50">
-                            <p className="text-sm font-medium">{newFile.name}</p>
-                            <p className="text-xs text-gray-500">
+                            <Text
+                              as="p"
+                              variant="body"
+                              className="text-sm font-medium"
+                            >
+                              {newFile.name}
+                            </Text>
+                            <Text
+                              as="p"
+                              variant="body"
+                              className="text-xs text-gray-500"
+                            >
                               {(newFile.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
+                            </Text>
                           </div>
                           <Button
                             variant="outline"

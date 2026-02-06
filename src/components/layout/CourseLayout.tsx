@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LayoutDashboard, Settings } from 'lucide-react'
 import AppWrapper from './AppWrapper'
+import { Text } from '@/components/ui/text'
 
 interface CourseLayoutProps {
   children?: React.ReactNode
@@ -31,7 +32,12 @@ export default function CourseLayout({
             <LayoutDashboard
               className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
             />
-            <span>Overview</span>
+            <Text
+              as="span"
+              variant="small"
+            >
+              Overview
+            </Text>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
@@ -42,7 +48,12 @@ export default function CourseLayout({
             }`}
           >
             <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-            <span>Settings</span>
+            <Text
+              as="span"
+              variant="small"
+            >
+              Settings
+            </Text>
           </button>
         </div>
 

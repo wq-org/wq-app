@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 export interface TabItem {
   id: string
@@ -39,14 +40,16 @@ export default function SelectTabs({
             )}
           >
             <Icon className={isActive ? 'text-black' : 'text-black/40'} />
-            <span
+            <Text
+              as="span"
+              variant="small"
               className={cn(
                 'text-xl',
                 isActive ? 'text-black font-medium' : 'text-black/40 hover:text-black/60',
               )}
             >
               {tab.title}
-            </span>
+            </Text>
           </button>
         )
       })}

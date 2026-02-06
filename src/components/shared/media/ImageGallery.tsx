@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { Text } from '@/components/ui/text'
 
 export interface GalleryImage {
   url: string
@@ -72,12 +73,14 @@ export function ImageGallery({
               />
             </div>
             {image.title ? (
-              <p
+              <Text
+                as="p"
+                variant="body"
                 className="mt-1 text-xs font-medium text-foreground truncate min-w-0 max-w-full"
                 title={image.title}
               >
                 {truncateTitle(image.title, titleMaxLength)}
-              </p>
+              </Text>
             ) : null}
           </button>
         ))}

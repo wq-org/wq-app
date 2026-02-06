@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FileText, MoreVertical, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getFileTypeConfig } from '@/components/shared/upload-files/types/upload.types'
+import { Text } from '@/components/ui/text'
 
 interface UploadedFileItemProps {
   file: File
@@ -54,8 +55,20 @@ export default function UploadedFileItem({ file, onRemove }: UploadedFileItemPro
 
       {/* File Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm font-medium text-gray-900 truncate"
+        >
+          {file.name}
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-xs text-gray-500"
+        >
+          {formatFileSize(file.size)}
+        </Text>
       </div>
 
       {/* Actions */}

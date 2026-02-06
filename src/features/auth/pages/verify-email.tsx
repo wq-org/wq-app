@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CheckCircle, XCircle } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 
 export default function VerifyEmailPage() {
   const navigate = useNavigate()
@@ -42,25 +43,57 @@ export default function VerifyEmailPage() {
       <div className="border p-8 rounded-3xl shadow-lg text-center max-w-md">
         {isVerifying ? (
           <>
-            <h1 className="text-2xl font-light mb-4">Verifying Email...</h1>
-            <p className="text-muted-foreground">Please wait while we verify your email address.</p>
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-light mb-4"
+            >
+              Verifying Email...
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-muted-foreground"
+            >
+              Please wait while we verify your email address.
+            </Text>
           </>
         ) : isSuccess ? (
           <>
             <CheckCircle className="w-16 h-16 mx-auto mb-4 text-green-500" />
-            <h1 className="text-2xl font-light mb-4">Email Verified!</h1>
-            <p className="text-muted-foreground mb-6">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-light mb-4"
+            >
+              Email Verified!
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-muted-foreground mb-6"
+            >
               Your email has been successfully verified. You can now log in to your account.
-            </p>
+            </Text>
             <Button onClick={() => navigate('/')}>Go to Login</Button>
           </>
         ) : (
           <>
             <XCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
-            <h1 className="text-2xl font-light mb-4">Verification Failed</h1>
-            <p className="text-muted-foreground mb-6">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-light mb-4"
+            >
+              Verification Failed
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-muted-foreground mb-6"
+            >
               {error || 'Unable to verify your email. The link may be invalid or expired.'}
-            </p>
+            </Text>
             <Button onClick={() => navigate('/auth/signup')}>Back to Sign Up</Button>
           </>
         )}

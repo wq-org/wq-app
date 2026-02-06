@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { MapPin, Presentation, Users2, Globe, Twitter, Facebook, Instagram } from 'lucide-react'
 import EmptyTeachersView from '@/features/institution/components/EmptyTeachersView'
 import EmptyStudentView from '@/features/student/components/EmptyStudentView'
+import { Text } from '@/components/ui/text'
 
 interface InstitutionAddress {
   street?: string
@@ -126,16 +127,43 @@ export function InstitutionProfileContent({ institutionId }: InstitutionProfileC
               <AvatarFallback>{getInitials(titleText)}</AvatarFallback>
             </Avatar>
             <div className="text-6xl w-fit">
-              <span className="pr-2">{titleText}</span>
-              {lighterFirst && <span className="text-gray-300">{lighterFirst}</span>}
-              {lighterSecond && <span className="px-2">{lighterSecond}</span>}
+              <Text
+                as="span"
+                variant="small"
+                className="pr-2"
+              >
+                {titleText}
+              </Text>
+              {lighterFirst && (
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-gray-300"
+                >
+                  {lighterFirst}
+                </Text>
+              )}
+              {lighterSecond && (
+                <Text
+                  as="span"
+                  variant="small"
+                  className="px-2"
+                >
+                  {lighterSecond}
+                </Text>
+              )}
             </div>
             <Badge
               variant="secondary"
               className="flex py-2 px-3"
             >
               <MapPin className="h-4 w-4" />
-              <p>{street}</p>
+              <Text
+                as="p"
+                variant="body"
+              >
+                {street}
+              </Text>
             </Badge>
 
             <div className="flex flex-wrap items-center gap-2 pt-2">

@@ -1,4 +1,5 @@
 import { FileText, Plus } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 
 export function EmptyLessonsView() {
   return (
@@ -6,11 +7,21 @@ export function EmptyLessonsView() {
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
         <FileText className="w-8 h-8 text-gray-400" />
       </div>
-      <p className="mt-3 text-gray-500 text-center text-sm">füge eine neue Lektion hinzu</p>
-      <p className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2">
+      <Text
+        as="p"
+        variant="body"
+        className="mt-3 text-gray-500 text-center text-sm"
+      >
+        füge eine neue Lektion hinzu
+      </Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2"
+      >
         Benutze das Eingabefeld und klicke auf das <Plus className="w-4 h-4 text-gray-400" />{' '}
         Symbol, um eine neue Lektion zu erstellen.
-      </p>
+      </Text>
     </div>
   )
 }

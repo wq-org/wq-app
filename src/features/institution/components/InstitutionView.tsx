@@ -9,6 +9,7 @@ import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 import EmptyTeachersView from './EmptyTeachersView'
 import EmptyStudentView from '@/features/student/components/EmptyStudentView'
+import { Text } from '@/components/ui/text'
 
 const InstitutionView = ({ children }: { children: React.ReactNode }) => {
   const [activeTab, setActiveTab] = useState<string>('teachers')
@@ -67,16 +68,39 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
               <AvatarFallback>{'WQ'}</AvatarFallback>
             </Avatar>
             <div className="text-6xl w-fit">
-              <span className="pr-2">{titleText}</span>
-              <span className="text-gray-300">{lighterFirst}</span>
-              <span className="px-2">{lighterSecond}</span>
+              <Text
+                as="span"
+                variant="small"
+                className="pr-2"
+              >
+                {titleText}
+              </Text>
+              <Text
+                as="span"
+                variant="small"
+                className="text-gray-300"
+              >
+                {lighterFirst}
+              </Text>
+              <Text
+                as="span"
+                variant="small"
+                className="px-2"
+              >
+                {lighterSecond}
+              </Text>
             </div>
             <Badge
               variant="secondary"
               className="flex py-2   px-3"
             >
               <MapPin className=" h-4 w-4" />
-              <p>{street}</p>
+              <Text
+                as="p"
+                variant="body"
+              >
+                {street}
+              </Text>
             </Badge>
 
             <div className="flex flex-wrap items-center gap-2 pt-2">

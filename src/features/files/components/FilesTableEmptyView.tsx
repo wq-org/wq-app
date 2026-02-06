@@ -1,4 +1,5 @@
 import { Files, Upload } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 
 export default function FilesTableEmptyView() {
   return (
@@ -6,11 +7,21 @@ export default function FilesTableEmptyView() {
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
         <Files className="w-8 h-8 text-gray-400" />
       </div>
-      <p className="mt-3 text-gray-500 text-center text-sm">No files found</p>
-      <p className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2">
+      <Text
+        as="p"
+        variant="body"
+        className="mt-3 text-gray-500 text-center text-sm"
+      >
+        No files found
+      </Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2"
+      >
         Upload your first file to get start use the command palette to upload files.
         <Upload className="w-4 h-4 text-gray-400" />
-      </p>
+      </Text>
     </div>
   )
 }

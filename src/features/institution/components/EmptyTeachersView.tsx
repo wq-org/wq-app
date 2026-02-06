@@ -1,4 +1,5 @@
 import { Presentation, SearchIcon } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 
 export default function EmptyTeachersView() {
   return (
@@ -6,11 +7,21 @@ export default function EmptyTeachersView() {
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
         <Presentation className="w-8 h-8 text-gray-400" />
       </div>
-      <p className="mt-3 text-gray-500 text-center text-sm">No teachers found</p>
-      <p className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2">
+      <Text
+        as="p"
+        variant="body"
+        className="mt-3 text-gray-500 text-center text-sm"
+      >
+        No teachers found
+      </Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2"
+      >
         Use the command palette to search for teachers and add them to your institution.
         <SearchIcon className="w-4 h-4 text-gray-400" />
-      </p>
+      </Text>
     </div>
   )
 }

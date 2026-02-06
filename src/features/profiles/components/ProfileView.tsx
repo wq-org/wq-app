@@ -4,6 +4,7 @@ import { useProfile } from '../hooks/useProfile'
 import { TeacherProfileContent } from './TeacherProfileContent'
 import { StudentProfileContent } from './StudentProfileContent'
 import { InstitutionProfileContent } from './InstitutionProfileContent'
+import { Text } from '@/components/ui/text'
 
 export function ProfileView() {
   const { id } = useParams<{ id: string }>()
@@ -20,7 +21,13 @@ export function ProfileView() {
   if (error || !profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">Profile not found</p>
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-500"
+        >
+          Profile not found
+        </Text>
       </div>
     )
   }
@@ -49,7 +56,13 @@ export function ProfileView() {
   // If role doesn't match, show error
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <p className="text-gray-500">Invalid profile type</p>
+      <Text
+        as="p"
+        variant="body"
+        className="text-gray-500"
+      >
+        Invalid profile type
+      </Text>
     </div>
   )
 }

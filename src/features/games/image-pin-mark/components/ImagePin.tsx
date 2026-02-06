@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { Text } from '@/components/ui/text'
 
 const imagePinVariants = cva('rounded-full border-2 border-white animate-pulse relative', {
   variants: {
@@ -49,7 +50,11 @@ export default function ImagePin({ className, variant, size = 24, ...props }: Im
       }}
       {...props}
     >
-      <span className={cn(pingVariants({ variant }))} />
+      <Text
+        as="span"
+        variant="small"
+        className={cn(pingVariants({ variant }))}
+      />
     </div>
   )
 }

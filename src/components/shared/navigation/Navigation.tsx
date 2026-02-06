@@ -7,6 +7,7 @@ import NotificationPanel from '@/features/notification/components/NotificationPa
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
+import { Text } from '@/components/ui/text'
 
 interface NavigationProps {
   currentPageName?: string
@@ -56,9 +57,13 @@ const Navigation = ({
               <ChevronLeft className="h-5 w-5 text-gray-600" />
             </Button>
             <div className="h-6 w-px bg-border" />
-            <h1 className="text-lg font-normal text-gray-700">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-lg font-normal text-gray-700"
+            >
               {children || currentPageName || 'Page Title'}
-            </h1>
+            </Text>
           </div>
 
           {/* Right Section - Language Switcher, Notification and Logout */}

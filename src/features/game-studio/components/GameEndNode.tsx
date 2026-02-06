@@ -1,6 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { Square } from 'lucide-react'
 import type { GameEndNodeProps } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 export default function GameEndNode({ data, selected }: GameEndNodeProps) {
   return (
@@ -18,7 +19,13 @@ export default function GameEndNode({ data, selected }: GameEndNodeProps) {
       <div className="p-2 rounded-lg border border-gray-500/20 bg-gray-500/10 flex items-center justify-center">
         <Square className="w-4 h-4 text-gray-500" />
       </div>
-      <span className="text-gray-900 font-medium">{data?.label || 'End'}</span>
+      <Text
+        as="span"
+        variant="small"
+        className="text-gray-900 font-medium"
+      >
+        {data?.label || 'End'}
+      </Text>
     </div>
   )
 }

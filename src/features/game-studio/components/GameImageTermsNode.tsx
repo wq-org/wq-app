@@ -1,6 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { Image as ImageIcon } from 'lucide-react'
 import type { GameImageTermsNodeProps } from '../types/game-studio.types'
+import { Text } from '@/components/ui/text'
 
 export default function GameImageTermsNode({ data, selected }: GameImageTermsNodeProps) {
   return (
@@ -18,7 +19,13 @@ export default function GameImageTermsNode({ data, selected }: GameImageTermsNod
       <div className="p-2 rounded-lg border border-blue-500/20 bg-blue-500/10 flex items-center justify-center">
         <ImageIcon className="w-4 h-4 text-blue-500" />
       </div>
-      <span className="text-gray-900 font-medium">{data?.label || 'Image and Terms'}</span>
+      <Text
+        as="span"
+        variant="small"
+        className="text-gray-900 font-medium"
+      >
+        {data?.label || 'Image and Terms'}
+      </Text>
       <Handle
         type="source"
         position={Position.Right}

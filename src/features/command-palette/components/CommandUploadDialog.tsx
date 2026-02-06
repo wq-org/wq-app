@@ -9,6 +9,7 @@ import { useUser } from '@/contexts/user'
 import type { UploadedFile } from '@/components/shared/upload-files/types/upload.types'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { Text } from '@/components/ui/text'
 
 interface CommandUploadDialogProps {
   onSuccess?: () => void
@@ -191,10 +192,20 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
                 <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white rounded-2xl border">
                   <Loader2 className="w-8 h-8 text-primary animate-spin" />
                   <div className="text-center">
-                    <p className="text-sm font-medium text-gray-900">Uploading files...</p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Uploading files...
+                    </Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-xs text-gray-500 mt-1"
+                    >
                       {uploadProgress.toFixed(0)}% complete
-                    </p>
+                    </Text>
                   </div>
                 </div>
               )}

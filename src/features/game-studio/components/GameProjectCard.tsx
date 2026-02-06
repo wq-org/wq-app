@@ -261,7 +261,7 @@ export function GameProjectCard({
                 e.stopPropagation()
                 onOpen?.()
               }}
-              className="text-blue-500 hover:opacity-80 hover:bg-transparent text-base gap-2"
+              className="text-blue-500 border-0  hover:bg-blue-100 hover:text-blue-500 hover:duration-200 "
             >
               <p>Open</p>
               <ArrowRight className="w-5 h-5" />
