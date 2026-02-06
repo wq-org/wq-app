@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import GameInformationCard from '@/features/games/components/GameInformationCard'
+import GameInformationCard from '@/features/games/shared/GameInformationCard'
 import { cn } from '@/lib/utils'
 
 interface PreviewIfElseSlideProps {

@@ -1,7 +1,7 @@
 import type { Node } from '@xyflow/react'
 import { cn } from '@/lib/utils'
 import { ContainerSlider } from '@/components/shared'
-import { StatsDisplay } from '@/features/games/components/StatsDisplay'
+import { StatsDisplay } from '@/features/games/shared/StatsDisplay'
 import { NODE_TYPE_TO_GAME } from './nodeTypeToGame'
 
 export interface GameModusProps {

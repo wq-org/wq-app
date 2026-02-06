@@ -7,14 +7,14 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
 import GameLayout from '@/components/layout/GameLayout'
-import GameInformation from '@/features/games/components/GameInformation'
-import GameInformationCard from '@/features/games/components/GameInformationCard'
-import GamePreviewAlert from '@/features/games/components/GamePreviewAlert'
-import GameSummaryCard from '@/features/games/components/GameSummaryCard'
-import PointsInput from '@/features/games/components/PointsInput'
-import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
-import GameResultTable from '@/features/games/components/GameResultTable'
-import FeedbackInput from '@/features/games/components/FeedbackInput'
+import GameInformation from '@/features/games/shared/GameInformation'
+import GameInformationCard from '@/features/games/shared/GameInformationCard'
+import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
+import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
+import PointsInput from '@/features/games/shared/PointsInput'
+import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
+import GameResultTable from '@/features/games/shared/GameResultTable'
+import FeedbackInput from '@/features/games/shared/FeedbackInput'
 import { Badge } from '@/components/ui/badge'
 import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
@@ -30,7 +30,8 @@ import type {
   Term,
   ImageTermMatchGameProps,
   ImageTermMatchGameData,
-} from './types/imageTermMatch.types'
+} from './types'
+import { computeImageTermResults } from '@/features/games/image-term-match/utils/imageTermScoring'
 
 const STATEMENT_TRUNCATE_LENGTH = 60
 const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
@@ -634,74 +635,29 @@ export default function ImageTermMatchGame({
 
       {resultsRevealed &&
         (() => {
-          const selectedTexts = previewSelectedTermIds
-            .map((id) => terms.find((t) => t.id === id)?.value ?? '')
-            .filter(Boolean)
-          const correctEarned = previewSelectedTermIds.reduce((sum, id) => {
-            const term = terms.find((t) => t.id === id)
-            if (!term?.isCorrect) return sum
-            const pts = term.points != null && term.points > 0 ? term.points : 1
-            return sum + pts
-          }, 0)
-          const penaltySum = previewSelectedTermIds.reduce((sum, id) => {
-            const term = terms.find((t) => t.id === id)
-            if (term?.isCorrect) return sum
-            return sum + (term?.pointsWhenWrong ?? 0)
-          }, 0)
-          const earned = Math.max(0, correctEarned - penaltySum)
-          const hasWrongSelection = previewSelectedTermIds.some((id) => {
-            const term = terms.find((t) => t.id === id)
-            return term && !term.isCorrect
-          })
-          const isFullyCorrect =
-            previewSelectedTermIds.length > 0 &&
-            previewSelectedTermIds.every((id) => terms.find((t) => t.id === id)?.isCorrect)
-          const firstCorrectSelected = previewSelectedTermIds.find(
-            (id) => terms.find((t) => t.id === id)?.isCorrect,
+          const result = computeImageTermResults(
+            terms,
+            previewSelectedTermIds,
+            pointsWhenCorrect,
           )
-          const firstWrongSelected = previewSelectedTermIds.find((id) => {
-            const t = terms.find((x) => x.id === id)
-            return t && !t.isCorrect
-          })
-          const feedbackText = isFullyCorrect
-            ? (terms.find((t) => t.id === firstCorrectSelected)?.feedbackWhenCorrect?.trim() ??
-              undefined)
-            : hasWrongSelection
-              ? (terms.find((t) => t.id === firstWrongSelected)?.feedbackWhenWrong?.trim() ??
-                undefined)
-              : undefined
-          const feedbackVariant: 'correct' | 'wrong' | undefined = isFullyCorrect
-            ? 'correct'
-            : hasWrongSelection
-              ? 'wrong'
-              : undefined
-          const rows: Array<{
-            key: string
-            statementText: string
-            statementTruncated: string
-            selectedAnswerTexts: string[]
-            earned: number
-            max: number
-            feedback?: string
-            feedbackVariant?: 'correct' | 'wrong'
-          }> = [
+          const rows = [
             {
               key: 'image-term',
-              statementText,
-              statementTruncated,
-              selectedAnswerTexts: selectedTexts,
-              earned,
-              max: pointsWhenCorrect,
-              feedback: feedbackText,
-              feedbackVariant,
+              statementText: result.statementText,
+              statementTruncated: result.statementTruncated,
+              selectedAnswerTexts: result.selectedAnswerTexts,
+              earned: result.earned,
+              max: result.max,
+              feedback: result.feedbackText,
+              feedbackVariant: result.feedbackVariant,
             },
           ]
           return (
             <div className="space-y-4">
               <GameResultTable
                 rows={rows}
-                totalEarned={earned}
-                totalMax={pointsWhenCorrect}
+                totalEarned={result.earned}
+                totalMax={result.max}
               />
             </div>
           )

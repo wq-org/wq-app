@@ -10,14 +10,14 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import GameLayout from '@/components/layout/GameLayout'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
-import GameInformation from '@/features/games/components/GameInformation'
-import GameInformationCard from '@/features/games/components/GameInformationCard'
-import GamePreviewAlert from '@/features/games/components/GamePreviewAlert'
-import GameSummaryCard from '@/features/games/components/GameSummaryCard'
-import PointsInput from '@/features/games/components/PointsInput'
-import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
-import GameResultTable from '@/features/games/components/GameResultTable'
-import FeedbackInput from '@/features/games/components/FeedbackInput'
+import GameInformation from '@/features/games/shared/GameInformation'
+import GameInformationCard from '@/features/games/shared/GameInformationCard'
+import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
+import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
+import PointsInput from '@/features/games/shared/PointsInput'
+import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
+import GameResultTable from '@/features/games/shared/GameResultTable'
+import FeedbackInput from '@/features/games/shared/FeedbackInput'
 import { useGameEditorContext } from '@/contexts/game-studio'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -32,8 +32,11 @@ import type {
   SelectedAnswer,
   ParagraphGameInitialData,
   ParagraphLineSelectGameProps,
-  QuestionResult,
-} from './types/paragraphLineSelect.types'
+} from './types'
+import {
+  hasMultipleCorrectOptions,
+  computeParagraphResults,
+} from '@/features/games/paragraph-line-select/utils/paragraphScoring'
 
 export type { ParagraphGameInitialData }
 
@@ -43,15 +46,6 @@ function splitIntoQuestions(text: string): string[] {
     .split(QUESTION_SEPARATOR)
     .map((s) => s.trim())
     .filter((s) => s.length > 0)
-}
-
-function hasMultipleCorrectOptions(config: SentenceConfig): boolean {
-  return config.options.filter((o) => o.isCorrect).length > 1
-}
-
-function getQuestionMaxPoints(config: SentenceConfig): number {
-  const sum = config.options.filter((o) => o.isCorrect).reduce((s, o) => s + (o.points ?? 0), 0)
-  return sum > 0 ? sum : (config.pointsWhenCorrect ?? 0)
 }
 
 export default function ParagraphLineSelectGame({
@@ -319,63 +313,17 @@ export default function ParagraphLineSelectGame({
     setResultsRevealed(true)
   }
 
-  const STATEMENT_TRUNCATE_LENGTH = 60
-
-  function getQuestionResult(config: SentenceConfig, selectedIds: string[]): QuestionResult {
-    const correctOptions = config.options.filter((o) => o.isCorrect)
-    const max = getQuestionMaxPoints(config)
-    const maxPerOption = correctOptions.reduce((sum, o) => sum + (o.points ?? 0), 0)
-    const pointsPerCorrect = correctOptions.length > 0 ? max / correctOptions.length : 0
-
-    if (selectedIds.length === 0) {
-      return { status: 'false', earned: 0, max, correctEarned: 0, penaltyApplied: 0 }
-    }
-
-    const correctSelectedIds = selectedIds.filter((id) => {
-      const opt = config.options.find((o) => o.id === id)
-      return opt?.isCorrect ?? false
-    })
-    const correctSelected = correctSelectedIds.length
-    const hasWrong = selectedIds.some((id) => {
-      const opt = config.options.find((o) => o.id === id)
-      return opt?.isCorrect === false
-    })
-
-    const correctEarned =
-      maxPerOption > 0
-        ? correctSelectedIds.reduce(
-            (sum, id) => sum + (config.options.find((o) => o.id === id)?.points ?? 0),
-            0,
-          )
-        : correctSelected * pointsPerCorrect
-
-    const selectedWrongOptions = config.options.filter(
-      (o) => !o.isCorrect && selectedIds.includes(o.id),
-    )
-    const penaltySum = selectedWrongOptions.reduce((s, o) => s + (o.pointsWhenWrong ?? 0), 0)
-    // Apply wrong-answer penalty: subtract from correct earned; score for this question never below 0
-    const earned = Math.max(0, correctEarned - penaltySum)
-
-    if (hasWrong) {
-      return { status: 'false', earned, max, correctEarned, penaltyApplied: penaltySum }
-    }
-    if (correctSelected === 0) {
-      return { status: 'false', earned: 0, max, correctEarned: 0, penaltyApplied: penaltySum }
-    }
-
-    const numCorrect = correctOptions.length
-    const multi = hasMultipleCorrectOptions(config)
-    if (multi) {
-      if (correctSelected === numCorrect) {
-        return { status: 'correct', earned, max, correctEarned, penaltyApplied: 0 }
-      }
-      return { status: 'partly correct', earned, max, correctEarned, penaltyApplied: 0 }
-    }
-
-    return { status: 'correct', earned, max, correctEarned, penaltyApplied: 0 }
-  }
-
   const hasAtLeastOneSelection = selectedAnswers.length > 0
+
+  const getSelectedIdsForScoring = (sentenceNumber: number): string[] => {
+    const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
+    const multi = config ? hasMultipleCorrectOptions(config) : false
+    return multi
+      ? getSelectedAnswers(sentenceNumber)
+      : getSelectedAnswer(sentenceNumber) != null
+        ? [getSelectedAnswer(sentenceNumber)!]
+        : []
+  }
 
   const totalQuestions = sentences.length
   const totalPoints = sentenceConfigs.reduce((sum, config) => {
@@ -913,51 +861,11 @@ export default function ParagraphLineSelectGame({
       {/* Results table: only visible after user clicks Check */}
       {resultsRevealed &&
         (() => {
-          const configsWithOptions = sentenceConfigs.filter((c) => c.options.length > 0)
-          if (configsWithOptions.length === 0) return null
-
-          let totalCorrectEarned = 0
-          let totalPenaltyApplied = 0
-          let totalMax = 0
-          const rows = configsWithOptions.map((config) => {
-            const sentenceNumber = config.sentenceNumber
-            const multi = hasMultipleCorrectOptions(config)
-            const selectedIds = multi
-              ? getSelectedAnswers(sentenceNumber)
-              : getSelectedAnswer(sentenceNumber) != null
-                ? [getSelectedAnswer(sentenceNumber)!]
-                : []
-            const result = getQuestionResult(config, selectedIds)
-            totalCorrectEarned += result.correctEarned ?? result.earned
-            totalPenaltyApplied += result.penaltyApplied ?? 0
-            totalMax += result.max
-            const statementTruncated =
-              config.sentenceText.length > STATEMENT_TRUNCATE_LENGTH
-                ? `${config.sentenceText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
-                : config.sentenceText
-            const selectedAnswerTexts = selectedIds
-              .map((id) => config.options.find((o) => o.id === id)?.text ?? '')
-              .filter(Boolean)
-            const feedback =
-              result.status === 'false'
-                ? (config.feedbackWhenWrong ?? '')
-                : (config.feedbackWhenCorrect ?? '')
-            const feedbackVariant =
-              result.status === 'false' ? ('wrong' as const) : ('correct' as const)
-            return {
-              key: config.sentenceNumber,
-              statementText: config.sentenceText,
-              statementTruncated,
-              selectedAnswerTexts,
-              earned: result.earned,
-              max: result.max,
-              feedback,
-              feedbackVariant,
-            }
-          })
-
-          const totalEarned = Math.max(0, totalCorrectEarned - totalPenaltyApplied)
-
+          const { rows, totalEarned, totalMax } = computeParagraphResults(
+            sentenceConfigs,
+            getSelectedIdsForScoring,
+          )
+          if (rows.length === 0) return null
           return (
             <GameResultTable
               rows={rows}

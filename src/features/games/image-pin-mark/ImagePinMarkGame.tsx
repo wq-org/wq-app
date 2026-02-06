@@ -12,9 +12,9 @@ import { cn } from '@/lib/utils'
 import GameLayout from '@/components/layout/GameLayout'
 import ImagePin from './components/ImagePin'
 import SquareMarker from './components/SquareMarker'
-import GameInformation from '@/features/games/components/GameInformation'
-import GameInformationCard from '@/features/games/components/GameInformationCard'
-import GamePreviewAlert from '@/features/games/components/GamePreviewAlert'
+import GameInformation from '@/features/games/shared/GameInformation'
+import GameInformationCard from '@/features/games/shared/GameInformationCard'
+import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
 import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
 import {
   Card,
@@ -28,11 +28,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Check, Minus, Plus, X } from 'lucide-react'
-import GameSummaryCard from '@/features/games/components/GameSummaryCard'
-import GameResultTable from '@/features/games/components/GameResultTable'
-import PointsInput from '@/features/games/components/PointsInput'
-import SlotsLeftLabel from '@/features/games/components/SlotsLeftLabel'
-import FeedbackInput from '@/features/games/components/FeedbackInput'
+import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
+import GameResultTable from '@/features/games/shared/GameResultTable'
+import PointsInput from '@/features/games/shared/PointsInput'
+import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
+import FeedbackInput from '@/features/games/shared/FeedbackInput'
 import { Badge } from '@/components/ui/badge'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
@@ -44,6 +44,7 @@ import { ImageGallery } from '@/components/shared/media'
 import type { GalleryImage } from '@/components/shared/media'
 import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
+import { computeImagePinResults } from '@/features/games/image-pin-mark/utils/imagePinScoring'
 
 /** Default size (width/height) for new squares; matches SquareMarker DEFAULT_SIZE. */
 const DEFAULT_SQUARE_SIZE = 80
@@ -414,8 +415,6 @@ export default function ImagePinMarkGame({
   const handleCheckAnswers = () => {
     setResultsRevealed(true)
   }
-
-  const STATEMENT_TRUNCATE_LENGTH = 60
 
   const totalPoints = squares.reduce(
     (sum, sq) => sum + (sq.points != null && sq.points > 0 ? sq.points : 1),
@@ -933,47 +932,13 @@ export default function ImagePinMarkGame({
                 {resultsRevealed &&
                   squares.length > 0 &&
                   (() => {
-                    let totalEarned = 0
-                    let totalMax = 0
-                    const rows = squares.map((square) => {
-                      const pinId = `pin-${square.id}`
-                      const pin = pinPositions.find((p) => p.id === pinId)
-                      const max = square.points != null && square.points > 0 ? square.points : 1
-                      const correct = pin?.squareId === square.id
-                      const penalty = square.pointsWhenWrong ?? 0
-                      const earned = correct ? max : -penalty
-                      totalEarned += earned
-                      totalMax += max
-                      const statementText = square.question || 'No question set'
-                      const statementTruncated =
-                        statementText.length > STATEMENT_TRUNCATE_LENGTH
-                          ? `${statementText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
-                          : statementText
-                      const placementText = pin
-                        ? correct
-                          ? 'Correct'
-                          : 'Wrong square'
-                        : 'Not placed'
-                      const feedbackText = correct
-                        ? square.feedbackWhenCorrect?.trim()
-                        : square.feedbackWhenWrong?.trim()
-                      return {
-                        key: square.id,
-                        statementText,
-                        statementTruncated,
-                        selectedAnswerTexts: [placementText],
-                        earned,
-                        max,
-                        feedback: feedbackText || undefined,
-                        feedbackVariant: correct ? ('correct' as const) : ('wrong' as const),
-                      }
-                    })
+                    const result = computeImagePinResults(squares, pinPositions)
                     return (
                       <>
                         <GameResultTable
-                          rows={rows}
-                          totalEarned={totalEarned}
-                          totalMax={totalMax}
+                          rows={result.rows}
+                          totalEarned={result.totalEarned}
+                          totalMax={result.totalMax}
                           title="Results"
                           columnLabels={{
                             statement: 'Question',

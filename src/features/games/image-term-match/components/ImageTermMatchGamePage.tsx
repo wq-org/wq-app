@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { GameNodePointsContext } from '@/contexts/game-studio'
-import GameInformation from '@/features/games/components/GameInformation'
+import GameInformation from '@/features/games/shared/GameInformation'
 import ImageTermMatchGame from '../ImageTermMatchGame'
 
 /**
