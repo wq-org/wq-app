@@ -8,11 +8,7 @@ interface GameEditorProviderProps {
   onReady?: () => void
 }
 
-export function GameEditorProvider({
-  children,
-  getGameDataRef,
-  onReady,
-}: GameEditorProviderProps) {
+export function GameEditorProvider({ children, getGameDataRef, onReady }: GameEditorProviderProps) {
   const readyRef = useRef(false)
   const registerGetGameData = useCallback(
     (getData: () => unknown) => {

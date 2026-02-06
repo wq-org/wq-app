@@ -128,8 +128,7 @@ export default function PreviewDrawer({
                   'If / else'
                 const description =
                   typeof data?.description === 'string' ? data.description : undefined
-                const condition =
-                  typeof data?.condition === 'string' ? data.condition : undefined
+                const condition = typeof data?.condition === 'string' ? data.condition : undefined
                 const correctPath = (data?.correctPath as 'A' | 'B' | undefined) ?? 'A'
                 return (
                   <div
