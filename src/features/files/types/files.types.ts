@@ -25,40 +25,40 @@ export interface FileTypeConfig {
 }
 
 export const FILE_TYPE_CONFIG: Record<FileItem['type'], FileTypeConfig> = {
-  Word: {
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/20',
-    Icon: FileText,
-  },
-  PPT: {
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/20',
-    Icon: FileBarChart2,
-  },
-  Exl: {
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-    borderColor: 'border-green-500/20',
-    Icon: FileSpreadsheet,
-  },
-  PDF: {
-    color: 'text-red-500',
-    bgColor: 'bg-red-500/10',
-    borderColor: 'border-red-500/20',
-    Icon: File,
-  },
-  Image: {
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/20',
-    Icon: ImageIcon,
-  },
-  Video: {
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/20',
-    Icon: Video,
-  },
+    Word: {
+        color: 'text-gray-500',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        Icon: FileText,
+    },
+    PPT: {
+        color: 'text-gray-500',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        Icon: FileBarChart2,
+    },
+    Exl: {
+        color: 'text-gray-500',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        Icon: FileSpreadsheet,
+    },
+    PDF: {
+        color: 'text-gray-500',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        Icon: File,
+    },
+    Image: {
+        color: 'text-gray-500',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        Icon: ImageIcon,
+    },
+    Video: {
+        color: 'text-gray-500',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        Icon: Video,
+    },
 }

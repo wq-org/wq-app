@@ -64,7 +64,7 @@ export function ContainerSlider({
       </div>
 
       {count > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
+        <div className="flex items-center justify-center gap-12 mt-6 sm:mt-8">
           <Button
             type="button"
             variant="ghost"
@@ -76,21 +76,23 @@ export function ContainerSlider({
           >
             <MoveLeft className="h-4 w-4" />
           </Button>
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => scrollTo(i)}
-              className={cn(
-                'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 rounded-full',
-                i === index
-                  ? 'w-8 h-3 bg-gray-800 dark:bg-gray-200'
-                  : 'w-3 h-3 bg-gray-400 rounded-full hover:bg-gray-500 dark:bg-gray-500 dark:hover:bg-gray-400',
-              )}
-              aria-label={`Go to slide ${i + 1}`}
-              aria-current={i === index ? 'true' : 'false'}
-            />
-          ))}
+        <div className="flex items-center justify-center gap-2 ">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => scrollTo(i)}
+                className={cn(
+                  'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 rounded-full',
+                  i === index
+                    ? 'w-8 h-3 bg-gray-800 dark:bg-gray-200'
+                    : 'w-3 h-3 bg-gray-400 rounded-full hover:bg-gray-500 dark:bg-gray-500 dark:hover:bg-gray-400',
+                )}
+                aria-label={`Go to slide ${i + 1}`}
+                aria-current={i === index ? 'true' : 'false'}
+              />
+            ))}
+          </div>
           <Button
             type="button"
             variant="ghost"
@@ -100,7 +102,7 @@ export function ContainerSlider({
             disabled={index >= count - 1}
             aria-label="Next slide"
           >
-            <MoveRight className="h-4 w-4" />
+            <MoveRight  className="h-4 w-4" />
           </Button>
         </div>
       )}
