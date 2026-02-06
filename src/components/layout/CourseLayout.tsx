@@ -32,7 +32,12 @@ export default function CourseLayout({
             <LayoutDashboard
               className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
             />
-            <Text as="span" variant="small">Overview</Text>
+            <Text
+              as="span"
+              variant="small"
+            >
+              Overview
+            </Text>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
@@ -43,7 +48,12 @@ export default function CourseLayout({
             }`}
           >
             <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-            <Text as="span" variant="small">Settings</Text>
+            <Text
+              as="span"
+              variant="small"
+            >
+              Settings
+            </Text>
           </button>
         </div>
 

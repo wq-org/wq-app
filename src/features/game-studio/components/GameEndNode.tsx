@@ -19,7 +19,13 @@ export default function GameEndNode({ data, selected }: GameEndNodeProps) {
       <div className="p-2 rounded-lg border border-gray-500/20 bg-gray-500/10 flex items-center justify-center">
         <Square className="w-4 h-4 text-gray-500" />
       </div>
-      <Text as="span" variant="small" className="text-gray-900 font-medium">{data?.label || 'End'}</Text>
+      <Text
+        as="span"
+        variant="small"
+        className="text-gray-900 font-medium"
+      >
+        {data?.label || 'End'}
+      </Text>
     </div>
   )
 }

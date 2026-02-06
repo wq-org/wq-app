@@ -148,7 +148,13 @@ export default function Course() {
         </Button>
       </div>
 
-      <Text as="p" variant="body" className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl">Themen</Text>
+      <Text
+        as="p"
+        variant="body"
+        className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl"
+      >
+        Themen
+      </Text>
 
       {/* Empty state when no topics */}
       {topics.length === 0 ? (
@@ -173,10 +179,20 @@ export default function Course() {
       {selectedTopic && (
         <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="mb-6">
-            <Text as="h2" variant="h2" className="text-2xl font-semibold text-gray-900">
+            <Text
+              as="h2"
+              variant="h2"
+              className="text-2xl font-semibold text-gray-900"
+            >
               Lessons for: {selectedTopic.name}
             </Text>
-            <Text as="p" variant="body" className="text-gray-500 mt-1">Explore the available lessons for this topic</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-gray-500 mt-1"
+            >
+              Explore the available lessons for this topic
+            </Text>
           </div>
 
           <div className="mb-6">

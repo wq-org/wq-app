@@ -13,7 +13,9 @@ interface ChatMessageProps {
 export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
   return (
     <div className={cn('group flex items-start gap-3 mb-4', isOwnMessage && 'flex-row-reverse')}>
-      <Text as="span" variant="small"
+      <Text
+        as="span"
+        variant="small"
         className={cn(
           'text-xs text-muted-foreground shrink-0 w-16',
           isOwnMessage ? 'text-right' : 'text-left',

@@ -48,10 +48,18 @@ export default function Lesson() {
   const overviewContent = (
     <div className="flex flex-col gap-12 pb-32">
       <div className="max-w-4xl mt-4 flex flex-col mx-auto">
-        <Text as="h1" variant="h1" className="px-4 text-6xl font-light mb-2 leading-[1.2]">
+        <Text
+          as="h1"
+          variant="h1"
+          className="px-4 text-6xl font-light mb-2 leading-[1.2]"
+        >
           {lesson?.title || "What's your Page about?"}
         </Text>
-        <Text as="p" variant="body" className="px-4 text-2xl text-gray-400 font-light mt-2 max-w-[28rem]">
+        <Text
+          as="p"
+          variant="body"
+          className="px-4 text-2xl text-gray-400 font-light mt-2 max-w-[28rem]"
+        >
           {lesson?.description || 'Description about the page'}
         </Text>
       </div>

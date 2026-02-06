@@ -47,13 +47,29 @@ export default function ForgotPasswordPage({ className }: React.ComponentProps<'
             type="button"
           >
             <MoveLeft />
-            <Text as="span" variant="small" className="sr-only">Back</Text>
+            <Text
+              as="span"
+              variant="small"
+              className="sr-only"
+            >
+              Back
+            </Text>
           </Button>
 
           <FieldGroup>
             <div className="flex flex-col items-center gap-1 text-center">
-              <Text as="h1" variant="h1" className="text-2xl font-light">Forgot Password</Text>
-              <Text as="p" variant="body" className="text-muted-foreground text-sm text-balance">
+              <Text
+                as="h1"
+                variant="h1"
+                className="text-2xl font-light"
+              >
+                Forgot Password
+              </Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-muted-foreground text-sm text-balance"
+              >
                 Enter your email address and we'll send you a reset link
               </Text>
             </div>

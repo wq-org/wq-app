@@ -24,10 +24,24 @@ export default function GameInformationCard({
 
   return (
     <div className="space-y-2">
-      {title && <Text as="h2" variant="h2" className="text-lg font-semibold">{title}</Text>}
+      {title && (
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-lg font-semibold"
+        >
+          {title}
+        </Text>
+      )}
       {description && (
         <div className="space-y-2">
-          <Text as="p" variant="body" className="text-sm text-muted-foreground">{displayText}</Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground"
+          >
+            {displayText}
+          </Text>
           {isLong && (
             <Button
               type="button"

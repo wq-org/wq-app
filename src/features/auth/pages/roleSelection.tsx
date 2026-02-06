@@ -24,12 +24,29 @@ export default function RoleSelectionPage() {
 
   return (
     <div className="w-screen h-screen container flex mx-auto flex-col items-center justify-center gap-8">
-      <Text as="h1" variant="h1" className="text-4xl font-light">
+      <Text
+        as="h1"
+        variant="h1"
+        className="text-4xl font-light"
+      >
         {t('title')}{' '}
         {selectedRole && (
-          <Text as="span" variant="small">
-            <Text as="span" variant="small" className="mr-2.5">{t('asA')}</Text>
-            <Text as="span" variant="small" className="bg-gray-100 text-black rounded-2xl px-4 py-2 capitalize">
+          <Text
+            as="span"
+            variant="small"
+          >
+            <Text
+              as="span"
+              variant="small"
+              className="mr-2.5"
+            >
+              {t('asA')}
+            </Text>
+            <Text
+              as="span"
+              variant="small"
+              className="bg-gray-100 text-black rounded-2xl px-4 py-2 capitalize"
+            >
               {selectedRole}
             </Text>
           </Text>
@@ -58,7 +75,13 @@ export default function RoleSelectionPage() {
             <div className="inline-flex p-3 bg-gray-100 rounded-lg w-fit">
               <GraduationCap className="h-8 w-8 text-gray-600" />
             </div>
-            <Text as="p" variant="body" className="text-3xl">{t('student.title')}</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-3xl"
+            >
+              {t('student.title')}
+            </Text>
             <CardDescription>{t('student.desc')}</CardDescription>
           </CardHeader>
         </Card>
@@ -80,7 +103,13 @@ export default function RoleSelectionPage() {
             <div className="inline-flex p-3 bg-gray-100 rounded-lg w-fit">
               <Presentation className="h-8 w-8 text-gray-600" />
             </div>
-            <Text as="p" variant="body" className="text-3xl">{t('teacher.title')}</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-3xl"
+            >
+              {t('teacher.title')}
+            </Text>
             <CardDescription>{t('teacher.desc')}</CardDescription>
           </CardHeader>
         </Card>

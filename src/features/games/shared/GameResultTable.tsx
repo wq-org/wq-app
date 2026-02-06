@@ -75,7 +75,13 @@ export default function GameResultTable({
 
   return (
     <div className="space-y-2">
-      <Text as="h3" variant="h3" className="text-sm font-medium text-gray-700 mb-2">{title}</Text>
+      <Text
+        as="h3"
+        variant="h3"
+        className="text-sm font-medium text-gray-700 mb-2"
+      >
+        {title}
+      </Text>
       <Table>
         <TableHeader>
           <TableRow>
@@ -91,7 +97,13 @@ export default function GameResultTable({
               <TableCell className="max-w-[200px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Text as="span" variant="small" className="truncate block cursor-default">{row.statementTruncated}</Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="truncate block cursor-default"
+                    >
+                      {row.statementTruncated}
+                    </Text>
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
@@ -109,7 +121,13 @@ export default function GameResultTable({
                     {row.selectedAnswerTexts.map((text, i) => (
                       <Tooltip key={i}>
                         <TooltipTrigger asChild>
-                          <Text as="span" variant="small" className="truncate block cursor-default">{text}</Text>
+                          <Text
+                            as="span"
+                            variant="small"
+                            className="truncate block cursor-default"
+                          >
+                            {text}
+                          </Text>
                         </TooltipTrigger>
                         <TooltipContent
                           side="top"

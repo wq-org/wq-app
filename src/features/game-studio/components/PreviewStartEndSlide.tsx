@@ -61,11 +61,25 @@ export function PreviewStartEndSlide({
       ref={containerRef}
       className="flex flex-col gap-4 p-6 justify-center min-h-full"
     >
-      {label && <Text as="p" variant="body" className="text-sm font-medium text-muted-foreground">{label}</Text>}
+      {label && (
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm font-medium text-muted-foreground"
+        >
+          {label}
+        </Text>
+      )}
       {titleWords.length > 0 && (
-        <Text as="h2" variant="h2" className="text-xl font-semibold leading-tight">
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-xl font-semibold leading-tight"
+        >
           {titleWords.map((word, i) => (
-            <Text as="span" variant="small"
+            <Text
+              as="span"
+              variant="small"
               key={i}
               className="word inline"
             >
@@ -75,9 +89,15 @@ export function PreviewStartEndSlide({
         </Text>
       )}
       {descWords.length > 0 && (
-        <Text as="p" variant="body" className="text-muted-foreground text-sm leading-relaxed">
+        <Text
+          as="p"
+          variant="body"
+          className="text-muted-foreground text-sm leading-relaxed"
+        >
           {descWords.map((word, i) => (
-            <Text as="span" variant="small"
+            <Text
+              as="span"
+              variant="small"
               key={i}
               className="word inline"
             >

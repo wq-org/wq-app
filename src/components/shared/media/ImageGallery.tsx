@@ -73,7 +73,9 @@ export function ImageGallery({
               />
             </div>
             {image.title ? (
-              <Text as="p" variant="body"
+              <Text
+                as="p"
+                variant="body"
                 className="mt-1 text-xs font-medium text-foreground truncate min-w-0 max-w-full"
                 title={image.title}
               >

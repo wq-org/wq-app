@@ -79,7 +79,12 @@ export default function PreviewDrawer({
             <DialogTitle>Game Simulation</DialogTitle>
           </DialogHeader>
           <div className="flex flex-1 items-center justify-center p-4 text-muted-foreground">
-            <Text as="p" variant="body">Add a Start node, game nodes, and an End node connected in a path to preview.</Text>
+            <Text
+              as="p"
+              variant="body"
+            >
+              Add a Start node, game nodes, and an End node connected in a path to preview.
+            </Text>
           </div>
         </DialogContent>
       </Dialog>

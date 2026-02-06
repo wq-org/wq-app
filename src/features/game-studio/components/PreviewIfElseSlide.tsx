@@ -33,7 +33,11 @@ function BranchRow({
     >
       <div className="flex items-center gap-2 min-w-0">
         <Badge variant={active ? 'default' : 'outline'}>Path {label}</Badge>
-        <Text as="span" variant="small" className="text-sm text-foreground truncate">
+        <Text
+          as="span"
+          variant="small"
+          className="text-sm text-foreground truncate"
+        >
           {destination && destination.trim() ? destination : 'Not connected'}
         </Text>
       </div>
@@ -61,24 +65,52 @@ export function PreviewIfElseSlide({
       />
       <Card>
         <CardHeader className="space-y-1">
-          <Text as="p" variant="body" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <Text
+            as="p"
+            variant="body"
+            className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+          >
             Routing Logic
           </Text>
-          <Text as="p" variant="body" className="text-sm text-foreground">This node chooses the next slide based on:</Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-foreground"
+          >
+            This node chooses the next slide based on:
+          </Text>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Text as="p" variant="body" className="text-xs text-muted-foreground">Condition</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-xs text-muted-foreground"
+            >
+              Condition
+            </Text>
             {displayCondition ? (
               <div className="rounded-md border bg-muted px-3 py-2 text-sm text-foreground">
                 {displayCondition}
               </div>
             ) : (
-              <Text as="p" variant="body" className="text-sm text-muted-foreground">No condition set yet.</Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                No condition set yet.
+              </Text>
             )}
           </div>
           <div className="space-y-2">
-            <Text as="p" variant="body" className="text-xs text-muted-foreground">Outgoing paths</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-xs text-muted-foreground"
+            >
+              Outgoing paths
+            </Text>
             <BranchRow
               label="A"
               destination={branches?.A}

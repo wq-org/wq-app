@@ -31,7 +31,9 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
       <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Text as="span" variant="small"
+            <Text
+              as="span"
+              variant="small"
               className="text-gray-900 font-medium truncate block"
               title={fullLabel}
             >
@@ -48,7 +50,13 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
         {data?.condition && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Text as="span" variant="small" className="text-xs text-gray-500 truncate block">{data.condition}</Text>
+              <Text
+                as="span"
+                variant="small"
+                className="text-xs text-gray-500 truncate block"
+              >
+                {data.condition}
+              </Text>
             </TooltipTrigger>
             <TooltipContent
               side="top"

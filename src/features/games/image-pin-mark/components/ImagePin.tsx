@@ -50,7 +50,11 @@ export default function ImagePin({ className, variant, size = 24, ...props }: Im
       }}
       {...props}
     >
-      <Text as="span" variant="small" className={cn(pingVariants({ variant }))} />
+      <Text
+        as="span"
+        variant="small"
+        className={cn(pingVariants({ variant }))}
+      />
     </div>
   )
 }

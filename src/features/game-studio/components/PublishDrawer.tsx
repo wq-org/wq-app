@@ -94,11 +94,29 @@ export default function PublishDrawer({
               <CardContent className="p-6">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Text as="span" variant="small" className="text-sm font-medium text-gray-700">Game Title:</Text>
-                    <Text as="span" variant="small" className="text-sm text-gray-600">{String(gameTitle)}</Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Game Title:
+                    </Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm text-gray-600"
+                    >
+                      {String(gameTitle)}
+                    </Text>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Text as="span" variant="small" className="text-sm font-medium text-gray-700">Total Nodes:</Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Total Nodes:
+                    </Text>
                     <Badge
                       variant="outline"
                       className="text-sm"
@@ -108,7 +126,11 @@ export default function PublishDrawer({
                   </div>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <Text as="span" variant="small" className="text-sm font-medium text-gray-700">
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Total Points to Achieve:
                       </Text>
                       <Badge variant="secondary">
@@ -117,7 +139,11 @@ export default function PublishDrawer({
                       </Badge>
                     </div>
                     {showFloorNote && (
-                      <Text as="p" variant="body" className="text-xs text-muted-foreground">
+                      <Text
+                        as="p"
+                        variant="body"
+                        className="text-xs text-muted-foreground"
+                      >
                         Wrong-answer penalties may apply; score never below 0.
                       </Text>
                     )}

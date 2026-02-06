@@ -19,7 +19,13 @@ export default function GameImagePinNode({ data, selected }: GameImagePinNodePro
       <div className="p-2 rounded-lg border border-blue-500/20 bg-blue-500/10 flex items-center justify-center">
         <MapPin className="w-4 h-4 text-blue-500" />
       </div>
-      <Text as="span" variant="small" className="text-gray-900 font-medium">{data?.label || 'Image and Pin'}</Text>
+      <Text
+        as="span"
+        variant="small"
+        className="text-gray-900 font-medium"
+      >
+        {data?.label || 'Image and Pin'}
+      </Text>
       <Handle
         type="source"
         position={Position.Right}

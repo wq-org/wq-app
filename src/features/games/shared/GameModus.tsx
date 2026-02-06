@@ -15,7 +15,12 @@ export function GameModus({ nodes, className }: GameModusProps) {
   if (nodes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-        <Text as="p" variant="body">Add game nodes to the flow to play.</Text>
+        <Text
+          as="p"
+          variant="body"
+        >
+          Add game nodes to the flow to play.
+        </Text>
       </div>
     )
   }

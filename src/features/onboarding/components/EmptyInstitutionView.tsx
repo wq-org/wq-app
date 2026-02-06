@@ -7,8 +7,18 @@ export default function EmptyInstitutionView() {
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
         <Building2 className="w-8 h-8 text-gray-400" />
       </div>
-      <Text as="p" variant="body" className="mt-3 text-gray-500 text-center text-sm">No institutions available</Text>
-      <Text as="p" variant="body" className="text-xs text-gray-400 text-center mt-1">
+      <Text
+        as="p"
+        variant="body"
+        className="mt-3 text-gray-500 text-center text-sm"
+      >
+        No institutions available
+      </Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-xs text-gray-400 text-center mt-1"
+      >
         There are currently no institutions to follow. Please check back later.
       </Text>
     </div>

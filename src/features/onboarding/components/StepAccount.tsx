@@ -102,8 +102,18 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   if (!avatars || avatars.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 gap-4">
-        <Text as="p" variant="body" className="text-muted-foreground">No avatars available.</Text>
-        <Text as="p" variant="body" className="text-sm text-gray-500">
+        <Text
+          as="p"
+          variant="body"
+          className="text-muted-foreground"
+        >
+          No avatars available.
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm text-gray-500"
+        >
           Please check your Supabase storage bucket: avatars/meta_data/ and avatars/faces/
         </Text>
       </div>
@@ -115,7 +125,13 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       {/* Avatar Selection */}
       <div className="flex flex-col items-center gap-4">
         <Label className="text-base font-light">
-          <Text as="h2" variant="h2" className="text-3xl font-light mb-2">Choose Your Avatar</Text>
+          <Text
+            as="h2"
+            variant="h2"
+            className="text-3xl font-light mb-2"
+          >
+            Choose Your Avatar
+          </Text>
         </Label>
         <div className="flex items-center gap-6">
           <Button
@@ -139,11 +155,27 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             </Avatar>
             <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-2">
-                <Text as="span" variant="small" className="text-2xl">{selectedAvatar.emoji}</Text>
-                <Text as="span" variant="small" className="text-sm font-medium text-foreground">{selectedAvatar.name}</Text>
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-2xl"
+                >
+                  {selectedAvatar.emoji}
+                </Text>
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-sm font-medium text-foreground"
+                >
+                  {selectedAvatar.name}
+                </Text>
               </div>
               {selectedAvatar.description && (
-                <Text as="p" variant="body" className="text-xs text-muted-foreground text-center max-w-xs">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-xs text-muted-foreground text-center max-w-xs"
+                >
                   {selectedAvatar.description}
                 </Text>
               )}
@@ -195,7 +227,15 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             onChange={(e) => handleUsernameChange(e.target.value)}
             className={`text-base ${usernameError ? 'border-red-500' : ''}`}
           />
-          {usernameError && <Text as="p" variant="body" className="text-sm text-red-500">{usernameError}</Text>}
+          {usernameError && (
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-red-500"
+            >
+              {usernameError}
+            </Text>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -235,7 +275,9 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
             className="resize-none"
             rows={3}
           />
-          <Text as="p" variant="body"
+          <Text
+            as="p"
+            variant="body"
             className={`text-xs text-right ${
               remainingChars < 20 ? 'text-orange-500' : 'text-muted-foreground'
             }`}

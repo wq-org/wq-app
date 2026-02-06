@@ -118,10 +118,18 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
     <>
       <div className="flex flex-col gap-6 pb-12">
         <div className="flex flex-col gap-2">
-          <Text as="h2" variant="h2" className="text-2xl font-semibold">
+          <Text
+            as="h2"
+            variant="h2"
+            className="text-2xl font-semibold"
+          >
             {t('settings.title', { defaultValue: 'Lesson Settings' })}
           </Text>
-          <Text as="p" variant="body" className="text-muted-foreground text-sm">
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground text-sm"
+          >
             {t('settings.subtitle', { defaultValue: 'Manage your lesson details' })}
           </Text>
         </div>

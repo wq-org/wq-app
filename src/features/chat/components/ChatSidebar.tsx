@@ -44,7 +44,13 @@ export function ChatSidebar({ chats, selectedChatId, onChatSelect }: ChatSidebar
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <Text as="p" variant="body" className="text-sm font-medium truncate">{chat.user.name}</Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-sm font-medium truncate"
+                    >
+                      {chat.user.name}
+                    </Text>
                   </div>
                 </div>
               </button>

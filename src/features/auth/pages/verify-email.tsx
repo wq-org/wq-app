@@ -43,14 +43,36 @@ export default function VerifyEmailPage() {
       <div className="border p-8 rounded-3xl shadow-lg text-center max-w-md">
         {isVerifying ? (
           <>
-            <Text as="h1" variant="h1" className="text-2xl font-light mb-4">Verifying Email...</Text>
-            <Text as="p" variant="body" className="text-muted-foreground">Please wait while we verify your email address.</Text>
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-light mb-4"
+            >
+              Verifying Email...
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-muted-foreground"
+            >
+              Please wait while we verify your email address.
+            </Text>
           </>
         ) : isSuccess ? (
           <>
             <CheckCircle className="w-16 h-16 mx-auto mb-4 text-green-500" />
-            <Text as="h1" variant="h1" className="text-2xl font-light mb-4">Email Verified!</Text>
-            <Text as="p" variant="body" className="text-muted-foreground mb-6">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-light mb-4"
+            >
+              Email Verified!
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-muted-foreground mb-6"
+            >
               Your email has been successfully verified. You can now log in to your account.
             </Text>
             <Button onClick={() => navigate('/')}>Go to Login</Button>
@@ -58,8 +80,18 @@ export default function VerifyEmailPage() {
         ) : (
           <>
             <XCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
-            <Text as="h1" variant="h1" className="text-2xl font-light mb-4">Verification Failed</Text>
-            <Text as="p" variant="body" className="text-muted-foreground mb-6">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-light mb-4"
+            >
+              Verification Failed
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-muted-foreground mb-6"
+            >
               {error || 'Unable to verify your email. The link may be invalid or expired.'}
             </Text>
             <Button onClick={() => navigate('/auth/signup')}>Back to Sign Up</Button>

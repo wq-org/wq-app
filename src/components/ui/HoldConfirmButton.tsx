@@ -92,7 +92,9 @@ function HoldConfirmButton({
       onTouchCancel={resetHold}
       {...props}
     >
-      <Text as="span" variant="small"
+      <Text
+        as="span"
+        variant="small"
         className={cn(
           'absolute inset-0 origin-left',
           CONFIRM_PROGRESS_CLASS,
@@ -103,14 +105,21 @@ function HoldConfirmButton({
         }}
       />
 
-      <Text as="span" variant="small"
+      <Text
+        as="span"
+        variant="small"
         className={cn(
           'relative z-10 flex items-center gap-2 transition-colors duration-150',
           isHolding && CONFIRM_CONTENT_HOLD_CLASS,
         )}
       >
         {icon ?? <Check className="size-5 shrink-0" />}
-        <Text as="span" variant="small">{children ?? 'Hold to Confirm'}</Text>
+        <Text
+          as="span"
+          variant="small"
+        >
+          {children ?? 'Hold to Confirm'}
+        </Text>
       </Text>
     </Button>
   )

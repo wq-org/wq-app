@@ -23,14 +23,22 @@ export default function GameSummaryCard({
       <CardContent className="p-4">
         <div className="text-sm text-muted-foreground flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-4">
-            <Text as="span" variant="small" className="flex items-center gap-2">
+            <Text
+              as="span"
+              variant="small"
+              className="flex items-center gap-2"
+            >
               <ListOrdered
                 className="size-4"
                 aria-hidden
               />
               Total {questionsLabel || 'questions'}: {totalQuestions}
             </Text>
-            <Text as="span" variant="small" className="flex items-center gap-2">
+            <Text
+              as="span"
+              variant="small"
+              className="flex items-center gap-2"
+            >
               <Award
                 className="size-4"
                 aria-hidden
@@ -38,7 +46,15 @@ export default function GameSummaryCard({
               Total {pointsLabel || 'points'}: {totalPoints}
             </Text>
           </div>
-          {pointsSubtitle && <Text as="p" variant="body" className="text-xs text-muted-foreground">{pointsSubtitle}</Text>}
+          {pointsSubtitle && (
+            <Text
+              as="p"
+              variant="body"
+              className="text-xs text-muted-foreground"
+            >
+              {pointsSubtitle}
+            </Text>
+          )}
         </div>
       </CardContent>
     </Card>

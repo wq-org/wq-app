@@ -15,7 +15,12 @@ export function ChatView({ chat, messages, currentUserId }: ChatViewProps) {
   if (!chat) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
-        <Text as="p" variant="body">Select a chat to start messaging</Text>
+        <Text
+          as="p"
+          variant="body"
+        >
+          Select a chat to start messaging
+        </Text>
       </div>
     )
   }
@@ -38,8 +43,20 @@ export function ChatView({ chat, messages, currentUserId }: ChatViewProps) {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <Text as="p" variant="body" className="font-medium">{chat.user.name}</Text>
-          <Text as="p" variant="body" className="text-sm text-muted-foreground">{chat.user.email}</Text>
+          <Text
+            as="p"
+            variant="body"
+            className="font-medium"
+          >
+            {chat.user.name}
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground"
+          >
+            {chat.user.email}
+          </Text>
         </div>
         <Popover>
           <PopoverTrigger asChild>

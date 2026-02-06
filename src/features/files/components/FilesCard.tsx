@@ -305,7 +305,12 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   <LayoutDashboard
                     className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
                   />
-                  <Text as="span" variant="small">Overview</Text>
+                  <Text
+                    as="span"
+                    variant="small"
+                  >
+                    Overview
+                  </Text>
                 </Button>
                 <Button
                   variant="ghost"
@@ -317,7 +322,12 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   }`}
                 >
                   <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-                  <Text as="span" variant="small">Settings</Text>
+                  <Text
+                    as="span"
+                    variant="small"
+                  >
+                    Settings
+                  </Text>
                 </Button>
               </div>
 
@@ -393,15 +403,33 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <Label className="text-xs text-gray-500">Filename</Label>
-                          <Text as="p" variant="body" className="text-sm font-medium">{file.filename}</Text>
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="text-sm font-medium"
+                          >
+                            {file.filename}
+                          </Text>
                         </div>
                         <div className="flex items-center justify-between">
                           <Label className="text-xs text-gray-500">Size</Label>
-                          <Text as="p" variant="body" className="text-sm font-medium">{file.size}</Text>
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="text-sm font-medium"
+                          >
+                            {file.size}
+                          </Text>
                         </div>
                         <div className="flex items-center justify-between">
                           <Label className="text-xs text-gray-500">Type</Label>
-                          <Text as="p" variant="body" className="text-sm font-medium">{file.type}</Text>
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="text-sm font-medium"
+                          >
+                            {file.type}
+                          </Text>
                         </div>
                       </div>
                     </div>
@@ -447,8 +475,18 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       ) : newFile ? (
                         <div className="space-y-2">
                           <div className="p-4 border rounded-lg bg-gray-50">
-                            <Text as="p" variant="body" className="text-sm font-medium">{newFile.name}</Text>
-                            <Text as="p" variant="body" className="text-xs text-gray-500">
+                            <Text
+                              as="p"
+                              variant="body"
+                              className="text-sm font-medium"
+                            >
+                              {newFile.name}
+                            </Text>
+                            <Text
+                              as="p"
+                              variant="body"
+                              className="text-xs text-gray-500"
+                            >
                               {(newFile.size / 1024 / 1024).toFixed(2)} MB
                             </Text>
                           </div>

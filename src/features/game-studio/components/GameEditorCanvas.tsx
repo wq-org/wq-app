@@ -1152,7 +1152,13 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               size="md"
               speed={1750}
             />
-            <Text as="p" variant="body" className="text-sm text-gray-500">Project Loading...</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-gray-500"
+            >
+              Project Loading...
+            </Text>
           </div>
         )}
         <GameSidebar />

@@ -348,7 +348,13 @@ export default function ImageTermMatchGame({
         <CardHeader>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Text as="h3" variant="h3" className="font-bold text-base leading-none">Terms</Text>
+              <Text
+                as="h3"
+                variant="h3"
+                className="font-bold text-base leading-none"
+              >
+                Terms
+              </Text>
               <div className="flex items-center gap-2">
                 <SlotsLeftLabel
                   current={terms.length}
@@ -366,7 +372,11 @@ export default function ImageTermMatchGame({
                 </Button>
               </div>
             </div>
-            <Text as="p" variant="body" className="text-sm text-muted-foreground">
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-muted-foreground"
+            >
               Add up to four multiple choice options. Use the{' '}
               <Circle
                 className="inline size-3.5 mx-0.5"
@@ -553,7 +563,13 @@ export default function ImageTermMatchGame({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <Text as="p" variant="body" className="text-gray-500 text-sm">No image uploaded</Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-gray-500 text-sm"
+                >
+                  No image uploaded
+                </Text>
               </div>
             )}
           </div>
@@ -604,12 +620,16 @@ export default function ImageTermMatchGame({
                       }
                     }}
                   >
-                    <Text as="span" variant="small"
+                    <Text
+                      as="span"
+                      variant="small"
                       className={`font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
                     >
                       {letter}.
                     </Text>
-                    <Text as="span" variant="small"
+                    <Text
+                      as="span"
+                      variant="small"
                       className={`flex-1 text-left ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
                     >
                       {term.value}
@@ -663,7 +683,12 @@ export default function ImageTermMatchGame({
 
       {!displayUrl && terms.every((term) => !term.value.trim()) && (
         <div className="text-center text-gray-400 py-12">
-          <Text as="p" variant="body">Complete the editor to see the preview</Text>
+          <Text
+            as="p"
+            variant="body"
+          >
+            Complete the editor to see the preview
+          </Text>
         </div>
       )}
     </div>
@@ -674,7 +699,11 @@ export default function ImageTermMatchGame({
     <div className="py-6 px-0 flex flex-col gap-6">
       {onDelete && (
         <div>
-          <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground text-sm mb-3"
+          >
             Hold the button below for 3 seconds to delete this node.
           </Text>
           <HoldToDeleteButton

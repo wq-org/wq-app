@@ -353,7 +353,11 @@ export default function ParagraphLineSelectGame({
         <CardContent className="p-6">
           <div className="space-y-2 mb-4">
             <Label className="text-base font-medium">Paragraph</Label>
-            <Text as="p" variant="body" className="text-sm text-muted-foreground">
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-muted-foreground"
+            >
               Paste or type your text below. Separate each question using the{' '}
               <Badge
                 variant="secondary"
@@ -394,8 +398,18 @@ export default function ParagraphLineSelectGame({
                     }`}
                     onClick={() => handleSelectSentence(index)}
                   >
-                    <Text as="p" variant="body" className="text-base leading-relaxed">
-                      <Text as="span" variant="small" className="font-medium  mr-2">{index + 1}.</Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-base leading-relaxed"
+                    >
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="font-medium  mr-2"
+                      >
+                        {index + 1}.
+                      </Text>
                       {sentence}
                     </Text>
                   </div>
@@ -404,7 +418,11 @@ export default function ParagraphLineSelectGame({
                   {isSelected && (
                     <div className="mt-3 ml-6 space-y-3 p-4 bg-gray-50 rounded-lg">
                       {config && hasMultipleCorrectOptions(config) && (
-                        <Text as="p" variant="body" className="text-sm text-muted-foreground">
+                        <Text
+                          as="p"
+                          variant="body"
+                          className="text-sm text-muted-foreground"
+                        >
                           Multiple answers can be correct for this question.
                         </Text>
                       )}
@@ -427,7 +445,13 @@ export default function ParagraphLineSelectGame({
                             ) : (
                               <X className="w-4 h-4 text-black shrink-0" />
                             )}
-                            <Text as="span" variant="small" className="text-sm wrap-break-word">{option.text}</Text>
+                            <Text
+                              as="span"
+                              variant="small"
+                              className="text-sm wrap-break-word"
+                            >
+                              {option.text}
+                            </Text>
                           </div>
                           <div className="flex items-center gap-2 shrink-0 ml-auto">
                             {option.isCorrect && (
@@ -622,7 +646,13 @@ export default function ParagraphLineSelectGame({
 
                       {config && config.options.some((o) => o.isCorrect) && (
                         <div className="pt-2">
-                          <Text as="span" variant="small" className="text-sm text-muted-foreground mr-2">Total points:</Text>
+                          <Text
+                            as="span"
+                            variant="small"
+                            className="text-sm text-muted-foreground mr-2"
+                          >
+                            Total points:
+                          </Text>
                           <Badge variant="secondary">
                             {config.options
                               .filter((o) => o.isCorrect)
@@ -635,7 +665,11 @@ export default function ParagraphLineSelectGame({
                         config.options.some(
                           (o) => !o.isCorrect && (o.pointsWhenWrong ?? 0) > 0,
                         ) && (
-                          <Text as="p" variant="body" className="pt-2 text-xs text-muted-foreground">
+                          <Text
+                            as="p"
+                            variant="body"
+                            className="pt-2 text-xs text-muted-foreground"
+                          >
                             Score never goes below zero.
                           </Text>
                         )}
@@ -767,7 +801,11 @@ export default function ParagraphLineSelectGame({
       <Card>
         <CardContent className="p-6">
           <div className="relative">
-            <Text as="p" variant="body" className="text-base leading-[2.5]">
+            <Text
+              as="p"
+              variant="body"
+              className="text-base leading-[2.5]"
+            >
               {sentences.map((sentence, index) => {
                 const isHovered = hoveredIndex === index
                 const config = getSentenceConfig(index)
@@ -786,7 +824,9 @@ export default function ParagraphLineSelectGame({
                     onOpenChange={(open) => setOpenPopoverIndex(open ? index : null)}
                   >
                     <PopoverTrigger asChild>
-                      <Text as="span" variant="small"
+                      <Text
+                        as="span"
+                        variant="small"
                         className={`relative inline transition-all duration-200 cursor-pointer ${
                           isHovered
                             ? 'opacity-100 scale-[1.02]'
@@ -840,7 +880,11 @@ export default function ParagraphLineSelectGame({
                                 ) : (
                                   <X className="w-4 h-4 shrink-0" />
                                 )}
-                                <Text as="span" variant="small" className="text-sm truncate max-w-[600px]">
+                                <Text
+                                  as="span"
+                                  variant="small"
+                                  className="text-sm truncate max-w-[600px]"
+                                >
                                   {option.text}
                                 </Text>
                               </button>
@@ -894,7 +938,11 @@ export default function ParagraphLineSelectGame({
     <div className="py-6 px-0 flex flex-col gap-6">
       {onDelete && (
         <div>
-          <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground text-sm mb-3"
+          >
             Hold the button below for 3 seconds to delete this node.
           </Text>
           <HoldToDeleteButton

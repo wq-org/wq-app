@@ -275,7 +275,13 @@ export default function GameNodeDialog({
               size="md"
               speed={1750}
             />
-            <Text as="p" variant="body" className="text-sm text-gray-500">Project Loading...</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-gray-500"
+            >
+              Project Loading...
+            </Text>
           </div>
         )}
         <DialogFooter>

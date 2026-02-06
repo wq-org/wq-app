@@ -33,11 +33,27 @@ const Error404 = () => {
           strokeWidth={1.5}
         />
 
-        <Text as="h1" variant="h1" className="text-6xl  text-black mb-4">404</Text>
+        <Text
+          as="h1"
+          variant="h1"
+          className="text-6xl  text-black mb-4"
+        >
+          404
+        </Text>
 
-        <Text as="h2" variant="h2" className="text-2xl font-semibold text-black mb-6">Page Not Found</Text>
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-2xl font-semibold text-black mb-6"
+        >
+          Page Not Found
+        </Text>
 
-        <Text as="p" variant="body" className="text-gray-700 mb-8 px-4">
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-700 mb-8 px-4"
+        >
           Oops! Looks like you've ventured into uncharted territory. The page you're looking for
           seems to have gone exploring.
         </Text>
@@ -56,7 +72,12 @@ const Error404 = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <Text as="p" variant="body">Go Back</Text>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Go Back
+              </Text>
             </TooltipContent>
           </Tooltip>
 
@@ -72,7 +93,12 @@ const Error404 = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <Text as="p" variant="body">Go to Dashboard</Text>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Go to Dashboard
+              </Text>
             </TooltipContent>
           </Tooltip>
 
@@ -88,7 +114,12 @@ const Error404 = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <Text as="p" variant="body">Go to Login</Text>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Go to Login
+              </Text>
             </TooltipContent>
           </Tooltip>
         </div>

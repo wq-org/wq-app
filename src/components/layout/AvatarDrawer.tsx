@@ -42,7 +42,13 @@ function AvatarOptionItem({ avatar, onSelect }: AvatarOptionItemProps) {
         />
         <AvatarFallback className="text-lg">{avatar.emoji}</AvatarFallback>
       </Avatar>
-      <Text as="span" variant="small" className="text-xs text-center">{avatar.name}</Text>
+      <Text
+        as="span"
+        variant="small"
+        className="text-xs text-center"
+      >
+        {avatar.name}
+      </Text>
     </button>
   )
 }

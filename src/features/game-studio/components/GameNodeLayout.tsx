@@ -54,7 +54,12 @@ export default function GameNodeLayout({
             <LayoutDashboard
               className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
             />
-            <Text as="span" variant="small">Overview</Text>
+            <Text
+              as="span"
+              variant="small"
+            >
+              Overview
+            </Text>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
@@ -65,7 +70,12 @@ export default function GameNodeLayout({
             }`}
           >
             <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-            <Text as="span" variant="small">Settings</Text>
+            <Text
+              as="span"
+              variant="small"
+            >
+              Settings
+            </Text>
           </button>
         </div>
       )}
@@ -97,7 +107,11 @@ export default function GameNodeLayout({
             {settingsContent ?? <GameNodeSettings nodeId={nodeId} />}
             {onDelete && settingsContent == null && (
               <div>
-                <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-muted-foreground text-sm mb-3"
+                >
                   Hold the button below for 3 seconds to delete this node.
                 </Text>
                 <HoldToDeleteButton

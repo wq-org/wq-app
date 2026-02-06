@@ -51,8 +51,18 @@ export default function CommandFeedbackForm() {
       <Card className="w-full shadow-none border-0 px-0 py-0">
         <CardHeader className="pb-2">
           <div className="flex-1">
-            <Text as="h2" variant="h2" className="text-xl font-light leading-none">Send Feedback</Text>
-            <Text as="p" variant="body" className="text-sm text-muted-foreground mt-1 font-light">
+            <Text
+              as="h2"
+              variant="h2"
+              className="text-xl font-light leading-none"
+            >
+              Send Feedback
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-muted-foreground mt-1 font-light"
+            >
               Tell us what’s on your mind. We read every message.
             </Text>
           </div>

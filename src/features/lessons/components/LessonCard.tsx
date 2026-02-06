@@ -17,12 +17,20 @@ export function LessonCard({ lesson, index, onView }: LessonCardProps) {
           <div className="flex-1 min-w-0">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Text as="h3" variant="h3" className="text-base font-semibold text-gray-900 line-clamp-2 cursor-help">
+                <Text
+                  as="h3"
+                  variant="h3"
+                  className="text-base font-semibold text-gray-900 line-clamp-2 cursor-help"
+                >
                   {index + 1}. {lesson.title}
                 </Text>
               </TooltipTrigger>
               <TooltipContent>
-                <Text as="p" variant="body" className="max-w-xs">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="max-w-xs"
+                >
                   {index + 1}. {lesson.title}
                 </Text>
               </TooltipContent>
@@ -34,12 +42,22 @@ export function LessonCard({ lesson, index, onView }: LessonCardProps) {
         <div className="flex-1 mb-3 min-h-0">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Text as="p" variant="body" className="text-sm text-gray-600 line-clamp-3 cursor-help">
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-gray-600 line-clamp-3 cursor-help"
+              >
                 {lesson.description || 'no description'}
               </Text>
             </TooltipTrigger>
             <TooltipContent>
-              <Text as="p" variant="body" className="max-w-xs">{lesson.description || 'no description'}</Text>
+              <Text
+                as="p"
+                variant="body"
+                className="max-w-xs"
+              >
+                {lesson.description || 'no description'}
+              </Text>
             </TooltipContent>
           </Tooltip>
         </div>

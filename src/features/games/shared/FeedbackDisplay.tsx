@@ -9,7 +9,15 @@ interface FeedbackDisplayProps {
 
 export default function FeedbackDisplay({ feedback, variant, className }: FeedbackDisplayProps) {
   if (feedback === undefined || feedback.trim() === '') {
-    return <Text as="span" variant="small" className="text-muted-foreground">—</Text>
+    return (
+      <Text
+        as="span"
+        variant="small"
+        className="text-muted-foreground"
+      >
+        —
+      </Text>
+    )
   }
 
   return (

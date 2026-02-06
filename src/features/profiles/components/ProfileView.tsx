@@ -21,7 +21,13 @@ export function ProfileView() {
   if (error || !profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text as="p" variant="body" className="text-gray-500">Profile not found</Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-500"
+        >
+          Profile not found
+        </Text>
       </div>
     )
   }
@@ -50,7 +56,13 @@ export function ProfileView() {
   // If role doesn't match, show error
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <Text as="p" variant="body" className="text-gray-500">Invalid profile type</Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-gray-500"
+      >
+        Invalid profile type
+      </Text>
     </div>
   )
 }

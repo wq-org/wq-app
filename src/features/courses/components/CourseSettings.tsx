@@ -122,8 +122,20 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
   return (
     <div className="flex flex-col gap-6 pb-12">
       <div className="flex flex-col gap-2">
-        <Text as="h2" variant="h2" className="text-2xl font-semibold">Course Settings</Text>
-        <Text as="p" variant="body" className="text-muted-foreground text-sm">Manage your course details and settings</Text>
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-2xl font-semibold"
+        >
+          Course Settings
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-muted-foreground text-sm"
+        >
+          Manage your course details and settings
+        </Text>
       </div>
 
       <div className="flex flex-col gap-6">
@@ -162,7 +174,13 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             >
               Published
             </Label>
-            <Text as="p" variant="body" className="text-sm text-muted-foreground">Make this course visible to students</Text>
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-muted-foreground"
+            >
+              Make this course visible to students
+            </Text>
           </div>
           <Switch
             id="published"

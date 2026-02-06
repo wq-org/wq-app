@@ -72,8 +72,20 @@ export default function GameStudio() {
       role="teacher"
     >
       <div className="flex flex-col gap-2">
-        <Text as="h1" variant="h1" className="text-6xl">Game Studio</Text>
-        <Text as="p" variant="body" className="text-gray-500 mt-2">Create and manage educational games for your students.</Text>
+        <Text
+          as="h1"
+          variant="h1"
+          className="text-6xl"
+        >
+          Game Studio
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-500 mt-2"
+        >
+          Create and manage educational games for your students.
+        </Text>
         <div className="flex justify-end w-full">
           <Button
             onClick={handleCreateGame}

@@ -155,8 +155,20 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
                 </div>
               )}
               <div className="flex flex-col items-center gap-1 text-center">
-                <Text as="h1" variant="h1" className="text-2xl font-light">{t('login.title')}</Text>
-                <Text as="p" variant="body" className="text-muted-foreground text-sm text-balance">{t('login.subtitle')}</Text>
+                <Text
+                  as="h1"
+                  variant="h1"
+                  className="text-2xl font-light"
+                >
+                  {t('login.title')}
+                </Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-muted-foreground text-sm text-balance"
+                >
+                  {t('login.subtitle')}
+                </Text>
               </div>
 
               <Field>

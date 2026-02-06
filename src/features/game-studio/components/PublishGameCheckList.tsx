@@ -52,7 +52,12 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
               className="flex items-center gap-2 flex-wrap text-sm text-slate-700"
             >
               <X className="size-4 text-slate-600 shrink-0" />
-              <Text as="span" variant="small">{msg}</Text>
+              <Text
+                as="span"
+                variant="small"
+              >
+                {msg}
+              </Text>
             </div>
           ))}
           {nodeItems.map((item) => {
@@ -73,7 +78,12 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
                   orientation="vertical"
                   className="h-4 bg-slate-300"
                 />
-                <Text as="span" variant="small">{err}</Text>
+                <Text
+                  as="span"
+                  variant="small"
+                >
+                  {err}
+                </Text>
               </div>
             ))
           })}

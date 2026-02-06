@@ -57,7 +57,11 @@ const Navigation = ({
               <ChevronLeft className="h-5 w-5 text-gray-600" />
             </Button>
             <div className="h-6 w-px bg-border" />
-            <Text as="h1" variant="h1" className="text-lg font-normal text-gray-700">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-lg font-normal text-gray-700"
+            >
               {children || currentPageName || 'Page Title'}
             </Text>
           </div>

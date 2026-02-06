@@ -153,8 +153,18 @@ export default function SettingsDrawer({
             <Label className="text-sm font-medium">Publish status</Label>
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <Text as="p" variant="body" className="text-sm font-medium">{isPublished ? 'Published' : 'Draft'}</Text>
-                <Text as="p" variant="body" className="text-xs text-muted-foreground">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm font-medium"
+                >
+                  {isPublished ? 'Published' : 'Draft'}
+                </Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-xs text-muted-foreground"
+                >
                   {isPublished
                     ? 'Students can play this game. Turn off to unpublish and hide it from the list.'
                     : 'Use the Publish button in the toolbar to publish this game for students.'}
@@ -194,7 +204,13 @@ export default function SettingsDrawer({
                 ))}
               </div>
             ) : (
-              <Text as="p" variant="body" className="text-sm text-muted-foreground">No previous versions</Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                No previous versions
+              </Text>
             )}
           </div>
 

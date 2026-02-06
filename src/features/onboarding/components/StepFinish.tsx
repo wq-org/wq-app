@@ -94,8 +94,20 @@ export default function StepFinish({
 
       <div className="flex flex-col gap-8">
         <div className="text-center">
-          <Text as="h2" variant="h2" className="text-3xl font-light mb-2">{t('finish.header.title')}</Text>
-          <Text as="p" variant="body" className="text-muted-foreground text-sm">{t('finish.header.subtitle')}</Text>
+          <Text
+            as="h2"
+            variant="h2"
+            className="text-3xl font-light mb-2"
+          >
+            {t('finish.header.title')}
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground text-sm"
+          >
+            {t('finish.header.subtitle')}
+          </Text>
         </div>
 
         {/* Summary Card */}
@@ -113,9 +125,21 @@ export default function StepFinish({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-2xl">{accountData.displayName}</CardTitle>
-                  <Text as="span" variant="small" className="text-xl">{accountData.avatar.emoji}</Text>
+                  <Text
+                    as="span"
+                    variant="small"
+                    className="text-xl"
+                  >
+                    {accountData.avatar.emoji}
+                  </Text>
                 </div>
-                <Text as="p" variant="body" className="text-muted-foreground">@{accountData.username}</Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-muted-foreground"
+                >
+                  @{accountData.username}
+                </Text>
               </div>
             </div>
           </CardHeader>
@@ -123,15 +147,33 @@ export default function StepFinish({
           <CardContent className="flex flex-col gap-6">
             {/* Description */}
             <div>
-              <Text as="h3" variant="h3" className="font-semibold mb-2">{t('finish.about.title')}</Text>
-              <Text as="p" variant="body" className="text-muted-foreground text-sm">{accountData.description}</Text>
+              <Text
+                as="h3"
+                variant="h3"
+                className="font-semibold mb-2"
+              >
+                {t('finish.about.title')}
+              </Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-muted-foreground text-sm"
+              >
+                {accountData.description}
+              </Text>
             </div>
 
             <Separator />
 
             {/* Institutions */}
             <div>
-              <Text as="h3" variant="h3" className="font-semibold mb-3">Following Institutions ({institutions.length})</Text>
+              <Text
+                as="h3"
+                variant="h3"
+                className="font-semibold mb-3"
+              >
+                Following Institutions ({institutions.length})
+              </Text>
               <div className="flex flex-wrap gap-2">
                 {institutions.map((institution) => (
                   <Badge
@@ -150,16 +192,50 @@ export default function StepFinish({
             {/* Account Details */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <Text as="p" variant="body" className="text-muted-foreground mb-1">Username</Text>
-                <Text as="p" variant="body" className="font-medium">@{accountData.username}</Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-muted-foreground mb-1"
+                >
+                  Username
+                </Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="font-medium"
+                >
+                  @{accountData.username}
+                </Text>
               </div>
               <div>
-                <Text as="p" variant="body" className="text-muted-foreground mb-1">Display Name</Text>
-                <Text as="p" variant="body" className="font-medium">{accountData.displayName}</Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-muted-foreground mb-1"
+                >
+                  Display Name
+                </Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="font-medium"
+                >
+                  {accountData.displayName}
+                </Text>
               </div>
               <div className="col-span-2">
-                <Text as="p" variant="body" className="text-muted-foreground mb-1">Avatar</Text>
-                <Text as="p" variant="body" className="font-medium">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-muted-foreground mb-1"
+                >
+                  Avatar
+                </Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="font-medium"
+                >
                   {accountData.avatar.name} {accountData.avatar.emoji}
                 </Text>
               </div>

@@ -130,7 +130,9 @@ function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
 
 function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
-    <Text as="p" variant="body"
+    <Text
+      as="p"
+      variant="body"
       data-slot="field-description"
       className={cn(
         'text-muted-foreground text-sm leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance',
@@ -162,7 +164,9 @@ function FieldSeparator({
     >
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
-        <Text as="span" variant="small"
+        <Text
+          as="span"
+          variant="small"
           className="bg-background text-muted-foreground relative mx-auto block w-fit px-2"
           data-slot="field-separator-content"
         >

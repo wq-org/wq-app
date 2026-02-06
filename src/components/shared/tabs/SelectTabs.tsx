@@ -40,7 +40,9 @@ export default function SelectTabs({
             )}
           >
             <Icon className={isActive ? 'text-black' : 'text-black/40'} />
-            <Text as="span" variant="small"
+            <Text
+              as="span"
+              variant="small"
               className={cn(
                 'text-xl',
                 isActive ? 'text-black font-medium' : 'text-black/40 hover:text-black/60',

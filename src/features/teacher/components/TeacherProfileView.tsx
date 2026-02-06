@@ -56,12 +56,22 @@ function ProfileCourseCard({
           <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Text as="h3" variant="h3" className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+                <Text
+                  as="h3"
+                  variant="h3"
+                  className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0"
+                >
                   {title}
                 </Text>
               </TooltipTrigger>
               <TooltipContent>
-                <Text as="p" variant="body" className="max-w-xs">{title}</Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="max-w-xs"
+                >
+                  {title}
+                </Text>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -69,7 +79,11 @@ function ProfileCourseCard({
 
         {/* Description area */}
         <div className="flex flex-col gap-3">
-          <Text as="p" variant="body" className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
+          <Text
+            as="p"
+            variant="body"
+            className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1"
+          >
             {description}
           </Text>
           {/* Join Button */}
@@ -81,7 +95,12 @@ function ProfileCourseCard({
               }}
               className="text-blue-500 hover:opacity-80 h-auto"
             >
-              <Text as="p" variant="body">Join</Text>
+              <Text
+                as="p"
+                variant="body"
+              >
+                Join
+              </Text>
               <UserPlus className="w-4 h-4" />
             </Button>
           </div>
@@ -177,7 +196,13 @@ const TeacherProfileView = () => {
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text as="p" variant="body" className="text-gray-500">Teacher not found</Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-gray-500"
+        >
+          Teacher not found
+        </Text>
       </div>
     )
   }

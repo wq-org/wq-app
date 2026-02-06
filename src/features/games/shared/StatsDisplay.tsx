@@ -28,7 +28,13 @@ function StatItem({ icon, value, label }: StatItemProps) {
         <Tooltip.Trigger asChild>
           <div className="flex items-center gap-1.5 px-2">
             <div className="text-muted-foreground">{icon}</div>
-            <Text as="span" variant="small" className="text-lg font-medium tabular-nums">{value}</Text>
+            <Text
+              as="span"
+              variant="small"
+              className="text-lg font-medium tabular-nums"
+            >
+              {value}
+            </Text>
           </div>
         </Tooltip.Trigger>
         <Tooltip.Portal>

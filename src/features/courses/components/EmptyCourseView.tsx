@@ -7,8 +7,18 @@ export default function EmptyCourseView() {
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
         <BookOpen className="w-8 h-8 text-gray-400" />
       </div>
-      <Text as="p" variant="body" className="mt-3 text-gray-500 text-center text-sm">Erstelle deinen ersten Kurs</Text>
-      <Text as="p" variant="body" className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2">
+      <Text
+        as="p"
+        variant="body"
+        className="mt-3 text-gray-500 text-center text-sm"
+      >
+        Erstelle deinen ersten Kurs
+      </Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2"
+      >
         Benutze das Kommando <Plus className="w-4 h-4 text-gray-400" /> in der Befehlsleiste, um
         einen neuen Kurs zu erstellen.
       </Text>

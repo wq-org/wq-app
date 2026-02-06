@@ -37,17 +37,39 @@ export default function NotificationItem({ notification }: NotificationItemProps
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <Text as="p" variant="body" className="text-base font-medium text-gray-900 mb-1">{notification.title}</Text>
-        <Text as="p" variant="body" className="text-sm text-gray-500 mb-2">{notification.message}</Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-base font-medium text-gray-900 mb-1"
+        >
+          {notification.title}
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm text-gray-500 mb-2"
+        >
+          {notification.message}
+        </Text>
 
         {/* File metadata */}
         {notification.metadata?.fileName && (
           <div className="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-lg w-fit mt-2">
             <div className="w-8 h-8 bg-blue-50 rounded flex items-center justify-center">
-              <Text as="span" variant="small" className="text-lg">{notification.metadata.fileIcon || '📄'}</Text>
+              <Text
+                as="span"
+                variant="small"
+                className="text-lg"
+              >
+                {notification.metadata.fileIcon || '📄'}
+              </Text>
             </div>
             <div className="flex items-center gap-2">
-              <Text as="span" variant="small" className="text-sm font-medium text-gray-700">
+              <Text
+                as="span"
+                variant="small"
+                className="text-sm font-medium text-gray-700"
+              >
                 {notification.metadata.fileName}
               </Text>
               {notification.metadata.fileSize && (

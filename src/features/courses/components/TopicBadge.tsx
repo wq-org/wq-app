@@ -54,7 +54,13 @@ export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: Top
             <Check className="w-4 h-4 text-white" />
           </Badge>
         )}
-        <Text as="span" variant="small" className="animate-in fade-in slide-in-from-top-1 duration-200">{topic.name}</Text>
+        <Text
+          as="span"
+          variant="small"
+          className="animate-in fade-in slide-in-from-top-1 duration-200"
+        >
+          {topic.name}
+        </Text>
         <Separator
           orientation="vertical"
           className="h-full bg-gray-300"

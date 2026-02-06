@@ -19,7 +19,13 @@ export default function GameParagraphNode({ data, selected }: GameParagraphNodeP
       <div className="p-2 rounded-lg border border-blue-500/20 bg-blue-500/10 flex items-center justify-center">
         <StickyNote className="w-4 h-4 text-blue-500" />
       </div>
-      <Text as="span" variant="small" className="text-gray-900 font-medium">{data?.label || 'Paragraph'}</Text>
+      <Text
+        as="span"
+        variant="small"
+        className="text-gray-900 font-medium"
+      >
+        {data?.label || 'Paragraph'}
+      </Text>
       <Handle
         type="source"
         position={Position.Right}

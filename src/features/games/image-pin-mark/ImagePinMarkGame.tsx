@@ -558,7 +558,11 @@ export default function ImagePinMarkGame({
           <CardDescription>
             Upload an image and start clicking on the areas you want to highlight. Your cursor turns
             into "
-            <Text as="span" variant="small" className="text-slate-500 inline-flex align-middle mx-1">
+            <Text
+              as="span"
+              variant="small"
+              className="text-slate-500 inline-flex align-middle mx-1"
+            >
               <Plus />
             </Text>
             " icon when you hover over the uploaded image.
@@ -884,7 +888,13 @@ export default function ImagePinMarkGame({
 
                 {squares.length > 0 && (
                   <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                    <Text as="p" variant="body" className="text-sm text-gray-600 mb-4">Drag pins onto the image above:</Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-sm text-gray-600 mb-4"
+                    >
+                      Drag pins onto the image above:
+                    </Text>
                     <div className="flex gap-4 flex-wrap">
                       {squares
                         .filter((square) => {
@@ -906,7 +916,11 @@ export default function ImagePinMarkGame({
                       const pinId = `pin-${square.id}`
                       return !pinPositions.some((p) => p.id === pinId)
                     }).length === 0 && (
-                      <Text as="p" variant="body" className="text-sm text-gray-500 text-center mt-4">
+                      <Text
+                        as="p"
+                        variant="body"
+                        className="text-sm text-gray-500 text-center mt-4"
+                      >
                         All pins have been placed on the image
                       </Text>
                     )}
@@ -915,15 +929,32 @@ export default function ImagePinMarkGame({
 
                 {squares.length > 0 && (
                   <div className="space-y-4">
-                    <Text as="h3" variant="h3" className="font-semibold text-lg">Questions:</Text>
+                    <Text
+                      as="h3"
+                      variant="h3"
+                      className="font-semibold text-lg"
+                    >
+                      Questions:
+                    </Text>
                     <div className="space-y-2">
                       {squares.map((square) => (
                         <div
                           key={square.id}
                           className="flex gap-2"
                         >
-                          <Text as="span" variant="small" className="font-medium min-w-20">Square {square.id}:</Text>
-                          <Text as="span" variant="small">{square.question || 'No question set'}</Text>
+                          <Text
+                            as="span"
+                            variant="small"
+                            className="font-medium min-w-20"
+                          >
+                            Square {square.id}:
+                          </Text>
+                          <Text
+                            as="span"
+                            variant="small"
+                          >
+                            {square.question || 'No question set'}
+                          </Text>
                         </div>
                       ))}
                     </div>
@@ -969,7 +1000,13 @@ export default function ImagePinMarkGame({
             </DndContext>
           ) : (
             <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
-              <Text as="p" variant="body" className="text-gray-500">Upload an image to see preview</Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-gray-500"
+              >
+                Upload an image to see preview
+              </Text>
             </div>
           )}
         </CardContent>
@@ -981,7 +1018,11 @@ export default function ImagePinMarkGame({
     <div className="space-y-6">
       {onDelete && (
         <div>
-          <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground text-sm mb-3"
+          >
             Hold the button below for 3 seconds to delete this node.
           </Text>
           <HoldToDeleteButton

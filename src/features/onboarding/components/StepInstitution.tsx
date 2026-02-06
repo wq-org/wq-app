@@ -67,8 +67,18 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
     return (
       <div className="flex flex-col gap-8">
         <div className="text-center">
-          <Text as="h2" variant="h2" className="text-3xl font-light mb-2">Follow Institutions</Text>
-          <Text as="p" variant="body" className="text-muted-foreground text-sm">
+          <Text
+            as="h2"
+            variant="h2"
+            className="text-3xl font-light mb-2"
+          >
+            Follow Institutions
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground text-sm"
+          >
             Select institutions to follow and get all updates
           </Text>
         </div>
@@ -97,8 +107,18 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
   return (
     <div className="flex flex-col gap-8">
       <div className="text-center">
-        <Text as="h2" variant="h2" className="text-3xl font-light mb-2">Follow Institutions</Text>
-        <Text as="p" variant="body" className="text-muted-foreground text-sm">
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-3xl font-light mb-2"
+        >
+          Follow Institutions
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-muted-foreground text-sm"
+        >
           Select institutions to follow and get all updates
         </Text>
       </div>
@@ -165,10 +185,22 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                   {institution.email && (
-                    <Text as="p" variant="body" className="text-xs text-muted-foreground">✉️ {institution.email}</Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-xs text-muted-foreground"
+                    >
+                      ✉️ {institution.email}
+                    </Text>
                   )}
                   {institution.website && (
-                    <Text as="p" variant="body" className="text-xs text-muted-foreground">🌐 {institution.website}</Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-xs text-muted-foreground"
+                    >
+                      🌐 {institution.website}
+                    </Text>
                   )}
                 </CardContent>
               </Card>

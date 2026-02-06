@@ -160,7 +160,15 @@ export default function SettingsLayout({
                   onChange={(e) => handleLinkedInChange(e.target.value)}
                   className={linkedInError ? 'border-red-500' : ''}
                 />
-                {linkedInError && <Text as="p" variant="body" className="text-sm text-red-500">{linkedInError}</Text>}
+                {linkedInError && (
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-sm text-red-500"
+                  >
+                    {linkedInError}
+                  </Text>
+                )}
               </div>
               <div className="w-full flex flex-col gap-3">
                 <Label htmlFor="description">About me</Label>

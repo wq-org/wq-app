@@ -34,7 +34,13 @@ export function LanguageSwitcher() {
           size="icon"
           className="h-10 w-10 rounded-full hover:bg-accent gap-1"
         >
-          <Text as="span" variant="small" className="text-base">{flags[currentLanguage.flag]}</Text>
+          <Text
+            as="span"
+            variant="small"
+            className="text-base"
+          >
+            {flags[currentLanguage.flag]}
+          </Text>
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -51,8 +57,18 @@ export function LanguageSwitcher() {
                 i18n.language === lang.code && 'bg-accent',
               )}
             >
-              <Text as="span" variant="small">{flags[lang.flag]}</Text>
-              <Text as="span" variant="small">{lang.name}</Text>
+              <Text
+                as="span"
+                variant="small"
+              >
+                {flags[lang.flag]}
+              </Text>
+              <Text
+                as="span"
+                variant="small"
+              >
+                {lang.name}
+              </Text>
             </button>
           ))}
         </div>

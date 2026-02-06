@@ -192,14 +192,28 @@ export default function FileStepperForm({
               </div>
             ) : (
               <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <Text as="span" variant="small" className="text-xs text-gray-500">
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-xs text-gray-500"
+                >
                   {currentFile.file.name.split('.').pop()?.toUpperCase()}
                 </Text>
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <Text as="p" variant="body" className="text-sm font-medium text-gray-900 truncate">{currentFile.file.name}</Text>
-              <Text as="p" variant="body" className="text-xs text-gray-500">
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm font-medium text-gray-900 truncate"
+              >
+                {currentFile.file.name}
+              </Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-xs text-gray-500"
+              >
                 {(currentFile.file.size / 1024 / 1024).toFixed(2)} MB
               </Text>
             </div>

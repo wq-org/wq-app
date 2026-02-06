@@ -140,7 +140,11 @@ export default function IfElseGameDialog({
               </div>
               {onDelete && (
                 <div>
-                  <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-muted-foreground text-sm mb-3"
+                  >
                     Hold the button below for 3 seconds to delete this node.
                   </Text>
                   <HoldToDeleteButton
@@ -164,7 +168,13 @@ export default function IfElseGameDialog({
                       )}
                     </Badge>
                   ) : (
-                    <Text as="span" variant="small" className="text-sm text-muted-foreground">No incoming node</Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm text-muted-foreground"
+                    >
+                      No incoming node
+                    </Text>
                   )}
                 </div>
               </div>
@@ -192,7 +202,13 @@ export default function IfElseGameDialog({
                       )
                     })
                   ) : (
-                    <Text as="span" variant="small" className="text-sm text-muted-foreground">No outgoing nodes</Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm text-muted-foreground"
+                    >
+                      No outgoing nodes
+                    </Text>
                   )}
                 </div>
               </div>
@@ -206,7 +222,13 @@ export default function IfElseGameDialog({
                     checked={correctPath === 'A'}
                     onCheckedChange={(checked) => setCorrectPath(checked ? 'A' : 'B')}
                   />
-                  <Text as="span" variant="small" className="text-sm">{correctPath === 'A' ? 'Node A' : 'Node B'}</Text>
+                  <Text
+                    as="span"
+                    variant="small"
+                    className="text-sm"
+                  >
+                    {correctPath === 'A' ? 'Node A' : 'Node B'}
+                  </Text>
                 </div>
               </div>
             </div>

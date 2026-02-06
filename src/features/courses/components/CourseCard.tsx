@@ -58,7 +58,13 @@ export default function CourseCard({
                 </CardTitle>
               </TooltipTrigger>
               <TooltipContent>
-                <Text as="p" variant="body" className="max-w-xs">{title}</Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  className="max-w-xs"
+                >
+                  {title}
+                </Text>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -78,7 +84,12 @@ export default function CourseCard({
               }}
               className="text-blue-500 border-0  hover:bg-blue-100 hover:text-blue-500 hover:duration-200 h-auto"
             >
-              <Text as="p" variant="body">View</Text>
+              <Text
+                as="p"
+                variant="body"
+              >
+                View
+              </Text>
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>

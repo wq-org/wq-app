@@ -115,7 +115,11 @@ export default function EndGameDialog({
 
           {onDelete && (
             <div>
-              <Text as="p" variant="body" className="text-muted-foreground text-sm mb-3">
+              <Text
+                as="p"
+                variant="body"
+                className="text-muted-foreground text-sm mb-3"
+              >
                 Hold the button below for 3 seconds to delete this node.
               </Text>
               <HoldToDeleteButton

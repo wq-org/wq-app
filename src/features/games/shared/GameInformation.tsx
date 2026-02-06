@@ -38,7 +38,11 @@ export default function GameInformation({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="description">Description</Label>
-            <Text as="span" variant="small" className="text-xs text-muted-foreground">
+            <Text
+              as="span"
+              variant="small"
+              className="text-xs text-muted-foreground"
+            >
               {description.length}/{MAX_DESCRIPTION_LENGTH}
             </Text>
           </div>

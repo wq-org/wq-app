@@ -97,8 +97,18 @@ export default function FileDropzone({
           Upload Files
         </Button>
         <div className="text-center space-y-1">
-          <Text as="p" variant="body" className="text-gray-600 text-sm">Choose files or drag & drop them here.</Text>
-          <Text as="p" variant="body" className="text-gray-400 text-xs">
+          <Text
+            as="p"
+            variant="body"
+            className="text-gray-600 text-sm"
+          >
+            Choose files or drag & drop them here.
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-gray-400 text-xs"
+          >
             Images (except WebP), PDF, MP4 videos (max 60s), Word (docx), PowerPoint (pptx/ppt). Max
             20 MB per file.
           </Text>

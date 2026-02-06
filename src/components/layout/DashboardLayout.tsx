@@ -85,9 +85,29 @@ export default function DashboardLayout({
                   <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-1">
-                  <Text as="p" variant="body" className="text-5xl">{userName}</Text>
-                  {username && <Text as="p" variant="body" className="text-sm text-muted-foreground">@{username}</Text>}
-                  <Text as="p" variant="body" className="text-muted-foreground">{description}</Text>
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-5xl"
+                  >
+                    {userName}
+                  </Text>
+                  {username && (
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-sm text-muted-foreground"
+                    >
+                      @{username}
+                    </Text>
+                  )}
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-muted-foreground"
+                  >
+                    {description}
+                  </Text>
                 </div>
               </div>
               {/* Quote of the Day - aligned to the right */}
@@ -191,7 +211,9 @@ export default function DashboardLayout({
                   {dashboardTabs.map((tab) => {
                     const Icon = tab.icon
                     return (
-                      <Text as="span" variant="small"
+                      <Text
+                        as="span"
+                        variant="small"
                         key={tab.id}
                         onClick={() => handleTabClick(tab.id)}
                         className={`text-xl border-b-2  flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
@@ -201,7 +223,12 @@ export default function DashboardLayout({
                         }`}
                       >
                         <Icon />
-                        <Text as="p" variant="body">{tab.label}</Text>
+                        <Text
+                          as="p"
+                          variant="body"
+                        >
+                          {tab.label}
+                        </Text>
                       </Text>
                     )
                   })}

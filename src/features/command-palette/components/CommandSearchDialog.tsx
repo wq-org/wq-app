@@ -100,8 +100,20 @@ export default function CommandSearch() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col gap-1">
-                      <Text as="span" variant="small" className="text-sm font-medium">{item.title}</Text>
-                      <Text as="span" variant="small" className="text-xs text-gray-400">{item.email || 'No email'}</Text>
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-sm font-medium"
+                      >
+                        {item.title}
+                      </Text>
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-xs text-gray-400"
+                      >
+                        {item.email || 'No email'}
+                      </Text>
                       <Badge
                         variant="secondary"
                         className="text-[10px] px-1.5 py-0 w-fit"

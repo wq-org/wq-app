@@ -167,7 +167,13 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
       <Card className="max-w-md mx-auto border-0 shadow-none">
         <CardHeader className="items-center p-0">
           <CardTitle className="text-xl text-gray-900">Add New</CardTitle>
-          <Text as="p" variant="body" className="text-sm text-gray-500 mt-2 font-normal">Choose what you want to create.</Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-gray-500 mt-2 font-normal"
+          >
+            Choose what you want to create.
+          </Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-3 w-full px-0 mt-6">
@@ -222,7 +228,11 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
               Add New {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}
             </CardTitle>
           </div>
-          <Text as="p" variant="body" className="text-sm text-gray-500 mt-2 font-normal">
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-gray-500 mt-2 font-normal"
+          >
             Create a new {selectedType} to get started.
           </Text>
         </CardHeader>
