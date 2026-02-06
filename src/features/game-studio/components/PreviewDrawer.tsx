@@ -6,7 +6,8 @@ import { StatsDisplay } from '@/features/games/components/StatsDisplay'
 import { NODE_TYPE_TO_GAME } from '@/features/games/components/nodeTypeToGame'
 import { getPreviewPath } from '../utils/flowOrder'
 import { PreviewStartEndSlide } from './PreviewStartEndSlide'
-import type { Node } from '@xyflow/react'
+import { PreviewIfElseSlide } from './PreviewIfElseSlide'
+import type { Node, Edge } from '@xyflow/react'
 import { cn } from '@/lib/utils'
 
 function getTitleAndDescription(data: Record<string, unknown> | undefined): {
@@ -22,6 +23,29 @@ function getTitleAndDescription(data: Record<string, unknown> | undefined): {
   return { title, description }
 }
 
+function getNodeLabel(node?: Node | null): string {
+  if (!node) return ''
+  const data = node.data as Record<string, unknown> | undefined
+  const label =
+    (typeof data?.label === 'string' && data.label.trim() ? data.label : null) ??
+    (typeof data?.title === 'string' && data.title.trim() ? data.title : null) ??
+    ''
+  return label || node.id
+}
+
+function getIfElseBranches(nodeId: string, nodes: Node[], edges: Edge[]) {
+  const outgoingEdges = edges.filter((e) => e.source === nodeId)
+  const branches: { A?: string; B?: string } = {}
+  outgoingEdges.forEach((edge) => {
+    const targetNode = nodes.find((n) => n.id === edge.target)
+    const label = getNodeLabel(targetNode)
+    const handleId = edge.sourceHandle ?? ''
+    if (handleId === 'right-top') branches.A = label
+    if (handleId === 'right-bottom') branches.B = label
+  })
+  return branches
+}
+
 export default function PreviewDrawer({
   open,
   onOpenChange,
@@ -31,9 +55,9 @@ export default function PreviewDrawer({
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const path = useMemo(() => getPreviewPath(nodes, edges), [nodes, edges])
-  const { startNode, playableNodes, endNode } = path
+  const { startNode, pathNodes, endNode } = path
 
-  const slideCount = (startNode ? 1 : 0) + playableNodes.length + (endNode ? 1 : 0)
+  const slideCount = (startNode ? 1 : 0) + pathNodes.length + (endNode ? 1 : 0)
   const startActive = startNode ? currentIndex === 0 : false
   const endActive = endNode ? currentIndex === slideCount - 1 : false
 
@@ -95,7 +119,34 @@ export default function PreviewDrawer({
                 drawerOpen={open}
               />
             )}
-            {playableNodes.map((node: Node) => {
+            {pathNodes.map((node: Node) => {
+              if (node.type === 'gameIfElse') {
+                const data = node.data as Record<string, unknown> | undefined
+                const title =
+                  (typeof data?.title === 'string' && data.title.trim() ? data.title : null) ??
+                  (typeof data?.label === 'string' && data.label.trim() ? data.label : null) ??
+                  'If / else'
+                const description =
+                  typeof data?.description === 'string' ? data.description : undefined
+                const condition =
+                  typeof data?.condition === 'string' ? data.condition : undefined
+                const correctPath = (data?.correctPath as 'A' | 'B' | undefined) ?? 'A'
+                return (
+                  <div
+                    key={node.id}
+                    className="p-4"
+                  >
+                    <PreviewIfElseSlide
+                      title={title}
+                      description={description}
+                      condition={condition}
+                      correctPath={correctPath}
+                      branches={getIfElseBranches(node.id, nodes, edges)}
+                    />
+                  </div>
+                )
+              }
+
               const GameComponent = NODE_TYPE_TO_GAME[node.type ?? '']
               if (!GameComponent) return null
               return (

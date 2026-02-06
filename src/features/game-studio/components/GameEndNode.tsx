@@ -11,12 +11,12 @@ export default function GameEndNode({ data, selected }: GameEndNodeProps) {
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-3 !h-3 !bg-red-500 !border-2 !border-white"
+        className="!w-3 !h-3 !bg-gray-500 !border-2 !border-white"
         id="left"
         onClick={(e) => e.stopPropagation()}
       />
-      <div className="p-2 rounded-lg border border-red-500/20 bg-red-500/10 flex items-center justify-center">
-        <Square className="w-4 h-4 text-red-500" />
+      <div className="p-2 rounded-lg border border-gray-500/20 bg-gray-500/10 flex items-center justify-center">
+        <Square className="w-4 h-4 text-gray-500" />
       </div>
       <span className="text-gray-900 font-medium">{data?.label || 'End'}</span>
     </div>

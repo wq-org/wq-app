@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import GameNodeLayout from './GameNodeLayout'
 import { GameEditorProvider } from '@/contexts/game-studio'
 import { logColor } from '@/lib/utils'
 import { toast } from 'sonner'
+import Spinner from '@/components/ui/spinner'
 
 // Map node types to game components and titles (components may accept initialData)
 const nodeTypeToGame: Record<
@@ -49,13 +50,28 @@ export default function GameNodeDialog({
 }: GameNodeDialogProps) {
   const [points, setPoints] = useState(100)
   const [saving, setSaving] = useState(false)
+  const [isRendering, setIsRendering] = useState(false)
   const getGameDataRef = useRef<(() => unknown) | null>(null)
+
+  const providerKey = open ? `${nodeType ?? 'node'}-${nodeId ?? 'none'}` : 'closed'
+
+  const handleRenderReady = useCallback(() => {
+    setIsRendering(false)
+  }, [])
 
   useEffect(() => {
     if (!open) {
       setPoints(100)
     }
   }, [open])
+
+  useLayoutEffect(() => {
+    if (open) {
+      setIsRendering(true)
+    } else {
+      setIsRendering(false)
+    }
+  }, [open, nodeId, nodeType])
 
   if (!nodeType) return null
 
@@ -234,7 +250,11 @@ export default function GameNodeDialog({
             Configure {gameConfig.title} game node
           </DialogDescription>
         </DialogHeader>
-        <GameEditorProvider getGameDataRef={getGameDataRef}>
+        <GameEditorProvider
+          key={providerKey}
+          getGameDataRef={getGameDataRef}
+          onReady={handleRenderReady}
+        >
           <GameNodeLayout
             key={open ? (nodeId ?? 'none') : 'closed'}
             nodeId={nodeId}
@@ -247,6 +267,16 @@ export default function GameNodeDialog({
             onRemoveImage={onRemoveImage}
           />
         </GameEditorProvider>
+        {isRendering && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center gap-3 bg-background/80">
+            <Spinner
+              variant="gray"
+              size="md"
+              speed={1750}
+            />
+            <p className="text-sm text-gray-500">Project Loading...</p>
+          </div>
+        )}
         <DialogFooter>
           <Button
             variant="outline"

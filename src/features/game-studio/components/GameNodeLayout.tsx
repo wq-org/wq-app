@@ -94,7 +94,7 @@ export default function GameNodeLayout({
         {!hideSettingsTab && activeTab === 'settings' && (
           <div className="flex flex-col gap-4">
             {settingsContent ?? <GameNodeSettings nodeId={nodeId} />}
-            {onDelete && (
+            {onDelete && settingsContent == null && (
               <div>
                 <p className="text-muted-foreground text-sm mb-3">
                   Hold the button below for 3 seconds to delete this node.

@@ -51,7 +51,8 @@ const IF_ELSE_HANDLE_B = 'right-bottom'
 
 export interface PreviewPathResult {
   startNode: Node | null
-  playableNodes: Node[]
+  /** Nodes in the preview path between Start and End (playable + logic). */
+  pathNodes: Node[]
   endNode: Node | null
 }
 
@@ -60,6 +61,17 @@ export interface PreviewPathResult {
  * At each gameIfElse node, follows the edge whose sourceHandle matches correctPath
  * ('A' → right-top, 'B' → right-bottom). Other nodes: follow the single outgoing edge.
  */
+const PREVIEW_NODE_TYPES = [
+  'gameParagraph',
+  'gameImageTerms',
+  'gameImagePin',
+  'gameIfElse',
+] as const
+
+function isPreviewType(type: string | undefined): type is (typeof PREVIEW_NODE_TYPES)[number] {
+  return type != null && PREVIEW_NODE_TYPES.includes(type as (typeof PREVIEW_NODE_TYPES)[number])
+}
+
 export function getPreviewPath(nodes: Node[], edges: Edge[]): PreviewPathResult {
   const byId = new Map(nodes.map((n) => [n.id, n]))
   const outEdges = new Map<string, Edge[]>()
@@ -73,10 +85,10 @@ export function getPreviewPath(nodes: Node[], edges: Edge[]): PreviewPathResult 
   const endNode = nodes.find((n) => n.type === 'gameEnd') ?? null
 
   if (!startNode || !endNode) {
-    return { startNode, playableNodes: [], endNode }
+    return { startNode, pathNodes: [], endNode }
   }
 
-  const playableNodes: Node[] = []
+  const pathNodes: Node[] = []
   let currentId: string = startNode.id
   const visited = new Set<string>()
 
@@ -87,8 +99,8 @@ export function getPreviewPath(nodes: Node[], edges: Edge[]): PreviewPathResult 
     const node = byId.get(currentId)
     const nextEdges = outEdges.get(currentId) ?? []
 
-    if (node && isPlayableType(node.type)) {
-      playableNodes.push(node)
+    if (node && isPreviewType(node.type)) {
+      pathNodes.push(node)
     }
 
     if (nextEdges.length === 0) break
@@ -109,5 +121,5 @@ export function getPreviewPath(nodes: Node[], edges: Edge[]): PreviewPathResult 
     currentId = nextEdge.target
   }
 
-  return { startNode, playableNodes, endNode }
+  return { startNode, pathNodes, endNode }
 }

@@ -986,7 +986,7 @@ export default function ParagraphLineSelectGame({
       {onDelete && (
         <div>
           <p className="text-muted-foreground text-sm mb-3">
-            Hold the button below for 3 seconds to delete this game node.
+            Hold the button below for 3 seconds to delete this node.
           </p>
           <HoldToDeleteButton
             onDelete={onDelete}

@@ -25,9 +25,9 @@ function StatItem({ icon, value, label }: StatItemProps) {
     <Tooltip.Provider delayDuration={0}>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
-          <div className="flex items-center gap-2 px-3">
+          <div className="flex items-center gap-1.5 px-2">
             <div className="text-muted-foreground">{icon}</div>
-            <span className="text-2xl font-medium tabular-nums">{value}</span>
+            <span className="text-lg font-medium tabular-nums">{value}</span>
           </div>
         </Tooltip.Trigger>
         <Tooltip.Portal>
@@ -53,34 +53,34 @@ export function StatsDisplay({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-3 rounded-full border border-border bg-background px-4 py-3 shadow-sm',
+        'inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 shadow-sm',
         className,
       )}
     >
       <StatItem
-        icon={<Check className="h-5 w-5" />}
+        icon={<Check className="h-4 w-4" />}
         value={correctAnswers}
         label="Correct Answers"
       />
 
       <Separator
         orientation="vertical"
-        className="h-8"
+        className="h-6"
       />
 
       <StatItem
-        icon={<X className="h-5 w-5" />}
+        icon={<X className="h-4 w-4" />}
         value={wrongAnswers}
         label="Wrong Answers"
       />
 
       <Separator
         orientation="vertical"
-        className="h-8"
+        className="h-6"
       />
 
       <StatItem
-        icon={<Trophy className="h-5 w-5" />}
+        icon={<Trophy className="h-4 w-4" />}
         value={score}
         label="Score"
       />

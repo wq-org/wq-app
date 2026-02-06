@@ -1046,21 +1046,23 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     setSelectedNodeId(null)
   }
 
-  const handleGameNodeDelete = () => {
-    if (selectedNodeId) {
+  const handleGameNodeDelete = (nodeIdOverride?: string) => {
+    const nodeIdToDelete = nodeIdOverride ?? selectedNodeId
+    if (nodeIdToDelete) {
       setNodes((prevNodes) => {
-        const nodeToDelete = prevNodes.find((n) => n.id === selectedNodeId)
+        const nodeToDelete = prevNodes.find((n) => n.id === nodeIdToDelete)
         if (!nodeToDelete) return prevNodes
 
-        const newNodes = prevNodes.filter((n) => n.id !== selectedNodeId)
+        const newNodes = prevNodes.filter((n) => n.id !== nodeIdToDelete)
 
         setEdges((prevEdges) =>
-          prevEdges.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId),
+          prevEdges.filter((e) => e.source !== nodeIdToDelete && e.target !== nodeIdToDelete),
         )
         toast.success('Game node deleted')
         return newNodes
       })
       setIsGameNodeDialogOpen(false)
+      setSelectedNodeId(null)
     }
   }
 
@@ -1339,7 +1341,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         nodeId={selectedNodeId || undefined}
         initialData={selectedNodeId ? nodes.find((n) => n.id === selectedNodeId)?.data : undefined}
         onSave={handleGameNodeSave}
-        onDelete={handleGameNodeDelete}
+        onDelete={selectedNodeId ? () => handleGameNodeDelete(selectedNodeId) : undefined}
         onUploadImage={
           projectId && getUserId()
             ? async (file, nodeId) => {

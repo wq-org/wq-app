@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import type { IfElseGameDialogProps } from '../types/game-studio.types'
 import GameNodeLayout from './GameNodeLayout'
 
@@ -105,7 +106,7 @@ export default function IfElseGameDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw]! max-w-[1080px]!">
+      <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw] max-w-[min(1080px,calc(100vw-2rem))]">
         <DialogHeader>
           <DialogTitle>Configure If/Else Node</DialogTitle>
           <DialogDescription className="sr-only">
@@ -136,6 +137,17 @@ export default function IfElseGameDialog({
                   rows={4}
                 />
               </div>
+              {onDelete && (
+                <div>
+                  <p className="text-muted-foreground text-sm mb-3">
+                    Hold the button below for 3 seconds to delete this node.
+                  </p>
+                  <HoldToDeleteButton
+                    onDelete={handleDelete}
+                    holdDuration={3000}
+                  />
+                </div>
+              )}
             </div>
           }
           overviewContent={
