@@ -133,7 +133,6 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
     const userId = getUserId()
     const role = getRole()
     if (userId && role) {
-      console.log('role files card', role)
       // Normalize role to singular
       let normalizedRole = role.toLowerCase().trim()
       if (normalizedRole === 'teachers') normalizedRole = 'teacher'
