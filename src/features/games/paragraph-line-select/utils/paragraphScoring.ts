@@ -3,11 +3,10 @@ import type {
   SentenceConfig,
   QuestionResult,
   QuestionResultStatus,
-  VotingOption,
 } from '@/features/games/paragraph-line-select/types'
 
 export type { QuestionResult, QuestionResultStatus }
-export type { SentenceConfig, VotingOption } from '@/features/games/paragraph-line-select/types'
+export type { SentenceConfig } from '@/features/games/paragraph-line-select/types'
 
 const STATEMENT_TRUNCATE_LENGTH = 60
 
@@ -99,7 +98,6 @@ export function computeParagraphResults(
 
   const rows: ParagraphResultRow[] = configsWithOptions.map((config) => {
     const sentenceNumber = config.sentenceNumber
-    const multi = hasMultipleCorrectOptions(config)
     const selectedIds = getSelectedIds(sentenceNumber)
 
     const result = getQuestionResult(config, selectedIds)
@@ -118,8 +116,7 @@ export function computeParagraphResults(
       result.status === 'false'
         ? (config.feedbackWhenWrong ?? '')
         : (config.feedbackWhenCorrect ?? '')
-    const feedbackVariant: 'correct' | 'wrong' =
-      result.status === 'false' ? 'wrong' : 'correct'
+    const feedbackVariant: 'correct' | 'wrong' = result.status === 'false' ? 'wrong' : 'correct'
 
     return {
       key: config.sentenceNumber,

@@ -61,11 +61,7 @@ export function computeImagePinResults(
       statementText.length > STATEMENT_TRUNCATE_LENGTH
         ? `${statementText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
         : statementText
-    const placementText = pin
-      ? correct
-        ? 'Correct'
-        : 'Wrong square'
-      : 'Not placed'
+    const placementText = pin ? (correct ? 'Correct' : 'Wrong square') : 'Not placed'
     const feedbackText = correct
       ? square.feedbackWhenCorrect?.trim()
       : square.feedbackWhenWrong?.trim()

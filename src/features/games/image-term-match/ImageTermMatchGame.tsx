@@ -26,14 +26,9 @@ import { useUser } from '@/contexts/user'
 import { MAX_IMAGE_TERM_OPTIONS } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 import { useGameEditorContext } from '@/contexts/game-studio'
-import type {
-  Term,
-  ImageTermMatchGameProps,
-  ImageTermMatchGameData,
-} from './types'
+import type { Term, ImageTermMatchGameProps, ImageTermMatchGameData } from './types'
 import { computeImageTermResults } from '@/features/games/image-term-match/utils/imageTermScoring'
 
-const STATEMENT_TRUNCATE_LENGTH = 60
 const IMAGE_EXTENSIONS = ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP']
 
 function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined): Term[] {
@@ -539,12 +534,6 @@ export default function ImageTermMatchGame({
   )
 
   // Preview Content
-  const statementText = title?.trim() || 'Image term match'
-  const statementTruncated =
-    statementText.length > STATEMENT_TRUNCATE_LENGTH
-      ? `${statementText.slice(0, STATEMENT_TRUNCATE_LENGTH)}…`
-      : statementText
-
   const previewContent = (
     <div className="space-y-6">
       <GameInformationCard
@@ -635,11 +624,7 @@ export default function ImageTermMatchGame({
 
       {resultsRevealed &&
         (() => {
-          const result = computeImageTermResults(
-            terms,
-            previewSelectedTermIds,
-            pointsWhenCorrect,
-          )
+          const result = computeImageTermResults(terms, previewSelectedTermIds, pointsWhenCorrect)
           const rows = [
             {
               key: 'image-term',

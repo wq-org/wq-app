@@ -3,8 +3,4 @@
  * Single entry for helpers that stay shared across multiple features.
  */
 
-export {
-  clampScore,
-  applyPenalty,
-  type GameScoreSummary,
-} from './scoring'
+export { clampScore, applyPenalty, type GameScoreSummary } from './scoring'
