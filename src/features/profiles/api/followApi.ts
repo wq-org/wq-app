@@ -11,6 +11,26 @@ async function getCurrentUserId(): Promise<string | null> {
 }
 
 /**
+ * Get teacher IDs that the current user (student) follows.
+ */
+export async function getFollowedTeacherIds(): Promise<string[]> {
+  const currentUserId = await getCurrentUserId()
+  if (!currentUserId) return []
+
+  const { data, error } = await supabase
+    .from('teacher_followers')
+    .select('teacher_id')
+    .eq('student_id', currentUserId)
+
+  if (error) {
+    console.error('Error fetching followed teachers:', error)
+    return []
+  }
+
+  return (data || []).map((row: { teacher_id: string }) => row.teacher_id)
+}
+
+/**
  * Check whether the current user is following the given teacher.
  */
 export async function isFollowing(teacherId: string): Promise<boolean> {
