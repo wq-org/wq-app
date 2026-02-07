@@ -241,7 +241,7 @@ const TeacherProfileView = () => {
       role="teacher"
       customTabs={coursesOnlyTabs}
       onClickTab={() => {}}
-      contactsCount={profile.follow_count ?? 0}
+      followCount={profile.follow_count ?? 0}
       handleFollowClick={isStudentViewingTeacher ? toggleFollow : undefined}
       connectButtonLabel={
         isStudentViewingTeacher

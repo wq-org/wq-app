@@ -142,7 +142,7 @@ export default function GameCard({ title, description, version, status, onPlay }
                 e.stopPropagation()
                 onPlay?.()
               }}
-              className="text-blue-500 border-0 hover:bg-blue-100 hover:text-blue-500 hover:duration-200"
+              className="text-blue-500 hover:text-blue-500 hover:opacity-80 "
             >
               <Text
                 as="p"

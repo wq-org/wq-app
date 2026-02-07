@@ -4,6 +4,7 @@ import type { Node, Edge } from '@xyflow/react'
 import { getGameForStudio } from '@/features/game-studio/api/gameStudioApi'
 import { GamePlayView } from '../components/GamePlayView'
 import { GamePlayProvider } from '@/contexts/game-play'
+import { useUser } from '@/contexts/user'
 import Spinner from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
@@ -12,6 +13,9 @@ import { ArrowLeft } from 'lucide-react'
 export default function PlayGamePage() {
   const { gameId } = useParams<{ gameId: string }>()
   const navigate = useNavigate()
+  const { getRole } = useUser()
+  const dashboardPath =
+    getRole()?.toLowerCase() === 'student' ? '/student/dashboard' : '/teacher/dashboard'
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
   const [loading, setLoading] = useState(true)
@@ -101,7 +105,7 @@ export default function PlayGamePage() {
         </Text>
         <Button
           variant="outline"
-          onClick={() => navigate('/teacher/dashboard')}
+          onClick={() => navigate(dashboardPath)}
           className="gap-2"
         >
           <ArrowLeft className="size-4" />
@@ -118,7 +122,7 @@ export default function PlayGamePage() {
           <GamePlayView
             nodes={nodes}
             edges={edges}
-            onBack={() => navigate('/teacher/dashboard')}
+            onBack={() => navigate(dashboardPath)}
           />
         </div>
       </div>

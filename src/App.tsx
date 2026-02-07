@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { useUser } from './contexts/user'
 import {
   LoginPage,
   SignUpPage,
@@ -42,6 +43,19 @@ import ProfileViewPage from './features/profiles/pages/view'
 function GameEditorCanvasWithProjectId() {
   const { id } = useParams<{ id: string }>()
   return <GameEditorCanvas projectId={id ?? undefined} />
+}
+
+function PlayRouteWrapper() {
+  const { getRole } = useUser()
+  const role = getRole() ?? 'student'
+  return (
+    <AppWrapper
+      role={role}
+      className="flex flex-col h-screen"
+    >
+      <PlayGamePage />
+    </AppWrapper>
+  )
 }
 
 function App() {
@@ -205,21 +219,6 @@ function App() {
                 }
               />
               <Route
-                path="play/:gameId"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <AppWrapper
-                        role="teacher"
-                        className="flex flex-col h-screen"
-                      >
-                        <PlayGamePage />
-                      </AppWrapper>
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
-              <Route
                 path="institution"
                 element={
                   <RequireAuth>
@@ -314,6 +313,18 @@ function App() {
                 <RequireAuth>
                   <RequireOnboarding>
                     <ProfileViewPage />
+                  </RequireOnboarding>
+                </RequireAuth>
+              }
+            />
+
+            {/* Play game (student and teacher) - root level so /play/:gameId works */}
+            <Route
+              path="/play/:gameId"
+              element={
+                <RequireAuth>
+                  <RequireOnboarding>
+                    <PlayRouteWrapper />
                   </RequireOnboarding>
                 </RequireAuth>
               }
