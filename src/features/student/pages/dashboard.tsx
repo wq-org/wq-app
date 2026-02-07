@@ -152,19 +152,27 @@ export default function Dashboard() {
         {selectedTab === 'files' &&
           (filesLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Spinner variant="gray" size="lg" speed={1750} />
+              <Spinner
+                variant="gray"
+                size="lg"
+                speed={1750}
+              />
             </div>
           ) : (
-            <TableView files={files} onRefresh={loadFiles} />
+            <TableView
+              files={files}
+              onRefresh={loadFiles}
+            />
           ))}
         {selectedTab === 'notes' && (
-          <div className="py-12 text-center text-muted-foreground">
-            Notes — coming soon
-          </div>
+          <div className="py-12 text-center text-muted-foreground">Notes — coming soon</div>
         )}
       </DashboardLayout>
 
-      <CommandPalette commandBarContext="student" onFilesUploaded={loadFiles} />
+      <CommandPalette
+        commandBarContext="student"
+        onFilesUploaded={loadFiles}
+      />
     </>
   )
 }

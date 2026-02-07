@@ -1,1 +1,15 @@
-{"tabs":{"courses":"Kurse","files":"Dateien","students":"Schüler","todos":"Aufgaben","games":"Spiele","notes":"Notizen","database":"Datenbank","overview":"Übersicht","analytics":"Analysen","forms":"Formulare","institutions":"Institutionen"}}
+{
+  "tabs": {
+    "courses": "Kurse",
+    "files": "Dateien",
+    "students": "Schüler",
+    "todos": "Aufgaben",
+    "games": "Spiele",
+    "notes": "Notizen",
+    "database": "Datenbank",
+    "overview": "Übersicht",
+    "analytics": "Analysen",
+    "forms": "Formulare",
+    "institutions": "Institutionen"
+  }
+}

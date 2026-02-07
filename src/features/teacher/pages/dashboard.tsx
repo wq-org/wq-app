@@ -188,9 +188,7 @@ export default function Dashboard() {
           ))}
         {selectedTab === 'students' && <StudentCardList students={[]} />}
         {selectedTab === 'notes' && (
-          <div className="py-12 text-center text-muted-foreground">
-            Notes — coming soon
-          </div>
+          <div className="py-12 text-center text-muted-foreground">Notes — coming soon</div>
         )}
       </DashboardLayout>
 
