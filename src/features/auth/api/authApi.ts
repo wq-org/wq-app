@@ -177,7 +177,7 @@ export async function getCompleteProfile(userId: string) {
   const { data, error } = await supabase
     .from('profiles')
     .select(
-      'user_id, username, display_name, avatar_url, email, description, role, is_onboarded, linkedin_url',
+      'user_id, username, display_name, avatar_url, email, description, role, is_onboarded, linkedin_url, follow_count',
     )
     .eq('user_id', userId)
     .maybeSingle()

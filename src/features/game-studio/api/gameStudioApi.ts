@@ -1,5 +1,6 @@
+import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
 import { supabase } from '@/lib/supabase'
-import type { FlowGameConfig } from '../types/game-studio.types'
+import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
 
 export interface GameForStudio {
@@ -173,4 +174,43 @@ export async function getTeacherFlowGames(teacherId: string): Promise<GameForStu
   }
 
   return (data || []) as GameForStudio[]
+}
+
+/**
+ * Get published games from teachers the current user (student) follows.
+ * For use on the student dashboard Games tab.
+ */
+export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardProps[]> {
+  const followedIds = await getFollowedTeacherIds()
+  if (followedIds.length === 0) return []
+
+  const { data, error } = await supabase
+    .from('games')
+    .select('id, title, description, version, status')
+    .in('teacher_id', followedIds)
+    .eq('status', 'published')
+    .order('updated_at', { ascending: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Error fetching published games from followed teachers:', error)
+    throw error
+  }
+
+  return (data || []).map(
+    (row: {
+      id: string
+      title: string
+      description: string | null
+      version: number | null
+      status: string | null
+    }) => ({
+      id: row.id,
+      title: row.title || 'Untitled Game',
+      description: row.description ?? 'No description available',
+      version: row.version ?? undefined,
+      status: (row.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
+      route: `/play/${row.id}`,
+    }),
+  )
 }

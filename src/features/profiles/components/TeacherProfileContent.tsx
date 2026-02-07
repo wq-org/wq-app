@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getTeacherCourses } from '@/features/courses/api/coursesApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
+import { useUser } from '@/contexts/user'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/courses/types/course.types'
 import type { CourseCardProps } from '@/features/courses/types/course.types'
 import { getDashboardTabs } from '@/components/layout/config'
 import { EmptyCourseView } from '@/features/courses'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
+import { useFollow } from '../hooks/useFollow'
 
 interface TeacherProfileContentProps {
   profile: Profile
@@ -20,6 +23,13 @@ export function TeacherProfileContent({ profile, userId }: TeacherProfileContent
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesLoading, setCoursesLoading] = useState(false)
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const { getUserId, getRole } = useUser()
+  const { t } = useTranslation('features.teacher')
+  const currentUserId = getUserId()
+  const viewerRole = getRole()?.toLowerCase()
+  const isStudentViewingTeacher =
+    viewerRole === 'student' && currentUserId && currentUserId !== userId
+  const { isFollowing, toggleFollow } = useFollow(isStudentViewingTeacher ? userId : null)
 
   // Fetch teacher courses
   useEffect(() => {
@@ -68,6 +78,15 @@ export function TeacherProfileContent({ profile, userId }: TeacherProfileContent
       role="teacher"
       customTabs={coursesOnlyTabs}
       onClickTab={() => {}}
+      contactsCount={profile.follow_count ?? 0}
+      handleFollowClick={isStudentViewingTeacher ? toggleFollow : undefined}
+      connectButtonLabel={
+        isStudentViewingTeacher
+          ? isFollowing
+            ? t('actions.connected')
+            : t('actions.connect')
+          : undefined
+      }
     >
       {coursesLoading ? (
         <div className="flex items-center justify-center py-12">

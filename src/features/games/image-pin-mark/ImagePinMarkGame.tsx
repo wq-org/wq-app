@@ -1,4 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
+import type {
+  CSSProperties,
+  ReactNode,
+  MouseEvent as ReactMouseEvent,
+  ChangeEvent as ReactChangeEvent,
+} from 'react'
 import { Text } from '@/components/ui/text'
 import {
   DndContext,
@@ -88,6 +94,12 @@ export interface ImagePinMarkGameProps {
   onRemoveImage?: (path: string) => void | Promise<void>
   /** When true, only the playable preview content is rendered (no editor/settings tabs). */
   previewOnly?: boolean
+  /** When true, game is played for real (no alert, no correct/incorrect icons on options). */
+  playMode?: boolean
+  /** Called when user clicks Check with (correct, wrong, score). Used in game-play to aggregate stats. */
+  onResultsRevealed?: (correct: number, wrong: number, score: number) => void
+  /** When true and results are revealed, user cannot change selection (play mode). */
+  lockSelectionAfterReveal?: boolean
 }
 
 type ImagePinVariant = 'default' | 'secondary' | 'correct' | 'wrong'
@@ -98,18 +110,21 @@ function DraggablePin({
   squareId,
   variant,
   resultsRevealed,
+  disabled,
 }: {
   id: string
   position?: { x: number; y: number }
   squareId?: number
   variant?: ImagePinVariant
   resultsRevealed?: boolean
+  disabled?: boolean
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
+    disabled,
   })
 
-  const baseStyle: React.CSSProperties = position
+  const baseStyle: CSSProperties = position
     ? {
         position: 'absolute',
         left: `${position.x}px`,
@@ -140,10 +155,11 @@ function DraggablePin({
     <div
       ref={setNodeRef}
       style={dragStyle}
-      {...listeners}
+      {...(disabled ? {} : listeners)}
       {...attributes}
       className={cn(
-        'cursor-grab active:cursor-grabbing',
+        !disabled && 'cursor-grab active:cursor-grabbing',
+        disabled && 'cursor-default',
         squareId && !resultsRevealed && 'ring-4 ring-blue-500 rounded-full',
       )}
     >
@@ -152,7 +168,7 @@ function DraggablePin({
   )
 }
 
-function DroppableArea({ children, id }: { children: React.ReactNode; id: string }) {
+function DroppableArea({ children, id }: { children: ReactNode; id: string }) {
   const { setNodeRef, isOver } = useDroppable({
     id,
   })
@@ -173,6 +189,9 @@ export default function ImagePinMarkGame({
   initialData: initialDataProp,
   onDelete,
   previewOnly,
+  playMode,
+  onResultsRevealed,
+  lockSelectionAfterReveal = false,
 }: ImagePinMarkGameProps = {}) {
   const initialData = initialDataProp as ImagePinMarkInitialData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -350,7 +369,7 @@ export default function ImagePinMarkGame({
     }
   }
 
-  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleImageClick = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (!imageContainerRef.current || squares.length >= MAX_IMAGE_PIN_SQUARES) return
 
     const rect = imageContainerRef.current.getBoundingClientRect()
@@ -414,6 +433,8 @@ export default function ImagePinMarkGame({
   }
 
   const handleCheckAnswers = () => {
+    const result = computeImagePinResults(squares, pinPositions)
+    onResultsRevealed?.(result.correct, result.wrong, result.score)
     setResultsRevealed(true)
   }
 
@@ -464,6 +485,10 @@ export default function ImagePinMarkGame({
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (lockSelectionAfterReveal && resultsRevealed) {
+      setDragPosition(null)
+      return
+    }
     const { active, over } = event
 
     const cleanup = (window as Window & { __dragCleanup?: () => void }).__dragCleanup
@@ -770,7 +795,7 @@ export default function ImagePinMarkGame({
                   <FeedbackInput
                     label="Correct"
                     value={square.feedbackWhenCorrect ?? ''}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    onChange={(e: ReactChangeEvent<HTMLTextAreaElement>) =>
                       handleSquareFeedbackWhenCorrectChange(square.id, e.target.value)
                     }
                     placeholder="Optional message when the answer is correct"
@@ -778,7 +803,7 @@ export default function ImagePinMarkGame({
                   <FeedbackInput
                     label="Wrong"
                     value={square.feedbackWhenWrong ?? ''}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    onChange={(e: ReactChangeEvent<HTMLTextAreaElement>) =>
                       handleSquareFeedbackWhenWrongChange(square.id, e.target.value)
                     }
                     placeholder="Optional message when the answer is wrong"
@@ -805,7 +830,7 @@ export default function ImagePinMarkGame({
         title={title}
         description={description}
       />
-      <GamePreviewAlert />
+      {previewOnly && !playMode && <GamePreviewAlert />}
       <Card>
         <CardHeader>
           <Label>Preview</Label>
@@ -850,17 +875,18 @@ export default function ImagePinMarkGame({
                         }
                       }}
                     />
-                    {squares.map((square) => (
-                      <SquareMarker
-                        key={square.id}
-                        number={square.id}
-                        x={square.x}
-                        y={square.y}
-                        width={square.width}
-                        height={square.height}
-                        pointerEvents="none"
-                      />
-                    ))}
+                    {(!playMode || resultsRevealed) &&
+                      squares.map((square) => (
+                        <SquareMarker
+                          key={square.id}
+                          number={square.id}
+                          x={square.x}
+                          y={square.y}
+                          width={square.width}
+                          height={square.height}
+                          pointerEvents="none"
+                        />
+                      ))}
                     {pinPositions.map((pin) => {
                       const expectedSquareId = parseInt(String(pin.id).replace(/^pin-/, ''), 10)
                       const pinSquareId = pin.squareId != null ? Number(pin.squareId) : NaN
@@ -880,6 +906,7 @@ export default function ImagePinMarkGame({
                           position={{ x: pin.x, y: pin.y }}
                           squareId={pin.squareId}
                           variant={displayVariant}
+                          disabled={lockSelectionAfterReveal && resultsRevealed}
                         />
                       )
                     })}
@@ -908,6 +935,7 @@ export default function ImagePinMarkGame({
                               key={pinId}
                               id={pinId}
                               resultsRevealed={resultsRevealed}
+                              disabled={lockSelectionAfterReveal && resultsRevealed}
                             />
                           )
                         })}
@@ -1040,6 +1068,7 @@ export default function ImagePinMarkGame({
       previewContent={previewContent}
       settingsContent={settingsContent}
       previewOnly={previewOnly}
+      playMode={playMode}
     />
   )
 }

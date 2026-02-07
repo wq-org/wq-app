@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { getTeacherCourses } from '@/features/courses/api/coursesApi'
@@ -7,6 +8,8 @@ import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC, DEFAULT_COURSE_IMAGE } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { DotWaveLoader } from '@/components/shared'
+import { useUser } from '@/contexts/user'
+import { useFollow } from '@/features/profiles/hooks/useFollow'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/courses/types/course.types'
 import type { CourseCardProps } from '@/features/courses/types/course.types'
@@ -137,6 +140,13 @@ const TeacherProfileView = () => {
   const [loading, setLoading] = useState(true)
   const [coursesLoading, setCoursesLoading] = useState(false)
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const { getUserId, getRole } = useUser()
+  const { t } = useTranslation('features.teacher')
+  const currentUserId = getUserId()
+  const viewerRole = getRole()?.toLowerCase()
+  const isStudentViewingTeacher =
+    viewerRole === 'student' && currentUserId && id && currentUserId !== id
+  const { isFollowing, toggleFollow } = useFollow(isStudentViewingTeacher ? id : null)
 
   // Fetch teacher profile
   useEffect(() => {
@@ -230,7 +240,16 @@ const TeacherProfileView = () => {
       description={profile.description || 'No description available'}
       role="teacher"
       customTabs={coursesOnlyTabs}
-      onClickTab={() => {}} // Only courses tab, so no need to handle tab changes
+      onClickTab={() => {}}
+      contactsCount={profile.follow_count ?? 0}
+      handleFollowClick={isStudentViewingTeacher ? toggleFollow : undefined}
+      connectButtonLabel={
+        isStudentViewingTeacher
+          ? isFollowing
+            ? t('actions.connected')
+            : t('actions.connect')
+          : undefined
+      }
     >
       {coursesLoading ? (
         <div className="flex items-center justify-center py-12">

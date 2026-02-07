@@ -42,6 +42,9 @@ export default function ImageTermMatchGame({
   initialData: initialDataProp,
   onDelete,
   previewOnly,
+  playMode,
+  onResultsRevealed,
+  lockSelectionAfterReveal = false,
 }: ImageTermMatchGameProps = {}) {
   const initialData = initialDataProp as ImageTermMatchGameData | null | undefined
   const [title, setTitle] = useState<string>(initialData?.title ?? '')
@@ -551,7 +554,7 @@ export default function ImageTermMatchGame({
         title={title}
         description={description}
       />
-      <GamePreviewAlert />
+      {previewOnly && !playMode && <GamePreviewAlert />}
       <Card>
         <CardContent className="p-6">
           <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
@@ -607,6 +610,7 @@ export default function ImageTermMatchGame({
                         : ''
                     }`}
                     onClick={() => {
+                      if (lockSelectionAfterReveal && resultsRevealed) return
                       if (singleCorrect) {
                         setPreviewSelectedTermIds((prev) =>
                           prev.includes(term.id) ? [] : [term.id],
@@ -619,6 +623,7 @@ export default function ImageTermMatchGame({
                         )
                       }
                     }}
+                    disabled={lockSelectionAfterReveal && resultsRevealed}
                   >
                     <Text
                       as="span"
@@ -672,7 +677,11 @@ export default function ImageTermMatchGame({
       <div className="flex items-center justify-start">
         <Button
           type="button"
-          onClick={() => setResultsRevealed(true)}
+          onClick={() => {
+            const result = computeImageTermResults(terms, previewSelectedTermIds, pointsWhenCorrect)
+            onResultsRevealed?.(result.correct, result.wrong, result.score)
+            setResultsRevealed(true)
+          }}
           disabled={previewSelectedTermIds.length === 0}
           className="gap-2"
         >
@@ -721,6 +730,7 @@ export default function ImageTermMatchGame({
       previewContent={previewContent}
       settingsContent={settingsContent}
       previewOnly={previewOnly}
+      playMode={playMode}
     />
   )
 }

@@ -5,6 +5,7 @@
   },
   "actions": {
     "connect": "Verbinden",
+    "connected": "Verbunden",
     "connectWith": "Verbinde dich mit {{userName}}"
   },
   "roles": {

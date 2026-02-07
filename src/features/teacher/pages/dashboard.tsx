@@ -16,6 +16,7 @@ import { DotWaveLoader } from '@/components/shared'
 import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { GamePlayList } from '@/features/game-play'
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -148,6 +149,7 @@ export default function Dashboard() {
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to your dashboard'}
         role="teacher"
+        contactsCount={profile?.follow_count ?? 0}
         onClickTab={(tabId: string) => handleClickTab(tabId)}
       >
         {selectedTab === 'courses' &&
@@ -167,6 +169,8 @@ export default function Dashboard() {
               onCourseView={handleCardView}
             />
           ))}
+
+        {selectedTab === 'games' && <GamePlayList />}
 
         {selectedTab === 'files' &&
           (filesLoading ? (
