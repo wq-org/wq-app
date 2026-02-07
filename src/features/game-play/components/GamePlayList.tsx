@@ -37,7 +37,7 @@ export function GamePlayList() {
   }, [loadGames])
 
   const handlePlay = (gameId: string) => {
-    navigate(`/teacher/play/${gameId}`)
+    navigate(`/play/${gameId}`)
   }
 
   if (loading) {

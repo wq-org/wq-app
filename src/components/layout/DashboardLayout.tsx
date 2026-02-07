@@ -27,6 +27,8 @@ interface DashboardLayoutProps {
   connectButtonLabel?: string
   onClickTab?: (tabId: string) => void
   universityName?: string
+  /** When set (e.g. on teacher profile view), show follow count badge next to university. */
+  followCount?: number
   customTabs?: DashboardTab[] // Optional custom tabs to override default
 }
 
@@ -44,12 +46,13 @@ export default function DashboardLayout({
   connectButtonLabel,
   onClickTab,
   universityName,
+  followCount,
   customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
   const defaultTabs = getDashboardTabs(role as Roles)
   const dashboardTabs = customTabs || defaultTabs
-  const { t } = useTranslation('features.teacher')
+  const { t, i18n } = useTranslation('features.teacher')
 
   function handleTabClick(tabId: string) {
     setActiveTab(tabId)
@@ -117,6 +120,15 @@ export default function DashboardLayout({
             </div>
             <div className="flex gap-4">
               <Badge variant="secondary">{universityName || t('badges.university')}</Badge>
+              {followCount !== undefined && (
+                <Badge variant="secondary">
+                  {t('badges.contacts', {
+                    formattedCount: (followCount ?? 0).toLocaleString(
+                      i18n.language === 'de' ? 'de-DE' : 'en-US',
+                    ),
+                  })}
+                </Badge>
+              )}
             </div>
             <div className="flex items-center gap-4">
               {handleFollowClick != null && (
