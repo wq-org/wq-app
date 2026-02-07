@@ -26,7 +26,6 @@ interface DashboardLayoutProps {
   handleMailClick?: () => void
   connectButtonLabel?: string
   onClickTab?: (tabId: string) => void
-  contactsCount?: number
   universityName?: string
   customTabs?: DashboardTab[] // Optional custom tabs to override default
 }
@@ -44,14 +43,13 @@ export default function DashboardLayout({
   handleMailClick,
   connectButtonLabel,
   onClickTab,
-  contactsCount,
   universityName,
   customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
   const defaultTabs = getDashboardTabs(role as Roles)
   const dashboardTabs = customTabs || defaultTabs
-  const { t, i18n } = useTranslation('features.teacher')
+  const { t } = useTranslation('features.teacher')
 
   function handleTabClick(tabId: string) {
     setActiveTab(tabId)
@@ -66,16 +64,6 @@ export default function DashboardLayout({
     author: 'Socrates',
     source: 'Anecdotal',
   }
-
-  // Contacts badge: teachers show real follower count (default 0), others show "-"
-  const contactsBadgeText =
-    role?.toLowerCase() === 'teacher'
-      ? t('badges.contacts', {
-          formattedCount: (contactsCount ?? 0).toLocaleString(
-            i18n.language === 'de' ? 'de-DE' : 'en-US',
-          ),
-        })
-      : '-'
 
   return (
     <div>
@@ -129,21 +117,22 @@ export default function DashboardLayout({
             </div>
             <div className="flex gap-4">
               <Badge variant="secondary">{universityName || t('badges.university')}</Badge>
-              <Badge variant="secondary">{contactsBadgeText}</Badge>
             </div>
             <div className="flex items-center gap-4">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="default"
-                    className="gap-2"
-                    onClick={handleFollowClick}
-                  >
-                    {connectButtonLabel ?? t('actions.connect')}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t('actions.connectWith', { userName })}</TooltipContent>
-              </Tooltip>
+              {handleFollowClick != null && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="default"
+                      className="gap-2"
+                      onClick={handleFollowClick}
+                    >
+                      {connectButtonLabel ?? t('actions.connect')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t('actions.connectWith', { userName })}</TooltipContent>
+                </Tooltip>
+              )}
 
               <Tooltip>
                 <TooltipTrigger asChild>

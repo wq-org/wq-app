@@ -149,7 +149,6 @@ export default function Dashboard() {
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to your dashboard'}
         role="teacher"
-        contactsCount={profile?.follow_count ?? 0}
         onClickTab={(tabId: string) => handleClickTab(tabId)}
       >
         {selectedTab === 'courses' &&
@@ -188,6 +187,11 @@ export default function Dashboard() {
             />
           ))}
         {selectedTab === 'students' && <StudentCardList students={[]} />}
+        {selectedTab === 'notes' && (
+          <div className="py-12 text-center text-muted-foreground">
+            Notes — coming soon
+          </div>
+        )}
       </DashboardLayout>
 
       <CommandPalette

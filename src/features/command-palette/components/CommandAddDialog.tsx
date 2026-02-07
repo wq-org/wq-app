@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -7,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { createCourse } from '@/features/courses/api/coursesApi'
 import { createInstitution } from '@/features/auth/api/authApi'
 import { createGame } from '@/features/command-palette/api/commandPaletteApi'
+import { createGameForStudio } from '@/features/game-studio/api/gameStudioApi'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
 import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, StickyNote } from 'lucide-react'
@@ -83,6 +85,7 @@ interface CommandAddDialogProps {
 }
 
 const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
+  const navigate = useNavigate()
   const { profile } = useUser()
   const { addNode } = useGameStudioContext()
   const [selectedType, setSelectedType] = useState<AddType | null>(null)
@@ -131,6 +134,20 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
 
     setLoading(true)
     try {
+      // New Game: use createGameForStudio and open the new project on canvas
+      if (selectedType === 'game' && profile?.user_id) {
+        const created = await createGameForStudio(profile.user_id, {
+          title: title.trim() || 'Untitled Game',
+          description: description.trim() || '',
+        })
+        onSuccess?.()
+        setTitle('')
+        setDescription('')
+        setSelectedType(null)
+        navigate(`/teacher/canvas/${created.id}`)
+        return
+      }
+
       const teacherId =
         selectedType === 'course' || selectedType === 'game' ? profile?.user_id || null : null
       const result = await createByType(
