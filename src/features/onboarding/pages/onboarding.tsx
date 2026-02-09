@@ -11,6 +11,7 @@ import {
 import { CheckIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
 import StepAccount from '../components/StepAccount'
 import StepInstitution from '../components/StepInstitution'
 import StepFinish from '../components/StepFinish'
@@ -49,7 +50,7 @@ export default function Onboarding() {
         },
       })
     } else {
-      navigate(`/${role}/dashboard`)
+      navigate(getDashboardPathForRole(role as UserRole))
     }
   }
 

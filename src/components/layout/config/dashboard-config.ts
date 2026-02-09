@@ -11,8 +11,23 @@ import {
   Users2,
   type LucideIcon,
 } from 'lucide-react'
+import { USER_ROLES, isValidRole } from '@/features/auth/types/auth.types'
 import type { Roles } from './dashboard.types'
 import i18n from '@/locales/i18n'
+
+/** Normalize role from API (snake_case or legacy camelCase) to Roles, or null if invalid. */
+function normalizeRole(role: string | null | undefined): Roles | null {
+  if (role == null || role === '') return null
+  const r = role.trim().toLowerCase()
+  if (isValidRole(r)) return r as Roles
+  const legacy: Record<string, Roles> = {
+    superadmin: USER_ROLES.SUPER_ADMIN,
+    institutionadmin: USER_ROLES.INSTITUTION_ADMIN,
+    teacher: USER_ROLES.TEACHER,
+    student: USER_ROLES.STUDENT,
+  }
+  return legacy[r] ?? null
+}
 
 export interface DashboardTab {
   id: string
@@ -60,24 +75,30 @@ export const studentDashboardTabs = createStudentTabs()
 export const institutionAdminDashboardTabs = createInstitutionAdminTabs()
 export const superAdminDashboardTabs = createSuperAdminTabs()
 
-export const VALID_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher', 'student']
+export const VALID_ROLES: Roles[] = [
+  USER_ROLES.SUPER_ADMIN,
+  USER_ROLES.INSTITUTION_ADMIN,
+  USER_ROLES.TEACHER,
+  USER_ROLES.STUDENT,
+]
 
-export function getDashboardTabs(role: Roles): DashboardTab[] {
-  if (role === 'teacher') {
+export function getDashboardTabs(role: Roles | string | null | undefined): DashboardTab[] {
+  const normalized = normalizeRole(role)
+  if (normalized === USER_ROLES.TEACHER) {
     return teacherDashboardTabs
   }
 
-  if (role === 'student') {
+  if (normalized === USER_ROLES.STUDENT) {
     return studentDashboardTabs
   }
 
-  if (role === 'institutionAdmin') {
+  if (normalized === USER_ROLES.INSTITUTION_ADMIN) {
     return institutionAdminDashboardTabs
   }
 
-  if (role === 'superAdmin') {
+  if (normalized === USER_ROLES.SUPER_ADMIN) {
     return superAdminDashboardTabs
   }
 
-  throw new Error('Invalid role')
+  return studentDashboardTabs
 }

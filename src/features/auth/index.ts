@@ -12,9 +12,17 @@ export * from './api/authApi'
 // Auth Hooks
 export { default as useAuth } from './hooks/useAuth'
 
-// Auth Types
+// Auth Types & role helpers
+export {
+  USER_ROLES,
+  isValidRole,
+  isSuperAdmin,
+  getDashboardPathForRole,
+} from './types/auth.types'
 export type {
   User,
+  UserRole,
+  UserProfile,
   SignUpData,
   LoginData,
   AuthResponse,

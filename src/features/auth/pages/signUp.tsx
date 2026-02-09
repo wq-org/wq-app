@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { Presentation, GraduationCap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { USER_ROLES } from '@/features/auth/types/auth.types'
 import { signUpUser } from '../api/authApi'
 import { useUser } from '@/contexts/user'
 import { DotWaveLoader } from '@/components/shared'
@@ -40,8 +41,8 @@ export default function SignUpPage({ className }: React.ComponentProps<'form'>) 
     navigate('/auth/login')
   }
 
-  // Select icon based on role
-  const RoleIcon = role === 'teacher' ? Presentation : GraduationCap
+  // Select icon based on role (pendingRole is teacher | student from role selection)
+  const RoleIcon = role === USER_ROLES.TEACHER ? Presentation : GraduationCap
 
   const handleEmailChange = (value: string) => {
     setEmail(value)

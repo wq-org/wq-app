@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { USER_ROLES } from '@/features/auth/types/auth.types'
 import { DotWaveLoader } from '@/components/shared'
 import { useProfile } from '../hooks/useProfile'
 import { TeacherProfileContent } from './TeacherProfileContent'
@@ -32,11 +33,10 @@ export function ProfileView() {
     )
   }
 
-  // Route to appropriate content component based on role
-  // institutionAdmin and superAdmin roles - treat as teacher for now
-  const role = profile.role?.toLowerCase()
+  // Route to appropriate content component based on role (snake_case from DB)
+  const role = profile.role
 
-  if (role === 'teacher') {
+  if (role === USER_ROLES.TEACHER) {
     return (
       <TeacherProfileContent
         profile={profile}
@@ -45,11 +45,11 @@ export function ProfileView() {
     )
   }
 
-  if (role === 'student') {
+  if (role === USER_ROLES.STUDENT) {
     return <StudentProfileContent profile={profile} />
   }
 
-  if (role === 'institution') {
+  if (role === USER_ROLES.INSTITUTION_ADMIN) {
     return <InstitutionProfileContent institutionId={profile.user_id} />
   }
 

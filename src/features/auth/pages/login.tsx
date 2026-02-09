@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
+import { getDashboardPathForRole, USER_ROLES, type UserRole } from '@/features/auth/types/auth.types'
 import { validateEmail } from '@/lib/validations'
 
 export default function LoginPage({ className }: React.ComponentProps<'form'>) {
@@ -34,8 +35,8 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   // Single source of truth: context first, then fallback to location.state
   const role = pendingRole || (location.state as { role?: string })?.role || ''
 
-  // Select icon based on role
-  const RoleIcon = role === 'teacher' ? Presentation : UserIcon
+  // Select icon based on role (pendingRole is teacher | student from role selection)
+  const RoleIcon = role === USER_ROLES.TEACHER ? Presentation : UserIcon
 
   const goToSignUp = () => {
     navigate('/auth/signup')
@@ -110,7 +111,8 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
             })
             navigate('/onboarding')
           } else {
-            const userRole = profile.data.role
+            const userRole = profile.data.role as UserRole
+            const dashboardPath = getDashboardPathForRole(userRole)
             toast.success('Welcome Back!', {
               description: `Logging you in as ${userRole}`,
               duration: 2000,
@@ -118,7 +120,7 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
 
             // Wait a bit for UserContext to update before navigating
             setTimeout(() => {
-              navigate(`/${userRole}/dashboard`)
+              navigate(dashboardPath)
             }, 700)
           }
         } catch (error) {

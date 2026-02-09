@@ -289,10 +289,10 @@ CREATE TRIGGER teacher_followers_count
 -- END;
 -- $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+-- DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+-- CREATE TRIGGER on_auth_user_created
+--   AFTER INSERT ON auth.users
+--   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Follow teacher (RLS applies; same-institution enforced by policy)
 DROP FUNCTION IF EXISTS public.follow_teacher(uuid);
@@ -501,14 +501,14 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('files', 'files', false), ('avatars', 'avatars', false), ('backgrounds', 'backgrounds', false)
 ON CONFLICT (id) DO NOTHING;
 
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- RLS on storage.objects is already enabled by Supabase; we only add policies here.
 
 DROP POLICY IF EXISTS "Allow authenticated uploads to files" ON storage.objects;
 CREATE POLICY "Allow authenticated uploads to files" ON storage.objects
 FOR INSERT TO authenticated
 WITH CHECK (
   bucket_id = 'files'
-  AND (storage.foldername(name))[1] IN ('teacher', 'student', 'institutionAdmin', 'superAdmin')
+  AND (storage.foldername(name))[1] IN ('teacher', 'student', 'institution_admin', 'super_admin')
   AND (storage.foldername(name))[2] = auth.uid()::text
 );
 
@@ -519,7 +519,7 @@ CREATE POLICY "Allow authenticated read own files" ON storage.objects
 FOR SELECT TO authenticated
 USING (
   bucket_id = 'files'
-  AND (storage.foldername(name))[1] IN ('teacher', 'student', 'institutionAdmin', 'superAdmin')
+  AND (storage.foldername(name))[1] IN ('teacher', 'student', 'institution_admin', 'super_admin')
   AND (storage.foldername(name))[2] = auth.uid()::text
 );
 DROP POLICY IF EXISTS "Teachers upload to own folder" ON storage.objects;

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
+import type { UserRole } from '@/features/auth/types/auth.types'
 import { fetchProfilesForSearch, fetchInstitutionsForSearch } from '../api/commandPaletteApi'
 
 export interface SearchItem {
   id: string
-  type: 'student' | 'teacher' | 'institutionAdmin' | 'superAdmin' | 'institution'
+  type: UserRole | 'institution'
   title: string
   email: string | null
   username: string | null
@@ -26,10 +27,10 @@ export function useSearchItems() {
         // Fetch institutions
         const institutions = await fetchInstitutionsForSearch()
 
-        // Transform profiles to SearchItem format
+        // Transform profiles to SearchItem format (role is UserRole from DB)
         const profileItems: SearchItem[] = profiles.map((profile) => ({
           id: profile.user_id,
-          type: profile.role as 'student' | 'teacher' | 'institutionAdmin' | 'superAdmin',
+          type: (profile.role ?? 'student') as UserRole,
           title: profile.display_name || profile.username || 'Unknown',
           email: profile.email,
           username: profile.username,

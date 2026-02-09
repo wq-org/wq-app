@@ -1,4 +1,7 @@
-export type Roles = 'superAdmin' | 'institutionAdmin' | 'teacher' | 'student'
+import type { UserRole } from '@/features/auth/types/auth.types'
+
+/** Dashboard role type; must match DB profiles.role (snake_case). */
+export type Roles = UserRole
 
 /**
  * View-specific command bar contexts.

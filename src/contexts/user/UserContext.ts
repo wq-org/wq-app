@@ -1,10 +1,11 @@
+import type { UserRole } from '@/features/auth/types/auth.types'
 import type { Roles } from '@/components/layout/config'
 import { createContext, useContext } from 'react'
 import type { Session } from '@supabase/supabase-js'
 
 export interface Profile {
   user_id: string
-  role: string | null
+  role: UserRole | null
   is_onboarded: boolean
   username: string | null
   display_name: string | null

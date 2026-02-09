@@ -4,6 +4,7 @@ import type { Node, Edge } from '@xyflow/react'
 import { getGameForStudio } from '@/features/game-studio/api/gameStudioApi'
 import { GamePlayView } from '../components/GamePlayView'
 import { GamePlayProvider } from '@/contexts/game-play'
+import { getDashboardPathForRole } from '@/features/auth/types/auth.types'
 import { useUser } from '@/contexts/user'
 import Spinner from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
@@ -14,8 +15,7 @@ export default function PlayGamePage() {
   const { gameId } = useParams<{ gameId: string }>()
   const navigate = useNavigate()
   const { getRole } = useUser()
-  const dashboardPath =
-    getRole()?.toLowerCase() === 'student' ? '/student/dashboard' : '/teacher/dashboard'
+  const dashboardPath = getDashboardPathForRole(getRole()) || '/student/dashboard'
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
   const [loading, setLoading] = useState(true)
