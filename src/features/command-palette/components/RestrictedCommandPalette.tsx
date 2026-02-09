@@ -11,7 +11,7 @@ export default function RestrictedCommandPalette() {
   const navigate = useNavigate()
 
   const handleLoginRedirect = () => {
-    navigate('/login')
+    navigate('/auth/login')
   }
 
   return (

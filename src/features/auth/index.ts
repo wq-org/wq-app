@@ -13,12 +13,7 @@ export * from './api/authApi'
 export { default as useAuth } from './hooks/useAuth'
 
 // Auth Types & role helpers
-export {
-  USER_ROLES,
-  isValidRole,
-  isSuperAdmin,
-  getDashboardPathForRole,
-} from './types/auth.types'
+export { USER_ROLES, isValidRole, isSuperAdmin, getDashboardPathForRole } from './types/auth.types'
 export type {
   User,
   UserRole,

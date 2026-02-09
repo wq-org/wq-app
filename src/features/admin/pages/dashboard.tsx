@@ -6,8 +6,9 @@ import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import Spinner from '@/components/ui/spinner'
 
 export default function AdminDashboard() {
-  const { profile, loading } = useUser()
+  const { profile, loading, getRole } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const role = getRole() ?? 'super_admin'
 
   if (loading) {
     return (
@@ -30,14 +31,14 @@ export default function AdminDashboard() {
         email={profile?.email || undefined}
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to the admin dashboard'}
-        role="institutionAdmin"
+        role={role}
         onClickTab={() => {}}
       >
         <div className="w-full py-8">
           <InstitutionForm />
         </div>
       </DashboardLayout>
-      <CommandPalette commandBarContext="institutionAdmin" />
+      <CommandPalette commandBarContext={role} />
     </div>
   )
 }

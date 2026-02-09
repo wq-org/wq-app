@@ -10,6 +10,7 @@ import {
   MessagesSquare,
   UserStar,
 } from 'lucide-react'
+import { USER_ROLES } from '@/features/auth/types/auth.types'
 import type { CommandBarGroup } from '../types/command-bar.types'
 import type { Roles } from '@/components'
 
@@ -21,7 +22,8 @@ import type { Roles } from '@/components'
 export const getBarGroups = (role: Roles): CommandBarGroup[] => {
   const teacherPrefix = '/teacher'
   const studentPrefix = '/student'
-  const rolePrefix = `/${role}`
+  const adminPrefix = '/admin'
+  const rolePrefix = role === USER_ROLES.SUPER_ADMIN ? adminPrefix : `/${role}`
 
   return [
     {
@@ -32,6 +34,47 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
           labelKey: 'actions.dashboard',
           icon: Home,
           to: `${teacherPrefix}/dashboard`,
+        },
+        {
+          id: 'search',
+          labelKey: 'actions.search',
+          icon: SearchIcon,
+          actionId: 'search',
+        },
+        {
+          id: 'studio',
+          labelKey: 'actions.studio',
+          icon: SplinePointer,
+          to: `${teacherPrefix}/game-studio`,
+        },
+        {
+          id: 'chat',
+          labelKey: 'actions.chat',
+          icon: MessagesSquare,
+          to: `${teacherPrefix}/chat`,
+        },
+        {
+          id: 'upload',
+          labelKey: 'actions.upload',
+          icon: Upload,
+          actionId: 'upload',
+        },
+        {
+          id: 'add-new',
+          labelKey: 'actions.addNew',
+          icon: Plus,
+          actionId: 'add',
+        },
+      ],
+    },
+    {
+      id: USER_ROLES.SUPER_ADMIN,
+      items: [
+        {
+          id: 'home',
+          labelKey: 'actions.dashboard',
+          icon: Home,
+          to: `${adminPrefix}/dashboard`,
         },
         {
           id: 'search',

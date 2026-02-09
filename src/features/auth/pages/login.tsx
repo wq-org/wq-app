@@ -18,7 +18,11 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
-import { getDashboardPathForRole, USER_ROLES, type UserRole } from '@/features/auth/types/auth.types'
+import {
+  getDashboardPathForRole,
+  USER_ROLES,
+  type UserRole,
+} from '@/features/auth/types/auth.types'
 import { validateEmail } from '@/lib/validations'
 
 export default function LoginPage({ className }: React.ComponentProps<'form'>) {
