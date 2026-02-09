@@ -87,6 +87,12 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
           to: `${studentPrefix}/chat`,
         },
         {
+          id: 'upload',
+          labelKey: 'actions.upload',
+          icon: Upload,
+          actionId: 'upload',
+        },
+        {
           id: 'add',
           labelKey: 'actions.addNew',
           icon: Plus,

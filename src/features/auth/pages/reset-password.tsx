@@ -3,58 +3,38 @@ import { Button } from '@/components/ui/button'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Text } from '@/components/ui/text'
+import { resetPassword } from '../api/authApi'
+import { toast } from 'sonner'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const token = searchParams.get('token')
 
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const isFormValid =
     newPassword.trim() !== '' && confirmPassword.trim() !== '' && newPassword === confirmPassword
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
 
     try {
-      // TODO: Implement reset password API call
-      console.log('Reset password with token:', token)
+      await resetPassword(newPassword)
+      toast.success('Password updated. You can sign in with your new password.')
       navigate('/auth/login')
-    } catch (error) {
-      console.error('Reset password error:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to reset password'
+      setError(message)
+      toast.error(message)
     } finally {
       setIsLoading(false)
     }
-  }
-
-  if (!token) {
-    return (
-      <div className="w-full container mx-auto max-w-lg h-screen flex items-center justify-center">
-        <div className="border p-8 rounded-3xl shadow-lg text-center">
-          <Text
-            as="h1"
-            variant="h1"
-            className="text-2xl font-light mb-4"
-          >
-            Invalid Reset Link
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="text-muted-foreground mb-4"
-          >
-            This password reset link is invalid or has expired.
-          </Text>
-          <Button onClick={() => navigate('/auth/forgot-password')}>Request New Link</Button>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -78,9 +58,19 @@ export default function ResetPasswordPage() {
                 variant="body"
                 className="text-muted-foreground text-sm text-balance"
               >
-                Enter your new password below
+                Enter your new password below. Use the link from your email to get here.
               </Text>
             </div>
+
+            {error && (
+              <Text
+                as="p"
+                variant="body"
+                className="text-destructive text-sm text-center"
+              >
+                {error}
+              </Text>
+            )}
 
             <Field>
               <FieldLabel htmlFor="new-password">New Password</FieldLabel>

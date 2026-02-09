@@ -1,0 +1,6 @@
+export { TwitterIcon } from './TwitterIcon'
+export { LinkedInIcon } from './LinkedInIcon'
+export { FacebookIcon } from './FacebookIcon'
+export { ThreadsIcon } from './ThreadsIcon'
+export { InstagramIcon } from './InstagramIcon'
+export { TikTokIcon } from './TikTokIcon'
