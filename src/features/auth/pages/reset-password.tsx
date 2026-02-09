@@ -63,7 +63,11 @@ export default function ResetPasswordPage() {
             </div>
 
             {error && (
-              <Text as="p" variant="body" className="text-destructive text-sm text-center">
+              <Text
+                as="p"
+                variant="body"
+                className="text-destructive text-sm text-center"
+              >
                 {error}
               </Text>
             )}

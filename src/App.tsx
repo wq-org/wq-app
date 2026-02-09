@@ -82,7 +82,12 @@ function App() {
             <Route path="/auth">
               <Route
                 index
-                element={<Navigate to="/auth/login" replace />}
+                element={
+                  <Navigate
+                    to="/auth/login"
+                    replace
+                  />
+                }
               />
               <Route
                 path="login"
@@ -133,7 +138,12 @@ function App() {
             <Route path="/teacher">
               <Route
                 index
-                element={<Navigate to="/teacher/dashboard" replace />}
+                element={
+                  <Navigate
+                    to="/teacher/dashboard"
+                    replace
+                  />
+                }
               />
               <Route
                 path="chat"
@@ -252,7 +262,12 @@ function App() {
             <Route path="/student">
               <Route
                 index
-                element={<Navigate to="/student/dashboard" replace />}
+                element={
+                  <Navigate
+                    to="/student/dashboard"
+                    replace
+                  />
+                }
               />
               <Route
                 path="dashboard"
