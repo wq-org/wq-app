@@ -119,19 +119,27 @@ export async function logoutUser(): Promise<void> {
 }
 
 /**
- * Request password reset email
+ * Request password reset email. Supabase sends a link that redirects to the app's reset-password page.
  */
 export async function requestPasswordReset(email: string): Promise<void> {
-  // TODO: Implement Supabase password reset request
-  console.log('Request password reset for:', email)
+  const redirectTo =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/reset-password`
+      : import.meta.env.VITE_PUBLIC_APP_URL
+        ? `${import.meta.env.VITE_PUBLIC_APP_URL}/auth/reset-password`
+        : ''
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectTo || undefined,
+  })
+  if (error) throw error
 }
 
 /**
- * Reset password with token
+ * Reset password for the current user (call after user lands on reset-password from the email link; session is established from URL hash).
  */
-export async function resetPassword(token: string, newPassword: string): Promise<void> {
-  // TODO: Implement Supabase password reset
-  console.log('Reset password with token:', token, 'New password:', newPassword)
+export async function resetPassword(newPassword: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) throw error
 }
 
 /**

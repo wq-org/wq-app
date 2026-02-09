@@ -81,6 +81,10 @@ function App() {
             {/* Auth Routes */}
             <Route path="/auth">
               <Route
+                index
+                element={<Navigate to="/auth/login" replace />}
+              />
+              <Route
                 path="login"
                 element={<LoginPage />}
               />
@@ -127,6 +131,10 @@ function App() {
 
             {/* Teacher Routes (require auth + onboarding) */}
             <Route path="/teacher">
+              <Route
+                index
+                element={<Navigate to="/teacher/dashboard" replace />}
+              />
               <Route
                 path="chat"
                 element={
@@ -242,6 +250,10 @@ function App() {
 
             {/* Student Routes (require auth + onboarding) */}
             <Route path="/student">
+              <Route
+                index
+                element={<Navigate to="/student/dashboard" replace />}
+              />
               <Route
                 path="dashboard"
                 element={

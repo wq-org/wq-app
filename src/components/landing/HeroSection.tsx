@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { Menu, X } from 'lucide-react'
 import pixelPeopleImg from '@/assets/images/pixel_people.png'
-import { TextEffect } from '@/components/motion-primitives/text-effect'
 import { AnimatedGroup } from '@/components/motion-primitives/animated-group'
 
 const menuItems = [
@@ -125,14 +124,9 @@ export function HeroSection() {
             <div className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"></div>
             <div className="mx-auto max-w-5xl px-6">
               <div className="sm:mx-auto lg:mr-auto lg:mt-0">
-                <TextEffect
-                  preset="fade-in-blur"
-                  speedSegment={0.3}
-                  as="h1"
-                  className="mt-8 max-w-2xl text-balance text-5xl font-medium md:text-6xl lg:mt-16"
-                >
+                <h1 className="mt-8 max-w-2xl text-balance text-5xl font-medium md:text-6xl lg:mt-16">
                   Motion Aware Learning for next Generation Health Education
-                </TextEffect>
+                </h1>
                 <p className="mt-8 max-w-xl text-pretty text-lg">
                   Build interactive health education games with Image Term Match, Image Pin Mark,
                   and Paragraph Line Select. Create custom scenarios, track progress, and transform

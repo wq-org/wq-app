@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { MoveLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Text } from '@/components/ui/text'
+import { requestPasswordReset } from '../api/authApi'
+import { toast } from 'sonner'
 
 export default function ForgotPasswordPage({ className }: React.ComponentProps<'form'>) {
   const navigate = useNavigate()
@@ -13,6 +15,7 @@ export default function ForgotPasswordPage({ className }: React.ComponentProps<'
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const goBack = () => {
     navigate('/auth/login')
@@ -20,14 +23,16 @@ export default function ForgotPasswordPage({ className }: React.ComponentProps<'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
 
     try {
-      // TODO: Implement forgot password API call
-      console.log('Forgot password for:', email)
+      await requestPasswordReset(email)
       setIsSubmitted(true)
-    } catch (error) {
-      console.error('Forgot password error:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to send reset link'
+      setError(message)
+      toast.error(message)
     } finally {
       setIsLoading(false)
     }
@@ -76,6 +81,11 @@ export default function ForgotPasswordPage({ className }: React.ComponentProps<'
 
             {!isSubmitted ? (
               <>
+                {error && (
+                  <Text as="p" variant="body" className="text-destructive text-sm text-center">
+                    {error}
+                  </Text>
+                )}
                 <Field>
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <Input
