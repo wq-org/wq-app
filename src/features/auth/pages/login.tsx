@@ -120,11 +120,10 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
               duration: 2000,
             })
 
-
-            console.log("userRole", dashboardPath)
+            console.log('userRole', dashboardPath)
             // Wait a bit for UserContext to update before navigating
             setTimeout(() => {
-             navigate(dashboardPath, { replace: true })
+              navigate(dashboardPath, { replace: true })
             }, 700)
           }
         } catch (error) {

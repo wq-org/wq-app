@@ -12,8 +12,6 @@ const menuItems = [
   { name: 'About', href: '#about' },
 ]
 
-
-
 export function HeroSection() {
   const [menuState, setMenuState] = useState(false)
 
@@ -114,50 +112,48 @@ export function HeroSection() {
                   health literacy through serious games.
                 </p>
 
-             
-                  <div
-                    key={1}
-                    className="rounded-[calc(var(--radius-xl)+0.125rem)] border bg-foreground/10 p-0.5"
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      className="rounded-xl px-5 text-base"
-                    >
-                      <Link to="/get-started">
-                        <span className="text-nowrap">Start Building</span>
-                      </Link>
-                    </Button>
-                  </div>
+                <div
+                  key={1}
+                  className="rounded-[calc(var(--radius-xl)+0.125rem)] border bg-foreground/10 p-0.5"
+                >
                   <Button
-                    key={2}
                     asChild
                     size="lg"
-                    variant="ghost"
-                    className="h-10.5 rounded-xl px-5 text-base"
+                    className="rounded-xl px-5 text-base"
                   >
                     <Link to="/get-started">
-                      <span className="text-nowrap">Learn More</span>
+                      <span className="text-nowrap">Start Building</span>
                     </Link>
                   </Button>
+                </div>
+                <Button
+                  key={2}
+                  asChild
+                  size="lg"
+                  variant="ghost"
+                  className="h-10.5 rounded-xl px-5 text-base"
+                >
+                  <Link to="/get-started">
+                    <span className="text-nowrap">Learn More</span>
+                  </Link>
+                </Button>
               </div>
             </div>
 
-       
-              <div
-                className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20"
-                style={{
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
-                }}
-              >
-                <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border bg-background p-4 shadow-lg shadow-zinc-950/15 ring-1 ring-background">
-                  <img
-                    className="relative aspect-15/8 w-full rounded-2xl border border-border/25 object-cover"
-                    src={pixelPeopleImg}
-                    alt="WQ Health platform preview"
-                  />
-                </div>
+            <div
+              className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20"
+              style={{
+                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
+              }}
+            >
+              <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border bg-background p-4 shadow-lg shadow-zinc-950/15 ring-1 ring-background">
+                <img
+                  className="relative aspect-15/8 w-full rounded-2xl border border-border/25 object-cover"
+                  src={pixelPeopleImg}
+                  alt="WQ Health platform preview"
+                />
               </div>
+            </div>
           </div>
         </section>
       </main>
