@@ -1,11 +1,3 @@
-import { ChevronUp, User2 } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
-
 import {
   Sidebar,
   SidebarHeader,
@@ -19,9 +11,11 @@ import {
   SidebarFooter,
   // SidebarMenuSub,
   // SidebarMenuSubItem,
-} from '../ui/sidebar'
-import Layout from '../ui/layout'
+} from '../../../components/ui/sidebar'
+import Layout from '../../../components/ui/layout'
 // import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
+
+import Spinner from '@/components/ui/spinner'
 
 import {
   LayoutDashboard,
@@ -35,6 +29,10 @@ import {
 } from 'lucide-react'
 
 import type { LucideIcon } from 'lucide-react'
+import { useUser } from '@/contexts/user'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
+import { NavUser } from '../../../components/shared/nav-user'
 
 export type NavigationItem = {
   title: string
@@ -86,6 +84,37 @@ const items: NavigationItem[] = [
 ]
 
 export default function InstitutionAdminLayout({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate()
+  const { profile, loading, getRole } = useUser()
+  //  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const userProfile = {
+    name: 'admin',
+    email: 'admin@wq-app.de',
+    avatar: 'https://github.com/unovue.png',
+  }
+  const role = getRole()
+  function navigateTo(path: string) {
+    navigate(`/institution_admin}${path}`)
+  }
+  console.log('profile :>> ', profile)
+
+  useEffect(() => {
+    console.log('profile :>> ', profile)
+    console.log('role :>> ', role)
+  }, [profile, role])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner
+          variant="gray"
+          size="sm"
+          speed={1750}
+        />
+      </div>
+    )
+  }
+
   return (
     <Layout>
       <Sidebar>
@@ -101,11 +130,9 @@ export default function InstitutionAdminLayout({ children }: { children: React.R
               <SidebarMenu>
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
+                    <SidebarMenuButton onClick={() => navigateTo(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -115,29 +142,7 @@ export default function InstitutionAdminLayout({ children }: { children: React.R
         </SidebarContent>
         <SidebarMenu></SidebarMenu>
         <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
-                    <User2 /> Username
-                    <ChevronUp className="ml-auto" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="top">
-                  <DropdownMenuItem>
-                    <span>Account</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Billing</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Sign out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <NavUser user={userProfile} />
         </SidebarFooter>
       </Sidebar>
       <p>{children}</p>

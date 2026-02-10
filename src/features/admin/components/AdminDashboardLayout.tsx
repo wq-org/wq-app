@@ -23,8 +23,8 @@ import {
   SidebarFooter,
   // SidebarMenuSub,
   // SidebarMenuSubItem,
-} from '../ui/sidebar'
-import Layout from '../ui/layout'
+} from '../../../components/ui/sidebar'
+import Layout from '../../../components/ui/layout'
 // import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import Spinner from '@/components/ui/spinner'
 
@@ -40,8 +40,8 @@ import {
 } from 'lucide-react'
 
 import type { LucideIcon } from 'lucide-react'
-import { NavUser } from '../shared/nav-user'
-import { TeamSwitcher } from '../shared/team-switcher'
+import { NavUser } from '../../../components/shared/nav-user'
+import { TeamSwitcher } from '../../../components/shared/team-switcher'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import { useEffect } from 'react'
@@ -249,7 +249,7 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex items-center justify-center min-h-screen">
         <Spinner
           variant="gray"
-          size="xl"
+          size="sm"
           speed={1750}
         />
       </div>
@@ -281,7 +281,6 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarMenu></SidebarMenu>
         <SidebarFooter>
           <NavUser user={userProfile} />
         </SidebarFooter>
