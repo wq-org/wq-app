@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { Menu, X } from 'lucide-react'
 import pixelPeopleImg from '@/assets/images/pixel_people.png'
-import { AnimatedGroup } from '@/components/motion-primitives/animated-group'
 
 const menuItems = [
   { name: 'Features', href: '#features' },
@@ -13,25 +12,7 @@ const menuItems = [
   { name: 'About', href: '#about' },
 ]
 
-const transitionVariants = {
-  item: {
-    hidden: {
-      opacity: 0,
-      filter: 'blur(12px)',
-      y: 12,
-    },
-    visible: {
-      opacity: 1,
-      filter: 'blur(0px)',
-      y: 0,
-      transition: {
-        type: 'spring' as const,
-        bounce: 0.3,
-        duration: 1.5,
-      },
-    },
-  },
-}
+
 
 export function HeroSection() {
   const [menuState, setMenuState] = useState(false)
@@ -133,20 +114,7 @@ export function HeroSection() {
                   health literacy through serious games.
                 </p>
 
-                <AnimatedGroup
-                  variants={{
-                    container: {
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.05,
-                          delayChildren: 0.75,
-                        },
-                      },
-                    },
-                    ...transitionVariants,
-                  }}
-                  className="mt-12 flex items-center gap-2"
-                >
+             
                   <div
                     key={1}
                     className="rounded-[calc(var(--radius-xl)+0.125rem)] border bg-foreground/10 p-0.5"
@@ -172,23 +140,10 @@ export function HeroSection() {
                       <span className="text-nowrap">Learn More</span>
                     </Link>
                   </Button>
-                </AnimatedGroup>
               </div>
             </div>
 
-            <AnimatedGroup
-              variants={{
-                container: {
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.05,
-                      delayChildren: 0.75,
-                    },
-                  },
-                },
-                ...transitionVariants,
-              }}
-            >
+       
               <div
                 className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20"
                 style={{
@@ -203,7 +158,6 @@ export function HeroSection() {
                   />
                 </div>
               </div>
-            </AnimatedGroup>
           </div>
         </section>
       </main>
