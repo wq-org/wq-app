@@ -17,8 +17,8 @@ import type { Roles } from '@/components/layout/config'
 import { Text } from '@/components/ui/text'
 
 // Constants for role arrays to minimize duplication
-const ADMIN_AND_TEACHER_ROLES: Roles[] = ['superAdmin', 'institutionAdmin', 'teacher']
-const SUPER_ADMIN_ONLY: Roles[] = ['superAdmin']
+const ADMIN_AND_TEACHER_ROLES: Roles[] = ['super_admin', 'institution_admin', 'teacher']
+const SUPER_ADMIN_ONLY: Roles[] = ['super_admin']
 const TEACHER_AND_STUDENT_ROLES: Roles[] = ['teacher', 'student']
 
 // This function calls create based on type

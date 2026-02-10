@@ -36,8 +36,8 @@ export default function CommandSearch() {
     if (
       item.type === 'student' ||
       item.type === 'teacher' ||
-      item.type === 'institutionAdmin' ||
-      item.type === 'superAdmin'
+      item.type === 'institution_admin' ||
+      item.type === 'super_admin'
     ) {
       navigate(`/profile/${item.id}`)
     } else if (item.type === 'institution') {
