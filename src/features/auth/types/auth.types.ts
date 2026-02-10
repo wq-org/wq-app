@@ -42,7 +42,7 @@ export function getDashboardPathForRole(role: UserRole | null): string {
   if (!role) return '/onboarding'
   switch (role) {
     case USER_ROLES.SUPER_ADMIN:
-      return '/admin/dashboard'
+      return '/super_admin/dashboard'
     case USER_ROLES.INSTITUTION_ADMIN:
       return '/teacher/dashboard'
     case USER_ROLES.TEACHER:

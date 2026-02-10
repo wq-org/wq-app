@@ -34,11 +34,19 @@ import RequireOnboarding from './components/auth/RequireOnboarding'
 import { Toaster } from './components/ui/sonner'
 import AppWrapper from './components/layout/AppWrapper'
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
-import AdminDashboard from './features/admin/pages/dashboard'
 import TeacherViewPage from './features/teacher/pages/view'
 import InstitutionViewPage from './features/institution/pages/view'
 import StudentViewPage from './features/student/pages/view'
 import ProfileViewPage from './features/profiles/pages/view'
+
+import AdminUsers from './features/admin/pages/users'
+import AdminInstitution from './features/admin/pages/institution'
+import AdminAnalytics from './features/admin/pages/analytics'
+import AdminDashboard from './features/admin/pages/dashboard'
+import AdminBilling from './features/admin/pages/billing'
+import AdminFeatures from './features/admin/pages/features'
+import AdminSystem from './features/admin/pages/system'
+import AdminLicenses from './features/admin/pages/licenses'
 
 function GameEditorCanvasWithProjectId() {
   const { id } = useParams<{ id: string }>()
@@ -120,15 +128,69 @@ function App() {
               }
             />
 
-            {/* Admin Routes (require auth + onboarding) */}
-            <Route path="/admin">
+            {/* Super Admin Routes (require auth) */}
+            <Route path="/super_admin">
               <Route
                 path="dashboard"
                 element={
                   <RequireAuth>
-                    <RequireOnboarding>
-                      <AdminDashboard />
-                    </RequireOnboarding>
+                    <AdminDashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="institution"
+                element={
+                  <RequireAuth>
+                    <AdminInstitution />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="users"
+                element={
+                  <RequireAuth>
+                    <AdminUsers />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="billing"
+                element={
+                  <RequireAuth>
+                    <AdminBilling />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="licenses"
+                element={
+                  <RequireAuth>
+                    <AdminLicenses />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="features"
+                element={
+                  <RequireAuth>
+                    <AdminFeatures />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="analytics"
+                element={
+                  <RequireAuth>
+                    <AdminAnalytics />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="system"
+                element={
+                  <RequireAuth>
+                    <AdminSystem />
                   </RequireAuth>
                 }
               />

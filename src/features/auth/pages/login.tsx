@@ -86,8 +86,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
             .eq('user_id', responseData.user.id)
             .maybeSingle()
 
-          console.log('profile :>> ', profile)
-
           // Check for query errors first
           if (profile.error) {
             console.error('Profile query error:', profile.error)
@@ -121,10 +119,9 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
               description: `Logging you in as ${userRole}`,
               duration: 2000,
             })
-
             // Wait a bit for UserContext to update before navigating
             setTimeout(() => {
-              navigate(dashboardPath)
+              navigate(dashboardPath, { replace: true })
             }, 700)
           }
         } catch (error) {
