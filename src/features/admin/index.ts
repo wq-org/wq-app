@@ -1,6 +1,6 @@
 // Pages
 export { default as AdminDashboard } from './pages/dashboard'
-export { default as InstitutionForm } from './components/institution-form'
+export { default as InstitutionForm } from './components/InstitutionForm'
 
 // Components
 // Add component exports when available

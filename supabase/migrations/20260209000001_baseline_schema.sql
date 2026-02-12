@@ -29,6 +29,16 @@ DO $$ BEGIN
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
+DO $$ BEGIN
+  CREATE TYPE institution_type AS ENUM ('school', 'university', 'college', 'organization', 'other');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+  CREATE TYPE institution_status AS ENUM ('active', 'inactive', 'suspended', 'pending');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 -- =============================================================================
 -- TABLES (order respects FKs)
@@ -61,6 +71,9 @@ CREATE TABLE IF NOT EXISTS public.institutions (
   description TEXT,
   email TEXT,
   address JSONB,
+  status institution_status DEFAULT 'active',
+  type institution_type,
+  slug TEXT UNIQUE,
   website TEXT,
   social_links JSONB,
   created_by_admin_id UUID REFERENCES public.profiles(user_id) ON DELETE SET NULL,
@@ -191,6 +204,7 @@ CREATE TABLE IF NOT EXISTS public.game_sessions (
 -- INDEXES
 -- =============================================================================
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_institutions_slug ON public.institutions(slug);
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 CREATE INDEX IF NOT EXISTS idx_courses_teacher ON public.courses(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_courses_published ON public.courses(is_published);

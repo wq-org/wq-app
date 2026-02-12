@@ -27,6 +27,9 @@ export default function Onboarding() {
   const [step, setStep] = useState(1)
   const [accountData, setAccountData] = useState<AccountData | null>(null)
   const [institutions, setInstitutions] = useState<Institution[]>([])
+  const handleStepChange = (nextStep: number) => {
+    setStep((prev) => (nextStep <= prev ? nextStep : prev))
+  }
 
   const handleAccountNext = (data: AccountData) => {
     setAccountData(data)
@@ -62,7 +65,7 @@ export default function Onboarding() {
       <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
         <Stepper
           value={step}
-          onValueChange={setStep}
+          onValueChange={handleStepChange}
           className="w-full max-w-2xl mb-8"
         >
           <StepperItem step={1}>

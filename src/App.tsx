@@ -47,6 +47,7 @@ import AdminBilling from './features/admin/pages/billing'
 import AdminFeatures from './features/admin/pages/features'
 import AdminSystem from './features/admin/pages/system'
 import AdminLicenses from './features/admin/pages/licenses'
+import { CreateInstitution } from './features/admin/pages/newInstitution'
 
 function GameEditorCanvasWithProjectId() {
   const { id } = useParams<{ id: string }>()
@@ -137,6 +138,11 @@ function App() {
                     <AdminDashboard />
                   </RequireAuth>
                 }
+              />
+
+              <Route
+                path="dashboard/new-institution"
+                element={<CreateInstitution />}
               />
               <Route
                 path="institution"
