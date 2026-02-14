@@ -25,5 +25,4 @@ export interface InstitutionFormData {
   address: AddressJsonb
   socialLinks: SocialLinks
   imageUrl: string
-  imageFile?: File | null
 }

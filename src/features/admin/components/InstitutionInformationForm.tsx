@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import ImageUpload from '@/components/ui/image-upload'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import {
@@ -19,6 +18,7 @@ import type {
   InstitutionFormData,
   AddressJsonb,
 } from '@/features/admin/types/institution.types'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 const INSTITUTION_TYPES: { value: InstitutionType; label: string }[] = [
   { value: 'school', label: 'School' },
@@ -50,8 +50,7 @@ const initialFormData: InstitutionFormData = {
   website: '',
   address: {},
   socialLinks: { linkedin: '', instagram: '' },
-  imageUrl: '',
-  imageFile: null,
+  imageUrl: DEFAULT_INSTITUTION_IMAGE,
 }
 
 function slugify(text: string): string {
@@ -65,14 +64,18 @@ function slugify(text: string): string {
 
 export default function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
   const [formData, setFormData] = useState<InstitutionFormData>(initialFormData)
+  const [isSlugTouched, setIsSlugTouched] = useState(false)
 
-  const handleNameChange = useCallback((name: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      name,
-      slug: prev.slug || slugify(name),
-    }))
-  }, [])
+  const handleNameChange = useCallback(
+    (name: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        name,
+        slug: isSlugTouched ? prev.slug : slugify(name),
+      }))
+    },
+    [isSlugTouched],
+  )
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -80,10 +83,12 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
       onSubmit(formData)
     }
     setFormData(initialFormData)
+    setIsSlugTouched(false)
   }
 
   const handleCancel = () => {
     setFormData(initialFormData)
+    setIsSlugTouched(false)
     onCancel?.()
   }
 
@@ -101,14 +106,6 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
     }))
   }
 
-  const handleImageChange = (url: string) => {
-    setFormData((prev) => ({ ...prev, imageUrl: url }))
-  }
-
-  const handleImageFileChange = (file: File | null) => {
-    setFormData((prev) => ({ ...prev, imageFile: file }))
-  }
-
   const isFormValid =
     formData.name.trim().length > 0 &&
     formData.slug.trim().length > 0 &&
@@ -122,8 +119,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
     (formData.address.postalCode ?? '').trim().length > 0 &&
     (formData.address.country ?? '').trim().length > 0 &&
     (formData.socialLinks.linkedin ?? '').trim().length > 0 &&
-    (formData.socialLinks.instagram ?? '').trim().length > 0 &&
-    formData.imageUrl.trim().length > 0
+    (formData.socialLinks.instagram ?? '').trim().length > 0
 
   return (
     <Card className="border max-w-3xl w-full shadow-sm">
@@ -185,7 +181,10 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
               id="institution-slug"
               placeholder="harvard-university"
               value={formData.slug}
-              onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
+              onChange={(e) => {
+                setIsSlugTouched(true)
+                setFormData((prev) => ({ ...prev, slug: e.target.value }))
+              }}
               className="text-base py-2 px-3 w-full"
             />
             <Text
@@ -193,7 +192,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
               variant="body"
               className="text-xs text-gray-400"
             >
-              URL-friendly identifier. Auto-generated from name if left empty.
+              URL-friendly identifier. Auto-generated from name unless manually edited.
             </Text>
           </div>
 
@@ -482,20 +481,26 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
           </div>
 
           <div className="flex flex-col gap-2">
-            <ImageUpload
-              label="Institution Image"
+            <Label
+              htmlFor="institution-image-url"
+              className="font-normal text-gray-700"
+            >
+              Image URL
+            </Label>
+            <Input
+              id="institution-image-url"
+              type="url"
+              placeholder="https://example.com/image.png"
               value={formData.imageUrl}
-              onChange={handleImageChange}
-              onFileChange={handleImageFileChange}
-              accept="image/*"
-              maxSizeMB={20}
+              onChange={(e) => setFormData((prev) => ({ ...prev, imageUrl: e.target.value }))}
+              className="text-base py-2 px-3 w-full"
             />
             <Text
               as="p"
               variant="body"
               className="text-xs text-gray-400 mt-1"
             >
-              Upload an image or enter an image URL
+              Enter a direct URL to the institution image.
             </Text>
           </div>
         </CardContent>
