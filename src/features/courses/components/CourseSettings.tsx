@@ -203,7 +203,10 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             )}
           </Button>
 
-          <HoldToDeleteButton loading={deleting} onDelete={handleDeleteCourse} />
+          <HoldToDeleteButton
+            loading={deleting}
+            onDelete={handleDeleteCourse}
+          />
         </div>
       </div>
     </div>

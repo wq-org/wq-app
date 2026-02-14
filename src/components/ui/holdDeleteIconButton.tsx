@@ -1,22 +1,22 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { X } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import * as React from 'react'
+import { X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 const RING_SIZES = {
-  xs: { ring: 28, stroke: 2, button: "size-6", icon: "size-3" },
-  sm: { ring: 36, stroke: 2, button: "size-7", icon: "size-4" },
-  md: { ring: 44, stroke: 3, button: "size-8", icon: "size-4" },
-  lg: { ring: 52, stroke: 3, button: "size-9", icon: "size-5" },
-  xl: { ring: 60, stroke: 4, button: "size-10", icon: "size-5" },
+  xs: { ring: 28, stroke: 2, button: 'size-6', icon: 'size-3' },
+  sm: { ring: 36, stroke: 2, button: 'size-7', icon: 'size-4' },
+  md: { ring: 44, stroke: 3, button: 'size-8', icon: 'size-4' },
+  lg: { ring: 52, stroke: 3, button: 'size-9', icon: 'size-5' },
+  xl: { ring: 60, stroke: 4, button: 'size-10', icon: 'size-5' },
 } as const
 
 type RingSize = keyof typeof RING_SIZES
 
 interface HoldToDeleteIconButtonProps
-  extends Omit<React.ComponentProps<typeof Button>, "size" | "variant"> {
+  extends Omit<React.ComponentProps<typeof Button>, 'size' | 'variant'> {
   onDelete?: () => void
   holdDuration?: number
   /** Preset ring size: xs | sm | md | lg | xl */
@@ -27,7 +27,7 @@ function HoldToDeleteIconButton({
   className,
   onDelete,
   holdDuration = 3000,
-  size = "lg",
+  size = 'lg',
   ...props
 }: HoldToDeleteIconButtonProps) {
   const { ring: ringSize, stroke: strokeWidth } = RING_SIZES[size]
@@ -116,8 +116,8 @@ function HoldToDeleteIconButton({
           stroke="currentColor"
           strokeWidth={strokeWidth}
           className={cn(
-            "text-muted transition-colors duration-200",
-            (isHolding || completed) && "text-red-100"
+            'text-muted transition-colors duration-200',
+            (isHolding || completed) && 'text-red-100',
           )}
         />
         {/* Progress arc */}
@@ -132,9 +132,9 @@ function HoldToDeleteIconButton({
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           className={cn(
-            "text-destructive transition-[stroke-dashoffset]",
-            isHolding ? "duration-0" : "duration-300 ease-out",
-            completed && "text-red-500"
+            'text-destructive transition-[stroke-dashoffset]',
+            isHolding ? 'duration-0' : 'duration-300 ease-out',
+            completed && 'text-red-500',
           )}
         />
       </svg>
@@ -156,8 +156,8 @@ function HoldToDeleteIconButton({
           strokeDasharray={2 * Math.PI * (radius - strokeWidth)}
           strokeDashoffset={2 * Math.PI * (radius - strokeWidth) * (1 - progress)}
           className={cn(
-            "text-red-100/60",
-            isHolding ? "duration-0" : "transition-[stroke-dashoffset] duration-300 ease-out"
+            'text-red-100/60',
+            isHolding ? 'duration-0' : 'transition-[stroke-dashoffset] duration-300 ease-out',
           )}
         />
       </svg>
@@ -167,14 +167,14 @@ function HoldToDeleteIconButton({
         variant="ghost"
         size="icon"
         className={cn(
-          "relative z-10 rounded-full",
+          'relative z-10 rounded-full',
           buttonSizeClass,
-          "text-muted-foreground",
-          "hover:bg-transparent hover:text-destructive",
-          isHolding && "text-destructive scale-90",
-          completed && "text-destructive scale-75",
-          "transition-all duration-200",
-          className
+          'text-muted-foreground',
+          'hover:bg-transparent hover:text-destructive',
+          isHolding && 'text-destructive scale-90',
+          completed && 'text-destructive scale-75',
+          'transition-all duration-200',
+          className,
         )}
         onMouseDown={startHold}
         onMouseUp={resetHold}
@@ -187,9 +187,9 @@ function HoldToDeleteIconButton({
         <X
           className={cn(
             iconSizeClass,
-            "transition-transform duration-200",
-            isHolding && "rotate-90",
-            completed && "rotate-180"
+            'transition-transform duration-200',
+            isHolding && 'rotate-90',
+            completed && 'rotate-180',
           )}
         />
         <span className="sr-only">Hold to delete</span>

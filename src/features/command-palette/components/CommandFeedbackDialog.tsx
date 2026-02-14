@@ -130,9 +130,7 @@ export default function CommandFeedbackForm() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="font-light">
-                  Screenshots (optional)
-                </Label>
+                <Label className="font-light">Screenshots (optional)</Label>
                 <FileDropzone
                   onFilesSelected={handleScreenshotsSelected}
                   disabled={false}

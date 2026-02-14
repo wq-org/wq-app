@@ -46,7 +46,10 @@ export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: Top
           className="h-full bg-gray-300"
         />
         <div onClick={(e) => e.stopPropagation()}>
-          <HoldToDeleteIconButton size="xs" onDelete={() => onDelete(topic)} />
+          <HoldToDeleteIconButton
+            size="xs"
+            onDelete={() => onDelete(topic)}
+          />
         </div>
       </div>
     </>
