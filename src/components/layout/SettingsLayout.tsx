@@ -101,9 +101,9 @@ export default function SettingsLayout({
 
   return (
     <>
-      <Navigation>
+      <AppNavigation>
         <PageTitle />
-      </Navigation>
+      </AppNavigation>
       <div className="w-screen h-screen">
         <section>
           <Container className="flex flex-col items-start w-full gap-3">
