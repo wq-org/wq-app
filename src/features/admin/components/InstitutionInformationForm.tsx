@@ -13,36 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-export type InstitutionType = 'school' | 'university' | 'college' | 'organization' | 'other'
-export type InstitutionStatus = 'active' | 'inactive' | 'suspended' | 'pending'
-
-interface AddressJsonb {
-  street?: string
-  city?: string
-  state?: string
-  country?: string
-  postalCode?: string
-}
-
-interface SocialLinks {
-  linkedin?: string
-  instagram?: string
-}
-
-export interface InstitutionFormData {
-  name: string
-  slug: string
-  type: InstitutionType | ''
-  status: InstitutionStatus
-  description: string
-  email: string
-  website: string
-  address: AddressJsonb
-  socialLinks: SocialLinks
-  imageUrl: string
-  imageFile?: File | null
-}
+import type {
+  InstitutionType,
+  InstitutionStatus,
+  InstitutionFormData,
+  AddressJsonb,
+} from '@/features/admin/types/institution.types'
 
 const INSTITUTION_TYPES: { value: InstitutionType; label: string }[] = [
   { value: 'school', label: 'School' },
@@ -87,19 +63,16 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormProps) {
+export default function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
   const [formData, setFormData] = useState<InstitutionFormData>(initialFormData)
 
-  const handleNameChange = useCallback(
-    (name: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        name,
-        slug: prev.slug || slugify(name),
-      }))
-    },
-    [],
-  )
+  const handleNameChange = useCallback((name: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      name,
+      slug: prev.slug || slugify(name),
+    }))
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -136,28 +109,51 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
     setFormData((prev) => ({ ...prev, imageFile: file }))
   }
 
-  const isFormValid = formData.name.trim().length > 0
+  const isFormValid =
+    formData.name.trim().length > 0 &&
+    formData.slug.trim().length > 0 &&
+    formData.type !== '' &&
+    formData.description.trim().length > 0 &&
+    formData.email.trim().length > 0 &&
+    formData.website.trim().length > 0 &&
+    (formData.address.street ?? '').trim().length > 0 &&
+    (formData.address.city ?? '').trim().length > 0 &&
+    (formData.address.state ?? '').trim().length > 0 &&
+    (formData.address.postalCode ?? '').trim().length > 0 &&
+    (formData.address.country ?? '').trim().length > 0 &&
+    (formData.socialLinks.linkedin ?? '').trim().length > 0 &&
+    (formData.socialLinks.instagram ?? '').trim().length > 0 &&
+    formData.imageUrl.trim().length > 0
 
   return (
-    <Card className="border shadow-sm">
+    <Card className="border max-w-3xl w-full shadow-sm">
       <form
         className="flex flex-col gap-5"
         onSubmit={handleSubmit}
       >
         <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-semibold text-gray-900">
-            Basic Information
-          </CardTitle>
-          <Text as="p" variant="body" className="text-sm text-gray-500 mt-2 font-normal">
+          <CardTitle className="text-2xl font-semibold text-gray-900">Basic Information</CardTitle>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-gray-500 mt-2 font-normal"
+          >
             Add the basic details for your institution.
           </Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-name" className="font-normal text-gray-700">
+            <Label
+              htmlFor="institution-name"
+              className="font-normal text-gray-700"
+            >
               Institution Name{' '}
-              <Text as="span" variant="small" className="text-red-500">
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
                 *
               </Text>
             </Label>
@@ -172,8 +168,18 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-slug" className="font-normal text-gray-700">
-              Slug
+            <Label
+              htmlFor="institution-slug"
+              className="font-normal text-gray-700"
+            >
+              Slug{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
             </Label>
             <Input
               id="institution-slug"
@@ -182,14 +188,28 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
               onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
               className="text-base py-2 px-3 w-full"
             />
-            <Text as="p" variant="body" className="text-xs text-gray-400">
+            <Text
+              as="p"
+              variant="body"
+              className="text-xs text-gray-400"
+            >
               URL-friendly identifier. Auto-generated from name if left empty.
             </Text>
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-type" className="font-normal text-gray-700">
-              Type
+            <Label
+              htmlFor="institution-type"
+              className="font-normal text-gray-700"
+            >
+              Type{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
             </Label>
             <Select
               value={formData.type || '__none__'}
@@ -200,13 +220,19 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                 }))
               }
             >
-              <SelectTrigger id="institution-type" className="w-full justify-between">
+              <SelectTrigger
+                id="institution-type"
+                className="w-full justify-between"
+              >
                 <SelectValue placeholder="Select institution type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">Select institution type</SelectItem>
                 {INSTITUTION_TYPES.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                  >
                     {label}
                   </SelectItem>
                 ))}
@@ -215,7 +241,10 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-status" className="font-normal text-gray-700">
+            <Label
+              htmlFor="institution-status"
+              className="font-normal text-gray-700"
+            >
               Status
             </Label>
             <Select
@@ -224,12 +253,18 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                 setFormData((prev) => ({ ...prev, status: v as InstitutionStatus }))
               }
             >
-              <SelectTrigger id="institution-status" className="w-full justify-between">
+              <SelectTrigger
+                id="institution-status"
+                className="w-full justify-between"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {INSTITUTION_STATUSES.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                  >
                     {label}
                   </SelectItem>
                 ))}
@@ -238,24 +273,42 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-description" className="font-normal text-gray-700">
-              Description
+            <Label
+              htmlFor="institution-description"
+              className="font-normal text-gray-700"
+            >
+              Description{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
             </Label>
             <Textarea
               id="institution-description"
               placeholder="Enter a brief description of the institution..."
               value={formData.description}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, description: e.target.value }))
-              }
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               rows={4}
               className="resize-none w-full"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-email" className="font-normal text-gray-700">
-              Email
+            <Label
+              htmlFor="institution-email"
+              className="font-normal text-gray-700"
+            >
+              Email{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
             </Label>
             <Input
               id="institution-email"
@@ -268,8 +321,18 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="institution-website" className="font-normal text-gray-700">
-              Website
+            <Label
+              htmlFor="institution-website"
+              className="font-normal text-gray-700"
+            >
+              Website{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
             </Label>
             <Input
               id="institution-website"
@@ -282,11 +345,23 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
           </div>
 
           <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-normal text-gray-700">Address</Label>
+            <Label className="font-normal text-gray-700">
+              Address{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
+            </Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
-                <Label htmlFor="institution-street" className="font-normal text-gray-600 text-sm">
-                  Street
+                <Label
+                  htmlFor="institution-street"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Street *
                 </Label>
                 <Input
                   id="institution-street"
@@ -297,8 +372,11 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="institution-city" className="font-normal text-gray-600 text-sm">
-                  City
+                <Label
+                  htmlFor="institution-city"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  City *
                 </Label>
                 <Input
                   id="institution-city"
@@ -309,8 +387,11 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="institution-state" className="font-normal text-gray-600 text-sm">
-                  State / Province
+                <Label
+                  htmlFor="institution-state"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  State / Province *
                 </Label>
                 <Input
                   id="institution-state"
@@ -321,8 +402,11 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="institution-postalCode" className="font-normal text-gray-600 text-sm">
-                  Postal Code
+                <Label
+                  htmlFor="institution-postalCode"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Postal Code *
                 </Label>
                 <Input
                   id="institution-postalCode"
@@ -333,8 +417,11 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="institution-country" className="font-normal text-gray-600 text-sm">
-                  Country
+                <Label
+                  htmlFor="institution-country"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Country *
                 </Label>
                 <Input
                   id="institution-country"
@@ -348,14 +435,23 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
           </div>
 
           <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-normal text-gray-700">Social Links</Label>
+            <Label className="font-normal text-gray-700">
+              Social Links{' '}
+              <Text
+                as="span"
+                variant="small"
+                className="text-red-500"
+              >
+                *
+              </Text>
+            </Label>
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-linkedin"
                   className="font-normal text-gray-600 text-sm"
                 >
-                  LinkedIn
+                  LinkedIn *
                 </Label>
                 <Input
                   id="institution-linkedin"
@@ -371,7 +467,7 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
                   htmlFor="institution-instagram"
                   className="font-normal text-gray-600 text-sm"
                 >
-                  Instagram
+                  Instagram *
                 </Label>
                 <Input
                   id="institution-instagram"
@@ -399,7 +495,7 @@ export default function InstitutionForm({ onSubmit, onCancel }: InstitutionFormP
               variant="body"
               className="text-xs text-gray-400 mt-1"
             >
-              Optional: Upload an image or enter an image URL
+              Upload an image or enter an image URL
             </Text>
           </div>
         </CardContent>

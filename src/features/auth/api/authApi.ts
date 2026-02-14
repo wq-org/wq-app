@@ -143,7 +143,7 @@ export async function resetPassword(newPassword: string): Promise<void> {
 }
 
 /**
- * Verify email with tokenx
+ * Verify email with token
  */
 export async function verifyEmail(token: string): Promise<void> {
   // TODO: Implement Supabase email verification

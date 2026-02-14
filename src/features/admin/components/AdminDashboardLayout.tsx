@@ -93,17 +93,19 @@ const data = {
 
 const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { profile, loading, getRole } = useUser()
-  //  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+
+  const { email, avatar_url, display_name } = profile || {}
   const userProfile = {
-    name: 'admin',
-    email: 'admin@wq-app.de',
-    avatar: 'https://github.com/hngngn.png',
+    name: display_name || 'admin',
+    email: email || 'admin@wq-app.de',
+    avatar:
+      avatar_url ||
+      'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_brazil_01.png',
   }
   const role = getRole()
 
   useEffect(() => {
     console.log('profile :>> ', profile)
-    console.log('role :>> ', role)
   }, [profile, role])
 
   if (loading) {
@@ -135,7 +137,7 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
           <NavUser user={userProfile} />
         </SidebarFooter>
       </Sidebar>
-      <p>{children}</p>
+      <div className="w-full pt-3.5">{children}</div>
     </Layout>
   )
 }

@@ -161,10 +161,7 @@ export const StepperTrigger = React.forwardRef<
 })
 StepperTrigger.displayName = 'StepperTrigger'
 
-export type StepperIndicatorProps = Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  'children'
-> & {
+export type StepperIndicatorProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> & {
   children?: React.ReactNode | ((props: { step: number }) => React.ReactNode)
 }
 
