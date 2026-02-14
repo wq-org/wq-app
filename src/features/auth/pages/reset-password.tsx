@@ -27,7 +27,6 @@ export default function ResetPasswordPage() {
 
   // Verify that a valid recovery session exists
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>
     let settled = false
 
     const settle = (state: PageState) => {
@@ -54,7 +53,7 @@ export default function ResetPasswordPage() {
     })
 
     // Timeout: if no session detected within the threshold, show invalid state
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       settle('invalid')
     }, SESSION_TIMEOUT_MS)
 
