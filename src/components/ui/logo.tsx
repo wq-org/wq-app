@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
-import faviconImg from '@/assets/images/favicon-32x32.png'
+import faviconImg from '/favicon-32x32.png'
 
 interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
