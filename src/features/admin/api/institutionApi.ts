@@ -1,6 +1,21 @@
 import { supabase } from '@/lib/supabase'
 import type { InstitutionFormData } from '@/features/admin/types/institution.types'
 
+/** Fetch all institutions ordered by creation date (newest first). */
+export async function fetchInstitutions() {
+  const { data, error } = await supabase
+    .from('institutions')
+    .select('id, name, slug, type, status, created_at')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching institutions:', error)
+    throw error
+  }
+
+  return data
+}
+
 /**
  * Create a new institution in the database.
  * Maps form data to the institutions schema (address and social_links as JSONB).
