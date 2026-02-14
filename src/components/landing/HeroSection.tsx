@@ -22,11 +22,11 @@ export function HeroSection() {
           Gebaut für Schulen gemacht für lernende.
         </p>
 
-        <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+        <div className="mt-4 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:max-w-none sm:justify-center">
           <Button
             asChild
             size="lg"
-            className="min-w-[180px] rounded-lg bg-black px-8 py-6 text-base font-medium text-white hover:bg-black/90"
+            className="flex-1 rounded-lg bg-black px-6 py-6 text-base font-medium text-white hover:bg-black/90 sm:min-w-[180px] sm:flex-initial"
           >
             <Link to="/auth/signup">Demo anfordern</Link>
           </Button>
@@ -34,7 +34,7 @@ export function HeroSection() {
             asChild
             size="lg"
             variant="outline"
-            className="min-w-[180px] rounded-lg border-2 border-white bg-transparent px-8 py-6 text-base font-medium text-white hover:bg-white/10 hover:text-white"
+            className="flex-1 rounded-lg border-2 border-white bg-transparent px-6 py-6 text-base font-medium text-white hover:bg-white/10 hover:text-white sm:min-w-[180px] sm:flex-initial"
           >
             <Link to="#kontakt">Kontakt</Link>
           </Button>

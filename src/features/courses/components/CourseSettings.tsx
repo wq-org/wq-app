@@ -7,7 +7,8 @@ import { Switch } from '@/components/ui/switch'
 import { getCourseById, updateCourse, deleteCourse } from '@/features/courses/api/coursesApi'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
-import { Trash2, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
@@ -77,6 +78,18 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
     }
   }
 
+  async function handleDeleteCourse() {
+    try {
+      setDeleting(true)
+      await deleteCourse(courseId)
+      const role = profile?.role || 'teacher'
+      navigate(`/${role}/dashboard`)
+    } catch (error) {
+      console.error('Error deleting course:', error)
+      alert('Failed to delete course. Please try again.')
+      setDeleting(false)
+    }
+  }
   const handleTogglePublished = async (checked: boolean) => {
     try {
       setIsPublished(checked)
@@ -87,23 +100,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       console.error('Error updating publish status:', error)
       setIsPublished(!checked) // Revert on error
       alert('Failed to update publish status. Please try again.')
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
-      return
-    }
-
-    try {
-      setDeleting(true)
-      await deleteCourse(courseId)
-      const role = profile?.role || 'teacher'
-      navigate(`/${role}/dashboard`)
-    } catch (error) {
-      console.error('Error deleting course:', error)
-      alert('Failed to delete course. Please try again.')
-      setDeleting(false)
     }
   }
 
@@ -207,19 +203,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             )}
           </Button>
 
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleting}
-            className="gap-2"
-          >
-            {deleting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-            Delete Course
-          </Button>
+          <HoldToDeleteButton loading={deleting} onDelete={handleDeleteCourse} />
         </div>
       </div>
     </div>

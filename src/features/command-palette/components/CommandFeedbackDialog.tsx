@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Container } from '@/components/shared'
+import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
+import { X } from 'lucide-react'
 
 const FEEDBACK_TYPES = [
   { value: 'feedback', label: 'Feedback' },
@@ -23,11 +25,21 @@ const FEEDBACK_TYPES = [
 export default function CommandFeedbackForm() {
   const [type, setType] = useState<string>('feedback')
   const [message, setMessage] = useState<string>('')
+  const [screenshots, setScreenshots] = useState<File[]>([])
   const [submitted, setSubmitted] = useState(false)
+
+  const handleScreenshotsSelected = useCallback((files: File[]) => {
+    const imageFiles = files.filter((f) => f.type.startsWith('image/'))
+    setScreenshots((prev) => [...prev, ...imageFiles])
+  }, [])
+
+  const handleRemoveScreenshot = (index: number) => {
+    setScreenshots((prev) => prev.filter((_, i) => i !== index))
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // API call or event here
+    // API call or event here - screenshots are available for attachment
     setSubmitted(true)
   }
 
@@ -47,7 +59,7 @@ export default function CommandFeedbackForm() {
   }
 
   return (
-    <Container className="px-0">
+    <Container className="px-0 max-h-[70vh] overflow-y-auto">
       <Card className="w-full shadow-none border-0 px-0 py-0">
         <CardHeader className="pb-2">
           <div className="flex-1">
@@ -116,6 +128,42 @@ export default function CommandFeedbackForm() {
                   required
                   className="h-28 resize-none font-light"
                 />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-light">
+                  Screenshots (optional)
+                </Label>
+                <FileDropzone
+                  onFilesSelected={handleScreenshotsSelected}
+                  disabled={false}
+                  accept="image/*"
+                />
+                {screenshots.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {screenshots.map((file, index) => (
+                      <div
+                        key={`${file.name}-${index}`}
+                        className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-sm"
+                      >
+                        <Text
+                          as="span"
+                          variant="small"
+                          className="truncate max-w-[120px]"
+                        >
+                          {file.name}
+                        </Text>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveScreenshot(index)}
+                          className="rounded-full p-1 hover:bg-muted transition-colors"
+                          aria-label="Remove screenshot"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

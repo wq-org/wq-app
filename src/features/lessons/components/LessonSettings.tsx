@@ -7,8 +7,7 @@ import { Trash2, Loader2 } from 'lucide-react'
 import { updateLesson, deleteLesson } from '@/features/lessons/api/lessonsApi'
 import { useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
-import { ConfirmationDialog } from '@/components/shared'
-import { AlertTriangle } from 'lucide-react'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
@@ -23,7 +22,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
   const { t } = useTranslation('features.lessons')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [originalTitle, setOriginalTitle] = useState('')
@@ -179,34 +177,17 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
               )}
             </Button>
 
-            <Button
+            <HoldToDeleteButton
               variant="destructive"
-              onClick={() => setShowDeleteDialog(true)}
+              onDelete={handleDelete}
               className="gap-2"
+              icon={<Trash2 className="w-4 h-4" />}
             >
-              <Trash2 className="w-4 h-4" />
               {t('settings.deleteAction', { defaultValue: 'Delete Lesson' })}
-            </Button>
+            </HoldToDeleteButton>
           </div>
         </div>
       </div>
-
-      <ConfirmationDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        title={t('settings.deleteDialog.title')}
-        description={t('settings.deleteDialog.description', {
-          title:
-            lesson?.title ||
-            t('settings.deleteDialog.fallbackTitle', { defaultValue: 'this lesson' }),
-        })}
-        Icon={AlertTriangle}
-        onConfirm={handleDelete}
-        onCancel={() => setShowDeleteDialog(false)}
-        confirmText={t('settings.deleteDialog.confirm')}
-        cancelText={t('settings.deleteDialog.cancel')}
-        confirmVariant="destructive"
-      />
     </>
   )
 }

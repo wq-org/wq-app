@@ -127,7 +127,7 @@ export default function Navigation({
         {/* Desktop nav */}
         <NavigationMenu
           viewport={false}
-          className="hidden flex-1 items-center justify-center md:flex"
+          className="hidden flex-1 items-center justify-center lg:flex"
         >
           <NavigationMenuList className="ml-0 flex flex-1 flex-wrap justify-center gap-1">
             {navItems.map((item) => (
@@ -188,7 +188,7 @@ export default function Navigation({
             type="button"
             aria-label={mobileOpen ? 'Menü schließen' : 'Menü öffnen'}
             onClick={() => setMobileOpen((o) => !o)}
-            className="-mr-2 flex p-2 md:hidden"
+            className="-mr-2 flex p-2 lg:hidden"
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -197,7 +197,7 @@ export default function Navigation({
 
       {/* Mobile nav - scrollable */}
       {mobileOpen && (
-        <nav className="border-t bg-background/80 backdrop-blur-md md:hidden">
+        <nav className="border-t bg-background/80 backdrop-blur-md lg:hidden">
           <div className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
             <ul className="flex flex-col gap-0.5 p-4">
               {navItems.map((item) =>

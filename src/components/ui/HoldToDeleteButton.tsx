@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button'
 import type { VariantProps } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-variants'
 import { Text } from '@/components/ui/text'
+import Spinner from './spinner'
 
 type HoldToDeleteVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
 interface HoldToDeleteButtonProps extends Omit<React.ComponentProps<typeof Button>, 'variant'> {
   onDelete?: () => void
   holdDuration?: number
+  loading?: boolean
   variant?: HoldToDeleteVariant
   /** Optional icon (e.g. Check for confirm). Defaults to Trash2. */
   icon?: React.ReactNode
@@ -49,6 +51,7 @@ function HoldToDeleteButton({
   holdDuration = 3000,
   children,
   icon,
+  loading = false,
   ...props
 }: HoldToDeleteButtonProps) {
   const [isHolding, setIsHolding] = React.useState(false)
@@ -136,7 +139,16 @@ function HoldToDeleteButton({
           isHolding && contentWhenHoldingClass,
         )}
       >
-        {icon ?? <Trash2 className="size-5 shrink-0" />}
+        {icon ??
+          (!loading ? (
+            <Trash2 className="size-5 shrink-0" />
+          ) : (
+            <Spinner
+              size="sm"
+              color="gray"
+            />
+          ))}
+
         <Text
           as="span"
           variant="small"

@@ -1,10 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Check, X, AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { ConfirmationDialog } from '@/components/shared'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Check } from 'lucide-react'
+import { HoldToDeleteIconButton } from '@/components/ui/holdDeleteIconButton'
 import { Text } from '@/components/ui/text'
 
 export interface Topic {
@@ -21,23 +18,6 @@ interface TopicBadgeProps {
 }
 
 export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: TopicBadgeProps) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const { t } = useTranslation('features.courses')
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setShowDeleteDialog(true)
-  }
-
-  const handleConfirmDelete = () => {
-    onDelete(topic)
-    setShowDeleteDialog(false)
-  }
-
-  const handleCancelDelete = () => {
-    setShowDeleteDialog(false)
-  }
-
   return (
     <>
       <div
@@ -65,29 +45,10 @@ export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: Top
           orientation="vertical"
           className="h-full bg-gray-300"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleDeleteClick}
-        >
-          <X className="w-4 h-4 text-red-500" />
-        </Button>
+        <div onClick={(e) => e.stopPropagation()}>
+          <HoldToDeleteIconButton size="xs" onDelete={() => onDelete(topic)} />
+        </div>
       </div>
-
-      <ConfirmationDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        title={t('topic.deleteDialog.title')}
-        description={t('topic.deleteDialog.description', {
-          name: topic.name,
-        })}
-        Icon={AlertTriangle}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        confirmText={t('topic.deleteDialog.confirm')}
-        cancelText={t('topic.deleteDialog.cancel')}
-        confirmVariant="destructive"
-      />
     </>
   )
 }
