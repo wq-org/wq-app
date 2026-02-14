@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import backgroundImg from '@/assets/images/background_img.png'
+import { BACKGROUND_SCHOOL } from '@/lib/constants'
 
 export function HeroSection() {
   return (
     <section
       className="relative flex h-screen min-h-screen flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-6"
-      style={{ backgroundImage: `url(${backgroundImg})` }}
+      style={{ backgroundImage: `url(${BACKGROUND_SCHOOL})` }}
     >
       {/* Overlay for better text readability */}
       <div

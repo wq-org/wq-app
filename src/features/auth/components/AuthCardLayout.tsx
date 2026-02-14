@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 import { cn } from '@/lib/utils'
-import backgroundImg from '@/assets/images/background_human.png'
+import { BACKGROUND_HUMAN } from '@/lib/constants'
 
 interface AuthCardLayoutProps {
   children: React.ReactNode
@@ -14,7 +14,7 @@ export default function AuthCardLayout({ children, backTo = '/', className }: Au
   return (
     <div
       className="relative flex min-h-screen items-center justify-center bg-cover bg-center bg-no-repeat p-4"
-      style={{ backgroundImage: `url(${backgroundImg})` }}
+      style={{ backgroundImage: `url(${BACKGROUND_HUMAN})` }}
     >
       {/* Blur overlay */}
       <div
@@ -33,7 +33,7 @@ export default function AuthCardLayout({ children, backTo = '/', className }: Au
         {/* Left panel - image */}
         <div className="hidden w-[40%] md:block">
           <img
-            src={backgroundImg}
+            src={BACKGROUND_HUMAN}
             alt=""
             className="h-full w-full object-cover"
             aria-hidden

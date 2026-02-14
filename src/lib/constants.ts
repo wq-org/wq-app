@@ -1,5 +1,11 @@
 export const AVATAR_PLACEHOLDER_SRC = 'https://github.com/shadcn.png'
 
+// Background Images
+export const BACKGROUND_HUMAN =
+  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/background_human.png'
+export const BACKGROUND_SCHOOL =
+  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/background_img.png'
+
 // Course Constants
 export const DEFAULT_COURSE_IMAGE =
   'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/sign/backgrounds/bg-blue.jpeg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yOWUyMTMxYy0yMTA3LTQ0MTktOGUyZi00NzliNWU3MmZkMjIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiYWNrZ3JvdW5kcy9iZy1ibHVlLmpwZWciLCJpYXQiOjE3NzA0MTMzNDgsImV4cCI6MTgwMTk0OTM0OH0.Vo1yapAnsQX0eCjIcbhJenVVKKNWMpp1JeSz6Yl3K7U'
