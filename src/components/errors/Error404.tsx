@@ -26,7 +26,7 @@ const Error404 = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-white to-gray-50 p-4">
       <div className="text-center max-w-xl">
         <Ghost
           className="w-32 h-32 mx-auto mb-8 text-black animate-bounce"
