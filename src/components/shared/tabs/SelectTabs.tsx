@@ -45,10 +45,7 @@ export default function SelectTabs({
             )}
           >
             <Icon
-              className={cn(
-                isCompact ? 'size-4' : '',
-                isActive ? 'text-black' : 'text-black/40',
-              )}
+              className={cn(isCompact ? 'size-4' : '', isActive ? 'text-black' : 'text-black/40')}
             />
             <Text
               as="span"

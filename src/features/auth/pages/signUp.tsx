@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field'
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { GraduationCap, Presentation, Building2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -94,10 +100,18 @@ export default function SignUpPage() {
       <div className="flex flex-col gap-6">
         {/* Title */}
         <div className="flex flex-col items-center gap-1 text-center">
-          <Text as="h1" variant="h1" className="text-2xl font-semibold">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-2xl font-semibold"
+          >
             {t('signUp.title')}
           </Text>
-          <Text as="p" variant="body" className="text-sm text-muted-foreground text-balance">
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground text-balance"
+          >
             {t('signUp.subtitle')}
           </Text>
         </div>
@@ -112,7 +126,10 @@ export default function SignUpPage() {
         />
 
         {/* Form */}
-        <form onSubmit={handleOnSubmitSignUp} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleOnSubmitSignUp}
+          className="flex flex-col gap-4"
+        >
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="email">{t('signUp.email')}</FieldLabel>

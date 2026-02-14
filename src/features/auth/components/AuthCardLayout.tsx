@@ -17,7 +17,10 @@ export default function AuthCardLayout({ children, backTo = '/', className }: Au
       style={{ backgroundImage: `url(${backgroundImg})` }}
     >
       {/* Blur overlay */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" aria-hidden />
+      <div
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+        aria-hidden
+      />
 
       {/* Card */}
       <div

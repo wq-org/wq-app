@@ -7,8 +7,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
+import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu-styles'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { Menu, X } from 'lucide-react'
@@ -24,8 +24,16 @@ const navItems: NavItem[] = [
   {
     label: 'Problem & Lösung',
     items: [
-      { title: 'Herausforderung', description: 'Die Bildungslandschaft im Wandel.', href: '#problem' },
-      { title: 'Unsere Lösung', description: 'Gamifizierte Lernplattform für nachhaltigen Erfolg.', href: '#loesung' },
+      {
+        title: 'Herausforderung',
+        description: 'Die Bildungslandschaft im Wandel.',
+        href: '#problem',
+      },
+      {
+        title: 'Unsere Lösung',
+        description: 'Gamifizierte Lernplattform für nachhaltigen Erfolg.',
+        href: '#loesung',
+      },
     ],
   },
   {
@@ -33,13 +41,21 @@ const navItems: NavItem[] = [
     items: [
       { title: 'Lehrende', description: 'Für Pädagogen und Dozenten.', href: '#lehrende' },
       { title: 'Lernende', description: 'Für Studierende und Schüler:innen.', href: '#lernende' },
-      { title: 'Institutionen', description: 'Für Schulen und Hochschulen.', href: '#institutionen' },
+      {
+        title: 'Institutionen',
+        description: 'Für Schulen und Hochschulen.',
+        href: '#institutionen',
+      },
     ],
   },
   {
     label: 'Produkt (Plattform)',
     items: [
-      { title: 'Plattform-Features', description: 'Übersicht aller Funktionen.', href: '#features' },
+      {
+        title: 'Plattform-Features',
+        description: 'Übersicht aller Funktionen.',
+        href: '#features',
+      },
       { title: 'Spiele-Editor', description: 'Eigene Lernspiele erstellen.', href: '#editor' },
       { title: 'Analytics', description: 'Fortschritt und Engagement messen.', href: '#analytics' },
     ],
@@ -47,7 +63,11 @@ const navItems: NavItem[] = [
   {
     label: 'Didaktik & Evidenz',
     items: [
-      { title: 'Didaktisches Konzept', description: 'Wissenschaftlich fundierter Ansatz.', href: '#didaktik' },
+      {
+        title: 'Didaktisches Konzept',
+        description: 'Wissenschaftlich fundierter Ansatz.',
+        href: '#didaktik',
+      },
       { title: 'Evidenzbasierung', description: 'Studien und Evaluierungen.', href: '#evidenz' },
     ],
   },
@@ -62,7 +82,11 @@ const navItems: NavItem[] = [
     label: 'Kontakt / Demo',
     href: '#kontakt',
     items: [
-      { title: 'Kontakt aufnehmen', description: 'Schreiben Sie uns eine Nachricht.', href: '#kontakt' },
+      {
+        title: 'Kontakt aufnehmen',
+        description: 'Schreiben Sie uns eine Nachricht.',
+        href: '#kontakt',
+      },
       { title: 'Demo buchen', description: 'Lernen Sie die Plattform kennen.', href: '#demo' },
     ],
   },
@@ -92,12 +116,19 @@ export default function Navigation({
       )}
     >
       <div className="container mx-auto flex h-14 max-w-6xl flex-wrap items-center justify-between gap-4 px-4">
-        <Link to="/" className="flex shrink-0 items-center" aria-label="WQ Health Home">
+        <Link
+          to="/"
+          className="flex shrink-0 items-center"
+          aria-label="WQ Health Home"
+        >
           <Logo showText={false} />
         </Link>
 
         {/* Desktop nav */}
-        <NavigationMenu viewport={false} className="hidden flex-1 items-center justify-center md:flex">
+        <NavigationMenu
+          viewport={false}
+          className="hidden flex-1 items-center justify-center md:flex"
+        >
           <NavigationMenuList className="ml-0 flex flex-1 flex-wrap justify-center gap-1">
             {navItems.map((item) => (
               <NavigationMenuItem key={item.label}>
@@ -115,7 +146,9 @@ export default function Navigation({
                                 href={subItem.href}
                                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                               >
-                                <div className="text-sm font-medium leading-none">{subItem.title}</div>
+                                <div className="text-sm font-medium leading-none">
+                                  {subItem.title}
+                                </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                   {subItem.description}
                                 </p>
@@ -128,7 +161,10 @@ export default function Navigation({
                   </>
                 ) : (
                   <NavigationMenuLink asChild>
-                    <a href={item.href ?? '#'} className={cn(navigationMenuTriggerStyle())}>
+                    <a
+                      href={item.href ?? '#'}
+                      className={cn(navigationMenuTriggerStyle())}
+                    >
                       {item.label}
                     </a>
                   </NavigationMenuLink>
@@ -141,7 +177,10 @@ export default function Navigation({
         {/* CTA + mobile toggle */}
         <div className="flex shrink-0 items-center gap-2">
           {showCtaButton && (
-            <Button asChild size="sm">
+            <Button
+              asChild
+              size="sm"
+            >
               <Link to="/auth/signup">{ctaLabel}</Link>
             </Button>
           )}

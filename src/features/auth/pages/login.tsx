@@ -58,8 +58,7 @@ export default function LoginPage() {
     }
   }
 
-  const isFormValid =
-    email.trim() !== '' && validateEmail(email) && password.trim() !== ''
+  const isFormValid = email.trim() !== '' && validateEmail(email) && password.trim() !== ''
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -146,10 +145,18 @@ export default function LoginPage() {
       <div className="flex flex-col gap-6">
         {/* Title */}
         <div className="flex flex-col items-center gap-1 text-center">
-          <Text as="h1" variant="h1" className="text-2xl font-semibold">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-2xl font-semibold"
+          >
             {t('login.title')}
           </Text>
-          <Text as="p" variant="body" className="text-sm text-muted-foreground text-balance">
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground text-balance"
+          >
             {t('login.subtitle')}
           </Text>
         </div>
@@ -164,7 +171,10 @@ export default function LoginPage() {
         />
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleLogin}
+          className="flex flex-col gap-4"
+        >
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="email">{t('login.email')}</FieldLabel>

@@ -23,7 +23,11 @@ export function HeroSection() {
         </p>
 
         <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
-          <Button asChild size="lg" className="min-w-[180px] rounded-lg bg-black px-8 py-6 text-base font-medium text-white hover:bg-black/90">
+          <Button
+            asChild
+            size="lg"
+            className="min-w-[180px] rounded-lg bg-black px-8 py-6 text-base font-medium text-white hover:bg-black/90"
+          >
             <Link to="/auth/signup">Demo anfordern</Link>
           </Button>
           <Button
