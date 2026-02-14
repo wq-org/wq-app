@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Navigation } from '@/components/shared'
+import { Container, AppNavigation } from '@/components/shared'
 import CommandPalette from '@/features/command-palette/components/CommandPalette'
 import { cn } from '@/lib/utils'
 import type { Roles, CommandBarContext } from './config'
@@ -19,7 +19,7 @@ function AppWrapper({ children, role, className, commandBarContext }: AppWrapper
 
   return (
     <>
-      <Navigation />
+      <AppNavigation />
       <Container className={cn(className)}>{children}</Container>
       <CommandPalette commandBarContext={effectiveContext} />
     </>

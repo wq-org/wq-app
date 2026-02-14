@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Container, Navigation } from '@/components/shared'
+import { Container, AppNavigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
@@ -85,9 +85,9 @@ export default function SettingsLayout({
   if (loading) {
     return (
       <>
-        <Navigation>
+        <AppNavigation>
           <PageTitle />
-        </Navigation>
+        </AppNavigation>
         <div className="w-screen h-screen flex items-center justify-center">
           <Spinner
             variant="gray"

@@ -1,162 +1,41 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Logo } from '@/components/ui/logo'
-import { Menu, X } from 'lucide-react'
-import pixelPeopleImg from '@/assets/images/pixel_people.png'
-
-const menuItems = [
-  { name: 'Features', href: '#features' },
-  { name: 'Solution', href: '#solution' },
-  { name: 'Pricing', href: '#pricing' },
-  { name: 'About', href: '#about' },
-]
+import backgroundImg from '@/assets/images/background_img.png'
 
 export function HeroSection() {
-  const [menuState, setMenuState] = useState(false)
-
   return (
-    <>
-      <header>
-        <nav
-          data-state={menuState ? 'active' : ''}
-          className="fixed z-20 w-full border-b border-dashed bg-white backdrop-blur md:relative dark:bg-zinc-950/50 lg:dark:bg-transparent"
-        >
-          <div className="m-auto max-w-5xl px-6">
-            <div className="flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
-              <div className="flex w-full justify-between lg:w-auto">
-                <Link
-                  to="/"
-                  aria-label="home"
-                  className="flex items-center space-x-2"
-                >
-                  <Logo />
-                </Link>
+    <section
+      className="relative flex h-screen min-h-screen flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-6"
+      style={{ backgroundImage: `url(${backgroundImg})` }}
+    >
+      {/* Overlay for better text readability */}
+      <div
+        className="absolute inset-0 bg-black/30"
+        aria-hidden
+      />
 
-                <button
-                  onClick={() => setMenuState(!menuState)}
-                  aria-label={menuState ? 'Close Menu' : 'Open Menu'}
-                  className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
-                >
-                  <Menu className="m-auto size-6 duration-200 data-[state=active]:rotate-180 data-[state=active]:scale-0 data-[state=active]:opacity-0" />
-                  <X className="absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200 data-[state=active]:rotate-0 data-[state=active]:scale-100 data-[state=active]:opacity-100" />
-                </button>
-              </div>
+      <div className="relative z-10 flex flex-col items-center justify-center gap-6 text-center">
+        <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-white drop-shadow-md sm:text-4xl md:text-5xl lg:text-6xl">
+          Interaktives Lernen für echte Kompetenz
+        </h1>
+        <p className="max-w-2xl text-lg font-medium text-white/95 drop-shadow-sm sm:text-xl">
+          Gebaut für Schulen gemacht für lernende.
+        </p>
 
-              <div
-                className={`mb-6 w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border bg-background p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent ${
-                  menuState ? 'flex' : 'hidden'
-                }`}
-              >
-                <div className="lg:pr-4">
-                  <ul className="space-y-6 text-base lg:flex lg:gap-8 lg:space-y-0 lg:text-sm">
-                    {menuItems.map((item, index) => (
-                      <li key={index}>
-                        <a
-                          href={item.href}
-                          className="block text-muted-foreground duration-150 hover:text-accent-foreground"
-                        >
-                          <span>{item.name}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit lg:border-l lg:pl-6">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                  >
-                    <Link to="/get-started">
-                      <span>Login</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="sm"
-                  >
-                    <Link to="/get-started">
-                      <span>Get Started</span>
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
-      </header>
-
-      <main className="overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0 isolate hidden lg:block"
-        >
-          <div className="absolute left-0 top-0 h-[800px] w-[560px] -translate-y-[350px] -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.08)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]" />
-          <div className="absolute left-0 top-0 h-[800px] w-60 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] transform-[translate(5%,-50%)]" />
-          <div className="absolute left-0 top-0 h-[800px] w-60 -translate-y-[350px] -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
+        <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+          <Button asChild size="lg" className="min-w-[180px] rounded-lg bg-black px-8 py-6 text-base font-medium text-white hover:bg-black/90">
+            <Link to="/auth/signup">Demo anfordern</Link>
+          </Button>
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="min-w-[180px] rounded-lg border-2 border-white bg-transparent px-8 py-6 text-base font-medium text-white hover:bg-white/10 hover:text-white"
+          >
+            <Link to="#kontakt">Kontakt</Link>
+          </Button>
         </div>
-
-        <section>
-          <div className="relative pt-24">
-            <div className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"></div>
-            <div className="mx-auto max-w-5xl px-6">
-              <div className="sm:mx-auto lg:mr-auto lg:mt-0">
-                <h1 className="mt-8 max-w-2xl text-balance text-5xl font-medium md:text-6xl lg:mt-16">
-                  Motion Aware Learning for next Generation Health Education
-                </h1>
-                <p className="mt-8 max-w-xl text-pretty text-lg">
-                  Build interactive health education games with Image Term Match, Image Pin Mark,
-                  and Paragraph Line Select. Create custom scenarios, track progress, and transform
-                  health literacy through serious games.
-                </p>
-
-                <div
-                  key={1}
-                  className="rounded-[calc(var(--radius-xl)+0.125rem)] border bg-foreground/10 p-0.5"
-                >
-                  <Button
-                    asChild
-                    size="lg"
-                    className="rounded-xl px-5 text-base"
-                  >
-                    <Link to="/get-started">
-                      <span className="text-nowrap">Start Building</span>
-                    </Link>
-                  </Button>
-                </div>
-                <Button
-                  key={2}
-                  asChild
-                  size="lg"
-                  variant="ghost"
-                  className="h-10.5 rounded-xl px-5 text-base"
-                >
-                  <Link to="/get-started">
-                    <span className="text-nowrap">Learn More</span>
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            <div
-              className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20"
-              style={{
-                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
-              }}
-            >
-              <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border bg-background p-4 shadow-lg shadow-zinc-950/15 ring-1 ring-background">
-                <img
-                  className="relative aspect-15/8 w-full rounded-2xl border border-border/25 object-cover"
-                  src={pixelPeopleImg}
-                  alt="WQ Health platform preview"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-    </>
+      </div>
+    </section>
   )
 }

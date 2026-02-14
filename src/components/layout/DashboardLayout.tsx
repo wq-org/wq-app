@@ -1,4 +1,4 @@
-import { Navigation } from '@/components/shared'
+import { AppNavigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -70,9 +70,9 @@ export default function DashboardLayout({
 
   return (
     <div>
-      <Navigation>
+      <AppNavigation>
         <PageTitle />
-      </Navigation>
+      </AppNavigation>
       <div className="flex flex-col gap-8 mb-8">
         <section className="rounded-2xl  h-full">
           <Container className="flex flex-col gap-4">

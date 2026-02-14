@@ -4,7 +4,6 @@ import {
   LoginPage,
   SignUpPage,
   VerifyEmailPage,
-  RoleSelectionPage,
   ForgotPasswordPage,
   ResetPasswordPage,
 } from './features/auth'
@@ -77,10 +76,6 @@ function App() {
             <Route
               path="/"
               element={<Home />}
-            />
-            <Route
-              path="/get-started"
-              element={<RoleSelectionPage />}
             />
             <Route
               path="/test"

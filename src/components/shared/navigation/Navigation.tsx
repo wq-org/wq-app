@@ -1,107 +1,202 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
-import { Bell, LogOut, ChevronLeft } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { useNavigate } from 'react-router'
+import { Logo } from '@/components/ui/logo'
+import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import NotificationPanel from '@/features/notification/components/NotificationPanel'
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher'
-import { useUser } from '@/contexts/user'
-import { toast } from 'sonner'
-import { Text } from '@/components/ui/text'
 
-interface NavigationProps {
-  currentPageName?: string
-  children?: React.ReactNode
-  className?: string
-  authenticated?: boolean
+interface NavItem {
+  label: string
+  href?: string
+  items?: { title: string; description: string; href: string }[]
 }
 
-const Navigation = ({
-  currentPageName,
-  children,
-  className,
-  authenticated = true,
-}: NavigationProps) => {
-  const navigate = useNavigate()
-  const { logout } = useUser()
+const navItems: NavItem[] = [
+  {
+    label: 'Problem & Lösung',
+    items: [
+      { title: 'Herausforderung', description: 'Die Bildungslandschaft im Wandel.', href: '#problem' },
+      { title: 'Unsere Lösung', description: 'Gamifizierte Lernplattform für nachhaltigen Erfolg.', href: '#loesung' },
+    ],
+  },
+  {
+    label: 'Für wen?',
+    items: [
+      { title: 'Lehrende', description: 'Für Pädagogen und Dozenten.', href: '#lehrende' },
+      { title: 'Lernende', description: 'Für Studierende und Schüler:innen.', href: '#lernende' },
+      { title: 'Institutionen', description: 'Für Schulen und Hochschulen.', href: '#institutionen' },
+    ],
+  },
+  {
+    label: 'Produkt (Plattform)',
+    items: [
+      { title: 'Plattform-Features', description: 'Übersicht aller Funktionen.', href: '#features' },
+      { title: 'Spiele-Editor', description: 'Eigene Lernspiele erstellen.', href: '#editor' },
+      { title: 'Analytics', description: 'Fortschritt und Engagement messen.', href: '#analytics' },
+    ],
+  },
+  {
+    label: 'Didaktik & Evidenz',
+    items: [
+      { title: 'Didaktisches Konzept', description: 'Wissenschaftlich fundierter Ansatz.', href: '#didaktik' },
+      { title: 'Evidenzbasierung', description: 'Studien und Evaluierungen.', href: '#evidenz' },
+    ],
+  },
+  {
+    label: 'Über WQ',
+    items: [
+      { title: 'Über uns', description: 'Unser Team und unsere Vision.', href: '#ueber-uns' },
+      { title: 'Partner', description: 'Kooperationen und Netzwerk.', href: '#partner' },
+    ],
+  },
+  {
+    label: 'Kontakt / Demo',
+    href: '#kontakt',
+    items: [
+      { title: 'Kontakt aufnehmen', description: 'Schreiben Sie uns eine Nachricht.', href: '#kontakt' },
+      { title: 'Demo buchen', description: 'Lernen Sie die Plattform kennen.', href: '#demo' },
+    ],
+  },
+]
 
-  const handleOnClickLogout = async () => {
-    try {
-      await logout()
-      toast.success('Logged out successfully')
-      navigate('/')
-    } catch (error) {
-      console.error('Logout error:', error)
-      toast.error('Failed to logout. Please try again.')
-    }
-  }
+const linkClass =
+  'block w-full rounded-sm px-3 py-2.5 text-left text-sm text-foreground no-underline outline-none transition-colors hover:bg-muted/80'
+
+interface NavigationProps {
+  showCtaButton?: boolean
+  ctaLabel?: 'Pilot starten' | 'Demo anfragen'
+  className?: string
+}
+
+export default function Navigation({
+  showCtaButton = true,
+  ctaLabel = 'Pilot starten',
+  className,
+}: NavigationProps) {
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div
+    <header
       className={cn(
-        'sticky top-0 z-40 w-full',
-
+        'sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60',
         className,
       )}
     >
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between gap-4">
-          {/* Left Section - Back button and Title */}
-          <div className="flex items-center gap-3 rounded-full border bg-card/50 backdrop-blur px-4 py-2 shadow-sm">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => window.history.back()}
-              className="h-8 w-8 rounded-full hover:bg-accent"
-            >
-              <ChevronLeft className="h-5 w-5 text-gray-600" />
-            </Button>
-            <div className="h-6 w-px bg-border" />
-            <Text
-              as="h1"
-              variant="h1"
-              className="text-lg font-normal text-gray-700"
-            >
-              {children || currentPageName || 'Page Title'}
-            </Text>
-          </div>
+      <div className="container mx-auto flex h-14 max-w-6xl flex-wrap items-center justify-between gap-4 px-4">
+        <Link to="/" className="flex shrink-0 items-center" aria-label="WQ Health Home">
+          <Logo showText={false} />
+        </Link>
 
-          {/* Right Section - Language Switcher, Notification and Logout */}
-          <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm">
-            <LanguageSwitcher />
-            {authenticated && (
-              <>
-                <div className="h-6 w-px bg-border" />
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10 rounded-full hover:bg-accent"
-                    >
-                      <Bell className="h-5 w-5 text-gray-600" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-90 h-120 rounded-4xl backdrop-blur overflow-hidden mr-20 mt-4">
-                    <NotificationPanel />
-                  </PopoverContent>
-                </Popover>
-                <div className="h-6 w-px bg-border" />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleOnClickLogout}
-                  className="h-10 w-10 rounded-full hover:bg-accent hover:text-red-600"
-                >
-                  <LogOut className="h-5 w-5 text-gray-600" />
-                </Button>
-              </>
-            )}
-          </div>
+        {/* Desktop nav */}
+        <NavigationMenu viewport={false} className="hidden flex-1 items-center justify-center md:flex">
+          <NavigationMenuList className="ml-0 flex flex-1 flex-wrap justify-center gap-1">
+            {navItems.map((item) => (
+              <NavigationMenuItem key={item.label}>
+                {item.items && item.items.length > 0 ? (
+                  <>
+                    <NavigationMenuTrigger className="bg-transparent [&_svg]:hidden">
+                      {item.label}
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                        {item.items.map((subItem) => (
+                          <li key={subItem.title}>
+                            <NavigationMenuLink asChild>
+                              <a
+                                href={subItem.href}
+                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                              >
+                                <div className="text-sm font-medium leading-none">{subItem.title}</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                  {subItem.description}
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  </>
+                ) : (
+                  <NavigationMenuLink asChild>
+                    <a href={item.href ?? '#'} className={cn(navigationMenuTriggerStyle())}>
+                      {item.label}
+                    </a>
+                  </NavigationMenuLink>
+                )}
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
+
+        {/* CTA + mobile toggle */}
+        <div className="flex shrink-0 items-center gap-2">
+          {showCtaButton && (
+            <Button asChild size="sm">
+              <Link to="/auth/signup">{ctaLabel}</Link>
+            </Button>
+          )}
+          <button
+            type="button"
+            aria-label={mobileOpen ? 'Menü schließen' : 'Menü öffnen'}
+            onClick={() => setMobileOpen((o) => !o)}
+            className="-mr-2 flex p-2 md:hidden"
+          >
+            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* Mobile nav - scrollable */}
+      {mobileOpen && (
+        <nav className="border-t bg-background/80 backdrop-blur-md md:hidden">
+          <div className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
+            <ul className="flex flex-col gap-0.5 p-4">
+              {navItems.map((item) =>
+                item.items && item.items.length > 0 ? (
+                  <li key={item.label}>
+                    <span className="block px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {item.label}
+                    </span>
+                    <ul className="mb-2 flex flex-col">
+                      {item.items.map((subItem) => (
+                        <li key={subItem.title}>
+                          <a
+                            href={subItem.href}
+                            onClick={() => setMobileOpen(false)}
+                            className={linkClass}
+                          >
+                            {subItem.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ) : (
+                  <li key={item.label}>
+                    <a
+                      href={item.href ?? '#'}
+                      onClick={() => setMobileOpen(false)}
+                      className={linkClass}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
+        </nav>
+      )}
+    </header>
   )
 }
-
-export default Navigation

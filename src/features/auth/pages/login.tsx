@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import {
@@ -8,10 +8,9 @@ import {
   FieldLabel,
   FieldSeparator,
 } from '@/components/ui/field'
-import { useNavigate, useLocation } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { Presentation, UserIcon } from 'lucide-react'
-import { useState } from 'react'
+import { GraduationCap, Presentation, Building2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authApi'
 import { DotWaveLoader } from '@/components/shared'
 import { useTranslation } from 'react-i18next'
@@ -24,26 +23,30 @@ import {
   type UserRole,
 } from '@/features/auth/types/auth.types'
 import { validateEmail } from '@/lib/validations'
+import AuthCardLayout from '../components/AuthCardLayout'
+import SelectTabs from '@/components/shared/tabs/SelectTabs'
+import type { TabItem } from '@/components/shared/tabs/SelectTabs'
 
-export default function LoginPage({ className }: React.ComponentProps<'form'>) {
+const roleTabs: TabItem[] = [
+  { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
+  { id: USER_ROLES.TEACHER, icon: Presentation, title: 'Teacher' },
+  { id: USER_ROLES.INSTITUTION_ADMIN, icon: Building2, title: 'Institution' },
+]
+
+export default function LoginPage() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const { t } = useTranslation('auth')
+  const { pendingRole, setPendingRole } = useUser()
+
+  const [selectedRole, setSelectedRole] = useState(pendingRole || USER_ROLES.STUDENT)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
 
-  const { t } = useTranslation('auth')
-  const { pendingRole } = useUser()
-
-  // Single source of truth: context first, then fallback to location.state
-  const role = pendingRole || (location.state as { role?: string })?.role || ''
-
-  // Select icon based on role (pendingRole is teacher | student from role selection)
-  const RoleIcon = role === USER_ROLES.TEACHER ? Presentation : UserIcon
-
-  const goToSignUp = () => {
-    navigate('/auth/signup')
+  const handleRoleChange = (tabId: string) => {
+    setSelectedRole(tabId)
+    setPendingRole(tabId)
   }
 
   const handleEmailChange = (value: string) => {
@@ -55,10 +58,12 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
     }
   }
 
+  const isFormValid =
+    email.trim() !== '' && validateEmail(email) && password.trim() !== ''
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
 
-    // Validate email before submitting
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address')
       return
@@ -68,7 +73,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
 
     try {
       const responseData = await loginUser({ email, password })
-      console.log('responseData :>> ', responseData)
 
       if (responseData.error) {
         toast.error('Login Failed', {
@@ -86,7 +90,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
             .eq('user_id', responseData.user.id)
             .maybeSingle()
 
-          // Check for query errors first
           if (profile.error) {
             console.error('Profile query error:', profile.error)
             toast.warning('Profile Error', {
@@ -96,7 +99,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
             return
           }
 
-          // Check if profile exists
           if (!profile.data) {
             toast.info('Complete Your Profile', {
               description: 'Please complete the onboarding process',
@@ -106,7 +108,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
             return
           }
 
-          // Stricter check: explicitly check for true
           if (profile.data.is_onboarded !== true || !profile.data.role) {
             toast.info('Complete Your Profile', {
               description: 'Please complete the onboarding process',
@@ -119,9 +120,6 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
               description: `Logging you in as ${userRole}`,
               duration: 2000,
             })
-
-            console.log('userRole', dashboardPath)
-            // Wait a bit for UserContext to update before navigating
             setTimeout(() => {
               navigate(dashboardPath, { replace: true })
             }, 700)
@@ -144,102 +142,95 @@ export default function LoginPage({ className }: React.ComponentProps<'form'>) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center px-4">
-      <div className="w-full container mx-auto max-w-lg">
-        <form
-          onSubmit={handleLogin}
-          className={cn('flex flex-col gap-6 h-screen justify-center', className)}
-        >
-          <div className="border p-8 rounded-3xl shadow-lg">
-            <FieldGroup>
-              {role && (
-                <div className="flex justify-center mb-4">
-                  <div className="inline-flex p-3 bg-gray-100 rounded-lg">
-                    <RoleIcon className="h-8 w-8 text-gray-600" />
-                  </div>
-                </div>
+    <AuthCardLayout backTo="/">
+      <div className="flex flex-col gap-6">
+        {/* Title */}
+        <div className="flex flex-col items-center gap-1 text-center">
+          <Text as="h1" variant="h1" className="text-2xl font-semibold">
+            {t('login.title')}
+          </Text>
+          <Text as="p" variant="body" className="text-sm text-muted-foreground text-balance">
+            {t('login.subtitle')}
+          </Text>
+        </div>
+
+        {/* Role Tabs */}
+        <SelectTabs
+          tabs={roleTabs}
+          activeTabId={selectedRole}
+          onTabChange={handleRoleChange}
+          variant="compact"
+          className="justify-center"
+        />
+
+        {/* Form */}
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="email">{t('login.email')}</FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                placeholder={t('common.placeholder.email')}
+                value={email}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                autoComplete="email"
+                name="email"
+                className={`bg-gray-50 ${emailError ? 'border-red-500' : ''}`}
+              />
+              {emailError && (
+                <FieldDescription className="text-red-500 text-sm">{emailError}</FieldDescription>
               )}
-              <div className="flex flex-col items-center gap-1 text-center">
-                <Text
-                  as="h1"
-                  variant="h1"
-                  className="text-2xl font-light"
+            </Field>
+
+            <Field>
+              <div className="flex items-center">
+                <FieldLabel htmlFor="password">{t('login.password')}</FieldLabel>
+                <a
+                  href="/auth/forgot-password"
+                  className="ml-auto text-sm underline-offset-4 hover:underline"
                 >
-                  {t('login.title')}
-                </Text>
-                <Text
-                  as="p"
-                  variant="body"
-                  className="text-muted-foreground text-sm text-balance"
-                >
-                  {t('login.subtitle')}
-                </Text>
+                  {t('login.forgot')}
+                </a>
               </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                name="password"
+                className="bg-gray-50"
+              />
+            </Field>
 
-              <Field>
-                <FieldLabel htmlFor="email">{t('login.email')}</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t('common.placeholder.email')}
-                  value={email}
-                  onChange={(e) => handleEmailChange(e.target.value)}
-                  autoComplete="email"
-                  name="email"
-                  className={emailError ? 'border-red-500' : ''}
-                />
-                {emailError && (
-                  <FieldDescription className="text-red-500 text-sm">{emailError}</FieldDescription>
-                )}
-              </Field>
+            <Field>
+              <Button
+                type="submit"
+                disabled={!isFormValid || isLoading}
+                className="w-full cursor-pointer"
+              >
+                {isLoading ? <DotWaveLoader variant="white" /> : t('login.submit')}
+              </Button>
+            </Field>
 
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">{t('login.password')}</FieldLabel>
-                  <a
-                    href="/auth/forgot-password"
-                    className="ml-auto text-sm underline-offset-4 hover:underline"
-                  >
-                    {t('login.forgot')}
-                  </a>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  name="password"
-                />
-              </Field>
+            <FieldSeparator>{t('login.or')}</FieldSeparator>
 
-              <Field>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="flex items-center"
+            <Field>
+              <FieldDescription className="text-center">
+                {t('login.noAccount')}{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/auth/signup')}
+                  className="underline underline-offset-4 hover:text-primary transition-colors"
                 >
-                  {isLoading ? <DotWaveLoader variant="white" /> : t('login.submit')}
-                </Button>
-              </Field>
-
-              <FieldSeparator>{t('login.or')}</FieldSeparator>
-              <Field>
-                <FieldDescription className="text-center">
-                  {t('login.noAccount')}{' '}
-                  <button
-                    type="button"
-                    onClick={goToSignUp}
-                    className="underline underline-offset-4 hover:text-primary transition-colors"
-                  >
-                    {t('login.signUpLink')}
-                  </button>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
-          </div>
+                  {t('login.signUpLink')}
+                </button>
+              </FieldDescription>
+            </Field>
+          </FieldGroup>
         </form>
       </div>
-    </div>
+    </AuthCardLayout>
   )
 }

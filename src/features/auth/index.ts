@@ -2,7 +2,6 @@
 export { default as LoginPage } from './pages/login'
 export { default as SignUpPage } from './pages/signUp'
 export { default as VerifyEmailPage } from './pages/verify-email'
-export { default as RoleSelectionPage } from './pages/roleSelection'
 export { default as ForgotPasswordPage } from './pages/forgot-password'
 export { default as ResetPasswordPage } from './pages/reset-password'
 
