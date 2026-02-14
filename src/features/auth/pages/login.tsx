@@ -9,45 +9,24 @@ import {
   FieldSeparator,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { GraduationCap, Presentation, Building2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authApi'
 import { DotWaveLoader } from '@/components/shared'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
-import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
-import {
-  getDashboardPathForRole,
-  USER_ROLES,
-  type UserRole,
-} from '@/features/auth/types/auth.types'
+import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
-import SelectTabs from '@/components/shared/tabs/SelectTabs'
-import type { TabItem } from '@/components/shared/tabs/SelectTabs'
-
-const roleTabs: TabItem[] = [
-  { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
-  { id: USER_ROLES.TEACHER, icon: Presentation, title: 'Teacher' },
-  { id: USER_ROLES.INSTITUTION_ADMIN, icon: Building2, title: 'Institution' },
-]
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
-  const { pendingRole, setPendingRole } = useUser()
 
-  const [selectedRole, setSelectedRole] = useState(pendingRole || USER_ROLES.STUDENT)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
-
-  const handleRoleChange = (tabId: string) => {
-    setSelectedRole(tabId)
-    setPendingRole(tabId)
-  }
 
   const handleEmailChange = (value: string) => {
     setEmail(value)
@@ -160,15 +139,6 @@ export default function LoginPage() {
             {t('login.subtitle')}
           </Text>
         </div>
-
-        {/* Role Tabs */}
-        <SelectTabs
-          tabs={roleTabs}
-          activeTabId={selectedRole}
-          onTabChange={handleRoleChange}
-          variant="compact"
-          className="justify-center"
-        />
 
         {/* Form */}
         <form

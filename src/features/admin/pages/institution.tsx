@@ -26,7 +26,10 @@ interface InstitutionRow {
   created_at: string
 }
 
-const STATUS_VARIANT: Record<InstitutionStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const STATUS_VARIANT: Record<
+  InstitutionStatus,
+  'default' | 'secondary' | 'destructive' | 'outline'
+> = {
   active: 'default',
   pending: 'outline',
   inactive: 'secondary',
@@ -63,9 +66,10 @@ export default function AdminInstitution() {
       <div className="flex flex-col gap-6 py-8 px-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-gray-900">Institutions</h1>
-          <Button variant="outline"
-
-           onClick={() => navigate(`/${role}/institution/new-institution`)}>
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/${role}/institution/new-institution`)}
+          >
             New Institution
           </Button>
         </div>
@@ -105,7 +109,9 @@ export default function AdminInstitution() {
                     <TableCell className="capitalize">{inst.type ?? '—'}</TableCell>
                     <TableCell>
                       {inst.status ? (
-                        <Badge variant={STATUS_VARIANT[inst.status as InstitutionStatus] ?? 'outline'}>
+                        <Badge
+                          variant={STATUS_VARIANT[inst.status as InstitutionStatus] ?? 'outline'}
+                        >
                           {inst.status}
                         </Badge>
                       ) : (

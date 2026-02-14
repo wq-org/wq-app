@@ -8,13 +8,19 @@ interface AuthCardLayoutProps {
   children: React.ReactNode
   backTo?: string
   className?: string
+  backgroundImage?: string
 }
 
-export default function AuthCardLayout({ children, backTo = '/', className }: AuthCardLayoutProps) {
+export default function AuthCardLayout({
+  children,
+  backTo = '/',
+  className,
+  backgroundImage = BACKGROUND_HUMAN,
+}: AuthCardLayoutProps) {
   return (
     <div
       className="relative flex min-h-screen items-center justify-center bg-cover bg-center bg-no-repeat p-4"
-      style={{ backgroundImage: `url(${BACKGROUND_HUMAN})` }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       {/* Blur overlay */}
       <div
@@ -33,7 +39,7 @@ export default function AuthCardLayout({ children, backTo = '/', className }: Au
         {/* Left panel - image */}
         <div className="hidden w-[40%] md:block">
           <img
-            src={BACKGROUND_HUMAN}
+            src={backgroundImage}
             alt=""
             className="h-full w-full object-cover"
             aria-hidden

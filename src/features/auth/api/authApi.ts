@@ -143,6 +143,38 @@ export async function resetPassword(newPassword: string): Promise<void> {
 }
 
 /**
+ * Resend email confirmation (verification) for signup.
+ * Uses the current user's email from session if email is not provided.
+ */
+export async function resendVerificationEmail(email?: string): Promise<{ error: string | null }> {
+  try {
+    let resolvedEmail = email
+    if (!resolvedEmail) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      resolvedEmail = user?.email ?? undefined
+    }
+    if (!resolvedEmail) {
+      return { error: 'No email available to resend verification' }
+    }
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: resolvedEmail,
+    })
+
+    if (error) {
+      return { error: error.message }
+    }
+    return { error: null }
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : 'Failed to resend verification email',
+    }
+  }
+}
+
+/**
  * Verify email with token
  */
 export async function verifyEmail(token: string): Promise<void> {

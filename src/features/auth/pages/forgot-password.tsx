@@ -2,133 +2,110 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { MoveLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Text } from '@/components/ui/text'
 import { requestPasswordReset } from '../api/authApi'
 import { toast } from 'sonner'
+import AuthCardLayout from '../components/AuthCardLayout'
+import { BACKGROUND_SCHOOL } from '@/lib/constants'
 
-export default function ForgotPasswordPage({ className }: React.ComponentProps<'form'>) {
+export default function ForgotPasswordPage() {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const goBack = () => {
-    navigate('/auth/login')
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError(null)
     setIsLoading(true)
 
     try {
       await requestPasswordReset(email)
       setIsSubmitted(true)
+      toast.success('Reset Link Sent', {
+        description: 'Check your email for a password reset link.',
+      })
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to send reset link'
-      setError(message)
-      toast.error(message)
+      toast.error('Failed to Send Reset Link', {
+        description: err instanceof Error ? err.message : 'An unexpected error occurred.',
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="w-full container mx-auto max-w-lg">
-      <form
-        onSubmit={handleSubmit}
-        className={cn('flex flex-col gap-6 h-screen  justify-center', className)}
-      >
-        <div className="border p-8 rounded-3xl shadow-lg">
-          <Button
-            onClick={goBack}
-            variant="ghost"
-            className="rounded-full"
-            type="button"
+    <AuthCardLayout
+      backTo="/auth/login"
+      backgroundImage={BACKGROUND_SCHOOL}
+    >
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col items-center gap-1 text-center">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-2xl font-semibold"
           >
-            <MoveLeft />
-            <Text
-              as="span"
-              variant="small"
-              className="sr-only"
-            >
-              Back
-            </Text>
-          </Button>
+            Forgot Password
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground text-balance"
+          >
+            Enter your email address and we'll send you a reset link.
+          </Text>
+        </div>
 
-          <FieldGroup>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <Text
-                as="h1"
-                variant="h1"
-                className="text-2xl font-light"
-              >
-                Forgot Password
-              </Text>
-              <Text
-                as="p"
-                variant="body"
-                className="text-muted-foreground text-sm text-balance"
-              >
-                Enter your email address and we'll send you a reset link
-              </Text>
-            </div>
-
-            {!isSubmitted ? (
-              <>
-                {error && (
-                  <Text
-                    as="p"
-                    variant="body"
-                    className="text-destructive text-sm text-center"
-                  >
-                    {error}
-                  </Text>
-                )}
-                <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </Field>
-
-                <Field>
-                  <Button
-                    type="submit"
-                    disabled={isLoading || !email}
-                  >
-                    {isLoading ? 'Sending...' : 'Send Reset Link'}
-                  </Button>
-                </Field>
-              </>
-            ) : (
+        {!isSubmitted ? (
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4"
+          >
+            <FieldGroup>
               <Field>
-                <FieldDescription className="text-center">
-                  Check your email for a password reset link. It may take a few minutes to arrive.
-                </FieldDescription>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="bg-gray-50"
+                />
+              </Field>
+
+              <Field>
                 <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate('/auth/login')}
-                  className="mt-4"
+                  type="submit"
+                  disabled={isLoading || !email.trim()}
+                  className="w-full cursor-pointer"
                 >
-                  Back to Login
+                  {isLoading ? 'Sending...' : 'Send Reset Link'}
                 </Button>
               </Field>
-            )}
+            </FieldGroup>
+          </form>
+        ) : (
+          <FieldGroup>
+            <Field>
+              <FieldDescription className="text-center">
+                Check your email for a password reset link. It may take a few minutes to arrive.
+              </FieldDescription>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/auth/login')}
+                className="mt-4 w-full"
+              >
+                Back to Login
+              </Button>
+            </Field>
           </FieldGroup>
-        </div>
-      </form>
-    </div>
+        )}
+      </div>
+    </AuthCardLayout>
   )
 }

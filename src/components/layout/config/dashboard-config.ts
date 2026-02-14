@@ -64,7 +64,7 @@ const createInstitutionAdminTabs = (): DashboardTab[] => [
 
 const createSuperAdminTabs = (): DashboardTab[] => [
   { id: 'forms', label: getTabLabel('forms'), icon: Building2 },
-  { id: 'institutions', label: getTabLabel('institutions'), icon: Building2 },
+  { id: 'institutions', label: getTabLabel('institutions'), icon: Building2 }, // blocked for now
   { id: 'overview', label: getTabLabel('overview'), icon: LayoutGrid },
   { id: 'analytics', label: getTabLabel('analytics'), icon: BarChart },
   { id: 'database', label: getTabLabel('database'), icon: HardDrive },
