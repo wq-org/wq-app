@@ -14,7 +14,11 @@ function getRedirectBaseUrl(): string {
   if (typeof window !== 'undefined') {
     const base = window.location.origin
     if (import.meta.env.DEV) {
-      console.log('Auth redirect base:', base, '(from window.location, VITE_PUBLIC_APP_URL not set)')
+      console.log(
+        'Auth redirect base:',
+        base,
+        '(from window.location, VITE_PUBLIC_APP_URL not set)',
+      )
     }
     return base
   }
