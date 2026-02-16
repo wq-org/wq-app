@@ -4,7 +4,6 @@ import CourseCardList from '@/features/courses/components/CourseCardList'
 import { getDashboardTabs } from '@/components/layout/config'
 import TableView from '@/features/files/components/FilesTableView'
 import { useState, useEffect, useCallback } from 'react'
-import { StudentCardList } from '@/features/student'
 import { EmptyCourseView } from '@/features/courses'
 import { useUser } from '@/contexts/user'
 import { useCourse } from '@/contexts/course'
@@ -17,6 +16,8 @@ import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { GamePlayList } from '@/features/game-play'
+import { fetchNotesByUser, NotesTabView } from '@/features/notes'
+import type { Note } from '@/features/notes'
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -60,6 +61,8 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
+  const [notes, setNotes] = useState<Note[]>([])
+  const [notesLoading, setNotesLoading] = useState(false)
 
   // Fetch courses when profile is loaded
   useEffect(() => {
@@ -116,6 +119,27 @@ export default function Dashboard() {
       loadFiles()
     }
   }, [profile?.role, profile?.user_id, loading, selectedTab, loadFiles])
+
+  const loadNotes = useCallback(async () => {
+    const userId = getUserId()
+    if (!userId || loading) return
+    setNotesLoading(true)
+    try {
+      const notesData = await fetchNotesByUser(userId)
+      setNotes(notesData)
+    } catch (error) {
+      console.error('Error fetching notes:', error)
+      setNotes([])
+    } finally {
+      setNotesLoading(false)
+    }
+  }, [getUserId, loading])
+
+  useEffect(() => {
+    if (selectedTab === 'notes') {
+      loadNotes()
+    }
+  }, [selectedTab, loadNotes])
 
   const handleClickTab = (id: string) => {
     const currentTab = getDashboardTabs('teacher').filter((tab) => tab.id === id)[0].id
@@ -186,9 +210,14 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-        {selectedTab === 'students' && <StudentCardList students={[]} />}
+        {/* Students tab commented out (school tab) */}
+        {/* {selectedTab === 'students' && <StudentCardList students={[]} />} */}
         {selectedTab === 'notes' && (
-          <div className="py-12 text-center text-muted-foreground">Notes — coming soon</div>
+          <NotesTabView
+            notes={notes}
+            loading={notesLoading}
+            onRefresh={loadNotes}
+          />
         )}
       </DashboardLayout>
 
@@ -196,6 +225,7 @@ export default function Dashboard() {
         commandBarContext="teacher"
         onCourseCreated={fetchCourses}
         onFilesUploaded={loadFiles}
+        onNoteCreated={loadNotes}
       />
     </>
   )

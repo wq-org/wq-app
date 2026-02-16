@@ -50,6 +50,7 @@ export interface CommandPaletteProps {
   className?: string
   onCourseCreated?: () => void
   onFilesUploaded?: () => void
+  onNoteCreated?: () => void
 }
 
 export interface Game {

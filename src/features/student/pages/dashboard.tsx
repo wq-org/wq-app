@@ -9,10 +9,12 @@ import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import Spinner from '@/components/ui/spinner'
-import { EmptyCourseView, EmptyGamesView, EmptyTodosView } from '@/features/student'
+import { EmptyCourseView, EmptyGamesView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { fetchNotesByUser, NotesTabView } from '@/features/notes'
+import type { Note } from '@/features/notes'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
   const extension = filename.split('.').pop()?.toUpperCase() || ''
@@ -39,6 +41,8 @@ export default function Dashboard() {
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
+  const [notes, setNotes] = useState<Note[]>([])
+  const [notesLoading, setNotesLoading] = useState(false)
   const navigate = useNavigate()
   const { profile, loading, getUserId, getRole } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
@@ -102,6 +106,26 @@ export default function Dashboard() {
     }
   }, [profile?.user_id, selectedTab, loadFiles])
 
+  const loadNotes = useCallback(async () => {
+    const userId = getUserId()
+    if (!userId || loading) return
+    setNotesLoading(true)
+    try {
+      const notesData = await fetchNotesByUser(userId)
+      setNotes(notesData)
+    } catch {
+      setNotes([])
+    } finally {
+      setNotesLoading(false)
+    }
+  }, [getUserId, loading])
+
+  useEffect(() => {
+    if (selectedTab === 'notes') {
+      loadNotes()
+    }
+  }, [selectedTab, loadNotes])
+
   const handleClickTab = (tabId: string) => {
     setSelectedTab(tabId)
   }
@@ -148,7 +172,8 @@ export default function Dashboard() {
               onGamePlay={(route) => route && navigate(route)}
             />
           ))}
-        {selectedTab === 'todos' && <EmptyTodosView />}
+        {/* Todos tab commented out */}
+        {/* {selectedTab === 'todos' && <EmptyTodosView />} */}
         {selectedTab === 'files' &&
           (filesLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -165,13 +190,18 @@ export default function Dashboard() {
             />
           ))}
         {selectedTab === 'notes' && (
-          <div className="py-12 text-center text-muted-foreground">Notes — coming soon</div>
+          <NotesTabView
+            notes={notes}
+            loading={notesLoading}
+            onRefresh={loadNotes}
+          />
         )}
       </DashboardLayout>
 
       <CommandPalette
         commandBarContext="student"
         onFilesUploaded={loadFiles}
+        onNoteCreated={loadNotes}
       />
     </>
   )

@@ -9,6 +9,7 @@ import { createCourse } from '@/features/courses/api/coursesApi'
 import { createInstitution } from '@/features/auth/api/authApi'
 import { createGame } from '@/features/command-palette/api/commandPaletteApi'
 import { createGameForStudio } from '@/features/game-studio/api/gameStudioApi'
+import { createNote } from '@/features/notes'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
 import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, StickyNote } from 'lucide-react'
@@ -26,7 +27,7 @@ const createByType = async (
   type: AddType,
   teacherId: string | null,
   data: { title: string; description: string },
-  onSuccess?: () => void,
+  onCourseCreated?: () => void,
   addNodeFn?: (
     position: { x: number; y: number },
     nodeData?: { title?: string; description?: string },
@@ -38,7 +39,7 @@ const createByType = async (
         throw new Error('Teacher ID is required to create a course')
       }
       const result = await createCourse(teacherId, data)
-      onSuccess?.()
+      onCourseCreated?.()
       return result
     }
     case 'institution':
@@ -51,7 +52,6 @@ const createByType = async (
         title: data.title,
         description: data.description,
       })
-      onSuccess?.()
       return gameResult
     }
     case 'node':
@@ -59,12 +59,6 @@ const createByType = async (
       if (addNodeFn) {
         addNodeFn({ x: 0, y: 0 }, { title: data.title, description: data.description })
       }
-      onSuccess?.()
-      return { success: true }
-    case 'notes':
-      // Log "create new node" when notes are created
-      console.log('create new node')
-      onSuccess?.()
       return { success: true }
     default:
       throw new Error('Unknown type')
@@ -81,10 +75,11 @@ interface AddOption {
 
 interface CommandAddDialogProps {
   role?: string
-  onSuccess?: () => void
+  onCourseCreated?: () => void
+  onNoteCreated?: () => void
 }
 
-const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
+const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDialogProps) => {
   const navigate = useNavigate()
   const { profile } = useUser()
   const { addNode } = useGameStudioContext()
@@ -140,11 +135,27 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
           title: title.trim() || 'Untitled Game',
           description: description.trim() || '',
         })
-        onSuccess?.()
         setTitle('')
         setDescription('')
         setSelectedType(null)
         navigate(`/teacher/canvas/${created.id}`)
+        return
+      }
+
+      if (selectedType === 'notes') {
+        if (!profile?.user_id) {
+          throw new Error('User ID is required to create notes')
+        }
+        await createNote({
+          userId: profile.user_id,
+          title,
+          description,
+          role: role || 'student',
+        })
+        onNoteCreated?.()
+        setTitle('')
+        setDescription('')
+        setSelectedType(null)
         return
       }
 
@@ -154,7 +165,7 @@ const CommandAddDialog = ({ role, onSuccess }: CommandAddDialogProps) => {
         selectedType,
         teacherId,
         { title, description },
-        onSuccess,
+        onCourseCreated,
         addNode,
       )
       console.log('Created', { type: selectedType, result })

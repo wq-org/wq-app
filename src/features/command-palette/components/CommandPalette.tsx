@@ -39,6 +39,7 @@ export default function CommandPalette({
   className,
   onCourseCreated,
   onFilesUploaded,
+  onNoteCreated,
 }: CommandPaletteProps) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
@@ -127,7 +128,10 @@ export default function CommandPalette({
     isCommandBarView(commandBarContext) && commandBarContext === 'game-studio'
       ? userItems.filter((item) => item.id !== 'settings')
       : userItems
-  const roleBasedUserCommands = primaryGroup?.items ?? []
+  // Chat symbol temporarily hidden (feature coming soon)
+  const roleBasedUserCommands = (primaryGroup?.items ?? []).filter((item) => item.id !== 'chat')
+
+  // School (students) and Todos tabs commented out in dashboard-config.ts for teacher + student
 
   function handleOnClickSearchDialog() {
     setActiveDialog('search')
@@ -402,7 +406,8 @@ export default function CommandPalette({
                 {activeDialog === 'add' && (
                   <CommandAddDialog
                     role={effectiveRole}
-                    onSuccess={onCourseCreated}
+                    onCourseCreated={onCourseCreated}
+                    onNoteCreated={onNoteCreated}
                   />
                 )}
               </Container>
