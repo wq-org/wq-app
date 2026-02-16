@@ -7,10 +7,10 @@ export function TestimonialsSection() {
         <div className="mx-auto max-w-2xl text-center">
           <blockquote>
             <p className="text-lg font-medium sm:text-xl md:text-3xl">
-              Wir entwickeln Lernräume, die Schüler wirklich erreichen. Gebaut für Schulen,
-              gemacht für Schüler. Bildung beginnt interaktiv – durch Spiel, Simulation
-              und aktives Handeln. Statt nur Inhalte bereitzustellen, verwandeln wir Wissen
-              in erlebbare Kompetenz. Lernen soll motivieren, fordern und Freude machen.
+              Wir entwickeln Lernräume, die Schüler wirklich erreichen. Gebaut für Schulen, gemacht
+              für Schüler. Bildung beginnt interaktiv – durch Spiel, Simulation und aktives Handeln.
+              Statt nur Inhalte bereitzustellen, verwandeln wir Wissen in erlebbare Kompetenz.
+              Lernen soll motivieren, fordern und Freude machen.
             </p>
 
             <div className="mt-12 flex items-center justify-center gap-6">
@@ -27,7 +27,9 @@ export function TestimonialsSection() {
 
               <div className="space-y-1 border-l pl-6">
                 <cite className="font-medium not-italic">Godfred Amoah Sefa, M.Sc.</cite>
-                <span className="text-muted-foreground block text-sm">Developer & Game Designer</span>
+                <span className="text-muted-foreground block text-sm">
+                  Developer & Game Designer
+                </span>
               </div>
             </div>
           </blockquote>
