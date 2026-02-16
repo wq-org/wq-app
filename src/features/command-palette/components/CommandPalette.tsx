@@ -127,7 +127,8 @@ export default function CommandPalette({
     isCommandBarView(commandBarContext) && commandBarContext === 'game-studio'
       ? userItems.filter((item) => item.id !== 'settings')
       : userItems
-  const roleBasedUserCommands = primaryGroup?.items ?? []
+  // Chat symbol commented out (feature coming soon)
+  const roleBasedUserCommands = (primaryGroup?.items ?? []).filter((item) => item.id !== 'chat')
 
   function handleOnClickSearchDialog() {
     setActiveDialog('search')

@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
-import faviconImg from '/favicon-32x32.png'
 
 interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
@@ -14,7 +13,7 @@ export function Logo({ className, showText = true, ...props }: LogoProps) {
       {...props}
     >
       <img
-        src={faviconImg}
+        src="/favicon.ico"
         alt="WQ Health"
         className={cn('h-5 w-5', !showText && 'h-full w-full')}
       />
