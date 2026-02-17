@@ -1,30 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
 
-/** Base URL for auth redirects. Prefers VITE_PUBLIC_APP_URL (set per env) over window.location. */
-function getRedirectBaseUrl(): string {
-  const envUrl = import.meta.env.VITE_PUBLIC_APP_URL
-  if (envUrl && typeof envUrl === 'string') {
-    const base = envUrl.replace(/\/$/, '') // strip trailing slash
-    if (import.meta.env.DEV) {
-      console.log('Auth redirect base:', base)
-    }
-    return base
-  }
-  if (typeof window !== 'undefined') {
-    const base = window.location.origin
-    if (import.meta.env.DEV) {
-      console.log(
-        'Auth redirect base:',
-        base,
-        '(from window.location, VITE_PUBLIC_APP_URL not set)',
-      )
-    }
-    return base
-  }
-  return ''
-}
-
 export interface AuthApiResponse {
   success: boolean
   user?: User | null // Supabase user object
@@ -68,7 +44,7 @@ export async function signUpUser(signUpData: AuthData): Promise<AuthApiResponse>
       email: signUpData.email,
       password: signUpData.password,
       options: {
-        emailRedirectTo: getRedirectBaseUrl() || undefined,
+        emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
         data: {
           role: signUpData.role,
         },
@@ -146,8 +122,12 @@ export async function logoutUser(): Promise<void> {
  * Request password reset email. Supabase sends a link that redirects to the app's reset-password page.
  */
 export async function requestPasswordReset(email: string): Promise<void> {
-  const base = getRedirectBaseUrl()
-  const redirectTo = base ? `${base}/auth/reset-password` : ''
+  const redirectTo =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/reset-password`
+      : import.meta.env.VITE_PUBLIC_APP_URL
+        ? `${String(import.meta.env.VITE_PUBLIC_APP_URL).replace(/\/$/, '')}/auth/reset-password`
+        : ''
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: redirectTo || undefined,
   })
