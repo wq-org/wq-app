@@ -176,9 +176,7 @@ export default function CommandPalette({
 
   return (
     <>
-      <div
-        className="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center pointer-events-none"
-      >
+      <div className="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center pointer-events-none">
         <button
           ref={notchRef}
           type="button"
