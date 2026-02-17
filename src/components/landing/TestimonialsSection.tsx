@@ -7,16 +7,16 @@ export function TestimonialsSection() {
         <div className="mx-auto max-w-2xl text-center">
           <blockquote>
             <p className="text-lg font-medium sm:text-xl md:text-3xl">
-              "WQ Health has revolutionized how we teach anatomy and clinical skills. The
-              interactive games, especially Image Pin Mark and Image Term Match, have dramatically
-              improved student engagement and retention. Our students are more confident and better
-              prepared for real-world clinical scenarios."
+              Wir entwickeln Lernräume, die Schüler wirklich erreichen. Gebaut für Schulen, gemacht
+              für Schüler. Bildung beginnt interaktiv – durch Spiel, Simulation und aktives Handeln.
+              Statt nur Inhalte bereitzustellen, verwandeln wir Wissen in erlebbare Kompetenz.
+              Lernen soll motivieren, fordern und Freude machen.
             </p>
 
             <div className="mt-12 flex items-center justify-center gap-6">
               <Avatar className="size-12">
                 <AvatarImage
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=AstridProbst"
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=brain"
                   alt="Astrid Probst"
                   height="400"
                   width="400"
@@ -26,9 +26,9 @@ export function TestimonialsSection() {
               </Avatar>
 
               <div className="space-y-1 border-l pl-6">
-                <cite className="font-medium not-italic">Astrid Probst, M.Sc.</cite>
+                <cite className="font-medium not-italic">Godfred Amoah Sefa, M.Sc.</cite>
                 <span className="text-muted-foreground block text-sm">
-                  APN Wound Management, Kreiskliniken Reutlingen gGmbH
+                  Developer & Game Designer
                 </span>
               </div>
             </div>

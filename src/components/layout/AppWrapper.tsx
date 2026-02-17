@@ -11,7 +11,6 @@ interface AppWrapperProps {
   className?: string
   /** Override which command bar to show (role-based or view-based). When not set, uses `role`. */
   commandBarContext?: CommandBarContext
-  authenticated?: boolean
 }
 
 function AppWrapper({ children, role, className, commandBarContext }: AppWrapperProps) {

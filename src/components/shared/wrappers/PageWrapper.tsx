@@ -12,13 +12,10 @@ export default function PageWrapper({
 }) {
   return (
     <>
-      <div>
-        <AppNavigation>
-          <PageTitle />
-        </AppNavigation>
-        <div className="flex flex-col gap-8"></div>
-        <Container className={cn(className)}>{children}</Container>
-      </div>
+      <AppNavigation>
+        <PageTitle />
+      </AppNavigation>
+      <Container className={cn(className)}>{children}</Container>
     </>
   )
 }

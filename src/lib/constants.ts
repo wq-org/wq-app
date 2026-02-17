@@ -19,6 +19,8 @@ export const GAME_CARD_BACKGROUND_IMAGE =
   'https://images.unsplash.com/photo-1706720097513-9e73025ac02a?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 export const QUESTION_SEPARATOR = '//'
 
+export const SKELETON_NODE_GRAPH_IMAGE =
+  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/skeleton-node-graph.png'
 /** Max voting options per question in Paragraph Line Select game. */
 export const MAX_PARAGRAPH_VOTING_OPTIONS = 4
 

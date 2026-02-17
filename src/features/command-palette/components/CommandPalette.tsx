@@ -179,20 +179,12 @@ export default function CommandPalette({
 
   return (
     <>
-      <div
-        className={cn(
-          'fixed inset-x-0 bottom-6 z-50 flex flex-col items-center',
-          !isVisible && 'pointer-events-none',
-        )}
-      >
+      <div className="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center pointer-events-none">
         <button
           ref={notchRef}
           type="button"
           onClick={handleNotchClick}
-          className={cn(
-            'mb-3 flex h-10 w-28 cursor-pointer select-none items-center justify-center rounded-full touch-none',
-            !isVisible && 'pointer-events-auto',
-          )}
+          className="pointer-events-auto mb-3 flex h-10 w-28 cursor-pointer select-none items-center justify-center rounded-full touch-none"
           role="button"
           tabIndex={0}
           aria-label={isVisible ? 'Hide command palette' : 'Show command palette'}
@@ -210,7 +202,7 @@ export default function CommandPalette({
             ref={paletteRef}
             className={cn(
               className,
-              'mx-auto flex items-center justify-center rounded-full border bg-background/80 backdrop-blur shadow-xl px-4 py-3 w-fit',
+              'pointer-events-auto mx-auto flex items-center justify-center rounded-full border bg-background/80 backdrop-blur shadow-xl px-4 py-3 w-fit',
             )}
             role="region"
             aria-label="Quick actions"

@@ -1,5 +1,7 @@
 Write a Good Git commit message should contain:
 
+** use always ```nvm use```as command before performing git actions
+
 - **Brief Summary**: Start with a short summary (50 characters or less) of the changes.
 - **Detailed Description**: Follow up with a more detailed explanation (72 characters per line) if necessary.
 - **Context**: Explain why the change was made and any relevant background.
