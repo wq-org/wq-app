@@ -1,1 +1,22 @@
-{}
+{
+  "actions": {
+    "follow": "Folgen"
+  },
+  "tabs": {
+    "teachers": "Lehrkräfte",
+    "students": "Lernende"
+  },
+  "links": {
+    "website": "Webseite",
+    "twitter": "Twitter",
+    "facebook": "Facebook",
+    "instagram": "Instagram"
+  },
+  "emptyTeachers": {
+    "title": "Keine Lehrkräfte gefunden",
+    "description": "Nutze die Command Palette, um Lehrkräfte zu suchen und zu deiner Institution hinzuzufügen."
+  },
+  "view": {
+    "notFound": "Institution nicht gefunden"
+  }
+}

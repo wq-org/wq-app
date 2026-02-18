@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import type { StartGameDialogProps } from '../types/game-studio.types'
+import { useTranslation } from 'react-i18next'
 
 function getTitleFromData(initialData: StartGameDialogProps['initialData']): string {
   if (!initialData) return ''
@@ -31,6 +32,7 @@ export default function StartGameDialog({
   onSave,
   initialData,
 }: StartGameDialogProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const prevOpenRef = useRef(false)
@@ -70,27 +72,25 @@ export default function StartGameDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw] max-w-[min(1080px,calc(100vw-2rem))] [&_button[data-slot='dialog-close']]:text-blue-500 [&_button[data-slot='dialog-close']]:hover:text-blue-600">
         <DialogHeader>
-          <DialogTitle>Configure Start Node</DialogTitle>
-          <DialogDescription className="sr-only">
-            Configure the start node with title and description
-          </DialogDescription>
+          <DialogTitle>{t('startDialog.title')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('startDialog.description')}</DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="start-node-title">Title</Label>
+            <Label htmlFor="start-node-title">{t('startDialog.fieldTitle')}</Label>
             <Input
               id="start-node-title"
-              placeholder="Enter game title"
+              placeholder={t('startDialog.titlePlaceholder')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="start-node-description">Description</Label>
+            <Label htmlFor="start-node-description">{t('startDialog.fieldDescription')}</Label>
             <Textarea
               id="start-node-description"
-              placeholder="Enter game description"
+              placeholder={t('startDialog.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -103,13 +103,13 @@ export default function StartGameDialog({
             variant="outline"
             onClick={handleCancel}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleSave}
             disabled={!title.trim() || !description.trim()}
           >
-            Save
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

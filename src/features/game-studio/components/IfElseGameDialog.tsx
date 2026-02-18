@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import type { IfElseGameDialogProps } from '../types/game-studio.types'
 import GameNodeLayout from './GameNodeLayout'
+import { useTranslation } from 'react-i18next'
 
 export default function IfElseGameDialog({
   open,
@@ -29,6 +30,7 @@ export default function IfElseGameDialog({
   nodes = [],
   edges = [],
 }: IfElseGameDialogProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [condition, setCondition] = useState('')
@@ -109,10 +111,8 @@ export default function IfElseGameDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw] max-w-[min(1080px,calc(100vw-2rem))]">
         <DialogHeader>
-          <DialogTitle>Configure If/Else Node</DialogTitle>
-          <DialogDescription className="sr-only">
-            Configure the if/else node title, description, condition, and correct path
-          </DialogDescription>
+          <DialogTitle>{t('ifElseDialog.title')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('ifElseDialog.description')}</DialogDescription>
         </DialogHeader>
         <GameNodeLayout
           nodeId={nodeId}
@@ -120,19 +120,21 @@ export default function IfElseGameDialog({
           settingsContent={
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="ifelse-node-title">Title</Label>
+                <Label htmlFor="ifelse-node-title">{t('ifElseDialog.fieldTitle')}</Label>
                 <Input
                   id="ifelse-node-title"
-                  placeholder="Enter node title"
+                  placeholder={t('ifElseDialog.titlePlaceholder')}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="ifelse-node-description">Description</Label>
+                <Label htmlFor="ifelse-node-description">
+                  {t('ifElseDialog.fieldDescription')}
+                </Label>
                 <Textarea
                   id="ifelse-node-description"
-                  placeholder="Enter node description"
+                  placeholder={t('ifElseDialog.descriptionPlaceholder')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
@@ -145,7 +147,7 @@ export default function IfElseGameDialog({
                     variant="body"
                     className="text-muted-foreground text-sm mb-3"
                   >
-                    Hold the button below for 3 seconds to delete this node.
+                    {t('ifElseDialog.deleteHint')}
                   </Text>
                   <HoldToDeleteButton
                     onDelete={handleDelete}
@@ -159,7 +161,7 @@ export default function IfElseGameDialog({
             <div className="flex flex-col gap-4">
               <Separator />
               <div className="flex flex-col gap-2">
-                <Label>Incoming Node</Label>
+                <Label>{t('ifElseDialog.incomingNode')}</Label>
                 <div>
                   {incomingNode ? (
                     <Badge variant="outline">
@@ -173,14 +175,14 @@ export default function IfElseGameDialog({
                       variant="small"
                       className="text-sm text-muted-foreground"
                     >
-                      No incoming node
+                      {t('ifElseDialog.noIncomingNode')}
                     </Text>
                   )}
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label>Outgoing Nodes</Label>
+                <Label>{t('ifElseDialog.outgoingNodes')}</Label>
                 <div className="flex flex-col gap-2">
                   {outgoingNodes.length > 0 ? (
                     outgoingNodes.map(({ node, handleId }) => {
@@ -193,7 +195,7 @@ export default function IfElseGameDialog({
                           className="flex items-center gap-2"
                         >
                           <Badge variant={isSelected ? 'default' : 'outline'}>
-                            {isNodeA ? 'Node A' : 'Node B'}
+                            {isNodeA ? t('common.nodeA') : t('common.nodeB')}
                           </Badge>
                           <Badge variant={isSelected ? 'secondary' : 'outline'}>
                             {String(node.data?.label || node.data?.title || node.id)}
@@ -207,7 +209,7 @@ export default function IfElseGameDialog({
                       variant="small"
                       className="text-sm text-muted-foreground"
                     >
-                      No outgoing nodes
+                      {t('ifElseDialog.noOutgoingNodes')}
                     </Text>
                   )}
                 </div>
@@ -216,7 +218,7 @@ export default function IfElseGameDialog({
               <Separator />
 
               <div className="flex flex-col gap-2">
-                <Label>When user answers correctly</Label>
+                <Label>{t('ifElseDialog.correctAnswerRoute')}</Label>
                 <div className="flex items-center gap-3">
                   <Switch
                     checked={correctPath === 'A'}
@@ -227,7 +229,7 @@ export default function IfElseGameDialog({
                     variant="small"
                     className="text-sm"
                   >
-                    {correctPath === 'A' ? 'Node A' : 'Node B'}
+                    {correctPath === 'A' ? t('common.nodeA') : t('common.nodeB')}
                   </Text>
                 </div>
               </div>
@@ -239,9 +241,9 @@ export default function IfElseGameDialog({
             variant="outline"
             onClick={handleCancel}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>{t('common.save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

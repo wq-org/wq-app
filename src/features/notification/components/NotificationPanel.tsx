@@ -7,8 +7,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import NotificationItem from './NotificationItem'
 import type { Notification } from '../types/notification.types'
 import { mockNotifications } from '../data/mockNotifications'
+import { useTranslation } from 'react-i18next'
 
 export default function NotificationPanel() {
+  const { t } = useTranslation('features.notification')
   const [notifications] = useState<Notification[]>(mockNotifications)
   const [activeTab, setActiveTab] = useState<'all' | 'following'>('all')
 
@@ -31,7 +33,7 @@ export default function NotificationPanel() {
             variant="h1"
             className="text-xl  text-gray-900"
           >
-            Notifications
+            {t('panel.title')}
           </Text>
         </div>
         {/* Tabs */}
@@ -43,7 +45,7 @@ export default function NotificationPanel() {
             }`}
           >
             <div className="flex items-center gap-1.5">
-              All
+              {t('panel.tabs.all')}
               {unreadCount > 0 && (
                 <Badge
                   variant="default"
@@ -65,7 +67,7 @@ export default function NotificationPanel() {
             }`}
           >
             <div className="flex items-center gap-1.5">
-              Following
+              {t('panel.tabs.following')}
               <Text
                 as="span"
                 variant="small"
@@ -95,14 +97,14 @@ export default function NotificationPanel() {
                     variant="body"
                     className="text-gray-500 text-base"
                   >
-                    No notifications
+                    {t('panel.emptyAll.title')}
                   </Text>
                   <Text
                     as="p"
                     variant="body"
                     className="text-gray-400 text-sm mt-1"
                   >
-                    You're all caught up!
+                    {t('panel.emptyAll.description')}
                   </Text>
                 </div>
               ) : (
@@ -123,14 +125,14 @@ export default function NotificationPanel() {
                 variant="body"
                 className="text-gray-500 text-base"
               >
-                No following notifications
+                {t('panel.emptyFollowing.title')}
               </Text>
               <Text
                 as="p"
                 variant="body"
                 className="text-gray-400 text-sm mt-1"
               >
-                Notifications from people you follow will appear here
+                {t('panel.emptyFollowing.description')}
               </Text>
             </div>
           )}

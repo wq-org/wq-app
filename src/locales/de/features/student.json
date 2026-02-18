@@ -1,1 +1,22 @@
-{}
+{
+  "view": {
+    "title": "Lernendenansicht",
+    "description": "Inhalte für Lernende werden hier angezeigt."
+  },
+  "emptyStudent": {
+    "title": "Keine Lernenden gefunden",
+    "description": "Nutze die Command Palette, um Lernende zu suchen und deinem Kurs hinzuzufügen."
+  },
+  "emptyGames": {
+    "title": "Keine Spiele verfügbar",
+    "description": "Es wurden noch keine Spiele veröffentlicht. Schau später erneut vorbei oder frage deine Lehrkraft."
+  },
+  "emptyTodos": {
+    "title": "Keine To-dos vorhanden",
+    "description": "Aktuell hast du keine To-dos. Schau später für neue Aufgaben wieder vorbei."
+  },
+  "emptyChat": {
+    "title": "Noch keine Nachrichten",
+    "description": "Starte eine Unterhaltung mit deiner Lehrkraft oder deinen Mitschülern."
+  }
+}

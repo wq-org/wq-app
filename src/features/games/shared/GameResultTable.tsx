@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import FeedbackDisplay from './FeedbackDisplay'
+import { useTranslation } from 'react-i18next'
 
 export interface GameResultTableRow {
   key: string | number
@@ -38,14 +39,6 @@ export interface GameResultTableColumnLabels {
   footer?: string
 }
 
-const DEFAULT_COLUMN_LABELS: Required<GameResultTableColumnLabels> = {
-  statement: 'Statement',
-  selectedAnswers: 'Selected answers',
-  result: 'Result',
-  feedback: 'Feedback',
-  footer: 'Overall',
-}
-
 export interface GameResultTableProps {
   /** Pre-computed rows for display. */
   rows: GameResultTableRow[]
@@ -66,12 +59,20 @@ export default function GameResultTable({
   rows,
   totalEarned,
   totalMax,
-  title = 'Selected Answers',
+  title,
   columnLabels,
 }: GameResultTableProps) {
+  const { t } = useTranslation('features.games')
   if (rows.length === 0) return null
 
-  const labels = { ...DEFAULT_COLUMN_LABELS, ...columnLabels }
+  const labels: Required<GameResultTableColumnLabels> = {
+    statement: t('resultTable.columns.statement'),
+    selectedAnswers: t('resultTable.columns.selectedAnswers'),
+    result: t('resultTable.columns.result'),
+    feedback: t('resultTable.columns.feedback'),
+    footer: t('resultTable.columns.footer'),
+    ...columnLabels,
+  }
 
   return (
     <div className="space-y-2">
@@ -80,7 +81,7 @@ export default function GameResultTable({
         variant="h3"
         className="text-sm font-medium text-gray-700 mb-2"
       >
-        {title}
+        {title ?? t('resultTable.title')}
       </Text>
       <Table>
         <TableHeader>
@@ -115,7 +116,7 @@ export default function GameResultTable({
               </TableCell>
               <TableCell className="max-w-[200px]">
                 {row.selectedAnswerTexts.length === 0 ? (
-                  '—'
+                  t('resultTable.emptyValue')
                 ) : (
                   <div className="flex flex-col gap-1">
                     {row.selectedAnswerTexts.map((text, i) => (

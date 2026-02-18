@@ -9,6 +9,8 @@
   },
   "card": {
     "published": "Veröffentlicht",
-    "unpublished": "Nicht veröffentlicht"
+    "unpublished": "Nicht veröffentlicht",
+    "open": "Öffnen",
+    "imageAlt": "Kurs"
   }
 }

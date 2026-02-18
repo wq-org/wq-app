@@ -27,7 +27,7 @@ export default function CourseCard({
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <img
           src={courseImage}
-          alt="Course"
+          alt={t('card.imageAlt')}
           className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
         />
         <Badge
@@ -85,7 +85,7 @@ export default function CourseCard({
                 as="p"
                 variant="body"
               >
-                View
+                {t('card.open')}
               </Text>
               <ArrowRight className="w-4 h-4" />
             </Button>

@@ -4,50 +4,51 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import type { SidebarItem } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
-
-const nodeItems: SidebarItem[] = [
-  {
-    id: 'end',
-    label: 'End Node',
-    icon: Square,
-    category: 'node',
-    nodeType: 'gameEnd',
-  },
-  {
-    id: 'paragraph',
-    label: 'Paragraph',
-    icon: StickyNote,
-    category: 'node',
-    nodeType: 'gameParagraph',
-  },
-  {
-    id: 'image-terms',
-    label: 'Image and Terms',
-    icon: ImageIcon,
-    category: 'node',
-    nodeType: 'gameImageTerms',
-  },
-  {
-    id: 'image-pin',
-    label: 'Image and Pin',
-    icon: MapPin,
-    category: 'node',
-    nodeType: 'gameImagePin',
-  },
-]
-
-const logicItems: SidebarItem[] = [
-  {
-    id: 'if-else',
-    label: 'If / else',
-    icon: GitBranch,
-    category: 'logic',
-    nodeType: 'gameIfElse',
-  },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function GameSidebar() {
+  const { t } = useTranslation('features.gameStudio')
   const [searchQuery, setSearchQuery] = useState('')
+  const nodeItems: SidebarItem[] = [
+    {
+      id: 'end',
+      label: t('sidebar.nodes.end'),
+      icon: Square,
+      category: 'node',
+      nodeType: 'gameEnd',
+    },
+    {
+      id: 'paragraph',
+      label: t('sidebar.nodes.paragraph'),
+      icon: StickyNote,
+      category: 'node',
+      nodeType: 'gameParagraph',
+    },
+    {
+      id: 'image-terms',
+      label: t('sidebar.nodes.imageTerms'),
+      icon: ImageIcon,
+      category: 'node',
+      nodeType: 'gameImageTerms',
+    },
+    {
+      id: 'image-pin',
+      label: t('sidebar.nodes.imagePin'),
+      icon: MapPin,
+      category: 'node',
+      nodeType: 'gameImagePin',
+    },
+  ]
+
+  const logicItems: SidebarItem[] = [
+    {
+      id: 'if-else',
+      label: t('sidebar.logic.ifElse'),
+      icon: GitBranch,
+      category: 'logic',
+      nodeType: 'gameIfElse',
+    },
+  ]
 
   const onDragStart = (event: React.DragEvent, item: SidebarItem) => {
     event.dataTransfer.setData(
@@ -78,7 +79,7 @@ export default function GameSidebar() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Insert node..."
+              placeholder={t('sidebar.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 h-9"
@@ -96,7 +97,7 @@ export default function GameSidebar() {
                 variant="h3"
                 className="text-xs font-medium text-muted-foreground uppercase tracking-wider"
               >
-                Nodes
+                {t('sidebar.sectionNodes')}
               </Text>
               <div className="space-y-1">
                 {filteredNodeItems.map((item) => {
@@ -146,7 +147,7 @@ export default function GameSidebar() {
                 variant="h3"
                 className="text-xs font-medium text-muted-foreground uppercase tracking-wider"
               >
-                Logic
+                {t('sidebar.sectionLogic')}
               </Text>
               <div className="space-y-1">
                 {filteredLogicItems.map((item) => {
@@ -186,7 +187,9 @@ export default function GameSidebar() {
 
           {/* No Results */}
           {filteredNodeItems.length === 0 && filteredLogicItems.length === 0 && (
-            <div className="text-center py-8 text-sm text-muted-foreground">No results found</div>
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              {t('sidebar.noResults')}
+            </div>
           )}
         </div>
       </div>

@@ -4,8 +4,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useGameStudioContext } from '@/contexts/game-studio'
 import type { GameNodeSettingsProps } from '../types/game-studio.types'
+import { useTranslation } from 'react-i18next'
 
 export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
+  const { t } = useTranslation('features.gameStudio')
   const { getNode } = useGameStudioContext()
   const node = nodeId ? getNode(nodeId) : null
 
@@ -33,20 +35,20 @@ export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="node-title">Title</Label>
+        <Label htmlFor="node-title">{t('gameNodeSettings.titleLabel')}</Label>
         <Input
           id="node-title"
-          placeholder="Enter node title"
+          placeholder={t('gameNodeSettings.titlePlaceholder')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="node-description">Description</Label>
+        <Label htmlFor="node-description">{t('gameNodeSettings.descriptionLabel')}</Label>
         <Textarea
           id="node-description"
-          placeholder="Enter node description"
+          placeholder={t('gameNodeSettings.descriptionPlaceholder')}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}

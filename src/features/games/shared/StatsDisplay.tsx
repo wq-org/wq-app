@@ -7,6 +7,7 @@ import * as Tooltip from '@radix-ui/react-tooltip'
 import { Check, X, Trophy } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface StatsDisplayProps {
   correctAnswers: number
@@ -57,6 +58,7 @@ export function StatsDisplay({
   score,
   className,
 }: StatsDisplayProps) {
+  const { t } = useTranslation('features.games')
   return (
     <div
       className={cn(
@@ -67,7 +69,7 @@ export function StatsDisplay({
       <StatItem
         icon={<Check className="h-4 w-4" />}
         value={correctAnswers}
-        label="Correct Answers"
+        label={t('stats.correctAnswers')}
       />
 
       <Separator
@@ -78,7 +80,7 @@ export function StatsDisplay({
       <StatItem
         icon={<X className="h-4 w-4" />}
         value={wrongAnswers}
-        label="Wrong Answers"
+        label={t('stats.wrongAnswers')}
       />
 
       <Separator
@@ -89,7 +91,7 @@ export function StatsDisplay({
       <StatItem
         icon={<Trophy className="h-4 w-4" />}
         value={score}
-        label="Score"
+        label={t('stats.score')}
       />
     </div>
   )

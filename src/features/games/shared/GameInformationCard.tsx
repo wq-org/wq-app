@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 const DEFAULT_TRUNCATE_LENGTH = 600
 
@@ -16,6 +17,7 @@ export default function GameInformationCard({
   description,
   truncateLength = DEFAULT_TRUNCATE_LENGTH,
 }: GameInformationCardProps) {
+  const { t } = useTranslation('features.games')
   const [expanded, setExpanded] = useState(false)
 
   const isLong = typeof description === 'string' && description.length > truncateLength
@@ -56,7 +58,7 @@ export default function GameInformationCard({
                     className="size-4"
                     aria-hidden
                   />
-                  Show less
+                  {t('gameInformationCard.showLess')}
                 </>
               ) : (
                 <>
@@ -64,7 +66,7 @@ export default function GameInformationCard({
                     className="size-4"
                     aria-hidden
                   />
-                  Show more
+                  {t('gameInformationCard.showMore')}
                 </>
               )}
             </Button>

@@ -1,1 +1,195 @@
-{}
+{
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saving": "Speichert...",
+    "nodeA": "Knoten A",
+    "nodeB": "Knoten B"
+  },
+  "emptyGamesView": {
+    "title": "Erstelle dein erstes Spiel",
+    "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und veröffentliche ihn für Lernende."
+  },
+  "emptyProjectsView": {
+    "title": "Noch keine Spielprojekte",
+    "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und veröffentliche ihn für Lernende."
+  },
+  "sidebar": {
+    "searchPlaceholder": "Knoten einfügen...",
+    "sectionNodes": "Knoten",
+    "sectionLogic": "Logik",
+    "noResults": "Keine Ergebnisse gefunden",
+    "nodes": {
+      "end": "End-Knoten",
+      "paragraph": "Absatz",
+      "imageTerms": "Bild und Begriffe",
+      "imagePin": "Bild und Pins"
+    },
+    "logic": {
+      "ifElse": "Wenn / sonst"
+    }
+  },
+  "nodeLayout": {
+    "overviewTab": "Überblick",
+    "settingsTab": "Einstellungen",
+    "noContent": "Kein Inhalt verfügbar",
+    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu löschen."
+  },
+  "previewDrawer": {
+    "title": "Spielsimulation",
+    "emptyHint": "Füge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad für die Vorschau hinzu.",
+    "ifElseFallback": "Wenn / sonst",
+    "labels": {
+      "start": "Start",
+      "end": "Ende"
+    }
+  },
+  "editorCanvas": {
+    "defaultTitle": "Allgemein",
+    "loading": "Projekt wird geladen...",
+    "actions": {
+      "save": "Speichern",
+      "preview": "Vorschau",
+      "leave": "Verlassen",
+      "publish": "Veröffentlichen"
+    }
+  },
+  "publishChecklist": {
+    "requirementsMet": "Anforderungen erfüllt",
+    "requirementsNotMet": "Anforderungen nicht erfüllt",
+    "rulesTitle": "Veröffentlichungsregeln",
+    "rules": {
+      "noAbandoned": "Keine verlassenen oder nicht verbundenen Knoten",
+      "linkedStartToEnd": "Alle Knoten sind von Start bis Ende verbunden",
+      "connectedPath": "Alle Knoten sind im Pfad Start bis Ende verbunden.",
+      "minimallyFilled": "Jeder Knoten ist mindestens so ausgefüllt, dass das Spiel spielbar ist."
+    }
+  },
+  "settingsDrawer": {
+    "title": "Einstellungen",
+    "closeAriaLabel": "Einstellungen schließen",
+    "projectTitleLabel": "Projekttitel",
+    "projectTitlePlaceholder": "Projekttitel eingeben",
+    "projectDescriptionLabel": "Projektbeschreibung",
+    "projectDescriptionPlaceholder": "Projektbeschreibung eingeben",
+    "publishStatusLabel": "Veröffentlichungsstatus",
+    "publishStatus": {
+      "published": "Veröffentlicht",
+      "draft": "Entwurf",
+      "publishedHint": "Lernende können dieses Spiel spielen. Deaktivieren zum Zurückziehen und Ausblenden.",
+      "draftHint": "Nutze den Veröffentlichen-Button in der Toolbar, um dieses Spiel für Lernende freizugeben."
+    },
+    "versionLabel": "Version",
+    "versionValue": "Version : {{version}}",
+    "rollbackLabel": "Rollback",
+    "rollbackToVersion": "Rollback auf Version {{version}}",
+    "noPreviousVersions": "Keine vorherigen Versionen",
+    "holdToDelete": "Zum Löschen halten",
+    "toasts": {
+      "saved": "Einstellungen gespeichert",
+      "saveFailed": "Einstellungen konnten nicht gespeichert werden",
+      "rolledBack": "Auf vorherige Version zurückgesetzt",
+      "rollbackFailed": "Rollback fehlgeschlagen",
+      "unpublished": "Spiel unveröffentlicht",
+      "unpublishFailed": "Unveröffentlichen fehlgeschlagen"
+    }
+  },
+  "gameNodeSettings": {
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Knotentitel eingeben",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Knotenbeschreibung eingeben"
+  },
+  "ifElseDialog": {
+    "title": "Wenn/Sonst-Knoten konfigurieren",
+    "description": "Konfiguriere Titel, Beschreibung, Bedingung und den korrekten Pfad des Wenn/Sonst-Knotens",
+    "fieldTitle": "Titel",
+    "titlePlaceholder": "Knotentitel eingeben",
+    "fieldDescription": "Beschreibung",
+    "descriptionPlaceholder": "Knotenbeschreibung eingeben",
+    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu löschen.",
+    "incomingNode": "Eingehender Knoten",
+    "noIncomingNode": "Kein eingehender Knoten",
+    "outgoingNodes": "Ausgehende Knoten",
+    "noOutgoingNodes": "Keine ausgehenden Knoten",
+    "correctAnswerRoute": "Bei richtiger Antwort"
+  },
+  "startDialog": {
+    "title": "Startknoten konfigurieren",
+    "description": "Konfiguriere den Startknoten mit Titel und Beschreibung",
+    "fieldTitle": "Titel",
+    "titlePlaceholder": "Spieltitel eingeben",
+    "fieldDescription": "Beschreibung",
+    "descriptionPlaceholder": "Spielbeschreibung eingeben"
+  },
+  "endDialog": {
+    "title": "Endknoten konfigurieren",
+    "description": "Konfiguriere den Endknoten mit Titel und Beschreibung",
+    "fieldTitle": "Titel",
+    "titlePlaceholder": "Knotentitel eingeben",
+    "fieldDescription": "Beschreibung",
+    "descriptionPlaceholder": "Knotenbeschreibung eingeben",
+    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu löschen."
+  },
+  "publishDrawer": {
+    "title": "Spiel veröffentlichen",
+    "untitledGame": "Unbenanntes Spiel",
+    "cannotPublishGame": "Spiel kann nicht veröffentlicht werden",
+    "publishUnavailable": "Veröffentlichen ist nicht verfügbar. Speichere zuerst das Projekt.",
+    "publishedSuccess": "Spiel erfolgreich veröffentlicht!",
+    "publishFailed": "Spiel konnte nicht veröffentlicht werden",
+    "gameTitleLabel": "Spieltitel:",
+    "totalNodesLabel": "Gesamte Knoten:",
+    "totalPointsLabel": "Erreichbare Gesamtpunkte:",
+    "pointsValue": "{{points}} Punkte",
+    "floorNote": "Bei falschen Antworten können Abzüge gelten; der Score fällt nie unter 0.",
+    "publishing": "Veröffentlicht...",
+    "publishForStudents": "Für Lernende veröffentlichen"
+  },
+  "previewIfElse": {
+    "ifElseFallback": "Wenn / sonst",
+    "routingLogic": "Routing-Logik",
+    "routingDescription": "Dieser Knoten wählt den nächsten Slide basierend auf:",
+    "condition": "Bedingung",
+    "noCondition": "Noch keine Bedingung gesetzt.",
+    "outgoingPaths": "Ausgehende Pfade",
+    "pathLabel": "Pfad",
+    "notConnected": "Nicht verbunden",
+    "correctRoute": "Korrekter Pfad"
+  },
+  "gameProjectCard": {
+    "untitledProject": "Unbenanntes Projekt",
+    "noDescription": "Keine Beschreibung",
+    "imageAlt": "Spielprojekt",
+    "open": "Öffnen",
+    "status": {
+      "published": "Veröffentlicht",
+      "draft": "Entwurf"
+    }
+  },
+  "gameCard": {
+    "centerAvatarAlt": "Zentraler Avatar",
+    "play": "Spielen",
+    "versionValue": "Version : {{version}}",
+    "status": {
+      "published": "Veröffentlicht",
+      "draft": "Entwurf"
+    }
+  },
+  "gameNodeDialog": {
+    "saveError": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut.",
+    "description": "Konfiguriere den Spielknoten {{gameTitle}}",
+    "loading": "Projekt wird geladen...",
+    "gameTitles": {
+      "paragraphLineSelect": "Absatz-Zeilen-Auswahl",
+      "imageTermMatch": "Bild-Begriffs-Matching",
+      "imagePinMark": "Bild-Pin-Markierung"
+    }
+  },
+  "header": {
+    "title": "Game Studio"
+  },
+  "helpDrawer": {
+    "title": "Game Studio Hilfe"
+  }
+}

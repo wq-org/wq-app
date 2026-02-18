@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export interface GameInformationProps {
   title: string
@@ -19,25 +20,27 @@ export default function GameInformation({
   onTitleChange,
   onDescriptionChange,
 }: GameInformationProps) {
+  const { t } = useTranslation('features.games')
+
   return (
     <Card>
       <CardHeader>
-        <Label>Game Information</Label>
+        <Label>{t('gameInformation.title')}</Label>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title">{t('gameInformation.fields.title')}</Label>
           <Input
             id="title"
             type="text"
-            placeholder="Enter game title"
+            placeholder={t('gameInformation.placeholders.title')}
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
           />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('gameInformation.fields.description')}</Label>
             <Text
               as="span"
               variant="small"
@@ -48,7 +51,7 @@ export default function GameInformation({
           </div>
           <Textarea
             id="description"
-            placeholder="Enter game description"
+            placeholder={t('gameInformation.placeholders.description')}
             value={description}
             onChange={(e) => onDescriptionChange(constrainDescription(e.target.value))}
             maxLength={MAX_DESCRIPTION_LENGTH}

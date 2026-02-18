@@ -4,12 +4,15 @@ import { Badge } from '@/components/ui/badge'
 import type { Notification } from '../types/notification.types'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface NotificationItemProps {
   notification: Notification
 }
 
 export default function NotificationItem({ notification }: NotificationItemProps) {
+  const { t } = useTranslation('features.notification')
+
   return (
     <div
       className={cn(
@@ -97,7 +100,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
                 }}
                 className="rounded-full"
               >
-                Accept
+                {t('item.actions.accept')}
               </Button>
             )}
             {notification.actions.decline && (
@@ -110,7 +113,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
                 }}
                 className="rounded-full"
               >
-                Decline
+                {t('item.actions.decline')}
               </Button>
             )}
           </div>

@@ -16,6 +16,7 @@ import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, StickyNote } fro
 import type { AddType } from '../types/command-bar.types'
 import type { Roles } from '@/components/layout/config'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 // Constants for role arrays to minimize duplication
 const ADMIN_AND_TEACHER_ROLES: Roles[] = ['super_admin', 'institution_admin', 'teacher']
@@ -82,6 +83,7 @@ interface CommandAddDialogProps {
 }
 
 const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDialogProps) => {
+  const { t } = useTranslation('features.commandPalette')
   const navigate = useNavigate()
   const { profile } = useUser()
   const { addNode } = useGameStudioContext()
@@ -93,22 +95,22 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
   const addOptions: AddOption[] = [
     {
       type: 'course',
-      label: 'Add Course',
-      description: 'Create a new course',
+      label: t('addDialog.options.course.label'),
+      description: t('addDialog.options.course.description'),
       icon: BookOpen,
       availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
     {
       type: 'institution',
-      label: 'Add Institution',
-      description: 'Create a new institution',
+      label: t('addDialog.options.institution.label'),
+      description: t('addDialog.options.institution.description'),
       icon: Building2,
       availableForRoles: SUPER_ADMIN_ONLY,
     },
     {
       type: 'game',
-      label: 'New Game',
-      description: 'Create a new educational game',
+      label: t('addDialog.options.game.label'),
+      description: t('addDialog.options.game.description'),
       icon: Gamepad2,
       availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
@@ -134,7 +136,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
       // New Game: use createGameForStudio and open the new project on canvas
       if (selectedType === 'game' && profile?.user_id) {
         const created = await createGameForStudio(profile.user_id, {
-          title: title.trim() || 'Untitled Game',
+          title: title.trim() || t('addDialog.untitledGame'),
           description: description.trim() || '',
         })
         setTitle('')
@@ -191,18 +193,35 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
     setSelectedType(type)
   }
 
+  const getTypeLabel = (type: AddType) => {
+    switch (type) {
+      case 'course':
+        return t('addDialog.types.course')
+      case 'institution':
+        return t('addDialog.types.institution')
+      case 'game':
+        return t('addDialog.types.game')
+      case 'notes':
+        return t('addDialog.types.notes')
+      case 'node':
+        return t('addDialog.types.node')
+      default:
+        return type
+    }
+  }
+
   // Show selection list if no type is selected
   if (!selectedType) {
     return (
       <Card className="max-w-md mx-auto border-0 shadow-none">
         <CardHeader className="items-center p-0">
-          <CardTitle className="text-xl text-gray-900">Add New</CardTitle>
+          <CardTitle className="text-xl text-gray-900">{t('addDialog.title')}</CardTitle>
           <Text
             as="p"
             variant="body"
             className="text-sm text-gray-500 mt-2 font-normal"
           >
-            Choose what you want to create.
+            {t('addDialog.subtitle')}
           </Text>
         </CardHeader>
 
@@ -255,7 +274,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
               <MoveLeft className="h-4 w-4" />
             </Button>
             <CardTitle className="text-xl text-gray-900">
-              Add New {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}
+              {t('addDialog.formTitle', { type: getTypeLabel(selectedType) })}
             </CardTitle>
           </div>
           <Text
@@ -263,7 +282,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
             variant="body"
             className="text-sm text-gray-500 mt-2 font-normal"
           >
-            Create a new {selectedType} to get started.
+            {t('addDialog.formSubtitle', { type: getTypeLabel(selectedType).toLowerCase() })}
           </Text>
         </CardHeader>
 
@@ -273,11 +292,13 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
               htmlFor={`${selectedType}-title`}
               className="font-normal text-gray-700"
             >
-              {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Title
+              {t('addDialog.fieldTitleLabel', { type: getTypeLabel(selectedType) })}
             </Label>
             <Input
               id={`${selectedType}-title`}
-              placeholder={`${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Title`}
+              placeholder={t('addDialog.fieldTitlePlaceholder', {
+                type: getTypeLabel(selectedType),
+              })}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -290,11 +311,13 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
               htmlFor={`${selectedType}-description`}
               className="font-normal text-gray-700"
             >
-              {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Description
+              {t('addDialog.fieldDescriptionLabel', { type: getTypeLabel(selectedType) })}
             </Label>
             <Textarea
               id={`${selectedType}-description`}
-              placeholder={`${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Description`}
+              placeholder={t('addDialog.fieldDescriptionPlaceholder', {
+                type: getTypeLabel(selectedType),
+              })}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -312,7 +335,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
             className="w-full"
             disabled={loading}
           >
-            Cancel
+            {t('addDialog.actions.cancel')}
           </Button>
           <Button
             type="submit"
@@ -321,8 +344,8 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
             className="w-full"
           >
             {loading
-              ? 'Creating...'
-              : `Create ${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}`}
+              ? t('addDialog.actions.creating')
+              : t('addDialog.actions.create', { type: getTypeLabel(selectedType) })}
           </Button>
         </CardFooter>
       </form>

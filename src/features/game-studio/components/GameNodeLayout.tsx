@@ -4,6 +4,7 @@ import GameNodeSettings from './GameNodeSettings'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { GameNodePointsContext } from '@/contexts/game-studio'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface GameNodeLayoutProps {
   nodeId?: string
@@ -36,6 +37,7 @@ export default function GameNodeLayout({
   onDelete,
   onRemoveImage,
 }: GameNodeLayoutProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
   return (
@@ -58,7 +60,7 @@ export default function GameNodeLayout({
               as="span"
               variant="small"
             >
-              Overview
+              {t('nodeLayout.overviewTab')}
             </Text>
           </button>
           <button
@@ -74,7 +76,7 @@ export default function GameNodeLayout({
               as="span"
               variant="small"
             >
-              Settings
+              {t('nodeLayout.settingsTab')}
             </Text>
           </button>
         </div>
@@ -98,7 +100,7 @@ export default function GameNodeLayout({
               </div>
             )}
             {!overviewContent && !GameComponent && (
-              <div className="text-muted-foreground">No content available</div>
+              <div className="text-muted-foreground">{t('nodeLayout.noContent')}</div>
             )}
           </div>
         )}
@@ -112,7 +114,7 @@ export default function GameNodeLayout({
                   variant="body"
                   className="text-muted-foreground text-sm mb-3"
                 >
-                  Hold the button below for 3 seconds to delete this node.
+                  {t('nodeLayout.deleteHint')}
                 </Text>
                 <HoldToDeleteButton
                   onDelete={onDelete}

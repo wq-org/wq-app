@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowRight } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import type { GameCardProps } from '../types/game-studio.types'
+import { useTranslation } from 'react-i18next'
 
 /** Positions (percent) for avatars on a circle around the center, with slight random variation */
 function getCirclePositions(
@@ -66,6 +67,7 @@ const CENTER_AVATAR_INDEX = 7
 const ORBITAL_AVATAR_COUNT = 7
 
 export default function GameCard({ title, description, version, status, onPlay }: GameCardProps) {
+  const { t } = useTranslation('features.gameStudio')
   const orbitalPositions = useMemo(() => getCirclePositions(ORBITAL_AVATAR_COUNT), [])
 
   return (
@@ -74,7 +76,7 @@ export default function GameCard({ title, description, version, status, onPlay }
       {status && (
         <div className="absolute top-3 left-3 z-10">
           <Badge variant={status === 'published' ? 'default' : 'secondary'}>
-            {status === 'published' ? 'Published' : 'Draft'}
+            {status === 'published' ? t('gameCard.status.published') : t('gameCard.status.draft')}
           </Badge>
         </div>
       )}
@@ -109,7 +111,7 @@ export default function GameCard({ title, description, version, status, onPlay }
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full overflow-hidden border-4 border-white shadow-lg w-20 h-20">
             <img
               src={avatars[CENTER_AVATAR_INDEX]?.url || '/placeholder.svg'}
-              alt="Center avatar"
+              alt={t('gameCard.centerAvatarAlt')}
               width={80}
               height={80}
               className="w-full h-full object-cover"
@@ -124,7 +126,7 @@ export default function GameCard({ title, description, version, status, onPlay }
               variant="outline"
               className="text-xs"
             >
-              Version : {version}
+              {t('gameCard.versionValue', { version })}
             </Badge>
           )}
           <div className="space-y-1">
@@ -148,7 +150,7 @@ export default function GameCard({ title, description, version, status, onPlay }
                 as="p"
                 variant="body"
               >
-                Play
+                {t('gameCard.play')}
               </Text>
               <ArrowRight className="w-5 h-5" />
             </Button>

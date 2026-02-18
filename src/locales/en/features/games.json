@@ -1,1 +1,48 @@
-{}
+{
+  "previewAlert": {
+    "title": "Preview only",
+    "description": "The correct/incorrect icons are for preview only and vanish in production so players do not see them during play."
+  },
+  "gameInformation": {
+    "title": "Game Information",
+    "fields": {
+      "title": "Title",
+      "description": "Description"
+    },
+    "placeholders": {
+      "title": "Enter game title",
+      "description": "Enter game description"
+    }
+  },
+  "resultTable": {
+    "title": "Selected Answers",
+    "emptyValue": "—",
+    "columns": {
+      "statement": "Statement",
+      "selectedAnswers": "Selected answers",
+      "result": "Result",
+      "feedback": "Feedback",
+      "footer": "Overall"
+    }
+  },
+  "stats": {
+    "correctAnswers": "Correct Answers",
+    "wrongAnswers": "Wrong Answers",
+    "score": "Score"
+  },
+  "gameInformationCard": {
+    "showMore": "Show more",
+    "showLess": "Show less"
+  },
+  "gameSummary": {
+    "questions": "questions",
+    "points": "points",
+    "totalLabel": "Total {{label}}: {{value}}"
+  },
+  "feedbackInput": {
+    "placeholder": "Optional feedback shown after Check"
+  },
+  "pointsInput": {
+    "placeholder": "pts"
+  }
+}

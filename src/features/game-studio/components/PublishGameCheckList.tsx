@@ -8,12 +8,14 @@ import type { ValidationResult } from '../utils/publishValidation'
 import { getDisplayNameForNodeType } from '../utils/publishValidation'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export interface PublishGameCheckListProps {
   validationResult: ValidationResult
 }
 
 export default function PublishGameCheckList({ validationResult }: PublishGameCheckListProps) {
+  const { t } = useTranslation('features.gameStudio')
   const { nodeItems, globalErrors } = validationResult
   const hasAnyErrors = globalErrors.length > 0 || nodeItems.some((item) => item.errors.length > 0)
 
@@ -26,7 +28,9 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
           ) : (
             <Check className="size-4 text-slate-600 shrink-0" />
           )}
-          Requirements {hasAnyErrors ? 'not met' : 'met'}
+          {hasAnyErrors
+            ? t('publishChecklist.requirementsNotMet')
+            : t('publishChecklist.requirementsMet')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
@@ -34,13 +38,13 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
           variant="default"
           className="border-slate-200 bg-slate-50 text-slate-800 [&>svg]:text-slate-600"
         >
-          <AlertTitle className="text-slate-800">Publishing rules</AlertTitle>
+          <AlertTitle className="text-slate-800">{t('publishChecklist.rulesTitle')}</AlertTitle>
           <AlertDescription className="text-slate-600 gap-0.5">
             <ul className="list-disc list-inside space-y-0.5">
-              <li>No abandoned or disconnected nodes</li>
-              <li>All nodes linked from Start to End</li>
-              <li>All nodes connected (path Start to End).</li>
-              <li>Each node minimally filled so the game is playable.</li>
+              <li>{t('publishChecklist.rules.noAbandoned')}</li>
+              <li>{t('publishChecklist.rules.linkedStartToEnd')}</li>
+              <li>{t('publishChecklist.rules.connectedPath')}</li>
+              <li>{t('publishChecklist.rules.minimallyFilled')}</li>
             </ul>
           </AlertDescription>
         </Alert>

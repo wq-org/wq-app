@@ -1,1 +1,48 @@
-{}
+{
+  "previewAlert": {
+    "title": "Nur Vorschau",
+    "description": "Die Symbole für richtig/falsch sind nur für die Vorschau und verschwinden in der Produktion, damit Spielende sie während des Spiels nicht sehen."
+  },
+  "gameInformation": {
+    "title": "Spielinformationen",
+    "fields": {
+      "title": "Titel",
+      "description": "Beschreibung"
+    },
+    "placeholders": {
+      "title": "Spieltitel eingeben",
+      "description": "Spielbeschreibung eingeben"
+    }
+  },
+  "resultTable": {
+    "title": "Ausgewählte Antworten",
+    "emptyValue": "—",
+    "columns": {
+      "statement": "Aussage",
+      "selectedAnswers": "Ausgewählte Antworten",
+      "result": "Ergebnis",
+      "feedback": "Feedback",
+      "footer": "Gesamt"
+    }
+  },
+  "stats": {
+    "correctAnswers": "Richtige Antworten",
+    "wrongAnswers": "Falsche Antworten",
+    "score": "Punktzahl"
+  },
+  "gameInformationCard": {
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen"
+  },
+  "gameSummary": {
+    "questions": "Fragen",
+    "points": "Punkte",
+    "totalLabel": "Gesamt {{label}}: {{value}}"
+  },
+  "feedbackInput": {
+    "placeholder": "Optionales Feedback nach dem Prüfen"
+  },
+  "pointsInput": {
+    "placeholder": "Pkt"
+  }
+}

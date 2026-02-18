@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { MoveLeft } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 import { cn } from '@/lib/utils'
 import { BACKGROUND_HUMAN } from '@/lib/constants'
@@ -9,6 +9,7 @@ interface AuthCardLayoutProps {
   backTo?: string
   className?: string
   backgroundImage?: string
+  navigationSlot?: React.ReactNode
 }
 
 export default function AuthCardLayout({
@@ -16,6 +17,7 @@ export default function AuthCardLayout({
   backTo = '/',
   className,
   backgroundImage = BACKGROUND_HUMAN,
+  navigationSlot,
 }: AuthCardLayoutProps) {
   return (
     <div
@@ -48,15 +50,16 @@ export default function AuthCardLayout({
 
         {/* Right panel - form */}
         <div className="flex w-full flex-col justify-between px-8 py-8 md:w-[60%] md:px-10 md:py-10">
-          {/* Back link */}
-          <div className="mb-4">
+          {/* Top nav: back (icon only) left, slot (e.g. language switcher) at end */}
+          <div className="mb-4 flex items-center justify-between gap-3">
             <Link
               to={backTo}
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Back"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-gray-100 hover:text-foreground"
             >
-              <ArrowLeft className="size-4" />
-              Back
+              <MoveLeft className="size-5" />
             </Link>
+            {navigationSlot && <div className="flex shrink-0 justify-end">{navigationSlot}</div>}
           </div>
 
           {/* Form content */}

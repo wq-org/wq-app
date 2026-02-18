@@ -1,1 +1,22 @@
-{}
+{
+  "actions": {
+    "follow": "Follow"
+  },
+  "tabs": {
+    "teachers": "Teachers",
+    "students": "Students"
+  },
+  "links": {
+    "website": "Website",
+    "twitter": "Twitter",
+    "facebook": "Facebook",
+    "instagram": "Instagram"
+  },
+  "emptyTeachers": {
+    "title": "No teachers found",
+    "description": "Use the command palette to search for teachers and add them to your institution."
+  },
+  "view": {
+    "notFound": "Institution not found"
+  }
+}

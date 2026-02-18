@@ -1,1 +1,23 @@
-{}
+{
+  "panel": {
+    "title": "Notifications",
+    "tabs": {
+      "all": "All",
+      "following": "Following"
+    },
+    "emptyAll": {
+      "title": "No notifications",
+      "description": "You're all caught up!"
+    },
+    "emptyFollowing": {
+      "title": "No following notifications",
+      "description": "Notifications from people you follow will appear here"
+    }
+  },
+  "item": {
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline"
+    }
+  }
+}

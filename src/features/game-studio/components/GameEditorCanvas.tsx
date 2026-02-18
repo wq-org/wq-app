@@ -50,6 +50,7 @@ import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { deleteFile } from '@/features/files/api/filesApi'
 import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
 import Spinner from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -75,6 +76,8 @@ export interface GameEditorCanvasProps {
 }
 
 export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
+  const { t } = useTranslation('features.gameStudio')
+  const fallbackTitle = t('editorCanvas.defaultTitle')
   // ========== Context & State Management ==========
   const {
     nodes: contextNodes,
@@ -97,7 +100,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [isEndDialogOpen, setIsEndDialogOpen] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null)
-  const [gameTitle, setGameTitle] = useState<string>('General')
+  const [gameTitle, setGameTitle] = useState<string>(fallbackTitle)
   const [projectVersion, setProjectVersion] = useState<number>(1)
   const [isPublished, setIsPublished] = useState(false)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
@@ -161,7 +164,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         }))
         setNodes(loadedNodes)
         setEdges(loadedEdges)
-        setGameTitle(game.title || 'General')
+        setGameTitle(game.title || fallbackTitle)
         setProjectVersion(game.version ?? 1)
         setLoadState('loaded')
       })
@@ -170,7 +173,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         toast.error('Failed to load project')
         setLoadState('error')
       })
-  }, [projectId])
+  }, [projectId, fallbackTitle, t])
 
   // ========== Validation Functions ==========
   const checkNodeConstraints = useCallback(
@@ -1157,7 +1160,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               variant="body"
               className="text-sm text-gray-500"
             >
-              Project Loading...
+              {t('editorCanvas.loading')}
             </Text>
           </div>
         )}
@@ -1180,11 +1183,11 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={(e) => {
-                  const newTitle = e.currentTarget.textContent?.trim() || 'General'
+                  const newTitle = e.currentTarget.textContent?.trim() || fallbackTitle
                   setGameTitle(newTitle)
                   if (newTitle === '') {
-                    e.currentTarget.textContent = 'General'
-                    setGameTitle('General')
+                    e.currentTarget.textContent = fallbackTitle
+                    setGameTitle(fallbackTitle)
                   }
                 }}
                 onKeyDown={(e) => {
@@ -1206,23 +1209,25 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               variant="outline"
               onClick={handleSave}
             >
-              Save
+              {t('editorCanvas.actions.save')}
             </Button>
             <Button
               variant="outline"
               onClick={() => setIsPreviewDrawerOpen(true)}
             >
               <Play className="h-4 w-4 mr-2" />
-              Preview
+              {t('editorCanvas.actions.preview')}
             </Button>
             <Button
               variant="outline"
               onClick={handleLeaveProject}
             >
               <DoorOpen className="h-4 w-4 mr-2" />
-              Leave
+              {t('editorCanvas.actions.leave')}
             </Button>
-            <Button onClick={() => setIsPublishDrawerOpen(true)}>Publish</Button>
+            <Button onClick={() => setIsPublishDrawerOpen(true)}>
+              {t('editorCanvas.actions.publish')}
+            </Button>
             <Button
               variant="ghost"
               size="icon"

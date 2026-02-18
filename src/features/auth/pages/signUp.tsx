@@ -21,6 +21,7 @@ import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
 import SelectTabs from '@/components/shared/tabs/SelectTabs'
 import type { TabItem } from '@/components/shared/tabs/SelectTabs'
+import AuthLanguageSwitcher from '../components/AuthLanguageSwitcher'
 
 const roleTabs: TabItem[] = [
   { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
@@ -96,7 +97,10 @@ export default function SignUpPage() {
   }
 
   return (
-    <AuthCardLayout backTo="/">
+    <AuthCardLayout
+      backTo="/"
+      navigationSlot={<AuthLanguageSwitcher />}
+    >
       <div className="flex flex-col gap-6">
         {/* Title */}
         <div className="flex flex-col items-center gap-1 text-center">

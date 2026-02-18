@@ -18,23 +18,24 @@ import { GameEditorProvider } from '@/contexts/game-studio'
 import { logColor } from '@/lib/utils'
 import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 // Map node types to game components and titles (components may accept initialData)
 const nodeTypeToGame: Record<
   string,
-  { component: React.ComponentType<{ initialData?: unknown }>; title: string }
+  { component: React.ComponentType<{ initialData?: unknown }>; titleKey: string }
 > = {
   gameParagraph: {
     component: ParagraphLineSelectGame,
-    title: 'Paragraph Line Select',
+    titleKey: 'gameNodeDialog.gameTitles.paragraphLineSelect',
   },
   gameImageTerms: {
     component: ImageTermMatchGame,
-    title: 'Image Term Match',
+    titleKey: 'gameNodeDialog.gameTitles.imageTermMatch',
   },
   gameImagePin: {
     component: ImagePinMarkGame,
-    title: 'Image Pin Mark',
+    titleKey: 'gameNodeDialog.gameTitles.imagePinMark',
   },
 }
 
@@ -49,6 +50,7 @@ export default function GameNodeDialog({
   onUploadImage,
   onRemoveImage,
 }: GameNodeDialogProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [points, setPoints] = useState(100)
   const [saving, setSaving] = useState(false)
   const [isRendering, setIsRendering] = useState(false)
@@ -81,7 +83,7 @@ export default function GameNodeDialog({
 
   const GameComponent = gameConfig.component
 
-  const SAVE_ERROR_MESSAGE = 'Something went wrong. Please try again in a few seconds.'
+  const SAVE_ERROR_MESSAGE = t('gameNodeDialog.saveError')
 
   const handleSave = async () => {
     try {
@@ -246,9 +248,9 @@ export default function GameNodeDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw]! max-w-[1080px]!">
         <DialogHeader>
-          <DialogTitle>{gameConfig.title}</DialogTitle>
+          <DialogTitle>{t(gameConfig.titleKey)}</DialogTitle>
           <DialogDescription className="sr-only">
-            Configure {gameConfig.title} game node
+            {t('gameNodeDialog.description', { gameTitle: t(gameConfig.titleKey) })}
           </DialogDescription>
         </DialogHeader>
         <GameEditorProvider
@@ -280,7 +282,7 @@ export default function GameNodeDialog({
               variant="body"
               className="text-sm text-gray-500"
             >
-              Project Loading...
+              {t('gameNodeDialog.loading')}
             </Text>
           </div>
         )}
@@ -290,13 +292,13 @@ export default function GameNodeDialog({
             onClick={handleCancel}
             disabled={saving}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleSave}
             disabled={saving}
           >
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? t('common.saving') : t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

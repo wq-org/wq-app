@@ -53,6 +53,7 @@ export default function DashboardLayout({
   const defaultTabs = getDashboardTabs(role as Roles)
   const dashboardTabs = customTabs || defaultTabs
   const { t, i18n } = useTranslation('features.teacher')
+  const { t: tLayout } = useTranslation('layout.dashboardLayout')
 
   function handleTabClick(tabId: string) {
     setActiveTab(tabId)
@@ -222,7 +223,7 @@ export default function DashboardLayout({
                           as="p"
                           variant="body"
                         >
-                          {tab.label}
+                          {tLayout(`tabs.${tab.id}`)}
                         </Text>
                       </Text>
                     )

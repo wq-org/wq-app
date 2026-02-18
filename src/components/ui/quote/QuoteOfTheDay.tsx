@@ -35,7 +35,7 @@ export function QuoteOfTheDay({ className = '' }: Props) {
       className={`max-w-[220px] ${className}`.trim()}
     >
       <blockquote>
-        <p className="text-muted-foreground text-sm leading-relaxed italic text-center">
+        <p className="text-muted-foreground text-xl leading-relaxed italic text-center">
           {quote.text}
         </p>
       </blockquote>

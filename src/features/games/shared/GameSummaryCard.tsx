@@ -1,6 +1,7 @@
 import { ListOrdered, Award } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export interface GameSummaryCardProps {
   totalQuestions: number
@@ -18,6 +19,7 @@ export default function GameSummaryCard({
   pointsLabel,
   pointsSubtitle,
 }: GameSummaryCardProps) {
+  const { t } = useTranslation('features.games')
   return (
     <Card>
       <CardContent className="p-4">
@@ -32,7 +34,10 @@ export default function GameSummaryCard({
                 className="size-4"
                 aria-hidden
               />
-              Total {questionsLabel || 'questions'}: {totalQuestions}
+              {t('gameSummary.totalLabel', {
+                label: questionsLabel || t('gameSummary.questions'),
+                value: totalQuestions,
+              })}
             </Text>
             <Text
               as="span"
@@ -43,7 +48,10 @@ export default function GameSummaryCard({
                 className="size-4"
                 aria-hidden
               />
-              Total {pointsLabel || 'points'}: {totalPoints}
+              {t('gameSummary.totalLabel', {
+                label: pointsLabel || t('gameSummary.points'),
+                value: totalPoints,
+              })}
             </Text>
           </div>
           {pointsSubtitle && (
