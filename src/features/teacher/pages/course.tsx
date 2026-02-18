@@ -12,7 +12,7 @@ import { CreateLessonForm } from '@/features/lessons/components/CreateLessonForm
 import { LessonCardList } from '@/features/lessons/components/LessonCardList'
 import { EmptyLessonsView } from '@/features/lessons/components/EmptyLessonsView'
 import type { Lesson } from '@/features/lessons/types/lesson.types'
-import { getLessonsByTopicId } from '@/features/lessons/api/lessonsApi'
+import { getLessonsByTopicId, deleteLesson } from '@/features/lessons/api/lessonsApi'
 import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/courses/api/coursesApi'
 import { Text } from '@/components/ui/text'
 export default function Course() {
@@ -223,6 +223,17 @@ export default function Course() {
               lessons={lessons}
               onView={(lessonId) => {
                 navigate(`/teacher/lesson/${lessonId}`)
+              }}
+              onDelete={async (lessonId) => {
+                try {
+                  await deleteLesson(lessonId)
+                  if (selectedTopic?.id) {
+                    const list = await getLessonsByTopicId(selectedTopic.id)
+                    setLessons(list)
+                  }
+                } catch (e) {
+                  console.error(e)
+                }
               }}
             />
           )}

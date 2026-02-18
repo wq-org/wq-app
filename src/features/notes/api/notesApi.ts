@@ -160,3 +160,12 @@ export async function createNote(input: CreateNoteInput): Promise<Note> {
 
   throw new Error(lastError ?? 'Failed to create note')
 }
+
+export async function deleteNote(noteId: string): Promise<void> {
+  const { error } = await supabase.from(NOTES_TABLE).delete().eq('id', noteId)
+
+  if (error) {
+    console.error('Error deleting note:', error)
+    throw error
+  }
+}

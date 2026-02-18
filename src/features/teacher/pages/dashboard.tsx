@@ -16,7 +16,7 @@ import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { GamePlayList } from '@/features/game-play'
-import { fetchNotesByUser, NotesTabView } from '@/features/notes'
+import { fetchNotesByUser, NotesTabView, deleteNote } from '@/features/notes'
 import type { Note } from '@/features/notes'
 
 // Helper function to map file extension to FileItem type
@@ -135,6 +135,20 @@ export default function Dashboard() {
     }
   }, [getUserId, loading])
 
+  const handleDeleteNote = useCallback(
+    async (noteId: string) => {
+      try {
+        await deleteNote(noteId)
+        await loadNotes()
+      } catch (error) {
+        console.error('Error deleting note:', error)
+        const { toast } = await import('sonner')
+        toast.error('Failed to delete note')
+      }
+    },
+    [loadNotes],
+  )
+
   useEffect(() => {
     if (selectedTab === 'notes') {
       loadNotes()
@@ -217,6 +231,7 @@ export default function Dashboard() {
             notes={notes}
             loading={notesLoading}
             onRefresh={loadNotes}
+            onDelete={handleDeleteNote}
           />
         )}
       </DashboardLayout>
