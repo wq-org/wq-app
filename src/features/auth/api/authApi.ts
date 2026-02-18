@@ -125,9 +125,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
   const baseUrl =
     import.meta.env.VITE_PUBLIC_APP_URL?.trim() ||
     (typeof window !== 'undefined' ? window.location.origin : '')
-  const redirectTo = baseUrl
-    ? `${String(baseUrl).replace(/\/$/, '')}/auth/reset-password`
-    : ''
+  const redirectTo = baseUrl ? `${String(baseUrl).replace(/\/$/, '')}/auth/reset-password` : ''
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: redirectTo || undefined,
   })
