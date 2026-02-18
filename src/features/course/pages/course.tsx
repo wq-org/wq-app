@@ -155,7 +155,10 @@ export default function Course() {
 
       {topicsLoading ? (
         <div className="flex items-center justify-center py-8">
-          <Spinner variant="gray" size="md" />
+          <Spinner
+            variant="gray"
+            size="md"
+          />
         </div>
       ) : topics.length === 0 ? (
         <EmptyTopicsView />
@@ -212,7 +215,10 @@ export default function Course() {
 
           {lessonsLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Spinner variant="gray" size="sm" />
+              <Spinner
+                variant="gray"
+                size="sm"
+              />
             </div>
           ) : lessons.length === 0 ? (
             <EmptyLessonsView />

@@ -31,7 +31,11 @@ export default function CourseLayout() {
     return (
       <AppWrapper role="teacher">
         <div className="flex flex-col gap-6 max-w-4xl mx-auto p-6">
-          <Text as="p" variant="body" className="text-muted-foreground">
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground"
+          >
             Course not found
           </Text>
         </div>

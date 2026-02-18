@@ -27,10 +27,11 @@ export default function LessonLayout({
               : 'text-black/40 hover:text-black/60 border-transparent'
           }`}
         >
-          <LayoutDashboard
-            className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
-          />
-          <Text as="span" variant="small">
+          <LayoutDashboard className={activeTab === 'overview' ? 'text-black' : 'text-black/40'} />
+          <Text
+            as="span"
+            variant="small"
+          >
             Overview
           </Text>
         </button>
@@ -43,7 +44,10 @@ export default function LessonLayout({
           }`}
         >
           <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-          <Text as="span" variant="small">
+          <Text
+            as="span"
+            variant="small"
+          >
             Settings
           </Text>
         </button>

@@ -124,7 +124,12 @@ export default function Lesson() {
     <LessonLayout
       lessonId={lessonId}
       overviewContent={overviewContent}
-      settingsContent={<LessonSettings lessonId={lessonId} courseId={courseId} />}
+      settingsContent={
+        <LessonSettings
+          lessonId={lessonId}
+          courseId={courseId}
+        />
+      }
     />
   )
 }

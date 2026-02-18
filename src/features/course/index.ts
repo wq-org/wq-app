@@ -6,7 +6,11 @@ export { TopicBadge } from './components/TopicBadge'
 export { default as CourseSettings } from './components/CourseSettings'
 export { default as EmptyCourseView } from './components/EmptyCourseView'
 export { CourseLessonTable } from './components/CourseLessonTable'
-export type { CourseLessonTableProps, OnViewLesson, OnDeleteLesson } from './components/CourseLessonTable'
+export type {
+  CourseLessonTableProps,
+  OnViewLesson,
+  OnDeleteLesson,
+} from './components/CourseLessonTable'
 export { CreateLessonForm } from './components/CreateLessonForm'
 export type { CreateLessonFormProps } from './components/CreateLessonForm'
 export { EmptyLessonsView } from './components/EmptyLessonsView'

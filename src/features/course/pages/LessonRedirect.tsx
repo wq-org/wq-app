@@ -43,16 +43,29 @@ export default function LessonRedirect() {
   }, [lessonId])
 
   if (error) {
-    return <Navigate to="/teacher/dashboard" replace />
+    return (
+      <Navigate
+        to="/teacher/dashboard"
+        replace
+      />
+    )
   }
 
   if (target) {
-    return <Navigate to={target} replace />
+    return (
+      <Navigate
+        to={target}
+        replace
+      />
+    )
   }
 
   return (
     <div className="flex items-center justify-center min-h-[200px]">
-      <Spinner variant="gray" size="lg" />
+      <Spinner
+        variant="gray"
+        size="lg"
+      />
     </div>
   )
 }
