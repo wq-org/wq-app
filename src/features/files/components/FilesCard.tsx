@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { LayoutDashboard, Settings, Trash2, X } from 'lucide-react'
+import { LayoutDashboard, Settings, X } from 'lucide-react'
 import { Text } from '@/components/ui/text'
+import SelectTabs from '@/components/shared/tabs/SelectTabs'
 import {
   Drawer,
   DrawerContent,
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { ConfirmationDialog, SimplePDFViewer, SimpleVideoPlayer } from '@/components/shared'
+import { SimplePDFViewer, SimpleVideoPlayer } from '@/components/shared'
 import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { useUser } from '@/contexts/user'
@@ -21,6 +22,7 @@ import { getFileBlobUrl, deleteFile, renameFile } from '../api/filesApi'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { FailedToLoad } from '@/components'
 
 interface FilesCardProps {
@@ -35,7 +37,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
   const { t } = useTranslation('features.files')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
   const [filename, setFilename] = useState(file.filename)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [deleteInProgress, setDeleteInProgress] = useState(false)
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [newFile, setNewFile] = useState<File | null>(null)
@@ -157,6 +159,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       return
     }
 
+    setDeleteInProgress(true)
     try {
       const result = await deleteFile(file.storagePath)
       if (result.success) {
@@ -170,7 +173,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       console.error('Error deleting file:', error)
       toast.error(t('toasts.deleteUnexpected'))
     } finally {
-      setShowDeleteDialog(false)
+      setDeleteInProgress(false)
     }
   }
 
@@ -285,50 +288,19 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <DrawerDescription className="sr-only">
-                {t('drawer.description')}
-              </DrawerDescription>
+              <DrawerDescription className="sr-only">{t('drawer.description')}</DrawerDescription>
             </DrawerHeader>
 
             <div className="flex flex-col flex-1 overflow-hidden">
-              {/* Tabs */}
-              <div className="flex border-b px-6 pt-4 shrink-0">
-                <Button
-                  variant="ghost"
-                  onClick={() => setActiveTab('overview')}
-                  className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
-                    activeTab === 'overview'
-                      ? 'text-black border-black font-medium animate-in zoom-in-95'
-                      : 'text-black/40 hover:text-black/60 border-transparent'
-                  }`}
-                >
-                  <LayoutDashboard
-                    className={activeTab === 'overview' ? 'text-black' : 'text-black/40'}
-                  />
-                  <Text
-                    as="span"
-                    variant="small"
-                  >
-                    {t('drawer.tabs.overview')}
-                  </Text>
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setActiveTab('settings')}
-                  className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
-                    activeTab === 'settings'
-                      ? 'text-black border-black font-medium animate-in zoom-in-95'
-                      : 'text-black/40 hover:text-black/60 border-transparent'
-                  }`}
-                >
-                  <Settings className={activeTab === 'settings' ? 'text-black' : 'text-black/40'} />
-                  <Text
-                    as="span"
-                    variant="small"
-                  >
-                    {t('drawer.tabs.settings')}
-                  </Text>
-                </Button>
+              <div className="border-b px-6 pt-4 shrink-0">
+                <SelectTabs
+                  tabs={[
+                    { id: 'overview', icon: LayoutDashboard, title: t('drawer.tabs.overview') },
+                    { id: 'settings', icon: Settings, title: t('drawer.tabs.settings') },
+                  ]}
+                  activeTabId={activeTab}
+                  onTabChange={(id) => setActiveTab(id as 'overview' | 'settings')}
+                />
               </div>
 
               {/* Tab Content */}
@@ -534,20 +506,20 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       </Button>
                       <div className="flex gap-2">
                         <Button
-                          variant="destructive"
-                          onClick={() => setShowDeleteDialog(true)}
-                          className="active:animate-in active:zoom-in-95"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          {t('deleteDialog.action')}
-                        </Button>
-                        <Button
                           onClick={handleSaveChanges}
                           disabled={!hasChanges}
                           className="active:animate-in active:zoom-in-95"
                         >
                           {t('editor.saveChanges')}
                         </Button>
+                        <HoldToDeleteButton
+                          onDelete={handleDelete}
+                          loading={deleteInProgress}
+                          className="active:animate-in active:zoom-in-95"
+                        >
+                          {t('deleteDialog.action')}
+                        </HoldToDeleteButton>
+
                       </div>
                     </div>
                   </div>
@@ -557,21 +529,6 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
           </div>
         </DrawerContent>
       </Drawer>
-
-      <ConfirmationDialog
-        title={t('deleteDialog.title')}
-        description={t('deleteDialog.description', {
-          filename: file.filename,
-        })}
-        onConfirm={handleDelete}
-        onCancel={() => setShowDeleteDialog(false)}
-        Icon={Trash2}
-        confirmText={t('deleteDialog.confirm')}
-        cancelText={t('deleteDialog.cancel')}
-        confirmVariant="destructive"
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-      />
     </>
   )
 }

@@ -231,9 +231,7 @@ export default function DashboardLayout({
                 </div>
               </div>
 
-              <Container className="flex w-full px-0 flex-1 min-h-[420px]">
-                {children}
-              </Container>
+              <Container className="flex w-full px-0 flex-1 min-h-[420px]">{children}</Container>
             </Container>
           </section>
         </section>
