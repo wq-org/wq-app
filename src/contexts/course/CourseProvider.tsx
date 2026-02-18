@@ -5,14 +5,14 @@ import {
   createCourse as createCourseApi,
   updateCourse as updateCourseApi,
   deleteCourse as deleteCourseApi,
-} from '@/features/courses/api/coursesApi'
+} from '@/features/course/api/coursesApi'
 import { useUser } from '../user'
 import { CourseContext, type CourseContextValue } from './CourseContext'
 import type {
   Course,
   CreateCourseData,
   UpdateCourseData,
-} from '@/features/courses/types/course.types'
+} from '@/features/course/types/course.types'
 
 export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [courses, setCourses] = useState<Course[]>([])

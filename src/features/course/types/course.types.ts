@@ -24,8 +24,6 @@ export interface UpdateCourseData {
   title?: string
   description?: string
   is_published?: boolean
-  // Optionally allow changes to teacher_id/institution_id,
-  // but typically these are not updated
 }
 
 // Course card props for display

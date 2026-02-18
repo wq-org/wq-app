@@ -1,59 +1,60 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import CourseLayout from '@/components/layout/CourseLayout'
-import CourseSettings from '@/features/courses/components/CourseSettings'
 import { useCourse } from '@/contexts/course'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus, Loader2 } from 'lucide-react'
-import { EmptyTopicsView } from '@/features/courses/components/EmptyTopicsView'
-import { TopicBadge, type Topic } from '@/features/courses/components/TopicBadge'
-import { CreateLessonForm } from '@/features/lessons/components/CreateLessonForm'
-import { LessonCardList } from '@/features/lessons/components/LessonCardList'
-import { EmptyLessonsView } from '@/features/lessons/components/EmptyLessonsView'
-import type { Lesson } from '@/features/lessons/types/lesson.types'
-import { getLessonsByTopicId, deleteLesson } from '@/features/lessons/api/lessonsApi'
-import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/courses/api/coursesApi'
+import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
+import { TopicBadge, type Topic } from '@/features/course/components/TopicBadge'
+import { CreateLessonForm } from '@/features/course/components/CreateLessonForm'
+import { CourseLessonTable } from '@/features/course/components/CourseLessonTable'
+import { EmptyLessonsView } from '@/features/course/components/EmptyLessonsView'
+import type { Lesson } from '@/features/course/types/lesson.types'
+import { getLessonsByTopicId, deleteLesson } from '@/features/course/api/lessonsApi'
+import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/course/api/coursesApi'
 import { Text } from '@/components/ui/text'
+import Spinner from '@/components/ui/spinner'
+
 export default function Course() {
-  const { id } = useParams<{ id: string }>()
+  const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
   const { fetchCourseById, selectedCourse } = useCourse()
   const [newTopic, setNewTopic] = useState('')
   const [topics, setTopics] = useState<Topic[]>([])
+  const [topicsLoading, setTopicsLoading] = useState(true)
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null)
   const [loading, setLoading] = useState(false)
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [lessonsLoading, setLessonsLoading] = useState(false)
 
-  // Fetch and store course in context when component mounts or id changes
   useEffect(() => {
-    if (id) {
-      // Only fetch if we don't already have this course selected
-      if (!selectedCourse || selectedCourse.id !== id) {
-        fetchCourseById(id)
+    if (courseId) {
+      if (!selectedCourse || selectedCourse.id !== courseId) {
+        fetchCourseById(courseId)
       }
     }
-  }, [id, fetchCourseById, selectedCourse])
+  }, [courseId, fetchCourseById, selectedCourse])
 
-  // Fetch topics for the course when component mounts or id changes
   useEffect(() => {
     const fetchTopics = async () => {
-      if (id) {
+      if (courseId) {
+        setTopicsLoading(true)
         try {
-          const fetchedTopics = await getTopicsByCourseId(id)
+          const fetchedTopics = await getTopicsByCourseId(courseId)
           setTopics(fetchedTopics)
         } catch (error) {
           console.error('Failed to fetch topics:', error)
-          // TODO: Show error toast/notification
+        } finally {
+          setTopicsLoading(false)
         }
+      } else {
+        setTopicsLoading(false)
       }
     }
 
     fetchTopics()
-  }, [id])
+  }, [courseId])
 
-  // Fetch lessons when a topic is selected
   useEffect(() => {
     const fetchLessons = async () => {
       if (selectedTopic?.id) {
@@ -63,12 +64,10 @@ export default function Course() {
           setLessons(fetchedLessons)
         } catch (error) {
           console.error('Failed to fetch lessons:', error)
-          // TODO: Show error toast/notification
         } finally {
           setLessonsLoading(false)
         }
       } else {
-        // Clear lessons when no topic is selected
         setLessons([])
       }
     }
@@ -77,11 +76,11 @@ export default function Course() {
   }, [selectedTopic?.id])
 
   const addTopic = async () => {
-    if (!newTopic.trim() || !id) return
+    if (!newTopic.trim() || !courseId) return
 
     setLoading(true)
     try {
-      const createdTopic = await createTopic(id, newTopic.trim())
+      const createdTopic = await createTopic(courseId, newTopic.trim())
       const topic: Topic = {
         id: createdTopic.id,
         name: createdTopic.name,
@@ -90,7 +89,6 @@ export default function Course() {
       setNewTopic('')
     } catch (error) {
       console.error('Failed to create topic:', error)
-      // TODO: Show error toast/notification
     } finally {
       setLoading(false)
     }
@@ -109,7 +107,6 @@ export default function Course() {
       }
     } catch (error) {
       console.error('Failed to delete topic:', error)
-      // TODO: Show error toast/notification
     }
   }
 
@@ -119,11 +116,11 @@ export default function Course() {
     }
   }
 
-  if (!id) {
+  if (!courseId) {
     return <div>Course not found</div>
   }
 
-  const overviewContent = (
+  return (
     <div className="flex flex-col gap-6 pb-32">
       <div className="flex items-center gap-4">
         <Input
@@ -156,11 +153,13 @@ export default function Course() {
         Themen
       </Text>
 
-      {/* Empty state when no topics */}
-      {topics.length === 0 ? (
+      {topicsLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Spinner variant="gray" size="md" />
+        </div>
+      ) : topics.length === 0 ? (
         <EmptyTopicsView />
       ) : (
-        /* Topics list */
         <div className="flex flex-wrap gap-4">
           {topics.map((topic, index) => (
             <TopicBadge
@@ -175,7 +174,6 @@ export default function Course() {
         </div>
       )}
 
-      {/* Lessons Container - Only shows when a topic is selected */}
       {selectedTopic && (
         <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="mb-6">
@@ -198,8 +196,8 @@ export default function Course() {
           <div className="mb-6">
             <CreateLessonForm
               topicId={selectedTopic.id}
+              courseId={courseId}
               onLessonCreated={async () => {
-                // Refresh lessons list after creating a lesson
                 if (selectedTopic?.id) {
                   try {
                     const fetchedLessons = await getLessonsByTopicId(selectedTopic.id)
@@ -214,15 +212,15 @@ export default function Course() {
 
           {lessonsLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+              <Spinner variant="gray" size="sm" />
             </div>
           ) : lessons.length === 0 ? (
             <EmptyLessonsView />
           ) : (
-            <LessonCardList
+            <CourseLessonTable
               lessons={lessons}
               onView={(lessonId) => {
-                navigate(`/teacher/lesson/${lessonId}`)
+                navigate(`/teacher/course/${courseId}/lesson/${lessonId}`)
               }}
               onDelete={async (lessonId) => {
                 try {
@@ -240,12 +238,5 @@ export default function Course() {
         </div>
       )}
     </div>
-  )
-
-  return (
-    <CourseLayout
-      overviewContent={overviewContent}
-      settingsContent={<CourseSettings courseId={id} />}
-    />
   )
 }

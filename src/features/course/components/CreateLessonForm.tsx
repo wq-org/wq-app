@@ -6,12 +6,13 @@ import { Plus, Loader2 } from 'lucide-react'
 import { useLesson } from '@/contexts/lesson'
 import { Textarea } from '@/components/ui/textarea'
 
-interface CreateLessonFormProps {
+export interface CreateLessonFormProps {
   topicId?: string
+  courseId?: string
   onLessonCreated?: () => void
 }
 
-export function CreateLessonForm({ topicId, onLessonCreated }: CreateLessonFormProps) {
+export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateLessonFormProps) {
   const [newLesson, setNewLesson] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
@@ -32,14 +33,16 @@ export function CreateLessonForm({ topicId, onLessonCreated }: CreateLessonFormP
         topic_id: topicId as string,
       })
 
-      // Navigate to lesson page with the created lesson ID
-      navigate(`/teacher/lesson/${createdLesson.id}`)
+      if (courseId) {
+        navigate(`/teacher/course/${courseId}/lesson/${createdLesson.id}`)
+      } else {
+        navigate(`/teacher/lesson/${createdLesson.id}`)
+      }
       setNewLesson('')
       setDescription('')
       onLessonCreated?.()
     } catch (error) {
       console.error('Failed to create lesson:', error)
-      // TODO: Show error toast/notification
     } finally {
       setLoading(false)
     }

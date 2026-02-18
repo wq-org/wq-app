@@ -55,7 +55,7 @@ export default function LessonEditor({
         plugins={plugins}
         marks={marks}
         tools={TOOLS}
-        value={value}
+        value={value as never}
         onChange={(newValue: Record<string, unknown>) => onChange?.(newValue)}
         readOnly={readOnly}
         autoFocus

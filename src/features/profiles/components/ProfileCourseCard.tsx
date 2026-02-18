@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import { DEFAULT_COURSE_IMAGE } from '@/lib/constants'
-import type { CourseCardProps } from '@/features/courses/types/course.types'
+import type { CourseCardProps } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
 
 interface ProfileCourseCardProps extends CourseCardProps {

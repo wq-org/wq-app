@@ -1,5 +1,5 @@
 import { ProfileCourseCard } from './ProfileCourseCard'
-import type { CourseCardProps } from '@/features/courses/types/course.types'
+import type { CourseCardProps } from '@/features/course/types/course.types'
 
 interface ProfileCourseCardListProps {
   courses: CourseCardProps[]

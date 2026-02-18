@@ -3,14 +3,14 @@ import type {
   Course,
   CreateCourseData,
   UpdateCourseData,
-} from '@/features/courses/types/course.types'
+} from '@/features/course/types/course.types'
 
 // Re-export types for backward compatibility
 export type {
   Course,
   CreateCourseData,
   UpdateCourseData,
-} from '@/features/courses/types/course.types'
+} from '@/features/course/types/course.types'
 
 export interface CourseContextValue {
   courses: Course[]

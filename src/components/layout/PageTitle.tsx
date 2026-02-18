@@ -8,6 +8,7 @@ const ROUTE_PATTERNS: Array<{ pattern: RegExp; key: string }> = [
   { pattern: /^\/teacher\/settings$/, key: 'teacherSettings' },
   { pattern: /^\/teacher\/game-studio$/, key: 'teacherGameStudio' },
   { pattern: /^\/teacher\/course\/[^/]+$/, key: 'teacherCourse' },
+  { pattern: /^\/teacher\/course\/[^/]+\/lesson\/[^/]+$/, key: 'teacherCourseLesson' },
   { pattern: /^\/teacher\/lesson\/[^/]+$/, key: 'teacherLesson' },
   { pattern: /^\/teacher\/view\/[^/]+$/, key: 'teacherView' },
   { pattern: /^\/teacher\/chat$/, key: 'teacherChat' },

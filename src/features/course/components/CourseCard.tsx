@@ -38,7 +38,6 @@ export default function CourseCard({
         </Badge>
       </CardHeader>
       <CardContent className="flex flex-col p-6">
-        {/* Header */}
         <div className="flex items-center gap-3">
           <Avatar className="w-12 h-12 rounded-full">
             {teacherAvatar ? (
@@ -70,12 +69,10 @@ export default function CourseCard({
           </div>
         </div>
 
-        {/* Description area that can stretch */}
         <div className="flex flex-col gap-3">
           <CardDescription className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
             {description}
           </CardDescription>
-          {/* Button */}
           <div className="flex items-center justify-end gap-2 mt-auto">
             <Button
               variant="ghost"

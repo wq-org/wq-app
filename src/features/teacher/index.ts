@@ -5,7 +5,6 @@ export { default as TeacherView } from './components/TeacherView'
 // Pages
 export { default as TeacherDashboard } from './pages/dashboard'
 export { default as TeacherSettings } from './pages/settings'
-export { default as Course } from './pages/course'
 export { default as GameStudio } from './pages/game-studio'
 
 // Types

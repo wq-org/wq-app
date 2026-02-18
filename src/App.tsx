@@ -19,10 +19,12 @@ import TeacherChat from './features/teacher/pages/chat'
 import TeacherDashboard from './features/teacher/pages/dashboard'
 import TeacherSettings from './features/teacher/pages/settings'
 import GameStudio from './features/teacher/pages/game-studio'
-import Course from './features/teacher/pages/course'
 import PlayGamePage from './features/game-play/pages/PlayGamePage'
 import { Error404 } from './components'
-import Lesson from './features/lessons/pages/lesson'
+import CourseLayout from './features/course/components/CourseLayout'
+import CoursePage from './features/course/pages/course'
+import LessonPage from './features/course/pages/lesson'
+import LessonRedirect from './features/course/pages/LessonRedirect'
 import Onboarding from './features/onboarding/pages/onboarding'
 
 import { UserProvider } from './contexts/user'
@@ -229,21 +231,30 @@ function App() {
                 }
               />
               <Route
-                path="course/:id"
+                path="course/:courseId"
                 element={
                   <RequireAuth>
                     <RequireOnboarding>
-                      <Course />
+                      <CourseLayout />
                     </RequireOnboarding>
                   </RequireAuth>
                 }
-              />
+              >
+                <Route
+                  index
+                  element={<CoursePage />}
+                />
+                <Route
+                  path="lesson/:lessonId"
+                  element={<LessonPage />}
+                />
+              </Route>
               <Route
                 path="lesson/:id"
                 element={
                   <RequireAuth>
                     <RequireOnboarding>
-                      <Lesson />
+                      <LessonRedirect />
                     </RequireOnboarding>
                   </RequireAuth>
                 }

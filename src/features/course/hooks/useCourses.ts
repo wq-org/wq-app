@@ -16,7 +16,6 @@ export function useCourses() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch all courses for the current teacher
   const fetchCourses = useCallback(async () => {
     if (!profile?.user_id) return
 
@@ -33,7 +32,6 @@ export function useCourses() {
     }
   }, [profile?.user_id])
 
-  // Fetch a single course by ID and set it as selected
   const fetchCourseById = useCallback(async (courseId: string) => {
     setLoading(true)
     setError(null)
@@ -48,7 +46,6 @@ export function useCourses() {
     }
   }, [])
 
-  // Create a new course
   const createCourseHandler = useCallback(
     async (
       data: Omit<CreateCourseData, 'teacher_id' | 'institution_id'>,
@@ -65,7 +62,6 @@ export function useCourses() {
           description: data.description,
         })
 
-        // Refresh courses list
         await fetchCourses()
 
         return course
@@ -78,19 +74,16 @@ export function useCourses() {
     [profile?.user_id, fetchCourses],
   )
 
-  // Update a course
   const updateCourseHandler = useCallback(
     async (id: string, data: UpdateCourseData): Promise<void> => {
       setError(null)
       try {
         await updateCourse(id, data)
 
-        // Update in courses list
         setCourses((prev) =>
           prev.map((course) => (course.id === id ? ({ ...course, ...data } as Course) : course)),
         )
 
-        // Update selected course if it's the one being updated
         if (selectedCourse?.id === id) {
           setSelectedCourse((prev) => (prev ? ({ ...prev, ...data } as Course) : null))
         }
@@ -103,17 +96,14 @@ export function useCourses() {
     [selectedCourse],
   )
 
-  // Delete a course
   const deleteCourseHandler = useCallback(
     async (id: string): Promise<void> => {
       setError(null)
       try {
         await deleteCourse(id)
 
-        // Remove from courses list
         setCourses((prev) => prev.filter((course) => course.id !== id))
 
-        // Clear selected course if it's the one being deleted
         if (selectedCourse?.id === id) {
           setSelectedCourse(null)
         }

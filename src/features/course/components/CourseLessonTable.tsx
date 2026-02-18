@@ -21,15 +21,18 @@ import { HoldToDeleteIconButton } from '@/components/ui/holdDeleteIconButton'
 import type { Lesson } from '../types/lesson.types'
 import { EmptyLessonsView } from './EmptyLessonsView'
 
-interface LessonCardListProps {
+export type OnViewLesson = (lessonId: string) => void
+export type OnDeleteLesson = (lessonId: string) => void
+
+export interface CourseLessonTableProps {
   lessons: Lesson[]
-  onView?: (lessonId: string) => void
-  onDelete?: (lessonId: string) => void
+  onView?: OnViewLesson
+  onDelete?: OnDeleteLesson
 }
 
 const ITEMS_PER_PAGE = 10
 
-export function LessonCardList({ lessons, onView, onDelete }: LessonCardListProps) {
+export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTableProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.max(1, Math.ceil(lessons.length / ITEMS_PER_PAGE))
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -77,7 +80,9 @@ export function LessonCardList({ lessons, onView, onDelete }: LessonCardListProp
             <TableRow>
               <TableHead className="text-left text-gray-400 font-light">Title</TableHead>
               <TableHead className="text-left text-gray-400 font-light">Description</TableHead>
-              <TableHead className="text-center text-gray-400 font-light w-[100px]">Action</TableHead>
+              <TableHead className="text-center text-gray-400 font-light w-[100px]">
+                Action
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

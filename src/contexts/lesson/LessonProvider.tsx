@@ -3,9 +3,9 @@ import {
   createLesson as createLessonApi,
   updateLesson as updateLessonApi,
   getLessonById as getLessonByIdApi,
-} from '@/features/lessons/api/lessonsApi'
+} from '@/features/course/api/lessonsApi'
 import { LessonContext, type LessonContextValue } from './LessonContext'
-import type { Lesson, CreateLessonData } from '@/features/lessons/types/lesson.types'
+import type { Lesson, CreateLessonData } from '@/features/course/types/lesson.types'
 
 export const LessonProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lesson, setLesson] = useState<Lesson | null>(null)

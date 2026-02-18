@@ -9,7 +9,6 @@ export async function createCourse(
   teacherId: string,
   { title, description }: { title: string; description: string },
 ): Promise<Course> {
-  // Get teacher's institution_id
   const institutionId = await getUserInstitutionId(teacherId)
 
   const { data, error } = await supabase
@@ -97,7 +96,6 @@ export async function deleteCourse(courseId: string): Promise<void> {
 
 /**
  * Create a new topic for a course
- * Note: The topics table uses 'title' column, not 'name'
  */
 export async function createTopic(
   courseId: string,
@@ -105,7 +103,6 @@ export async function createTopic(
 ): Promise<{ id: string; name: string; course_id: string }> {
   const now = new Date().toISOString()
 
-  // Get the maximum order_index for topics in this course to calculate the next index
   const { data: existingTopics, error: fetchError } = await supabase
     .from('topics')
     .select('order_index')
@@ -118,14 +115,13 @@ export async function createTopic(
     throw fetchError
   }
 
-  // Calculate the next order_index (max + 1, or 0 if no topics exist)
   const nextOrderIndex =
     existingTopics && existingTopics.length > 0 ? (existingTopics[0].order_index ?? -1) + 1 : 0
 
   const { data, error } = await supabase
     .from('topics')
     .insert({
-      title: name.trim(), // Database column is 'title', not 'name'
+      title: name.trim(),
       course_id: courseId,
       order_index: nextOrderIndex,
       created_at: now,
@@ -138,10 +134,9 @@ export async function createTopic(
     throw error
   }
 
-  // Map 'title' from database to 'name' to match the Topic interface
   return {
     id: data.id,
-    name: data.title, // Map title -> name for interface compatibility
+    name: data.title,
     course_id: data.course_id,
   }
 }
@@ -163,10 +158,9 @@ export async function getTopicsByCourseId(
     throw error
   }
 
-  // Map 'title' from database to 'name' to match the Topic interface
   return (data || []).map((topic) => ({
     id: topic.id,
-    name: topic.title, // Map title -> name for interface compatibility
+    name: topic.title,
     course_id: topic.course_id,
   }))
 }
@@ -181,4 +175,20 @@ export async function deleteTopic(topicId: string): Promise<void> {
     console.error('Error deleting topic:', error)
     throw error
   }
+}
+
+/**
+ * Get a topic by ID (returns course_id for redirects)
+ */
+export async function getTopicById(
+  topicId: string,
+): Promise<{ id: string; course_id: string } | null> {
+  const { data, error } = await supabase
+    .from('topics')
+    .select('id, course_id')
+    .eq('id', topicId)
+    .single()
+
+  if (error || !data) return null
+  return data as { id: string; course_id: string }
 }

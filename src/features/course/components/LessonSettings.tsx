@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Trash2, Loader2 } from 'lucide-react'
-import { updateLesson, deleteLesson } from '@/features/lessons/api/lessonsApi'
+import { updateLesson, deleteLesson } from '@/features/course/api/lessonsApi'
 import { useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
@@ -12,11 +12,12 @@ import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
 
-interface LessonSettingsProps {
+export interface LessonSettingsProps {
   lessonId: string
+  courseId?: string
 }
 
-export default function LessonSettings({ lessonId }: LessonSettingsProps) {
+export default function LessonSettings({ lessonId, courseId }: LessonSettingsProps) {
   const navigate = useNavigate()
   const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLesson()
   const { t } = useTranslation('features.lessons')
@@ -28,7 +29,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
   const [originalDescription, setOriginalDescription] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
 
-  // Fetch lesson data
   useEffect(() => {
     const fetchLesson = async () => {
       try {
@@ -46,7 +46,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
     }
   }, [lessonId, fetchLessonById])
 
-  // Update local state when lesson changes
   useEffect(() => {
     if (lesson) {
       setTitle(lesson.title || '')
@@ -56,7 +55,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
     }
   }, [lesson])
 
-  // Check for changes
   useEffect(() => {
     const changed = title !== originalTitle || description !== originalDescription
     setHasChanges(changed)
@@ -86,11 +84,8 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
   const handleDelete = async () => {
     try {
       await deleteLesson(lessonId)
-      // Navigate back to course page (we need to get the course ID from lesson context)
-      if (lesson?.topic_id) {
-        // Navigate back to the course - we'd need to get course_id from topic
-        // For now, navigate to dashboard
-        navigate('/teacher/dashboard')
+      if (courseId) {
+        navigate(`/teacher/course/${courseId}`)
       } else {
         navigate('/teacher/dashboard')
       }
@@ -133,7 +128,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
         </div>
 
         <div className="flex flex-col gap-6">
-          {/* Title Input */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="title">Title</Label>
             <Input
@@ -146,7 +140,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
             />
           </div>
 
-          {/* Description Input */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -159,7 +152,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
             />
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center justify-end gap-4 py-4 border-t">
             <Button
               variant="default"
@@ -178,7 +170,6 @@ export default function LessonSettings({ lessonId }: LessonSettingsProps) {
             </Button>
 
             <HoldToDeleteButton
-              variant="destructive"
               onDelete={handleDelete}
               className="gap-2"
               icon={<Trash2 className="w-4 h-4" />}

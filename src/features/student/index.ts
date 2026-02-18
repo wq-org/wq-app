@@ -7,7 +7,7 @@ export { default as EmptyStudentView } from './components/EmptyStudentView'
 export { default as EmptyGamesView } from './components/EmptyGamesView'
 export { default as EmptyTodosView } from './components/EmptyTodosView'
 export { default as EmptyChatView } from './components/EmptyChatView'
-export { default as EmptyCourseView } from '@/features/courses/components/EmptyCourseView'
+export { default as EmptyCourseView } from '@/features/course/components/EmptyCourseView'
 
 // Pages
 export { default as StudentDashboard } from './pages/dashboard'

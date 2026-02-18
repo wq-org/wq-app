@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { getCourseById, updateCourse, deleteCourse } from '@/features/courses/api/coursesApi'
+import { getCourseById, updateCourse, deleteCourse } from '@/features/course/api/coursesApi'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import { Loader2 } from 'lucide-react'
@@ -29,7 +29,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
   const [originalDescription, setOriginalDescription] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
 
-  // Fetch course data
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -52,7 +51,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
     }
   }, [courseId])
 
-  // Check for changes
   useEffect(() => {
     const changed = title !== originalTitle || description !== originalDescription
     setHasChanges(changed)
@@ -90,6 +88,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       setDeleting(false)
     }
   }
+
   const handleTogglePublished = async (checked: boolean) => {
     try {
       setIsPublished(checked)
@@ -98,7 +97,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       })
     } catch (error) {
       console.error('Error updating publish status:', error)
-      setIsPublished(!checked) // Revert on error
+      setIsPublished(!checked)
       alert('Failed to update publish status. Please try again.')
     }
   }
@@ -135,7 +134,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       </div>
 
       <div className="flex flex-col gap-6">
-        {/* Title Input */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="title">Title</Label>
           <Input
@@ -148,7 +146,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
           />
         </div>
 
-        {/* Description Input */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="description">Description</Label>
           <Textarea
@@ -161,7 +158,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
           />
         </div>
 
-        {/* Published Switch */}
         <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">
           <div className="flex flex-col gap-1">
             <Label
@@ -185,7 +181,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
           />
         </div>
 
-        {/* Action Buttons */}
         <div className="flex  items-center justify-end gap-4 py-4 border-t">
           <Button
             variant="default"

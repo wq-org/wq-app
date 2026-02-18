@@ -29,9 +29,9 @@ export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: Top
         {isSelected && (
           <Badge
             variant="default"
-            className="rounded-full animate-in zoom-in-50 duration-200 hover:scale-95 active:scale-90 transition-all text-white p-0.5"
+            className="rounded-full animate-in zoom-in-50 duration-200 hover:scale-95 active:scale-90 transition-all  p-0.5"
           >
-            <Check className="w-4 h-4 text-white" />
+            <Check className="w-4 h-4 " />
           </Badge>
         )}
         <Text
