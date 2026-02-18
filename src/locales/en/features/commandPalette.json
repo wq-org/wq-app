@@ -26,6 +26,10 @@
     "undo": "Undo",
     "redo": "Redo"
   },
+  "navigation": {
+    "pan": "Pan",
+    "select": "Select"
+  },
   "search": {
     "placeholder": "Search courses, people, institutions, games…",
     "noResults": "No results found",

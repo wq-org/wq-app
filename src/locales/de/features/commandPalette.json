@@ -26,6 +26,10 @@
     "undo": "Rückgängig",
     "redo": "Wiederholen"
   },
+  "navigation": {
+    "pan": "Verschieben",
+    "select": "Auswählen"
+  },
   "search": {
     "placeholder": "Kurse, Personen, Institutionen, Spiele suchen…",
     "noResults": "Keine Ergebnisse gefunden",

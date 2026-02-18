@@ -10,8 +10,10 @@ import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio
 import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export default function GameStudio() {
+  const { t } = useTranslation('features.gameStudio')
   const navigate = useNavigate()
   const { getUserId } = useUser()
   const [projects, setProjects] = useState<GameProjectCardListProps['projects']>([])
@@ -29,8 +31,8 @@ export default function GameStudio() {
         setProjects(
           data.map((g) => ({
             id: g.id,
-            title: g.title || 'Untitled Game',
-            description: g.description ?? 'No description',
+            title: g.title || t('page.fallbackUntitledGame'),
+            description: g.description ?? t('page.fallbackNoDescription'),
             version: g.version ?? undefined,
             status: g.status === 'published' ? 'published' : 'draft',
           })),
@@ -38,27 +40,27 @@ export default function GameStudio() {
       })
       .catch((err) => {
         console.error(err)
-        toast.error('Failed to load games')
+        toast.error(t('page.toasts.loadFailed'))
       })
       .finally(() => setLoading(false))
-  }, [getUserId])
+  }, [getUserId, t])
 
   const handleCreateGame = async () => {
     const teacherId = getUserId()
     if (!teacherId) {
-      toast.error('You must be signed in to create a game')
+      toast.error(t('page.toasts.createRequiresSignin'))
       return
     }
     setCreating(true)
     try {
       const created = await createGameForStudio(teacherId, {
-        title: 'Untitled Game',
+        title: t('page.fallbackUntitledGame'),
         description: '',
       })
       navigate(`/teacher/canvas/${created.id}`)
     } catch (err) {
       console.error(err)
-      toast.error('Failed to create game')
+      toast.error(t('page.toasts.createFailed'))
     } finally {
       setCreating(false)
     }
@@ -75,14 +77,14 @@ export default function GameStudio() {
           variant="h1"
           className="text-6xl"
         >
-          Game Studio
+          {t('page.title')}
         </Text>
         <Text
           as="p"
           variant="body"
           className="text-gray-500 mt-2"
         >
-          Create and manage educational games for your students.
+          {t('page.subtitle')}
         </Text>
         <div className="flex justify-end w-full">
           <Button
@@ -90,7 +92,7 @@ export default function GameStudio() {
             variant="default"
             disabled={creating || loading}
           >
-            {creating ? 'Creating…' : 'Create game'}
+            {creating ? t('page.creating') : t('page.createGame')}
           </Button>
         </div>
       </div>

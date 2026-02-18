@@ -186,6 +186,19 @@
       "imagePinMark": "Image Pin Mark"
     }
   },
+  "page": {
+    "title": "Game Studio",
+    "subtitle": "Create and manage educational games for your students.",
+    "createGame": "Create game",
+    "creating": "Creating...",
+    "fallbackUntitledGame": "Untitled Game",
+    "fallbackNoDescription": "No description",
+    "toasts": {
+      "loadFailed": "Failed to load games",
+      "createRequiresSignin": "You must be signed in to create a game",
+      "createFailed": "Failed to create game"
+    }
+  },
   "header": {
     "title": "Game Studio"
   },

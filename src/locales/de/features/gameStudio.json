@@ -186,6 +186,19 @@
       "imagePinMark": "Bild-Pin-Markierung"
     }
   },
+  "page": {
+    "title": "Game Studio",
+    "subtitle": "Erstelle und verwalte Lernspiele für deine Lernenden.",
+    "createGame": "Spiel erstellen",
+    "creating": "Wird erstellt...",
+    "fallbackUntitledGame": "Unbenanntes Spiel",
+    "fallbackNoDescription": "Keine Beschreibung",
+    "toasts": {
+      "loadFailed": "Spiele konnten nicht geladen werden",
+      "createRequiresSignin": "Du musst angemeldet sein, um ein Spiel zu erstellen",
+      "createFailed": "Spiel konnte nicht erstellt werden"
+    }
+  },
   "header": {
     "title": "Game Studio"
   },

@@ -67,7 +67,7 @@ export default function DashboardLayout({
       <AppNavigation>
         <PageTitle />
       </AppNavigation>
-      <div className="flex flex-col gap-8 mb-8">
+      <div className="flex flex-col gap-8 mb-8 pt-[var(--app-nav-height,82px)]">
         <section className="rounded-2xl  h-full">
           <Container className="flex flex-col gap-4">
             <div className="flex gap-4 items-start">

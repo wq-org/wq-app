@@ -1172,7 +1172,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           onDrop={onDrop}
         >
           {/* Top Center Badge */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 max-w-60 w-full min-w-0">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 max-w-60 w-full min-w-0">
             <Badge
               variant="outline"
               className="px-4 py-2 text-sm cursor-text bg-white w-full min-w-0 max-w-full"
@@ -1203,8 +1203,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
             </Badge>
           </div>
 
-          {/* Top Right Controls */}
-          <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          {/* Top Right Controls - z-20 above React Flow pane so buttons stay clickable */}
+          <div className="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-auto">
             <Button
               variant="outline"
               onClick={handleSave}
