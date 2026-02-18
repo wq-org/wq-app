@@ -122,14 +122,23 @@ export async function logoutUser(): Promise<void> {
  * Request password reset email. Supabase sends a link that redirects to the app's reset-password page.
  */
 export async function requestPasswordReset(email: string): Promise<void> {
-  const baseUrl =
-    import.meta.env.VITE_PUBLIC_APP_URL?.trim() ||
-    (typeof window !== 'undefined' ? window.location.origin : '')
-  const redirectTo = baseUrl ? `${String(baseUrl).replace(/\/$/, '')}/auth/reset-password` : ''
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: redirectTo || undefined,
-  })
-  if (error) throw error
+  try {
+    const redirectUrl = `${
+      import.meta.env.VITE_PUBLIC_APP_URL || window.location.origin
+    }/auth/reset-password`
+
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to send password reset email'
+    throw new Error(errorMessage)
+  }
 }
 
 /**
