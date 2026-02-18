@@ -24,6 +24,12 @@
     "lessonsForTopic": "Lessons for: {{topic}}",
     "lessonsForTopicDescription": "Explore the available lessons for this topic"
   },
+  "layout": {
+    "tabs": {
+      "overview": "Overview",
+      "settings": "Settings"
+    }
+  },
   "lessonTable": {
     "columns": {
       "title": "Title",

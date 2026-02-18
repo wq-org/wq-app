@@ -1,1 +1,29 @@
-{}
+{
+  "profile": {
+    "fields": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Name"
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Username"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": "wq-health@serious-game.com"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "placeholder": "https://www.linkedin.com/in/username"
+      },
+      "aboutMe": {
+        "label": "About me",
+        "placeholder": "a text about you"
+      }
+    },
+    "actions": {
+      "save": "Save Changes"
+    }
+  }
+}

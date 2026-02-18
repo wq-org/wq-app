@@ -35,6 +35,13 @@
     "noContent": "Kein Inhalt verfügbar",
     "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu löschen."
   },
+  "holdDelete": {
+    "title": "Löschen",
+    "description": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "holdMessage": "Halte {{seconds}} Sekunden gedrückt, um zu löschen.",
+    "deletingIn": "Löschen in {{seconds}}s",
+    "deleting": "Wird gelöscht…"
+  },
   "previewDrawer": {
     "title": "Spielsimulation",
     "emptyHint": "Füge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad für die Vorschau hinzu.",

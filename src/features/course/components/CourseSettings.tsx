@@ -18,7 +18,7 @@ interface CourseSettingsProps {
 }
 
 export default function CourseSettings({ courseId }: CourseSettingsProps) {
-  const { t } = useTranslation('features.courses')
+  const { t } = useTranslation('features.course')
   const navigate = useNavigate()
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)

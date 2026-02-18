@@ -9,15 +9,33 @@ export interface Topic {
   name: string
 }
 
+export interface HoldDeleteTooltipProps {
+  tooltipDelayDuration?: number
+  tooltipTitle?: string
+  tooltipDescription?: string
+  tooltipHoldMessage?: string | ((seconds: number) => string)
+  tooltipDeletingIn?: (seconds: number) => string
+  tooltipDeleting?: string
+  holdDuration?: number
+}
+
 interface TopicBadgeProps {
   topic: Topic
   isSelected: boolean
   index: number
   onToggle: (topic: Topic) => void
   onDelete: (topic: Topic) => void
+  holdDeleteTooltip?: HoldDeleteTooltipProps
 }
 
-export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: TopicBadgeProps) {
+export function TopicBadge({
+  topic,
+  isSelected,
+  index,
+  onToggle,
+  onDelete,
+  holdDeleteTooltip,
+}: TopicBadgeProps) {
   return (
     <>
       <div
@@ -49,6 +67,7 @@ export function TopicBadge({ topic, isSelected, index, onToggle, onDelete }: Top
           <HoldToDeleteIconButton
             size="xs"
             onDelete={() => onDelete(topic)}
+            {...holdDeleteTooltip}
           />
         </div>
       </div>

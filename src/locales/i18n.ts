@@ -15,12 +15,12 @@ import layoutDashboardLayoutDE from './de/layout/dashboardLayout.json'
 import featuresAdminDE from './de/features/admin.json'
 import featuresAuthDE from './de/features/auth.json'
 import featuresCommandPaletteDE from './de/features/commandPalette.json'
-import featuresCoursesDE from './de/features/courses.json'
+import featuresCourseDE from './de/features/course.json'
 import featuresFilesDE from './de/features/files.json'
 import featuresGamesDE from './de/features/games.json'
 import featuresGameStudioDE from './de/features/gameStudio.json'
 import featuresInstitutionDE from './de/features/institution.json'
-import featuresLessonsDE from './de/features/lessons.json'
+import featuresLessonDE from './de/features/lesson.json'
 import featuresNotificationDE from './de/features/notification.json'
 import featuresOnboardingDE from './de/features/onboarding.json'
 import featuresStudentDE from './de/features/student.json'
@@ -41,12 +41,12 @@ import layoutDashboardLayoutEN from './en/layout/dashboardLayout.json'
 
 // EN imports - Features (alphabetically ordered to match directory structure)
 import featuresAdminEN from './en/features/admin.json'
-import featuresCoursesEN from './en/features/courses.json'
+import featuresCourseEN from './en/features/course.json'
 import featuresFilesEN from './en/features/files.json'
 import featuresGamesEN from './en/features/games.json'
 import featuresGameStudioEN from './en/features/gameStudio.json'
 import featuresInstitutionEN from './en/features/institution.json'
-import featuresLessonsEN from './en/features/lessons.json'
+import featuresLessonEN from './en/features/lesson.json'
 import featuresNotificationEN from './en/features/notification.json'
 import featuresOnboardingEN from './en/features/onboarding.json'
 import featuresStudentEN from './en/features/student.json'
@@ -68,12 +68,12 @@ i18n.use(initReactI18next).init({
       'features.admin': featuresAdminEN,
       'features.auth': featuresAuthEN,
       'features.commandPalette': featuresCommandPaletteEN,
-      'features.courses': featuresCoursesEN,
+      'features.course': featuresCourseEN,
       'features.files': featuresFilesEN,
       'features.games': featuresGamesEN,
       'features.gameStudio': featuresGameStudioEN,
       'features.institution': featuresInstitutionEN,
-      'features.lessons': featuresLessonsEN,
+      'features.lesson': featuresLessonEN,
       'features.notification': featuresNotificationEN,
       'features.onboarding': featuresOnboardingEN,
       'features.student': featuresStudentEN,
@@ -95,12 +95,12 @@ i18n.use(initReactI18next).init({
       'features.admin': featuresAdminDE,
       'features.auth': featuresAuthDE,
       'features.commandPalette': featuresCommandPaletteDE,
-      'features.courses': featuresCoursesDE,
+      'features.course': featuresCourseDE,
       'features.files': featuresFilesDE,
       'features.games': featuresGamesDE,
       'features.gameStudio': featuresGameStudioDE,
       'features.institution': featuresInstitutionDE,
-      'features.lessons': featuresLessonsDE,
+      'features.lesson': featuresLessonDE,
       'features.notification': featuresNotificationDE,
       'features.onboarding': featuresOnboardingDE,
       'features.student': featuresStudentDE,
@@ -125,12 +125,12 @@ i18n.use(initReactI18next).init({
     'features.admin',
     'features.auth',
     'features.commandPalette',
-    'features.courses',
+    'features.course',
     'features.files',
     'features.games',
     'features.gameStudio',
     'features.institution',
-    'features.lessons',
+    'features.lesson',
     'features.notification',
     'features.onboarding',
     'features.student',

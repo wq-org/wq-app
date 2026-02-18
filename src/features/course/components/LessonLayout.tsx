@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LayoutDashboard, Settings } from 'lucide-react'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export interface LessonLayoutProps {
   lessonId: string
@@ -14,6 +15,7 @@ export default function LessonLayout({
   overviewContent,
   settingsContent,
 }: LessonLayoutProps) {
+  const { t } = useTranslation('features.lesson')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
   return (
@@ -32,7 +34,7 @@ export default function LessonLayout({
             as="span"
             variant="small"
           >
-            Overview
+            {t('layout.tabs.overview')}
           </Text>
         </button>
         <button
@@ -48,7 +50,7 @@ export default function LessonLayout({
             as="span"
             variant="small"
           >
-            Settings
+            {t('layout.tabs.settings')}
           </Text>
         </button>
       </div>

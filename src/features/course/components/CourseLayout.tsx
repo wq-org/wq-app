@@ -6,17 +6,18 @@ import { Text } from '@/components/ui/text'
 import SelectTabs, { type TabItem } from '@/components/shared/tabs/SelectTabs'
 import { useCourse } from '@/contexts/course'
 import CourseSettings from '@/features/course/components/CourseSettings'
-
-const COURSE_TABS: TabItem[] = [
-  { id: 'overview', icon: LayoutDashboard, title: 'Overview' },
-  { id: 'settings', icon: Settings, title: 'Settings' },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function CourseLayout() {
+  const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const location = useLocation()
   const { fetchCourseById } = useCourse()
   const [activeTab, setActiveTab] = useState<string>('overview')
+  const courseTabs: TabItem[] = [
+    { id: 'overview', icon: LayoutDashboard, title: t('layout.tabs.overview') },
+    { id: 'settings', icon: Settings, title: t('layout.tabs.settings') },
+  ]
 
   // Child route under this layout (e.g. course overview or lesson) is rendered here.
   const isLessonRoute = /\/lesson\/[^/]+$/.test(location.pathname)
@@ -36,7 +37,7 @@ export default function CourseLayout() {
             variant="body"
             className="text-muted-foreground"
           >
-            Course not found
+            {t('page.notFound')}
           </Text>
         </div>
       </AppWrapper>
@@ -52,7 +53,7 @@ export default function CourseLayout() {
         ) : (
           <>
             <SelectTabs
-              tabs={COURSE_TABS}
+              tabs={courseTabs}
               activeTabId={activeTab}
               onTabChange={setActiveTab}
               className="border-b"

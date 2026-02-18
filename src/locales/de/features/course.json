@@ -24,6 +24,12 @@
     "lessonsForTopic": "Lektionen für: {{topic}}",
     "lessonsForTopicDescription": "Entdecke die verfügbaren Lektionen für dieses Thema"
   },
+  "layout": {
+    "tabs": {
+      "overview": "Übersicht",
+      "settings": "Einstellungen"
+    }
+  },
   "lessonTable": {
     "columns": {
       "title": "Titel",

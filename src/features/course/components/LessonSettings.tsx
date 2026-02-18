@@ -20,7 +20,7 @@ export interface LessonSettingsProps {
 export default function LessonSettings({ lessonId, courseId }: LessonSettingsProps) {
   const navigate = useNavigate()
   const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLesson()
-  const { t } = useTranslation('features.lessons')
+  const { t } = useTranslation('features.lesson')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [title, setTitle] = useState('')

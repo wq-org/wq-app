@@ -28,5 +28,11 @@
   "create": {
     "titlePlaceholder": "Neue Lektion hinzufügen",
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
+  },
+  "layout": {
+    "tabs": {
+      "overview": "Übersicht",
+      "settings": "Einstellungen"
+    }
   }
 }

@@ -35,6 +35,13 @@
     "noContent": "No content available",
     "deleteHint": "Hold the button below for 3 seconds to delete this node."
   },
+  "holdDelete": {
+    "title": "Delete",
+    "description": "This action cannot be undone.",
+    "holdMessage": "Hold for {{seconds}} seconds to delete.",
+    "deletingIn": "Deleting in {{seconds}}s",
+    "deleting": "Deleting…"
+  },
   "previewDrawer": {
     "title": "Game Simulation",
     "emptyHint": "Add a Start node, game nodes, and an End node connected in a path to preview.",

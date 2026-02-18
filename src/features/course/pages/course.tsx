@@ -5,7 +5,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus, Loader2 } from 'lucide-react'
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
-import { TopicBadge, type Topic } from '@/features/course/components/TopicBadge'
+import {
+  TopicBadge,
+  type Topic,
+  type HoldDeleteTooltipProps,
+} from '@/features/course/components/TopicBadge'
 import { CreateLessonForm } from '@/features/course/components/CreateLessonForm'
 import { CourseLessonTable } from '@/features/course/components/CourseLessonTable'
 import { EmptyLessonsView } from '@/features/course/components/EmptyLessonsView'
@@ -17,7 +21,20 @@ import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 
 export default function Course() {
-  const { t } = useTranslation('features.courses')
+  const { t } = useTranslation('features.course')
+  const { t: tGameStudio } = useTranslation('features.gameStudio')
+
+  const holdDeleteTooltip: HoldDeleteTooltipProps = {
+    tooltipDelayDuration: 500,
+    tooltipTitle: tGameStudio('holdDelete.title'),
+    tooltipDescription: tGameStudio('holdDelete.description'),
+    tooltipHoldMessage: (seconds: number) =>
+      tGameStudio('holdDelete.holdMessage', { seconds }),
+    tooltipDeletingIn: (seconds: number) =>
+      tGameStudio('holdDelete.deletingIn', { seconds }),
+    tooltipDeleting: tGameStudio('holdDelete.deleting'),
+    holdDuration: 3000,
+  }
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
   const { fetchCourseById, selectedCourse } = useCourse()
@@ -174,6 +191,7 @@ export default function Course() {
               index={index}
               onToggle={toggleTopic}
               onDelete={onDeleteTopic}
+              holdDeleteTooltip={holdDeleteTooltip}
             />
           ))}
         </div>
@@ -241,6 +259,7 @@ export default function Course() {
                   console.error(e)
                 }
               }}
+              holdDeleteTooltip={holdDeleteTooltip}
             />
           )}
         </div>

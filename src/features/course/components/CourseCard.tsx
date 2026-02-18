@@ -19,7 +19,7 @@ export default function CourseCard({
   teacherInitials = 'U',
   onView = () => {},
 }: CourseCardProps) {
-  const { t } = useTranslation('features.courses')
+  const { t } = useTranslation('features.course')
   const courseImage = image || BACKGROUND_SCHOOL
 
   return (

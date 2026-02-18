@@ -21,6 +21,7 @@ import { HoldToDeleteIconButton } from '@/components/ui/holdDeleteIconButton'
 import type { Lesson } from '../types/lesson.types'
 import { EmptyLessonsView } from './EmptyLessonsView'
 import { useTranslation } from 'react-i18next'
+import type { HoldDeleteTooltipProps } from './TopicBadge'
 
 export type OnViewLesson = (lessonId: string) => void
 export type OnDeleteLesson = (lessonId: string) => void
@@ -29,12 +30,18 @@ export interface CourseLessonTableProps {
   lessons: Lesson[]
   onView?: OnViewLesson
   onDelete?: OnDeleteLesson
+  holdDeleteTooltip?: HoldDeleteTooltipProps
 }
 
 const ITEMS_PER_PAGE = 10
 
-export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTableProps) {
-  const { t } = useTranslation('features.courses')
+export function CourseLessonTable({
+  lessons,
+  onView,
+  onDelete,
+  holdDeleteTooltip,
+}: CourseLessonTableProps) {
+  const { t } = useTranslation('features.course')
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.max(1, Math.ceil(lessons.length / ITEMS_PER_PAGE))
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -118,6 +125,7 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
                     <HoldToDeleteIconButton
                       size="sm"
                       onDelete={onDelete ? () => onDelete(lesson.id) : undefined}
+                      {...holdDeleteTooltip}
                     />
                   </div>
                 </TableCell>

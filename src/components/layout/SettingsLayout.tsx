@@ -11,6 +11,7 @@ import type { Profile } from '@/contexts/user'
 import Spinner from '../ui/spinner'
 import AvatarDrawer from './AvatarDrawer'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface SettingsLayoutProps {
   children?: React.ReactNode
@@ -41,6 +42,7 @@ export default function SettingsLayout({
   onAvatarSelect,
   linkedInValue = '',
 }: SettingsLayoutProps) {
+  const { t } = useTranslation('settings')
   const [name, setName] = useState(profile?.display_name || '')
   const [linkedIn, setLinkedIn] = useState(linkedInValue)
   const [aboutMe, setAboutMe] = useState(profile?.description || '')
@@ -121,41 +123,41 @@ export default function SettingsLayout({
               className="flex flex-col gap-4 w-[400px]"
             >
               <div className="w-full flex flex-col gap-3">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t('profile.fields.name.label')}</Label>
                 <Input
                   type="text"
                   id="name"
-                  placeholder="Name"
+                  placeholder={t('profile.fields.name.placeholder')}
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
                 />
               </div>
               <div className="w-full flex flex-col gap-3">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">{t('profile.fields.username.label')}</Label>
                 <Input
                   type="text"
                   disabled
                   id="username"
-                  placeholder="Username"
+                  placeholder={t('profile.fields.username.placeholder')}
                   value={profile?.username || ''}
                 />
               </div>
               <div className="w-full flex flex-col gap-3">
-                <Label htmlFor="email">E-mail</Label>
+                <Label htmlFor="email">{t('profile.fields.email.label')}</Label>
                 <Input
                   disabled
                   type="email"
                   id="email"
-                  placeholder="wq-health@serious-game.com"
+                  placeholder={t('profile.fields.email.placeholder')}
                   value={profile?.email || ''}
                 />
               </div>
               <div className="w-full flex flex-col gap-3">
-                <Label htmlFor="linkedin">LinkedIn</Label>
+                <Label htmlFor="linkedin">{t('profile.fields.linkedin.label')}</Label>
                 <Input
                   type="url"
                   id="linkedin"
-                  placeholder="https://www.linkedin.com/in/username"
+                  placeholder={t('profile.fields.linkedin.placeholder')}
                   value={linkedIn}
                   onChange={(e) => handleLinkedInChange(e.target.value)}
                   className={linkedInError ? 'border-red-500' : ''}
@@ -171,10 +173,10 @@ export default function SettingsLayout({
                 )}
               </div>
               <div className="w-full flex flex-col gap-3">
-                <Label htmlFor="description">About me</Label>
+                <Label htmlFor="description">{t('profile.fields.aboutMe.label')}</Label>
                 <Textarea
                   id="description"
-                  placeholder="a text about you"
+                  placeholder={t('profile.fields.aboutMe.placeholder')}
                   className="w-full rounded-lg resize-none"
                   value={aboutMe}
                   onChange={(e) => handleAboutMeChange(e.target.value)}
@@ -186,7 +188,7 @@ export default function SettingsLayout({
                 variant="default"
                 disabled={!hasChanges}
               >
-                Save Changes
+                {t('profile.actions.save')}
               </Button>
             </form>
           </Container>
