@@ -57,17 +57,21 @@ export function GamePlayList() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-4 animate-in fade-in-0 slide-in-from-bottom-4">
       {games.map((game) => (
-        <GameCard
+        <div
           key={game.id}
-          id={game.id}
-          title={game.title || 'Untitled Game'}
-          description={game.description || 'No description'}
-          version={game.version ?? undefined}
-          status="published"
-          onPlay={() => handlePlay(game.id)}
-        />
+          className="animate-in fade-in-0 slide-in-from-bottom-3"
+        >
+          <GameCard
+            id={game.id}
+            title={game.title || 'Untitled Game'}
+            description={game.description || 'No description'}
+            version={game.version ?? undefined}
+            status="published"
+            onPlay={() => handlePlay(game.id)}
+          />
+        </div>
       ))}
     </div>
   )

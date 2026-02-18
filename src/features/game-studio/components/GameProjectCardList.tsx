@@ -7,7 +7,7 @@ export default function GameProjectCardList({ projects, onOpen }: GameProjectCar
       {projects.map((project) => (
         <div
           key={project.id}
-          className="flex-1 min-w-[320px] max-w-[350px] flex justify-center"
+          className="flex-1 min-w-[320px] max-w-[350px] flex justify-center animate-in fade-in-0 slide-in-from-bottom-4"
         >
           <GameProjectCard
             id={project.id}

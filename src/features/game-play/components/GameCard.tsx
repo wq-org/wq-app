@@ -150,7 +150,7 @@ export function GameCard({
   const centerPosition = avatarPositions[7]
 
   return (
-    <Card className="relative w-[350px] mx-auto rounded-4xl hover:shadow-lg transition-shadow">
+    <Card className="relative w-[350px] mx-auto rounded-4xl hover:shadow-lg transition-shadow animate-in fade-in-0 slide-in-from-bottom-4">
       {status && (
         <div className="absolute top-3 left-3 z-10">
           <Badge variant={status === 'published' ? 'default' : 'secondary'}>
@@ -227,7 +227,7 @@ export function GameCard({
                 e.stopPropagation()
                 onPlay()
               }}
-              className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200"
+              className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200 active:animate-in active:zoom-in-95"
             >
               <Play className="w-5 h-5 mr-2" />
               Play

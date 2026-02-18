@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import GameInformationCard from '@/features/games/shared/GameInformationCard'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface PreviewIfElseSlideProps {
   title?: string
@@ -19,10 +20,16 @@ function BranchRow({
   label,
   destination,
   active,
+  pathPrefix,
+  notConnectedLabel,
+  correctRouteLabel,
 }: {
   label: 'A' | 'B'
   destination?: string
   active: boolean
+  pathPrefix: string
+  notConnectedLabel: string
+  correctRouteLabel: string
 }) {
   return (
     <div
@@ -32,16 +39,18 @@ function BranchRow({
       )}
     >
       <div className="flex items-center gap-2 min-w-0">
-        <Badge variant={active ? 'default' : 'outline'}>Path {label}</Badge>
+        <Badge variant={active ? 'default' : 'outline'}>
+          {pathPrefix} {label}
+        </Badge>
         <Text
           as="span"
           variant="small"
           className="text-sm text-foreground truncate"
         >
-          {destination && destination.trim() ? destination : 'Not connected'}
+          {destination && destination.trim() ? destination : notConnectedLabel}
         </Text>
       </div>
-      {active && <Badge variant="secondary">Correct route</Badge>}
+      {active && <Badge variant="secondary">{correctRouteLabel}</Badge>}
     </div>
   )
 }
@@ -53,7 +62,8 @@ export function PreviewIfElseSlide({
   correctPath = 'A',
   branches,
 }: PreviewIfElseSlideProps) {
-  const displayTitle = title?.trim() || 'If / else'
+  const { t } = useTranslation('features.gameStudio')
+  const displayTitle = title?.trim() || t('previewIfElse.ifElseFallback')
   const displayDescription = description?.trim() || ''
   const displayCondition = condition?.trim() || ''
 
@@ -70,14 +80,14 @@ export function PreviewIfElseSlide({
             variant="body"
             className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
           >
-            Routing Logic
+            {t('previewIfElse.routingLogic')}
           </Text>
           <Text
             as="p"
             variant="body"
             className="text-sm text-foreground"
           >
-            This node chooses the next slide based on:
+            {t('previewIfElse.routingDescription')}
           </Text>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -87,7 +97,7 @@ export function PreviewIfElseSlide({
               variant="body"
               className="text-xs text-muted-foreground"
             >
-              Condition
+              {t('previewIfElse.condition')}
             </Text>
             {displayCondition ? (
               <div className="rounded-md border bg-muted px-3 py-2 text-sm text-foreground">
@@ -99,7 +109,7 @@ export function PreviewIfElseSlide({
                 variant="body"
                 className="text-sm text-muted-foreground"
               >
-                No condition set yet.
+                {t('previewIfElse.noCondition')}
               </Text>
             )}
           </div>
@@ -109,17 +119,23 @@ export function PreviewIfElseSlide({
               variant="body"
               className="text-xs text-muted-foreground"
             >
-              Outgoing paths
+              {t('previewIfElse.outgoingPaths')}
             </Text>
             <BranchRow
               label="A"
               destination={branches?.A}
               active={correctPath === 'A'}
+              pathPrefix={t('previewIfElse.pathLabel')}
+              notConnectedLabel={t('previewIfElse.notConnected')}
+              correctRouteLabel={t('previewIfElse.correctRoute')}
             />
             <BranchRow
               label="B"
               destination={branches?.B}
               active={correctPath === 'B'}
+              pathPrefix={t('previewIfElse.pathLabel')}
+              notConnectedLabel={t('previewIfElse.notConnected')}
+              correctRouteLabel={t('previewIfElse.correctRoute')}
             />
           </div>
         </CardContent>

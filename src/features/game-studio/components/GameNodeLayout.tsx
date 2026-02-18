@@ -4,6 +4,7 @@ import GameNodeSettings from './GameNodeSettings'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { GameNodePointsContext } from '@/contexts/game-studio'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface GameNodeLayoutProps {
   nodeId?: string
@@ -36,10 +37,11 @@ export default function GameNodeLayout({
   onDelete,
   onRemoveImage,
 }: GameNodeLayoutProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 animate-in fade-in-0 slide-in-from-bottom-4">
       {/* Tabs */}
       {!hideSettingsTab && (
         <div className="flex gap-12 border-b mb-6">
@@ -47,7 +49,7 @@ export default function GameNodeLayout({
             onClick={() => setActiveTab('overview')}
             className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
               activeTab === 'overview'
-                ? 'text-black border-black font-medium'
+                ? 'text-black border-black font-medium animate-in zoom-in-95'
                 : 'text-black/40 hover:text-black/60 border-transparent'
             }`}
           >
@@ -58,14 +60,14 @@ export default function GameNodeLayout({
               as="span"
               variant="small"
             >
-              Overview
+              {t('nodeLayout.overviewTab')}
             </Text>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
             className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
               activeTab === 'settings'
-                ? 'text-black border-black font-medium'
+                ? 'text-black border-black font-medium animate-in zoom-in-95'
                 : 'text-black/40 hover:text-black/60 border-transparent'
             }`}
           >
@@ -74,14 +76,17 @@ export default function GameNodeLayout({
               as="span"
               variant="small"
             >
-              Settings
+              {t('nodeLayout.settingsTab')}
             </Text>
           </button>
         </div>
       )}
 
       {/* Tab Content */}
-      <div>
+      <div
+        key={hideSettingsTab ? 'overview' : activeTab}
+        className="animate-in fade-in-0 slide-in-from-bottom-3"
+      >
         {(activeTab === 'overview' || hideSettingsTab) && (
           <div className="flex flex-col gap-6">
             {overviewContent && <div>{overviewContent}</div>}
@@ -98,7 +103,7 @@ export default function GameNodeLayout({
               </div>
             )}
             {!overviewContent && !GameComponent && (
-              <div className="text-muted-foreground">No content available</div>
+              <div className="text-muted-foreground">{t('nodeLayout.noContent')}</div>
             )}
           </div>
         )}
@@ -112,7 +117,7 @@ export default function GameNodeLayout({
                   variant="body"
                   className="text-muted-foreground text-sm mb-3"
                 >
-                  Hold the button below for 3 seconds to delete this node.
+                  {t('nodeLayout.deleteHint')}
                 </Text>
                 <HoldToDeleteButton
                   onDelete={onDelete}

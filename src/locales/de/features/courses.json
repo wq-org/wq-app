@@ -1,4 +1,40 @@
 {
+  "settings": {
+    "title": "Kurseinstellungen",
+    "subtitle": "Verwalte deine Kursdetails und Einstellungen",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Kurstitel",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Kursbeschreibung",
+    "publishedLabel": "Veröffentlicht",
+    "publishedHint": "Diesen Kurs für Lernende sichtbar machen",
+    "save": "Änderungen speichern",
+    "saving": "Speichern...",
+    "deleteAction": "Kurs löschen",
+    "errors": {
+      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Kurs konnte nicht gelöscht werden. Bitte versuche es erneut.",
+      "publishStatusFailed": "Veröffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
+    }
+  },
+  "page": {
+    "notFound": "Kurs nicht gefunden",
+    "addTopicPlaceholder": "Neues Thema hinzufügen",
+    "topicsTitle": "Themen",
+    "lessonsForTopic": "Lektionen für: {{topic}}",
+    "lessonsForTopicDescription": "Entdecke die verfügbaren Lektionen für dieses Thema"
+  },
+  "lessonTable": {
+    "columns": {
+      "title": "Titel",
+      "description": "Beschreibung",
+      "action": "Aktion"
+    },
+    "noDescription": "Keine Beschreibung",
+    "actions": {
+      "view": "Ansehen"
+    }
+  },
   "topic": {
     "deleteDialog": {
       "title": "Thema löschen",
@@ -9,6 +45,8 @@
   },
   "card": {
     "published": "Veröffentlicht",
-    "unpublished": "Nicht veröffentlicht"
+    "unpublished": "Nicht veröffentlicht",
+    "open": "Öffnen",
+    "imageAlt": "Kurs"
   }
 }

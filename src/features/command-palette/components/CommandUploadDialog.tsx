@@ -10,12 +10,14 @@ import type { UploadedFile } from '@/components/shared/upload-files/types/upload
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface CommandUploadDialogProps {
   onSuccess?: () => void
 }
 
 export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}) {
+  const { t } = useTranslation('features.commandPalette')
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [showStepper, setShowStepper] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -58,7 +60,9 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
         if (result.isValid) {
           validFiles.push(files[index])
         } else {
-          toast.error(`File "${files[index].name}": ${result.error}`)
+          toast.error(t('upload.toasts.fileValidationError', { fileName: files[index].name }), {
+            description: result.error,
+          })
         }
       })
 
@@ -96,12 +100,12 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
     const role = getRole()
 
     if (!userId) {
-      toast.error('User ID not found. Please log in again.')
+      toast.error(t('upload.toasts.userIdMissing'))
       return
     }
 
     if (!role) {
-      toast.error('User role not found. Please log in again.')
+      toast.error(t('upload.toasts.userRoleMissing'))
       return
     }
 
@@ -122,7 +126,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
     }
 
     if (uploadedFiles.length === 0) {
-      toast.error('No files to upload')
+      toast.error(t('upload.toasts.noFiles'))
       return
     }
 
@@ -143,16 +147,16 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
       const failedCount = results.filter((r) => !r.success).length
 
       if (successCount > 0) {
-        toast.success(
-          `Successfully uploaded ${successCount} file(s)${failedCount > 0 ? ` (${failedCount} failed)` : ''}`,
-        )
+        toast.success(t('upload.toasts.successSummary', { successCount, failedCount }))
       }
 
       if (failedCount > 0) {
         const failedFiles = results
           .map((r, i) => (r.success ? null : uploadedFiles[i].file.name))
           .filter(Boolean)
-        toast.error(`Failed to upload ${failedCount} file(s): ${failedFiles.join(', ')}`)
+        toast.error(t('upload.toasts.failedSummary', { failedCount }), {
+          description: String(failedFiles.join(', ')),
+        })
       }
 
       // Reset state only if all uploads succeeded
@@ -166,7 +170,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
       }
     } catch (error) {
       console.error('Unexpected error during upload:', error)
-      toast.error('An unexpected error occurred during upload')
+      toast.error(t('upload.toasts.unexpectedError'))
     } finally {
       setIsUploading(false)
       setUploadProgress(0)
@@ -197,14 +201,14 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
                       variant="body"
                       className="text-sm font-medium text-gray-900"
                     >
-                      Uploading files...
+                      {t('upload.progress.uploading')}
                     </Text>
                     <Text
                       as="p"
                       variant="body"
                       className="text-xs text-gray-500 mt-1"
                     >
-                      {uploadProgress.toFixed(0)}% complete
+                      {t('upload.progress.complete', { percent: uploadProgress.toFixed(0) })}
                     </Text>
                   </div>
                 </div>

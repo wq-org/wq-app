@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin } from 'lucide-react'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface InstitutionLinks {
   website?: string
@@ -36,6 +37,7 @@ export default function Institution({
   onFollowClick,
   children,
 }: InstitutionProps) {
+  const { t } = useTranslation('features.institution')
   // Helper function to clean URLs (remove angle brackets if present)
   const cleanUrl = (url?: string): string | undefined => {
     if (!url) return undefined
@@ -44,10 +46,10 @@ export default function Institution({
 
   // Get all available links
   const availableLinks = [
-    { key: 'website', label: 'Website', url: cleanUrl(links?.website) },
-    { key: 'twitter', label: 'Twitter', url: cleanUrl(links?.twitter) },
-    { key: 'facebook', label: 'Facebook', url: cleanUrl(links?.facebook) },
-    { key: 'instagram', label: 'Instagram', url: cleanUrl(links?.instagram) },
+    { key: 'website', label: t('links.website'), url: cleanUrl(links?.website) },
+    { key: 'twitter', label: t('links.twitter'), url: cleanUrl(links?.twitter) },
+    { key: 'facebook', label: t('links.facebook'), url: cleanUrl(links?.facebook) },
+    { key: 'instagram', label: t('links.instagram'), url: cleanUrl(links?.instagram) },
   ].filter((link) => link.url)
   return (
     <PageWrapper className="flex flex-col gap-8 items-start w-fit">
@@ -119,7 +121,7 @@ export default function Institution({
         className="gap-2 w-fit"
         onClick={onFollowClick}
       >
-        Follow
+        {t('actions.follow')}
       </Button>
 
       <Container className="flex flex-col gap-4 w-full border min-h-[400px] rounded-3xl">
@@ -130,7 +132,7 @@ export default function Institution({
               variant="h3"
               className="text-xl text-center"
             >
-              Teachers
+              {t('tabs.teachers')}
             </Text>
             <div>{/* Teachers content can be passed as children or props */}</div>
           </div>
@@ -140,7 +142,7 @@ export default function Institution({
               variant="h3"
               className="text-xl text-center"
             >
-              Students
+              {t('tabs.students')}
             </Text>
             <div>{/* Students content can be passed as children or props */}</div>
           </div>

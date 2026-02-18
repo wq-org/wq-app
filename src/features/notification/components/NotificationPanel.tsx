@@ -7,8 +7,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import NotificationItem from './NotificationItem'
 import type { Notification } from '../types/notification.types'
 import { mockNotifications } from '../data/mockNotifications'
+import { useTranslation } from 'react-i18next'
 
 export default function NotificationPanel() {
+  const { t } = useTranslation('features.notification')
   const [notifications] = useState<Notification[]>(mockNotifications)
   const [activeTab, setActiveTab] = useState<'all' | 'following'>('all')
 
@@ -17,7 +19,7 @@ export default function NotificationPanel() {
   return (
     // Make panel have fixed height and flex column, header/tabs sticky, notification list scrollable
     <div
-      className="w-90 p-4 rounded-4xl backdrop-blur bg-card/70 border shadow-md flex flex-col"
+      className="w-90 p-4 rounded-4xl backdrop-blur bg-card/70 border shadow-md flex flex-col animate-in fade-in-0 slide-in-from-right-2"
       style={{ height: 500, minHeight: 400 }}
     >
       {/* Header */}
@@ -31,7 +33,7 @@ export default function NotificationPanel() {
             variant="h1"
             className="text-xl  text-gray-900"
           >
-            Notifications
+            {t('panel.title')}
           </Text>
         </div>
         {/* Tabs */}
@@ -39,11 +41,13 @@ export default function NotificationPanel() {
           <button
             onClick={() => setActiveTab('all')}
             className={`relative pb-2 text-base  transition-colors ${
-              activeTab === 'all' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'all'
+                ? 'text-gray-900 animate-in zoom-in-95'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <div className="flex items-center gap-1.5">
-              All
+              {t('panel.tabs.all')}
               {unreadCount > 0 && (
                 <Badge
                   variant="default"
@@ -61,11 +65,13 @@ export default function NotificationPanel() {
           <button
             onClick={() => setActiveTab('following')}
             className={`relative pb-2 text-base transition-colors ${
-              activeTab === 'following' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'following'
+                ? 'text-gray-900 animate-in zoom-in-95'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <div className="flex items-center gap-1.5">
-              Following
+              {t('panel.tabs.following')}
               <Text
                 as="span"
                 variant="small"
@@ -87,7 +93,7 @@ export default function NotificationPanel() {
       <div className="flex-1 min-h-0">
         <ScrollArea className="h-full max-h-full">
           {activeTab === 'all' && (
-            <div>
+            <div className="animate-in fade-in-0 slide-in-from-bottom-3">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <Text
@@ -95,14 +101,14 @@ export default function NotificationPanel() {
                     variant="body"
                     className="text-gray-500 text-base"
                   >
-                    No notifications
+                    {t('panel.emptyAll.title')}
                   </Text>
                   <Text
                     as="p"
                     variant="body"
                     className="text-gray-400 text-sm mt-1"
                   >
-                    You're all caught up!
+                    {t('panel.emptyAll.description')}
                   </Text>
                 </div>
               ) : (
@@ -117,20 +123,20 @@ export default function NotificationPanel() {
           )}
 
           {activeTab === 'following' && (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in-0 slide-in-from-bottom-3">
               <Text
                 as="p"
                 variant="body"
                 className="text-gray-500 text-base"
               >
-                No following notifications
+                {t('panel.emptyFollowing.title')}
               </Text>
               <Text
                 as="p"
                 variant="body"
                 className="text-gray-400 text-sm mt-1"
               >
-                Notifications from people you follow will appear here
+                {t('panel.emptyFollowing.description')}
               </Text>
             </div>
           )}

@@ -16,6 +16,7 @@ import {
   hasParagraphPenalties,
 } from '../utils/publishValidation'
 import PublishGameCheckList from './PublishGameCheckList'
+import { useTranslation } from 'react-i18next'
 
 export default function PublishDrawer({
   open,
@@ -25,13 +26,14 @@ export default function PublishDrawer({
   gameTitle: propGameTitle,
   onPublish,
 }: PublishDrawerProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [publishing, setPublishing] = useState(false)
   const startNode = nodes.find((n: Node) => n.type === 'gameStart')
   const gameTitle =
     propGameTitle ||
     (startNode?.data?.title as string) ||
     (startNode?.data?.label as string) ||
-    'Untitled Game'
+    t('publishDrawer.untitledGame')
 
   const validationResult = getValidationResult(nodes, edges)
   const canPublish = validationResult.canPublish
@@ -44,24 +46,24 @@ export default function PublishDrawer({
       toast.error(
         validationResult.globalErrors[0] ??
           validationResult.nodeItems.find((i) => i.errors.length > 0)?.errors[0] ??
-          'Cannot publish game',
+          t('publishDrawer.cannotPublishGame'),
       )
       return
     }
 
     if (!onPublish) {
-      toast.error('Publish is not available. Save the project first.')
+      toast.error(t('publishDrawer.publishUnavailable'))
       return
     }
 
     setPublishing(true)
     try {
       await onPublish()
-      toast.success('Game published successfully!')
+      toast.success(t('publishDrawer.publishedSuccess'))
       onOpenChange(false)
     } catch (err) {
       console.error(err)
-      toast.error('Failed to publish game')
+      toast.error(t('publishDrawer.publishFailed'))
     } finally {
       setPublishing(false)
     }
@@ -76,7 +78,7 @@ export default function PublishDrawer({
       <DrawerContent className="w-[50vw]! max-w-none! h-screen flex flex-col">
         <DrawerHeader className="border-b shrink-0">
           <div className="flex items-center justify-between">
-            <DrawerTitle className="text-2xl font-bold">Publish Game</DrawerTitle>
+            <DrawerTitle className="text-2xl font-bold">{t('publishDrawer.title')}</DrawerTitle>
             <Button
               variant="ghost"
               size="icon"
@@ -99,7 +101,7 @@ export default function PublishDrawer({
                       variant="small"
                       className="text-sm font-medium text-gray-700"
                     >
-                      Game Title:
+                      {t('publishDrawer.gameTitleLabel')}
                     </Text>
                     <Text
                       as="span"
@@ -115,7 +117,7 @@ export default function PublishDrawer({
                       variant="small"
                       className="text-sm font-medium text-gray-700"
                     >
-                      Total Nodes:
+                      {t('publishDrawer.totalNodesLabel')}
                     </Text>
                     <Badge
                       variant="outline"
@@ -131,11 +133,11 @@ export default function PublishDrawer({
                         variant="small"
                         className="text-sm font-medium text-gray-700"
                       >
-                        Total Points to Achieve:
+                        {t('publishDrawer.totalPointsLabel')}
                       </Text>
                       <Badge variant="secondary">
                         <Trophy className="w-3 h-3 mr-1" />
-                        {totalPoints.toFixed(1)} points
+                        {t('publishDrawer.pointsValue', { points: totalPoints.toFixed(1) })}
                       </Badge>
                     </div>
                     {showFloorNote && (
@@ -144,7 +146,7 @@ export default function PublishDrawer({
                         variant="body"
                         className="text-xs text-muted-foreground"
                       >
-                        Wrong-answer penalties may apply; score never below 0.
+                        {t('publishDrawer.floorNote')}
                       </Text>
                     )}
                   </div>
@@ -167,7 +169,7 @@ export default function PublishDrawer({
             className="rounded-lg w-full"
             disabled={!canPublish || publishing}
           >
-            {publishing ? 'Publishing…' : 'Publish for Students'}
+            {publishing ? t('publishDrawer.publishing') : t('publishDrawer.publishForStudents')}
           </Button>
         </div>
       </DrawerContent>

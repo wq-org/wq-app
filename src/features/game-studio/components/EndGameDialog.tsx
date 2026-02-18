@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import type { EndGameDialogProps } from '../types/game-studio.types'
+import { useTranslation } from 'react-i18next'
 
 interface EndGameDialogPropsWithDelete extends EndGameDialogProps {
   onDelete?: () => void
@@ -39,6 +40,7 @@ export default function EndGameDialog({
   initialData,
   onDelete,
 }: EndGameDialogPropsWithDelete) {
+  const { t } = useTranslation('features.gameStudio')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const prevOpenRef = useRef(false)
@@ -83,28 +85,26 @@ export default function EndGameDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw] max-w-[min(1080px,calc(100vw-2rem))]">
         <DialogHeader>
-          <DialogTitle>Configure End Node</DialogTitle>
-          <DialogDescription className="sr-only">
-            Configure the end node with title and description
-          </DialogDescription>
+          <DialogTitle>{t('endDialog.title')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('endDialog.description')}</DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="end-node-title">Title</Label>
+            <Label htmlFor="end-node-title">{t('endDialog.fieldTitle')}</Label>
             <Input
               id="end-node-title"
-              placeholder="Enter node title"
+              placeholder={t('endDialog.titlePlaceholder')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="end-node-description">Description</Label>
+            <Label htmlFor="end-node-description">{t('endDialog.fieldDescription')}</Label>
             <Textarea
               id="end-node-description"
-              placeholder="Enter node description"
+              placeholder={t('endDialog.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -120,7 +120,7 @@ export default function EndGameDialog({
                 variant="body"
                 className="text-muted-foreground text-sm mb-3"
               >
-                Hold the button below for 3 seconds to delete this node.
+                {t('endDialog.deleteHint')}
               </Text>
               <HoldToDeleteButton
                 onDelete={handleDelete}
@@ -135,13 +135,13 @@ export default function EndGameDialog({
             variant="outline"
             onClick={handleCancel}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleSave}
             disabled={!title.trim() || !description.trim()}
           >
-            Save
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,11 +2,17 @@
   "settings": {
     "title": "Lektionseinstellungen",
     "subtitle": "Verwalte die Details deiner Lektion",
+    "titleLabel": "Titel",
+    "descriptionLabel": "Beschreibung",
     "save": "Änderungen speichern",
     "saving": "Speichern...",
     "deleteAction": "Lektion löschen",
     "titlePlaceholder": "Titel der Lektion",
     "descriptionPlaceholder": "Beschreibung der Lektion",
+    "errors": {
+      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Lektion konnte nicht gelöscht werden. Bitte versuche es erneut."
+    },
     "deleteDialog": {
       "title": "Lektion löschen",
       "description": "Möchtest du \"{{title}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",

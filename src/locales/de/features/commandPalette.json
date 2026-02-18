@@ -26,9 +26,79 @@
     "undo": "Rückgängig",
     "redo": "Wiederholen"
   },
+  "navigation": {
+    "pan": "Verschieben",
+    "select": "Auswählen"
+  },
   "search": {
     "placeholder": "Kurse, Personen, Institutionen, Spiele suchen…",
     "noResults": "Keine Ergebnisse gefunden",
     "recent": "Letzte Suchen"
+  },
+  "addDialog": {
+    "title": "Neu hinzufügen",
+    "subtitle": "Wähle aus, was du erstellen möchtest.",
+    "untitledGame": "Unbenanntes Spiel",
+    "formTitle": "{{type}} hinzufügen",
+    "formSubtitle": "Erstelle ein neues {{type}}, um zu starten.",
+    "fieldTitleLabel": "{{type}} Titel",
+    "fieldTitlePlaceholder": "{{type}} Titel",
+    "fieldDescriptionLabel": "{{type}} Beschreibung",
+    "fieldDescriptionPlaceholder": "{{type}} Beschreibung",
+    "actions": {
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt...",
+      "create": "{{type}} erstellen"
+    },
+    "types": {
+      "course": "Kurs",
+      "institution": "Institution",
+      "game": "Spiel",
+      "notes": "Notizen",
+      "node": "Knoten"
+    },
+    "options": {
+      "course": {
+        "label": "Kurs hinzufügen",
+        "description": "Einen neuen Kurs erstellen"
+      },
+      "institution": {
+        "label": "Institution hinzufügen",
+        "description": "Eine neue Institution erstellen"
+      },
+      "game": {
+        "label": "Neues Spiel",
+        "description": "Ein neues Lernspiel erstellen"
+      }
+    }
+  },
+  "upload": {
+    "dropzone": {
+      "uploadButton": "Dateien hochladen",
+      "title": "Dateien auswählen oder hier per Drag & Drop ablegen.",
+      "description": "Bilder (außer WebP), PDF, MP4-Videos (max. 60s), Word (docx), PowerPoint (pptx/ppt). Max. 20 MB pro Datei."
+    },
+    "stepper": {
+      "filenameLabel": "Dateiname *",
+      "filenamePlaceholder": "Dateinamen eingeben",
+      "clearInputAria": "Eingabe löschen",
+      "back": "Zurück",
+      "previous": "Vorherige",
+      "next": "Weiter",
+      "done": "Fertig"
+    },
+    "progress": {
+      "uploading": "Dateien werden hochgeladen...",
+      "complete": "{{percent}}% abgeschlossen"
+    },
+    "toasts": {
+      "fileValidationError": "Datei \"{{fileName}}\" ist ungültig",
+      "userIdMissing": "Benutzer-ID nicht gefunden. Bitte melde dich erneut an.",
+      "userRoleMissing": "Benutzerrolle nicht gefunden. Bitte melde dich erneut an.",
+      "noFiles": "Keine Dateien zum Hochladen",
+      "successSummary": "{{successCount}} Datei(en) erfolgreich hochgeladen. Fehlgeschlagen: {{failedCount}}",
+      "failedSummary": "{{failedCount}} Datei(en) konnten nicht hochgeladen werden",
+      "unexpectedError": "Beim Upload ist ein unerwarteter Fehler aufgetreten"
+    }
   }
 }

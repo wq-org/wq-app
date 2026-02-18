@@ -1,1 +1,208 @@
-{}
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "nodeA": "Node A",
+    "nodeB": "Node B"
+  },
+  "emptyGamesView": {
+    "title": "Create your first game",
+    "description": "Build a flow with Start, game nodes, and End, then publish for students."
+  },
+  "emptyProjectsView": {
+    "title": "No game projects yet",
+    "description": "Build a flow with Start, game nodes, and End, then publish for students."
+  },
+  "sidebar": {
+    "searchPlaceholder": "Insert node...",
+    "sectionNodes": "Nodes",
+    "sectionLogic": "Logic",
+    "noResults": "No results found",
+    "nodes": {
+      "end": "End Node",
+      "paragraph": "Paragraph",
+      "imageTerms": "Image and Terms",
+      "imagePin": "Image and Pin"
+    },
+    "logic": {
+      "ifElse": "If / else"
+    }
+  },
+  "nodeLayout": {
+    "overviewTab": "Overview",
+    "settingsTab": "Settings",
+    "noContent": "No content available",
+    "deleteHint": "Hold the button below for 3 seconds to delete this node."
+  },
+  "previewDrawer": {
+    "title": "Game Simulation",
+    "emptyHint": "Add a Start node, game nodes, and an End node connected in a path to preview.",
+    "ifElseFallback": "If / else",
+    "labels": {
+      "start": "Start",
+      "end": "End"
+    }
+  },
+  "editorCanvas": {
+    "defaultTitle": "General",
+    "loading": "Project Loading...",
+    "actions": {
+      "save": "Save",
+      "preview": "Preview",
+      "leave": "Leave",
+      "publish": "Publish"
+    }
+  },
+  "publishChecklist": {
+    "requirementsMet": "Requirements met",
+    "requirementsNotMet": "Requirements not met",
+    "rulesTitle": "Publishing rules",
+    "rules": {
+      "noAbandoned": "No abandoned or disconnected nodes",
+      "linkedStartToEnd": "All nodes linked from Start to End",
+      "connectedPath": "All nodes connected (path Start to End).",
+      "minimallyFilled": "Each node minimally filled so the game is playable."
+    }
+  },
+  "settingsDrawer": {
+    "title": "Settings",
+    "closeAriaLabel": "Close settings",
+    "projectTitleLabel": "Project Title",
+    "projectTitlePlaceholder": "Enter project title",
+    "projectDescriptionLabel": "Project Description",
+    "projectDescriptionPlaceholder": "Enter project description",
+    "publishStatusLabel": "Publish status",
+    "publishStatus": {
+      "published": "Published",
+      "draft": "Draft",
+      "publishedHint": "Students can play this game. Turn off to unpublish and hide it from the list.",
+      "draftHint": "Use the Publish button in the toolbar to publish this game for students."
+    },
+    "versionLabel": "Version",
+    "versionValue": "Version : {{version}}",
+    "rollbackLabel": "Rollback",
+    "rollbackToVersion": "Rollback to Version {{version}}",
+    "noPreviousVersions": "No previous versions",
+    "holdToDelete": "Hold to Delete",
+    "toasts": {
+      "saved": "Settings saved",
+      "saveFailed": "Failed to save settings",
+      "rolledBack": "Rolled back to previous version",
+      "rollbackFailed": "Failed to rollback",
+      "unpublished": "Game unpublished",
+      "unpublishFailed": "Failed to unpublish"
+    }
+  },
+  "gameNodeSettings": {
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter node title",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Enter node description"
+  },
+  "ifElseDialog": {
+    "title": "Configure If/Else Node",
+    "description": "Configure the if/else node title, description, condition, and correct path",
+    "fieldTitle": "Title",
+    "titlePlaceholder": "Enter node title",
+    "fieldDescription": "Description",
+    "descriptionPlaceholder": "Enter node description",
+    "deleteHint": "Hold the button below for 3 seconds to delete this node.",
+    "incomingNode": "Incoming Node",
+    "noIncomingNode": "No incoming node",
+    "outgoingNodes": "Outgoing Nodes",
+    "noOutgoingNodes": "No outgoing nodes",
+    "correctAnswerRoute": "When user answers correctly"
+  },
+  "startDialog": {
+    "title": "Configure Start Node",
+    "description": "Configure the start node with title and description",
+    "fieldTitle": "Title",
+    "titlePlaceholder": "Enter game title",
+    "fieldDescription": "Description",
+    "descriptionPlaceholder": "Enter game description"
+  },
+  "endDialog": {
+    "title": "Configure End Node",
+    "description": "Configure the end node with title and description",
+    "fieldTitle": "Title",
+    "titlePlaceholder": "Enter node title",
+    "fieldDescription": "Description",
+    "descriptionPlaceholder": "Enter node description",
+    "deleteHint": "Hold the button below for 3 seconds to delete this node."
+  },
+  "publishDrawer": {
+    "title": "Publish Game",
+    "untitledGame": "Untitled Game",
+    "cannotPublishGame": "Cannot publish game",
+    "publishUnavailable": "Publish is not available. Save the project first.",
+    "publishedSuccess": "Game published successfully!",
+    "publishFailed": "Failed to publish game",
+    "gameTitleLabel": "Game Title:",
+    "totalNodesLabel": "Total Nodes:",
+    "totalPointsLabel": "Total Points to Achieve:",
+    "pointsValue": "{{points}} points",
+    "floorNote": "Wrong-answer penalties may apply; score never below 0.",
+    "publishing": "Publishing...",
+    "publishForStudents": "Publish for Students"
+  },
+  "previewIfElse": {
+    "ifElseFallback": "If / else",
+    "routingLogic": "Routing Logic",
+    "routingDescription": "This node chooses the next slide based on:",
+    "condition": "Condition",
+    "noCondition": "No condition set yet.",
+    "outgoingPaths": "Outgoing paths",
+    "pathLabel": "Path",
+    "notConnected": "Not connected",
+    "correctRoute": "Correct route"
+  },
+  "gameProjectCard": {
+    "untitledProject": "Untitled Project",
+    "noDescription": "No description",
+    "imageAlt": "Game project",
+    "open": "Open",
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    }
+  },
+  "gameCard": {
+    "centerAvatarAlt": "Center avatar",
+    "play": "Play",
+    "versionValue": "Version : {{version}}",
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    }
+  },
+  "gameNodeDialog": {
+    "saveError": "Something went wrong. Please try again in a few seconds.",
+    "description": "Configure {{gameTitle}} game node",
+    "loading": "Project Loading...",
+    "gameTitles": {
+      "paragraphLineSelect": "Paragraph Line Select",
+      "imageTermMatch": "Image Term Match",
+      "imagePinMark": "Image Pin Mark"
+    }
+  },
+  "page": {
+    "title": "Game Studio",
+    "subtitle": "Create and manage educational games for your students.",
+    "createGame": "Create game",
+    "creating": "Creating...",
+    "fallbackUntitledGame": "Untitled Game",
+    "fallbackNoDescription": "No description",
+    "toasts": {
+      "loadFailed": "Failed to load games",
+      "createRequiresSignin": "You must be signed in to create a game",
+      "createFailed": "Failed to create game"
+    }
+  },
+  "header": {
+    "title": "Game Studio"
+  },
+  "helpDrawer": {
+    "title": "Game Studio Help"
+  }
+}

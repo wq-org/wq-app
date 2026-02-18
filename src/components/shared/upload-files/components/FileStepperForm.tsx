@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/stepper'
 import { Check, X } from 'lucide-react'
 import type { UploadedFile } from '../types/upload.types'
+import { useTranslation } from 'react-i18next'
 
 interface FileStepperFormProps {
   files: UploadedFile[]
@@ -27,6 +28,7 @@ export default function FileStepperForm({
   onComplete,
   onBack,
 }: FileStepperFormProps) {
+  const { t } = useTranslation('features.commandPalette')
   const [currentStep, setCurrentStep] = useState(1)
   const isEditingRef = useRef<string | null>(null)
 
@@ -221,14 +223,14 @@ export default function FileStepperForm({
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="filename">Filename *</Label>
+              <Label htmlFor="filename">{t('upload.stepper.filenameLabel')}</Label>
               <div className="relative">
                 <Input
                   id="filename"
                   value={currentFormData.title}
                   onChange={(e) => handleFilenameChange(e.target.value)}
                   onBlur={handleInputBlur}
-                  placeholder="Enter filename"
+                  placeholder={t('upload.stepper.filenamePlaceholder')}
                   className="w-full pr-10"
                 />
                 {currentFormData.title && (
@@ -237,7 +239,7 @@ export default function FileStepperForm({
                     size="icon"
                     onClick={() => handleFilenameChange('')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors h-8 w-8"
-                    aria-label="Clear input"
+                    aria-label={t('upload.stepper.clearInputAria')}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -253,13 +255,13 @@ export default function FileStepperForm({
               onClick={handlePrevious}
               disabled={currentStep === 1 && !onBack}
             >
-              {currentStep === 1 ? 'Back' : 'Previous'}
+              {currentStep === 1 ? t('upload.stepper.back') : t('upload.stepper.previous')}
             </Button>
             <Button
               onClick={handleNext}
               disabled={!currentFormData.title.trim()}
             >
-              {currentStep === files.length ? 'Done' : 'Next'}
+              {currentStep === files.length ? t('upload.stepper.done') : t('upload.stepper.next')}
             </Button>
           </div>
         </div>

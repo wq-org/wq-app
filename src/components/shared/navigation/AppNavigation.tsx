@@ -37,10 +37,13 @@ const AppNavigation = ({
   }
 
   return (
-    <div className={cn('sticky top-0 z-40 w-full', className)}>
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 rounded-full border bg-card/50 backdrop-blur px-4 py-2 shadow-sm">
+    <div
+      className={cn('sticky top-0 z-40 w-full pointer-events-none', className)}
+      style={{ ['--app-nav-height' as string]: '82px' }}
+    >
+      <div className="container mx-auto max-w-7xl px-4 py-3">
+        <div className="flex items-center justify-between gap-4 pointer-events-none">
+          <div className="flex items-center gap-3 rounded-full border bg-card/50 backdrop-blur px-4 py-2 shadow-sm pointer-events-auto">
             <Button
               variant="ghost"
               size="icon"
@@ -59,7 +62,7 @@ const AppNavigation = ({
             </Text>
           </div>
 
-          <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm">
+          <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm pointer-events-auto">
             <LanguageSwitcher />
             {authenticated && (
               <>

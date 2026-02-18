@@ -1,6 +1,9 @@
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export default function StudentView() {
+  const { t } = useTranslation('features.student')
+
   return (
     <div className="flex flex-col gap-4">
       <Text
@@ -8,14 +11,14 @@ export default function StudentView() {
         variant="h2"
         className="text-2xl font-semibold"
       >
-        Student View
+        {t('view.title')}
       </Text>
       <Text
         as="p"
         variant="body"
         className="text-gray-600"
       >
-        Student content will be displayed here.
+        {t('view.description')}
       </Text>
     </div>
   )

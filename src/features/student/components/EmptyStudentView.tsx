@@ -1,7 +1,10 @@
 import { Users, SearchIcon } from 'lucide-react'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export default function EmptyStudentView() {
+  const { t } = useTranslation('features.student')
+
   return (
     <div className="w-full animate-fade-in slide-in-from-bottom-5 duration-300 flex flex-col items-center justify-center p-12 border border-dashed border-gray-200 rounded-xl">
       <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
@@ -12,14 +15,14 @@ export default function EmptyStudentView() {
         variant="body"
         className="mt-3 text-gray-500 text-center text-sm"
       >
-        No students found
+        {t('emptyStudent.title')}
       </Text>
       <Text
         as="p"
         variant="body"
         className="text-xs text-gray-400 text-center mt-1 flex items-center gap-2"
       >
-        Use the command palette to search for students and add them to your class.
+        {t('emptyStudent.description')}
         <SearchIcon className="w-4 h-4 text-gray-400" />
       </Text>
     </div>

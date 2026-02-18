@@ -3,6 +3,7 @@ import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ALL_ALLOWED_TYPES } from '../types/upload.types'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface FileDropzoneProps {
   onFilesSelected: (files: File[]) => void
@@ -15,6 +16,7 @@ export default function FileDropzone({
   disabled = false,
   accept,
 }: FileDropzoneProps) {
+  const { t } = useTranslation('features.commandPalette')
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -94,7 +96,7 @@ export default function FileDropzone({
           disabled={disabled}
         >
           <Upload className="w-5 h-5" />
-          Upload Files
+          {t('upload.dropzone.uploadButton')}
         </Button>
         <div className="text-center space-y-1">
           <Text
@@ -102,15 +104,14 @@ export default function FileDropzone({
             variant="body"
             className="text-gray-600 text-sm"
           >
-            Choose files or drag & drop them here.
+            {t('upload.dropzone.title')}
           </Text>
           <Text
             as="p"
             variant="body"
             className="text-gray-400 text-xs"
           >
-            Images (except WebP), PDF, MP4 videos (max 60s), Word (docx), PowerPoint (pptx/ppt). Max
-            20 MB per file.
+            {t('upload.dropzone.description')}
           </Text>
         </div>
       </div>

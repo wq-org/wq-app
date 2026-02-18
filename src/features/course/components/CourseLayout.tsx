@@ -30,7 +30,7 @@ export default function CourseLayout() {
   if (!courseId) {
     return (
       <AppWrapper role="teacher">
-        <div className="flex flex-col gap-6 max-w-4xl mx-auto p-6">
+        <div className="flex flex-col gap-6 w-full mx-auto p-6">
           <Text
             as="p"
             variant="body"
@@ -43,11 +43,9 @@ export default function CourseLayout() {
     )
   }
 
-  const contentMaxWidth = isLessonRoute ? 'max-w-6xl' : 'max-w-4xl'
-
   return (
     <AppWrapper role="teacher">
-      <div className={`flex flex-col gap-6 ${contentMaxWidth} mx-auto p-6`}>
+      <div className="flex flex-col gap-6 w-full mx-auto p-6">
         {isLessonRoute ? (
           /* Outlet: renders the matched child route (e.g. Lesson page). Needed so nested routes under this layout show here. */
           <Outlet />

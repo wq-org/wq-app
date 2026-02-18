@@ -26,9 +26,79 @@
     "undo": "Undo",
     "redo": "Redo"
   },
+  "navigation": {
+    "pan": "Pan",
+    "select": "Select"
+  },
   "search": {
     "placeholder": "Search courses, people, institutions, games…",
     "noResults": "No results found",
     "recent": "Recent searches"
+  },
+  "addDialog": {
+    "title": "Add New",
+    "subtitle": "Choose what you want to create.",
+    "untitledGame": "Untitled Game",
+    "formTitle": "Add New {{type}}",
+    "formSubtitle": "Create a new {{type}} to get started.",
+    "fieldTitleLabel": "{{type}} Title",
+    "fieldTitlePlaceholder": "{{type}} Title",
+    "fieldDescriptionLabel": "{{type}} Description",
+    "fieldDescriptionPlaceholder": "{{type}} Description",
+    "actions": {
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "create": "Create {{type}}"
+    },
+    "types": {
+      "course": "Course",
+      "institution": "Institution",
+      "game": "Game",
+      "notes": "Notes",
+      "node": "Node"
+    },
+    "options": {
+      "course": {
+        "label": "Add Course",
+        "description": "Create a new course"
+      },
+      "institution": {
+        "label": "Add Institution",
+        "description": "Create a new institution"
+      },
+      "game": {
+        "label": "New Game",
+        "description": "Create a new educational game"
+      }
+    }
+  },
+  "upload": {
+    "dropzone": {
+      "uploadButton": "Upload Files",
+      "title": "Choose files or drag & drop them here.",
+      "description": "Images (except WebP), PDF, MP4 videos (max 60s), Word (docx), PowerPoint (pptx/ppt). Max 20 MB per file."
+    },
+    "stepper": {
+      "filenameLabel": "Filename *",
+      "filenamePlaceholder": "Enter filename",
+      "clearInputAria": "Clear input",
+      "back": "Back",
+      "previous": "Previous",
+      "next": "Next",
+      "done": "Done"
+    },
+    "progress": {
+      "uploading": "Uploading files...",
+      "complete": "{{percent}}% complete"
+    },
+    "toasts": {
+      "fileValidationError": "File \"{{fileName}}\" failed validation",
+      "userIdMissing": "User ID not found. Please log in again.",
+      "userRoleMissing": "User role not found. Please log in again.",
+      "noFiles": "No files to upload",
+      "successSummary": "Successfully uploaded {{successCount}} file(s). Failed: {{failedCount}}",
+      "failedSummary": "Failed to upload {{failedCount}} file(s)",
+      "unexpectedError": "An unexpected error occurred during upload"
+    }
   }
 }

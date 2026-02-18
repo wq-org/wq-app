@@ -75,7 +75,7 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
       setHasChanges(false)
     } catch (error) {
       console.error('Error updating lesson:', error)
-      alert('Failed to save changes. Please try again.')
+      alert(t('settings.errors.saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -91,7 +91,7 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
       }
     } catch (error) {
       console.error('Error deleting lesson:', error)
-      alert('Failed to delete lesson. Please try again.')
+      alert(t('settings.errors.deleteFailed'))
     }
   }
 
@@ -129,7 +129,7 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t('settings.titleLabel')}</Label>
             <Input
               id="title"
               type="text"
@@ -141,7 +141,7 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('settings.descriptionLabel')}</Label>
             <Textarea
               id="description"
               placeholder={t('settings.descriptionPlaceholder')}

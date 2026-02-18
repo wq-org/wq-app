@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface PointsInputProps {
   value: string
@@ -9,11 +10,13 @@ interface PointsInputProps {
 }
 
 export default function PointsInput({ value, onChange, onBlur, className }: PointsInputProps) {
+  const { t } = useTranslation('features.games')
+
   return (
     <Input
       type="text"
       inputMode="decimal"
-      placeholder="pts"
+      placeholder={t('pointsInput.placeholder')}
       value={value}
       onChange={onChange}
       onBlur={onBlur}

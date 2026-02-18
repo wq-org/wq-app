@@ -11,5 +11,9 @@
   "roles": {
     "teacher": "Your Role is Teacher",
     "student": "Your Role is Student"
+  },
+  "view": {
+    "title": "Teacher View",
+    "description": "Teacher content will be displayed here."
   }
 }

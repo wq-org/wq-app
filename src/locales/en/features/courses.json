@@ -1,4 +1,40 @@
 {
+  "settings": {
+    "title": "Course Settings",
+    "subtitle": "Manage your course details and settings",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Course title",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Course description",
+    "publishedLabel": "Published",
+    "publishedHint": "Make this course visible to students",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "deleteAction": "Delete Course",
+    "errors": {
+      "saveFailed": "Failed to save changes. Please try again.",
+      "deleteFailed": "Failed to delete course. Please try again.",
+      "publishStatusFailed": "Failed to update publish status. Please try again."
+    }
+  },
+  "page": {
+    "notFound": "Course not found",
+    "addTopicPlaceholder": "Add new topic",
+    "topicsTitle": "Topics",
+    "lessonsForTopic": "Lessons for: {{topic}}",
+    "lessonsForTopicDescription": "Explore the available lessons for this topic"
+  },
+  "lessonTable": {
+    "columns": {
+      "title": "Title",
+      "description": "Description",
+      "action": "Action"
+    },
+    "noDescription": "No description",
+    "actions": {
+      "view": "View"
+    }
+  },
   "topic": {
     "deleteDialog": {
       "title": "Delete Topic",
@@ -9,6 +45,8 @@
   },
   "card": {
     "published": "Published",
-    "unpublished": "Unpublished"
+    "unpublished": "Unpublished",
+    "open": "Open",
+    "imageAlt": "Course"
   }
 }

@@ -10,6 +10,7 @@ import { PreviewIfElseSlide } from './PreviewIfElseSlide'
 import type { Node, Edge } from '@xyflow/react'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 function getTitleAndDescription(data: Record<string, unknown> | undefined): {
   title: string
@@ -53,6 +54,7 @@ export default function PreviewDrawer({
   nodes = [],
   edges = [],
 }: PreviewDrawerProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const path = useMemo(() => getPreviewPath(nodes, edges), [nodes, edges])
@@ -76,14 +78,14 @@ export default function PreviewDrawer({
           className="fixed top-[50%] left-[50%] z-50 w-[70vw]! max-w-none! h-[95vh]! max-h-[95vh]! -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4 flex flex-col gap-4 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
         >
           <DialogHeader className="flex  flex-row items-center justify-between space-y-0 pr-10">
-            <DialogTitle>Game Simulation</DialogTitle>
+            <DialogTitle>{t('previewDrawer.title')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-1 items-center justify-center p-4 text-muted-foreground">
             <Text
               as="p"
               variant="body"
             >
-              Add a Start node, game nodes, and an End node connected in a path to preview.
+              {t('previewDrawer.emptyHint')}
             </Text>
           </div>
         </DialogContent>
@@ -101,7 +103,7 @@ export default function PreviewDrawer({
         className="fixed top-[50%] left-[50%] z-50 w-[70vw]! max-w-none! h-[95vh]! max-h-[95vh]! -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4 flex flex-col gap-4 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
       >
         <DialogHeader className="flex     flex-row items-center justify-between space-y-0 pr-10">
-          <DialogTitle>Game Simulation</DialogTitle>
+          <DialogTitle>{t('previewDrawer.title')}</DialogTitle>
         </DialogHeader>
         <div className={cn('overflow-auto flex-1 flex flex-col min-h-0 p-4 space-y-4')}>
           <div className="flex justify-center shrink-0">
@@ -121,7 +123,7 @@ export default function PreviewDrawer({
                 title={startData.title}
                 description={startData.description}
                 active={startActive}
-                label="Start"
+                label={t('previewDrawer.labels.start')}
                 drawerOpen={open}
               />
             )}
@@ -131,7 +133,7 @@ export default function PreviewDrawer({
                 const title =
                   (typeof data?.title === 'string' && data.title.trim() ? data.title : null) ??
                   (typeof data?.label === 'string' && data.label.trim() ? data.label : null) ??
-                  'If / else'
+                  t('previewDrawer.ifElseFallback')
                 const description =
                   typeof data?.description === 'string' ? data.description : undefined
                 const condition = typeof data?.condition === 'string' ? data.condition : undefined
@@ -171,7 +173,7 @@ export default function PreviewDrawer({
                 title={endData.title}
                 description={endData.description}
                 active={endActive}
-                label="End"
+                label={t('previewDrawer.labels.end')}
                 drawerOpen={open}
               />
             )}

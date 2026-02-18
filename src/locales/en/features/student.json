@@ -1,1 +1,22 @@
-{}
+{
+  "view": {
+    "title": "Student View",
+    "description": "Student content will be displayed here."
+  },
+  "emptyStudent": {
+    "title": "No students found",
+    "description": "Use the command palette to search for students and add them to your class."
+  },
+  "emptyGames": {
+    "title": "No games available to join",
+    "description": "No games have been published yet. Check back later or ask your teacher."
+  },
+  "emptyTodos": {
+    "title": "No todos are set",
+    "description": "You don't have any todos at the moment. Check back later for new tasks."
+  },
+  "emptyChat": {
+    "title": "No messages yet",
+    "description": "Start a conversation with your teacher or classmates."
+  }
+}

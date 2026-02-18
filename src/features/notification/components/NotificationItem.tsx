@@ -4,16 +4,19 @@ import { Badge } from '@/components/ui/badge'
 import type { Notification } from '../types/notification.types'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface NotificationItemProps {
   notification: Notification
 }
 
 export default function NotificationItem({ notification }: NotificationItemProps) {
+  const { t } = useTranslation('features.notification')
+
   return (
     <div
       className={cn(
-        'flex gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100',
+        'flex gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100 animate-in fade-in-0 slide-in-from-bottom-2',
         !notification.isRead && 'bg-blue-50/30',
       )}
     >
@@ -95,9 +98,9 @@ export default function NotificationItem({ notification }: NotificationItemProps
                   e.stopPropagation()
                   notification.actions?.accept?.()
                 }}
-                className="rounded-full"
+                className="rounded-full active:animate-in active:zoom-in-95"
               >
-                Accept
+                {t('item.actions.accept')}
               </Button>
             )}
             {notification.actions.decline && (
@@ -108,9 +111,9 @@ export default function NotificationItem({ notification }: NotificationItemProps
                   e.stopPropagation()
                   notification.actions?.decline?.()
                 }}
-                className="rounded-full"
+                className="rounded-full active:animate-in active:zoom-in-95"
               >
-                Decline
+                {t('item.actions.decline')}
               </Button>
             )}
           </div>

@@ -10,8 +10,10 @@ import type { TabItem } from '@/components/shared'
 import EmptyTeachersView from './EmptyTeachersView'
 import EmptyStudentView from '@/features/student/components/EmptyStudentView'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 const InstitutionView = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useTranslation('features.institution')
   const [activeTab, setActiveTab] = useState<string>('teachers')
 
   const avatarUrl = '#'
@@ -20,10 +22,10 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
   const lighterSecond = 'including same great deal, annually.'
   const street = 'Masterstroke 10 12345 Berlin'
   const availableLinks = [
-    { key: 'website', label: 'Website', url: '#', icon: Globe },
-    { key: 'twitter', label: 'Twitter', url: '#', icon: Twitter },
-    { key: 'facebook', label: 'Facebook', url: '#', icon: Facebook },
-    { key: 'instagram', label: 'Instagram', url: '#', icon: Instagram },
+    { key: 'website', label: t('links.website'), url: '#', icon: Globe },
+    { key: 'twitter', label: t('links.twitter'), url: '#', icon: Twitter },
+    { key: 'facebook', label: t('links.facebook'), url: '#', icon: Facebook },
+    { key: 'instagram', label: t('links.instagram'), url: '#', icon: Instagram },
   ]
   const onFollowClick = () => {
     console.log('Follow clicked')
@@ -31,8 +33,8 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
   const loading = false
 
   const tabs: TabItem[] = [
-    { id: 'teachers', icon: Presentation, title: 'Teachers' },
-    { id: 'students', icon: Users2, title: 'Students' },
+    { id: 'teachers', icon: Presentation, title: t('tabs.teachers') },
+    { id: 'students', icon: Users2, title: t('tabs.students') },
   ]
 
   //   const getInitials = (name: string | null, email: string | null) => {
@@ -112,7 +114,7 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
                 className="gap-2 w-fit"
                 onClick={onFollowClick}
               >
-                Follow
+                {t('actions.follow')}
               </Button>
               {availableLinks.length > 0 &&
                 availableLinks.map((link) => {

@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import type { SettingsDrawerProps } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 export default function SettingsDrawer({
   open,
@@ -25,6 +26,7 @@ export default function SettingsDrawer({
   isPublished = false,
   onUnpublish,
 }: SettingsDrawerProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [localTitle, setLocalTitle] = useState(initialTitle)
   const [localDescription, setLocalDescription] = useState(initialDescription)
   const [isSaving, setIsSaving] = useState(false)
@@ -49,11 +51,11 @@ export default function SettingsDrawer({
         title: localTitle,
         description: localDescription,
       })
-      toast.success('Settings saved')
+      toast.success(t('settingsDrawer.toasts.saved'))
       handleClose()
     } catch (err) {
       console.error(err)
-      toast.error('Failed to save settings')
+      toast.error(t('settingsDrawer.toasts.saveFailed'))
     } finally {
       setIsSaving(false)
     }
@@ -64,11 +66,11 @@ export default function SettingsDrawer({
 
     try {
       await onRollback(versionId)
-      toast.success('Rolled back to previous version')
+      toast.success(t('settingsDrawer.toasts.rolledBack'))
       handleClose()
     } catch (err) {
       console.error(err)
-      toast.error('Failed to rollback')
+      toast.error(t('settingsDrawer.toasts.rollbackFailed'))
     }
   }
 
@@ -85,10 +87,10 @@ export default function SettingsDrawer({
     setIsUnpublishing(true)
     try {
       await onUnpublish()
-      toast.success('Game unpublished')
+      toast.success(t('settingsDrawer.toasts.unpublished'))
     } catch (err) {
       console.error(err)
-      toast.error('Failed to unpublish')
+      toast.error(t('settingsDrawer.toasts.unpublishFailed'))
     } finally {
       setIsUnpublishing(false)
     }
@@ -103,12 +105,12 @@ export default function SettingsDrawer({
       <DrawerContent className="w-[50vw]! max-w-none! h-screen!">
         <DrawerHeader>
           <div className="flex items-center justify-between w-full">
-            <DrawerTitle>Settings</DrawerTitle>
+            <DrawerTitle>{t('settingsDrawer.title')}</DrawerTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleClose}
-              aria-label="Close settings"
+              aria-label={t('settingsDrawer.closeAriaLabel')}
             >
               <X className="h-5 w-5" />
             </Button>
@@ -121,13 +123,13 @@ export default function SettingsDrawer({
               htmlFor="project-title"
               className="text-sm font-medium"
             >
-              Project Title
+              {t('settingsDrawer.projectTitleLabel')}
             </label>
             <Input
               id="project-title"
               value={localTitle}
               onChange={(e) => setLocalTitle(e.target.value)}
-              placeholder="Enter project title"
+              placeholder={t('settingsDrawer.projectTitlePlaceholder')}
             />
           </div>
 
@@ -137,20 +139,20 @@ export default function SettingsDrawer({
               htmlFor="project-description"
               className="text-sm font-medium"
             >
-              Project Description
+              {t('settingsDrawer.projectDescriptionLabel')}
             </label>
             <Textarea
               id="project-description"
               value={localDescription}
               onChange={(e) => setLocalDescription(e.target.value)}
-              placeholder="Enter project description"
+              placeholder={t('settingsDrawer.projectDescriptionPlaceholder')}
               rows={4}
             />
           </div>
 
           {/* Publish status */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Publish status</Label>
+            <Label className="text-sm font-medium">{t('settingsDrawer.publishStatusLabel')}</Label>
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <Text
@@ -158,7 +160,9 @@ export default function SettingsDrawer({
                   variant="body"
                   className="text-sm font-medium"
                 >
-                  {isPublished ? 'Published' : 'Draft'}
+                  {isPublished
+                    ? t('settingsDrawer.publishStatus.published')
+                    : t('settingsDrawer.publishStatus.draft')}
                 </Text>
                 <Text
                   as="p"
@@ -166,8 +170,8 @@ export default function SettingsDrawer({
                   className="text-xs text-muted-foreground"
                 >
                   {isPublished
-                    ? 'Students can play this game. Turn off to unpublish and hide it from the list.'
-                    : 'Use the Publish button in the toolbar to publish this game for students.'}
+                    ? t('settingsDrawer.publishStatus.publishedHint')
+                    : t('settingsDrawer.publishStatus.draftHint')}
                 </Text>
               </div>
               <Switch
@@ -180,15 +184,15 @@ export default function SettingsDrawer({
 
           {/* Version Badge */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Version</label>
+            <label className="text-sm font-medium">{t('settingsDrawer.versionLabel')}</label>
             <div>
-              <Badge variant="outline">Version : {version}</Badge>
+              <Badge variant="outline">{t('settingsDrawer.versionValue', { version })}</Badge>
             </div>
           </div>
 
           {/* Rollback Section */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Rollback</label>
+            <label className="text-sm font-medium">{t('settingsDrawer.rollbackLabel')}</label>
             {rollbackVersions.length > 0 ? (
               <div className="space-y-2">
                 {rollbackVersions.map((versionItem) => (
@@ -199,7 +203,7 @@ export default function SettingsDrawer({
                     onClick={() => handleRollback(versionItem.id)}
                   >
                     <RotateCcw className="h-4 w-4" />
-                    Rollback to Version {versionItem.version}
+                    {t('settingsDrawer.rollbackToVersion', { version: versionItem.version })}
                   </Button>
                 ))}
               </div>
@@ -209,7 +213,7 @@ export default function SettingsDrawer({
                 variant="body"
                 className="text-sm text-muted-foreground"
               >
-                No previous versions
+                {t('settingsDrawer.noPreviousVersions')}
               </Text>
             )}
           </div>
@@ -219,12 +223,14 @@ export default function SettingsDrawer({
 
           {/* Bottom Actions */}
           <div className="flex flex-col gap-3 pt-4 border-t">
-            <HoldToDeleteButton onDelete={handleDelete}>Hold to Delete</HoldToDeleteButton>
+            <HoldToDeleteButton onDelete={handleDelete}>
+              {t('settingsDrawer.holdToDelete')}
+            </HoldToDeleteButton>
             <Button
               onClick={handleSave}
               disabled={isSaving}
             >
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? t('common.saving') : t('common.save')}
             </Button>
           </div>
         </div>

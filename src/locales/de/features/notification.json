@@ -1,1 +1,23 @@
-{}
+{
+  "panel": {
+    "title": "Benachrichtigungen",
+    "tabs": {
+      "all": "Alle",
+      "following": "Gefolgt"
+    },
+    "emptyAll": {
+      "title": "Keine Benachrichtigungen",
+      "description": "Du bist auf dem neuesten Stand!"
+    },
+    "emptyFollowing": {
+      "title": "Keine Benachrichtigungen von Gefolgten",
+      "description": "Benachrichtigungen von Personen, denen du folgst, erscheinen hier"
+    }
+  },
+  "item": {
+    "actions": {
+      "accept": "Akzeptieren",
+      "decline": "Ablehnen"
+    }
+  }
+}

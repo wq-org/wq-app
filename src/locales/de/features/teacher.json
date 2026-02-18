@@ -11,5 +11,9 @@
   "roles": {
     "teacher": "Deine Rolle ist Lehrer",
     "student": "Deine Rolle ist Schüler"
+  },
+  "view": {
+    "title": "Lehrendenansicht",
+    "description": "Inhalte für Lehrende werden hier angezeigt."
   }
 }

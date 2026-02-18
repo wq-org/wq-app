@@ -18,6 +18,7 @@ import { toast } from 'sonner'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
+import AuthLanguageSwitcher from '../components/AuthLanguageSwitcher'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -120,7 +121,10 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCardLayout backTo="/">
+    <AuthCardLayout
+      backTo="/"
+      navigationSlot={<AuthLanguageSwitcher />}
+    >
       <div className="flex flex-col gap-6">
         {/* Title */}
         <div className="flex flex-col items-center gap-1 text-center">
@@ -147,7 +151,12 @@ export default function LoginPage() {
         >
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="email">{t('login.email')}</FieldLabel>
+              <div className="flex  justify-between">
+                <FieldLabel htmlFor="email">{t('login.email')}</FieldLabel>
+                {emailError && (
+                  <FieldDescription className="text-red-500 text-xs">{emailError}</FieldDescription>
+                )}
+              </div>
               <Input
                 id="email"
                 type="email"
@@ -158,9 +167,6 @@ export default function LoginPage() {
                 name="email"
                 className={`bg-gray-50 ${emailError ? 'border-red-500' : ''}`}
               />
-              {emailError && (
-                <FieldDescription className="text-red-500 text-sm">{emailError}</FieldDescription>
-              )}
             </Field>
 
             <Field>

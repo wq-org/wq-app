@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface FeedbackInputProps {
   label?: string
@@ -17,9 +18,10 @@ export default function FeedbackInput({
   label,
   value,
   onChange,
-  placeholder = 'Optional feedback shown after Check',
+  placeholder,
   className,
 }: FeedbackInputProps) {
+  const { t } = useTranslation('features.games')
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange({ ...e, target: { ...e.target, value: constrainDescription(e.target.value) } })
   }
@@ -41,7 +43,7 @@ export default function FeedbackInput({
       <Textarea
         value={value}
         onChange={handleChange}
-        placeholder={placeholder}
+        placeholder={placeholder || t('feedbackInput.placeholder')}
         maxLength={MAX_DESCRIPTION_LENGTH}
         className="min-h-16 text-sm w-full"
       />
