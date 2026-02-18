@@ -519,7 +519,6 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                         >
                           {t('deleteDialog.action')}
                         </HoldToDeleteButton>
-
                       </div>
                     </div>
                   </div>
