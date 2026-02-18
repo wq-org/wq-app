@@ -9,10 +9,6 @@ export const BACKGROUND_SCHOOL =
 // Institution Constants
 export const DEFAULT_INSTITUTION_IMAGE = 'https://github.com/unovue.png'
 
-// Course Constants
-export const DEFAULT_COURSE_IMAGE =
-  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/sign/backgrounds/bg-blue.jpeg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yOWUyMTMxYy0yMTA3LTQ0MTktOGUyZi00NzliNWU3MmZkMjIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiYWNrZ3JvdW5kcy9iZy1ibHVlLmpwZWciLCJpYXQiOjE3NzA0MTMzNDgsImV4cCI6MTgwMTk0OTM0OH0.Vo1yapAnsQX0eCjIcbhJenVVKKNWMpp1JeSz6Yl3K7U'
-
 // Game Studio Constants
 export const MAX_END_NODE_INCOMING_CONNECTIONS = 10
 export const GAME_CARD_BACKGROUND_IMAGE =

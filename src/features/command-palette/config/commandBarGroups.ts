@@ -2,13 +2,13 @@ import {
   Home,
   Search as SearchIcon,
   Plus,
-  Settings as SettingsIcon,
+  // Settings as SettingsIcon,
   SplinePointer,
   Upload,
   Hand,
   MousePointer2,
   MessagesSquare,
-  UserStar,
+  // UserStar,
 } from 'lucide-react'
 import { USER_ROLES } from '@/features/auth/types/auth.types'
 import type { CommandBarGroup } from '../types/command-bar.types'
@@ -23,7 +23,7 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
   const teacherPrefix = '/teacher'
   const studentPrefix = '/student'
   const adminPrefix = '/admin'
-  const rolePrefix = role === USER_ROLES.SUPER_ADMIN ? adminPrefix : `/${role}`
+  // const rolePrefix = role === USER_ROLES.SUPER_ADMIN ? adminPrefix : `/${role}`
 
   return [
     {
@@ -143,23 +143,23 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
         },
       ],
     },
-    {
-      id: 'user',
-      items: [
-        {
-          id: 'feedback',
-          labelKey: 'actions.feedback',
-          icon: UserStar,
-          actionId: 'feedback',
-        },
-        {
-          id: 'settings',
-          labelKey: 'actions.settings',
-          icon: SettingsIcon,
-          to: `${rolePrefix}/settings`,
-        },
-      ],
-    },
+    // {
+    //   id: 'user',
+    //   items: [
+    //     {
+    //       id: 'feedback',
+    //       labelKey: 'actions.feedback',
+    //       icon: UserStar,
+    //       actionId: 'feedback',
+    //     },
+    //     {
+    //       id: 'settings',
+    //       labelKey: 'actions.settings',
+    //       icon: SettingsIcon,
+    //       to: `${rolePrefix}/settings`,
+    //     },
+    //   ],
+    // },
     {
       id: 'game-studio',
       items: [

@@ -14,7 +14,7 @@ import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
 
-interface StudentProfileContentProps {
+interface ProfileStudentViewProps {
   profile: Profile
 }
 
@@ -70,7 +70,7 @@ async function getPublishedGames(): Promise<GameCardProps[]> {
   }))
 }
 
-export function StudentProfileContent({ profile }: StudentProfileContentProps) {
+export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   const [courses, setCourses] = useState<
     (Course & { teacher_profile?: { avatar_url?: string; display_name?: string } })[]
   >([])

@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authApi'
-import { DotWaveLoader } from '@/components/shared'
+import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -190,7 +190,14 @@ export default function LoginPage() {
                 disabled={!isFormValid || isLoading}
                 className="w-full cursor-pointer"
               >
-                {isLoading ? <DotWaveLoader variant="white" /> : t('login.submit')}
+                {isLoading ? (
+                  <Spinner
+                    variant="white"
+                    size="sm"
+                  />
+                ) : (
+                  t('login.submit')
+                )}
               </Button>
             </Field>
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DotWaveLoader } from '@/components/shared'
+import Spinner from '@/components/ui/spinner'
 import { Container } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -53,7 +53,10 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <DotWaveLoader />
+        <Spinner
+          variant="gray"
+          size="lg"
+        />
       </div>
     )
   }

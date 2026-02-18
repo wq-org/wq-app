@@ -3,9 +3,8 @@ import { useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import { AVATAR_PLACEHOLDER_SRC, DEFAULT_COURSE_IMAGE } from '@/lib/constants'
+import { AVATAR_PLACEHOLDER_SRC, BACKGROUND_SCHOOL } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
-import { DotWaveLoader } from '@/components/shared'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/course/types/course.types'
 import type { CourseCardProps } from '@/features/course/types/course.types'
@@ -32,7 +31,7 @@ function ProfileCourseCard({
   teacherInitials = 'U',
   onJoin,
 }: CourseCardProps & { onJoin?: (id: string) => void }) {
-  const courseImage = image || DEFAULT_COURSE_IMAGE
+  const courseImage = image || BACKGROUND_SCHOOL
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
@@ -276,7 +275,10 @@ const StudentProfileView = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <DotWaveLoader />
+        <Spinner
+          variant="gray"
+          size="lg"
+        />
       </div>
     )
   }

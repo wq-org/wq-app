@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '@/features/auth/types/auth.types'
 import { signUpUser } from '../api/authApi'
 import { useUser } from '@/contexts/user'
-import { DotWaveLoader } from '@/components/shared'
+import Spinner from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
@@ -185,7 +185,14 @@ export default function SignUpPage() {
                 disabled={!isFormValid || isLoading}
                 className="w-full cursor-pointer"
               >
-                {isLoading ? <DotWaveLoader variant="white" /> : t('signUp.submit')}
+                {isLoading ? (
+                  <Spinner
+                    variant="white"
+                    size="sm"
+                  />
+                ) : (
+                  t('signUp.submit')
+                )}
               </Button>
             </Field>
 

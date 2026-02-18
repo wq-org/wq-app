@@ -21,6 +21,8 @@ import { Text } from '@/components/ui/text'
 const ADMIN_AND_TEACHER_ROLES: Roles[] = ['super_admin', 'institution_admin', 'teacher']
 const SUPER_ADMIN_ONLY: Roles[] = ['super_admin']
 const TEACHER_AND_STUDENT_ROLES: Roles[] = ['teacher', 'student']
+void StickyNote
+void TEACHER_AND_STUDENT_ROLES
 
 // This function calls create based on type
 const createByType = async (
@@ -110,13 +112,13 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
       icon: Gamepad2,
       availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
-    {
-      type: 'notes',
-      label: 'New Notes',
-      description: 'Create a new note',
-      icon: StickyNote,
-      availableForRoles: TEACHER_AND_STUDENT_ROLES,
-    },
+    // {
+    //   type: 'notes',
+    //   label: 'New Notes',
+    //   description: 'Create a new note',
+    //   icon: StickyNote,
+    //   availableForRoles: TEACHER_AND_STUDENT_ROLES,
+    // },
   ]
 
   // Filter options based on role

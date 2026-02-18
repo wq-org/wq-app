@@ -61,13 +61,6 @@ export default function DashboardLayout({
     }
   }
 
-  // Hardcoded quote
-  const sampleQuote = {
-    text: 'Education is the kindling of a flame, not the filling of a vessel.',
-    author: 'Socrates',
-    source: 'Anecdotal',
-  }
-
   return (
     <div>
       <AppNavigation>
@@ -109,13 +102,8 @@ export default function DashboardLayout({
                 </div>
               </div>
               {/* Quote of the Day - aligned to the right */}
-              <div className="flex-1 flex justify-end">
-                <QuoteOfTheDay
-                  quote={sampleQuote.text}
-                  author={sampleQuote.author}
-                  source={sampleQuote.source}
-                  className="max-w-md"
-                />
+              <div className="flex-1 flex justify-center">
+                <QuoteOfTheDay className="max-w-md" />
               </div>
             </div>
             <div className="flex gap-4">
@@ -137,6 +125,7 @@ export default function DashboardLayout({
                     <Button
                       variant="default"
                       className="gap-2"
+                      data-follow-button
                       onClick={handleFollowClick}
                     >
                       {connectButtonLabel ?? t('actions.connect')}

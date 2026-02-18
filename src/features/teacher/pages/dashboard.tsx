@@ -11,13 +11,13 @@ import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useNavigate } from 'react-router-dom'
-import { DotWaveLoader } from '@/components/shared'
 import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { GamePlayList } from '@/features/game-play'
 import { fetchNotesByUser, NotesTabView, deleteNote } from '@/features/notes'
 import type { Note } from '@/features/notes'
+void NotesTabView
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -61,8 +61,8 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
-  const [notes, setNotes] = useState<Note[]>([])
-  const [notesLoading, setNotesLoading] = useState(false)
+  const [_notes, setNotes] = useState<Note[]>([])
+  const [_notesLoading, setNotesLoading] = useState(false)
 
   // Fetch courses when profile is loaded
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function Dashboard() {
     }
   }, [getUserId, loading])
 
-  const handleDeleteNote = useCallback(
+  const _handleDeleteNote = useCallback(
     async (noteId: string) => {
       try {
         await deleteNote(noteId)
@@ -148,6 +148,7 @@ export default function Dashboard() {
     },
     [loadNotes],
   )
+  void _handleDeleteNote
 
   useEffect(() => {
     if (selectedTab === 'notes') {
@@ -172,7 +173,10 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <DotWaveLoader />
+        <Spinner
+          variant="gray"
+          size="lg"
+        />
       </div>
     )
   }
@@ -226,14 +230,14 @@ export default function Dashboard() {
           ))}
         {/* Students tab commented out (school tab) */}
         {/* {selectedTab === 'students' && <StudentCardList students={[]} />} */}
-        {selectedTab === 'notes' && (
+        {/* {selectedTab === 'notes' && (
           <NotesTabView
             notes={notes}
             loading={notesLoading}
             onRefresh={loadNotes}
             onDelete={handleDeleteNote}
           />
-        )}
+        )} */}
       </DashboardLayout>
 
       <CommandPalette

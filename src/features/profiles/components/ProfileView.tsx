@@ -1,10 +1,10 @@
 import { useParams } from 'react-router-dom'
 import { USER_ROLES } from '@/features/auth/types/auth.types'
-import { DotWaveLoader } from '@/components/shared'
+import Spinner from '@/components/ui/spinner'
 import { useProfile } from '../hooks/useProfile'
-import { TeacherProfileContent } from './TeacherProfileContent'
-import { StudentProfileContent } from './StudentProfileContent'
-import { InstitutionProfileContent } from './InstitutionProfileContent'
+import { ProfileTeacherView } from './ProfileTeacherView'
+import { ProfileStudentView } from './ProfileStudentView'
+import { ProfileInstitutionView } from './ProfileInstitutionView'
 import { Text } from '@/components/ui/text'
 
 export function ProfileView() {
@@ -14,7 +14,10 @@ export function ProfileView() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <DotWaveLoader />
+        <Spinner
+          variant="gray"
+          size="lg"
+        />
       </div>
     )
   }
@@ -38,7 +41,7 @@ export function ProfileView() {
 
   if (role === USER_ROLES.TEACHER) {
     return (
-      <TeacherProfileContent
+      <ProfileTeacherView
         profile={profile}
         userId={profile.user_id}
       />
@@ -46,11 +49,11 @@ export function ProfileView() {
   }
 
   if (role === USER_ROLES.STUDENT) {
-    return <StudentProfileContent profile={profile} />
+    return <ProfileStudentView profile={profile} />
   }
 
   if (role === USER_ROLES.INSTITUTION_ADMIN) {
-    return <InstitutionProfileContent institutionId={profile.user_id} />
+    return <ProfileInstitutionView institutionId={profile.user_id} />
   }
 
   // If role doesn't match, show error

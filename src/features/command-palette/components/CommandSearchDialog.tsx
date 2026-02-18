@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
-import { DotWaveLoader } from '@/components/shared'
+import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
 export default function CommandSearch() {
@@ -72,9 +72,9 @@ export default function CommandSearch() {
       <div className="flex-1 ">
         {loading ? (
           <div className="p-8 flex items-center justify-center">
-            <DotWaveLoader
+            <Spinner
               variant="gray"
-              size={32}
+              size="sm"
             />
           </div>
         ) : filtered.length > 0 ? (

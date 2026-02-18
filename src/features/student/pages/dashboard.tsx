@@ -13,7 +13,7 @@ import { EmptyCourseView, EmptyGamesView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
-import { fetchNotesByUser, NotesTabView, deleteNote } from '@/features/notes'
+import { fetchNotesByUser } from '@/features/notes'
 import type { Note } from '@/features/notes'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -41,8 +41,8 @@ export default function Dashboard() {
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
-  const [notes, setNotes] = useState<Note[]>([])
-  const [notesLoading, setNotesLoading] = useState(false)
+  const [_notes, setNotes] = useState<Note[]>([])
+  const [_notesLoading, setNotesLoading] = useState(false)
   const navigate = useNavigate()
   const { profile, loading, getUserId, getRole } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
@@ -120,19 +120,19 @@ export default function Dashboard() {
     }
   }, [getUserId, loading])
 
-  const handleDeleteNote = useCallback(
-    async (noteId: string) => {
-      try {
-        await deleteNote(noteId)
-        await loadNotes()
-      } catch (error) {
-        console.error('Error deleting note:', error)
-        const { toast } = await import('sonner')
-        toast.error('Failed to delete note')
-      }
-    },
-    [loadNotes],
-  )
+  // const handleDeleteNote = useCallback(
+  //   async (noteId: string) => {
+  //     try {
+  //       await deleteNote(noteId)
+  //       await loadNotes()
+  //     } catch (error) {
+  //       console.error('Error deleting note:', error)
+  //       const { toast } = await import('sonner')
+  //       toast.error('Failed to delete note')
+  //     }
+  //   },
+  //   [loadNotes],
+  // )
 
   useEffect(() => {
     if (selectedTab === 'notes') {
@@ -203,14 +203,14 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-        {selectedTab === 'notes' && (
+        {/* {selectedTab === 'notes' && (
           <NotesTabView
             notes={notes}
             loading={notesLoading}
             onRefresh={loadNotes}
             onDelete={handleDeleteNote}
           />
-        )}
+        )} */}
       </DashboardLayout>
 
       <CommandPalette

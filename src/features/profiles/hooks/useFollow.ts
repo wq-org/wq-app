@@ -2,7 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import * as followApi from '../api/followApi'
 
-export function useFollow(teacherId: string | null) {
+export interface UseFollowOptions {
+  onFollowSuccess?: () => void
+}
+
+export function useFollow(teacherId: string | null, options?: UseFollowOptions) {
+  const { onFollowSuccess } = options ?? {}
   const [isFollowing, setIsFollowing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
@@ -46,6 +51,7 @@ export function useFollow(teacherId: string | null) {
         await followApi.follow(teacherId)
         setIsFollowing(true)
         toast.success('Following')
+        onFollowSuccess?.()
       }
     } catch (error) {
       console.error('Error toggling follow:', error)
@@ -53,7 +59,7 @@ export function useFollow(teacherId: string | null) {
     } finally {
       setLoading(false)
     }
-  }, [teacherId, isFollowing])
+  }, [teacherId, isFollowing, onFollowSuccess])
 
   return { isFollowing, loading: loading || checking, toggleFollow }
 }

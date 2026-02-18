@@ -8,7 +8,7 @@ import type { GameProjectCardListProps } from '@/features/game-studio/types/game
 import { Button } from '@/components/ui/button'
 import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { toast } from 'sonner'
-import DotWaveLoader from '@/components/shared/loaders/DotWaveLoader'
+import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
 export default function GameStudio() {
@@ -97,9 +97,9 @@ export default function GameStudio() {
       <div className="pb-14">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <DotWaveLoader
-              variant="default"
-              size={48}
+            <Spinner
+              variant="gray"
+              size="lg"
             />
           </div>
         ) : projects.length === 0 ? (

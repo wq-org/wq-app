@@ -1,41 +1,57 @@
-import { Quote } from 'lucide-react'
-import { Text } from '@/components/ui/text'
+import { useState, useEffect } from 'react'
+import { Logo } from '@/components/ui/logo'
+
+const QUOTES = [
+  {
+    text: 'Genius is one percent inspiration and ninety-nine percent perspiration.',
+    author: 'Thomas Edison',
+  },
+  { text: 'You can observe a lot just by watching.', author: 'Yogi Berra' },
+  { text: 'A house divided against itself cannot stand.', author: 'Abraham Lincoln' },
+  {
+    text: 'Difficulties increase the nearer we get to the goal.',
+    author: 'Johann Wolfgang von Goethe',
+  },
+  { text: 'Fate is in your hands and no one elses', author: 'Byron Pulsifer' },
+]
 
 type Props = {
-  quote: string
-  author?: string
-  source?: string
   className?: string
 }
 
-export function QuoteOfTheDay({ quote, author, source, className }: Props) {
+export function QuoteOfTheDay({ className = '' }: Props) {
+  const [quote, setQuote] = useState<(typeof QUOTES)[0] | null>(null)
+
+  useEffect(() => {
+    const i = Math.floor(Math.random() * QUOTES.length)
+    setQuote(QUOTES[i])
+  }, [])
+
+  if (!quote) return null
+
   return (
     <aside
       aria-label="Quote of the day"
-      aria-live="polite"
-      className={`${className ?? ''}`}
+      className={`max-w-[220px] ${className}`.trim()}
     >
-      <div className="flex gap-6 p-6">
-        <Quote className="w-6 h-6 text-gray-300  shrink-0 mt-1" />
-        <div className="flex flex-col gap-3 max-w-[350px]">
-          <Text
-            as="p"
-            variant="body"
-            className="text-gray-400 text-xl leading-relaxed font-light font-eb-garamond"
-          >
-            {quote}
-          </Text>
-          {(author || source) && (
-            <Text
-              as="p"
-              variant="body"
-              className="text-gray-400 text-base font-light font-eb-garamond"
-            >
-              {author ? `— ${author}` : ''}
-              {source ? (author ? `, ${source}` : source) : ''}
-            </Text>
-          )}
-        </div>
+      <blockquote>
+        <p className="text-muted-foreground text-sm leading-relaxed italic text-center">
+          {quote.text}
+        </p>
+      </blockquote>
+
+      <div className="mt-2 flex items-center justify-center gap-1.5">
+        <span className="flex shrink-0 cursor-default items-center rounded-full bg-muted pr-1.5 pl-0.5 py-0.5 gap-1">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full overflow-hidden bg-background">
+            <Logo
+              showText={false}
+              className="h-2.5 w-2.5"
+            />
+          </span>
+          <span className="text-muted-foreground text-[10px] font-medium leading-tight">
+            {quote.author}
+          </span>
+        </span>
       </div>
     </aside>
   )

@@ -29,11 +29,11 @@ interface Institution {
   instagram_url: string | null
 }
 
-interface InstitutionProfileContentProps {
+interface ProfileInstitutionViewProps {
   institutionId: string
 }
 
-export function InstitutionProfileContent({ institutionId }: InstitutionProfileContentProps) {
+export function ProfileInstitutionView({ institutionId }: ProfileInstitutionViewProps) {
   // Hardcoded institution data for now
   const institution: Institution = {
     id: institutionId,
