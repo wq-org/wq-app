@@ -75,7 +75,7 @@ export default function GameResultTable({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 animate-in fade-in-0 slide-in-from-bottom-4">
       <Text
         as="h3"
         variant="h3"
@@ -94,7 +94,10 @@ export default function GameResultTable({
         </TableHeader>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.key}>
+            <TableRow
+              key={row.key}
+              className="animate-in fade-in-0 slide-in-from-bottom-2"
+            >
               <TableCell className="max-w-[200px]">
                 <Tooltip>
                   <TooltipTrigger asChild>

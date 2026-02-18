@@ -2,11 +2,17 @@
   "settings": {
     "title": "Lesson Settings",
     "subtitle": "Manage your lesson details",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
     "save": "Save Changes",
     "saving": "Saving...",
     "deleteAction": "Delete Lesson",
     "titlePlaceholder": "Lesson title",
     "descriptionPlaceholder": "Lesson description",
+    "errors": {
+      "saveFailed": "Failed to save changes. Please try again.",
+      "deleteFailed": "Failed to delete lesson. Please try again."
+    },
     "deleteDialog": {
       "title": "Delete Lesson",
       "description": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",

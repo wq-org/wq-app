@@ -1,4 +1,33 @@
 {
+  "table": {
+    "columns": {
+      "type": "Typ",
+      "filename": "Dateiname",
+      "size": "Größe"
+    }
+  },
+  "empty": {
+    "title": "Keine Dateien gefunden",
+    "description": "Lade deine erste Datei hoch. Nutze dafür die Befehlspalette."
+  },
+  "drawer": {
+    "title": "Dateidetails",
+    "description": "Dateidetails mit Übersicht und Einstellungen anzeigen und verwalten",
+    "tabs": {
+      "overview": "Übersicht",
+      "settings": "Einstellungen"
+    },
+    "overview": {
+      "filename": "Dateiname",
+      "size": "Größe",
+      "type": "Typ"
+    },
+    "settings": {
+      "filename": "Dateiname",
+      "replaceFile": "Datei ersetzen",
+      "newFilePreviewAlt": "Vorschau der neuen Datei"
+    }
+  },
   "deleteDialog": {
     "title": "Datei löschen",
     "description": "Möchtest du \"{{filename}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -11,5 +40,19 @@
     "removeNewFile": "Neue Datei entfernen",
     "reset": "Zurücksetzen",
     "saveChanges": "Änderungen speichern"
+  },
+  "toasts": {
+    "loadFailed": "Datei konnte nicht geladen werden",
+    "filePathMissingDelete": "Dateipfad nicht verfügbar. Datei kann nicht gelöscht werden.",
+    "deleteSuccess": "Datei erfolgreich gelöscht",
+    "deleteFailed": "Datei konnte nicht gelöscht werden",
+    "deleteUnexpected": "Beim Löschen der Datei ist ein unerwarteter Fehler aufgetreten",
+    "filePathMissingSave": "Dateipfad nicht verfügbar. Änderungen können nicht gespeichert werden.",
+    "fileLocationUnknown": "Dateispeicherort konnte nicht bestimmt werden. Bitte versuche es erneut.",
+    "filenameEmpty": "Dateiname darf nicht leer sein",
+    "renameFailed": "Datei konnte nicht umbenannt werden",
+    "uploadFailed": "Neue Datei konnte nicht hochgeladen werden",
+    "saveSuccess": "Änderungen erfolgreich gespeichert",
+    "saveUnexpected": "Beim Speichern der Änderungen ist ein unerwarteter Fehler aufgetreten"
   }
 }

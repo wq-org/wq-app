@@ -200,8 +200,8 @@ export default function DashboardLayout({
               ) : null}
             </div>
           </Container>
-          <section className="pt-8 rounded-2xl bg-gray-100 min-h-[calc(95vh-400px)] pb-8">
-            <Container className="h-full">
+          <section className="pt-8 rounded-2xl bg-gray-100 min-h-[560px] pb-8">
+            <Container className="h-full min-h-0">
               <div className="flex flex-wrap justify-between items-center">
                 <div className="flex flex-wrap gap-12">
                   {dashboardTabs.map((tab) => {
@@ -231,7 +231,9 @@ export default function DashboardLayout({
                 </div>
               </div>
 
-              <Container className="flex  w-full px-0 flex-1">{children}</Container>
+              <Container className="flex w-full px-0 flex-1 min-h-[420px]">
+                {children}
+              </Container>
             </Container>
           </section>
         </section>

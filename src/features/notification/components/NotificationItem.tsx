@@ -16,7 +16,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
   return (
     <div
       className={cn(
-        'flex gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100',
+        'flex gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100 animate-in fade-in-0 slide-in-from-bottom-2',
         !notification.isRead && 'bg-blue-50/30',
       )}
     >
@@ -98,7 +98,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
                   e.stopPropagation()
                   notification.actions?.accept?.()
                 }}
-                className="rounded-full"
+                className="rounded-full active:animate-in active:zoom-in-95"
               >
                 {t('item.actions.accept')}
               </Button>
@@ -111,7 +111,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
                   e.stopPropagation()
                   notification.actions?.decline?.()
                 }}
-                className="rounded-full"
+                className="rounded-full active:animate-in active:zoom-in-95"
               >
                 {t('item.actions.decline')}
               </Button>

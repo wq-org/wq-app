@@ -41,7 +41,7 @@ export default function GameNodeLayout({
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 animate-in fade-in-0 slide-in-from-bottom-4">
       {/* Tabs */}
       {!hideSettingsTab && (
         <div className="flex gap-12 border-b mb-6">
@@ -49,7 +49,7 @@ export default function GameNodeLayout({
             onClick={() => setActiveTab('overview')}
             className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
               activeTab === 'overview'
-                ? 'text-black border-black font-medium'
+                ? 'text-black border-black font-medium animate-in zoom-in-95'
                 : 'text-black/40 hover:text-black/60 border-transparent'
             }`}
           >
@@ -67,7 +67,7 @@ export default function GameNodeLayout({
             onClick={() => setActiveTab('settings')}
             className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
               activeTab === 'settings'
-                ? 'text-black border-black font-medium'
+                ? 'text-black border-black font-medium animate-in zoom-in-95'
                 : 'text-black/40 hover:text-black/60 border-transparent'
             }`}
           >
@@ -83,7 +83,10 @@ export default function GameNodeLayout({
       )}
 
       {/* Tab Content */}
-      <div>
+      <div
+        key={hideSettingsTab ? 'overview' : activeTab}
+        className="animate-in fade-in-0 slide-in-from-bottom-3"
+      >
         {(activeTab === 'overview' || hideSettingsTab) && (
           <div className="flex flex-col gap-6">
             {overviewContent && <div>{overviewContent}</div>}

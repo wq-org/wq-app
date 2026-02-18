@@ -20,12 +20,14 @@ import TableEmptyView from '@/features/files/components/FilesTableEmptyView'
 import type { FileItem } from '../types/files.types'
 import { FILE_TYPE_CONFIG } from '../types/files.types'
 import FilesCard from './FilesCard'
+import { useTranslation } from 'react-i18next'
 
 interface FileTableProps {
   files: FileItem[]
   onRefresh?: () => void
 }
 export default function FileTable({ files, onRefresh }: FileTableProps) {
+  const { t } = useTranslation('features.files')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -85,14 +87,20 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-6">
-      <div className="w-full bg-white rounded-4xl shadow p-6">
+    <div className="w-full flex flex-col items-stretch gap-2 animate-in fade-in-0 slide-in-from-bottom-4">
+      <div className="w-full bg-white rounded-4xl shadow p-6 animate-in fade-in-0 slide-in-from-bottom-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-gray-400 font-light w-[60px]">Type</TableHead>
-              <TableHead className="text-left text-gray-400 font-light">Filename</TableHead>
-              <TableHead className="text-center text-gray-400 font-light">Size</TableHead>
+              <TableHead className="text-center text-gray-400 font-light w-[60px]">
+                {t('table.columns.type')}
+              </TableHead>
+              <TableHead className="text-left text-gray-400 font-light">
+                {t('table.columns.filename')}
+              </TableHead>
+              <TableHead className="text-center text-gray-400 font-light">
+                {t('table.columns.size')}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -102,7 +110,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
               return (
                 <TableRow
                   key={file.id}
-                  className="border-b last:border-0 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="border-b last:border-0 cursor-pointer hover:bg-gray-50 transition-colors animate-in fade-in-0 slide-in-from-bottom-2"
                   onClick={() => handleRowClick(file)}
                 >
                   <TableCell className="text-center">
@@ -125,12 +133,16 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
         </Table>
       </div>
       {totalPages > 1 && (
-        <Pagination>
+        <Pagination className="animate-in fade-in-0 slide-in-from-bottom-3">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                className={
+                  currentPage === 1
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer active:animate-in active:zoom-in-95'
+                }
               />
             </PaginationItem>
             {getPageNumbers().map((page, index) => (
@@ -141,7 +153,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
                   <PaginationLink
                     onClick={() => handlePageChange(page as number)}
                     isActive={currentPage === page}
-                    className="cursor-pointer"
+                    className="cursor-pointer active:animate-in active:zoom-in-95"
                   >
                     {page}
                   </PaginationLink>
@@ -152,7 +164,9 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
               <PaginationNext
                 onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                 className={
-                  currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                  currentPage === totalPages
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer active:animate-in active:zoom-in-95'
                 }
               />
             </PaginationItem>

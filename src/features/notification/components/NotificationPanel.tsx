@@ -19,7 +19,7 @@ export default function NotificationPanel() {
   return (
     // Make panel have fixed height and flex column, header/tabs sticky, notification list scrollable
     <div
-      className="w-90 p-4 rounded-4xl backdrop-blur bg-card/70 border shadow-md flex flex-col"
+      className="w-90 p-4 rounded-4xl backdrop-blur bg-card/70 border shadow-md flex flex-col animate-in fade-in-0 slide-in-from-right-2"
       style={{ height: 500, minHeight: 400 }}
     >
       {/* Header */}
@@ -41,7 +41,9 @@ export default function NotificationPanel() {
           <button
             onClick={() => setActiveTab('all')}
             className={`relative pb-2 text-base  transition-colors ${
-              activeTab === 'all' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'all'
+                ? 'text-gray-900 animate-in zoom-in-95'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <div className="flex items-center gap-1.5">
@@ -63,7 +65,9 @@ export default function NotificationPanel() {
           <button
             onClick={() => setActiveTab('following')}
             className={`relative pb-2 text-base transition-colors ${
-              activeTab === 'following' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'following'
+                ? 'text-gray-900 animate-in zoom-in-95'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <div className="flex items-center gap-1.5">
@@ -89,7 +93,7 @@ export default function NotificationPanel() {
       <div className="flex-1 min-h-0">
         <ScrollArea className="h-full max-h-full">
           {activeTab === 'all' && (
-            <div>
+            <div className="animate-in fade-in-0 slide-in-from-bottom-3">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <Text
@@ -119,7 +123,7 @@ export default function NotificationPanel() {
           )}
 
           {activeTab === 'following' && (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in-0 slide-in-from-bottom-3">
               <Text
                 as="p"
                 variant="body"

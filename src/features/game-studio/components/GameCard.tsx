@@ -71,7 +71,7 @@ export default function GameCard({ title, description, version, status, onPlay }
   const orbitalPositions = useMemo(() => getCirclePositions(ORBITAL_AVATAR_COUNT), [])
 
   return (
-    <Card className="relative w-[350px] mx-auto rounded-4xl hover:shadow-lg transition-shadow">
+    <Card className="relative w-[350px] mx-auto rounded-4xl hover:shadow-lg transition-shadow animate-in fade-in-0 slide-in-from-bottom-4">
       {/* Status badge - top left */}
       {status && (
         <div className="absolute top-3 left-3 z-10">
@@ -144,7 +144,7 @@ export default function GameCard({ title, description, version, status, onPlay }
                 e.stopPropagation()
                 onPlay?.()
               }}
-              className="text-blue-500 hover:text-blue-500 hover:opacity-80 "
+              className="text-blue-500 hover:text-blue-500 hover:opacity-80 active:animate-in active:zoom-in-95"
             >
               <Text
                 as="p"

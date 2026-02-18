@@ -63,12 +63,13 @@ export default function AdminInstitution() {
 
   return (
     <AdminDashboardLayout>
-      <div className="flex flex-col gap-6 py-8 px-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
+        <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
           <h1 className="text-2xl font-semibold text-gray-900">Institutions</h1>
           <Button
             variant="outline"
             onClick={() => navigate(`/${role}/institution/new-institution`)}
+            className="active:animate-in active:zoom-in-95"
           >
             New Institution
           </Button>
@@ -88,12 +89,13 @@ export default function AdminInstitution() {
             <Button
               variant="outline"
               onClick={() => navigate(`/${role}/dashboard/new-institution`)}
+              className="active:animate-in active:zoom-in-95"
             >
               Create your first institution
             </Button>
           </div>
         ) : (
-          <div className="rounded-lg border">
+          <div className="rounded-lg border animate-in fade-in-0 slide-in-from-bottom-4">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -104,7 +106,10 @@ export default function AdminInstitution() {
               </TableHeader>
               <TableBody>
                 {institutions.map((inst) => (
-                  <TableRow key={inst.id}>
+                  <TableRow
+                    key={inst.id}
+                    className="animate-in fade-in-0 slide-in-from-bottom-2"
+                  >
                     <TableCell className="font-medium">{inst.slug ?? '—'}</TableCell>
                     <TableCell className="capitalize">{inst.type ?? '—'}</TableCell>
                     <TableCell>

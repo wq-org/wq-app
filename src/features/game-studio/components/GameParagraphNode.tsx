@@ -6,7 +6,7 @@ import { Text } from '@/components/ui/text'
 export default function GameParagraphNode({ data, selected }: GameParagraphNodeProps) {
   return (
     <div
-      className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow ${selected ? 'border-2 border-gray-300' : ''}`}
+      className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow animate-in fade-in-0 slide-in-from-bottom-2 ${selected ? 'border-2 border-gray-300 animate-in zoom-in-95' : ''}`}
       onClick={data?.onClick}
     >
       <Handle

@@ -213,7 +213,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
   // Show selection list if no type is selected
   if (!selectedType) {
     return (
-      <Card className="max-w-md mx-auto border-0 shadow-none">
+      <Card className="max-w-md mx-auto border-0 shadow-none animate-in fade-in-0 slide-in-from-bottom-3">
         <CardHeader className="items-center p-0">
           <CardTitle className="text-xl text-gray-900">{t('addDialog.title')}</CardTitle>
           <Text
@@ -232,7 +232,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
               <div
                 key={option.type}
                 onClick={() => handleOptionSelect(option.type)}
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-left w-full"
+                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-left w-full animate-in fade-in-0 slide-in-from-bottom-2 active:animate-in active:zoom-in-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gray-100">
@@ -254,7 +254,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
 
   // Show form when a type is selected
   return (
-    <Card className="max-w-md mx-auto border-0 shadow-none">
+    <Card className="max-w-md mx-auto border-0 shadow-none animate-in fade-in-0 slide-in-from-bottom-3">
       <form
         className="flex flex-col gap-5"
         onSubmit={async (e) => {
@@ -269,7 +269,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
               variant="ghost"
               size="icon"
               onClick={handleCancel}
-              className="shrink-0"
+              className="shrink-0 active:animate-in active:zoom-in-95"
             >
               <MoveLeft className="h-4 w-4" />
             </Button>
@@ -332,7 +332,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
             variant="outline"
             type="button"
             onClick={handleCancel}
-            className="w-full"
+            className="w-full active:animate-in active:zoom-in-95"
             disabled={loading}
           >
             {t('addDialog.actions.cancel')}
@@ -341,7 +341,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
             type="submit"
             variant="default"
             disabled={!title.trim() || !description.trim() || loading}
-            className="w-full"
+            className="w-full active:animate-in active:zoom-in-95"
           >
             {loading
               ? t('addDialog.actions.creating')

@@ -1,4 +1,33 @@
 {
+  "table": {
+    "columns": {
+      "type": "Type",
+      "filename": "Filename",
+      "size": "Size"
+    }
+  },
+  "empty": {
+    "title": "No files found",
+    "description": "Upload your first file to get started. Use the command palette to upload files."
+  },
+  "drawer": {
+    "title": "File Details",
+    "description": "View and manage file details including overview and settings",
+    "tabs": {
+      "overview": "Overview",
+      "settings": "Settings"
+    },
+    "overview": {
+      "filename": "Filename",
+      "size": "Size",
+      "type": "Type"
+    },
+    "settings": {
+      "filename": "Filename",
+      "replaceFile": "Replace File",
+      "newFilePreviewAlt": "New file preview"
+    }
+  },
   "deleteDialog": {
     "title": "Delete File",
     "description": "Are you sure you want to delete \"{{filename}}\"? This action cannot be undone.",
@@ -11,5 +40,19 @@
     "removeNewFile": "Remove New File",
     "reset": "Reset",
     "saveChanges": "Save Changes"
+  },
+  "toasts": {
+    "loadFailed": "Failed to load file",
+    "filePathMissingDelete": "File path not available. Cannot delete file.",
+    "deleteSuccess": "File deleted successfully",
+    "deleteFailed": "Failed to delete file",
+    "deleteUnexpected": "An unexpected error occurred while deleting the file",
+    "filePathMissingSave": "File path not available. Cannot save changes.",
+    "fileLocationUnknown": "Unable to determine file location. Please try again.",
+    "filenameEmpty": "Filename cannot be empty",
+    "renameFailed": "Failed to rename file",
+    "uploadFailed": "Failed to upload new file",
+    "saveSuccess": "Changes saved successfully",
+    "saveUnexpected": "An unexpected error occurred while saving changes"
   }
 }

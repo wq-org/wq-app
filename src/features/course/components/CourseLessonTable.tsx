@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { HoldToDeleteIconButton } from '@/components/ui/holdDeleteIconButton'
 import type { Lesson } from '../types/lesson.types'
 import { EmptyLessonsView } from './EmptyLessonsView'
+import { useTranslation } from 'react-i18next'
 
 export type OnViewLesson = (lessonId: string) => void
 export type OnDeleteLesson = (lessonId: string) => void
@@ -33,6 +34,7 @@ export interface CourseLessonTableProps {
 const ITEMS_PER_PAGE = 10
 
 export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTableProps) {
+  const { t } = useTranslation('features.courses')
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.max(1, Math.ceil(lessons.length / ITEMS_PER_PAGE))
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -73,15 +75,19 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-6">
-      <div className="w-full bg-white rounded-4xl shadow p-6">
+    <div className="w-full flex flex-col items-center justify-center gap-6 animate-in fade-in-0 slide-in-from-bottom-4">
+      <div className="w-full bg-white rounded-4xl shadow p-6 animate-in fade-in-0 slide-in-from-bottom-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left text-gray-400 font-light">Title</TableHead>
-              <TableHead className="text-left text-gray-400 font-light">Description</TableHead>
+              <TableHead className="text-left text-gray-400 font-light">
+                {t('lessonTable.columns.title')}
+              </TableHead>
+              <TableHead className="text-left text-gray-400 font-light">
+                {t('lessonTable.columns.description')}
+              </TableHead>
               <TableHead className="text-center text-gray-400 font-light w-[100px]">
-                Action
+                {t('lessonTable.columns.action')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -89,14 +95,14 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
             {currentLessons.map((lesson) => (
               <TableRow
                 key={lesson.id}
-                className="border-b last:border-0 hover:bg-gray-50 transition-colors"
+                className="border-b last:border-0 hover:bg-gray-50 transition-colors animate-in fade-in-0 slide-in-from-bottom-2"
               >
                 <TableCell className="text-left">
                   <span className="font-medium text-gray-900">{lesson.title}</span>
                 </TableCell>
                 <TableCell className="text-left">
                   <span className="text-sm text-muted-foreground line-clamp-1">
-                    {lesson.description || 'No description'}
+                    {lesson.description || t('lessonTable.noDescription')}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
@@ -104,10 +110,10 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 transition-all duration-200"
+                      className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 transition-all duration-200 active:animate-in active:zoom-in-95"
                       onClick={() => onView?.(lesson.id)}
                     >
-                      View
+                      {t('lessonTable.actions.view')}
                     </Button>
                     <HoldToDeleteIconButton
                       size="sm"
@@ -121,12 +127,16 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
         </Table>
       </div>
       {totalPages > 1 && (
-        <Pagination>
+        <Pagination className="animate-in fade-in-0 slide-in-from-bottom-3">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                className={
+                  currentPage === 1
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer active:animate-in active:zoom-in-95'
+                }
               />
             </PaginationItem>
             {getPageNumbers().map((page, index) => (
@@ -137,7 +147,7 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
                   <PaginationLink
                     onClick={() => handlePageChange(page as number)}
                     isActive={currentPage === page}
-                    className="cursor-pointer"
+                    className="cursor-pointer active:animate-in active:zoom-in-95"
                   >
                     {page}
                   </PaginationLink>
@@ -148,7 +158,9 @@ export function CourseLessonTable({ lessons, onView, onDelete }: CourseLessonTab
               <PaginationNext
                 onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                 className={
-                  currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                  currentPage === totalPages
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer active:animate-in active:zoom-in-95'
                 }
               />
             </PaginationItem>

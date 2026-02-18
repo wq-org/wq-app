@@ -14,8 +14,10 @@ import { getLessonsByTopicId, deleteLesson } from '@/features/course/api/lessons
 import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/course/api/coursesApi'
 import { Text } from '@/components/ui/text'
 import Spinner from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 export default function Course() {
+  const { t } = useTranslation('features.courses')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
   const { fetchCourseById, selectedCourse } = useCourse()
@@ -117,7 +119,7 @@ export default function Course() {
   }
 
   if (!courseId) {
-    return <div>Course not found</div>
+    return <div>{t('page.notFound')}</div>
   }
 
   return (
@@ -127,7 +129,7 @@ export default function Course() {
           value={newTopic}
           onChange={(e) => setNewTopic(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Neues Thema hinzufügen"
+          placeholder={t('page.addTopicPlaceholder')}
           className="flex-1   px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
         />
         <Button
@@ -150,7 +152,7 @@ export default function Course() {
         variant="body"
         className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl"
       >
-        Themen
+        {t('page.topicsTitle')}
       </Text>
 
       {topicsLoading ? (
@@ -185,14 +187,14 @@ export default function Course() {
               variant="h2"
               className="text-2xl font-semibold text-gray-900"
             >
-              Lessons for: {selectedTopic.name}
+              {t('page.lessonsForTopic', { topic: selectedTopic.name })}
             </Text>
             <Text
               as="p"
               variant="body"
               className="text-gray-500 mt-1"
             >
-              Explore the available lessons for this topic
+              {t('page.lessonsForTopicDescription')}
             </Text>
           </div>
 

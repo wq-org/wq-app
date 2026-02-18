@@ -68,10 +68,10 @@ export default function GameStudio() {
 
   return (
     <AppWrapper
-      className="flex flex-col gap-12"
+      className="flex flex-col gap-12 animate-in fade-in-0 slide-in-from-bottom-4"
       role="teacher"
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-3">
         <Text
           as="h1"
           variant="h1"
@@ -91,12 +91,13 @@ export default function GameStudio() {
             onClick={handleCreateGame}
             variant="default"
             disabled={creating || loading}
+            className="active:animate-in active:zoom-in-95"
           >
             {creating ? t('page.creating') : t('page.createGame')}
           </Button>
         </div>
       </div>
-      <div className="pb-14">
+      <div className="pb-14 animate-in fade-in-0 slide-in-from-bottom-4">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Spinner

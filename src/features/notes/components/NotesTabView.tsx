@@ -45,8 +45,8 @@ export default function NotesTabView({ notes, loading, onRefresh, onDelete }: No
   }
 
   return (
-    <div className="w-full py-8">
-      <div className="mb-6 flex items-center justify-between gap-4">
+    <div className="w-full py-8 animate-in fade-in-0 slide-in-from-bottom-4">
+      <div className="mb-6 flex items-center justify-between gap-4 animate-in fade-in-0 slide-in-from-bottom-3">
         <div className="flex items-center gap-3">
           <Text
             as="h2"
@@ -68,7 +68,7 @@ export default function NotesTabView({ notes, loading, onRefresh, onDelete }: No
           variant="outline"
           size="sm"
           onClick={onRefresh}
-          className="gap-2"
+          className="gap-2 active:animate-in active:zoom-in-95"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Refresh
@@ -78,8 +78,8 @@ export default function NotesTabView({ notes, loading, onRefresh, onDelete }: No
       {notes.length === 0 ? (
         <EmptyNotesView />
       ) : (
-        <div className="w-full flex flex-col items-center justify-center gap-6">
-          <div className="w-full bg-white rounded-4xl shadow p-6">
+        <div className="w-full flex flex-col items-center justify-center gap-6 animate-in fade-in-0 slide-in-from-bottom-4">
+          <div className="w-full bg-white rounded-4xl shadow p-6 animate-in fade-in-0 slide-in-from-bottom-4">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -100,7 +100,7 @@ export default function NotesTabView({ notes, loading, onRefresh, onDelete }: No
                 {notes.map((note) => (
                   <TableRow
                     key={note.id}
-                    className="border-b last:border-0 hover:bg-gray-50 transition-colors"
+                    className="border-b last:border-0 hover:bg-gray-50 transition-colors animate-in fade-in-0 slide-in-from-bottom-2"
                   >
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center">

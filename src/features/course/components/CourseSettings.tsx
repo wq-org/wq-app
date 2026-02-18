@@ -11,12 +11,14 @@ import { Loader2 } from 'lucide-react'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface CourseSettingsProps {
   courseId: string
 }
 
 export default function CourseSettings({ courseId }: CourseSettingsProps) {
+  const { t } = useTranslation('features.courses')
   const navigate = useNavigate()
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)
@@ -70,7 +72,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       setHasChanges(false)
     } catch (error) {
       console.error('Error updating course:', error)
-      alert('Failed to save changes. Please try again.')
+      alert(t('settings.errors.saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -84,7 +86,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       navigate(`/${role}/dashboard`)
     } catch (error) {
       console.error('Error deleting course:', error)
-      alert('Failed to delete course. Please try again.')
+      alert(t('settings.errors.deleteFailed'))
       setDeleting(false)
     }
   }
@@ -98,7 +100,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
     } catch (error) {
       console.error('Error updating publish status:', error)
       setIsPublished(!checked)
-      alert('Failed to update publish status. Please try again.')
+      alert(t('settings.errors.publishStatusFailed'))
     }
   }
 
@@ -122,24 +124,24 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
           variant="h2"
           className="text-2xl font-semibold"
         >
-          Course Settings
+          {t('settings.title')}
         </Text>
         <Text
           as="p"
           variant="body"
           className="text-muted-foreground text-sm"
         >
-          Manage your course details and settings
+          {t('settings.subtitle')}
         </Text>
       </div>
 
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title">{t('settings.titleLabel')}</Label>
           <Input
             id="title"
             type="text"
-            placeholder="Course title"
+            placeholder={t('settings.titlePlaceholder')}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="text-base"
@@ -147,10 +149,10 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('settings.descriptionLabel')}</Label>
           <Textarea
             id="description"
-            placeholder="Course description"
+            placeholder={t('settings.descriptionPlaceholder')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="resize-none"
@@ -164,14 +166,14 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
               htmlFor="published"
               className="text-base font-medium"
             >
-              Published
+              {t('settings.publishedLabel')}
             </Label>
             <Text
               as="p"
               variant="body"
               className="text-sm text-muted-foreground"
             >
-              Make this course visible to students
+              {t('settings.publishedHint')}
             </Text>
           </div>
           <Switch
@@ -191,17 +193,19 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
+                {t('settings.saving')}
               </>
             ) : (
-              'Save Changes'
+              t('settings.save')
             )}
           </Button>
 
           <HoldToDeleteButton
             loading={deleting}
             onDelete={handleDeleteCourse}
-          />
+          >
+            {t('settings.deleteAction')}
+          </HoldToDeleteButton>
         </div>
       </div>
     </div>

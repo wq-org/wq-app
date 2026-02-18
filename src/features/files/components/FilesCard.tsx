@@ -61,12 +61,12 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
             fileUrlRef.current = url
             setFileUrl(url)
           } else {
-            toast.error('Failed to load file')
+            toast.error(t('toasts.loadFailed'))
           }
         })
         .catch((error) => {
           console.error('Error getting file blob URL:', error)
-          toast.error('Failed to load file')
+          toast.error(t('toasts.loadFailed'))
         })
         .finally(() => {
           setLoading(false)
@@ -87,7 +87,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
         fileUrlRef.current = null
       }
     }
-  }, [isImage, isPDF, isVideo, file.storagePath, open])
+  }, [isImage, isPDF, isVideo, file.storagePath, open, t])
 
   // Reset filename when file changes
   useEffect(() => {
@@ -153,22 +153,22 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
 
   const handleDelete = async () => {
     if (!file.storagePath) {
-      toast.error('File path not available. Cannot delete file.')
+      toast.error(t('toasts.filePathMissingDelete'))
       return
     }
 
     try {
       const result = await deleteFile(file.storagePath)
       if (result.success) {
-        toast.success('File deleted successfully')
+        toast.success(t('toasts.deleteSuccess'))
         onFileDeleted?.()
         onOpenChange(false)
       } else {
-        toast.error(result.error || 'Failed to delete file')
+        toast.error(result.error || t('toasts.deleteFailed'))
       }
     } catch (error) {
       console.error('Error deleting file:', error)
-      toast.error('An unexpected error occurred while deleting the file')
+      toast.error(t('toasts.deleteUnexpected'))
     } finally {
       setShowDeleteDialog(false)
     }
@@ -182,13 +182,13 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
 
   const handleSaveChanges = async () => {
     if (!file.storagePath) {
-      toast.error('File path not available. Cannot save changes.')
+      toast.error(t('toasts.filePathMissingSave'))
       return
     }
 
     const pathInfo = extractPathInfo()
     if (!pathInfo) {
-      toast.error('Unable to determine file location. Please try again.')
+      toast.error(t('toasts.fileLocationUnknown'))
       return
     }
 
@@ -199,7 +199,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       // Handle filename change
       if (filename !== file.filename) {
         if (!filename.trim()) {
-          toast.error('Filename cannot be empty')
+          toast.error(t('toasts.filenameEmpty'))
           return
         }
 
@@ -211,7 +211,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
 
         const renameResult = await renameFile(file.storagePath, newFilename)
         if (!renameResult.success) {
-          toast.error(renameResult.error || 'Failed to rename file')
+          toast.error(renameResult.error || t('toasts.renameFailed'))
           return
         }
 
@@ -240,7 +240,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
         })
 
         if (!uploadResult.success) {
-          toast.error(uploadResult.error || 'Failed to upload new file')
+          toast.error(uploadResult.error || t('toasts.uploadFailed'))
           return
         }
 
@@ -257,11 +257,11 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       setNewFile(null)
       setNewFilePreview(null)
 
-      toast.success('Changes saved successfully')
+      toast.success(t('toasts.saveSuccess'))
       onFileDeleted?.() // Trigger refresh
     } catch (error) {
       console.error('Error saving changes:', error)
-      toast.error('An unexpected error occurred while saving changes')
+      toast.error(t('toasts.saveUnexpected'))
     }
   }
 
@@ -272,11 +272,11 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
         open={open}
         onOpenChange={onOpenChange}
       >
-        <DrawerContent className="h-screen w-[60vw]! max-w-2xl! sm:max-w-2xl!">
+        <DrawerContent className="h-screen w-[60vw]! max-w-2xl! sm:max-w-2xl! data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:slide-in-from-right-52 data-[state=closed]:slide-out-to-right-52">
           <div className="flex flex-col h-full w-full">
             <DrawerHeader className="shrink-0">
               <div className="flex items-center justify-between">
-                <DrawerTitle>File Details</DrawerTitle>
+                <DrawerTitle>{t('drawer.title')}</DrawerTitle>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -286,7 +286,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                 </Button>
               </div>
               <DrawerDescription className="sr-only">
-                View and manage file details including overview and settings
+                {t('drawer.description')}
               </DrawerDescription>
             </DrawerHeader>
 
@@ -298,7 +298,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   onClick={() => setActiveTab('overview')}
                   className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
                     activeTab === 'overview'
-                      ? 'text-black border-black font-medium'
+                      ? 'text-black border-black font-medium animate-in zoom-in-95'
                       : 'text-black/40 hover:text-black/60 border-transparent'
                   }`}
                 >
@@ -309,7 +309,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                     as="span"
                     variant="small"
                   >
-                    Overview
+                    {t('drawer.tabs.overview')}
                   </Text>
                 </Button>
                 <Button
@@ -317,7 +317,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                   onClick={() => setActiveTab('settings')}
                   className={`text-xl border-b-2 rounded-none h-auto px-0 pb-2 gap-2 ${
                     activeTab === 'settings'
-                      ? 'text-black border-black font-medium'
+                      ? 'text-black border-black font-medium animate-in zoom-in-95'
                       : 'text-black/40 hover:text-black/60 border-transparent'
                   }`}
                 >
@@ -326,13 +326,16 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                     as="span"
                     variant="small"
                   >
-                    Settings
+                    {t('drawer.tabs.settings')}
                   </Text>
                 </Button>
               </div>
 
               {/* Tab Content */}
-              <div className="flex-1 overflow-y-auto p-6 pb-12">
+              <div
+                key={activeTab}
+                className="flex-1 overflow-y-auto p-6 pb-12 animate-in fade-in-0 slide-in-from-bottom-3"
+              >
                 {activeTab === 'overview' && (
                   <div className="flex flex-col space-y-6">
                     {isImage && (
@@ -402,7 +405,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                       <Separator />
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-xs text-gray-500">Filename</Label>
+                          <Label className="text-xs text-gray-500">
+                            {t('drawer.overview.filename')}
+                          </Label>
                           <Text
                             as="p"
                             variant="body"
@@ -412,7 +417,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                           </Text>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-xs text-gray-500">Size</Label>
+                          <Label className="text-xs text-gray-500">
+                            {t('drawer.overview.size')}
+                          </Label>
                           <Text
                             as="p"
                             variant="body"
@@ -422,7 +429,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                           </Text>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-xs text-gray-500">Type</Label>
+                          <Label className="text-xs text-gray-500">
+                            {t('drawer.overview.type')}
+                          </Label>
                           <Text
                             as="p"
                             variant="body"
@@ -439,7 +448,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                 {activeTab === 'settings' && (
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="filename-input">Filename</Label>
+                      <Label htmlFor="filename-input">{t('drawer.settings.filename')}</Label>
                       <Input
                         id="filename-input"
                         value={filename}
@@ -450,13 +459,13 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Replace File</Label>
+                      <Label>{t('drawer.settings.replaceFile')}</Label>
                       {newFilePreview ? (
                         <div className="space-y-2">
                           <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
                             <img
                               src={newFilePreview}
-                              alt="New file preview"
+                              alt={t('drawer.settings.newFilePreviewAlt')}
                               className="w-full h-full object-contain"
                             />
                           </div>
@@ -467,9 +476,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                               setNewFile(null)
                               setNewFilePreview(null)
                             }}
-                            className="w-full"
+                            className="w-full active:animate-in active:zoom-in-95"
                           >
-                            {t('editor.removeNewFile', { defaultValue: 'Remove New File' })}
+                            {t('editor.removeNewFile')}
                           </Button>
                         </div>
                       ) : newFile ? (
@@ -497,9 +506,9 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                               setNewFile(null)
                               setNewFilePreview(null)
                             }}
-                            className="w-full"
+                            className="w-full active:animate-in active:zoom-in-95"
                           >
-                            {t('editor.removeNewFile', { defaultValue: 'Remove New File' })}
+                            {t('editor.removeNewFile')}
                           </Button>
                         </div>
                       ) : (
@@ -518,23 +527,26 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                           setNewFile(null)
                           setNewFilePreview(null)
                         }}
+                        className="active:animate-in active:zoom-in-95"
                         disabled={!hasChanges}
                       >
-                        {t('editor.reset', { defaultValue: 'Reset' })}
+                        {t('editor.reset')}
                       </Button>
                       <div className="flex gap-2">
                         <Button
                           variant="destructive"
                           onClick={() => setShowDeleteDialog(true)}
+                          className="active:animate-in active:zoom-in-95"
                         >
                           <Trash2 className="h-4 w-4" />
-                          {t('deleteDialog.action', { defaultValue: 'Delete File' })}
+                          {t('deleteDialog.action')}
                         </Button>
                         <Button
                           onClick={handleSaveChanges}
                           disabled={!hasChanges}
+                          className="active:animate-in active:zoom-in-95"
                         >
-                          {t('editor.saveChanges', { defaultValue: 'Save Changes' })}
+                          {t('editor.saveChanges')}
                         </Button>
                       </div>
                     </div>

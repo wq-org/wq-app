@@ -23,7 +23,7 @@ export default function CourseCard({
   const courseImage = image || BACKGROUND_SCHOOL
 
   return (
-    <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
+    <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <img
           src={courseImage}
@@ -79,7 +79,7 @@ export default function CourseCard({
               onClick={() => {
                 onView?.(id)
               }}
-              className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200"
+              className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200 active:animate-in active:zoom-in-95"
             >
               <Text
                 as="p"
