@@ -61,8 +61,10 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
-  const [_notes, setNotes] = useState<Note[]>([])
-  const [_notesLoading, setNotesLoading] = useState(false)
+  const [notes, setNotes] = useState<Note[]>([])
+  const [notesLoading, setNotesLoading] = useState(false)
+  void notes
+  void notesLoading
 
   // Fetch courses when profile is loaded
   useEffect(() => {

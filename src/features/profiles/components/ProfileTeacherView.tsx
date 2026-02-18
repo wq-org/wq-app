@@ -55,7 +55,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   const isStudentViewingTeacher =
     viewerRole === 'student' && currentUserId && currentUserId !== userId
 
-  const fetchCourses = () => {
+  const fetchCourses = useCallback(() => {
     setCoursesLoading(true)
     getTeacherCourses(userId)
       .then(setCourses)
@@ -64,9 +64,9 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
         setCourses([])
       })
       .finally(() => setCoursesLoading(false))
-  }
+  }, [userId])
 
-  const fetchGames = () => {
+  const fetchGames = useCallback(() => {
     setGamesLoading(true)
     fetchTeacherGames(userId)
       .then(setGames)
@@ -75,7 +75,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
         setGames([])
       })
       .finally(() => setGamesLoading(false))
-  }
+  }, [userId])
 
   const handleFollowSuccess = useCallback(() => {
     const el = document.querySelector('[data-follow-button]')
@@ -98,7 +98,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
     }
     fetchCourses()
     fetchGames()
-  }, [userId])
+  }, [fetchCourses, fetchGames])
 
   const { isFollowing, toggleFollow } = useFollow(isStudentViewingTeacher ? userId : null, {
     onFollowSuccess: handleFollowSuccess,
@@ -107,14 +107,14 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   // Fetch teacher courses
   useEffect(() => {
     fetchCourses()
-  }, [userId])
+  }, [fetchCourses])
 
   // Fetch games when tab is games and content is visible (not behind follow gate)
   useEffect(() => {
     if (selectedTab === 'games' && !(isStudentViewingTeacher && !isFollowing)) {
       fetchGames()
     }
-  }, [userId, selectedTab, isStudentViewingTeacher, isFollowing])
+  }, [selectedTab, isStudentViewingTeacher, isFollowing, fetchGames])
 
   const handleCourseJoin = (courseId: string) => {
     // TODO: Implement join course functionality

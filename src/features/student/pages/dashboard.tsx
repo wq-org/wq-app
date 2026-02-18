@@ -41,8 +41,10 @@ export default function Dashboard() {
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
-  const [_notes, setNotes] = useState<Note[]>([])
-  const [_notesLoading, setNotesLoading] = useState(false)
+  const [notes, setNotes] = useState<Note[]>([])
+  const [notesLoading, setNotesLoading] = useState(false)
+  void notes
+  void notesLoading
   const navigate = useNavigate()
   const { profile, loading, getUserId, getRole } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')

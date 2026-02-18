@@ -16,10 +16,11 @@ import type { Roles } from '@/components'
 
 /**
  * Get command bar groups with role-based routes
- * @param role - User role (required)
+ * @param role - User role (reserved for future role-specific groups)
  * @returns Array of command bar groups with dynamic routes
  */
 export const getBarGroups = (role: Roles): CommandBarGroup[] => {
+  void role
   const teacherPrefix = '/teacher'
   const studentPrefix = '/student'
   const adminPrefix = '/admin'
