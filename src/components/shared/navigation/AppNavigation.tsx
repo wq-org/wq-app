@@ -1,3 +1,4 @@
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Bell, LogOut, ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -21,7 +22,7 @@ const AppNavigation = ({
   children,
   className,
   authenticated = true,
-}: AppNavigationProps) => {
+}: AppNavigationProps): React.ReactElement => {
   const navigate = useNavigate()
   const { logout } = useUser()
 

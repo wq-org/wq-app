@@ -41,14 +41,14 @@ export function QuoteOfTheDay({ className = '' }: Props) {
       </blockquote>
 
       <div className="mt-2 flex items-center justify-center gap-1.5">
-        <span className="flex shrink-0 cursor-default items-center rounded-full bg-muted pr-1.5 pl-0.5 py-0.5 gap-1">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full overflow-hidden bg-background">
+        <span className="flex shrink-0 cursor-default items-center rounded-full bg-muted pr-2.5 pl-1.5 py-1.5 gap-2">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full overflow-hidden bg-background">
             <Logo
               showText={false}
-              className="h-2.5 w-2.5"
+              className="h-4 w-4"
             />
           </span>
-          <span className="text-muted-foreground text-[10px] font-medium leading-tight">
+          <span className="text-muted-foreground text-sm font-medium leading-tight">
             {quote.author}
           </span>
         </span>
