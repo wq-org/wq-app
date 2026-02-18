@@ -67,10 +67,7 @@ function HoldToDeleteIconButton({
   const animationFrameRef = React.useRef<number | null>(null)
 
   const secondsTotal = holdDurationSeconds(holdDuration)
-  const secondsRemaining = Math.max(
-    0,
-    Math.ceil((holdDuration / 1000) * (1 - progress)),
-  )
+  const secondsRemaining = Math.max(0, Math.ceil((holdDuration / 1000) * (1 - progress)))
 
   const radius = (ringSize - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
@@ -130,25 +127,17 @@ function HoldToDeleteIconButton({
   const strokeDashoffset = circumference * (1 - progress)
 
   const holdMessage =
-    typeof tooltipHoldMessage === 'function'
-      ? tooltipHoldMessage(secondsTotal)
-      : tooltipHoldMessage
+    typeof tooltipHoldMessage === 'function' ? tooltipHoldMessage(secondsTotal) : tooltipHoldMessage
 
   const tooltipContent = isHolding ? (
     <TooltipContent variant="destructive">
-      {secondsRemaining > 0
-        ? tooltipDeletingIn(secondsRemaining)
-        : tooltipDeleting}
+      {secondsRemaining > 0 ? tooltipDeletingIn(secondsRemaining) : tooltipDeleting}
     </TooltipContent>
   ) : (
     <TooltipContent variant="destructive">
       <div className="space-y-0.5">
-        {tooltipTitle && (
-          <p className="font-semibold">{tooltipTitle}</p>
-        )}
-        {tooltipDescription && (
-          <p className="opacity-90">{tooltipDescription}</p>
-        )}
+        {tooltipTitle && <p className="font-semibold">{tooltipTitle}</p>}
+        {tooltipDescription && <p className="opacity-90">{tooltipDescription}</p>}
         <p>{holdMessage}</p>
       </div>
     </TooltipContent>
@@ -169,98 +158,98 @@ function HoldToDeleteIconButton({
         >
           {/* SVG progress ring */}
           <svg
-        className="absolute inset-0 -rotate-90 rounded-full"
-        width={ringSize}
-        height={ringSize}
-        viewBox={`0 0 ${ringSize} ${ringSize}`}
-      >
-        {/* Background track */}
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
-          className={cn(
-            'text-muted transition-colors duration-200',
-            (isHolding || completed) && 'text-red-100',
-          )}
-        />
-        {/* Progress arc */}
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          strokeLinecap="round"
-          className={cn(
-            'text-destructive transition-[stroke-dashoffset]',
-            isHolding ? 'duration-0' : 'duration-300 ease-out',
-            completed && 'text-red-500',
-          )}
-        />
-      </svg>
+            className="absolute inset-0 -rotate-90 rounded-full"
+            width={ringSize}
+            height={ringSize}
+            viewBox={`0 0 ${ringSize} ${ringSize}`}
+          >
+            {/* Background track */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              className={cn(
+                'text-muted transition-colors duration-200',
+                (isHolding || completed) && 'text-red-100',
+              )}
+            />
+            {/* Progress arc */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              className={cn(
+                'text-destructive transition-[stroke-dashoffset]',
+                isHolding ? 'duration-0' : 'duration-300 ease-out',
+                completed && 'text-red-500',
+              )}
+            />
+          </svg>
 
-      {/* Pie fill background (fills inside the circle) */}
-      <svg
-        className="absolute inset-0 -rotate-90 rounded-full"
-        width={ringSize}
-        height={ringSize}
-        viewBox={`0 0 ${ringSize} ${ringSize}`}
-      >
-        <circle
-          cx={center}
-          cy={center}
-          r={radius - strokeWidth}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={(radius - strokeWidth) * 2}
-          strokeDasharray={2 * Math.PI * (radius - strokeWidth)}
-          strokeDashoffset={2 * Math.PI * (radius - strokeWidth) * (1 - progress)}
-          className={cn(
-            'text-red-100/60',
-            isHolding ? 'duration-0' : 'transition-[stroke-dashoffset] duration-300 ease-out',
-          )}
-        />
-      </svg>
+          {/* Pie fill background (fills inside the circle) */}
+          <svg
+            className="absolute inset-0 -rotate-90 rounded-full"
+            width={ringSize}
+            height={ringSize}
+            viewBox={`0 0 ${ringSize} ${ringSize}`}
+          >
+            <circle
+              cx={center}
+              cy={center}
+              r={radius - strokeWidth}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={(radius - strokeWidth) * 2}
+              strokeDasharray={2 * Math.PI * (radius - strokeWidth)}
+              strokeDashoffset={2 * Math.PI * (radius - strokeWidth) * (1 - progress)}
+              className={cn(
+                'text-red-100/60',
+                isHolding ? 'duration-0' : 'transition-[stroke-dashoffset] duration-300 ease-out',
+              )}
+            />
+          </svg>
 
-      {/* Icon button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          'relative z-10 rounded-full',
-          buttonSizeClass,
-          'text-muted-foreground',
-          'hover:bg-transparent hover:text-destructive',
-          isHolding && 'text-destructive scale-90',
-          completed && 'text-destructive scale-75',
-          'transition-all duration-200',
-          className,
-        )}
-        onMouseDown={startHold}
-        onMouseUp={resetHold}
-        onMouseLeave={resetHold}
-        onTouchStart={startHold}
-        onTouchEnd={resetHold}
-        onTouchCancel={resetHold}
-        {...props}
-      >
-        <X
-          className={cn(
-            iconSizeClass,
-            'transition-transform duration-200',
-            isHolding && 'rotate-90',
-            completed && 'rotate-180',
-          )}
-        />
-        <span className="sr-only">Hold to delete</span>
-      </Button>
+          {/* Icon button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              'relative z-10 rounded-full',
+              buttonSizeClass,
+              'text-muted-foreground',
+              'hover:bg-transparent hover:text-destructive',
+              isHolding && 'text-destructive scale-90',
+              completed && 'text-destructive scale-75',
+              'transition-all duration-200',
+              className,
+            )}
+            onMouseDown={startHold}
+            onMouseUp={resetHold}
+            onMouseLeave={resetHold}
+            onTouchStart={startHold}
+            onTouchEnd={resetHold}
+            onTouchCancel={resetHold}
+            {...props}
+          >
+            <X
+              className={cn(
+                iconSizeClass,
+                'transition-transform duration-200',
+                isHolding && 'rotate-90',
+                completed && 'rotate-180',
+              )}
+            />
+            <span className="sr-only">Hold to delete</span>
+          </Button>
         </div>
       </TooltipTrigger>
       {tooltipContent}

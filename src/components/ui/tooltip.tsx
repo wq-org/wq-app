@@ -43,10 +43,8 @@ function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimiti
 }
 
 const tooltipContentVariants = {
-  default:
-    'bg-foreground text-background [--tooltip-arrow:theme(colors.foreground)]',
-  destructive:
-    'bg-red-500/20 text-red-500 [--tooltip-arrow:theme(colors.red.500)]',
+  default: 'bg-foreground text-background [--tooltip-arrow:theme(colors.foreground)]',
+  destructive: 'bg-red-500/20 text-red-500 [--tooltip-arrow:theme(colors.red.500)]',
 } as const
 
 type TooltipContentVariant = keyof typeof tooltipContentVariants

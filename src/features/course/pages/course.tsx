@@ -28,10 +28,8 @@ export default function Course() {
     tooltipDelayDuration: 500,
     tooltipTitle: tGameStudio('holdDelete.title'),
     tooltipDescription: tGameStudio('holdDelete.description'),
-    tooltipHoldMessage: (seconds: number) =>
-      tGameStudio('holdDelete.holdMessage', { seconds }),
-    tooltipDeletingIn: (seconds: number) =>
-      tGameStudio('holdDelete.deletingIn', { seconds }),
+    tooltipHoldMessage: (seconds: number) => tGameStudio('holdDelete.holdMessage', { seconds }),
+    tooltipDeletingIn: (seconds: number) => tGameStudio('holdDelete.deletingIn', { seconds }),
     tooltipDeleting: tGameStudio('holdDelete.deleting'),
     holdDuration: 3000,
   }
