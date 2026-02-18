@@ -127,6 +127,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
       import.meta.env.VITE_PUBLIC_APP_URL || window.location.origin
     }/auth/reset-password`
 
+    console.log('redirectUrl', redirectUrl)
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
