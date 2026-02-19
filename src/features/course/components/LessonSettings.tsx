@@ -10,14 +10,16 @@ import { useLesson } from '@/contexts/lesson'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { Text } from '@/components/ui/text'
 
 export interface LessonSettingsProps {
   lessonId: string
   courseId?: string
+  onUnsavedChange?: (dirty: boolean) => void
 }
 
-export default function LessonSettings({ lessonId, courseId }: LessonSettingsProps) {
+export default function LessonSettings({ lessonId, courseId, onUnsavedChange }: LessonSettingsProps) {
   const navigate = useNavigate()
   const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLesson()
   const { t } = useTranslation('features.lesson')
@@ -58,7 +60,8 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
   useEffect(() => {
     const changed = title !== originalTitle || description !== originalDescription
     setHasChanges(changed)
-  }, [title, description, originalTitle, originalDescription])
+    onUnsavedChange?.(changed)
+  }, [title, description, originalTitle, originalDescription, onUnsavedChange])
 
   const handleSaveChanges = async () => {
     if (!hasChanges) return
@@ -73,9 +76,12 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
       setOriginalTitle(title)
       setOriginalDescription(description)
       setHasChanges(false)
+      toast.success(t('settings.toasts.saveSuccess'), {
+        description: t('settings.toasts.saveSuccessDescription'),
+      })
     } catch (error) {
       console.error('Error updating lesson:', error)
-      alert(t('settings.errors.saveFailed'))
+      toast.error(t('settings.toasts.saveFailed'))
     } finally {
       setSaving(false)
     }

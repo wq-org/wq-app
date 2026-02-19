@@ -12,13 +12,14 @@ import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import LessonImageGallery from './LessonImageGallery'
+import { toast } from 'sonner'
 
 interface CourseSettingsProps {
   courseId: string
+  onUnsavedChange?: (dirty: boolean) => void
 }
 
-export default function CourseSettings({ courseId }: CourseSettingsProps) {
+export default function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProps) {
   const { t } = useTranslation('features.course')
   const navigate = useNavigate()
   const { profile } = useUser()
@@ -57,7 +58,8 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
   useEffect(() => {
     const changed = title !== originalTitle || description !== originalDescription
     setHasChanges(changed)
-  }, [title, description, originalTitle, originalDescription])
+    onUnsavedChange?.(changed)
+  }, [title, description, originalTitle, originalDescription, onUnsavedChange])
 
   const handleSaveChanges = async () => {
     if (!hasChanges) return
@@ -71,9 +73,13 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       setOriginalTitle(title)
       setOriginalDescription(description)
       setHasChanges(false)
+      onUnsavedChange?.(false)
+      toast.success(t('settings.toasts.saveSuccess'), {
+        description: t('settings.toasts.saveSuccessDescription'),
+      })
     } catch (error) {
       console.error('Error updating course:', error)
-      alert(t('settings.errors.saveFailed'))
+      toast.error(t('settings.toasts.saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -87,7 +93,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
       navigate(`/${role}/dashboard`)
     } catch (error) {
       console.error('Error deleting course:', error)
-      alert(t('settings.errors.deleteFailed'))
+      toast.error(t('settings.toasts.deleteFailed'))
       setDeleting(false)
     }
   }
@@ -101,7 +107,7 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
     } catch (error) {
       console.error('Error updating publish status:', error)
       setIsPublished(!checked)
-      alert(t('settings.errors.publishStatusFailed'))
+      toast.error(t('settings.toasts.publishStatusFailed'))
     }
   }
 
@@ -159,23 +165,6 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             className="resize-none"
             rows={4}
           />
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <Label>
-            {t('settings.lessonHeaderImagesTitle', { defaultValue: 'Lesson Header Images' })}
-          </Label>
-          <Text
-            as="p"
-            variant="body"
-            className="text-sm text-muted-foreground"
-          >
-            {t('settings.lessonHeaderImagesHint', {
-              defaultValue:
-                'Select a default image for lesson headers. Selection behavior will be connected in the next step.',
-            })}
-          </Text>
-          <LessonImageGallery />
         </div>
 
         <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">

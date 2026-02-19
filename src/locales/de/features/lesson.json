@@ -13,6 +13,11 @@
       "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
       "deleteFailed": "Lektion konnte nicht gelöscht werden. Bitte versuche es erneut."
     },
+    "toasts": {
+      "saveSuccess": "Änderungen gespeichert",
+      "saveSuccessDescription": "Deine Lektionsdetails wurden aktualisiert.",
+      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut."
+    },
     "deleteDialog": {
       "title": "Lektion löschen",
       "description": "Möchtest du \"{{title}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -39,5 +44,11 @@
       "preview": "Vorschau",
       "settings": "Einstellungen"
     }
+  },
+  "unsavedChanges": {
+    "title": "Ungespeicherte Änderungen",
+    "description": "Beim Wechsel der Registerkarte oder beim Verlassen der Seite gehen Änderungen möglicherweise verloren.",
+    "stay": "Bleiben",
+    "continueAnyway": "Trotzdem fortfahren"
   }
 }

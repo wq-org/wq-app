@@ -15,6 +15,7 @@ export const LessonProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const fetchLessonById = useCallback(async (lessonId: string): Promise<Lesson> => {
     setLoading(true)
     setError(null)
+    setLesson(null)
     try {
       const fetchedLesson = await getLessonByIdApi(lessonId)
       setLesson(fetchedLesson)

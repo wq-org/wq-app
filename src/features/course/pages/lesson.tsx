@@ -6,9 +6,11 @@ import LessonSettings from '@/features/course/components/LessonSettings'
 import LessonEditor from '@/features/course/components/LessonEditor'
 import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
 import { DEFAULT_LESSON_BACKGROUND } from '@/lib/constants'
+import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
 
 function parseContent(raw: unknown): Record<string, unknown> | undefined {
@@ -33,7 +35,11 @@ export default function Lesson() {
   const { lesson, fetchLessonById, createLesson, updateLesson } = useLesson()
   const [editorValue, setEditorValue] = useState<Record<string, unknown> | undefined>(undefined)
   const [, setIsInitialContentLoading] = useState(true)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [hasUnsavedSettingsChanges, setHasUnsavedSettingsChanges] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'preview' | 'settings'>('overview')
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingTabRef = useRef<'overview' | 'preview' | 'settings' | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -80,7 +86,8 @@ export default function Lesson() {
       try {
         const fetchedLesson = await fetchLessonById(lessonId)
         if (!cancelled) {
-          setEditorValue(parseContent(fetchedLesson.content))
+          setEditorValue(parseContent(fetchedLesson.content) ?? {})
+          setHasUnsavedChanges(false)
         }
       } catch (error) {
         if (!cancelled) {
@@ -102,23 +109,87 @@ export default function Lesson() {
   }, [lessonId, courseId, location.state, fetchLessonById, createLesson, navigate])
 
   useEffect(() => {
-    if (!lesson) return
-    setEditorValue(parseContent(lesson.content))
-  }, [lesson?.id, lesson?.content])
+    if (!lesson || lesson.id !== lessonId) return
+    setEditorValue(parseContent(lesson.content) ?? {})
+    setHasUnsavedChanges(false)
+  }, [lessonId, lesson?.id, lesson?.content])
 
   const handleEditorChange = useCallback(
     (newValue: Record<string, unknown>) => {
       setEditorValue(newValue)
+      setHasUnsavedChanges(true)
 
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current)
       }
       saveTimerRef.current = setTimeout(() => {
-        updateLesson({ content: JSON.stringify(newValue) }).catch(console.error)
+        updateLesson({ content: JSON.stringify(newValue) })
+          .then(() => setHasUnsavedChanges(false))
+          .catch(console.error)
       }, 1500)
     },
     [updateLesson],
   )
+
+  const handleTabChange = useCallback(
+    (requestedTab: 'overview' | 'preview' | 'settings') => {
+      if (requestedTab === activeTab) return
+      // Only show "Trotzdem fortfahren" when user changed settings (title/description) and tries to switch tab
+      if (hasUnsavedSettingsChanges) {
+        pendingTabRef.current = requestedTab
+        toast.custom(
+          (id) => (
+            <div className="flex flex-col gap-2 rounded-lg border bg-background p-4 shadow-md">
+              <Text as="p" variant="body" className="font-semibold">
+                {t('unsavedChanges.title')}
+              </Text>
+              <Text as="p" variant="small" className="text-muted-foreground">
+                {t('unsavedChanges.description')}
+              </Text>
+              <div className="mt-2 flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-foreground border-border"
+                  onClick={() => {
+                    pendingTabRef.current = null
+                    toast.dismiss(id)
+                  }}
+                >
+                  {t('unsavedChanges.stay')}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    const tab = pendingTabRef.current
+                    pendingTabRef.current = null
+                    toast.dismiss(id)
+                    if (tab) setActiveTab(tab)
+                  }}
+                >
+                  {t('unsavedChanges.continueAnyway')}
+                </Button>
+              </div>
+            </div>
+          ),
+          { duration: Infinity },
+        )
+        return
+      }
+      setActiveTab(requestedTab)
+    },
+    [activeTab, hasUnsavedSettingsChanges, t],
+  )
+
+  useEffect(() => {
+    const anyUnsaved = hasUnsavedChanges || hasUnsavedSettingsChanges
+    if (!anyUnsaved) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [hasUnsavedChanges, hasUnsavedSettingsChanges])
 
   useEffect(() => {
     return () => {
@@ -304,12 +375,15 @@ export default function Lesson() {
   return (
     <LessonLayout
       lessonId={lessonId}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
       overviewContent={overviewContent}
       previewContent={previewContent}
       settingsContent={
         <LessonSettings
           lessonId={lessonId}
           courseId={courseId}
+          onUnsavedChange={setHasUnsavedSettingsChanges}
         />
       }
     />

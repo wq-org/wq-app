@@ -15,6 +15,13 @@
       "saveFailed": "Failed to save changes. Please try again.",
       "deleteFailed": "Failed to delete course. Please try again.",
       "publishStatusFailed": "Failed to update publish status. Please try again."
+    },
+    "toasts": {
+      "saveSuccess": "Changes saved",
+      "saveSuccessDescription": "Your course details have been updated.",
+      "saveFailed": "Failed to save changes. Please try again.",
+      "deleteFailed": "Failed to delete course. Please try again.",
+      "publishStatusFailed": "Failed to update publish status. Please try again."
     }
   },
   "page": {
@@ -28,6 +35,12 @@
     "tabs": {
       "overview": "Overview",
       "settings": "Settings"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "description": "You might lose changes if you switch tab or leave the page.",
+      "stay": "Stay",
+      "continueAnyway": "Continue anyway"
     }
   },
   "lessonTable": {

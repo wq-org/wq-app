@@ -15,6 +15,13 @@
       "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
       "deleteFailed": "Kurs konnte nicht gelöscht werden. Bitte versuche es erneut.",
       "publishStatusFailed": "Veröffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
+    },
+    "toasts": {
+      "saveSuccess": "Änderungen gespeichert",
+      "saveSuccessDescription": "Deine Kursdetails wurden aktualisiert.",
+      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Kurs konnte nicht gelöscht werden. Bitte versuche es erneut.",
+      "publishStatusFailed": "Veröffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
     }
   },
   "page": {
@@ -28,6 +35,12 @@
     "tabs": {
       "overview": "Übersicht",
       "settings": "Einstellungen"
+    },
+    "unsavedChanges": {
+      "title": "Ungespeicherte Änderungen",
+      "description": "Beim Wechsel der Registerkarte oder beim Verlassen der Seite gehen Änderungen möglicherweise verloren.",
+      "stay": "Bleiben",
+      "continueAnyway": "Trotzdem fortfahren"
     }
   },
   "lessonTable": {

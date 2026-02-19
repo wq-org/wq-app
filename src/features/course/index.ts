@@ -19,7 +19,6 @@ export { default as LessonSettings } from './components/LessonSettings'
 export type { LessonSettingsProps } from './components/LessonSettings'
 export { default as LessonLayout } from './components/LessonLayout'
 export type { LessonLayoutProps } from './components/LessonLayout'
-export { default as LessonImageGallery } from './components/LessonImageGallery'
 
 // Pages
 export { default as CoursePage } from './pages/course'

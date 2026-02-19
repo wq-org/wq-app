@@ -13,6 +13,11 @@
       "saveFailed": "Failed to save changes. Please try again.",
       "deleteFailed": "Failed to delete lesson. Please try again."
     },
+    "toasts": {
+      "saveSuccess": "Changes saved",
+      "saveSuccessDescription": "Your lesson details have been updated.",
+      "saveFailed": "Failed to save changes. Please try again."
+    },
     "deleteDialog": {
       "title": "Delete Lesson",
       "description": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
@@ -39,5 +44,11 @@
       "preview": "Preview",
       "settings": "Settings"
     }
+  },
+  "unsavedChanges": {
+    "title": "Unsaved changes",
+    "description": "You might lose changes if you switch tab or leave the page.",
+    "stay": "Stay",
+    "continueAnyway": "Continue anyway"
   }
 }

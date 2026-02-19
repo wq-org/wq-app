@@ -3,12 +3,16 @@ import { Eye, LayoutDashboard, Settings } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 
+export type LessonTab = 'overview' | 'preview' | 'settings'
+
 export interface LessonLayoutProps {
   lessonId: string
   children?: React.ReactNode
   overviewContent?: React.ReactNode
   previewContent?: React.ReactNode
   settingsContent?: React.ReactNode
+  activeTab?: LessonTab
+  onTabChange?: (tab: LessonTab) => void
 }
 
 export default function LessonLayout({
@@ -16,9 +20,14 @@ export default function LessonLayout({
   overviewContent,
   previewContent,
   settingsContent,
+  activeTab: controlledActiveTab,
+  onTabChange,
 }: LessonLayoutProps) {
   const { t } = useTranslation('features.lesson')
-  const [activeTab, setActiveTab] = useState<'overview' | 'preview' | 'settings'>('overview')
+  const isControlled = controlledActiveTab !== undefined && onTabChange !== undefined
+  const [internalTab, setInternalTab] = useState<LessonTab>('overview')
+  const activeTab = isControlled ? controlledActiveTab : internalTab
+  const setActiveTab = isControlled ? onTabChange : setInternalTab
 
   return (
     <div className="flex flex-col gap-6 w-full animate-in fade-in-0 slide-in-from-bottom-4">
