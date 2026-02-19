@@ -84,16 +84,16 @@ export function CourseLessonTable({
   return (
     <div className="w-full flex flex-col items-center justify-center gap-6 animate-in fade-in-0 slide-in-from-bottom-4">
       <div className="w-full bg-white rounded-4xl shadow p-6 animate-in fade-in-0 slide-in-from-bottom-4">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left text-gray-400 font-light">
+              <TableHead className="text-left text-gray-400 font-light w-[30%] min-w-0">
                 {t('lessonTable.columns.title')}
               </TableHead>
-              <TableHead className="text-left text-gray-400 font-light">
+              <TableHead className="text-left text-gray-400 font-light w-[38%] min-w-0">
                 {t('lessonTable.columns.description')}
               </TableHead>
-              <TableHead className="text-center text-gray-400 font-light w-[100px]">
+              <TableHead className="text-center text-gray-400 font-light w-[120px] shrink-0">
                 {t('lessonTable.columns.action')}
               </TableHead>
             </TableRow>
@@ -104,16 +104,16 @@ export function CourseLessonTable({
                 key={lesson.id}
                 className="border-b last:border-0 hover:bg-gray-50 transition-colors animate-in fade-in-0 slide-in-from-bottom-2"
               >
-                <TableCell className="text-left">
-                  <span className="font-medium text-gray-900">{lesson.title}</span>
+                <TableCell className="text-left min-w-0 w-[30%]">
+                  <span className="font-medium text-gray-900 truncate block">{lesson.title}</span>
                 </TableCell>
-                <TableCell className="text-left">
-                  <span className="text-sm text-muted-foreground line-clamp-1">
+                <TableCell className="text-left min-w-0 w-[38%]">
+                  <span className="text-sm text-muted-foreground truncate block max-w-full">
                     {lesson.description || t('lessonTable.noDescription')}
                   </span>
                 </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
+                <TableCell className="text-center w-[120px] shrink-0 align-middle whitespace-nowrap">
+                  <div className="flex items-center justify-center gap-2 min-h-[2.25rem]">
                     <Button
                       variant="ghost"
                       size="sm"
