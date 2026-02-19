@@ -199,7 +199,8 @@ export default function LoginPage() {
                 {isLoading ? (
                   <Spinner
                     variant="white"
-                    size="sm"
+                    size="xs"
+                    speed={1750}
                   />
                 ) : (
                   t('login.submit')
@@ -212,13 +213,14 @@ export default function LoginPage() {
             <Field>
               <FieldDescription className="text-center">
                 {t('login.noAccount')}{' '}
-                <button
+                <Button
                   type="button"
+                  variant="link"
                   onClick={() => navigate('/auth/signup')}
-                  className="underline underline-offset-4 hover:text-primary transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   {t('login.signUpLink')}
-                </button>
+                </Button>
               </FieldDescription>
             </Field>
           </FieldGroup>

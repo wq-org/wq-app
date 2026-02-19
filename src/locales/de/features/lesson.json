@@ -30,6 +30,7 @@
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
   },
   "layout": {
+    "loading": "Wird geladen...",
     "tabs": {
       "overview": "Übersicht",
       "settings": "Einstellungen"

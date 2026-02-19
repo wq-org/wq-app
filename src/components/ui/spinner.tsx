@@ -10,6 +10,7 @@ const spinnerVariants = cva('origin-center overflow-visible will-change-transfor
       black: '[--uib-color:theme(colors.black)]',
     },
     size: {
+      xs: 'h-4 w-4 [--uib-size:16px] [--stroke-width:2px]',
       sm: 'h-6 w-6 [--uib-size:24px] [--stroke-width:2px]',
       md: 'h-10 w-10 [--uib-size:40px] [--stroke-width:3px]',
       lg: 'h-16 w-16 [--uib-size:64px] [--stroke-width:4px]',
@@ -42,8 +43,10 @@ export default function Spinner({
   speed = 2000,
   ...props
 }: SpinnerProps) {
-  const sizeValue = size === 'sm' ? 24 : size === 'lg' ? 64 : size === 'xl' ? 96 : 40
-  const strokeWidth = size === 'sm' ? 2 : size === 'lg' ? 4 : size === 'xl' ? 5 : 3
+  const sizeValue =
+    size === 'xs' ? 16 : size === 'sm' ? 24 : size === 'lg' ? 64 : size === 'xl' ? 96 : 40
+  const strokeWidth =
+    size === 'xs' ? 2 : size === 'sm' ? 2 : size === 'lg' ? 4 : size === 'xl' ? 5 : 3
   const radius = (sizeValue - strokeWidth) / 2
   const center = sizeValue / 2
   // Convert milliseconds to seconds for CSS animation

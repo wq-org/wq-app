@@ -205,13 +205,14 @@ export default function SignUpPage() {
             <Field>
               <FieldDescription className="text-center">
                 {t('signUp.hasAccount')}{' '}
-                <button
+                <Button
                   type="button"
+                  variant="link"
                   onClick={() => navigate('/auth/login')}
-                  className="underline underline-offset-4 hover:text-primary transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   {t('signUp.loginLink')}
-                </button>
+                </Button>
               </FieldDescription>
             </Field>
           </FieldGroup>

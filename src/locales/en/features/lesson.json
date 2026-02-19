@@ -30,6 +30,7 @@
     "descriptionPlaceholder": "Lesson description (max 120 characters)"
   },
   "layout": {
+    "loading": "Loading...",
     "tabs": {
       "overview": "Overview",
       "settings": "Settings"
