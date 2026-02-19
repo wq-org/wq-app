@@ -2,7 +2,7 @@ import {
   Home,
   Search as SearchIcon,
   Plus,
-  // Settings as SettingsIcon,
+  Settings as SettingsIcon,
   SplinePointer,
   Upload,
   Hand,
@@ -144,23 +144,17 @@ export const getBarGroups = (role: Roles): CommandBarGroup[] => {
         },
       ],
     },
-    // {
-    //   id: 'user',
-    //   items: [
-    //     {
-    //       id: 'feedback',
-    //       labelKey: 'actions.feedback',
-    //       icon: UserStar,
-    //       actionId: 'feedback',
-    //     },
-    //     {
-    //       id: 'settings',
-    //       labelKey: 'actions.settings',
-    //       icon: SettingsIcon,
-    //       to: `${rolePrefix}/settings`,
-    //     },
-    //   ],
-    // },
+    {
+      id: 'user',
+      items: [
+        {
+          id: 'settings',
+          labelKey: 'actions.settings',
+          icon: SettingsIcon,
+          to: role === 'student' ? `${studentPrefix}/settings` : `${teacherPrefix}/settings`,
+        },
+      ],
+    },
     {
       id: 'game-studio',
       items: [

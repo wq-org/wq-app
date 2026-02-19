@@ -23,7 +23,10 @@
   },
   "page": {
     "fallbackTitle": "Worum geht es auf deiner Seite?",
-    "editorPlaceholder": "Beginne zu schreiben..."
+    "editorPlaceholder": "Beginne zu schreiben...",
+    "headingsNavLabel": "Inhalte",
+    "previewTitle": "Vorschau",
+    "previewHint": "Schreibgeschützte Vorschau der Lektionsinhalte."
   },
   "create": {
     "titlePlaceholder": "Neue Lektion hinzufügen",

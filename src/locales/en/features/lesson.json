@@ -23,7 +23,10 @@
   },
   "page": {
     "fallbackTitle": "What's your Page about?",
-    "editorPlaceholder": "Start writing..."
+    "editorPlaceholder": "Start writing...",
+    "headingsNavLabel": "On this page",
+    "previewTitle": "Preview",
+    "previewHint": "Read-only preview of the lesson content."
   },
   "create": {
     "titlePlaceholder": "New lesson",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { LayoutDashboard, Settings, X } from 'lucide-react'
+import { ChevronsLeftRight, LayoutDashboard, Settings, X } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import SelectTabs from '@/components/shared/tabs/SelectTabs'
 import {
@@ -21,6 +21,7 @@ import type { FileItem } from '../types/files.types'
 import { getFileBlobUrl, deleteFile, renameFile } from '../api/filesApi'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { FailedToLoad } from '@/components'
@@ -36,6 +37,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
   const { getUserId, getRole } = useUser()
   const { t } = useTranslation('features.files')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
+  const [expanded, setExpanded] = useState(false)
   const [filename, setFilename] = useState(file.filename)
   const [deleteInProgress, setDeleteInProgress] = useState(false)
   const [fileUrl, setFileUrl] = useState<string | null>(null)
@@ -275,18 +277,33 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
         open={open}
         onOpenChange={onOpenChange}
       >
-        <DrawerContent className="h-screen w-[60vw]! max-w-2xl! sm:max-w-2xl! data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:slide-in-from-right-52 data-[state=closed]:slide-out-to-right-52">
+        <DrawerContent
+          className={cn(
+            'h-screen data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:slide-in-from-right-52 data-[state=closed]:slide-out-to-right-52 transition-[width] duration-200',
+            expanded ? 'w-[100vw]! max-w-[100vw]!' : 'w-[60vw]! max-w-2xl! sm:max-w-2xl!',
+          )}
+        >
           <div className="flex flex-col h-full w-full">
             <DrawerHeader className="shrink-0">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <DrawerTitle>{t('drawer.title')}</DrawerTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onOpenChange(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setExpanded((e) => !e)}
+                    aria-label={expanded ? t('drawer.collapse') : t('drawer.expand')}
+                  >
+                    <ChevronsLeftRight className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <DrawerDescription className="sr-only">{t('drawer.description')}</DrawerDescription>
             </DrawerHeader>
@@ -294,6 +311,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
             <div className="flex flex-col flex-1 overflow-hidden">
               <div className="border-b px-6 pt-4 shrink-0">
                 <SelectTabs
+                  variant="compact"
                   tabs={[
                     { id: 'overview', icon: LayoutDashboard, title: t('drawer.tabs.overview') },
                     { id: 'settings', icon: Settings, title: t('drawer.tabs.settings') },

@@ -13,6 +13,8 @@
   "drawer": {
     "title": "Dateidetails",
     "description": "Dateidetails mit Übersicht und Einstellungen anzeigen und verwalten",
+    "expand": "Auf volle Breite erweitern",
+    "collapse": "Einklappen",
     "tabs": {
       "overview": "Übersicht",
       "settings": "Einstellungen"

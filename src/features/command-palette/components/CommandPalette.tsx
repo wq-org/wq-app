@@ -124,10 +124,7 @@ export default function CommandPalette({
     : (getGroupById(commandBarContext as Roles, commandBarContext as Roles) ?? commandBarGroup[0])
   const defaultUserCommands = getGroupById('user', effectiveRole)
   const userItems = defaultUserCommands?.items ?? []
-  const displayedUserItems =
-    isCommandBarView(commandBarContext) && commandBarContext === 'game-studio'
-      ? userItems.filter((item) => item.id !== 'settings')
-      : userItems
+  const displayedUserItems = userItems
   // Chat symbol temporarily hidden (feature coming soon)
   const roleBasedUserCommands = (primaryGroup?.items ?? []).filter((item) => item.id !== 'chat')
 

@@ -4,8 +4,10 @@ import { useLesson } from '@/contexts/lesson'
 import LessonLayout from '@/features/course/components/LessonLayout'
 import LessonSettings from '@/features/course/components/LessonSettings'
 import LessonEditor from '@/features/course/components/LessonEditor'
+import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
 import { DEFAULT_LESSON_BACKGROUND } from '@/lib/constants'
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 
@@ -28,9 +30,9 @@ export default function Lesson() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
-  const { lesson, loading, fetchLessonById, createLesson, updateLesson } = useLesson()
+  const { lesson, fetchLessonById, createLesson, updateLesson } = useLesson()
   const [editorValue, setEditorValue] = useState<Record<string, unknown> | undefined>(undefined)
-  const [isInitialContentLoading, setIsInitialContentLoading] = useState(true)
+  const [, setIsInitialContentLoading] = useState(true)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -137,43 +139,49 @@ export default function Lesson() {
       defaultValue: 'Write a short summary to introduce this lesson.',
     })
 
+  const lessonHeroBanner = (
+    <div className="relative overflow-hidden rounded-2xl border min-h-[260px]">
+      <img
+        src={DEFAULT_LESSON_BACKGROUND}
+        alt={lessonTitle}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/45" />
+      <div className="relative z-10 flex min-h-[260px] items-center justify-center px-6 py-10">
+        <div className="max-w-3xl text-center text-white">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-white text-4xl md:text-5xl font-semibold tracking-tight"
+          >
+            {lessonTitle}
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="mt-4 text-white/90 text-base md:text-lg leading-7"
+          >
+            {lessonDescription}
+          </Text>
+        </div>
+      </div>
+    </div>
+  )
+
   const overviewContent = (
     <div className="relative flex flex-col gap-6">
-      <section className="relative overflow-hidden rounded-2xl border min-h-[260px] animate-in fade-in-0 slide-in-from-bottom-4">
-        <img
-          src={DEFAULT_LESSON_BACKGROUND}
-          alt={lessonTitle}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/45" />
-        <div className="relative z-10 flex min-h-[260px] items-center justify-center px-6 py-10">
-          <div className="max-w-3xl text-center text-white">
-            <Text
-              as="h1"
-              variant="h1"
-              className="text-white text-4xl md:text-5xl font-semibold tracking-tight"
-            >
-              {lessonTitle}
-            </Text>
-            <Text
-              as="p"
-              variant="body"
-              className="mt-4 text-white/90 text-base md:text-lg leading-7"
-            >
-              {lessonDescription}
-            </Text>
-          </div>
-        </div>
-      </section>
+      <div className="animate-in fade-in-0 slide-in-from-bottom-4">{lessonHeroBanner}</div>
 
-      <LessonEditor
-        className="w-full border rounded-2xl flex-1 animate-in fade-in-0 slide-in-from-bottom-4 bg-white"
-        value={editorValue}
-        onChange={handleEditorChange}
-        placeholder={t('page.editorPlaceholder')}
-      />
-      {isInitialContentLoading && loading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
+      {editorValue !== undefined ? (
+        <LessonEditor
+          key={`lesson-${lessonId}`}
+          className="w-full border rounded-2xl flex-1 animate-in fade-in-0 slide-in-from-bottom-4 bg-white"
+          value={editorValue}
+          onChange={handleEditorChange}
+          placeholder={t('page.editorPlaceholder')}
+        />
+      ) : (
+        <div className="flex min-h-[280px] w-full items-center justify-center rounded-2xl border bg-muted/30">
           <div className="flex flex-col items-center gap-2">
             <Spinner
               variant="gray"
@@ -183,9 +191,9 @@ export default function Lesson() {
             <Text
               as="p"
               variant="body"
-              className="text-sm text-gray-500"
+              className="text-sm text-muted-foreground"
             >
-              {t('editorCanvas.loading', { defaultValue: t('layout.loading') })}
+              {t('layout.loading')}
             </Text>
           </div>
         </div>
@@ -193,9 +201,57 @@ export default function Lesson() {
     </div>
   )
 
+  const previewHeadings = getHeadingsFromLessonValue(editorValue ?? undefined)
+
+  const scrollToHeading = (heading: { blockId: string; elementId?: string }) => {
+    const el =
+      (heading.elementId ? document.getElementById(heading.elementId) : null) ??
+      document.querySelector(`[data-block-id="${heading.blockId}"]`) ??
+      document.getElementById(heading.blockId)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   const previewContent = (
-    <div className="relative flex flex-col gap-6">
-      <section className="rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4">
+    <div className={cn('relative', previewHeadings.length > 0 && 'flex gap-4')}>
+      {previewHeadings.length > 0 && (
+        <aside
+          className="sticky top-24 z-30 w-52 shrink-0 self-start rounded-2xl border bg-card/50 px-4 py-3 backdrop-blur"
+          role="navigation"
+          aria-label={t('page.headingsNavLabel', { defaultValue: 'On this page' })}
+        >
+          <Text
+            as="p"
+            variant="small"
+            className="mb-2 font-semibold text-muted-foreground"
+          >
+            {t('page.headingsNavLabel', { defaultValue: 'On this page' })}
+          </Text>
+          <nav className="flex flex-col gap-0.5">
+            {previewHeadings.map((h) => (
+              <button
+                key={h.blockId}
+                type="button"
+                onClick={() => scrollToHeading(h)}
+                className={cn(
+                  'text-left text-sm text-foreground hover:text-primary hover:underline',
+                  h.level === 1 && 'font-semibold',
+                  h.level === 2 && 'pl-2 font-medium',
+                  h.level === 3 && 'pl-4',
+                  h.level === 4 && 'pl-6 text-muted-foreground',
+                )}
+              >
+                {h.text}
+              </button>
+            ))}
+          </nav>
+        </aside>
+      )}
+
+      <section
+        className={cn(
+          'min-w-0 flex-1 rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4',
+        )}
+      >
         <Text
           as="h2"
           variant="h2"
@@ -213,32 +269,35 @@ export default function Lesson() {
           })}
         </Text>
 
-        <LessonEditor
-          className="mt-4 rounded-xl border bg-background"
-          value={editorValue}
-          readOnly
-          placeholder={t('page.editorPlaceholder')}
-        />
-      </section>
+        <div className="mt-4 animate-in fade-in-0 slide-in-from-bottom-4">{lessonHeroBanner}</div>
 
-      {isInitialContentLoading && loading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
-          <div className="flex flex-col items-center gap-2">
-            <Spinner
-              variant="gray"
-              size="md"
-              speed={1750}
-            />
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-gray-500"
-            >
-              {t('editorCanvas.loading', { defaultValue: t('layout.loading') })}
-            </Text>
+        {editorValue !== undefined ? (
+          <LessonEditor
+            key={`lesson-${lessonId}-preview`}
+            className="mt-4 rounded-xl border bg-background"
+            value={editorValue}
+            readOnly
+            placeholder={t('page.editorPlaceholder')}
+          />
+        ) : (
+          <div className="mt-4 flex min-h-[200px] items-center justify-center rounded-xl border bg-muted/30">
+            <div className="flex flex-col items-center gap-2">
+              <Spinner
+                variant="gray"
+                size="md"
+                speed={1750}
+              />
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                {t('layout.loading')}
+              </Text>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </section>
     </div>
   )
 

@@ -13,6 +13,8 @@
   "drawer": {
     "title": "File Details",
     "description": "View and manage file details including overview and settings",
+    "expand": "Expand to full width",
+    "collapse": "Collapse",
     "tabs": {
       "overview": "Overview",
       "settings": "Settings"
