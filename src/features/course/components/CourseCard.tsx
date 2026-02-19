@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight } from 'lucide-react'
-import { BACKGROUND_SCHOOL } from '@/lib/constants'
+import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import type { CourseCardProps } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
@@ -20,7 +20,7 @@ export default function CourseCard({
   onView = () => {},
 }: CourseCardProps) {
   const { t } = useTranslation('features.course')
-  const courseImage = image || BACKGROUND_SCHOOL
+  const courseImage = image || DEFAULT_COURSE_BACKGROUND
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">

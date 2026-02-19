@@ -33,6 +33,7 @@
     "loading": "Wird geladen...",
     "tabs": {
       "overview": "Übersicht",
+      "preview": "Vorschau",
       "settings": "Einstellungen"
     }
   }

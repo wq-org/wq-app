@@ -3,16 +3,18 @@ export const AVATAR_PLACEHOLDER_SRC = 'https://github.com/shadcn.png'
 // Background Images
 export const BACKGROUND_HUMAN =
   'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/background_human.png'
-export const BACKGROUND_SCHOOL =
+export const DEFAULT_COURSE_BACKGROUND =
   'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/background_img.png'
+
+export const DEFAULT_LESSON_BACKGROUND =
+  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/human_watching_phone.JPG'
 
 // Institution Constants
 export const DEFAULT_INSTITUTION_IMAGE = 'https://github.com/unovue.png'
 
 // Game Studio Constants
 export const MAX_END_NODE_INCOMING_CONNECTIONS = 10
-export const GAME_CARD_BACKGROUND_IMAGE =
-  'https://images.unsplash.com/photo-1706720097513-9e73025ac02a?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+
 export const QUESTION_SEPARATOR = '//'
 
 export const SKELETON_NODE_GRAPH_IMAGE =

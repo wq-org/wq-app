@@ -109,7 +109,7 @@ export default function LessonSettings({ lessonId, courseId }: LessonSettingsPro
 
   return (
     <>
-      <div className="flex flex-col gap-6 pb-12">
+      <div className="flex flex-col gap-6 pb-12 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex flex-col gap-2">
           <Text
             as="h2"

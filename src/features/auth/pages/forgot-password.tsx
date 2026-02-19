@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/text'
 import { requestPasswordReset } from '../api/authApi'
 import { toast } from 'sonner'
 import AuthCardLayout from '../components/AuthCardLayout'
-import { BACKGROUND_SCHOOL } from '@/lib/constants'
+import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
   return (
     <AuthCardLayout
       backTo="/auth/login"
-      backgroundImage={BACKGROUND_SCHOOL}
+      backgroundImage={DEFAULT_COURSE_BACKGROUND}
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-1 text-center">

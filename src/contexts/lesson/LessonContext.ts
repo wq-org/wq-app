@@ -9,7 +9,7 @@ export interface LessonContextValue {
   loading: boolean
   error: string | null
   setLesson: (lesson: Lesson | null) => void
-  fetchLessonById: (lessonId: string) => Promise<void>
+  fetchLessonById: (lessonId: string) => Promise<Lesson>
   createLesson: (data: CreateLessonData) => Promise<Lesson>
   updateLesson: (
     updates: Partial<{ title: string; content: string; description: string }>,
@@ -21,7 +21,7 @@ export const LessonContext = createContext<LessonContextValue>({
   loading: false,
   error: null,
   setLesson: () => {},
-  fetchLessonById: async () => {},
+  fetchLessonById: async () => ({}) as Lesson,
   createLesson: async () => ({}) as Lesson,
   updateLesson: async () => {},
 })

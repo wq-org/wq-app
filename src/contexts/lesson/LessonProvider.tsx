@@ -12,16 +12,18 @@ export const LessonProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchLessonById = useCallback(async (lessonId: string) => {
+  const fetchLessonById = useCallback(async (lessonId: string): Promise<Lesson> => {
     setLoading(true)
     setError(null)
     try {
       const fetchedLesson = await getLessonByIdApi(lessonId)
       setLesson(fetchedLesson)
+      return fetchedLesson
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch lesson'
       setError(errorMessage)
       console.error('Error fetching lesson:', err)
+      throw err
     } finally {
       setLoading(false)
     }

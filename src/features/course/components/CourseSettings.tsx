@@ -12,6 +12,7 @@ import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import LessonImageGallery from './LessonImageGallery'
 
 interface CourseSettingsProps {
   courseId: string
@@ -158,6 +159,23 @@ export default function CourseSettings({ courseId }: CourseSettingsProps) {
             className="resize-none"
             rows={4}
           />
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <Label>
+            {t('settings.lessonHeaderImagesTitle', { defaultValue: 'Lesson Header Images' })}
+          </Label>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground"
+          >
+            {t('settings.lessonHeaderImagesHint', {
+              defaultValue:
+                'Select a default image for lesson headers. Selection behavior will be connected in the next step.',
+            })}
+          </Text>
+          <LessonImageGallery />
         </div>
 
         <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">

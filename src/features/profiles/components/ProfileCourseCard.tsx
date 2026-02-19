@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
-import { BACKGROUND_SCHOOL } from '@/lib/constants'
+import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import type { CourseCardProps } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
 
@@ -20,7 +20,7 @@ export function ProfileCourseCard({
   teacherInitials = 'U',
   onJoin,
 }: ProfileCourseCardProps) {
-  const courseImage = image || BACKGROUND_SCHOOL
+  const courseImage = image || DEFAULT_COURSE_BACKGROUND
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">

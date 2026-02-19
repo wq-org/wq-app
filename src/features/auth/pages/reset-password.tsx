@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import AuthCardLayout from '../components/AuthCardLayout'
 import PasswordResetSuccessDrawer from '../components/PasswordResetSuccessDrawer'
-import { BACKGROUND_SCHOOL } from '@/lib/constants'
+import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 
 type PageState = 'loading' | 'invalid' | 'form' | 'success'
@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
     return (
       <AuthCardLayout
         backTo="/auth/login"
-        backgroundImage={BACKGROUND_SCHOOL}
+        backgroundImage={DEFAULT_COURSE_BACKGROUND}
       >
         <div className="flex flex-col items-center justify-center gap-4 py-12">
           <Spinner
@@ -113,7 +113,7 @@ export default function ResetPasswordPage() {
     return (
       <AuthCardLayout
         backTo="/auth/login"
-        backgroundImage={BACKGROUND_SCHOOL}
+        backgroundImage={DEFAULT_COURSE_BACKGROUND}
       >
         <div className="flex flex-col items-center gap-4 text-center">
           <Text
@@ -146,7 +146,7 @@ export default function ResetPasswordPage() {
     <>
       <AuthCardLayout
         backTo="/auth/login"
-        backgroundImage={BACKGROUND_SCHOOL}
+        backgroundImage={DEFAULT_COURSE_BACKGROUND}
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-1 text-center">

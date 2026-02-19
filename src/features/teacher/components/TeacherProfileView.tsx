@@ -5,7 +5,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { getTeacherCourses } from '@/features/course/api/coursesApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import { AVATAR_PLACEHOLDER_SRC, BACKGROUND_SCHOOL } from '@/lib/constants'
+import { AVATAR_PLACEHOLDER_SRC, DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useFollow } from '@/features/profiles/hooks/useFollow'
@@ -31,7 +31,7 @@ function ProfileCourseCard({
   teacherInitials = 'U',
   onJoin,
 }: CourseCardProps & { onJoin?: (id: string) => void }) {
-  const courseImage = image || BACKGROUND_SCHOOL
+  const courseImage = image || DEFAULT_COURSE_BACKGROUND
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
