@@ -51,7 +51,9 @@ function isBlockLike(obj: unknown): obj is { id: string; type: string; value?: u
   )
 }
 
-function* iterateBlocks(value: Record<string, unknown>): Generator<{ id: string; type: string; value: unknown }> {
+function* iterateBlocks(
+  value: Record<string, unknown>,
+): Generator<{ id: string; type: string; value: unknown }> {
   const blocks = value.blocks
   if (Array.isArray(blocks)) {
     for (const b of blocks) {
