@@ -32,10 +32,18 @@ export default function CourseLayout() {
         toast.custom(
           (id) => (
             <div className="flex flex-col gap-2 rounded-lg border bg-background p-4 shadow-md">
-              <Text as="p" variant="body" className="font-semibold">
+              <Text
+                as="p"
+                variant="body"
+                className="font-semibold"
+              >
                 {t('layout.unsavedChanges.title')}
               </Text>
-              <Text as="p" variant="small" className="text-muted-foreground">
+              <Text
+                as="p"
+                variant="small"
+                className="text-muted-foreground"
+              >
                 {t('layout.unsavedChanges.description')}
               </Text>
               <div className="mt-2 flex justify-end gap-2">
