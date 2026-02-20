@@ -107,9 +107,9 @@ export default function SettingsLayout({
         <PageTitle />
       </AppNavigation>
       <div className="w-screen h-screen">
-        <section>
+        <section className="animate-in fade-in-0 slide-in-from-bottom-4">
           <Container className="flex flex-col items-start w-full gap-3">
-            <div className="relative">
+            <div className="relative animate-in fade-in-0 zoom-in-95">
               <AvatarDrawer
                 avatarSrc={avatarSrc}
                 displayNameInitial={displayNameInitial}
@@ -120,7 +120,7 @@ export default function SettingsLayout({
             </div>
             <form
               onSubmit={handleSave}
-              className="flex flex-col gap-4 w-[400px]"
+              className="flex flex-col gap-4 w-[400px] animate-in fade-in-0 slide-in-from-bottom-3"
             >
               <div className="w-full flex flex-col gap-3">
                 <Label htmlFor="name">{t('profile.fields.name.label')}</Label>

@@ -66,6 +66,7 @@ export default function FileDropzone({
                 relative flex flex-col items-center justify-center
                 min-h-[200px] rounded-2xl border-2 border-dashed
                 transition-colors cursor-pointer py-8
+                animate-in fade-in-0 slide-in-from-bottom-2
                 ${
                   disabled
                     ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
@@ -92,7 +93,7 @@ export default function FileDropzone({
       <div className="flex flex-col items-center gap-4 pointer-events-none">
         <Button
           variant="outline"
-          className="flex items-center gap-2 bg-white pointer-events-none"
+          className="flex items-center gap-2 bg-white pointer-events-none animate-in fade-in-0 zoom-in-95"
           disabled={disabled}
         >
           <Upload className="w-5 h-5" />

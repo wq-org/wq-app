@@ -7,7 +7,7 @@ Write a Good Git commit message should contain:
 - **Context**: Explain why the change was made and any relevant background.
 - **References**: Include references to issues or tasks (e.g., "Fixes #123") if applicable.
 - **Imperative Mood**: Use the imperative mood (e.g., "Add feature" instead of "Added feature").
-- **Detailed Mode**: write a detialed bullet point change list of what was changed and why.
+- **Detailed Mode**: write a detailed bullet point change list of what was changed and why.
 
 
 ### Example Format:

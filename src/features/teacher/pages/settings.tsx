@@ -159,7 +159,7 @@ export default function Settings() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen animate-in fade-in-0">
         <Spinner
           variant="gray"
           size="xl"

@@ -134,7 +134,6 @@ export default function Lesson() {
   const handleTabChange = useCallback(
     (requestedTab: 'overview' | 'preview' | 'settings') => {
       if (requestedTab === activeTab) return
-      // Only show "Trotzdem fortfahren" when user changed settings (title/description) and tries to switch tab
       if (hasUnsavedSettingsChanges) {
         pendingTabRef.current = requestedTab
         toast.custom(

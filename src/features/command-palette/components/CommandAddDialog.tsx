@@ -213,8 +213,8 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
   // Show selection list if no type is selected
   if (!selectedType) {
     return (
-      <Card className="max-w-md mx-auto border-0 shadow-none animate-in fade-in-0 slide-in-from-bottom-3">
-        <CardHeader className="items-center p-0">
+      <Card className="max-w-md mx-auto border-0 shadow-none animate-in fade-in-0 zoom-in-95 slide-in-from-left-2">
+        <CardHeader className="items-center p-0 animate-in fade-in-0 slide-in-from-top-1">
           <CardTitle className="text-xl text-gray-900">{t('addDialog.title')}</CardTitle>
           <Text
             as="p"
@@ -225,14 +225,14 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
           </Text>
         </CardHeader>
 
-        <CardContent className="flex flex-col gap-3 w-full px-0 mt-6">
+        <CardContent className="flex flex-col gap-3 w-full px-0 mt-6 animate-in fade-in-0 slide-in-from-bottom-2">
           {availableOptions.map((option) => {
             const Icon = option.icon
             return (
               <div
                 key={option.type}
                 onClick={() => handleOptionSelect(option.type)}
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-left w-full animate-in fade-in-0 slide-in-from-bottom-2 active:animate-in active:zoom-in-95"
+                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-colors text-left w-full animate-in fade-in-0 slide-in-from-bottom-2 active:animate-in active:zoom-in-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gray-100">
@@ -254,15 +254,15 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
 
   // Show form when a type is selected
   return (
-    <Card className="max-w-md mx-auto border-0 shadow-none animate-in fade-in-0 slide-in-from-bottom-3">
+    <Card className="max-w-md mx-auto border-0 shadow-none animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
       <form
-        className="flex flex-col gap-5"
+        className="flex flex-col gap-5 animate-in fade-in-0 slide-in-from-bottom-2"
         onSubmit={async (e) => {
           e.preventDefault()
           await handleCreate()
         }}
       >
-        <CardHeader className="items-center p-0">
+        <CardHeader className="items-center p-0 animate-in fade-in-0 slide-in-from-top-1">
           <div className="flex items-center gap-3 mb-2">
             <Button
               type="button"
@@ -286,7 +286,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
           </Text>
         </CardHeader>
 
-        <CardContent className="flex flex-col gap-8 w-full px-0">
+        <CardContent className="flex flex-col gap-8 w-full px-0 animate-in fade-in-0 slide-in-from-bottom-2">
           <div className="flex flex-col gap-2">
             <Label
               htmlFor={`${selectedType}-title`}
@@ -327,7 +327,7 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-3 w-full px-0">
+        <CardFooter className="flex flex-col gap-3 w-full px-0 animate-in fade-in-0 slide-in-from-bottom-2">
           <Button
             variant="outline"
             type="button"

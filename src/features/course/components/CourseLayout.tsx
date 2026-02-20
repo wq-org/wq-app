@@ -26,7 +26,6 @@ export default function CourseLayout() {
   const handleTabChange = useCallback(
     (requestedTab: string) => {
       if (requestedTab === activeTab) return
-      // Only show "Trotzdem fortfahren" when user changed settings (title/description) and tries to switch tab
       if (hasUnsavedChanges) {
         pendingTabRef.current = requestedTab
         toast.custom(
