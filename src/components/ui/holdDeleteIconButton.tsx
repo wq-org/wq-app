@@ -58,7 +58,7 @@ function HoldToDeleteIconButton({
   ...props
 }: HoldToDeleteIconButtonProps) {
   const { ring: ringSize, stroke: strokeWidth } = RING_SIZES[size]
-  const { button: buttonSizeClass, icon: iconSizeClass } = RING_SIZES[size]
+  const { icon: iconSizeClass } = RING_SIZES[size]
   const [isHolding, setIsHolding] = React.useState(false)
   const [progress, setProgress] = React.useState(0)
   const [completed, setCompleted] = React.useState(false)
@@ -218,18 +218,19 @@ function HoldToDeleteIconButton({
             />
           </svg>
 
-          {/* Icon button */}
+          {/* Icon button: same size as ring so X is centered in the circle */}
           <Button
             variant="ghost"
             size="icon"
+            style={{ width: ringSize, height: ringSize }}
             className={cn(
-              'relative z-10 rounded-full',
-              buttonSizeClass,
+              'relative z-10 rounded-full shrink-0',
               'text-muted-foreground',
               'hover:bg-transparent hover:text-destructive',
               isHolding && 'text-destructive scale-90',
               completed && 'text-destructive scale-75',
               'transition-all duration-200',
+              'flex items-center justify-center',
               className,
             )}
             onMouseDown={startHold}
@@ -243,7 +244,7 @@ function HoldToDeleteIconButton({
             <X
               className={cn(
                 iconSizeClass,
-                'transition-transform duration-200',
+                'shrink-0 transition-transform duration-200',
                 isHolding && 'rotate-90',
                 completed && 'rotate-180',
               )}
