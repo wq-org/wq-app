@@ -289,7 +289,9 @@ export default function SkeletonNodeGraph({
             x="450"
             y="244"
             fill="#6b7280"
-            style={{ font: '14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }}
+            style={{
+              font: '14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial',
+            }}
           >
             if / else
           </text>
