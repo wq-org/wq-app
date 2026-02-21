@@ -16,9 +16,6 @@ export const DEFAULT_INSTITUTION_IMAGE = 'https://github.com/unovue.png'
 export const MAX_END_NODE_INCOMING_CONNECTIONS = 10
 
 export const QUESTION_SEPARATOR = '//'
-
-export const SKELETON_NODE_GRAPH_IMAGE =
-  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/skeleton-node-graph.png'
 /** Max voting options per question in Paragraph Line Select game. */
 export const MAX_PARAGRAPH_VOTING_OPTIONS = 4
 

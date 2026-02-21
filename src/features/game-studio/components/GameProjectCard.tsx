@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ArrowRight } from 'lucide-react'
-import { SKELETON_NODE_GRAPH_IMAGE } from '@/lib/constants'
 import { Text } from '@/components/ui/text'
 import type { GameProjectCardProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
+import SkeletonNodeGraph from './SkeletonNodeGraph'
 
 export function GameProjectCard({
   title,
@@ -16,18 +16,13 @@ export function GameProjectCard({
   onOpen,
 }: GameProjectCardProps) {
   const { t } = useTranslation('features.gameStudio')
-  const cardImage = SKELETON_NODE_GRAPH_IMAGE
   const resolvedTitle = title || t('gameProjectCard.untitledProject')
   const resolvedDescription = description || t('gameProjectCard.noDescription')
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
-        <img
-          src={cardImage}
-          alt={t('gameProjectCard.imageAlt')}
-          className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
-        />
+        <SkeletonNodeGraph className="rounded-t-3xl rounded-b-none w-full h-48 overflow-hidden" />
         <Badge
           variant={status === 'published' ? 'default' : 'secondary'}
           className="absolute top-3 left-3"
