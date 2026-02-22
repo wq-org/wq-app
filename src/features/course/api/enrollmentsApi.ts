@@ -81,32 +81,8 @@ export async function cancelCourseJoin(courseId: string): Promise<CourseEnrollme
 }
 
 export async function getMyCourseRequests(): Promise<CourseJoinRequestRow[]> {
-  const userId = await getCurrentUserId()
-
-  const { data, error } = await supabase
-    .from('course_enrollments')
-    .select(
-      `
-      course_id,
-      student_id,
-      status,
-      requested_at,
-      responded_at,
-      responded_by,
-      note,
-      enrolled_at,
-      course:courses!course_enrollments_course_id_fkey(id, title, teacher_id)
-    `,
-    )
-    .eq('student_id', userId)
-    .order('requested_at', { ascending: false })
-
-  if (error) {
-    console.error('Error fetching my course requests:', error)
-    throw error
-  }
-
-  return (data || []) as unknown as CourseJoinRequestRow[]
+  // Request workflow is disabled in baseline schema; keep API for compatibility.
+  return []
 }
 
 export async function getMyAcceptedCourses(): Promise<EnrollmentCourse[]> {
@@ -116,7 +92,7 @@ export async function getMyAcceptedCourses(): Promise<EnrollmentCourse[]> {
     .from('course_enrollments')
     .select(
       `
-      status,
+      enrolled_at,
       course:courses!course_enrollments_course_id_fkey(
         id,
         title,
@@ -131,8 +107,7 @@ export async function getMyAcceptedCourses(): Promise<EnrollmentCourse[]> {
     `,
     )
     .eq('student_id', userId)
-    .eq('status', 'accepted')
-    .order('requested_at', { ascending: false })
+    .order('enrolled_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching accepted courses:', error)
@@ -186,10 +161,9 @@ export async function getMyEnrollmentStatusMap(
 
   const { data, error } = await supabase
     .from('course_enrollments')
-    .select('course_id, status, requested_at')
+    .select('course_id')
     .eq('student_id', userId)
     .in('course_id', courseIds)
-    .order('requested_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching enrollment statuses:', error)
@@ -199,7 +173,7 @@ export async function getMyEnrollmentStatusMap(
   const statusMap: Record<string, EnrollmentStatus> = {}
   ;(data || []).forEach((row) => {
     if (!statusMap[row.course_id]) {
-      statusMap[row.course_id] = row.status as EnrollmentStatus
+      statusMap[row.course_id] = 'accepted'
     }
   })
 

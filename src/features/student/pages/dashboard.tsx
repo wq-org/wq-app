@@ -16,11 +16,7 @@ import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFil
 import { fetchNotesByUser } from '@/features/notes'
 import type { Note } from '@/features/notes'
 import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
-import {
-  getMyAcceptedCourses,
-  getMyCourseRequests,
-  type EnrollmentCourse,
-} from '@/features/course/api/enrollmentsApi'
+import { getMyAcceptedCourses, type EnrollmentCourse } from '@/features/course/api/enrollmentsApi'
 import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
 import type { CourseCardProps, EnrollmentStatus } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
@@ -48,7 +44,6 @@ function formatFileSize(bytes: number): string {
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<string>('courses')
   const [acceptedCourses, setAcceptedCourses] = useState<EnrollmentCourse[]>([])
-  const [courseRequests, setCourseRequests] = useState<{ status: EnrollmentStatus }[]>([])
   const [followedTeacherIds, setFollowedTeacherIds] = useState<string[]>([])
   const [coursesLoading, setCoursesLoading] = useState(false)
   const [games, setGames] = useState<GameCardProps[]>([])
@@ -71,22 +66,19 @@ export default function Dashboard() {
     async function loadCoursesTabData() {
       setCoursesLoading(true)
       try {
-        const [accepted, requests, follows] = await Promise.all([
+        const [accepted, follows] = await Promise.all([
           getMyAcceptedCourses(),
-          getMyCourseRequests(),
           getFollowedTeacherIds(),
         ])
 
         if (!cancelled) {
           setAcceptedCourses(accepted)
-          setCourseRequests(requests.map((request) => ({ status: request.status })))
           setFollowedTeacherIds(follows)
         }
       } catch (error) {
         console.error('Error loading student courses tab:', error)
         if (!cancelled) {
           setAcceptedCourses([])
-          setCourseRequests([])
           setFollowedTeacherIds([])
         }
       } finally {
@@ -255,23 +247,6 @@ export default function Dashboard() {
             />
           ) : followedTeacherIds.length === 0 ? (
             <EmptyFollowsView />
-          ) : courseRequests.some((request) => request.status === 'pending') ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Text
-                as="p"
-                variant="h3"
-                className="text-gray-900"
-              >
-                {t('dashboard.empty.pendingOnlyTitle')}
-              </Text>
-              <Text
-                as="p"
-                variant="body"
-                className="text-gray-500 mt-2"
-              >
-                {t('dashboard.empty.pendingOnlyDescription')}
-              </Text>
-            </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Text
