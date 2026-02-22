@@ -55,7 +55,7 @@ function formatFileSize(bytes: number): string {
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<string>('courses')
-  const { profile, loading, getUserId, getRole,getUserInstitutionId } = useUser()
+  const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { courses, loading: coursesLoading, fetchCourses, setSelectedCourse } = useCourse()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const navigate = useNavigate()
@@ -85,7 +85,7 @@ export default function Dashboard() {
 
     setFilesLoading(true)
     try {
-      const result = await fetchFilesByRole( userInstitutionId,  role, userId, {
+      const result = await fetchFilesByRole(userInstitutionId, role, userId, {
         limit: 100,
         sortBy: { column: 'created_at', order: 'desc' },
       })

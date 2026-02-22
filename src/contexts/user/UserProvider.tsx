@@ -92,8 +92,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null
   }
 
-  const getUserInstitutionId = (): string | null =>{
-        if (profile?.userInstitutionId) {
+  const getUserInstitutionId = (): string | null => {
+    if (profile?.userInstitutionId) {
       return profile.userInstitutionId as string
     }
     return null

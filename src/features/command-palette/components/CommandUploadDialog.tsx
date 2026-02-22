@@ -104,7 +104,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
       toast.error(t('upload.toasts.userIdMissing'))
       return
     }
-      if (!institutionId) {
+    if (!institutionId) {
       toast.error(t('upload.toasts.institutionIdIdMissing'))
       return
     }

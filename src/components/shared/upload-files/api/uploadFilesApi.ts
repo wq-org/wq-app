@@ -32,8 +32,8 @@ export async function uploadFile({
   role,
 }: FileUploadOptions): Promise<FileUploadResult> {
   console.log('current role :>>', role)
-  console.log('typeof role :>> ', typeof role);
-  console.log('institutionId :>> ', institutionId);
+  console.log('typeof role :>> ', typeof role)
+  console.log('institutionId :>> ', institutionId)
 
   try {
     // Validate inputs
@@ -156,7 +156,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i]
-      console.log('options :>> ', options);
+      console.log('options :>> ', options)
 
       // Update progress if callback provided
       if (option.onProgress) {
@@ -252,7 +252,7 @@ export async function uploadFilesWithMetadata(
       title: uploadedFile.title,
       role,
       onProgress: onProgress
-        ? (progress: number) => { 
+        ? (progress: number) => {
             // Calculate overall progress across all files
             const fileProgress = (index / files.length) * 100 + progress / files.length
             onProgress(Math.min(fileProgress, 100))
@@ -436,7 +436,6 @@ export async function fetchFilesByRole(
   userId: string,
   options?: FetchFilesOptions,
 ): Promise<FetchFilesResult> {
-
   try {
     // Validate inputs
     if (!institutionId || !institutionId.trim()) {
@@ -462,7 +461,6 @@ export async function fetchFilesByRole(
 
     // Construct storage path: {institution_id}/{role}/{user_id}/ (role singular for storage)
     const storagePath = `${institutionId}/${pathRole(role)}/${userId}/`
-
 
     // Fetch files from Supabase storage
     const { data, error } = await supabase.storage.from(BUCKET_NAME).list(storagePath, {

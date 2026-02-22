@@ -273,7 +273,7 @@ export async function getCompleteProfile(userId: string) {
     throw error
   }
 
-return response
+  return response
 }
 
 export async function updateProfile(

@@ -139,7 +139,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
     const role = getRole()
     if (userId && role) {
       // Normalize role to singular
-      console.log('role filesCard.tsx :>> ', role);
+      console.log('role filesCard.tsx :>> ', role)
       let normalizedRole = role.toLowerCase().trim()
       if (normalizedRole === 'teachers') normalizedRole = 'teacher'
       if (normalizedRole === 'students') normalizedRole = 'student'
@@ -239,7 +239,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
 
         // Upload new file with the target filename
         const uploadResult = await uploadFile({
-          institutionId: "",
+          institutionId: '',
           teacherId: pathInfo.userId,
           file: newFile,
           title: newFilename.split('.')[0],

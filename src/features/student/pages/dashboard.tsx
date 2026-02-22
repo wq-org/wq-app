@@ -127,7 +127,7 @@ export default function Dashboard() {
     if (!userId || !role || !userInstitutionId || loading) return
     setFilesLoading(true)
     try {
-      const result = await fetchFilesByRole(userInstitutionId , role, userId, {
+      const result = await fetchFilesByRole(userInstitutionId, role, userId, {
         limit: 100,
         sortBy: { column: 'created_at', order: 'desc' },
       })
