@@ -31,17 +31,17 @@ export default function NotificationPanel() {
   const [activeTab, setActiveTab] = useState<TabId>('all')
 
   const unreadCount = notifications.filter((n) => !n.isRead).length
-  const filtered = useMemo(
-    () => filterByTab(notifications, activeTab),
-    [notifications, activeTab],
-  )
+  const filtered = useMemo(() => filterByTab(notifications, activeTab), [notifications, activeTab])
   const usersCount = notifications.filter((n) => getAction(n) === 'follow').length
   const courseCount = notifications.filter((n) => getAction(n) === 'join_course').length
 
   const emptyMessage: Record<TabId, { title: string; description: string }> = {
     all: { title: t('panel.emptyAll.title'), description: t('panel.emptyAll.description') },
     users: { title: t('panel.emptyUsers.title'), description: t('panel.emptyUsers.description') },
-    course: { title: t('panel.emptyCourse.title'), description: t('panel.emptyCourse.description') },
+    course: {
+      title: t('panel.emptyCourse.title'),
+      description: t('panel.emptyCourse.description'),
+    },
   }
 
   const notificationTabs = useMemo(
@@ -59,7 +59,8 @@ export default function NotificationPanel() {
       {
         id: 'course',
         icon: GraduationCap,
-        title: courseCount > 0 ? `${t('panel.tabs.course')} ${courseCount}` : t('panel.tabs.course'),
+        title:
+          courseCount > 0 ? `${t('panel.tabs.course')} ${courseCount}` : t('panel.tabs.course'),
       },
     ],
     [t, unreadCount, usersCount, courseCount],
@@ -76,7 +77,11 @@ export default function NotificationPanel() {
         style={{ backgroundClip: 'padding-box' }}
       >
         <div className="flex items-center justify-between mb-6">
-          <Text as="h1" variant="h1" className="text-xl text-gray-900">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-xl text-gray-900"
+          >
             {t('panel.title')}
           </Text>
         </div>
@@ -96,10 +101,18 @@ export default function NotificationPanel() {
           <div className="animate-in fade-in-0 slide-in-from-bottom-3">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Text as="p" variant="body" className="text-gray-500 text-base">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-gray-500 text-base"
+                >
                   {emptyMessage[activeTab].title}
                 </Text>
-                <Text as="p" variant="body" className="text-gray-400 text-sm mt-1">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-gray-400 text-sm mt-1"
+                >
                   {emptyMessage[activeTab].description}
                 </Text>
               </div>

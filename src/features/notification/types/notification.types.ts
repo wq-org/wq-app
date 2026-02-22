@@ -1,4 +1,11 @@
-export type NotificationType = 'follow' | 'join' | 'mention' | 'request' | 'upload' | 'edit' | 'general'
+export type NotificationType =
+  | 'follow'
+  | 'join'
+  | 'mention'
+  | 'request'
+  | 'upload'
+  | 'edit'
+  | 'general'
 
 /** Drives UI: "wants to follow you" vs "wants to join course" and icon. */
 export type NotificationAction = 'follow' | 'join_course'
