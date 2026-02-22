@@ -35,18 +35,32 @@ export async function createCourse(
  * Get all courses for a teacher
  */
 export async function getTeacherCourses(teacherId: string): Promise<Course[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabase.rpc('get_teacher_profile_courses', {
+    target_teacher_id: teacherId,
+  })
+
+  if (!error) {
+    return (data || []) as Course[]
+  }
+
+  // Backward compatibility when the RPC migration is not applied yet.
+  if (error.code !== 'PGRST202') {
+    console.error('Error fetching teacher profile courses via RPC:', error)
+    throw error
+  }
+
+  const { data: fallbackData, error: fallbackError } = await supabase
     .from('courses')
     .select('*')
     .eq('teacher_id', teacherId)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching courses:', error)
-    throw error
+  if (fallbackError) {
+    console.error('Error fetching courses:', fallbackError)
+    throw fallbackError
   }
 
-  return (data || []) as Course[]
+  return (fallbackData || []) as Course[]
 }
 
 /**

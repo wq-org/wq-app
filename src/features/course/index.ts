@@ -37,3 +37,4 @@ export type { Lesson, CreateLessonData, LessonCardProps } from './types/lesson.t
 // API
 export * from './api/coursesApi'
 export * from './api/lessonsApi'
+export * from './api/enrollmentsApi'

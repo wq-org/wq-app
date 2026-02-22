@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { upsertProfile } from '@/features/auth/api/authApi'
+import { upsertProfile, updateProfile } from '@/features/auth/api/authApi'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import SuccessPage from './SuccessPage'
@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
+import { USER_ROLES } from '@/features/auth/types/auth.types'
 
 export default function StepFinish({
   onBack,
@@ -43,8 +44,23 @@ export default function StepFinish({
       return
     }
 
+    const requiresInstitution =
+      pendingRole === USER_ROLES.STUDENT ||
+      pendingRole === USER_ROLES.TEACHER ||
+      pendingRole === USER_ROLES.INSTITUTION_ADMIN
+
+    if (requiresInstitution && institutions.length === 0) {
+      setIsSubmitting(false)
+      toast.error(
+        t('finish.errors.missingInstitution', {
+          defaultValue: 'Please select at least one institution before finishing onboarding.',
+        }),
+      )
+      return
+    }
+
     try {
-      // Upsert profile with all onboarding data
+      // First persist profile data but keep onboarding incomplete until institution linking succeeds.
       await upsertProfile(session.user.id, {
         email: session.user.email,
         username: accountData.username,
@@ -52,19 +68,16 @@ export default function StepFinish({
         display_name: accountData.displayName,
         avatar_url: accountData.avatar.src,
         role: pendingRole,
-        is_onboarded: true,
+        is_onboarded: false,
       })
 
-      // Link selected institutions to user
-      if (institutions.length > 0) {
+      // Link selected institutions to user (required for teacher/student follow rules).
+      if (requiresInstitution && institutions.length > 0) {
         const institutionIds = institutions.map((inst) => inst.id)
-        try {
-          await linkUserInstitutions(session.user.id, institutionIds)
-        } catch (linkErr) {
-          console.error('Error linking institutions:', linkErr)
-          // Don't fail onboarding if institution linking fails
-        }
+        await linkUserInstitutions(session.user.id, institutionIds)
       }
+
+      await updateProfile(session.user.id, { is_onboarded: true })
 
       // Refresh profile to get the updated is_onboarded status
       await refreshProfile()

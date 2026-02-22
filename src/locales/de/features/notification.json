@@ -1,6 +1,8 @@
 {
   "panel": {
     "title": "Benachrichtigungen",
+    "loading": "Benachrichtigungen werden geladen...",
+    "loadError": "Benachrichtigungen konnten nicht geladen werden.",
     "tabs": {
       "all": "Alle",
       "users": "Nutzer",
@@ -22,10 +24,19 @@
   "item": {
     "actionWantsToFollow": "möchte dir folgen",
     "actionWantsToJoinCourse": "möchte dem Kurs beitreten",
+    "unknownUser": "Unbekannter Nutzer",
     "courseLabel": "Kurs",
     "actions": {
       "accept": "Akzeptieren",
       "decline": "Ablehnen"
+    },
+    "toasts": {
+      "acceptSuccess": "Beitrittsanfrage akzeptiert.",
+      "acceptError": "Anfrage konnte nicht akzeptiert werden.",
+      "declineSuccess": "Beitrittsanfrage abgelehnt.",
+      "declineError": "Anfrage konnte nicht abgelehnt werden.",
+      "followAcceptSuccess": "Folgen-Anfrage akzeptiert.",
+      "followDeclineSuccess": "Folgen-Anfrage abgelehnt."
     }
   }
 }

@@ -9,12 +9,22 @@ import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import Spinner from '@/components/ui/spinner'
-import { EmptyCourseView, EmptyGamesView } from '@/features/student'
+import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { fetchNotesByUser } from '@/features/notes'
 import type { Note } from '@/features/notes'
+import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
+import {
+  getMyAcceptedCourses,
+  getMyCourseRequests,
+  type EnrollmentCourse,
+} from '@/features/course/api/enrollmentsApi'
+import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
+import type { CourseCardProps, EnrollmentStatus } from '@/features/course/types/course.types'
+import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
   const extension = filename.split('.').pop()?.toUpperCase() || ''
@@ -37,6 +47,10 @@ function formatFileSize(bytes: number): string {
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<string>('courses')
+  const [acceptedCourses, setAcceptedCourses] = useState<EnrollmentCourse[]>([])
+  const [courseRequests, setCourseRequests] = useState<{ status: EnrollmentStatus }[]>([])
+  const [followedTeacherIds, setFollowedTeacherIds] = useState<string[]>([])
+  const [coursesLoading, setCoursesLoading] = useState(false)
   const [games, setGames] = useState<GameCardProps[]>([])
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
@@ -48,6 +62,44 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const { profile, loading, getUserId, getRole } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const { t } = useTranslation('features.course')
+
+  useEffect(() => {
+    if (selectedTab !== 'courses') return
+    let cancelled = false
+
+    async function loadCoursesTabData() {
+      setCoursesLoading(true)
+      try {
+        const [accepted, requests, follows] = await Promise.all([
+          getMyAcceptedCourses(),
+          getMyCourseRequests(),
+          getFollowedTeacherIds(),
+        ])
+
+        if (!cancelled) {
+          setAcceptedCourses(accepted)
+          setCourseRequests(requests.map((request) => ({ status: request.status })))
+          setFollowedTeacherIds(follows)
+        }
+      } catch (error) {
+        console.error('Error loading student courses tab:', error)
+        if (!cancelled) {
+          setAcceptedCourses([])
+          setCourseRequests([])
+          setFollowedTeacherIds([])
+        }
+      } finally {
+        if (!cancelled) setCoursesLoading(false)
+      }
+    }
+
+    loadCoursesTabData()
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedTab])
 
   useEffect(() => {
     if (!profile?.user_id || selectedTab !== 'games') return
@@ -168,9 +220,75 @@ export default function Dashboard() {
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to your dashboard'}
         role="student"
+        followedTeacherCount={followedTeacherIds.length}
         onClickTab={handleClickTab}
       >
-        {selectedTab === 'courses' && <EmptyCourseView />}
+        {selectedTab === 'courses' &&
+          (coursesLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Spinner
+                variant="gray"
+                size="lg"
+                speed={1750}
+              />
+            </div>
+          ) : acceptedCourses.length > 0 ? (
+            <ProfileCourseCardList
+              courses={acceptedCourses.map((course) => {
+                const teacherName = course.teacher?.display_name || ''
+                return {
+                  id: course.id,
+                  title: course.title,
+                  description: course.description,
+                  teacherAvatar: course.teacher?.avatar_url || undefined,
+                  teacherInitials: teacherName?.charAt(0).toUpperCase() || 'T',
+                } satisfies CourseCardProps
+              })}
+              enrollmentStatusMap={acceptedCourses.reduce<Record<string, EnrollmentStatus>>(
+                (acc, course) => {
+                  acc[course.id] = 'accepted'
+                  return acc
+                },
+                {},
+              )}
+            />
+          ) : followedTeacherIds.length === 0 ? (
+            <EmptyFollowsView />
+          ) : courseRequests.some((request) => request.status === 'pending') ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Text
+                as="p"
+                variant="h3"
+                className="text-gray-900"
+              >
+                {t('dashboard.empty.pendingOnlyTitle')}
+              </Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-gray-500 mt-2"
+              >
+                {t('dashboard.empty.pendingOnlyDescription')}
+              </Text>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Text
+                as="p"
+                variant="h3"
+                className="text-gray-900"
+              >
+                {t('dashboard.empty.noAcceptedTitle')}
+              </Text>
+              <Text
+                as="p"
+                variant="body"
+                className="text-gray-500 mt-2"
+              >
+                {t('dashboard.empty.noAcceptedDescription')}
+              </Text>
+            </div>
+          ))}
         {selectedTab === 'games' &&
           (gamesLoading ? (
             <div className="flex items-center justify-center py-12">

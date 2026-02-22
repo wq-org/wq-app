@@ -6,6 +6,11 @@ import { useTranslation } from 'react-i18next'
 import confetti from 'canvas-confetti'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getTeacherCourses } from '@/features/course/api/coursesApi'
+import {
+  cancelCourseJoin,
+  getMyEnrollmentStatusMap,
+  requestCourseJoin,
+} from '@/features/course/api/enrollmentsApi'
 import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
@@ -14,14 +19,15 @@ import { useUser } from '@/contexts/user'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/course/types/course.types'
 import type { CourseCardProps } from '@/features/course/types/course.types'
+import type { EnrollmentStatus } from '@/features/course/types/course.types'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { getDashboardTabs } from '@/components/layout/config'
 import { EmptyCourseView } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
-import { ProfileFollowToSeeView } from './ProfileFollowToSeeView'
 import { useFollow } from '../hooks/useFollow'
+import { toast } from 'sonner'
 
 interface ProfileTeacherViewProps {
   profile: Profile
@@ -46,10 +52,15 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   const [games, setGames] = useState<GameCardProps[]>([])
   const [gamesLoading, setGamesLoading] = useState(false)
   const [selectedTab, setSelectedTab] = useState<string>('courses')
+  const [enrollmentStatusMap, setEnrollmentStatusMap] = useState<Record<string, EnrollmentStatus>>(
+    {},
+  )
+  const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null)
   const navigate = useNavigate()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { getUserId, getRole } = useUser()
   const { t } = useTranslation('features.teacher')
+  const { t: tCourse } = useTranslation('features.course')
   const currentUserId = getUserId()
   const viewerRole = getRole()?.toLowerCase()
   const isStudentViewingTeacher =
@@ -100,7 +111,12 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
     fetchGames()
   }, [fetchCourses, fetchGames])
 
-  const { isFollowing, toggleFollow } = useFollow(isStudentViewingTeacher ? userId : null, {
+  const {
+    isFollowing,
+    isPending,
+    loading: followLoading,
+    toggleFollow,
+  } = useFollow(isStudentViewingTeacher ? userId : null, {
     onFollowSuccess: handleFollowSuccess,
   })
 
@@ -109,16 +125,53 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
     fetchCourses()
   }, [fetchCourses])
 
-  // Fetch games when tab is games and content is visible (not behind follow gate)
+  // Fetch games when tab is selected.
   useEffect(() => {
-    if (selectedTab === 'games' && !(isStudentViewingTeacher && !isFollowing)) {
+    if (selectedTab === 'games') {
       fetchGames()
     }
-  }, [selectedTab, isStudentViewingTeacher, isFollowing, fetchGames])
+  }, [selectedTab, fetchGames])
 
-  const handleCourseJoin = (courseId: string) => {
-    // TODO: Implement join course functionality
-    console.log('Join course:', courseId)
+  useEffect(() => {
+    if (!isStudentViewingTeacher || courses.length === 0) {
+      setEnrollmentStatusMap({})
+      return
+    }
+
+    getMyEnrollmentStatusMap(courses.map((course) => course.id))
+      .then(setEnrollmentStatusMap)
+      .catch((error) => {
+        console.error('Error loading enrollment status map:', error)
+        setEnrollmentStatusMap({})
+      })
+  }, [courses, isStudentViewingTeacher])
+
+  const handleCourseJoin = async (courseId: string) => {
+    try {
+      setLoadingCourseId(courseId)
+      const enrollment = await requestCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
+      toast.success(tCourse('join.toasts.requested'))
+    } catch (error) {
+      console.error('Error joining course:', error)
+      toast.error(tCourse('join.toasts.requestFailed'))
+    } finally {
+      setLoadingCourseId(null)
+    }
+  }
+
+  const handleCourseJoinCancel = async (courseId: string) => {
+    try {
+      setLoadingCourseId(courseId)
+      const enrollment = await cancelCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
+      toast.success(tCourse('join.toasts.cancelled'))
+    } catch (error) {
+      console.error('Error cancelling join request:', error)
+      toast.error(tCourse('join.toasts.cancelFailed'))
+    } finally {
+      setLoadingCourseId(null)
+    }
   }
 
   const handleGamePlay = (route?: string) => {
@@ -143,8 +196,6 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
     (tab) => tab.id === 'courses' || tab.id === 'games',
   )
 
-  const showFollowGate = isStudentViewingTeacher && !isFollowing
-
   return (
     <DashboardLayout
       imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
@@ -154,58 +205,60 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="teacher"
-      customTabs={showFollowGate ? [] : coursesAndGamesTabs}
+      customTabs={coursesAndGamesTabs}
       onClickTab={handleClickTab}
       followCount={profile.follow_count ?? 0}
       handleFollowClick={isStudentViewingTeacher ? toggleFollow : undefined}
       connectButtonLabel={
         isStudentViewingTeacher
-          ? isFollowing
-            ? t('actions.connected')
-            : t('actions.connect')
+          ? followLoading
+            ? t('actions.pending', { defaultValue: 'Pending' })
+            : isFollowing
+              ? t('actions.connected')
+              : isPending
+                ? t('actions.pending', { defaultValue: 'Pending' })
+                : t('actions.connect')
           : undefined
       }
     >
-      {showFollowGate ? (
-        <ProfileFollowToSeeView />
-      ) : (
-        <>
-          {selectedTab === 'courses' &&
-            (coursesLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Spinner
-                  variant="gray"
-                  size="lg"
-                  speed={1750}
-                />
-              </div>
-            ) : courses.length === 0 ? (
-              <EmptyCourseView />
-            ) : (
-              <ProfileCourseCardList
-                courses={courseCards}
-                onCourseJoin={handleCourseJoin}
-              />
-            ))}
-          {selectedTab === 'games' &&
-            (gamesLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Spinner
-                  variant="gray"
-                  size="lg"
-                  speed={1750}
-                />
-              </div>
-            ) : games.length === 0 ? (
-              <EmptyGamesView />
-            ) : (
-              <GameCardList
-                games={games}
-                onGamePlay={handleGamePlay}
-              />
-            ))}
-        </>
-      )}
+      {selectedTab === 'courses' &&
+        (coursesLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner
+              variant="gray"
+              size="lg"
+              speed={1750}
+            />
+          </div>
+        ) : courses.length === 0 ? (
+          <EmptyCourseView />
+        ) : (
+          <ProfileCourseCardList
+            courses={courseCards}
+            onCourseJoin={handleCourseJoin}
+            onCourseJoinCancel={handleCourseJoinCancel}
+            enrollmentStatusMap={enrollmentStatusMap}
+            loadingCourseId={loadingCourseId}
+            joinDisabled={isStudentViewingTeacher ? !isFollowing : false}
+          />
+        ))}
+      {selectedTab === 'games' &&
+        (gamesLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner
+              variant="gray"
+              size="lg"
+              speed={1750}
+            />
+          </div>
+        ) : games.length === 0 ? (
+          <EmptyGamesView />
+        ) : (
+          <GameCardList
+            games={games}
+            onGamePlay={handleGamePlay}
+          />
+        ))}
     </DashboardLayout>
   )
 }

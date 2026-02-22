@@ -37,3 +37,16 @@ export interface CourseCardProps {
   teacherInitials?: string
   onView?: (id: string) => void
 }
+
+export type EnrollmentStatus = 'pending' | 'accepted' | 'rejected' | 'cancelled'
+
+export interface CourseEnrollment {
+  course_id: string
+  student_id: string
+  status: EnrollmentStatus
+  requested_at: string
+  responded_at?: string | null
+  responded_by?: string | null
+  note?: string | null
+  enrolled_at?: string
+}

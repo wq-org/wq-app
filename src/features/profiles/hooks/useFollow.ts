@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
+import type { FollowStatus } from '../api/followApi'
 import * as followApi from '../api/followApi'
 
 export interface UseFollowOptions {
@@ -8,13 +9,28 @@ export interface UseFollowOptions {
 
 export function useFollow(teacherId: string | null, options?: UseFollowOptions) {
   const { onFollowSuccess } = options ?? {}
-  const [isFollowing, setIsFollowing] = useState(false)
+  const [followStatus, setFollowStatus] = useState<FollowStatus>('none')
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
 
+  const isFollowing = followStatus === 'accepted'
+
+  const refetch = useCallback(async () => {
+    if (!teacherId) return
+    setChecking(true)
+    try {
+      const status = await followApi.getFollowStatus(teacherId)
+      setFollowStatus(status)
+    } catch {
+      setFollowStatus('none')
+    } finally {
+      setChecking(false)
+    }
+  }, [teacherId])
+
   useEffect(() => {
     if (!teacherId) {
-      setIsFollowing(false)
+      setFollowStatus('none')
       setChecking(false)
       return
     }
@@ -23,12 +39,12 @@ export function useFollow(teacherId: string | null, options?: UseFollowOptions) 
     setChecking(true)
 
     followApi
-      .isFollowing(teacherId)
-      .then((following) => {
-        if (!cancelled) setIsFollowing(following)
+      .getFollowStatus(teacherId)
+      .then((status) => {
+        if (!cancelled) setFollowStatus(status)
       })
       .catch(() => {
-        if (!cancelled) setIsFollowing(false)
+        if (!cancelled) setFollowStatus('none')
       })
       .finally(() => {
         if (!cancelled) setChecking(false)
@@ -43,23 +59,33 @@ export function useFollow(teacherId: string | null, options?: UseFollowOptions) 
     if (!teacherId) return
     setLoading(true)
     try {
-      if (isFollowing) {
+      if (followStatus === 'accepted') {
         await followApi.unfollow(teacherId)
-        setIsFollowing(false)
+        setFollowStatus('none')
         toast.success('Unfollowed')
       } else {
         await followApi.follow(teacherId)
-        setIsFollowing(true)
-        toast.success('Following')
+        setFollowStatus('accepted')
+        toast.success('Followed')
         onFollowSuccess?.()
       }
     } catch (error) {
       console.error('Error toggling follow:', error)
-      toast.error('Something went wrong')
+      const errorMessage =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? String(error.message)
+          : 'Something went wrong'
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
-  }, [teacherId, isFollowing, onFollowSuccess])
+  }, [teacherId, followStatus, onFollowSuccess])
 
-  return { isFollowing, loading: loading || checking, toggleFollow }
+  return {
+    isFollowing,
+    followStatus,
+    loading: loading || checking,
+    toggleFollow,
+    refetch,
+  }
 }

@@ -1,153 +1,75 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { getTeacherCourses } from '@/features/course/api/coursesApi'
+import {
+  cancelCourseJoin,
+  getMyEnrollmentStatusMap,
+  requestCourseJoin,
+} from '@/features/course/api/enrollmentsApi'
+import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import { AVATAR_PLACEHOLDER_SRC, DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
+import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useFollow } from '@/features/profiles/hooks/useFollow'
-import type { Profile } from '@/contexts/user/UserContext'
-import type { Course } from '@/features/course/types/course.types'
-import type { CourseCardProps } from '@/features/course/types/course.types'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Button } from '@/components/ui/button'
-import { UserPlus } from 'lucide-react'
+import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
 import { getDashboardTabs } from '@/components/layout/config'
 import { EmptyCourseView } from '@/features/course'
+import { EmptyGamesView } from '@/features/student'
+import GameCardList from '@/features/game-studio/components/GameCardList'
+import type { Profile } from '@/contexts/user/UserContext'
+import type {
+  Course,
+  CourseCardProps,
+  EnrollmentStatus,
+} from '@/features/course/types/course.types'
+import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Text } from '@/components/ui/text'
 
-// Modified CourseCard for profile view - shows "Join" instead of "View" and no published badge
-function ProfileCourseCard({
-  id,
-  title,
-  description,
-  image,
-  teacherAvatar,
-  teacherInitials = 'U',
-  onJoin,
-}: CourseCardProps & { onJoin?: (id: string) => void }) {
-  const courseImage = image || DEFAULT_COURSE_BACKGROUND
-
-  return (
-    <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
-      <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
-        <img
-          src={courseImage}
-          alt="Course"
-          className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
-        />
-      </CardHeader>
-      <CardContent className="flex flex-col p-6">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <Avatar className="w-12 h-12 rounded-full">
-            {teacherAvatar ? (
-              <AvatarImage
-                src={teacherAvatar}
-                alt="avatar"
-              />
-            ) : (
-              <AvatarFallback className="text-xl">{teacherInitials || 'U'}</AvatarFallback>
-            )}
-          </Avatar>
-          <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Text
-                  as="h3"
-                  variant="h3"
-                  className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0"
-                >
-                  {title}
-                </Text>
-              </TooltipTrigger>
-              <TooltipContent>
-                <Text
-                  as="p"
-                  variant="body"
-                  className="max-w-xs"
-                >
-                  {title}
-                </Text>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-
-        {/* Description area */}
-        <div className="flex flex-col gap-3">
-          <Text
-            as="p"
-            variant="body"
-            className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1"
-          >
-            {description}
-          </Text>
-          {/* Join Button */}
-          <div className="flex items-center gap-2 mt-auto">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                onJoin?.(id)
-              }}
-              className="text-blue-500 hover:opacity-80 h-auto"
-            >
-              <Text
-                as="p"
-                variant="body"
-              >
-                Join
-              </Text>
-              <UserPlus className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function ProfileCourseCardList({
-  courses,
-  onCourseJoin,
-}: {
-  courses: CourseCardProps[]
-  onCourseJoin?: (id: string) => void
-}) {
-  return (
-    <div className="flex gap-10 flex-wrap">
-      {courses.map((course, idx) => (
-        <ProfileCourseCard
-          key={idx}
-          {...course}
-          onJoin={(id) => onCourseJoin?.(id)}
-        />
-      ))}
-    </div>
-  )
+async function fetchTeacherGames(teacherId: string): Promise<GameCardProps[]> {
+  const data = await getTeacherFlowGames(teacherId)
+  return data
+    .filter((game) => game.status === 'published' || Boolean(game.published_at))
+    .map((game) => ({
+      id: game.id,
+      title: game.title || 'Untitled Game',
+      description: game.description ?? 'No description available',
+      route: `/play/${game.id}`,
+    }))
 }
 
 const TeacherProfileView = () => {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [courses, setCourses] = useState<Course[]>([])
+  const [games, setGames] = useState<GameCardProps[]>([])
   const [loading, setLoading] = useState(true)
   const [coursesLoading, setCoursesLoading] = useState(false)
+  const [gamesLoading, setGamesLoading] = useState(false)
+  const [selectedTab, setSelectedTab] = useState<string>('courses')
+  const [enrollmentStatusMap, setEnrollmentStatusMap] = useState<Record<string, EnrollmentStatus>>(
+    {},
+  )
+  const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null)
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { getUserId, getRole } = useUser()
   const { t } = useTranslation('features.teacher')
+  const { t: tCourse } = useTranslation('features.course')
   const currentUserId = getUserId()
   const viewerRole = getRole()?.toLowerCase()
   const isStudentViewingTeacher =
-    viewerRole === 'student' && currentUserId && id && currentUserId !== id
-  const { isFollowing, toggleFollow } = useFollow(isStudentViewingTeacher ? id : null)
+    viewerRole === 'student' && Boolean(currentUserId) && Boolean(id) && currentUserId !== id
+  const {
+    isFollowing,
+    loading: followLoading,
+    toggleFollow,
+  } = useFollow(isStudentViewingTeacher ? (id ?? null) : null)
 
-  // Fetch teacher profile
   useEffect(() => {
     async function fetchProfile() {
       if (!id) return
@@ -167,31 +89,86 @@ const TeacherProfileView = () => {
     fetchProfile()
   }, [id])
 
-  // Fetch teacher courses
+  const fetchCourses = useCallback(async () => {
+    if (!id) return
+
+    setCoursesLoading(true)
+    try {
+      const data = await getTeacherCourses(id)
+      setCourses(data.filter((course) => course.is_published))
+    } catch (error) {
+      console.error('Error fetching teacher courses:', error)
+      setCourses([])
+    } finally {
+      setCoursesLoading(false)
+    }
+  }, [id])
+
+  const fetchGames = useCallback(async () => {
+    if (!id) return
+
+    setGamesLoading(true)
+    try {
+      const data = await fetchTeacherGames(id)
+      setGames(data)
+    } catch (error) {
+      console.error('Error fetching teacher games:', error)
+      setGames([])
+    } finally {
+      setGamesLoading(false)
+    }
+  }, [id])
+
   useEffect(() => {
-    async function fetchCourses() {
-      if (!id) return
+    if (!profile) return
+    fetchCourses()
+  }, [profile, fetchCourses])
 
-      setCoursesLoading(true)
-      try {
-        const data = await getTeacherCourses(id)
-        setCourses(data)
-      } catch (error) {
-        console.error('Error fetching teacher courses:', error)
-        setCourses([])
-      } finally {
-        setCoursesLoading(false)
-      }
+  useEffect(() => {
+    if (!profile || selectedTab !== 'games') return
+    fetchGames()
+  }, [profile, selectedTab, fetchGames])
+
+  useEffect(() => {
+    if (!isStudentViewingTeacher || !isFollowing || courses.length === 0) {
+      setEnrollmentStatusMap({})
+      return
     }
 
-    if (profile) {
-      fetchCourses()
-    }
-  }, [id, profile])
+    getMyEnrollmentStatusMap(courses.map((course) => course.id))
+      .then(setEnrollmentStatusMap)
+      .catch((error) => {
+        console.error('Error loading enrollment statuses:', error)
+        setEnrollmentStatusMap({})
+      })
+  }, [courses, isFollowing, isStudentViewingTeacher])
 
-  const handleCourseJoin = (courseId: string) => {
-    // TODO: Implement join course functionality
-    console.log('Join course:', courseId)
+  const handleCourseJoin = async (courseId: string) => {
+    try {
+      setLoadingCourseId(courseId)
+      const enrollment = await requestCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
+      toast.success(tCourse('join.toasts.requested'))
+    } catch (error) {
+      console.error('Error joining course:', error)
+      toast.error(tCourse('join.toasts.requestFailed'))
+    } finally {
+      setLoadingCourseId(null)
+    }
+  }
+
+  const handleCourseJoinCancel = async (courseId: string) => {
+    try {
+      setLoadingCourseId(courseId)
+      const enrollment = await cancelCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
+      toast.success(tCourse('join.toasts.cancelled'))
+    } catch (error) {
+      console.error('Error cancelling join request:', error)
+      toast.error(tCourse('join.toasts.cancelFailed'))
+    } finally {
+      setLoadingCourseId(null)
+    }
   }
 
   if (loading) {
@@ -219,18 +196,20 @@ const TeacherProfileView = () => {
     )
   }
 
-  // Map courses to CourseCardProps format
   const courseCards: CourseCardProps[] = courses.map((course) => ({
     id: course.id,
     title: course.title,
     description: course.description,
-    image: undefined, // You can add image support later
+    image: undefined,
     teacherAvatar: signedAvatarUrl || undefined,
     teacherInitials: profile.display_name?.charAt(0).toUpperCase() || 'T',
   }))
 
-  // Filter tabs to only show courses
-  const coursesOnlyTabs = getDashboardTabs('teacher').filter((tab) => tab.id === 'courses')
+  const coursesAndGamesTabs = getDashboardTabs('teacher').filter(
+    (tab) => tab.id === 'courses' || tab.id === 'games',
+  )
+
+  const joinDisabled = !isStudentViewingTeacher || !isFollowing
 
   return (
     <DashboardLayout
@@ -241,34 +220,59 @@ const TeacherProfileView = () => {
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="teacher"
-      customTabs={coursesOnlyTabs}
-      onClickTab={() => {}}
+      customTabs={coursesAndGamesTabs}
+      onClickTab={setSelectedTab}
       followCount={profile.follow_count ?? 0}
       handleFollowClick={isStudentViewingTeacher ? toggleFollow : undefined}
       connectButtonLabel={
         isStudentViewingTeacher
-          ? isFollowing
-            ? t('actions.connected')
-            : t('actions.connect')
+          ? followLoading
+            ? t('actions.connect')
+            : isFollowing
+              ? t('actions.connected')
+              : t('actions.connect')
           : undefined
       }
     >
-      {coursesLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Spinner
-            variant="gray"
-            size="lg"
-            speed={1750}
+      {selectedTab === 'courses' &&
+        (coursesLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner
+              variant="gray"
+              size="lg"
+              speed={1750}
+            />
+          </div>
+        ) : courses.length === 0 ? (
+          <EmptyCourseView />
+        ) : (
+          <ProfileCourseCardList
+            courses={courseCards}
+            onCourseJoin={handleCourseJoin}
+            onCourseJoinCancel={handleCourseJoinCancel}
+            enrollmentStatusMap={enrollmentStatusMap}
+            loadingCourseId={loadingCourseId}
+            joinDisabled={joinDisabled}
           />
-        </div>
-      ) : courses.length === 0 ? (
-        <EmptyCourseView />
-      ) : (
-        <ProfileCourseCardList
-          courses={courseCards}
-          onCourseJoin={handleCourseJoin}
-        />
-      )}
+        ))}
+
+      {selectedTab === 'games' &&
+        (gamesLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner
+              variant="gray"
+              size="lg"
+              speed={1750}
+            />
+          </div>
+        ) : games.length === 0 ? (
+          <EmptyGamesView />
+        ) : (
+          <GameCardList
+            games={games}
+            onGamePlay={(route) => route && navigate(route)}
+          />
+        ))}
     </DashboardLayout>
   )
 }

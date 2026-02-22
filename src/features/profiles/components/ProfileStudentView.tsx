@@ -13,6 +13,14 @@ import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
+import {
+  cancelCourseJoin,
+  getMyEnrollmentStatusMap,
+  requestCourseJoin,
+} from '@/features/course/api/enrollmentsApi'
+import type { EnrollmentStatus } from '@/features/course/types/course.types'
+import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 interface ProfileStudentViewProps {
   profile: Profile
@@ -78,7 +86,12 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   const [coursesLoading, setCoursesLoading] = useState(false)
   const [gamesLoading, setGamesLoading] = useState(false)
   const [selectedTab, setSelectedTab] = useState<string>('courses')
+  const [enrollmentStatusMap, setEnrollmentStatusMap] = useState<Record<string, EnrollmentStatus>>(
+    {},
+  )
+  const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null)
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const { t } = useTranslation('features.course')
 
   // Fetch published courses
   useEffect(() => {
@@ -118,9 +131,46 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
     }
   }, [selectedTab])
 
-  const handleCourseJoin = (courseId: string) => {
-    // TODO: Implement join course functionality
-    console.log('Join course:', courseId)
+  useEffect(() => {
+    if (courses.length === 0) {
+      setEnrollmentStatusMap({})
+      return
+    }
+
+    getMyEnrollmentStatusMap(courses.map((course) => course.id))
+      .then(setEnrollmentStatusMap)
+      .catch((error) => {
+        console.error('Error fetching enrollment statuses:', error)
+        setEnrollmentStatusMap({})
+      })
+  }, [courses])
+
+  const handleCourseJoin = async (courseId: string) => {
+    try {
+      setLoadingCourseId(courseId)
+      const enrollment = await requestCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
+      toast.success(t('join.toasts.requested'))
+    } catch (error) {
+      console.error('Error joining course:', error)
+      toast.error(t('join.toasts.requestFailed'))
+    } finally {
+      setLoadingCourseId(null)
+    }
+  }
+
+  const handleCourseJoinCancel = async (courseId: string) => {
+    try {
+      setLoadingCourseId(courseId)
+      const enrollment = await cancelCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
+      toast.success(t('join.toasts.cancelled'))
+    } catch (error) {
+      console.error('Error cancelling join request:', error)
+      toast.error(t('join.toasts.cancelFailed'))
+    } finally {
+      setLoadingCourseId(null)
+    }
   }
 
   const handleGamePlay = (route?: string) => {
@@ -180,6 +230,9 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
+            onCourseJoinCancel={handleCourseJoinCancel}
+            enrollmentStatusMap={enrollmentStatusMap}
+            loadingCourseId={loadingCourseId}
           />
         ))}
 

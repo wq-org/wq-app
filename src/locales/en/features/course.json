@@ -69,5 +69,52 @@
     "unpublished": "Unpublished",
     "open": "Open",
     "imageAlt": "Course"
+  },
+  "join": {
+    "actions": {
+      "join": "Join",
+      "rejoin": "Request again",
+      "cancel": "Cancel",
+      "accept": "Accept",
+      "reject": "Reject"
+    },
+    "status": {
+      "pending": "Requested",
+      "accepted": "Joined",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "requested": "Requested",
+      "joined": "Joined"
+    },
+    "requests": {
+      "title": "Join requests",
+      "subtitle": "Review student requests by course",
+      "empty": "No requests for this filter.",
+      "unknownCourse": "Untitled course"
+    },
+    "filters": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "toasts": {
+      "requested": "Join request sent",
+      "requestFailed": "Could not send join request",
+      "cancelled": "Join request cancelled",
+      "cancelFailed": "Could not cancel join request",
+      "accepted": "Request accepted",
+      "rejected": "Request rejected",
+      "respondFailed": "Could not respond to request"
+    }
+  },
+  "dashboard": {
+    "empty": {
+      "noFollowsTitle": "No followed teachers yet",
+      "noFollowsDescription": "Follow a teacher to request access to their courses.",
+      "pendingOnlyTitle": "Requests are pending",
+      "pendingOnlyDescription": "Your requests are waiting for teacher approval.",
+      "noAcceptedTitle": "No accepted courses yet",
+      "noAcceptedDescription": "Your followed teachers have not accepted a request yet."
+    }
   }
 }

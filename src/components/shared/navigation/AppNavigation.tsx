@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Bell, LogOut, ChevronLeft } from 'lucide-react'
+import { Bell, BellDot, LogOut, ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useNavigate } from 'react-router'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '../i18n/LanguageSwitcher'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { Text } from '@/components/ui/text'
+import { Badge } from '@/components/ui/badge'
 
 interface AppNavigationProps {
   currentPageName?: string
@@ -25,6 +26,7 @@ const AppNavigation = ({
 }: AppNavigationProps): React.ReactElement => {
   const navigate = useNavigate()
   const { logout } = useUser()
+  const [notificationCount, setNotificationCount] = React.useState(0)
 
   const handleOnClickLogout = async () => {
     try {
@@ -73,13 +75,23 @@ const AppNavigation = ({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10 rounded-full hover:bg-accent"
+                      className="relative h-10 w-10 rounded-full hover:bg-accent"
                     >
-                      <Bell className="h-5 w-5 text-gray-600" />
+                      {notificationCount > 0 ? (
+                        <BellDot className="h-5 w-5 text-gray-600" />
+                      ) : (
+                        <Bell className="h-5 w-5 text-gray-600" />
+                      )}
+                      {notificationCount > 0 && (
+                        <Badge className="absolute -top-2.5 -right-2.5 h-5 min-w-5 px-1 tabular-nums bg-[#FF015B] text-white hover:bg-[#FF015B]">
+                          {notificationCount > 99 ? '99+' : notificationCount}
+                        </Badge>
+                      )}
+                      <span className="sr-only">Notifications</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-90 h-120 rounded-4xl backdrop-blur overflow-hidden mr-20 mt-4">
-                    <NotificationPanel />
+                    <NotificationPanel onTotalCountChange={setNotificationCount} />
                   </PopoverContent>
                 </Popover>
                 <div className="h-6 w-px bg-border" />

@@ -17,19 +17,13 @@ export default function NotificationBadge({ count = 0 }: NotificationBadgeProps)
           size="icon"
           className="relative"
         >
-          {count > 0 ? (
-            <>
-              <BellDot className="h-5 w-5" />
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs rounded-full"
-              >
-                {count > 9 ? '9+' : count}
-              </Badge>
-            </>
-          ) : (
-            <Bell className="h-5 w-5" />
+          {count > 0 ? <BellDot className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
+          {count > 0 && (
+            <Badge className="absolute -top-2.5 -right-2.5 h-5 min-w-5 px-1 tabular-nums bg-[#FF015B] text-white hover:bg-[#FF015B]">
+              {count > 99 ? '99+' : count}
+            </Badge>
           )}
+          <span className="sr-only">Notifications</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent

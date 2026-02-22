@@ -1,10 +1,12 @@
 {
   "badges": {
-    "university": "Hochschule Reutlingen",
-    "contacts": "{{formattedCount}} Kontakte"
+    "contacts": "{{formattedCount}} Kontakte",
+    "followedTeachers": "{{formattedCount}} Lehrkräfte",
+    "followers": "{{formattedCount}} Follower"
   },
   "actions": {
     "connect": "Verbinden",
+    "pending": "Ausstehend",
     "connected": "Verbunden",
     "connectWith": "Verbinde dich mit {{userName}}"
   },

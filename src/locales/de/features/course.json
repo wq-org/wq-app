@@ -69,5 +69,52 @@
     "unpublished": "Nicht veröffentlicht",
     "open": "Öffnen",
     "imageAlt": "Kurs"
+  },
+  "join": {
+    "actions": {
+      "join": "Beitreten",
+      "rejoin": "Erneut anfragen",
+      "cancel": "Abbrechen",
+      "accept": "Akzeptieren",
+      "reject": "Ablehnen"
+    },
+    "status": {
+      "pending": "Angefragt",
+      "accepted": "Beigetreten",
+      "rejected": "Abgelehnt",
+      "cancelled": "Abgebrochen",
+      "requested": "Angefragt",
+      "joined": "Beigetreten"
+    },
+    "requests": {
+      "title": "Beitrittsanfragen",
+      "subtitle": "Anfragen von Lernenden nach Kurs gruppiert",
+      "empty": "Keine Anfragen für diesen Filter.",
+      "unknownCourse": "Unbenannter Kurs"
+    },
+    "filters": {
+      "pending": "Ausstehend",
+      "accepted": "Akzeptiert",
+      "rejected": "Abgelehnt"
+    },
+    "toasts": {
+      "requested": "Beitrittsanfrage gesendet",
+      "requestFailed": "Beitrittsanfrage konnte nicht gesendet werden",
+      "cancelled": "Beitrittsanfrage abgebrochen",
+      "cancelFailed": "Beitrittsanfrage konnte nicht abgebrochen werden",
+      "accepted": "Anfrage akzeptiert",
+      "rejected": "Anfrage abgelehnt",
+      "respondFailed": "Anfrage konnte nicht bearbeitet werden"
+    }
+  },
+  "dashboard": {
+    "empty": {
+      "noFollowsTitle": "Noch keinen Lehrkräften gefolgt",
+      "noFollowsDescription": "Folge einer Lehrkraft, um Zugriff auf deren Kurse anzufragen.",
+      "pendingOnlyTitle": "Anfragen sind ausstehend",
+      "pendingOnlyDescription": "Deine Anfragen warten auf die Freigabe der Lehrkraft.",
+      "noAcceptedTitle": "Noch keine akzeptierten Kurse",
+      "noAcceptedDescription": "Bisher wurde keine deiner Anfragen akzeptiert."
+    }
   }
 }

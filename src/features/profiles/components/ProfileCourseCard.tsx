@@ -5,10 +5,16 @@ import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import type { CourseCardProps } from '@/features/course/types/course.types'
+import type { EnrollmentStatus } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 interface ProfileCourseCardProps extends CourseCardProps {
   onJoin?: (id: string) => void
+  onCancelJoin?: (id: string) => void
+  joinStatus?: EnrollmentStatus
+  isLoadingJoin?: boolean
+  joinDisabled?: boolean
 }
 
 export function ProfileCourseCard({
@@ -19,8 +25,17 @@ export function ProfileCourseCard({
   teacherAvatar,
   teacherInitials = 'U',
   onJoin,
+  onCancelJoin,
+  joinStatus,
+  isLoadingJoin = false,
+  joinDisabled = false,
 }: ProfileCourseCardProps) {
+  const { t } = useTranslation('features.course')
   const courseImage = image || DEFAULT_COURSE_BACKGROUND
+  const canJoin = !joinStatus || joinStatus === 'rejected' || joinStatus === 'cancelled'
+  const isRequested = joinStatus === 'pending'
+  const isJoined = joinStatus === 'accepted'
+  const isRejected = joinStatus === 'rejected'
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
@@ -79,21 +94,52 @@ export function ProfileCourseCard({
           </Text>
           {/* Join Button */}
           <div className="flex items-center gap-2 mt-auto">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                onJoin?.(id)
-              }}
-              className="text-blue-500 hover:opacity-80 h-auto"
-            >
-              <Text
-                as="p"
-                variant="body"
+            {canJoin && (
+              <Button
+                variant="ghost"
+                disabled={isLoadingJoin || joinDisabled}
+                onClick={() => onJoin?.(id)}
+                className="text-blue-500 hover:opacity-80 h-auto"
               >
-                Join
-              </Text>
-              <UserPlus className="w-4 h-4" />
-            </Button>
+                <Text
+                  as="p"
+                  variant="body"
+                >
+                  {isRejected ? t('join.actions.rejoin') : t('join.actions.join')}
+                </Text>
+                <UserPlus className="w-4 h-4" />
+              </Button>
+            )}
+
+            {isRequested && (
+              <>
+                <Button
+                  variant="outline"
+                  className="h-auto"
+                  disabled
+                >
+                  {t('join.status.requested')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="h-auto text-muted-foreground"
+                  disabled={isLoadingJoin}
+                  onClick={() => onCancelJoin?.(id)}
+                >
+                  {t('join.actions.cancel')}
+                </Button>
+              </>
+            )}
+
+            {isJoined && (
+              <Button
+                variant="outline"
+                className="h-auto text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-50"
+                disabled
+              >
+                {t('join.status.joined')}
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

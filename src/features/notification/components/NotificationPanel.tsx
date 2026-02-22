@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Bell, User, GraduationCap } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import { Separator } from '@/components/ui/separator'
@@ -6,10 +6,22 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import SelectTabs from '@/components/shared/tabs/SelectTabs'
 import NotificationItem from './NotificationItem'
 import type { Notification, NotificationAction } from '../types/notification.types'
-import { mockNotifications } from '../data/mockNotifications'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { supabase } from '@/lib/supabase'
+import {
+  getPendingCourseJoinRequestsForNotifications,
+  getPendingFollowRequestsForNotifications,
+  respondToCourseJoinRequest,
+  respondToFollowRequest,
+} from '../api/notificationRequestsApi'
+import { useUser } from '@/contexts/user'
 
 type TabId = 'all' | 'users' | 'course'
+
+interface NotificationPanelProps {
+  onTotalCountChange?: (count: number) => void
+}
 
 function getAction(n: Notification): NotificationAction | undefined {
   if (n.action) return n.action
@@ -25,12 +37,210 @@ function filterByTab(notifications: Notification[], tab: TabId): Notification[] 
   return notifications
 }
 
-export default function NotificationPanel() {
+function getNameInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('')
+}
+
+function formatTimestamp(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleString()
+}
+
+export default function NotificationPanel({ onTotalCountChange }: NotificationPanelProps) {
   const { t } = useTranslation('features.notification')
-  const [notifications] = useState<Notification[]>(mockNotifications)
+  const { getRole } = useUser()
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<TabId>('all')
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length
+  const loadNotifications = useCallback(async () => {
+    setLoading(true)
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user?.id) {
+        setNotifications([])
+        onTotalCountChange?.(0)
+        return
+      }
+      const role = getRole()?.toLowerCase()
+      const canRespondJoinRequests =
+        role === 'teacher' || role === 'admin' || role === 'super_admin'
+      const canRespondFollowRequests =
+        role === 'teacher' || role === 'admin' || role === 'super_admin'
+
+      const [joinRequests, pendingFollowRequests] = await Promise.all([
+        getPendingCourseJoinRequestsForNotifications().catch((error) => {
+          console.error('Failed to load join request notifications:', error)
+          return []
+        }),
+        getPendingFollowRequestsForNotifications().catch((error) => {
+          console.error('Failed to load follow request notifications:', error)
+          return []
+        }),
+      ])
+
+      const pendingJoinNotifications: Notification[] = joinRequests.map((request) => {
+        const studentName =
+          request.student?.display_name ||
+          request.student?.username ||
+          t('item.unknownUser', { defaultValue: 'Unknown user' })
+
+        const notificationId = `join-${request.course_id}-${request.student_id}`
+        const joinActions = canRespondJoinRequests
+          ? {
+              accept: async () => {
+                setActionLoadingId(notificationId)
+                try {
+                  await respondToCourseJoinRequest(request.course_id, request.student_id, 'accept')
+                  setNotifications((prev) => prev.filter((item) => item.id !== notificationId))
+                  toast.success(
+                    t('item.toasts.acceptSuccess', { defaultValue: 'Join request accepted.' }),
+                  )
+                } catch (error) {
+                  console.error('Failed to accept join request:', error)
+                  toast.error(
+                    t('item.toasts.acceptError', { defaultValue: 'Could not accept request.' }),
+                  )
+                } finally {
+                  setActionLoadingId(null)
+                }
+              },
+              decline: async () => {
+                setActionLoadingId(notificationId)
+                try {
+                  await respondToCourseJoinRequest(request.course_id, request.student_id, 'reject')
+                  setNotifications((prev) => prev.filter((item) => item.id !== notificationId))
+                  toast.success(
+                    t('item.toasts.declineSuccess', { defaultValue: 'Join request declined.' }),
+                  )
+                } catch (error) {
+                  console.error('Failed to decline join request:', error)
+                  toast.error(
+                    t('item.toasts.declineError', { defaultValue: 'Could not decline request.' }),
+                  )
+                } finally {
+                  setActionLoadingId(null)
+                }
+              },
+            }
+          : undefined
+
+        return {
+          id: notificationId,
+          type: 'join',
+          action: 'join_course',
+          title: studentName,
+          message: formatTimestamp(request.requested_at),
+          timestamp: request.requested_at,
+          isRead: false,
+          courseName: request.course?.title,
+          avatar: {
+            src: request.student?.avatar_url || undefined,
+            fallback: getNameInitials(studentName),
+            color: 'bg-gray-100',
+          },
+          actions: joinActions,
+        } as Notification
+      })
+
+      const followerNotifications: Notification[] = pendingFollowRequests.map((request) => {
+        const studentName =
+          request.student?.display_name ||
+          request.student?.username ||
+          t('item.unknownUser', { defaultValue: 'Unknown user' })
+        const notificationId = `follow-${request.teacher_id}-${request.student_id}`
+        // Follow requests are accepted or declined only here (notification panel); teacher decision.
+        const followActions = canRespondFollowRequests
+          ? {
+              accept: async () => {
+                setActionLoadingId(notificationId)
+                try {
+                  await respondToFollowRequest(request.teacher_id, request.student_id, 'accept')
+                  setNotifications((prev) => prev.filter((item) => item.id !== notificationId))
+                  toast.success(
+                    t('item.toasts.followAcceptSuccess', {
+                      defaultValue: 'Follow request accepted.',
+                    }),
+                  )
+                } catch (error) {
+                  console.error('Failed to accept follow request:', error)
+                  toast.error(
+                    t('item.toasts.acceptError', { defaultValue: 'Could not accept request.' }),
+                  )
+                } finally {
+                  setActionLoadingId(null)
+                }
+              },
+              decline: async () => {
+                setActionLoadingId(notificationId)
+                try {
+                  await respondToFollowRequest(request.teacher_id, request.student_id, 'reject')
+                  setNotifications((prev) => prev.filter((item) => item.id !== notificationId))
+                  toast.success(
+                    t('item.toasts.followDeclineSuccess', {
+                      defaultValue: 'Follow request declined.',
+                    }),
+                  )
+                } catch (error) {
+                  console.error('Failed to decline follow request:', error)
+                  toast.error(
+                    t('item.toasts.declineError', { defaultValue: 'Could not decline request.' }),
+                  )
+                } finally {
+                  setActionLoadingId(null)
+                }
+              },
+            }
+          : undefined
+
+        return {
+          id: notificationId,
+          type: 'follow',
+          action: 'follow',
+          title: studentName,
+          message: formatTimestamp(request.requested_at),
+          timestamp: request.requested_at,
+          isRead: false,
+          avatar: {
+            src: request.student?.avatar_url || undefined,
+            fallback: getNameInitials(studentName),
+            color: 'bg-gray-100',
+          },
+          actions: followActions,
+        } as Notification
+      })
+
+      const combined = [...pendingJoinNotifications, ...followerNotifications].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      )
+
+      setNotifications(combined)
+      onTotalCountChange?.(combined.length)
+    } catch (error) {
+      console.error('Failed loading notifications:', error)
+      setNotifications([])
+      onTotalCountChange?.(0)
+      toast.error(t('panel.loadError', { defaultValue: 'Failed to load notifications.' }))
+    } finally {
+      setLoading(false)
+    }
+  }, [getRole, onTotalCountChange, t])
+
+  useEffect(() => {
+    loadNotifications()
+  }, [loadNotifications])
+
+  const unreadCount = notifications.length
   const filtered = useMemo(() => filterByTab(notifications, activeTab), [notifications, activeTab])
   const usersCount = notifications.filter((n) => getAction(n) === 'follow').length
   const courseCount = notifications.filter((n) => getAction(n) === 'join_course').length
@@ -99,7 +309,17 @@ export default function NotificationPanel() {
       <div className="flex-1 min-h-0">
         <ScrollArea className="h-full max-h-full">
           <div className="animate-in fade-in-0 slide-in-from-bottom-3">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-gray-500 text-base"
+                >
+                  {t('panel.loading', { defaultValue: 'Loading notifications...' })}
+                </Text>
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <Text
                   as="p"
@@ -121,6 +341,7 @@ export default function NotificationPanel() {
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
+                  isActionLoading={actionLoadingId === notification.id}
                 />
               ))
             )}

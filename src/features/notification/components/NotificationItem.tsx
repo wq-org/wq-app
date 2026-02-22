@@ -1,5 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import Spinner from '@/components/ui/spinner'
 import type { Notification, NotificationAction } from '../types/notification.types'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
@@ -8,6 +9,7 @@ import { UserPlus, GraduationCap } from 'lucide-react'
 
 interface NotificationItemProps {
   notification: Notification
+  isActionLoading?: boolean
 }
 
 function getAction(notification: Notification): NotificationAction | undefined {
@@ -17,7 +19,10 @@ function getAction(notification: Notification): NotificationAction | undefined {
   return undefined
 }
 
-export default function NotificationItem({ notification }: NotificationItemProps) {
+export default function NotificationItem({
+  notification,
+  isActionLoading = false,
+}: NotificationItemProps) {
   const { t } = useTranslation('features.notification')
   const action = getAction(notification)
 
@@ -104,12 +109,20 @@ export default function NotificationItem({ notification }: NotificationItemProps
               <Button
                 size="sm"
                 variant="default"
+                disabled={isActionLoading}
                 onClick={(e) => {
                   e.stopPropagation()
                   notification.actions?.accept?.()
                 }}
-                className="rounded-md active:animate-in active:zoom-in-95"
+                className="rounded-md active:animate-in active:zoom-in-95 gap-2"
               >
+                {isActionLoading ? (
+                  <Spinner
+                    size="xs"
+                    variant="white"
+                    className="shrink-0"
+                  />
+                ) : null}
                 {t('item.actions.accept')}
               </Button>
             )}
@@ -117,6 +130,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
               <Button
                 size="sm"
                 variant="outline"
+                disabled={isActionLoading}
                 onClick={(e) => {
                   e.stopPropagation()
                   notification.actions?.decline?.()

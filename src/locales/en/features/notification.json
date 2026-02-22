@@ -1,6 +1,8 @@
 {
   "panel": {
     "title": "Notifications",
+    "loading": "Loading notifications...",
+    "loadError": "Failed to load notifications.",
     "tabs": {
       "all": "All",
       "users": "Users",
@@ -22,10 +24,19 @@
   "item": {
     "actionWantsToFollow": "wants to follow you",
     "actionWantsToJoinCourse": "wants to join course",
+    "unknownUser": "Unknown user",
     "courseLabel": "Course",
     "actions": {
       "accept": "Accept",
       "decline": "Decline"
+    },
+    "toasts": {
+      "acceptSuccess": "Join request accepted.",
+      "acceptError": "Could not accept request.",
+      "declineSuccess": "Join request declined.",
+      "declineError": "Could not decline request.",
+      "followAcceptSuccess": "Follow request accepted.",
+      "followDeclineSuccess": "Follow request declined."
     }
   }
 }

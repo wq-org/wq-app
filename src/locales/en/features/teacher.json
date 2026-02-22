@@ -1,10 +1,13 @@
 {
   "badges": {
     "university": "Reutlingen University",
-    "contacts": "{{formattedCount}} Contacts"
+    "contacts": "{{formattedCount}} Contacts",
+    "followedTeachers": "{{formattedCount}} teachers",
+    "followers": "{{formattedCount}} followers"
   },
   "actions": {
     "connect": "Connect",
+    "pending": "Pending",
     "connected": "Connected",
     "connectWith": "Connect with {{userName}}"
   },

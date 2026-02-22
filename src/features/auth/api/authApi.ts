@@ -27,6 +27,13 @@ export interface AuthResponse {
   role: string
 }
 
+/** Normalize role for storage (no trailing/leading space, lowercase) so DB role checks never fail. */
+function normalizeRole(role: string | null | undefined): string | null {
+  if (role == null || role === '') return role ?? null
+  const r = role.trim().toLowerCase()
+  return r === '' ? null : r
+}
+
 /**
  * Sign up a new user
  */
@@ -40,13 +47,14 @@ export async function signUpUser(signUpData: AuthData): Promise<AuthApiResponse>
     }
   }
   try {
+    const role = normalizeRole(signUpData.role)
     const { data, error } = await supabase.auth.signUp({
       email: signUpData.email,
       password: signUpData.password,
       options: {
         emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
         data: {
-          role: signUpData.role,
+          role: role ?? signUpData.role,
         },
       },
     })
@@ -270,9 +278,13 @@ export async function upsertProfile(
     role: string | null
   }>,
 ) {
+  const normalized =
+    payload.role !== undefined
+      ? { ...payload, role: normalizeRole(payload.role) ?? payload.role }
+      : payload
   const { data, error } = await supabase
     .from('profiles')
-    .upsert({ user_id: userId, ...payload }, { onConflict: 'user_id' })
+    .upsert({ user_id: userId, ...normalized }, { onConflict: 'user_id' })
     .select()
     .single()
   if (error) throw error

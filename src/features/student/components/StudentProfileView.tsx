@@ -20,6 +20,7 @@ import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Text } from '@/components/ui/text'
+import { getFollowedTeacherCount } from '@/features/profiles/api/followApi'
 
 // Modified CourseCard for profile view - shows "Join" instead of "View" and no published badge
 function ProfileCourseCard({
@@ -196,6 +197,7 @@ const StudentProfileView = () => {
   const [coursesLoading, setCoursesLoading] = useState(false)
   const [gamesLoading, setGamesLoading] = useState(false)
   const [selectedTab, setSelectedTab] = useState<string>('courses')
+  const [followedTeacherCount, setFollowedTeacherCount] = useState(0)
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
 
   // Fetch student profile
@@ -257,6 +259,25 @@ const StudentProfileView = () => {
       fetchGames()
     }
   }, [profile, selectedTab])
+
+  useEffect(() => {
+    async function fetchFollowedTeacherCount() {
+      if (!id) {
+        setFollowedTeacherCount(0)
+        return
+      }
+
+      try {
+        const count = await getFollowedTeacherCount(id)
+        setFollowedTeacherCount(count)
+      } catch (error) {
+        console.error('Error fetching followed teacher count:', error)
+        setFollowedTeacherCount(0)
+      }
+    }
+
+    fetchFollowedTeacherCount()
+  }, [id])
 
   const handleCourseJoin = (courseId: string) => {
     // TODO: Implement join course functionality
@@ -327,6 +348,7 @@ const StudentProfileView = () => {
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="student"
+      followedTeacherCount={followedTeacherCount}
       customTabs={coursesAndGamesTabs}
       onClickTab={handleClickTab}
     >

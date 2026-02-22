@@ -27,8 +27,10 @@ interface DashboardLayoutProps {
   connectButtonLabel?: string
   onClickTab?: (tabId: string) => void
   universityName?: string
-  /** When set (e.g. on teacher profile view), show follow count badge next to university. */
+  /** When set (e.g. on teacher dashboard), show follower count badge. */
   followCount?: number
+  /** When set (student dashboard), show followed teachers count badge next to role/university. */
+  followedTeacherCount?: number
   customTabs?: DashboardTab[] // Optional custom tabs to override default
 }
 
@@ -47,6 +49,7 @@ export default function DashboardLayout({
   onClickTab,
   universityName,
   followCount,
+  followedTeacherCount,
   customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
@@ -107,9 +110,27 @@ export default function DashboardLayout({
                 <QuoteOfTheDay className="max-w-md" />
               </div>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center flex-wrap">
               <Badge variant="secondary">{universityName || t('badges.university')}</Badge>
-              {followCount !== undefined && (
+              {role?.toLowerCase() === 'student' && followedTeacherCount !== undefined && (
+                <Badge variant="secondary">
+                  {t('badges.followedTeachers', {
+                    formattedCount: (followedTeacherCount ?? 0).toLocaleString(
+                      i18n.language === 'de' ? 'de-DE' : 'en-US',
+                    ),
+                  })}
+                </Badge>
+              )}
+              {role?.toLowerCase() === 'teacher' && followCount !== undefined && (
+                <Badge variant="secondary">
+                  {t('badges.followers', {
+                    formattedCount: (followCount ?? 0).toLocaleString(
+                      i18n.language === 'de' ? 'de-DE' : 'en-US',
+                    ),
+                  })}
+                </Badge>
+              )}
+              {followCount !== undefined && role?.toLowerCase() !== 'teacher' && (
                 <Badge variant="secondary">
                   {t('badges.contacts', {
                     formattedCount: (followCount ?? 0).toLocaleString(
