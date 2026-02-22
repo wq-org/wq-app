@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { X, Trophy } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
+import { HoldConfirmButton } from '@/components/ui/HoldConfirmButton'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { PublishDrawerProps } from '../types/game-studio.types'
@@ -163,14 +164,14 @@ export default function PublishDrawer({
               <PublishGameCheckList validationResult={validationResult} />
             </div>
           )}
-          <Button
-            onClick={handlePublish}
-            variant="default"
-            className="rounded-lg w-full"
+          <HoldConfirmButton
+            onConfirm={handlePublish}
+            variant="outline"
+            className="rounded-lg w-full text-blue-500 border-0 hover:bg-blue-100 hover:text-blue-500 hover:duration-200"
             disabled={!canPublish || publishing}
           >
             {publishing ? t('publishDrawer.publishing') : t('publishDrawer.publishForStudents')}
-          </Button>
+          </HoldConfirmButton>
         </div>
       </DrawerContent>
     </Drawer>

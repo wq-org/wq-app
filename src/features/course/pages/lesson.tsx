@@ -34,12 +34,7 @@ export default function Lesson() {
   const navigate = useNavigate()
   const navState = location.state as { initialTab?: 'overview' | 'preview' | 'settings' } | null
   const initialTabFromNav = navState?.initialTab
-  const {
-    lesson,
-    fetchLessonById,
-    createLesson,
-    updateLesson,
-  } = useLesson()
+  const { lesson, fetchLessonById, createLesson, updateLesson } = useLesson()
   const [editorValue, setEditorValue] = useState<Record<string, unknown> | undefined>(undefined)
   const [, setIsInitialContentLoading] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
