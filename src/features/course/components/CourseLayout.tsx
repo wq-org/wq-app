@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Settings } from 'lucide-react'
+import { LayoutDashboard, Eye, Settings, BarChart2 } from 'lucide-react'
 import AppWrapper from '@/components/layout/AppWrapper'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import SelectTabs, { type TabItem } from '@/components/shared/tabs/SelectTabs'
 import { useCourse } from '@/contexts/course'
 import CourseSettings from '@/features/course/components/CourseSettings'
+import CoursePreviewTab from '@/features/course/components/CoursePreviewTab'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -20,7 +21,9 @@ export default function CourseLayout() {
   const pendingTabRef = useRef<string | null>(null)
   const courseTabs: TabItem[] = [
     { id: 'overview', icon: LayoutDashboard, title: t('layout.tabs.overview') },
+    { id: 'preview', icon: Eye, title: t('layout.tabs.preview') },
     { id: 'settings', icon: Settings, title: t('layout.tabs.settings') },
+    { id: 'analytics', icon: BarChart2, title: t('layout.tabs.analytics') },
   ]
 
   const handleTabChange = useCallback(
@@ -131,12 +134,14 @@ export default function CourseLayout() {
             />
             <div className="mt-6">
               {activeTab === 'overview' && <Outlet />}
+              {activeTab === 'preview' && <CoursePreviewTab courseId={courseId} />}
               {activeTab === 'settings' && (
                 <CourseSettings
                   courseId={courseId}
                   onUnsavedChange={setHasUnsavedChanges}
                 />
               )}
+              {activeTab === 'analytics' && <div className="flex flex-col gap-6 pb-32" />}
             </div>
           </>
         )}

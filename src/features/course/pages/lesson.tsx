@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { useParams, useLocation, useNavigate } from 'react-router-dom'
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import LessonLayout from '@/features/course/components/LessonLayout'
 import LessonSettings from '@/features/course/components/LessonSettings'
@@ -32,7 +32,14 @@ export default function Lesson() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
-  const { lesson, fetchLessonById, createLesson, updateLesson } = useLesson()
+  const previewOnly = (location.state as { previewOnly?: boolean } | null)?.previewOnly === true
+  const {
+    lesson,
+    loading: lessonLoading,
+    fetchLessonById,
+    createLesson,
+    updateLesson,
+  } = useLesson()
   const [editorValue, setEditorValue] = useState<Record<string, unknown> | undefined>(undefined)
   const [, setIsInitialContentLoading] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -210,6 +217,30 @@ export default function Lesson() {
     return <div>Lesson not found</div>
   }
 
+  const isPreviewContentReady =
+    !lessonLoading && lesson?.id === lessonId && editorValue !== undefined
+
+  if (previewOnly && !isPreviewContentReady) {
+    return (
+      <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
+        <div className="flex flex-col items-center gap-3">
+          <Spinner
+            variant="gray"
+            size="md"
+            speed={1750}
+          />
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground"
+          >
+            {t('layout.loading')}
+          </Text>
+        </div>
+      </div>
+    )
+  }
+
   const lessonTitle = lesson?.title?.trim() || t('page.fallbackTitle')
   const lessonDescription =
     lesson?.description?.trim() ||
@@ -378,6 +409,22 @@ export default function Lesson() {
       </section>
     </div>
   )
+
+  if (previewOnly) {
+    return (
+      <div className="flex flex-col gap-6 w-full animate-in fade-in-0 slide-in-from-bottom-4">
+        {courseId && (
+          <Link
+            to={`/teacher/course/${courseId}`}
+            className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+          >
+            {t('page.backToCourse', { defaultValue: 'Back to course' })}
+          </Link>
+        )}
+        <div className="mt-6">{previewContent}</div>
+      </div>
+    )
+  }
 
   return (
     <LessonLayout

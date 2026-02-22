@@ -24,7 +24,7 @@ interface TopicBadgeProps {
   isSelected: boolean
   index: number
   onToggle: (topic: Topic) => void
-  onDelete: (topic: Topic) => void
+  onDelete?: (topic: Topic) => void
   holdDeleteTooltip?: HoldDeleteTooltipProps
 }
 
@@ -59,17 +59,21 @@ export function TopicBadge({
         >
           {topic.name}
         </Text>
-        <Separator
-          orientation="vertical"
-          className="h-full bg-gray-300"
-        />
-        <div onClick={(e) => e.stopPropagation()}>
-          <HoldToDeleteIconButton
-            size="xs"
-            onDelete={() => onDelete(topic)}
-            {...holdDeleteTooltip}
-          />
-        </div>
+        {onDelete != null && (
+          <>
+            <Separator
+              orientation="vertical"
+              className="h-full bg-gray-300"
+            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <HoldToDeleteIconButton
+                size="xs"
+                onDelete={() => onDelete(topic)}
+                {...holdDeleteTooltip}
+              />
+            </div>
+          </>
+        )}
       </div>
     </>
   )

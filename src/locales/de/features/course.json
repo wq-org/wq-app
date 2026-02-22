@@ -33,8 +33,10 @@
   },
   "layout": {
     "tabs": {
-      "overview": "Übersicht",
-      "settings": "Einstellungen"
+      "overview": "Editor",
+      "preview": "Vorschau",
+      "settings": "Einstellungen",
+      "analytics": "Analytik"
     },
     "unsavedChanges": {
       "title": "Ungespeicherte Änderungen",

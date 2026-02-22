@@ -28,6 +28,7 @@
   },
   "page": {
     "fallbackTitle": "Worum geht es auf deiner Seite?",
+    "backToCourse": "Zurück zum Kurs",
     "editorPlaceholder": "Beginne zu schreiben...",
     "headingsNavLabel": "Inhalte",
     "previewTitle": "Vorschau",

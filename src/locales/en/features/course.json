@@ -33,8 +33,10 @@
   },
   "layout": {
     "tabs": {
-      "overview": "Overview",
-      "settings": "Settings"
+      "overview": "Editor",
+      "preview": "Preview",
+      "settings": "Settings",
+      "analytics": "Analytics"
     },
     "unsavedChanges": {
       "title": "Unsaved changes",

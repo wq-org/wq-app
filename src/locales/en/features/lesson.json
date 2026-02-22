@@ -28,6 +28,7 @@
   },
   "page": {
     "fallbackTitle": "What's your Page about?",
+    "backToCourse": "Back to course",
     "editorPlaceholder": "Start writing...",
     "headingsNavLabel": "On this page",
     "previewTitle": "Preview",

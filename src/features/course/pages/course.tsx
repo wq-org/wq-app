@@ -244,7 +244,9 @@ export default function Course() {
             <CourseLessonTable
               lessons={lessons}
               onView={(lessonId) => {
-                navigate(`/teacher/course/${courseId}/lesson/${lessonId}`)
+                navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
+                  state: { previewOnly: true },
+                })
               }}
               onDelete={async (lessonId) => {
                 try {

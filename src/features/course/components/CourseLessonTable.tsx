@@ -31,6 +31,8 @@ export interface CourseLessonTableProps {
   onView?: OnViewLesson
   onDelete?: OnDeleteLesson
   holdDeleteTooltip?: HoldDeleteTooltipProps
+  /** When false, only the View action is shown (no delete button). Default true. */
+  showDeleteAction?: boolean
 }
 
 const ITEMS_PER_PAGE = 10
@@ -40,6 +42,7 @@ export function CourseLessonTable({
   onView,
   onDelete,
   holdDeleteTooltip,
+  showDeleteAction = true,
 }: CourseLessonTableProps) {
   const { t } = useTranslation('features.course')
   const [currentPage, setCurrentPage] = useState(1)
@@ -122,11 +125,13 @@ export function CourseLessonTable({
                     >
                       {t('lessonTable.actions.view')}
                     </Button>
-                    <HoldToDeleteIconButton
-                      size="sm"
-                      onDelete={onDelete ? () => onDelete(lesson.id) : undefined}
-                      {...holdDeleteTooltip}
-                    />
+                    {showDeleteAction && (
+                      <HoldToDeleteIconButton
+                        size="sm"
+                        onDelete={onDelete ? () => onDelete(lesson.id) : undefined}
+                        {...holdDeleteTooltip}
+                      />
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

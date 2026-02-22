@@ -4,6 +4,8 @@ export { default as CourseCardList } from './components/CourseCardList'
 export { EmptyTopicsView } from './components/EmptyTopicsView'
 export { TopicBadge } from './components/TopicBadge'
 export { default as CourseSettings } from './components/CourseSettings'
+export { default as CoursePreviewTab } from './components/CoursePreviewTab'
+export type { CoursePreviewTabProps } from './components/CoursePreviewTab'
 export { default as EmptyCourseView } from './components/EmptyCourseView'
 export { CourseLessonTable } from './components/CourseLessonTable'
 export type {
