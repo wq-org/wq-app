@@ -208,7 +208,7 @@ BEGIN
       'authenticated',
       'authenticated',
       'admin@wq-app.de',
-      crypt('', gen_salt('bf')), -- CHANGE THIS PASSWORD!
+      crypt('', gen_salt('wq-app', 10)), -- CHANGE THIS PASSWORD!
       NOW(),
       NOW(),
       NOW(),
