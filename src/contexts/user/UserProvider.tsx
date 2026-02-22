@@ -92,6 +92,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null
   }
 
+  const getUserInstitutionId = (): string | null =>{
+        if (profile?.userInstitutionId) {
+      return profile.userInstitutionId as string
+    }
+    return null
+  }
+
   // Logout function that clears all state and storage
   const handleLogout = useCallback(async () => {
     try {
@@ -123,6 +130,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     refreshProfile,
     getUserId,
     getRole,
+    getUserInstitutionId,
     logout: handleLogout,
   }
 

@@ -139,12 +139,13 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
     const role = getRole()
     if (userId && role) {
       // Normalize role to singular
+      console.log('role filesCard.tsx :>> ', role);
       let normalizedRole = role.toLowerCase().trim()
       if (normalizedRole === 'teachers') normalizedRole = 'teacher'
       if (normalizedRole === 'students') normalizedRole = 'student'
-      if (normalizedRole === 'admins' || normalizedRole === 'institutionadmins')
-        normalizedRole = 'institutionAdmin'
-      if (normalizedRole === 'superadmins') normalizedRole = 'superAdmin'
+      if (normalizedRole === 'admins' || normalizedRole === 'institution_admin')
+        normalizedRole = 'institution_admin'
+      if (normalizedRole === 'superadmins') normalizedRole = 'super_admin'
 
       return {
         role: normalizedRole,
@@ -238,6 +239,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
 
         // Upload new file with the target filename
         const uploadResult = await uploadFile({
+          institutionId: "",
           teacherId: pathInfo.userId,
           file: newFile,
           title: newFilename.split('.')[0],
@@ -280,7 +282,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
         <DrawerContent
           className={cn(
             'h-screen data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:slide-in-from-right-52 data-[state=closed]:slide-out-to-right-52 transition-[width] duration-200',
-            expanded ? 'w-[100vw]! max-w-[100vw]!' : 'w-[60vw]! max-w-2xl! sm:max-w-2xl!',
+            expanded ? 'w-screen! max-w-[100vw]!' : 'w-[60vw]! max-w-2xl! sm:max-w-2xl!',
           )}
         >
           <div className="flex flex-col h-full w-full">

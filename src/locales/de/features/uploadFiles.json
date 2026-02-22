@@ -1,1 +1,18 @@
-{}
+{
+  "upload": {
+    "toasts": {
+      "fileValidationError": "Dateivalidierungsfehler: {{fileName}}",
+      "userIdMissing": "Benutzer-ID fehlt. Bitte melden Sie sich erneut an.",
+      "institutionIdIdMissing": "Institutions-ID fehlt. Bitte stellen Sie sicher, dass Sie Teil einer Institution sind.",
+      "userRoleMissing": "Benutzerrolle fehlt. Bitte melden Sie sich erneut an.",
+      "noFiles": "Keine Dateien zum Hochladen ausgewählt.",
+      "successSummary": "{{successCount}} Datei(en) erfolgreich hochgeladen{{#failedCount}}. {{failedCount}} Datei(en) fehlgeschlagen{{/failedCount}}.",
+      "failedSummary": "{{failedCount}} Datei(en) konnten nicht hochgeladen werden",
+      "unexpectedError": "Ein unerwarteter Fehler ist beim Hochladen aufgetreten."
+    },
+    "progress": {
+      "uploading": "Dateien werden hochgeladen...",
+      "complete": "{{percent}}% abgeschlossen"
+    }
+  }
+}

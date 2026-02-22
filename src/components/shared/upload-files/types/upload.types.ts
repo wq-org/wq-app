@@ -141,6 +141,7 @@ export interface FileUploadResult {
 }
 
 export interface FileUploadOptions {
+  institutionId: string // Institution ID for storage path
   teacherId: string
   file: File
   title?: string

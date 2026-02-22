@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
+import { isValidRole } from '@/features/auth/types/auth.types'
 
 export interface AuthApiResponse {
   success: boolean
@@ -36,25 +37,39 @@ function normalizeRole(role: string | null | undefined): string | null {
 
 /**
  * Sign up a new user
+ * REQUIRED: Role must be one of the valid USER_ROLES (student, teacher, institution_admin, super_admin)
  */
 export async function signUpUser(signUpData: AuthData): Promise<AuthApiResponse> {
-  if (!signUpData.role) {
+  // Validate role is provided
+  if (!signUpData.role || signUpData.role.trim() === '') {
     return {
       success: false,
       user: null,
       session: null,
-      error: 'Role must be set before signing up.',
+      error:
+        'Role is required for signup. Must be one of: student, teacher, institution_admin, super_admin',
     }
   }
+
+  // Normalize and validate role
+  const normalizedRole = normalizeRole(signUpData.role)
+  if (!normalizedRole || !isValidRole(normalizedRole)) {
+    return {
+      success: false,
+      user: null,
+      session: null,
+      error: `Invalid role: "${signUpData.role}". Must be one of: student, teacher, institution_admin, super_admin`,
+    }
+  }
+
   try {
-    const role = normalizeRole(signUpData.role)
     const { data, error } = await supabase.auth.signUp({
       email: signUpData.email,
       password: signUpData.password,
       options: {
         emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
         data: {
-          role: role ?? signUpData.role,
+          role: normalizedRole,
         },
       },
     })
@@ -239,11 +254,26 @@ export async function getCompleteProfile(userId: string) {
     .maybeSingle()
 
   if (error) {
+    throw error
+  }
+
+  if (!data) {
+    return null
+  }
+
+  const userInstitutionId = await getUserInstitutionId(userId)
+
+  const response = {
+    ...data,
+    userInstitutionId,
+  }
+
+  if (error) {
     console.error('Error fetching complete profile:', error)
     throw error
   }
 
-  return data
+return response
 }
 
 export async function updateProfile(

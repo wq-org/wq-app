@@ -23,7 +23,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const { validateFiles } = useFileValidation()
-  const { getUserId, getRole } = useUser()
+  const { getUserId, getRole, getUserInstitutionId } = useUser()
 
   const generateFileId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -98,31 +98,20 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
   const handleComplete = useCallback(async () => {
     const userId = getUserId()
     const role = getRole()
+    const institutionId = getUserInstitutionId()
 
     if (!userId) {
       toast.error(t('upload.toasts.userIdMissing'))
+      return
+    }
+      if (!institutionId) {
+      toast.error(t('upload.toasts.institutionIdIdMissing'))
       return
     }
 
     if (!role) {
       toast.error(t('upload.toasts.userRoleMissing'))
       return
-    }
-
-    // Ensure role is singular (not plural) - fix any plural roles
-    let normalizedRole = role.toLowerCase().trim()
-    if (normalizedRole === 'teachers') {
-      console.error('ERROR: Role is plural "teachers" in database - should be "teacher"')
-      normalizedRole = 'teacher' // Fix it
-    } else if (normalizedRole === 'students') {
-      console.error('ERROR: Role is plural "students" in database - should be "student"')
-      normalizedRole = 'student' // Fix it
-    } else if (normalizedRole === 'admins' || normalizedRole === 'institutionadmins') {
-      console.error('ERROR: Role is plural in database - should be "institutionAdmin"')
-      normalizedRole = 'institutionAdmin' // Fix it
-    } else if (normalizedRole === 'superadmins') {
-      console.error('ERROR: Role is plural in database - should be "superAdmin"')
-      normalizedRole = 'superAdmin' // Fix it
     }
 
     if (uploadedFiles.length === 0) {
@@ -136,8 +125,9 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
     try {
       const results = await uploadFilesWithMetadata(
         uploadedFiles,
+        institutionId,
         userId,
-        normalizedRole,
+        role,
         (progress) => {
           setUploadProgress(progress)
         },
@@ -175,7 +165,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
       setIsUploading(false)
       setUploadProgress(0)
     }
-  }, [t, uploadedFiles, getUserId, getRole, onSuccess])
+  }, [t, uploadedFiles, getUserId, getRole, getUserInstitutionId, onSuccess])
 
   const handleBack = useCallback(() => {
     setShowStepper(false)

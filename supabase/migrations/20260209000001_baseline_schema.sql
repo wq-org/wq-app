@@ -288,25 +288,42 @@ CREATE TRIGGER teacher_followers_count
   FOR EACH ROW EXECUTE FUNCTION public.update_teacher_follow_count();
 
 -- Auth: create profile on signup
--- CREATE OR REPLACE FUNCTION public.handle_new_user()
--- RETURNS TRIGGER AS $$
--- BEGIN
---   INSERT INTO public.profiles (user_id, email, role, is_onboarded)
---   VALUES (
---     NEW.id,
---     NEW.email,
---     COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
---     false
---   )
---   ON CONFLICT (user_id) DO NOTHING;
---   RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+-- IMPORTANT: do NOT trust `raw_user_meta_data->>'role'` for privileged roles.
+-- Clients can set signup metadata. We allow only a safe subset and default to 'student'.
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+DECLARE
+  requested_role TEXT;
+  safe_role TEXT;
+BEGIN
+  requested_role := lower(trim(coalesce(NEW.raw_user_meta_data->>'role', '')));
 
--- DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
--- CREATE TRIGGER on_auth_user_created
---   AFTER INSERT ON auth.users
---   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  -- Allowlist only non-privileged roles here.
+  -- If you need admin/institution_admin/super_admin, assign those server-side via an invite flow.
+  safe_role := CASE
+    WHEN requested_role IN ('student', 'teacher') THEN requested_role
+    ELSE 'student'
+  END;
+
+  INSERT INTO public.profiles (user_id, email, role, is_onboarded)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    safe_role,
+    false
+  )
+  ON CONFLICT (user_id) DO NOTHING;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql
+   SECURITY DEFINER
+   SET search_path = public, pg_temp;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Follow teacher (RLS applies; same-institution enforced by policy)
 DROP FUNCTION IF EXISTS public.follow_teacher(uuid);

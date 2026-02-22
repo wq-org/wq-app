@@ -1,1 +1,18 @@
-{}
+{
+  "upload": {
+    "toasts": {
+      "fileValidationError": "File validation error: {{fileName}}",
+      "userIdMissing": "User ID is missing. Please log in again.",
+      "institutionIdIdMissing": "Institution ID is missing. Please ensure you are part of an institution.",
+      "userRoleMissing": "User role is missing. Please log in again.",
+      "noFiles": "No files selected for upload.",
+      "successSummary": "{{successCount}} file(s) uploaded successfully{{#failedCount}}. {{failedCount}} file(s) failed{{/failedCount}}.",
+      "failedSummary": "{{failedCount}} file(s) failed to upload",
+      "unexpectedError": "An unexpected error occurred during upload."
+    },
+    "progress": {
+      "uploading": "Uploading files...",
+      "complete": "{{percent}}% complete"
+    }
+  }
+}

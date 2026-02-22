@@ -14,6 +14,7 @@ export interface Profile {
   description: string | null
   linkedin_url: string | null
   follow_count?: number | null
+  userInstitutionId: string
 }
 
 export interface UserContextValue {
@@ -26,6 +27,7 @@ export interface UserContextValue {
   refreshProfile: () => Promise<void>
   getUserId: () => string | null
   getRole: () => Roles | null
+  getUserInstitutionId: () => string | null
   logout: () => Promise<void>
 }
 
@@ -39,6 +41,7 @@ export const UserContext = createContext<UserContextValue>({
   refreshProfile: async () => {},
   getUserId: () => null,
   getRole: () => null,
+  getUserInstitutionId: () => null,
   logout: async () => {},
 })
 

@@ -19,19 +19,31 @@ function pathRole(role: string): string {
 
 /**
  * Uploads a single file to Supabase storage
- * Path structure: {role}/{user_id}/filename.filetype (teachers becomes teacher; other roles unchanged)
+ * Path structure: {institution_id}/{role}/{user_id}/filename.filetype
  *
- * @param options - Upload options including teacherId, file, role, and optional metadata
+ * @param options - Upload options including institutionId, teacherId, file, role, and optional metadata
  * @returns Promise with upload result containing path, publicUrl, or error
  */
 export async function uploadFile({
+  institutionId,
   teacherId,
   file,
   title,
   role,
 }: FileUploadOptions): Promise<FileUploadResult> {
+  console.log('current role :>>', role)
+  console.log('typeof role :>> ', typeof role);
+  console.log('institutionId :>> ', institutionId);
+
   try {
     // Validate inputs
+    if (!institutionId || !institutionId.trim()) {
+      return {
+        success: false,
+        error: 'Institution ID is required',
+      }
+    }
+
     if (!teacherId || !teacherId.trim()) {
       return {
         success: false,
@@ -61,8 +73,8 @@ export async function uploadFile({
     const sanitizedBaseName = baseFileName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '_')
     const sanitizedFileName = `${sanitizedBaseName}.${fileExtension}`
 
-    // Construct storage path: {role}/{user_id}/filename.filetype (role singular for storage)
-    const storagePath = `${pathRole(role)}/${teacherId}/${sanitizedFileName}`
+    // Construct storage path: {institution_id}/{role}/{user_id}/filename.filetype
+    const storagePath = `${institutionId}/${pathRole(role)}/${teacherId}/${sanitizedFileName}`
 
     console.log('Uploading file:', {
       originalFileName: file.name,
@@ -71,6 +83,7 @@ export async function uploadFile({
       storagePath,
       fileSize: file.size,
       fileType: file.type,
+      institutionId,
       teacherId,
     })
 
@@ -102,12 +115,6 @@ export async function uploadFile({
     const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(data.path)
 
     const publicUrl = urlData?.publicUrl
-
-    console.log('File uploaded successfully:', {
-      path: data.path,
-      publicUrl,
-      fileName: file.name,
-    })
 
     return {
       success: true,
@@ -149,6 +156,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i]
+      console.log('options :>> ', options);
 
       // Update progress if callback provided
       if (option.onProgress) {
@@ -190,6 +198,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
  * Uploads files from UploadedFile objects
  *
  * @param files - Array of UploadedFile objects with metadata
+ * @param institutionId - Institution ID for the upload path
  * @param teacherId - User ID for the upload path
  * @param role - Role for storage path (e.g., 'teachers', 'students', 'institutionAdmins', 'superAdmins')
  * @param onProgress - Optional progress callback
@@ -197,6 +206,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
  */
 export async function uploadFilesWithMetadata(
   files: UploadedFile[],
+  institutionId: string,
   teacherId: string,
   role: string,
   onProgress?: (progress: number) => void,
@@ -211,6 +221,13 @@ export async function uploadFilesWithMetadata(
       ]
     }
 
+    if (!institutionId || !institutionId.trim()) {
+      return files.map(() => ({
+        success: false,
+        error: 'Institution ID is required',
+      }))
+    }
+
     if (!teacherId || !teacherId.trim()) {
       return files.map(() => ({
         success: false,
@@ -220,6 +237,7 @@ export async function uploadFilesWithMetadata(
 
     console.log('Uploading files with metadata:', {
       fileCount: files.length,
+      institutionId,
       teacherId,
       files: files.map((f) => ({
         fileName: f.file.name,
@@ -228,12 +246,13 @@ export async function uploadFilesWithMetadata(
     })
 
     const uploadOptions: FileUploadOptions[] = files.map((uploadedFile, index) => ({
+      institutionId,
       teacherId,
       file: uploadedFile.file,
       title: uploadedFile.title,
       role,
       onProgress: onProgress
-        ? (progress: number) => {
+        ? (progress: number) => { 
             // Calculate overall progress across all files
             const fileProgress = (index / files.length) * 100 + progress / files.length
             onProgress(Math.min(fileProgress, 100))
@@ -402,21 +421,31 @@ export async function renameFile(
 }
 
 /**
- * Fetches all files from the storage bucket based on role and user ID
- * Path structure: {role}/{user_id}/
+ * Fetches all files from the storage bucket based on institution, role and user ID
+ * Path structure: {institution_id}/{role}/{user_id}/
  *
+ * @param institutionId - Institution ID
  * @param role - User role (e.g., 'teacher', 'student', 'institutionAdmin', 'superAdmin')
  * @param userId - User ID
  * @param options - Optional fetch options (limit, sortBy)
  * @returns Promise with fetch result containing files array or error
  */
 export async function fetchFilesByRole(
+  institutionId: string,
   role: string,
   userId: string,
   options?: FetchFilesOptions,
 ): Promise<FetchFilesResult> {
+
   try {
     // Validate inputs
+    if (!institutionId || !institutionId.trim()) {
+      return {
+        success: false,
+        error: 'Institution ID is required',
+      }
+    }
+
     if (!role || !role.trim()) {
       return {
         success: false,
@@ -431,16 +460,9 @@ export async function fetchFilesByRole(
       }
     }
 
-    // Construct storage path: {role}/{user_id}/ (role singular for storage)
-    const storagePath = `${pathRole(role)}/${userId}/`
+    // Construct storage path: {institution_id}/{role}/{user_id}/ (role singular for storage)
+    const storagePath = `${institutionId}/${pathRole(role)}/${userId}/`
 
-    console.log('Fetching files:', {
-      role,
-      userId,
-      storagePath,
-      limit: options?.limit || 100,
-      sortBy: options?.sortBy || { column: 'name', order: 'asc' },
-    })
 
     // Fetch files from Supabase storage
     const { data, error } = await supabase.storage.from(BUCKET_NAME).list(storagePath, {

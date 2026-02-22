@@ -60,7 +60,7 @@ export default function Dashboard() {
   void notes
   void notesLoading
   const navigate = useNavigate()
-  const { profile, loading, getUserId, getRole } = useUser()
+  const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { t } = useTranslation('features.course')
 
@@ -123,17 +123,18 @@ export default function Dashboard() {
   const loadFiles = useCallback(async () => {
     const userId = getUserId()
     const role = getRole()?.toLowerCase()
-    if (!userId || !role || loading) return
+    const userInstitutionId = getUserInstitutionId()
+    if (!userId || !role || !userInstitutionId || loading) return
     setFilesLoading(true)
     try {
-      const result = await fetchFilesByRole(role, userId, {
+      const result = await fetchFilesByRole(userInstitutionId , role, userId, {
         limit: 100,
         sortBy: { column: 'created_at', order: 'desc' },
       })
       if (result.success && result.files) {
         const mappedFiles: FileItem[] = result.files.map((file: FileListItem, index) => {
           const fileSize = Number(file.metadata?.size) || 0
-          const storagePath = `${role}/${userId}/${file.name}`
+          const storagePath = `${userInstitutionId}/${role}/${userId}/${file.name}`
           return {
             id: index + 1,
             filename: file.name,
@@ -152,7 +153,7 @@ export default function Dashboard() {
     } finally {
       setFilesLoading(false)
     }
-  }, [getUserId, getRole, loading])
+  }, [getUserId, getRole, loading, getUserInstitutionId])
 
   useEffect(() => {
     if (selectedTab === 'files') {
