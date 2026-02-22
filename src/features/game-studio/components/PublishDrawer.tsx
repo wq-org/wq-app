@@ -166,8 +166,7 @@ export default function PublishDrawer({
           )}
           <HoldConfirmButton
             onConfirm={handlePublish}
-            variant="outline"
-            className="rounded-lg w-full text-blue-500 border-0 hover:bg-blue-100 hover:text-blue-500 hover:duration-200"
+            className="rounded-lg w-full"
             disabled={!canPublish || publishing}
           >
             {publishing ? t('publishDrawer.publishing') : t('publishDrawer.publishForStudents')}

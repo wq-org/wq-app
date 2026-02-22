@@ -23,9 +23,13 @@ interface HoldConfirmButtonProps extends Omit<React.ComponentProps<typeof Button
 const CONFIRM_PROGRESS_CLASS = 'bg-blue-200'
 const CONFIRM_CONTENT_HOLD_CLASS = 'text-blue-600'
 
+/** Normal + hover look to match card action buttons (e.g. Öffnen). Press/hold state unchanged. */
+const CONFIRM_DEFAULT_APPEARANCE =
+  'text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200 active:animate-in active:zoom-in-95'
+
 function HoldConfirmButton({
   className,
-  variant = 'confirm',
+  variant = 'ghost',
   size = 'default',
   onConfirm,
   holdDuration = 3000,
@@ -83,7 +87,11 @@ function HoldConfirmButton({
       type="button"
       variant={variant}
       size={size}
-      className={cn('relative overflow-hidden select-none', className)}
+      className={cn(
+        'relative overflow-hidden select-none',
+        CONFIRM_DEFAULT_APPEARANCE,
+        className,
+      )}
       onMouseDown={startHold}
       onMouseUp={resetHold}
       onMouseLeave={resetHold}
