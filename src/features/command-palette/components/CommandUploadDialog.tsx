@@ -86,7 +86,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
       setUploadedFiles(newUploadedFiles)
       setShowStepper(true)
     },
-    [validateFiles, showStepper, isUploading],
+    [t, validateFiles, showStepper, isUploading],
   )
 
   const handleFileUpdate = useCallback((id: string, updates: { title: string }) => {
@@ -175,7 +175,7 @@ export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogPr
       setIsUploading(false)
       setUploadProgress(0)
     }
-  }, [uploadedFiles, getUserId, getRole, onSuccess])
+  }, [t, uploadedFiles, getUserId, getRole, onSuccess])
 
   const handleBack = useCallback(() => {
     setShowStepper(false)

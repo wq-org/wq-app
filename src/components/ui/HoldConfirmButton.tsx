@@ -87,11 +87,7 @@ function HoldConfirmButton({
       type="button"
       variant={variant}
       size={size}
-      className={cn(
-        'relative overflow-hidden select-none',
-        CONFIRM_DEFAULT_APPEARANCE,
-        className,
-      )}
+      className={cn('relative overflow-hidden select-none', CONFIRM_DEFAULT_APPEARANCE, className)}
       onMouseDown={startHold}
       onMouseUp={resetHold}
       onMouseLeave={resetHold}

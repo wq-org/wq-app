@@ -1,17 +1,25 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import type { Notification } from '../types/notification.types'
+import type { Notification, NotificationAction } from '../types/notification.types'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import { UserPlus, GraduationCap } from 'lucide-react'
 
 interface NotificationItemProps {
   notification: Notification
 }
 
+function getAction(notification: Notification): NotificationAction | undefined {
+  if (notification.action) return notification.action
+  if (notification.type === 'follow') return 'follow'
+  if (notification.type === 'join') return 'join_course'
+  return undefined
+}
+
 export default function NotificationItem({ notification }: NotificationItemProps) {
   const { t } = useTranslation('features.notification')
+  const action = getAction(notification)
 
   return (
     <div
@@ -40,52 +48,54 @@ export default function NotificationItem({ notification }: NotificationItemProps
 
       {/* Content */}
       <div className="flex-1 min-w-0">
+        {/* Name */}
         <Text
           as="p"
           variant="body"
-          className="text-base font-medium text-gray-900 mb-1"
+          className="text-base font-medium text-gray-900 mb-1 truncate"
         >
           {notification.title}
         </Text>
+
+        {/* Action line with icon */}
+        {action && (
+          <div className="flex items-center gap-2 mb-1 min-w-0">
+            {action === 'follow' ? (
+              <UserPlus className="size-4 shrink-0 text-muted-foreground" />
+            ) : (
+              <GraduationCap className="size-4 shrink-0 text-muted-foreground" />
+            )}
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-gray-600 truncate"
+            >
+              {action === 'follow'
+                ? t('item.actionWantsToFollow', { defaultValue: 'wants to follow you' })
+                : t('item.actionWantsToJoinCourse', { defaultValue: 'wants to join course' })}
+            </Text>
+          </div>
+        )}
+
+        {/* Course name */}
+        {action === 'join_course' && notification.courseName && (
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-gray-500 mb-1 truncate"
+          >
+            {t('item.courseLabel', { defaultValue: 'Course' })}: {notification.courseName}
+          </Text>
+        )}
+
+        {/* Metadata line (e.g. "12h ago • Hobby List") */}
         <Text
           as="p"
           variant="body"
-          className="text-sm text-gray-500 mb-2"
+          className="text-sm text-gray-500 mb-2 truncate"
         >
           {notification.message}
         </Text>
-
-        {/* File metadata */}
-        {notification.metadata?.fileName && (
-          <div className="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-lg w-fit mt-2">
-            <div className="w-8 h-8 bg-blue-50 rounded flex items-center justify-center">
-              <Text
-                as="span"
-                variant="small"
-                className="text-lg"
-              >
-                {notification.metadata.fileIcon || '📄'}
-              </Text>
-            </div>
-            <div className="flex items-center gap-2">
-              <Text
-                as="span"
-                variant="small"
-                className="text-sm font-medium text-gray-700"
-              >
-                {notification.metadata.fileName}
-              </Text>
-              {notification.metadata.fileSize && (
-                <Badge
-                  variant="secondary"
-                  className="text-xs"
-                >
-                  {notification.metadata.fileSize}
-                </Badge>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Action buttons */}
         {notification.actions && (
@@ -98,7 +108,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
                   e.stopPropagation()
                   notification.actions?.accept?.()
                 }}
-                className="rounded-full active:animate-in active:zoom-in-95"
+                className="rounded-md active:animate-in active:zoom-in-95"
               >
                 {t('item.actions.accept')}
               </Button>
@@ -111,7 +121,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
                   e.stopPropagation()
                   notification.actions?.decline?.()
                 }}
-                className="rounded-full active:animate-in active:zoom-in-95"
+                className="rounded-md active:animate-in active:zoom-in-95"
               >
                 {t('item.actions.decline')}
               </Button>

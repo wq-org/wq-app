@@ -3,18 +3,26 @@
     "title": "Benachrichtigungen",
     "tabs": {
       "all": "Alle",
-      "following": "Gefolgt"
+      "users": "Nutzer",
+      "course": "Kurs"
     },
     "emptyAll": {
       "title": "Keine Benachrichtigungen",
       "description": "Du bist auf dem neuesten Stand!"
     },
-    "emptyFollowing": {
-      "title": "Keine Benachrichtigungen von Gefolgten",
-      "description": "Benachrichtigungen von Personen, denen du folgst, erscheinen hier"
+    "emptyUsers": {
+      "title": "Keine Folgen-Anfragen",
+      "description": "Folgen-Anfragen erscheinen hier"
+    },
+    "emptyCourse": {
+      "title": "Keine Kurs-Beitrittsanfragen",
+      "description": "Kurs-Beitrittsanfragen erscheinen hier"
     }
   },
   "item": {
+    "actionWantsToFollow": "möchte dir folgen",
+    "actionWantsToJoinCourse": "möchte dem Kurs beitreten",
+    "courseLabel": "Kurs",
     "actions": {
       "accept": "Akzeptieren",
       "decline": "Ablehnen"

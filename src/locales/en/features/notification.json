@@ -3,18 +3,26 @@
     "title": "Notifications",
     "tabs": {
       "all": "All",
-      "following": "Following"
+      "users": "Users",
+      "course": "Course"
     },
     "emptyAll": {
       "title": "No notifications",
       "description": "You're all caught up!"
     },
-    "emptyFollowing": {
-      "title": "No following notifications",
-      "description": "Notifications from people you follow will appear here"
+    "emptyUsers": {
+      "title": "No follow requests",
+      "description": "Follow requests will appear here"
+    },
+    "emptyCourse": {
+      "title": "No course join requests",
+      "description": "Course join requests will appear here"
     }
   },
   "item": {
+    "actionWantsToFollow": "wants to follow you",
+    "actionWantsToJoinCourse": "wants to join course",
+    "courseLabel": "Course",
     "actions": {
       "accept": "Accept",
       "decline": "Decline"

@@ -122,7 +122,7 @@ export default function Lesson() {
     if (!lesson || lesson.id !== lessonId) return
     setEditorValue(parseContent(lesson.content) ?? {})
     setHasUnsavedChanges(false)
-  }, [lessonId, lesson?.id, lesson?.content])
+  }, [lessonId, lesson])
 
   const handleEditorChange = useCallback(
     (newValue: Record<string, unknown>) => {
