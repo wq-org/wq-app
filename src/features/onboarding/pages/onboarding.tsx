@@ -23,7 +23,7 @@ import { PageTitle } from '@/components/layout/PageTitle'
 
 export default function Onboarding() {
   const navigate = useNavigate()
-  const { pendingRole } = useUser()
+  const { pendingRole, profile } = useUser()
   const [step, setStep] = useState(1)
   const [accountData, setAccountData] = useState<AccountData | null>(null)
   const [institutions, setInstitutions] = useState<Institution[]>([])
@@ -42,7 +42,7 @@ export default function Onboarding() {
   }
 
   const handleFinish = () => {
-    const role = pendingRole
+    const role = profile?.role || pendingRole
     if (!role) {
       toast.error('Something went wrong', {
         description:

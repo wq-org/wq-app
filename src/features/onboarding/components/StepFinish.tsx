@@ -21,7 +21,7 @@ export default function StepFinish({
   accountData,
   institutions,
 }: StepFinishProps) {
-  const { session, pendingRole, refreshProfile } = useUser()
+  const { session, pendingRole, profile, setPendingRole, refreshProfile } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const { t } = useTranslation('features.onboarding')
@@ -37,17 +37,22 @@ export default function StepFinish({
 
     setIsSubmitting(true)
 
-    if (!pendingRole) {
+    const onboardingRole = profile?.role || pendingRole
+
+    if (!onboardingRole) {
       setIsSubmitting(false)
       // Show error or prevent submission if role is not selected using the sonner toast
       toast.error(t('finish.errors.missingRole'))
       return
     }
 
+    // Keep role in context/sessionStorage for the final navigation step.
+    setPendingRole(onboardingRole)
+
     const requiresInstitution =
-      pendingRole === USER_ROLES.STUDENT ||
-      pendingRole === USER_ROLES.TEACHER ||
-      pendingRole === USER_ROLES.INSTITUTION_ADMIN
+      onboardingRole === USER_ROLES.STUDENT ||
+      onboardingRole === USER_ROLES.TEACHER ||
+      onboardingRole === USER_ROLES.INSTITUTION_ADMIN
 
     if (requiresInstitution && institutions.length === 0) {
       setIsSubmitting(false)
@@ -67,7 +72,7 @@ export default function StepFinish({
         description: accountData.description,
         display_name: accountData.displayName,
         avatar_url: accountData.avatar.src,
-        role: pendingRole,
+        role: onboardingRole,
         is_onboarded: false,
       })
 

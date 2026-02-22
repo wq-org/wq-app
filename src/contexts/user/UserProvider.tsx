@@ -69,6 +69,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     sessionStorage.removeItem(PENDING_ROLE_KEY)
   }, [])
 
+  // Keep pendingRole aligned with profile state so onboarding can continue without relogin.
+  useEffect(() => {
+    const profileRole = profile?.role ?? null
+
+    if (profile?.is_onboarded) {
+      if (pendingRole) {
+        clearPendingRole()
+      }
+      return
+    }
+
+    if (profileRole && pendingRole !== profileRole) {
+      setPendingRole(profileRole)
+    }
+  }, [profile?.role, profile?.is_onboarded, pendingRole, clearPendingRole, setPendingRole])
+
   const refreshProfile = async () => {
     if (session?.user) {
       await fetchProfile(session.user.id)

@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useUser } from '@/contexts/user'
+import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
 
 interface SuccessPageProps {
   isOpen: boolean
@@ -45,7 +46,7 @@ export default function SuccessPage({
     const role = profile?.role || pendingRole
 
     if (role) {
-      navigate(`/${role}/dashboard`)
+      navigate(getDashboardPathForRole(role as UserRole))
     } else if (onClickHandler) {
       // Fallback to onClickHandler if no role is available
       onClickHandler()

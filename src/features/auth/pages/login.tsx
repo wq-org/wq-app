@@ -19,10 +19,12 @@ import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/au
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
 import AuthLanguageSwitcher from '../components/AuthLanguageSwitcher'
+import { useUser } from '@/contexts/user'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
+  const { setPendingRole, clearPendingRole } = useUser()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -88,11 +90,15 @@ export default function LoginPage() {
           }
 
           if (profile.data.is_onboarded !== true || !profile.data.role) {
+            if (profile.data.role) {
+              setPendingRole(profile.data.role)
+            }
             toast.info('Complete Your Profile', {
               description: 'Please complete the onboarding process',
             })
             navigate('/onboarding')
           } else {
+            clearPendingRole()
             const userRole = profile.data.role as UserRole
             const dashboardPath = getDashboardPathForRole(userRole)
             toast.success('Welcome Back!', {

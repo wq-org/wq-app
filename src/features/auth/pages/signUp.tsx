@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import {
@@ -41,6 +41,13 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
 
+  useEffect(() => {
+    // Ensure onboarding always has a role, even when user keeps the default tab.
+    if (!pendingRole) {
+      setPendingRole(selectedRole)
+    }
+  }, [pendingRole, selectedRole, setPendingRole])
+
   const handleRoleChange = (tabId: string) => {
     setSelectedRole(tabId)
     setPendingRole(tabId)
@@ -73,6 +80,8 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
+      // Persist the chosen role before auth/signup so onboarding can continue in first session.
+      setPendingRole(selectedRole)
       const responseData = await signUpUser({ email, password, role: selectedRole })
 
       if (responseData.success) {
