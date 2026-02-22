@@ -134,7 +134,7 @@ export default function CoursePreviewTab({ courseId }: CoursePreviewTabProps) {
               lessons={lessons}
               onView={(lessonId) => {
                 navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
-                  state: { previewOnly: true },
+                  state: { initialTab: 'preview' },
                 })
               }}
               showDeleteAction={false}

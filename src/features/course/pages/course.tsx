@@ -245,7 +245,7 @@ export default function Course() {
               lessons={lessons}
               onView={(lessonId) => {
                 navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
-                  state: { previewOnly: true },
+                  state: { initialTab: 'overview' },
                 })
               }}
               onDelete={async (lessonId) => {
