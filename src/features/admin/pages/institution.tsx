@@ -15,6 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Logo } from '@/components/ui/logo'
 import type { InstitutionStatus } from '../types/institution.types'
 
 interface InstitutionRow {
@@ -23,6 +25,9 @@ interface InstitutionRow {
   slug: string | null
   type: string | null
   status: string | null
+  email: string | null
+  country: string | null
+  image_url: string | null
   created_at: string
 }
 
@@ -99,8 +104,11 @@ export default function AdminInstitution() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Name</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Country</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -110,8 +118,27 @@ export default function AdminInstitution() {
                     key={inst.id}
                     className="animate-in fade-in-0 slide-in-from-bottom-2"
                   >
-                    <TableCell className="font-medium">{inst.slug ?? '—'}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={inst.image_url ?? '/favicon.ico'}
+                            alt={`${inst.name} logo`}
+                          />
+                          <AvatarFallback>
+                            <Logo
+                              showText={false}
+                              className="h-5 w-5"
+                            />
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{inst.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[320px] truncate">{inst.slug ?? '—'}</TableCell>
                     <TableCell className="capitalize">{inst.type ?? '—'}</TableCell>
+                    <TableCell>{inst.email ?? '—'}</TableCell>
+                    <TableCell>{inst.country ?? '—'}</TableCell>
                     <TableCell>
                       {inst.status ? (
                         <Badge

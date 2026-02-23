@@ -5,7 +5,7 @@ import type { InstitutionFormData } from '@/features/admin/types/institution.typ
 export async function fetchInstitutions() {
   const { data, error } = await supabase
     .from('institutions')
-    .select('id, name, slug, type, status, created_at')
+    .select('id, name, slug, type, status, email, country, image_url, created_at')
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -42,6 +42,8 @@ export async function createInstitution(data: InstitutionFormData) {
       status: data.status ?? 'active',
       description: data.description?.trim() || null,
       email: data.email?.trim() || null,
+      billing_email: data.email?.trim() || null,
+      country: data.address?.country?.trim() || null,
       website: data.website?.trim() || null,
       address: hasAddress ? data.address : null,
       social_links: hasSocialLinks ? data.socialLinks : null,

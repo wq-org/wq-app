@@ -51,12 +51,12 @@ const data = {
       url: '/dashboard',
       isActive: true,
       icon: LayoutDashboard,
-      items: [{ title: 'Create institution', url: '/new-institution' }],
     },
     {
       title: 'Institutions',
       url: '/institution',
       icon: Building2,
+      items: [{ title: 'Create institution', url: '/new-institution' }],
     },
     {
       title: 'Users',
