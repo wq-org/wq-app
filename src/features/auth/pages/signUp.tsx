@@ -215,7 +215,6 @@ export default function SignUpPage() {
               <FieldDescription className="text-center">
                 {t('signUp.hasAccount')}{' '}
                 <Button
-                  type="button"
                   variant="link"
                   onClick={() => navigate('/auth/login')}
                   className="hover:text-primary transition-colors"

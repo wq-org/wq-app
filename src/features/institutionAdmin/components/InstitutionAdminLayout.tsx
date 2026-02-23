@@ -11,8 +11,8 @@ import {
   SidebarFooter,
   // SidebarMenuSub,
   // SidebarMenuSubItem,
-} from '../../../components/ui/sidebar'
-import Layout from '../../../components/ui/layout'
+} from '@/components/ui/sidebar'
+import Layout from '@/components/ui/layout'
 // import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 
 import Spinner from '@/components/ui/spinner'
@@ -31,8 +31,8 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router'
-import { NavUser } from '../../../components/shared/nav-user'
+import { useNavigate } from 'react-router-dom'
+import { NavUser } from '@/components/shared/nav-user'
 
 export type NavigationItem = {
   title: string
