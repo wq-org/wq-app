@@ -67,7 +67,7 @@ export default function ImageTermMatchGame({
   const [editingPenalty, setEditingPenalty] = useState<Record<string, string>>({})
 
   const gameEditor = useGameEditorContext()
-  const { getUserId, getRole } = useUser()
+  const { getUserId, getRole, getUserInstitutionId } = useUser()
 
   const effectiveFilepath = imageRemovedByUser
     ? null
@@ -161,10 +161,14 @@ export default function ImageTermMatchGame({
   useEffect(() => {
     const userId = getUserId()
     const role = getRole()?.toLowerCase()
-    if (!userId || !role) return
+    const institutionId = getUserInstitutionId()
+    if (!userId || !role || !institutionId) return
     setGalleryLoading(true)
     const pathRole = role === 'teachers' ? 'teacher' : role
-    fetchFilesByRole(role, userId, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } })
+    fetchFilesByRole(institutionId, role, userId, {
+      limit: 100,
+      sortBy: { column: 'created_at', order: 'desc' },
+    })
       .then((result) => {
         if (!result.success || !result.files) {
           setGalleryImages([])
@@ -176,7 +180,7 @@ export default function ImageTermMatchGame({
         })
         return Promise.all(
           imageFiles.map(async (file) => {
-            const storagePath = `${pathRole}/${userId}/${file.name}`
+            const storagePath = `${institutionId}/${pathRole}/${userId}/${file.name}`
             const url = await getFileBlobUrl(storagePath)
             return { url: url ?? '', title: file.name, storagePath }
           }),

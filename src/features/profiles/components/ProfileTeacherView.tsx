@@ -113,7 +113,6 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
 
   const {
     isFollowing,
-    isPending,
     loading: followLoading,
     toggleFollow,
   } = useFollow(isStudentViewingTeacher ? userId : null, {
@@ -212,12 +211,10 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
       connectButtonLabel={
         isStudentViewingTeacher
           ? followLoading
-            ? t('actions.pending', { defaultValue: 'Pending' })
+            ? t('actions.connect')
             : isFollowing
               ? t('actions.connected')
-              : isPending
-                ? t('actions.pending', { defaultValue: 'Pending' })
-                : t('actions.connect')
+              : t('actions.connect')
           : undefined
       }
     >

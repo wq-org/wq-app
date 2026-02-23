@@ -85,7 +85,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     setEdges: setContextEdges,
     addNode: addContextNode,
   } = useGameStudioContext()
-  const { getUserId } = useUser()
+  const { getUserId, getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const [nodes, setNodes] = useState<Node[]>(initialNodes)
   const [edges, setEdges] = useState<Edge[]>(initialEdges)
@@ -1358,9 +1358,11 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           projectId && getUserId()
             ? async (file, nodeId) => {
                 const teacherId = getUserId()
-                if (!teacherId) return null
+                const institutionId = getUserInstitutionId()
+                if (!teacherId || !institutionId) return null
                 const title = `games_${projectId}_${nodeId}`
                 const result = await uploadFile({
+                  institutionId,
                   teacherId,
                   file,
                   title,
