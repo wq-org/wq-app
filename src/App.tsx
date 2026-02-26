@@ -138,7 +138,7 @@ function App() {
               />
 
               <Route
-                path="dashboard/new-institution"
+                path="institution/new-institution"
                 element={<NewInstitution />}
               />
               <Route

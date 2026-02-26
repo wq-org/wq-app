@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.institutions (
   created_by_admin_id UUID REFERENCES public.profiles(user_id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  image_url TEXT
+  image_url TEXT,
 );
 
 -- 3. USER_INSTITUTIONS
