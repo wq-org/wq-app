@@ -108,7 +108,6 @@ export default function AdminInstitution() {
                   <TableHead>Slug</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Country</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -138,7 +137,6 @@ export default function AdminInstitution() {
                     <TableCell className="max-w-[320px] truncate">{inst.slug ?? '—'}</TableCell>
                     <TableCell className="capitalize">{inst.type ?? '—'}</TableCell>
                     <TableCell>{inst.email ?? '—'}</TableCell>
-                    <TableCell>{inst.country ?? '—'}</TableCell>
                     <TableCell>
                       {inst.status ? (
                         <Badge

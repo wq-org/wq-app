@@ -14,7 +14,7 @@ function toOptionalPositiveInteger(value?: number) {
 export async function fetchInstitutions() {
   const { data, error } = await supabase
     .from('institutions')
-    .select('id, name, slug, type, status, email, country, image_url, created_at')
+    .select('id, name, slug, type, status, email, image_url, created_at')
     .order('created_at', { ascending: false })
 
   if (error) {
