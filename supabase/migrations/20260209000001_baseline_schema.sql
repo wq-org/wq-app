@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS public.institutions (
   name TEXT NOT NULL,
   description TEXT,
   email TEXT,
+  image_url TEXT,
   phone TEXT,
   legal_name TEXT,
   legal_form TEXT,
@@ -94,8 +95,7 @@ CREATE TABLE IF NOT EXISTS public.institutions (
   social_links JSONB,
   created_by_admin_id UUID REFERENCES public.profiles(user_id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  image_url TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 3. USER_INSTITUTIONS
