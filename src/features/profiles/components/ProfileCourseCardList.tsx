@@ -8,6 +8,7 @@ interface ProfileCourseCardListProps {
   enrollmentStatusMap?: Record<string, EnrollmentStatus>
   loadingCourseId?: string | null
   joinDisabled?: boolean
+  joinDisabledByCourseId?: Record<string, boolean>
 }
 
 export function ProfileCourseCardList({
@@ -16,6 +17,7 @@ export function ProfileCourseCardList({
   enrollmentStatusMap = {},
   loadingCourseId = null,
   joinDisabled = false,
+  joinDisabledByCourseId = {},
 }: ProfileCourseCardListProps) {
   return (
     <div className="flex gap-10 flex-wrap">
@@ -26,7 +28,7 @@ export function ProfileCourseCardList({
           onJoin={(id) => onCourseJoin?.(id)}
           joinStatus={enrollmentStatusMap[course.id]}
           isLoadingJoin={loadingCourseId === course.id}
-          joinDisabled={joinDisabled}
+          joinDisabled={joinDisabled || Boolean(joinDisabledByCourseId[course.id])}
         />
       ))}
     </div>

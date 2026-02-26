@@ -142,6 +142,11 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   }, [courses, isStudentViewingTeacher])
 
   const handleCourseJoin = async (courseId: string) => {
+    if (!isStudentViewingTeacher || !isFollowing) {
+      toast.error(tCourse('join.toasts.requestFailed'))
+      return
+    }
+
     try {
       setLoadingCourseId(courseId)
       await requestCourseJoin(courseId)
@@ -217,7 +222,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
             onCourseJoin={handleCourseJoin}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
-            joinDisabled={isStudentViewingTeacher ? !isFollowing : false}
+            joinDisabled={!isStudentViewingTeacher || !isFollowing}
           />
         ))}
       {selectedTab === 'games' &&

@@ -140,6 +140,11 @@ const TeacherProfileView = () => {
   }, [courses, isFollowing, isStudentViewingTeacher])
 
   const handleCourseJoin = async (courseId: string) => {
+    if (!isStudentViewingTeacher || !isFollowing) {
+      toast.error(tCourse('join.toasts.requestFailed'))
+      return
+    }
+
     try {
       setLoadingCourseId(courseId)
       await requestCourseJoin(courseId)

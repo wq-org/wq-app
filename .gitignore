@@ -41,3 +41,8 @@ dist-ssr
 .env.test.local.backup.8
 
 .cursor/rules/db-schema-wq.mdc
+
+auth.users.md
+profiles.md
+games.md
+institution.md

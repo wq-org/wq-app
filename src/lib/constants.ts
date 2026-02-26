@@ -10,7 +10,7 @@ export const DEFAULT_LESSON_BACKGROUND =
   'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/human_watching_phone.JPG'
 
 // Institution Constants
-export const DEFAULT_INSTITUTION_IMAGE = 'https://github.com/unovue.png'
+export const DEFAULT_INSTITUTION_IMAGE = '/favicon.ico'
 
 // Game Studio Constants
 export const MAX_END_NODE_INCOMING_CONNECTIONS = 10

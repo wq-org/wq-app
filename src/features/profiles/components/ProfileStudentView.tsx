@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
@@ -17,6 +17,8 @@ import { getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course/a
 import type { EnrollmentStatus } from '@/features/course/types/course.types'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
+import { useUser } from '@/contexts/user'
 
 interface ProfileStudentViewProps {
   profile: Profile
@@ -85,9 +87,13 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   const [enrollmentStatusMap, setEnrollmentStatusMap] = useState<Record<string, EnrollmentStatus>>(
     {},
   )
+  const [followedTeacherIds, setFollowedTeacherIds] = useState<string[]>([])
   const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null)
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { t } = useTranslation('features.course')
+  const { getRole } = useUser()
+  const viewerRole = getRole()?.toLowerCase()
+  const canJoinPublishedCourses = viewerRole === 'student'
 
   // Fetch published courses
   useEffect(() => {
@@ -141,7 +147,42 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
       })
   }, [courses])
 
+  useEffect(() => {
+    if (!canJoinPublishedCourses) {
+      setFollowedTeacherIds([])
+      return
+    }
+
+    getFollowedTeacherIds()
+      .then(setFollowedTeacherIds)
+      .catch((error) => {
+        console.error('Error fetching followed teacher ids:', error)
+        setFollowedTeacherIds([])
+      })
+  }, [canJoinPublishedCourses])
+
+  const followedTeacherIdSet = useMemo(() => new Set(followedTeacherIds), [followedTeacherIds])
+
+  const joinDisabledByCourseId = useMemo(() => {
+    const disabledMap: Record<string, boolean> = {}
+    courses.forEach((course) => {
+      disabledMap[course.id] =
+        !canJoinPublishedCourses || !followedTeacherIdSet.has(course.teacher_id)
+    })
+    return disabledMap
+  }, [courses, canJoinPublishedCourses, followedTeacherIdSet])
+
   const handleCourseJoin = async (courseId: string) => {
+    const selectedCourse = courses.find((course) => course.id === courseId)
+    if (
+      !canJoinPublishedCourses ||
+      !selectedCourse ||
+      !followedTeacherIdSet.has(selectedCourse.teacher_id)
+    ) {
+      toast.error(t('join.toasts.requestFailed'))
+      return
+    }
+
     try {
       setLoadingCourseId(courseId)
       await requestCourseJoin(courseId)
@@ -214,6 +255,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
             onCourseJoin={handleCourseJoin}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
+            joinDisabledByCourseId={joinDisabledByCourseId}
           />
         ))}
 
