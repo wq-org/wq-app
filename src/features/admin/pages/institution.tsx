@@ -61,7 +61,7 @@ export default function AdminInstitution() {
           <h1 className="text-2xl font-semibold text-gray-900">Institutions</h1>
           <Button
             variant="outline"
-            onClick={() => navigate(`/${role}/dashboard/new-institution`)}
+            onClick={() => navigate(`/${role}/institution/new-institution`)}
             className="active:animate-in active:zoom-in-95"
           >
             New Institution

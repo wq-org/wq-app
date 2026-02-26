@@ -104,9 +104,7 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   }
   const role = getRole()
 
-  useEffect(() => {
-    console.log('profile :>> ', profile)
-  }, [profile, role])
+  useEffect(() => {}, [profile, role])
 
   if (loading) {
     return (

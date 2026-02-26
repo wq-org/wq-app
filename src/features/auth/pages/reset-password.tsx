@@ -14,7 +14,32 @@ import Spinner from '@/components/ui/spinner'
 
 type PageState = 'loading' | 'invalid' | 'form' | 'success'
 
-const SESSION_TIMEOUT_MS = 3000
+const SESSION_TIMEOUT_MS = 600000
+const SESSION_POLL_INTERVAL_MS = 1500
+
+function getAuthErrorFromUrl(): string | null {
+  if (typeof window === 'undefined') return null
+
+  const searchParams = new URLSearchParams(window.location.search)
+  const hash = window.location.hash.startsWith('#')
+    ? window.location.hash.slice(1)
+    : window.location.hash
+  const hashParams = new URLSearchParams(hash)
+
+  const errorDescription =
+    searchParams.get('error_description') || hashParams.get('error_description')
+  if (errorDescription) {
+    return errorDescription
+  }
+
+  const hasExplicitAuthError =
+    Boolean(searchParams.get('error')) ||
+    Boolean(searchParams.get('error_code')) ||
+    Boolean(hashParams.get('error')) ||
+    Boolean(hashParams.get('error_code'))
+
+  return hasExplicitAuthError ? 'This password reset link is invalid or expired.' : null
+}
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -24,42 +49,71 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [invalidReason, setInvalidReason] = useState(
+    'This password reset link is no longer valid. Please request a new one.',
+  )
 
   // Verify that a valid recovery session exists
   useEffect(() => {
     let settled = false
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    let intervalId: ReturnType<typeof setInterval> | null = null
 
-    const settle = (state: PageState) => {
+    const settle = (state: PageState, reason?: string) => {
       if (settled) return
       settled = true
-      clearTimeout(timeoutId)
+      if (timeoutId) clearTimeout(timeoutId)
+      if (intervalId) clearInterval(intervalId)
+      if (state === 'invalid' && reason) {
+        setInvalidReason(reason)
+      }
       setPageState(state)
+    }
+
+    const explicitAuthError = getAuthErrorFromUrl()
+    if (explicitAuthError) {
+      settle('invalid', explicitAuthError)
+      return () => {}
     }
 
     // Listen for auth state changes (PASSWORD_RECOVERY or SIGNED_IN from the recovery link)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session) {
         settle('form')
       }
     })
 
-    // Also check if there's already a session (user may have landed here with the token already processed)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        settle('form')
+    const checkSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
+
+        if (session) {
+          settle('form')
+        }
+      } catch {
+        // Retry until timeout; transient auth fetch failures should not immediately invalidate the flow.
       }
-    })
+    }
+
+    // Check immediately and continue polling in case event delivery is delayed.
+    void checkSession()
+    intervalId = setInterval(() => {
+      void checkSession()
+    }, SESSION_POLL_INTERVAL_MS)
 
     // Timeout: if no session detected within the threshold, show invalid state
-    const timeoutId = setTimeout(() => {
+    timeoutId = setTimeout(() => {
       settle('invalid')
     }, SESSION_TIMEOUT_MS)
 
     return () => {
       subscription.unsubscribe()
-      clearTimeout(timeoutId)
+      if (timeoutId) clearTimeout(timeoutId)
+      if (intervalId) clearInterval(intervalId)
     }
   }, [])
 
@@ -128,7 +182,7 @@ export default function ResetPasswordPage() {
             variant="body"
             className="text-sm text-muted-foreground text-balance"
           >
-            This password reset link is no longer valid. Please request a new one.
+            {invalidReason}
           </Text>
           <Button
             onClick={() => navigate('/auth/forgot-password')}

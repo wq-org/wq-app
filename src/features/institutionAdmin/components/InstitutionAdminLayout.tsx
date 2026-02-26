@@ -96,12 +96,8 @@ export default function InstitutionAdminLayout({ children }: { children: React.R
   function navigateTo(path: string) {
     navigate(`/institution_admin}${path}`)
   }
-  console.log('profile :>> ', profile)
 
-  useEffect(() => {
-    console.log('profile :>> ', profile)
-    console.log('role :>> ', role)
-  }, [profile, role])
+  useEffect(() => {}, [profile, role])
 
   if (loading) {
     return (

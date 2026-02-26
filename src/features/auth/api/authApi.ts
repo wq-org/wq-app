@@ -35,6 +35,33 @@ function normalizeRole(role: string | null | undefined): string | null {
   return r === '' ? null : r
 }
 
+function normalizeBaseUrl(url: string): string {
+  return url.trim().replace(/\/+$/, '')
+}
+
+function buildAppUrl(path: string): string {
+  const normalizedPath = path === '' ? '' : path.startsWith('/') ? path : `/${path}`
+
+  const rawEnvBaseUrl = import.meta.env.VITE_PUBLIC_APP_URL?.trim()
+  const envBaseUrl = rawEnvBaseUrl ? normalizeBaseUrl(rawEnvBaseUrl) : null
+
+  const browserOrigin =
+    typeof window !== 'undefined' && window.location.origin
+      ? normalizeBaseUrl(window.location.origin)
+      : null
+
+  // In development we prefer the currently opened host/port to avoid localhost vs 127.0.0.1 mismatches.
+  const baseUrl = import.meta.env.DEV
+    ? (browserOrigin ?? envBaseUrl)
+    : (envBaseUrl ?? browserOrigin)
+
+  if (!baseUrl) {
+    throw new Error('Missing app base URL. Set VITE_PUBLIC_APP_URL.')
+  }
+
+  return `${baseUrl}${normalizedPath}`
+}
+
 /**
  * Sign up a new user
  * REQUIRED: Role must be one of the valid USER_ROLES (student, teacher, institution_admin, super_admin)
@@ -67,7 +94,7 @@ export async function signUpUser(signUpData: AuthData): Promise<AuthApiResponse>
       email: signUpData.email,
       password: signUpData.password,
       options: {
-        emailRedirectTo: import.meta.env.VITE_PUBLIC_APP_URL,
+        emailRedirectTo: buildAppUrl(''),
         data: {
           role: normalizedRole,
         },
@@ -146,9 +173,7 @@ export async function logoutUser(): Promise<void> {
  */
 export async function requestPasswordReset(email: string): Promise<void> {
   try {
-    const redirectUrl = `${
-      import.meta.env.VITE_PUBLIC_APP_URL || window.location.origin
-    }/auth/reset-password`
+    const redirectUrl = buildAppUrl('/auth/reset-password')
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
