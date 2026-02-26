@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { InstitutionFormData } from '@/features/admin/types/institution.types'
+import type { InstitutionFormData, InstitutionRow } from '@/features/admin/types/institution.types'
 
 function toOptionalText(value?: string) {
   const normalized = value?.trim()
@@ -22,7 +22,7 @@ export async function fetchInstitutions() {
     throw error
   }
 
-  return data
+  return data as InstitutionRow[]
 }
 
 /**

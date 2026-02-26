@@ -17,18 +17,7 @@ import {
 } from '@/components/ui/table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Logo } from '@/components/ui/logo'
-import type { InstitutionStatus } from '../types/institution.types'
-
-interface InstitutionRow {
-  id: string
-  name: string
-  slug: string | null
-  type: string | null
-  status: string | null
-  email: string | null
-  image_url: string | null
-  created_at: string
-}
+import type { InstitutionStatus, InstitutionRow } from '../types/institution.types'
 
 const STATUS_VARIANT: Record<
   InstitutionStatus,

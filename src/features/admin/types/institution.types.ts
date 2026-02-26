@@ -53,3 +53,14 @@ export interface InstitutionFormData {
   socialLinks: SocialLinks
   imageUrl: string
 }
+
+export type InstitutionRow = {
+  id: string
+  name: string
+  slug: string | null
+  type: string | null
+  status: string | null
+  email: string | null
+  image_url: string | null
+  created_at: string
+}
