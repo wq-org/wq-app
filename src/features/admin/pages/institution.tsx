@@ -26,7 +26,6 @@ interface InstitutionRow {
   type: string | null
   status: string | null
   email: string | null
-  country: string | null
   image_url: string | null
   created_at: string
 }
