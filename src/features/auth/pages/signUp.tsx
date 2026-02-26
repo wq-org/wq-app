@@ -42,11 +42,10 @@ export default function SignUpPage() {
   const [emailError, setEmailError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Ensure onboarding always has a role, even when user keeps the default tab.
-    if (!pendingRole) {
-      setPendingRole(selectedRole)
+    if (pendingRole && pendingRole !== selectedRole) {
+      setSelectedRole(pendingRole)
     }
-  }, [pendingRole, selectedRole, setPendingRole])
+  }, [pendingRole, selectedRole])
 
   const handleRoleChange = (tabId: string) => {
     setSelectedRole(tabId)
@@ -128,7 +127,6 @@ export default function SignUpPage() {
             {t('signUp.subtitle')}
           </Text>
         </div>
-
         {/* Role Tabs */}
         <SelectTabs
           tabs={roleTabs}
@@ -137,7 +135,6 @@ export default function SignUpPage() {
           variant="compact"
           className="justify-center"
         />
-
         {/* Form */}
         <form
           onSubmit={handleOnSubmitSignUp}
@@ -210,21 +207,23 @@ export default function SignUpPage() {
             </Field>
 
             <FieldSeparator>{t('signUp.or')}</FieldSeparator>
-
-            <Field>
-              <FieldDescription className="text-center">
-                {t('signUp.hasAccount')}{' '}
-                <Button
-                  variant="link"
-                  onClick={() => navigate('/auth/login')}
-                  className="hover:text-primary transition-colors"
-                >
-                  {t('signUp.loginLink')}
-                </Button>
-              </FieldDescription>
-            </Field>
           </FieldGroup>
         </form>
+        <div className="flex justify-center items-center gap-0">
+          <Text
+            className="text-center"
+            variant="small"
+          >
+            {t('signUp.hasAccount')}{' '}
+          </Text>
+          <Button
+            variant="link"
+            onClick={() => navigate('/auth/login')}
+            className="hover:text-primary transition-colors"
+          >
+            {t('signUp.loginLink')}
+          </Button>
+        </div>
       </div>
     </AuthCardLayout>
   )

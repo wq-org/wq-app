@@ -9,10 +9,9 @@ import { createCourse } from '@/features/course/api/coursesApi'
 import { createInstitution } from '@/features/auth/api/authApi'
 import { createGame } from '@/features/command-palette/api/commandPaletteApi'
 import { createGameForStudio } from '@/features/game-studio/api/gameStudioApi'
-import { createNote } from '@/features/notes'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
-import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft, StickyNote } from 'lucide-react'
+import { BookOpen, Building2, Gamepad2, ChevronRight, MoveLeft } from 'lucide-react'
 import type { AddType } from '../types/command-bar.types'
 import type { Roles } from '@/components/layout/config'
 import { Text } from '@/components/ui/text'
@@ -21,9 +20,6 @@ import { useTranslation } from 'react-i18next'
 // Constants for role arrays to minimize duplication
 const ADMIN_AND_TEACHER_ROLES: Roles[] = ['super_admin', 'institution_admin', 'teacher']
 const SUPER_ADMIN_ONLY: Roles[] = ['super_admin']
-const TEACHER_AND_STUDENT_ROLES: Roles[] = ['teacher', 'student']
-void StickyNote
-void TEACHER_AND_STUDENT_ROLES
 
 // This function calls create based on type
 const createByType = async (
@@ -79,10 +75,9 @@ interface AddOption {
 interface CommandAddDialogProps {
   role?: string
   onCourseCreated?: () => void
-  onNoteCreated?: () => void
 }
 
-const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDialogProps) => {
+const CommandAddDialog = ({ role, onCourseCreated }: CommandAddDialogProps) => {
   const { t } = useTranslation('features.commandPalette')
   const navigate = useNavigate()
   const { profile } = useUser()
@@ -114,13 +109,6 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
       icon: Gamepad2,
       availableForRoles: ADMIN_AND_TEACHER_ROLES,
     },
-    // {
-    //   type: 'notes',
-    //   label: 'New Notes',
-    //   description: 'Create a new note',
-    //   icon: StickyNote,
-    //   availableForRoles: TEACHER_AND_STUDENT_ROLES,
-    // },
   ]
 
   // Filter options based on role
@@ -143,23 +131,6 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
         setDescription('')
         setSelectedType(null)
         navigate(`/teacher/canvas/${created.id}`)
-        return
-      }
-
-      if (selectedType === 'notes') {
-        if (!profile?.user_id) {
-          throw new Error('User ID is required to create notes')
-        }
-        await createNote({
-          userId: profile.user_id,
-          title,
-          description,
-          role: role || 'student',
-        })
-        onNoteCreated?.()
-        setTitle('')
-        setDescription('')
-        setSelectedType(null)
         return
       }
 
@@ -201,8 +172,6 @@ const CommandAddDialog = ({ role, onCourseCreated, onNoteCreated }: CommandAddDi
         return t('addDialog.types.institution')
       case 'game':
         return t('addDialog.types.game')
-      case 'notes':
-        return t('addDialog.types.notes')
       case 'node':
         return t('addDialog.types.node')
       default:

@@ -6,11 +6,7 @@ import { useTranslation } from 'react-i18next'
 import confetti from 'canvas-confetti'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getTeacherCourses } from '@/features/course/api/coursesApi'
-import {
-  cancelCourseJoin,
-  getMyEnrollmentStatusMap,
-  requestCourseJoin,
-} from '@/features/course/api/enrollmentsApi'
+import { getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course/api/enrollmentsApi'
 import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
@@ -148,26 +144,12 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   const handleCourseJoin = async (courseId: string) => {
     try {
       setLoadingCourseId(courseId)
-      const enrollment = await requestCourseJoin(courseId)
-      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
-      toast.success(tCourse('join.toasts.requested'))
+      await requestCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: 'accepted' }))
+      toast.success(tCourse('join.status.joined'))
     } catch (error) {
       console.error('Error joining course:', error)
       toast.error(tCourse('join.toasts.requestFailed'))
-    } finally {
-      setLoadingCourseId(null)
-    }
-  }
-
-  const handleCourseJoinCancel = async (courseId: string) => {
-    try {
-      setLoadingCourseId(courseId)
-      const enrollment = await cancelCourseJoin(courseId)
-      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
-      toast.success(tCourse('join.toasts.cancelled'))
-    } catch (error) {
-      console.error('Error cancelling join request:', error)
-      toast.error(tCourse('join.toasts.cancelFailed'))
     } finally {
       setLoadingCourseId(null)
     }
@@ -233,7 +215,6 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
-            onCourseJoinCancel={handleCourseJoinCancel}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
             joinDisabled={isStudentViewingTeacher ? !isFollowing : false}

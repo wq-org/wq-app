@@ -215,22 +215,23 @@ export default function LoginPage() {
             </Field>
 
             <FieldSeparator>{t('login.or')}</FieldSeparator>
-
-            <Field>
-              <FieldDescription className="text-center">
-                {t('login.noAccount')}{' '}
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => navigate('/auth/signup')}
-                  className="hover:text-primary transition-colors"
-                >
-                  {t('login.signUpLink')}
-                </Button>
-              </FieldDescription>
-            </Field>
           </FieldGroup>
         </form>
+        <div className="flex justify-center items-center gap-0">
+          <Text
+            className="text-center"
+            variant="small"
+          >
+            {t('login.noAccount')}{' '}
+          </Text>
+          <Button
+            variant="link"
+            onClick={() => navigate('/auth/signUp')}
+            className="hover:text-primary transition-colors"
+          >
+            {t('signUp.loginLink')}
+          </Button>
+        </div>
       </div>
     </AuthCardLayout>
   )

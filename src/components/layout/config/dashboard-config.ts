@@ -41,7 +41,6 @@ const createTeacherTabs = (): DashboardTab[] => [
   { id: 'courses', label: getTabLabel('courses'), icon: Shapes },
   { id: 'files', label: getTabLabel('files'), icon: FolderOpen },
   { id: 'games', label: getTabLabel('games'), icon: Gamepad2 },
-  // { id: 'notes', label: getTabLabel('notes'), icon: StickyNote },
   // { id: 'students', label: getTabLabel('students'), icon: Users2 },
   // { id: 'todos', label: getTabLabel('todos'), icon: LayoutList },
 ]
@@ -50,7 +49,6 @@ const createStudentTabs = (): DashboardTab[] => [
   { id: 'courses', label: getTabLabel('courses'), icon: Shapes },
   { id: 'games', label: getTabLabel('games'), icon: Gamepad2 },
   { id: 'files', label: getTabLabel('files'), icon: FolderOpen },
-  // { id: 'notes', label: getTabLabel('notes'), icon: StickyNote },
   // { id: 'todos', label: getTabLabel('todos'), icon: LayoutList },
 ]
 

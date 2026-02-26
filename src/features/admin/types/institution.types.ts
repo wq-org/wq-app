@@ -1,8 +1,16 @@
-export type InstitutionType = 'school' | 'university' | 'college' | 'organization' | 'other'
+export type InstitutionType =
+  | 'school'
+  | 'university'
+  | 'college'
+  | 'organization'
+  | 'hospital'
+  | 'other'
 export type InstitutionStatus = 'active' | 'inactive' | 'suspended' | 'pending'
+export type InvoiceLanguage = 'de' | 'en'
 
 export interface AddressJsonb {
   street?: string
+  addressLine2?: string
   city?: string
   state?: string
   country?: string
@@ -22,7 +30,26 @@ export interface InstitutionFormData {
   description: string
   email: string
   website: string
+  phone: string
+  legalName: string
+  legalForm: string
+  registrationNumber: string
+  taxId: string
+  vatId: string
+  billingEmail: string
+  billingContactName: string
+  billingContactPhone: string
+  primaryContactName: string
+  primaryContactEmail: string
+  primaryContactPhone: string
+  primaryContactRole: string
+  invoiceLanguage: InvoiceLanguage
+  paymentTerms: number
   address: AddressJsonb
+  institutionNumber: string
+  numberOfBeds?: number
+  departments: string[]
+  accreditation: string
   socialLinks: SocialLinks
   imageUrl: string
 }

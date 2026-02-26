@@ -13,8 +13,6 @@ import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
-import { fetchNotesByUser } from '@/features/notes'
-import type { Note } from '@/features/notes'
 import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
 import { getMyAcceptedCourses, type EnrollmentCourse } from '@/features/course/api/enrollmentsApi'
 import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
@@ -50,10 +48,6 @@ export default function Dashboard() {
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
-  const [notes, setNotes] = useState<Note[]>([])
-  const [notesLoading, setNotesLoading] = useState(false)
-  void notes
-  void notesLoading
   const navigate = useNavigate()
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
@@ -152,40 +146,6 @@ export default function Dashboard() {
       loadFiles()
     }
   }, [profile?.user_id, selectedTab, loadFiles])
-
-  const loadNotes = useCallback(async () => {
-    const userId = getUserId()
-    if (!userId || loading) return
-    setNotesLoading(true)
-    try {
-      const notesData = await fetchNotesByUser(userId)
-      setNotes(notesData)
-    } catch {
-      setNotes([])
-    } finally {
-      setNotesLoading(false)
-    }
-  }, [getUserId, loading])
-
-  // const handleDeleteNote = useCallback(
-  //   async (noteId: string) => {
-  //     try {
-  //       await deleteNote(noteId)
-  //       await loadNotes()
-  //     } catch (error) {
-  //       console.error('Error deleting note:', error)
-  //       const { toast } = await import('sonner')
-  //       toast.error('Failed to delete note')
-  //     }
-  //   },
-  //   [loadNotes],
-  // )
-
-  useEffect(() => {
-    if (selectedTab === 'notes') {
-      loadNotes()
-    }
-  }, [selectedTab, loadNotes])
 
   const handleClickTab = (tabId: string) => {
     setSelectedTab(tabId)
@@ -299,20 +259,11 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-        {/* {selectedTab === 'notes' && (
-          <NotesTabView
-            notes={notes}
-            loading={notesLoading}
-            onRefresh={loadNotes}
-            onDelete={handleDeleteNote}
-          />
-        )} */}
       </DashboardLayout>
 
       <CommandPalette
         commandBarContext="student"
         onFilesUploaded={loadFiles}
-        onNoteCreated={loadNotes}
       />
     </>
   )

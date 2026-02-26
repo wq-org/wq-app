@@ -1,56 +1,12 @@
 import { supabase } from '@/lib/supabase'
-import { getCourseJoinRequests, respondCourseJoin } from '@/features/course/api/enrollmentsApi'
 import {
   getTeacherPendingFollowRequests,
   respondFollowRequest,
 } from '@/features/profiles/api/followApi'
 import type {
-  NotificationCourseJoinRequest,
   NotificationFollowRequest,
   NotificationProfileSummary,
 } from '../types/notification-requests.types'
-
-export async function getPendingCourseJoinRequestsForNotifications(): Promise<
-  NotificationCourseJoinRequest[]
-> {
-  const rows = await getCourseJoinRequests()
-
-  return rows
-    .filter((row) => row.status === 'pending')
-    .map((row) => ({
-      course_id: row.course_id,
-      student_id: row.student_id,
-      status: row.status,
-      requested_at: row.requested_at,
-      responded_at: row.responded_at,
-      responded_by: row.responded_by,
-      note: row.note,
-      enrolled_at: row.enrolled_at,
-      course: row.course
-        ? {
-            id: row.course.id,
-            title: row.course.title,
-            teacher_id: row.course.teacher_id,
-          }
-        : null,
-      student: row.student
-        ? {
-            user_id: row.student.user_id,
-            display_name: row.student.display_name,
-            avatar_url: row.student.avatar_url,
-            username: row.student.username,
-          }
-        : null,
-    }))
-}
-
-export async function respondToCourseJoinRequest(
-  courseId: string,
-  studentId: string,
-  action: 'accept' | 'reject',
-) {
-  return respondCourseJoin(courseId, studentId, action)
-}
 
 async function getProfileMapByUserIds(
   userIds: string[],

@@ -13,11 +13,7 @@ import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
-import {
-  cancelCourseJoin,
-  getMyEnrollmentStatusMap,
-  requestCourseJoin,
-} from '@/features/course/api/enrollmentsApi'
+import { getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course/api/enrollmentsApi'
 import type { EnrollmentStatus } from '@/features/course/types/course.types'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
@@ -148,26 +144,12 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   const handleCourseJoin = async (courseId: string) => {
     try {
       setLoadingCourseId(courseId)
-      const enrollment = await requestCourseJoin(courseId)
-      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
-      toast.success(t('join.toasts.requested'))
+      await requestCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: 'accepted' }))
+      toast.success(t('join.status.joined'))
     } catch (error) {
       console.error('Error joining course:', error)
       toast.error(t('join.toasts.requestFailed'))
-    } finally {
-      setLoadingCourseId(null)
-    }
-  }
-
-  const handleCourseJoinCancel = async (courseId: string) => {
-    try {
-      setLoadingCourseId(courseId)
-      const enrollment = await cancelCourseJoin(courseId)
-      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
-      toast.success(t('join.toasts.cancelled'))
-    } catch (error) {
-      console.error('Error cancelling join request:', error)
-      toast.error(t('join.toasts.cancelFailed'))
     } finally {
       setLoadingCourseId(null)
     }
@@ -230,7 +212,6 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
-            onCourseJoinCancel={handleCourseJoinCancel}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
           />

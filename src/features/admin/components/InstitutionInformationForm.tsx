@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, type FormEvent } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ import type {
   InstitutionStatus,
   InstitutionFormData,
   AddressJsonb,
+  InvoiceLanguage,
 } from '@/features/admin/types/institution.types'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
@@ -25,6 +26,7 @@ const INSTITUTION_TYPES: { value: InstitutionType; label: string }[] = [
   { value: 'university', label: 'University' },
   { value: 'college', label: 'College' },
   { value: 'organization', label: 'Organization' },
+  { value: 'hospital', label: 'Hospital' },
   { value: 'other', label: 'Other' },
 ]
 
@@ -33,6 +35,20 @@ const INSTITUTION_STATUSES: { value: InstitutionStatus; label: string }[] = [
   { value: 'inactive', label: 'Inactive' },
   { value: 'suspended', label: 'Suspended' },
   { value: 'pending', label: 'Pending' },
+]
+
+const LEGAL_FORMS = [
+  { value: 'gmbh', label: 'GmbH' },
+  { value: 'ggmbh', label: 'gGmbH (gemeinnutzig)' },
+  { value: 'ag', label: 'AG' },
+  { value: 'ev', label: 'e.V.' },
+  { value: 'kg', label: 'KG' },
+  { value: 'other', label: 'Other' },
+]
+
+const INVOICE_LANGUAGES: { value: InvoiceLanguage; label: string }[] = [
+  { value: 'de', label: 'German (DE)' },
+  { value: 'en', label: 'English (EN)' },
 ]
 
 interface InstitutionFormProps {
@@ -48,7 +64,26 @@ const initialFormData: InstitutionFormData = {
   description: '',
   email: '',
   website: '',
-  address: {},
+  phone: '',
+  legalName: '',
+  legalForm: '',
+  registrationNumber: '',
+  taxId: '',
+  vatId: '',
+  billingEmail: '',
+  billingContactName: '',
+  billingContactPhone: '',
+  primaryContactName: '',
+  primaryContactEmail: '',
+  primaryContactPhone: '',
+  primaryContactRole: '',
+  invoiceLanguage: 'de',
+  paymentTerms: 30,
+  address: { country: 'Germany' },
+  institutionNumber: '',
+  numberOfBeds: undefined,
+  departments: [],
+  accreditation: '',
   socialLinks: { linkedin: '', instagram: '' },
   imageUrl: DEFAULT_INSTITUTION_IMAGE,
 }
@@ -60,6 +95,11 @@ function slugify(text: string): string {
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+function parseOptionalNumber(value: string): number | undefined {
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : undefined
 }
 
 export default function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
@@ -77,11 +117,9 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
     [isSlugTouched],
   )
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (onSubmit) {
-      onSubmit(formData)
-    }
+    onSubmit?.(formData)
     setFormData(initialFormData)
     setIsSlugTouched(false)
   }
@@ -106,6 +144,15 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
     }))
   }
 
+  const handleDepartmentsChange = (value: string) => {
+    const departments = value
+      .split(',')
+      .map((department) => department.trim())
+      .filter((department) => department.length > 0)
+
+    setFormData((prev) => ({ ...prev, departments }))
+  }
+
   const isFormValid =
     formData.name.trim().length > 0 &&
     formData.slug.trim().length > 0 &&
@@ -113,11 +160,18 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
     formData.description.trim().length > 0 &&
     formData.email.trim().length > 0 &&
     formData.website.trim().length > 0 &&
+    formData.phone.trim().length > 0 &&
+    formData.legalName.trim().length > 0 &&
+    formData.legalForm.trim().length > 0 &&
+    formData.vatId.trim().length > 0 &&
+    formData.primaryContactName.trim().length > 0 &&
+    formData.primaryContactEmail.trim().length > 0 &&
+    formData.billingEmail.trim().length > 0 &&
     (formData.address.street ?? '').trim().length > 0 &&
     (formData.address.city ?? '').trim().length > 0 &&
-    (formData.address.state ?? '').trim().length > 0 &&
     (formData.address.postalCode ?? '').trim().length > 0 &&
     (formData.address.country ?? '').trim().length > 0 &&
+    formData.paymentTerms > 0 &&
     (formData.socialLinks.linkedin ?? '').trim().length > 0 &&
     (formData.socialLinks.instagram ?? '').trim().length > 0
 
@@ -134,7 +188,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
             variant="body"
             className="text-sm text-gray-500 mt-2 font-normal"
           >
-            Add the basic details for your institution.
+            Add the basic details for your institution. Fields marked with * are required.
           </Text>
         </CardHeader>
 
@@ -155,7 +209,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
             </Label>
             <Input
               id="institution-name"
-              placeholder="e.g., Harvard University"
+              placeholder="e.g., Kreiskliniken Reutlingen"
               value={formData.name}
               onChange={(e) => handleNameChange(e.target.value)}
               required
@@ -179,7 +233,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
             </Label>
             <Input
               id="institution-slug"
-              placeholder="harvard-university"
+              placeholder="kreiskliniken-reutlingen"
               value={formData.slug}
               onChange={(e) => {
                 setIsSlugTouched(true)
@@ -196,79 +250,81 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
             </Text>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="institution-type"
-              className="font-normal text-gray-700"
-            >
-              Type{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="institution-type"
+                className="font-normal text-gray-700"
               >
-                *
-              </Text>
-            </Label>
-            <Select
-              value={formData.type || '__none__'}
-              onValueChange={(v) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  type: v === '__none__' ? '' : (v as InstitutionType),
-                }))
-              }
-            >
-              <SelectTrigger
-                id="institution-type"
-                className="w-full justify-between"
+                Type{' '}
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-red-500"
+                >
+                  *
+                </Text>
+              </Label>
+              <Select
+                value={formData.type || '__none__'}
+                onValueChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    type: v === '__none__' ? '' : (v as InstitutionType),
+                  }))
+                }
               >
-                <SelectValue placeholder="Select institution type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">Select institution type</SelectItem>
-                {INSTITUTION_TYPES.map(({ value, label }) => (
-                  <SelectItem
-                    key={value}
-                    value={value}
-                  >
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                <SelectTrigger
+                  id="institution-type"
+                  className="w-full justify-between"
+                >
+                  <SelectValue placeholder="Select institution type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">Select institution type</SelectItem>
+                  {INSTITUTION_TYPES.map(({ value, label }) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                    >
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="institution-status"
-              className="font-normal text-gray-700"
-            >
-              Status
-            </Label>
-            <Select
-              value={formData.status}
-              onValueChange={(v) =>
-                setFormData((prev) => ({ ...prev, status: v as InstitutionStatus }))
-              }
-            >
-              <SelectTrigger
-                id="institution-status"
-                className="w-full justify-between"
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="institution-status"
+                className="font-normal text-gray-700"
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {INSTITUTION_STATUSES.map(({ value, label }) => (
-                  <SelectItem
-                    key={value}
-                    value={value}
-                  >
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                Status
+              </Label>
+              <Select
+                value={formData.status}
+                onValueChange={(v) =>
+                  setFormData((prev) => ({ ...prev, status: v as InstitutionStatus }))
+                }
+              >
+                <SelectTrigger
+                  id="institution-status"
+                  className="w-full justify-between"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {INSTITUTION_STATUSES.map(({ value, label }) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                    >
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -295,28 +351,54 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="institution-email"
-              className="font-normal text-gray-700"
-            >
-              Email{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="institution-email"
+                className="font-normal text-gray-700"
               >
-                *
-              </Text>
-            </Label>
-            <Input
-              id="institution-email"
-              type="email"
-              placeholder="contact@institution.edu"
-              value={formData.email}
-              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-              className="text-base py-2 px-3 w-full"
-            />
+                Email{' '}
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-red-500"
+                >
+                  *
+                </Text>
+              </Label>
+              <Input
+                id="institution-email"
+                type="email"
+                placeholder="contact@institution.de"
+                value={formData.email}
+                onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                className="text-base py-2 px-3 w-full"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="institution-phone"
+                className="font-normal text-gray-700"
+              >
+                Phone{' '}
+                <Text
+                  as="span"
+                  variant="small"
+                  className="text-red-500"
+                >
+                  *
+                </Text>
+              </Label>
+              <Input
+                id="institution-phone"
+                type="tel"
+                placeholder="+49 7121 200-0"
+                value={formData.phone}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                className="text-base py-2 px-3 w-full"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -336,7 +418,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
             <Input
               id="institution-website"
               type="url"
-              placeholder="https://www.institution.edu"
+              placeholder="https://www.institution.de"
               value={formData.website}
               onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
               className="text-base py-2 px-3 w-full"
@@ -344,32 +426,359 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
           </div>
 
           <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-normal text-gray-700">
-              Address{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
-            </Label>
+            <Label className="font-semibold text-gray-700">Legal Information</Label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2 sm:col-span-2">
+                <Label
+                  htmlFor="institution-legal-name"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Legal Name *
+                </Label>
+                <Input
+                  id="institution-legal-name"
+                  placeholder="Kreiskliniken Reutlingen gGmbH"
+                  value={formData.legalName}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, legalName: e.target.value }))}
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-legal-form"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Legal Form *
+                </Label>
+                <Select
+                  value={formData.legalForm || '__none__'}
+                  onValueChange={(v) =>
+                    setFormData((prev) => ({ ...prev, legalForm: v === '__none__' ? '' : v }))
+                  }
+                >
+                  <SelectTrigger
+                    id="institution-legal-form"
+                    className="w-full justify-between"
+                  >
+                    <SelectValue placeholder="Select legal form" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Select legal form</SelectItem>
+                    {LEGAL_FORMS.map(({ value, label }) => (
+                      <SelectItem
+                        key={value}
+                        value={value}
+                      >
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-vat-id"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  VAT ID (USt-ID) *
+                </Label>
+                <Input
+                  id="institution-vat-id"
+                  placeholder="DE123456789"
+                  value={formData.vatId}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, vatId: e.target.value }))}
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-registration-number"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Handelsregister (HRB)
+                </Label>
+                <Input
+                  id="institution-registration-number"
+                  placeholder="HRB 12345"
+                  value={formData.registrationNumber}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, registrationNumber: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-tax-id"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Steuernummer
+                </Label>
+                <Input
+                  id="institution-tax-id"
+                  placeholder="12/345/67890"
+                  value={formData.taxId}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, taxId: e.target.value }))}
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
+            <Label className="font-semibold text-gray-700">Primary Contact</Label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-primary-contact-name"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Contact Name *
+                </Label>
+                <Input
+                  id="institution-primary-contact-name"
+                  placeholder="Astrid"
+                  value={formData.primaryContactName}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, primaryContactName: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-primary-contact-role"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Role / Title
+                </Label>
+                <Input
+                  id="institution-primary-contact-role"
+                  placeholder="Pflegedirektion"
+                  value={formData.primaryContactRole}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, primaryContactRole: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-primary-contact-email"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Contact Email *
+                </Label>
+                <Input
+                  id="institution-primary-contact-email"
+                  type="email"
+                  placeholder="m.schmidt@example.de"
+                  value={formData.primaryContactEmail}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, primaryContactEmail: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-primary-contact-phone"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Contact Phone
+                </Label>
+                <Input
+                  id="institution-primary-contact-phone"
+                  type="tel"
+                  placeholder="+49 7121 200-1234"
+                  value={formData.primaryContactPhone}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, primaryContactPhone: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-blue-50">
+            <Label className="font-semibold text-gray-700">Billing Information</Label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2 sm:col-span-2">
+                <Label
+                  htmlFor="institution-billing-email"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Billing Email *
+                </Label>
+                <Input
+                  id="institution-billing-email"
+                  type="email"
+                  placeholder="billing@institution.de"
+                  value={formData.billingEmail}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, billingEmail: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-billing-contact-name"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Billing Contact Name
+                </Label>
+                <Input
+                  id="institution-billing-contact-name"
+                  placeholder="Buchhaltung"
+                  value={formData.billingContactName}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, billingContactName: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-billing-contact-phone"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Billing Contact Phone
+                </Label>
+                <Input
+                  id="institution-billing-contact-phone"
+                  type="tel"
+                  placeholder="+49 7121 200-900"
+                  value={formData.billingContactPhone}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, billingContactPhone: e.target.value }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-invoice-language"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Invoice Language
+                </Label>
+                <Select
+                  value={formData.invoiceLanguage}
+                  onValueChange={(v) =>
+                    setFormData((prev) => ({ ...prev, invoiceLanguage: v as InvoiceLanguage }))
+                  }
+                >
+                  <SelectTrigger
+                    id="institution-invoice-language"
+                    className="w-full justify-between"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {INVOICE_LANGUAGES.map(({ value, label }) => (
+                      <SelectItem
+                        key={value}
+                        value={value}
+                      >
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-payment-terms"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Payment Terms (days)
+                </Label>
+                <Input
+                  id="institution-payment-terms"
+                  type="number"
+                  min={1}
+                  placeholder="30"
+                  value={formData.paymentTerms}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      paymentTerms: parseOptionalNumber(e.target.value) ?? 0,
+                    }))
+                  }
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
+            <Label className="font-semibold text-gray-700">Address</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-street"
                   className="font-normal text-gray-600 text-sm"
                 >
-                  Street *
+                  Street & Number *
                 </Label>
                 <Input
                   id="institution-street"
-                  placeholder="123 Main St"
+                  placeholder="Am Steinenberg 70"
                   value={formData.address.street || ''}
                   onChange={(e) => handleAddressChange('street', e.target.value)}
                   className="text-base py-2 px-3 w-full"
                 />
               </div>
+
+              <div className="flex flex-col gap-2 sm:col-span-2">
+                <Label
+                  htmlFor="institution-address-line-2"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Additional Address (Building, Floor)
+                </Label>
+                <Input
+                  id="institution-address-line-2"
+                  placeholder="Gebaude A, 2. OG"
+                  value={formData.address.addressLine2 || ''}
+                  onChange={(e) => handleAddressChange('addressLine2', e.target.value)}
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="institution-postal-code"
+                  className="font-normal text-gray-600 text-sm"
+                >
+                  Postal Code (PLZ) *
+                </Label>
+                <Input
+                  id="institution-postal-code"
+                  placeholder="72764"
+                  maxLength={5}
+                  value={formData.address.postalCode || ''}
+                  onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                  className="text-base py-2 px-3 w-full"
+                />
+              </div>
+
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-city"
@@ -379,42 +788,29 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
                 </Label>
                 <Input
                   id="institution-city"
-                  placeholder="City"
+                  placeholder="Reutlingen"
                   value={formData.address.city || ''}
                   onChange={(e) => handleAddressChange('city', e.target.value)}
                   className="text-base py-2 px-3 w-full"
                 />
               </div>
+
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-state"
                   className="font-normal text-gray-600 text-sm"
                 >
-                  State / Province *
+                  Bundesland (optional)
                 </Label>
                 <Input
                   id="institution-state"
-                  placeholder="State"
+                  placeholder="Baden-Wurttemberg"
                   value={formData.address.state || ''}
                   onChange={(e) => handleAddressChange('state', e.target.value)}
                   className="text-base py-2 px-3 w-full"
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <Label
-                  htmlFor="institution-postalCode"
-                  className="font-normal text-gray-600 text-sm"
-                >
-                  Postal Code *
-                </Label>
-                <Input
-                  id="institution-postalCode"
-                  placeholder="Postal Code"
-                  value={formData.address.postalCode || ''}
-                  onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                  className="text-base py-2 px-3 w-full"
-                />
-              </div>
+
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-country"
@@ -424,7 +820,7 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
                 </Label>
                 <Input
                   id="institution-country"
-                  placeholder="Country"
+                  placeholder="Germany"
                   value={formData.address.country || ''}
                   onChange={(e) => handleAddressChange('country', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -432,6 +828,89 @@ export default function InstitutionInformationForm({ onSubmit, onCancel }: Insti
               </div>
             </div>
           </div>
+
+          {formData.type === 'hospital' && (
+            <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
+              <Label className="font-semibold text-gray-700">Hospital Details</Label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2">
+                  <Label
+                    htmlFor="institution-number"
+                    className="font-normal text-gray-600 text-sm"
+                  >
+                    IK-Nummer (Institutionskennzeichen)
+                  </Label>
+                  <Input
+                    id="institution-number"
+                    placeholder="123456789"
+                    value={formData.institutionNumber}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, institutionNumber: e.target.value }))
+                    }
+                    className="text-base py-2 px-3 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label
+                    htmlFor="institution-number-of-beds"
+                    className="font-normal text-gray-600 text-sm"
+                  >
+                    Number of Beds
+                  </Label>
+                  <Input
+                    id="institution-number-of-beds"
+                    type="number"
+                    min={0}
+                    placeholder="500"
+                    value={formData.numberOfBeds ?? ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        numberOfBeds: parseOptionalNumber(e.target.value),
+                      }))
+                    }
+                    className="text-base py-2 px-3 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  <Label
+                    htmlFor="institution-departments"
+                    className="font-normal text-gray-600 text-sm"
+                  >
+                    Departments (comma-separated)
+                  </Label>
+                  <Input
+                    id="institution-departments"
+                    placeholder="Intensivpflege, Wundmanagement, Notaufnahme"
+                    value={formData.departments.join(', ')}
+                    onChange={(e) => handleDepartmentsChange(e.target.value)}
+                    className="text-base py-2 px-3 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  <Label
+                    htmlFor="institution-accreditation"
+                    className="font-normal text-gray-600 text-sm"
+                  >
+                    Accreditation
+                  </Label>
+                  <Input
+                    id="institution-accreditation"
+                    placeholder="ISO 9001"
+                    value={formData.accreditation}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, accreditation: e.target.value }))
+                    }
+                    className="text-base py-2 px-3 w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
             <Label className="font-normal text-gray-700">

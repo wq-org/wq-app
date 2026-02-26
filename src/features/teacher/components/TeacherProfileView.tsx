@@ -5,11 +5,7 @@ import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { getTeacherCourses } from '@/features/course/api/coursesApi'
-import {
-  cancelCourseJoin,
-  getMyEnrollmentStatusMap,
-  requestCourseJoin,
-} from '@/features/course/api/enrollmentsApi'
+import { getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course/api/enrollmentsApi'
 import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
@@ -146,26 +142,12 @@ const TeacherProfileView = () => {
   const handleCourseJoin = async (courseId: string) => {
     try {
       setLoadingCourseId(courseId)
-      const enrollment = await requestCourseJoin(courseId)
-      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
-      toast.success(tCourse('join.toasts.requested'))
+      await requestCourseJoin(courseId)
+      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: 'accepted' }))
+      toast.success(tCourse('join.status.joined'))
     } catch (error) {
       console.error('Error joining course:', error)
       toast.error(tCourse('join.toasts.requestFailed'))
-    } finally {
-      setLoadingCourseId(null)
-    }
-  }
-
-  const handleCourseJoinCancel = async (courseId: string) => {
-    try {
-      setLoadingCourseId(courseId)
-      const enrollment = await cancelCourseJoin(courseId)
-      setEnrollmentStatusMap((prev) => ({ ...prev, [courseId]: enrollment.status }))
-      toast.success(tCourse('join.toasts.cancelled'))
-    } catch (error) {
-      console.error('Error cancelling join request:', error)
-      toast.error(tCourse('join.toasts.cancelFailed'))
     } finally {
       setLoadingCourseId(null)
     }
@@ -249,7 +231,6 @@ const TeacherProfileView = () => {
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
-            onCourseJoinCancel={handleCourseJoinCancel}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
             joinDisabled={joinDisabled}

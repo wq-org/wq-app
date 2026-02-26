@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { Bell, User, GraduationCap } from 'lucide-react'
+import { Bell, User } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -10,14 +10,12 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import {
-  getPendingCourseJoinRequestsForNotifications,
   getPendingFollowRequestsForNotifications,
-  respondToCourseJoinRequest,
   respondToFollowRequest,
 } from '../api/notificationRequestsApi'
 import { useUser } from '@/contexts/user'
 
-type TabId = 'all' | 'users' | 'course'
+type TabId = 'all' | 'users'
 
 interface NotificationPanelProps {
   onTotalCountChange?: (count: number) => void
@@ -33,7 +31,6 @@ function getAction(n: Notification): NotificationAction | undefined {
 function filterByTab(notifications: Notification[], tab: TabId): Notification[] {
   if (tab === 'all') return notifications
   if (tab === 'users') return notifications.filter((n) => getAction(n) === 'follow')
-  if (tab === 'course') return notifications.filter((n) => getAction(n) === 'join_course')
   return notifications
 }
 
@@ -73,85 +70,15 @@ export default function NotificationPanel({ onTotalCountChange }: NotificationPa
         return
       }
       const role = getRole()?.toLowerCase()
-      const canRespondJoinRequests =
-        role === 'teacher' || role === 'admin' || role === 'super_admin'
       const canRespondFollowRequests =
         role === 'teacher' || role === 'admin' || role === 'super_admin'
 
-      const [joinRequests, pendingFollowRequests] = await Promise.all([
-        getPendingCourseJoinRequestsForNotifications().catch((error) => {
-          console.error('Failed to load join request notifications:', error)
-          return []
-        }),
-        getPendingFollowRequestsForNotifications().catch((error) => {
+      const pendingFollowRequests = await getPendingFollowRequestsForNotifications().catch(
+        (error) => {
           console.error('Failed to load follow request notifications:', error)
           return []
-        }),
-      ])
-
-      const pendingJoinNotifications: Notification[] = joinRequests.map((request) => {
-        const studentName =
-          request.student?.display_name ||
-          request.student?.username ||
-          t('item.unknownUser', { defaultValue: 'Unknown user' })
-
-        const notificationId = `join-${request.course_id}-${request.student_id}`
-        const joinActions = canRespondJoinRequests
-          ? {
-              accept: async () => {
-                setActionLoadingId(notificationId)
-                try {
-                  await respondToCourseJoinRequest(request.course_id, request.student_id, 'accept')
-                  setNotifications((prev) => prev.filter((item) => item.id !== notificationId))
-                  toast.success(
-                    t('item.toasts.acceptSuccess', { defaultValue: 'Join request accepted.' }),
-                  )
-                } catch (error) {
-                  console.error('Failed to accept join request:', error)
-                  toast.error(
-                    t('item.toasts.acceptError', { defaultValue: 'Could not accept request.' }),
-                  )
-                } finally {
-                  setActionLoadingId(null)
-                }
-              },
-              decline: async () => {
-                setActionLoadingId(notificationId)
-                try {
-                  await respondToCourseJoinRequest(request.course_id, request.student_id, 'reject')
-                  setNotifications((prev) => prev.filter((item) => item.id !== notificationId))
-                  toast.success(
-                    t('item.toasts.declineSuccess', { defaultValue: 'Join request declined.' }),
-                  )
-                } catch (error) {
-                  console.error('Failed to decline join request:', error)
-                  toast.error(
-                    t('item.toasts.declineError', { defaultValue: 'Could not decline request.' }),
-                  )
-                } finally {
-                  setActionLoadingId(null)
-                }
-              },
-            }
-          : undefined
-
-        return {
-          id: notificationId,
-          type: 'join',
-          action: 'join_course',
-          title: studentName,
-          message: formatTimestamp(request.requested_at),
-          timestamp: request.requested_at,
-          isRead: false,
-          courseName: request.course?.title,
-          avatar: {
-            src: request.student?.avatar_url || undefined,
-            fallback: getNameInitials(studentName),
-            color: 'bg-gray-100',
-          },
-          actions: joinActions,
-        } as Notification
-      })
+        },
+      )
 
       const followerNotifications: Notification[] = pendingFollowRequests.map((request) => {
         const studentName =
@@ -220,7 +147,7 @@ export default function NotificationPanel({ onTotalCountChange }: NotificationPa
         } as Notification
       })
 
-      const combined = [...pendingJoinNotifications, ...followerNotifications].sort(
+      const combined = [...followerNotifications].sort(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       )
 
@@ -243,15 +170,10 @@ export default function NotificationPanel({ onTotalCountChange }: NotificationPa
   const unreadCount = notifications.length
   const filtered = useMemo(() => filterByTab(notifications, activeTab), [notifications, activeTab])
   const usersCount = notifications.filter((n) => getAction(n) === 'follow').length
-  const courseCount = notifications.filter((n) => getAction(n) === 'join_course').length
 
   const emptyMessage: Record<TabId, { title: string; description: string }> = {
     all: { title: t('panel.emptyAll.title'), description: t('panel.emptyAll.description') },
     users: { title: t('panel.emptyUsers.title'), description: t('panel.emptyUsers.description') },
-    course: {
-      title: t('panel.emptyCourse.title'),
-      description: t('panel.emptyCourse.description'),
-    },
   }
 
   const notificationTabs = useMemo(
@@ -266,14 +188,8 @@ export default function NotificationPanel({ onTotalCountChange }: NotificationPa
         icon: User,
         title: usersCount > 0 ? `${t('panel.tabs.users')} ${usersCount}` : t('panel.tabs.users'),
       },
-      {
-        id: 'course',
-        icon: GraduationCap,
-        title:
-          courseCount > 0 ? `${t('panel.tabs.course')} ${courseCount}` : t('panel.tabs.course'),
-      },
     ],
-    [t, unreadCount, usersCount, courseCount],
+    [t, unreadCount, usersCount],
   )
 
   return (

@@ -39,7 +39,6 @@ export default function CommandPalette({
   className,
   onCourseCreated,
   onFilesUploaded,
-  onNoteCreated,
 }: CommandPaletteProps) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
@@ -396,7 +395,6 @@ export default function CommandPalette({
                   <CommandAddDialog
                     role={effectiveRole}
                     onCourseCreated={onCourseCreated}
-                    onNoteCreated={onNoteCreated}
                   />
                 )}
               </Container>

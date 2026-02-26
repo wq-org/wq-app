@@ -50,7 +50,6 @@ export interface CommandPaletteProps {
   className?: string
   onCourseCreated?: () => void
   onFilesUploaded?: () => void
-  onNoteCreated?: () => void
 }
 
 export interface Game {
@@ -78,4 +77,4 @@ export interface UpdateGameData {
 /**
  * Types of items that can be added via CommandAddDialog
  */
-export type AddType = 'course' | 'institution' | 'game' | 'node' | 'notes'
+export type AddType = 'course' | 'institution' | 'game' | 'node'

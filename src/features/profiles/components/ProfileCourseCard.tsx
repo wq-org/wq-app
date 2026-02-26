@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 
 interface ProfileCourseCardProps extends CourseCardProps {
   onJoin?: (id: string) => void
-  onCancelJoin?: (id: string) => void
   joinStatus?: EnrollmentStatus
   isLoadingJoin?: boolean
   joinDisabled?: boolean
@@ -25,17 +24,14 @@ export function ProfileCourseCard({
   teacherAvatar,
   teacherInitials = 'U',
   onJoin,
-  onCancelJoin,
   joinStatus,
   isLoadingJoin = false,
   joinDisabled = false,
 }: ProfileCourseCardProps) {
   const { t } = useTranslation('features.course')
   const courseImage = image || DEFAULT_COURSE_BACKGROUND
-  const canJoin = !joinStatus || joinStatus === 'rejected' || joinStatus === 'cancelled'
-  const isRequested = joinStatus === 'pending'
+  const canJoin = joinStatus !== 'accepted'
   const isJoined = joinStatus === 'accepted'
-  const isRejected = joinStatus === 'rejected'
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
@@ -105,30 +101,10 @@ export function ProfileCourseCard({
                   as="p"
                   variant="body"
                 >
-                  {isRejected ? t('join.actions.rejoin') : t('join.actions.join')}
+                  {t('join.actions.join')}
                 </Text>
                 <UserPlus className="w-4 h-4" />
               </Button>
-            )}
-
-            {isRequested && (
-              <>
-                <Button
-                  variant="outline"
-                  className="h-auto"
-                  disabled
-                >
-                  {t('join.status.requested')}
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="h-auto text-muted-foreground"
-                  disabled={isLoadingJoin}
-                  onClick={() => onCancelJoin?.(id)}
-                >
-                  {t('join.actions.cancel')}
-                </Button>
-              </>
             )}
 
             {isJoined && (

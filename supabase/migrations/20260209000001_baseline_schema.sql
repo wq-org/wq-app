@@ -1,7 +1,7 @@
 -- =============================================================================
 -- BASELINE SCHEMA — Single migration for local and fresh deploys
 -- Serious game MVP: profiles, institutions, courses, topics, lessons, games,
--- game_sessions, game_versions, media_files, teacher_followers, storage RLS.
+-- and teacher_followers + storage RLS.
 -- After this, use new migrations only for schema changes.
 -- =============================================================================
 
@@ -15,22 +15,19 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 DO $$ BEGIN
-  CREATE TYPE file_type AS ENUM ('image', 'pdf', 'video', 'audio', 'document');
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END $$;
-DO $$ BEGIN
   CREATE TYPE game_status AS ENUM ('draft', 'published', 'archived');
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 DO $$ BEGIN
-  CREATE TYPE entity_type AS ENUM ('game', 'course', 'topic', 'lesson', 'profile');
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END $$;
-DO $$ BEGIN
-  CREATE TYPE institution_type AS ENUM ('school', 'university', 'college', 'organization', 'other');
+  CREATE TYPE institution_type AS ENUM (
+    'school',
+    'university',
+    'college',
+    'organization',
+    'hospital',
+    'other'
+  );
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
@@ -70,7 +67,26 @@ CREATE TABLE IF NOT EXISTS public.institutions (
   name TEXT NOT NULL,
   description TEXT,
   email TEXT,
+  phone TEXT,
+  legal_name TEXT,
+  legal_form TEXT,
+  registration_number TEXT,
+  tax_id TEXT,
+  vat_id TEXT,
+  billing_email TEXT,
+  billing_contact_name TEXT,
+  billing_contact_phone TEXT,
+  primary_contact_name TEXT,
+  primary_contact_email TEXT,
+  primary_contact_phone TEXT,
+  primary_contact_role TEXT,
+  invoice_language TEXT DEFAULT 'de' CHECK (invoice_language IN ('de', 'en', 'es', 'fr', 'sv')),
+  payment_terms INTEGER DEFAULT 30 CHECK (payment_terms > 0),
   address JSONB,
+  institution_number TEXT,
+  number_of_beds INTEGER CHECK (number_of_beds >= 0),
+  departments TEXT[],
+  accreditation TEXT,
   status institution_status DEFAULT 'active',
   type institution_type,
   slug TEXT UNIQUE,
@@ -142,21 +158,7 @@ CREATE TABLE IF NOT EXISTS public.lessons (
   description TEXT
 );
 
--- 9. MEDIA_FILES
-CREATE TABLE IF NOT EXISTS public.media_files (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT,
-  file_path TEXT NOT NULL,
-  file_type file_type NOT NULL,
-  file_size_bytes BIGINT,
-  uploader_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
-  entity_type entity_type,
-  entity_id UUID,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 10. GAMES
+-- 9. GAMES
 CREATE TABLE IF NOT EXISTS public.games (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   title TEXT NOT NULL,
@@ -174,32 +176,6 @@ CREATE TABLE IF NOT EXISTS public.games (
   published_at TIMESTAMPTZ
 );
 
--- 11. GAME_VERSIONS
-CREATE TABLE IF NOT EXISTS public.game_versions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  game_id UUID NOT NULL REFERENCES public.games(id) ON DELETE CASCADE,
-  version INTEGER NOT NULL,
-  game_config JSONB NOT NULL,
-  published_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (game_id, version)
-);
-
--- 12. GAME_SESSIONS
-CREATE TABLE IF NOT EXISTS public.game_sessions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  game_id UUID NOT NULL REFERENCES public.games(id) ON DELETE CASCADE,
-  student_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
-  score INTEGER DEFAULT 0,
-  completed BOOLEAN DEFAULT false,
-  session_data JSONB,
-  started_at TIMESTAMPTZ DEFAULT NOW(),
-  completed_at TIMESTAMPTZ,
-  game_version INTEGER,
-  current_node_id TEXT,
-  progress_data JSONB
-);
-
 -- =============================================================================
 -- INDEXES
 -- =============================================================================
@@ -213,9 +189,6 @@ CREATE INDEX IF NOT EXISTS idx_lessons_topic ON public.lessons(topic_id);
 CREATE INDEX IF NOT EXISTS idx_games_teacher ON public.games(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_games_topic ON public.games(topic_id);
 CREATE INDEX IF NOT EXISTS idx_games_status ON public.games(status);
-CREATE INDEX IF NOT EXISTS idx_game_sessions_student ON public.game_sessions(student_id);
-CREATE INDEX IF NOT EXISTS idx_game_sessions_game ON public.game_sessions(game_id);
-CREATE INDEX IF NOT EXISTS idx_media_files_entity ON public.media_files(entity_type, entity_id) WHERE (entity_type = 'game'::entity_type);
 
 -- =============================================================================
 -- FUNCTIONS & TRIGGERS
@@ -242,30 +215,6 @@ DROP TRIGGER IF EXISTS lessons_updated_at ON public.lessons;
 CREATE TRIGGER lessons_updated_at BEFORE UPDATE ON public.lessons FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 DROP TRIGGER IF EXISTS games_updated_at ON public.games;
 CREATE TRIGGER games_updated_at BEFORE UPDATE ON public.games FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
-
--- Game media: enforce file_path pattern and entity_id when entity_type = 'game'
-CREATE OR REPLACE FUNCTION public.validate_game_media_reference()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF NEW.entity_type = 'game' THEN
-    IF NEW.entity_id IS NULL THEN
-      RAISE EXCEPTION 'entity_id cannot be null for game media';
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM public.games WHERE id = NEW.entity_id) THEN
-      RAISE EXCEPTION 'Game with id % does not exist', NEW.entity_id;
-    END IF;
-    IF NOT (NEW.file_path ~ ('^games/' || NEW.entity_id::text || '/.+')) THEN
-      RAISE EXCEPTION 'Game media file_path must follow pattern: games/{game_id}/{filename}. Expected: games/%/{filename}, Got: %', NEW.entity_id, NEW.file_path;
-    END IF;
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
-
-DROP TRIGGER IF EXISTS trigger_validate_game_media ON public.media_files;
-CREATE TRIGGER trigger_validate_game_media
-  BEFORE INSERT OR UPDATE ON public.media_files
-  FOR EACH ROW EXECUTE FUNCTION public.validate_game_media_reference();
 
 -- follow_count when teacher_followers change (profiles uses user_id)
 CREATE OR REPLACE FUNCTION public.update_teacher_follow_count()
@@ -468,14 +417,6 @@ CREATE POLICY "Students can view lessons in enrolled courses" ON public.lessons 
 );
 
 -- =============================================================================
--- RLS — MEDIA_FILES
--- =============================================================================
-ALTER TABLE public.media_files ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Users can manage their uploaded files" ON public.media_files;
-CREATE POLICY "Users can manage their uploaded files" ON public.media_files FOR ALL USING (auth.uid() = uploader_id);
-
--- =============================================================================
 -- RLS — GAMES
 -- =============================================================================
 ALTER TABLE public.games ENABLE ROW LEVEL SECURITY;
@@ -492,41 +433,7 @@ CREATE POLICY "Students can read published games of followed teachers" ON public
 );
 
 -- =============================================================================
--- RLS — GAME_SESSIONS
--- =============================================================================
-ALTER TABLE public.game_sessions ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Students can manage their game sessions" ON public.game_sessions;
-CREATE POLICY "Students can manage their game sessions" ON public.game_sessions FOR ALL USING (auth.uid() = student_id);
-DROP POLICY IF EXISTS "Teachers can view sessions for their games" ON public.game_sessions;
-CREATE POLICY "Teachers can view sessions for their games" ON public.game_sessions FOR SELECT USING (
-  game_id IN (SELECT id FROM public.games WHERE teacher_id = auth.uid())
-);
-
--- =============================================================================
--- RLS — GAME_VERSIONS
--- =============================================================================
-ALTER TABLE public.game_versions ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Teachers can view their game versions" ON public.game_versions;
-CREATE POLICY "Teachers can view their game versions" ON public.game_versions FOR SELECT USING (
-  EXISTS (SELECT 1 FROM public.games WHERE games.id = game_versions.game_id AND games.teacher_id = auth.uid())
-);
-DROP POLICY IF EXISTS "Teachers can create versions for their games" ON public.game_versions;
-CREATE POLICY "Teachers can create versions for their games" ON public.game_versions FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM public.games WHERE games.id = game_versions.game_id AND games.teacher_id = auth.uid())
-);
-DROP POLICY IF EXISTS "Teachers can update their game versions" ON public.game_versions;
-CREATE POLICY "Teachers can update their game versions" ON public.game_versions FOR UPDATE USING (
-  EXISTS (SELECT 1 FROM public.games WHERE games.id = game_versions.game_id AND games.teacher_id = auth.uid())
-);
-DROP POLICY IF EXISTS "Teachers can delete their game versions" ON public.game_versions;
-CREATE POLICY "Teachers can delete their game versions" ON public.game_versions FOR DELETE USING (
-  EXISTS (SELECT 1 FROM public.games WHERE games.id = game_versions.game_id AND games.teacher_id = auth.uid())
-);
-
--- =============================================================================
--- STORAGE — buckets + RLS (path: {role}/{user_id}/filename for files)
+-- STORAGE — buckets + RLS (path: {institution_id}/{role}/{user_id}/filename)
 -- =============================================================================
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('files', 'files', false), ('avatars', 'avatars', false), ('backgrounds', 'backgrounds', false)
@@ -535,37 +442,72 @@ ON CONFLICT (id) DO NOTHING;
 -- RLS on storage.objects is already enabled by Supabase; we only add policies here.
 
 DROP POLICY IF EXISTS "Allow authenticated uploads to files" ON storage.objects;
-CREATE POLICY "Allow authenticated uploads to files" ON storage.objects
+DROP POLICY IF EXISTS "Allow authenticated read files" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated read own files" ON storage.objects;
+DROP POLICY IF EXISTS "Teachers upload to own folder" ON storage.objects;
+DROP POLICY IF EXISTS "Teachers read own files" ON storage.objects;
+DROP POLICY IF EXISTS "Teachers update own files" ON storage.objects;
+DROP POLICY IF EXISTS "Teachers delete own files" ON storage.objects;
+DROP POLICY IF EXISTS "Users upload to own institution folder" ON storage.objects;
+DROP POLICY IF EXISTS "Users read files from own institution" ON storage.objects;
+DROP POLICY IF EXISTS "Users manage own files" ON storage.objects;
+
+-- 1. Authenticated users can upload to their own institution folder
+CREATE POLICY "Users upload to own institution folder" ON storage.objects
 FOR INSERT TO authenticated
 WITH CHECK (
   bucket_id = 'files'
-  AND (storage.foldername(name))[1] IN ('teacher', 'student', 'institution_admin', 'super_admin')
-  AND (storage.foldername(name))[2] = auth.uid()::text
+  AND (storage.foldername(name))[1] IS NOT NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.user_institutions ui
+    WHERE ui.user_id = auth.uid()
+      AND ui.institution_id::text = (storage.foldername(name))[1]
+  )
+  AND (storage.foldername(name))[2] IN ('teacher', 'student', 'institution_admin', 'super_admin')
+  AND (storage.foldername(name))[3] = auth.uid()::text
 );
 
-DROP POLICY IF EXISTS "Allow authenticated read files" ON storage.objects;
-CREATE POLICY "Allow authenticated read files" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'files');
-DROP POLICY IF EXISTS "Allow authenticated read own files" ON storage.objects;
-CREATE POLICY "Allow authenticated read own files" ON storage.objects
+-- 2. Users can read files from their institution
+CREATE POLICY "Users read files from own institution" ON storage.objects
 FOR SELECT TO authenticated
 USING (
   bucket_id = 'files'
-  AND (storage.foldername(name))[1] IN ('teacher', 'student', 'institution_admin', 'super_admin')
-  AND (storage.foldername(name))[2] = auth.uid()::text
+  AND (storage.foldername(name))[1] IS NOT NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.user_institutions ui
+    WHERE ui.user_id = auth.uid()
+      AND ui.institution_id::text = (storage.foldername(name))[1]
+  )
 );
-DROP POLICY IF EXISTS "Teachers upload to own folder" ON storage.objects;
-CREATE POLICY "Teachers upload to own folder" ON storage.objects FOR INSERT TO authenticated
+
+-- 3. Users can read/write only their own files
+CREATE POLICY "Users manage own files" ON storage.objects
+FOR ALL TO authenticated
+USING (
+  bucket_id = 'files'
+  AND (storage.foldername(name))[1] IS NOT NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.user_institutions ui
+    WHERE ui.user_id = auth.uid()
+      AND ui.institution_id::text = (storage.foldername(name))[1]
+  )
+  AND (storage.foldername(name))[3] = auth.uid()::text
+)
 WITH CHECK (
-  bucket_id = 'files' AND (storage.foldername(name))[1] = 'teacher' AND (storage.foldername(name))[2] = auth.uid()::text
+  bucket_id = 'files'
+  AND (storage.foldername(name))[1] IS NOT NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.user_institutions ui
+    WHERE ui.user_id = auth.uid()
+      AND ui.institution_id::text = (storage.foldername(name))[1]
+  )
+  AND (storage.foldername(name))[3] = auth.uid()::text
 );
-DROP POLICY IF EXISTS "Teachers read own files" ON storage.objects;
-CREATE POLICY "Teachers read own files" ON storage.objects FOR SELECT TO authenticated
-USING (bucket_id = 'files' AND (storage.foldername(name))[1] = 'teacher' AND (storage.foldername(name))[2] = auth.uid()::text);
-DROP POLICY IF EXISTS "Teachers update own files" ON storage.objects;
-CREATE POLICY "Teachers update own files" ON storage.objects FOR UPDATE TO authenticated
-USING (bucket_id = 'files' AND (storage.foldername(name))[1] = 'teacher' AND (storage.foldername(name))[2] = auth.uid()::text);
-DROP POLICY IF EXISTS "Teachers delete own files" ON storage.objects;
-CREATE POLICY "Teachers delete own files" ON storage.objects FOR DELETE TO authenticated
-USING (bucket_id = 'files' AND (storage.foldername(name))[1] = 'teacher' AND (storage.foldername(name))[2] = auth.uid()::text);
+
+-- 4. Authenticated avatars bucket read (keep existing)
 DROP POLICY IF EXISTS "authenticated_read_avatars_bucket" ON storage.objects;
 CREATE POLICY "authenticated_read_avatars_bucket" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'avatars');

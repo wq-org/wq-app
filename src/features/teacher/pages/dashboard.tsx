@@ -15,9 +15,6 @@ import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { GamePlayList } from '@/features/game-play'
-import { fetchNotesByUser, NotesTabView, deleteNote } from '@/features/notes'
-import type { Note } from '@/features/notes'
-void NotesTabView
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -61,10 +58,6 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
-  const [notes, setNotes] = useState<Note[]>([])
-  const [notesLoading, setNotesLoading] = useState(false)
-  void notes
-  void notesLoading
 
   // Fetch courses when profile is loaded
   useEffect(() => {
@@ -122,42 +115,6 @@ export default function Dashboard() {
       loadFiles()
     }
   }, [profile?.role, profile?.user_id, loading, selectedTab, loadFiles])
-
-  const loadNotes = useCallback(async () => {
-    const userId = getUserId()
-    if (!userId || loading) return
-    setNotesLoading(true)
-    try {
-      const notesData = await fetchNotesByUser(userId)
-      setNotes(notesData)
-    } catch (error) {
-      console.error('Error fetching notes:', error)
-      setNotes([])
-    } finally {
-      setNotesLoading(false)
-    }
-  }, [getUserId, loading])
-
-  const _handleDeleteNote = useCallback(
-    async (noteId: string) => {
-      try {
-        await deleteNote(noteId)
-        await loadNotes()
-      } catch (error) {
-        console.error('Error deleting note:', error)
-        const { toast } = await import('sonner')
-        toast.error('Failed to delete note')
-      }
-    },
-    [loadNotes],
-  )
-  void _handleDeleteNote
-
-  useEffect(() => {
-    if (selectedTab === 'notes') {
-      loadNotes()
-    }
-  }, [selectedTab, loadNotes])
 
   const handleClickTab = (id: string) => {
     const currentTab = getDashboardTabs('teacher').filter((tab) => tab.id === id)[0].id
@@ -234,21 +191,12 @@ export default function Dashboard() {
           ))}
         {/* Students tab commented out (school tab) */}
         {/* {selectedTab === 'students' && <StudentCardList students={[]} />} */}
-        {/* {selectedTab === 'notes' && (
-          <NotesTabView
-            notes={notes}
-            loading={notesLoading}
-            onRefresh={loadNotes}
-            onDelete={handleDeleteNote}
-          />
-        )} */}
       </DashboardLayout>
 
       <CommandPalette
         commandBarContext="teacher"
         onCourseCreated={fetchCourses}
         onFilesUploaded={loadFiles}
-        onNoteCreated={loadNotes}
       />
     </>
   )
