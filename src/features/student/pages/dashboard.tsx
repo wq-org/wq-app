@@ -17,7 +17,7 @@ import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
 import { getMyAcceptedCourses, type EnrollmentCourse } from '@/features/course/api/enrollmentsApi'
 import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
 import type { CourseCardProps, EnrollmentStatus } from '@/features/course/types/course.types'
-import { Text } from '@/components/ui/text'
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -208,22 +208,16 @@ export default function Dashboard() {
           ) : followedTeacherIds.length === 0 ? (
             <EmptyFollowsView />
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Text
-                as="p"
-                variant="h3"
-                className="text-gray-900"
-              >
-                {t('dashboard.empty.noAcceptedTitle')}
-              </Text>
-              <Text
-                as="p"
-                variant="body"
-                className="text-gray-500 mt-2"
-              >
-                {t('dashboard.empty.noAcceptedDescription')}
-              </Text>
-            </div>
+            <Empty className="border-none py-12">
+              <EmptyHeader>
+                <EmptyTitle className="text-gray-900">
+                  {t('dashboard.empty.noAcceptedTitle')}
+                </EmptyTitle>
+                <EmptyDescription className="text-gray-500">
+                  {t('dashboard.empty.noAcceptedDescription')}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ))}
         {selectedTab === 'games' &&
           (gamesLoading ? (
@@ -242,8 +236,6 @@ export default function Dashboard() {
               onGamePlay={(route) => route && navigate(route)}
             />
           ))}
-        {/* Todos tab commented out */}
-        {/* {selectedTab === 'todos' && <EmptyTodosView />} */}
         {selectedTab === 'files' &&
           (filesLoading ? (
             <div className="flex items-center justify-center py-12">

@@ -1,27 +1,24 @@
 import { TextCursorInput } from 'lucide-react'
-import { Text } from '@/components/ui/text'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 
 export function EmptyTopicsView() {
   return (
-    <div className="flex border-4xl flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-xl">
-      <div className="p-3 rounded-full bg-gray-50 border border-gray-200">
-        <TextCursorInput className="w-8 h-8 text-gray-400" />
-      </div>
-      <Text
-        as="p"
-        variant="body"
-        className="mt-3 text-gray-500 text-center text-sm"
-      >
-        füge ein neues Thema hinzu
-      </Text>
-      <Text
-        as="p"
-        variant="body"
-        className="text-xs text-gray-400 text-center mt-1"
-      >
-        Es ist noch kein Thema vorhanden. Bitte nutzen Sie das Eingabefeld und klicken Sie auf das
-        Plus-Symbol
-      </Text>
-    </div>
+    <Empty className="w-full animate-in fade-in-0 slide-in-from-bottom-5 duration-300 border border-dashed border-gray-200 rounded-xl p-6">
+      <EmptyHeader>
+        <EmptyMedia
+          variant="icon"
+          className="bg-gray-50 border border-gray-200 text-gray-400"
+        >
+          <TextCursorInput className="w-8 h-8 text-gray-400" />
+        </EmptyMedia>
+        <EmptyTitle className="text-sm font-normal text-gray-500">
+          füge ein neues Thema hinzu
+        </EmptyTitle>
+        <EmptyDescription className="text-xs text-gray-400">
+          Es ist noch kein Thema vorhanden. Bitte nutzen Sie das Eingabefeld und klicken Sie auf das
+          Plus-Symbol
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
   )
 }

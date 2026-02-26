@@ -24,6 +24,7 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
   const navigate = useNavigate()
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)
+  const [isPublishing, setIsPublishing] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [title, setTitle] = useState('')
@@ -100,14 +101,22 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
 
   const handleTogglePublished = async (checked: boolean) => {
     try {
-      setIsPublished(checked)
+      setIsPublishing(true)
+
       await updateCourse(courseId, {
         is_published: checked,
       })
+      setIsPublished(checked)
+      toast.success(t('settings.toasts.saveSuccess'), {
+        description: t('settings.toasts.saveSuccessDescription'),
+      })
     } catch (error) {
+      setIsPublishing(false)
       console.error('Error updating publish status:', error)
       setIsPublished(!checked)
       toast.error(t('settings.toasts.publishStatusFailed'))
+    } finally {
+      setIsPublishing(false)
     }
   }
 
@@ -183,11 +192,15 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
               {t('settings.publishedHint')}
             </Text>
           </div>
-          <Switch
-            id="published"
-            checked={isPublished}
-            onCheckedChange={handleTogglePublished}
-          />
+          {isPublishing ? (
+            <Spinner size="xs" />
+          ) : (
+            <Switch
+              id="published"
+              checked={isPublished}
+              onCheckedChange={handleTogglePublished}
+            />
+          )}
         </div>
 
         <div className="flex  items-center justify-end gap-4 py-4 border-t">

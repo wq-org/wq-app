@@ -1,5 +1,4 @@
 // Components
-export { default as CommandEmpty } from './components/CommandEmpty'
 export { default as CommandFeedbackForm } from './components/CommandFeedbackDialog'
 export { default as CommandList } from './components/CommandList'
 export { default as CommandPalette } from './components/CommandPalette'
