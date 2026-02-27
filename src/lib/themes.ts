@@ -42,3 +42,29 @@ export function getThemeBackgroundStyle(themeId?: string): CSSProperties {
     backgroundColor: `oklch(var(${getThemeCssVar(themeId)}))`,
   }
 }
+
+export function getThemeTitleStyle(themeId?: string): CSSProperties {
+  const themeVar = getThemeCssVar(themeId)
+
+  return {
+    color:
+      themeId === 'darkblue'
+        ? `oklch(from oklch(var(${themeVar})) 0.985 0.03 h)`
+        : `oklch(from oklch(var(${themeVar})) 0.94 0.045 h)`,
+    textShadow:
+      themeId === 'darkblue' ? '0 1px 2px rgba(0, 0, 0, 0.18)' : '0 1px 2px rgba(0, 0, 0, 0.12)',
+  }
+}
+
+export function getThemeDescriptionStyle(themeId?: string): CSSProperties {
+  const themeVar = getThemeCssVar(themeId)
+
+  return {
+    color:
+      themeId === 'darkblue'
+        ? `oklch(from oklch(var(${themeVar})) 0.96 0.025 h)`
+        : `oklch(from oklch(var(${themeVar})) 0.9 0.035 h)`,
+    textShadow:
+      themeId === 'darkblue' ? '0 1px 2px rgba(0, 0, 0, 0.14)' : '0 1px 2px rgba(0, 0, 0, 0.1)',
+  }
+}

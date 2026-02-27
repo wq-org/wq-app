@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
 import LessonPreviewContent from '@/features/course/components/LessonPreviewContent'
-import { getThemeBackgroundStyle } from '@/lib/themes'
+import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 
 function parseContent(raw: unknown): Record<string, unknown> | undefined {
   if (raw == null || raw === '') return undefined
@@ -258,13 +258,15 @@ export default function Lesson() {
             as="h1"
             variant="h1"
             className="text-4xl font-semibold tracking-tight md:text-5xl"
+            style={getThemeTitleStyle(selectedCourse?.theme_id)}
           >
             {lessonTitle}
           </Text>
           <Text
             as="p"
             variant="body"
-            className="mt-4 text-base leading-7 text-foreground/80 md:text-lg"
+            className="mt-4 text-base font-semibold leading-7 md:text-lg"
+            style={getThemeDescriptionStyle(selectedCourse?.theme_id)}
           >
             {lessonDescription}
           </Text>

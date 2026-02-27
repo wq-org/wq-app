@@ -1,6 +1,6 @@
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { getThemeBackgroundStyle } from '@/lib/themes'
+import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
 import LessonEditor from '@/features/course/components/LessonEditor'
 import Spinner from '@/components/ui/spinner'
@@ -54,13 +54,15 @@ export default function LessonPreviewContent({
             as="h1"
             variant="h1"
             className="text-4xl font-semibold tracking-tight md:text-5xl"
+            style={getThemeTitleStyle(themeId)}
           >
             {title}
           </Text>
           <Text
             as="p"
             variant="body"
-            className="mt-4 text-base leading-7 text-foreground/80 md:text-lg"
+            className="mt-4 text-base font-semibold leading-7 md:text-lg"
+            style={getThemeDescriptionStyle(themeId)}
           >
             {description}
           </Text>
