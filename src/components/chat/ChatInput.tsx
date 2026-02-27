@@ -1,21 +1,47 @@
 'use client'
 
-import Ai03 from '@/components/Ai03'
+import type { FormEvent } from 'react'
+import { useState } from 'react'
+import { SendHorizontal } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface ChatInputProps {
   onSend: (message: string) => void
 }
 
 export function ChatInput({ onSend }: ChatInputProps) {
+  const [message, setMessage] = useState('')
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const nextMessage = message.trim()
+    if (!nextMessage) return
+
+    onSend(nextMessage)
+    setMessage('')
+  }
+
   return (
-    <div className="pt-2 pb-4 px-4 sm:px-5">
-      <Ai03
-        compact
-        showMetaRow={false}
-        showAssistControls={false}
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-2 px-4 pt-2 pb-4 sm:px-5"
+    >
+      <Input
+        value={message}
+        onChange={(event) => setMessage(event.target.value)}
         placeholder="Type a message..."
-        onSubmitMessage={onSend}
+        className="h-11 rounded-2xl border-neutral-200 bg-white"
       />
-    </div>
+      <Button
+        type="submit"
+        size="icon"
+        className="h-11 w-11 rounded-2xl"
+        aria-label="Send message"
+      >
+        <SendHorizontal className="size-4" />
+      </Button>
+    </form>
   )
 }

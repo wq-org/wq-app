@@ -29,6 +29,7 @@ const progressFillClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
   link: 'bg-destructive/20',
   delete: 'bg-red-200',
   confirm: 'bg-blue-200',
+  active: 'bg-emerald-200',
 }
 
 /** Text + icon color when holding (contrasts with progress fill) */
@@ -41,6 +42,7 @@ const contentHoldClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
   link: 'text-destructive',
   delete: 'text-red-600',
   confirm: 'text-blue-600',
+  active: 'text-emerald-700',
 }
 
 function HoldToDeleteButton({

@@ -1,4 +1,3 @@
-import { Stack } from '@/components/stack'
 import { cn } from '@/lib/utils'
 import { ChatImage } from '@/components/chat/ChatImage'
 import type { ChatImageItem } from '@/components/chat/types'
@@ -44,21 +43,17 @@ export function ChatImageList({ images, className }: ChatImageListProps) {
 
   return (
     <div className={cn(className)}>
-      <Stack
-        randomRotation
-        sensitivity={170}
-        sendToBackOnClick
-        cards={normalizedImages.map((image, index) => (
-          <img
-            key={index}
+      <div className="grid max-w-full grid-cols-2 gap-2">
+        {normalizedImages.map((image, index) => (
+          <ChatImage
+            key={`${image.src}-${index}`}
             src={image.src}
             alt={image.alt}
-            crossOrigin="anonymous"
-            className="h-full w-full object-cover"
-            draggable={false}
+            ratio={image.ratio}
+            className="w-28 sm:w-32"
           />
         ))}
-      />
+      </div>
     </div>
   )
 }

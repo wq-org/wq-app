@@ -1,6 +1,16 @@
 import { supabase } from '@/lib/supabase'
 import { getUserInstitutionId } from '@/features/auth/api/authApi'
+import type { UserRole } from '@/features/auth/types/auth.types'
 import type { Game, UpdateGameData } from '../types/command-bar.types'
+
+export interface SearchableProfile {
+  user_id: string
+  username: string | null
+  display_name: string | null
+  email: string | null
+  avatar_url: string | null
+  role: UserRole | null
+}
 
 /**
  * Create a new game
@@ -100,7 +110,7 @@ export async function getGameById(gameId: string): Promise<Game | null> {
 /**
  * Fetch searchable users from the same institution(s) as the current user.
  */
-export async function fetchProfilesForSearch() {
+export async function fetchProfilesForSearch(): Promise<SearchableProfile[]> {
   const { data, error } = await supabase.rpc('list_searchable_profiles_in_my_institutions')
 
   if (error) {
@@ -108,5 +118,5 @@ export async function fetchProfilesForSearch() {
     throw error
   }
 
-  return data || []
+  return (data ?? []) as SearchableProfile[]
 }

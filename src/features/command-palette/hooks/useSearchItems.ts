@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { UserRole } from '@/features/auth/types/auth.types'
-import { fetchProfilesForSearch } from '../api/commandPaletteApi'
+import { fetchProfilesForSearch, type SearchableProfile } from '../api/commandPaletteApi'
 
 export interface SearchItem {
   id: string
@@ -23,7 +23,7 @@ export function useSearchItems() {
       try {
         // Fetch searchable users from the same institution(s).
         const profiles = await fetchProfilesForSearch()
-        const profileItems: SearchItem[] = profiles.map((profile) => {
+        const profileItems: SearchItem[] = profiles.map((profile: SearchableProfile) => {
           const role = (profile.role ?? 'student') as UserRole
 
           return {
