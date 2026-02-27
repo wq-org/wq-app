@@ -24,6 +24,8 @@ import { Error404 } from './components'
 import CourseLayout from './features/course/components/CourseLayout'
 import CoursePage from './features/course/pages/course'
 import LessonPage from './features/course/pages/lesson'
+import CourseView from './features/course/pages/CourseView'
+import LessonView from './features/course/pages/LessonView'
 import LessonRedirect from './features/course/pages/LessonRedirect'
 import Onboarding from './features/onboarding/pages/onboarding'
 
@@ -389,6 +391,26 @@ function App() {
                   <RequireAuth>
                     <RequireOnboarding>
                       <StudentViewPage />
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="course/:courseId"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <CourseView />
+                    </RequireOnboarding>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="course/:courseId/lesson/:lessonId"
+                element={
+                  <RequireAuth>
+                    <RequireOnboarding>
+                      <LessonView />
                     </RequireOnboarding>
                   </RequireAuth>
                 }

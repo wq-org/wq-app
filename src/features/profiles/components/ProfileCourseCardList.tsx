@@ -5,6 +5,7 @@ import type { EnrollmentStatus } from '@/features/course/types/course.types'
 interface ProfileCourseCardListProps {
   courses: CourseCardProps[]
   onCourseJoin?: (id: string) => void
+  onCourseView?: (id: string) => void
   enrollmentStatusMap?: Record<string, EnrollmentStatus>
   loadingCourseId?: string | null
   joinDisabled?: boolean
@@ -14,6 +15,7 @@ interface ProfileCourseCardListProps {
 export function ProfileCourseCardList({
   courses,
   onCourseJoin,
+  onCourseView,
   enrollmentStatusMap = {},
   loadingCourseId = null,
   joinDisabled = false,
@@ -26,6 +28,7 @@ export function ProfileCourseCardList({
           key={idx}
           {...course}
           onJoin={(id) => onCourseJoin?.(id)}
+          onView={(id) => onCourseView?.(id)}
           joinStatus={enrollmentStatusMap[course.id]}
           isLoadingJoin={loadingCourseId === course.id}
           joinDisabled={joinDisabled || Boolean(joinDisabledByCourseId[course.id])}

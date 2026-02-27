@@ -98,30 +98,13 @@ export async function getGameById(gameId: string): Promise<Game | null> {
 }
 
 /**
- * Fetch students and teachers from profiles table
+ * Fetch searchable users from the same institution(s) as the current user.
  */
 export async function fetchProfilesForSearch() {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('user_id, username, display_name, email, avatar_url, role')
-    .in('role', ['student', 'teacher', 'institutionAdmin', 'superAdmin'])
+  const { data, error } = await supabase.rpc('list_searchable_profiles_in_my_institutions')
 
   if (error) {
     console.error('Error fetching profiles:', error)
-    throw error
-  }
-
-  return data || []
-}
-
-/**
- * Fetch institutions for search
- */
-export async function fetchInstitutionsForSearch() {
-  const { data, error } = await supabase.from('institutions').select('id, name, email')
-
-  if (error) {
-    console.error('Error fetching institutions:', error)
     throw error
   }
 

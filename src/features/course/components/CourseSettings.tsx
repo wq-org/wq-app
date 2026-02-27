@@ -24,7 +24,7 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
   const navigate = useNavigate()
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)
-  const [isPublishing, setIsPublishing] = useState(true)
+  const [isPublishing, setIsPublishing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [title, setTitle] = useState('')

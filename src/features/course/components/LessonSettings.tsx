@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Trash2, Loader2 } from 'lucide-react'
-import { updateLesson, deleteLesson } from '@/features/course/api/lessonsApi'
+import { deleteLesson } from '@/features/course/api/lessonsApi'
 import { useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
@@ -72,11 +72,7 @@ export default function LessonSettings({
 
     try {
       setSaving(true)
-      await updateLesson(lessonId, {
-        title,
-        description,
-      })
-      await updateLessonContext({ title, description })
+      await updateLessonContext({ title, description }, lessonId)
       setOriginalTitle(title)
       setOriginalDescription(description)
       setHasChanges(false)

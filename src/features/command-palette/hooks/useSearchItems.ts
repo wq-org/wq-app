@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import type { UserRole } from '@/features/auth/types/auth.types'
-import { fetchProfilesForSearch, fetchInstitutionsForSearch } from '../api/commandPaletteApi'
+import { fetchProfilesForSearch } from '../api/commandPaletteApi'
 
 export interface SearchItem {
   id: string
-  type: UserRole | 'institution'
+  type: UserRole
   title: string
   email: string | null
   username: string | null
@@ -21,33 +21,22 @@ export function useSearchItems() {
       setLoading(true)
       setError(null)
       try {
-        // Fetch students and teachers from profiles table
+        // Fetch searchable users from the same institution(s).
         const profiles = await fetchProfilesForSearch()
+        const profileItems: SearchItem[] = profiles.map((profile) => {
+          const role = (profile.role ?? 'student') as UserRole
 
-        // Fetch institutions
-        const institutions = await fetchInstitutionsForSearch()
+          return {
+            id: profile.user_id,
+            type: role,
+            title: profile.display_name || profile.username || 'Unknown',
+            email: profile.email,
+            username: profile.username,
+            avatar_url: profile.avatar_url,
+          }
+        })
 
-        // Transform profiles to SearchItem format (role is UserRole from DB)
-        const profileItems: SearchItem[] = profiles.map((profile) => ({
-          id: profile.user_id,
-          type: (profile.role ?? 'student') as UserRole,
-          title: profile.display_name || profile.username || 'Unknown',
-          email: profile.email,
-          username: profile.username,
-          avatar_url: profile.avatar_url,
-        }))
-
-        // Transform institutions to SearchItem format
-        const institutionItems: SearchItem[] = institutions.map((institution) => ({
-          id: institution.id,
-          type: 'institution',
-          title: institution.name,
-          email: institution.email,
-          username: null,
-          avatar_url: null,
-        }))
-
-        setItems([...profileItems, ...institutionItems])
+        setItems(profileItems)
       } catch (err) {
         console.error('Error fetching search items:', err)
         setError(err instanceof Error ? err : new Error('Failed to fetch search items'))

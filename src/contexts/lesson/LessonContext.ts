@@ -13,6 +13,7 @@ export interface LessonContextValue {
   createLesson: (data: CreateLessonData) => Promise<Lesson>
   updateLesson: (
     updates: Partial<{ title: string; content: string; description: string }>,
+    lessonId?: string,
   ) => Promise<void>
 }
 

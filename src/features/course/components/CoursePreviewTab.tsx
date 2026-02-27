@@ -13,9 +13,10 @@ import Spinner from '@/components/ui/spinner'
 
 export interface CoursePreviewTabProps {
   courseId: string
+  onLessonView?: (lessonId: string) => void
 }
 
-export default function CoursePreviewTab({ courseId }: CoursePreviewTabProps) {
+export default function CoursePreviewTab({ courseId, onLessonView }: CoursePreviewTabProps) {
   const { t } = useTranslation('features.course')
   const navigate = useNavigate()
   const [topics, setTopics] = useState<Topic[]>([])
@@ -133,6 +134,10 @@ export default function CoursePreviewTab({ courseId }: CoursePreviewTabProps) {
             <CourseLessonTable
               lessons={lessons}
               onView={(lessonId) => {
+                if (onLessonView) {
+                  onLessonView(lessonId)
+                  return
+                }
                 navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
                   state: { initialTab: 'preview' },
                 })

@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, X } from 'lucide-react'
+import { Check, TriangleAlert } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -24,7 +24,7 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
       <CardHeader className="">
         <CardTitle className="text-base text-slate-800 flex gap-2 items-center">
           {hasAnyErrors ? (
-            <X className="size-4 text-slate-600 shrink-0" />
+            <TriangleAlert className="size-4 text-amber-600 shrink-0" />
           ) : (
             <Check className="size-4 text-slate-600 shrink-0" />
           )}
@@ -55,7 +55,7 @@ export default function PublishGameCheckList({ validationResult }: PublishGameCh
               key={`global-${i}`}
               className="flex items-center gap-2 flex-wrap text-sm text-slate-700"
             >
-              <X className="size-4 text-slate-600 shrink-0" />
+              <TriangleAlert className="size-4 text-amber-600 shrink-0" />
               <Text
                 as="span"
                 variant="small"

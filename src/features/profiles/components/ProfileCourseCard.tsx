@@ -2,12 +2,13 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
-import { UserPlus } from 'lucide-react'
+import { ArrowRight, UserPlus } from 'lucide-react'
 import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import type { CourseCardProps } from '@/features/course/types/course.types'
 import type { EnrollmentStatus } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 
 interface ProfileCourseCardProps extends CourseCardProps {
   onJoin?: (id: string) => void
@@ -24,6 +25,7 @@ export function ProfileCourseCard({
   teacherAvatar,
   teacherInitials = 'U',
   onJoin,
+  onView,
   joinStatus,
   isLoadingJoin = false,
   joinDisabled = false,
@@ -32,6 +34,8 @@ export function ProfileCourseCard({
   const courseImage = image || DEFAULT_COURSE_BACKGROUND
   const canJoin = joinStatus !== 'accepted'
   const isJoined = joinStatus === 'accepted'
+  const canOpen = isJoined && typeof onView === 'function'
+  const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
@@ -46,9 +50,9 @@ export function ProfileCourseCard({
         {/* Header */}
         <div className="flex items-center gap-3">
           <Avatar className="w-12 h-12 rounded-full">
-            {teacherAvatar ? (
+            {teacherAvatarUrl ? (
               <AvatarImage
-                src={teacherAvatar}
+                src={teacherAvatarUrl}
                 alt="avatar"
               />
             ) : (
@@ -89,7 +93,7 @@ export function ProfileCourseCard({
             {description}
           </Text>
           {/* Join Button */}
-          <div className="flex items-center gap-2 mt-auto">
+          <div className="flex items-center justify-end gap-2 mt-auto">
             {canJoin && (
               <Button
                 variant="ghost"
@@ -107,10 +111,25 @@ export function ProfileCourseCard({
               </Button>
             )}
 
-            {isJoined && (
+            {canOpen && (
               <Button
-                variant="outline"
-                className="h-auto text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-50"
+                variant="ghost"
+                onClick={() => onView?.(id)}
+                className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 transition-all duration-200 active:animate-in active:zoom-in-95"
+              >
+                <Text
+                  as="p"
+                  variant="body"
+                >
+                  {t('card.open')}
+                </Text>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            )}
+
+            {isJoined && !canOpen && (
+              <Button
+                variant="active"
                 disabled
               >
                 {t('join.status.joined')}

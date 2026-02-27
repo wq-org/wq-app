@@ -51,6 +51,16 @@ export default function Lesson() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTabRef = useRef<'overview' | 'preview' | 'settings' | null>(null)
 
+  // Route changes can happen without unmounting. Clear pending autosave timers
+  // so stale updates from a previous lesson do not fire against a reset context.
+  useEffect(() => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = null
+    }
+    setHasUnsavedChanges(false)
+  }, [lessonId])
+
   useEffect(() => {
     let cancelled = false
 
@@ -126,6 +136,7 @@ export default function Lesson() {
 
   const handleEditorChange = useCallback(
     (newValue: Record<string, unknown>) => {
+      if (!lessonId) return
       setEditorValue(newValue)
       setHasUnsavedChanges(true)
 
@@ -133,12 +144,12 @@ export default function Lesson() {
         clearTimeout(saveTimerRef.current)
       }
       saveTimerRef.current = setTimeout(() => {
-        updateLesson({ content: JSON.stringify(newValue) })
+        updateLesson({ content: JSON.stringify(newValue) }, lessonId)
           .then(() => setHasUnsavedChanges(false))
           .catch(console.error)
       }, 1500)
     },
-    [updateLesson],
+    [lessonId, updateLesson],
   )
 
   const handleTabChange = useCallback(

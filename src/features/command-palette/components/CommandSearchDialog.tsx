@@ -6,16 +6,41 @@ import { Badge } from '@/components/ui/badge'
 import { X, Search } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+
+const SEARCH_AVATAR_FALLBACK = '/favicon.ico'
+const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {
+  student: 'roles.student',
+  teacher: 'roles.teacher',
+  institution_admin: 'roles.admin',
+  super_admin: 'roles.admin',
+}
+
+function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title: string }) {
+  const { url } = useAvatarUrl(avatarPath)
+
+  return (
+    <Avatar className="w-12 h-12">
+      <AvatarImage
+        src={url || SEARCH_AVATAR_FALLBACK}
+        alt={title}
+        className="rounded-full w-12 h-12"
+      />
+      <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
+        {title.charAt(0).toUpperCase()}
+      </AvatarFallback>
+    </Avatar>
+  )
+}
 
 export default function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const { items, loading } = useSearchItems()
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'features.commandPalette'])
   const navigate = useNavigate()
 
   const filtered = useMemo(() => {
@@ -32,17 +57,7 @@ export default function CommandSearch() {
   }, [searchQuery, items])
 
   const handleClickItem = (item: SearchItem) => {
-    // Navigate based on item type - all user profiles use /profile/:id
-    if (
-      item.type === 'student' ||
-      item.type === 'teacher' ||
-      item.type === 'institution_admin' ||
-      item.type === 'super_admin'
-    ) {
-      navigate(`/profile/${item.id}`)
-    } else if (item.type === 'institution') {
-      navigate(`/institution/${item.id}`)
-    }
+    navigate(`/profile/${item.id}`)
   }
 
   return (
@@ -51,7 +66,7 @@ export default function CommandSearch() {
         <Search className="mr-3 h-4 w-4 text-gray-400" />
         <input
           type="text"
-          placeholder="Type a command or search..."
+          placeholder={t('search.placeholder', { ns: 'features.commandPalette' })}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1 outline-none text-sm"
@@ -89,16 +104,10 @@ export default function CommandSearch() {
                   className="border-0 rounded-2xl shadow-none w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer"
                 >
                   <div className="flex gap-3">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage
-                        src={item.avatar_url || AVATAR_PLACEHOLDER_SRC}
-                        alt={item.title}
-                        className="rounded-full w-12 h-12"
-                      />
-                      <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
-                        {item.title.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <SearchAvatar
+                      avatarPath={item.avatar_url}
+                      title={item.title}
+                    />
                     <div className="flex flex-col gap-1">
                       <Text
                         as="span"
@@ -118,7 +127,7 @@ export default function CommandSearch() {
                         variant="secondary"
                         className="text-[10px] px-1.5 py-0 w-fit"
                       >
-                        {t(`roles.${item.type}`)}
+                        {t(ROLE_LABEL_KEY_MAP[item.type])}
                       </Badge>
                     </div>
                   </div>
@@ -127,7 +136,9 @@ export default function CommandSearch() {
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-500 text-sm">No results found</div>
+          <div className="p-8 text-center text-gray-500 text-sm">
+            {t('search.noResults', { ns: 'features.commandPalette' })}
+          </div>
         )}
       </div>
       <Dialog.Description className="sr-only">

@@ -17,6 +17,7 @@ export const buttonVariants = cva(
           'text-red-500 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30',
         confirm:
           'text-blue-500 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/30',
+        active: '!h-auto text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-50',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

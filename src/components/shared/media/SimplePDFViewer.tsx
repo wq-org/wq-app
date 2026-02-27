@@ -8,7 +8,7 @@ export default function SimplePDFViewer({
   fileName = 'document.pdf',
 }: SimplePDFViewerProps) {
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-full">
       <iframe
         src={pdfUrl}
         className="w-full h-full border-0"

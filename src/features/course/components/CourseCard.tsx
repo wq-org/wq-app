@@ -8,6 +8,7 @@ import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import type { CourseCardProps } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
+import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 
 export default function CourseCard({
   id,
@@ -21,6 +22,7 @@ export default function CourseCard({
 }: CourseCardProps) {
   const { t } = useTranslation('features.course')
   const courseImage = image || DEFAULT_COURSE_BACKGROUND
+  const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
 
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
@@ -40,9 +42,9 @@ export default function CourseCard({
       <CardContent className="flex flex-col p-6">
         <div className="flex items-center gap-3">
           <Avatar className="w-12 h-12 rounded-full">
-            {teacherAvatar ? (
+            {teacherAvatarUrl ? (
               <AvatarImage
-                src={teacherAvatar}
+                src={teacherAvatarUrl}
                 alt="avatar"
               />
             ) : (

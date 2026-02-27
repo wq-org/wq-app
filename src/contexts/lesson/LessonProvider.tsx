@@ -48,15 +48,19 @@ export const LessonProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [])
 
   const updateLesson = useCallback(
-    async (updates: Partial<{ title: string; content: string; description: string }>) => {
-      if (!lesson?.id) {
+    async (
+      updates: Partial<{ title: string; content: string; description: string }>,
+      lessonId?: string,
+    ) => {
+      const targetLessonId = lessonId ?? lesson?.id
+      if (!targetLessonId) {
         throw new Error('No lesson selected')
       }
 
       setLoading(true)
       setError(null)
       try {
-        const updatedLesson = await updateLessonApi(lesson.id, updates)
+        const updatedLesson = await updateLessonApi(targetLessonId, updates)
         setLesson(updatedLesson)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to update lesson'

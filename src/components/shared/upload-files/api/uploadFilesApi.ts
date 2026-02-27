@@ -69,9 +69,12 @@ export async function uploadFile({
     const baseFileName = title || file.name.split('.')[0]
     const fileExtension = file.name.split('.').pop() || ''
 
-    // Sanitize filename
-    const sanitizedBaseName = baseFileName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '_')
-    const sanitizedFileName = `${sanitizedBaseName}.${fileExtension}`
+    // Keep user-provided names as-is and only guard path separators.
+    const safeBaseName = baseFileName.replace(/[\\/]/g, '-').trim()
+    const safeFileNameWithoutExtension = safeBaseName || file.name.split('.')[0] || 'file'
+    const sanitizedFileName = fileExtension
+      ? `${safeFileNameWithoutExtension}.${fileExtension}`
+      : safeFileNameWithoutExtension
 
     // Construct storage path: {institution_id}/{role}/{user_id}/filename.filetype
     const storagePath = `${institutionId}/${pathRole(role)}/${teacherId}/${sanitizedFileName}`
@@ -482,16 +485,6 @@ export async function fetchFilesByRole(
         error: 'No data returned from storage',
       }
     }
-
-    console.log('Files fetched successfully:', {
-      count: data.length,
-      files: data.map((file) => ({
-        name: file.name,
-        id: file.id,
-        created_at: file.created_at,
-        updated_at: file.updated_at,
-      })),
-    })
 
     return {
       success: true,

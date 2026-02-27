@@ -45,7 +45,7 @@ export default function PasswordResetSuccessDrawer({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DrawerContent className="h-[100vh] flex flex-col">
+      <DrawerContent className="h-screen flex flex-col">
         <DrawerHeader className="flex-1 flex flex-col items-center justify-center text-center">
           <div className="mb-6">
             <CheckCircle2 className="h-16 w-16 text-green-500" />

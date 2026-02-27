@@ -151,6 +151,10 @@ export default function Dashboard() {
     setSelectedTab(tabId)
   }
 
+  const handleCourseView = (courseId: string) => {
+    navigate(`/student/course/${courseId}`)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -204,6 +208,7 @@ export default function Dashboard() {
                 },
                 {},
               )}
+              onCourseView={handleCourseView}
             />
           ) : followedTeacherIds.length === 0 ? (
             <EmptyFollowsView />

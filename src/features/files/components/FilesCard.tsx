@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { FailedToLoad } from '@/components'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 
 interface FilesCardProps {
   file: FileItem
@@ -331,44 +332,54 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                 {activeTab === 'overview' && (
                   <div className="flex flex-col space-y-6">
                     {isImage && (
-                      <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
-                        {loading ? (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Spinner
-                              variant="gray"
-                              size="xl"
-                              speed={1750}
+                      <div className="w-full rounded-lg overflow-hidden border bg-gray-100">
+                        <AspectRatio
+                          ratio={16 / 9}
+                          className="w-full"
+                        >
+                          {loading ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Spinner
+                                variant="gray"
+                                size="xl"
+                                speed={1750}
+                              />
+                            </div>
+                          ) : fileUrl ? (
+                            <img
+                              src={fileUrl}
+                              alt={file.filename}
+                              className="w-full h-full object-contain bg-white"
                             />
-                          </div>
-                        ) : fileUrl ? (
-                          <img
-                            src={fileUrl}
-                            alt={file.filename}
-                            className="w-full h-full object-cover "
-                          />
-                        ) : (
-                          <FailedToLoad />
-                        )}
+                          ) : (
+                            <FailedToLoad />
+                          )}
+                        </AspectRatio>
                       </div>
                     )}
                     {isPDF && (
-                      <div className="w-full aspect-9/16 rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
-                        {fileUrl ? (
-                          <SimplePDFViewer
-                            pdfUrl={fileUrl}
-                            fileName={file.filename}
-                          />
-                        ) : loading ? (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Spinner
-                              variant="gray"
-                              size="xl"
-                              speed={1750}
+                      <div className="w-full rounded-lg overflow-hidden border bg-gray-100">
+                        <AspectRatio
+                          ratio={4 / 3}
+                          className="w-full max-h-[70vh]"
+                        >
+                          {fileUrl ? (
+                            <SimplePDFViewer
+                              pdfUrl={fileUrl}
+                              fileName={file.filename}
                             />
-                          </div>
-                        ) : (
-                          <FailedToLoad />
-                        )}
+                          ) : loading ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Spinner
+                                variant="gray"
+                                size="xl"
+                                speed={1750}
+                              />
+                            </div>
+                          ) : (
+                            <FailedToLoad />
+                          )}
+                        </AspectRatio>
                       </div>
                     )}
                     {isVideo && (

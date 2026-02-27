@@ -24,7 +24,7 @@ export function GameProjectCard({
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <SkeletonNodeGraph className="rounded-t-3xl rounded-b-none w-full h-48 overflow-hidden" />
         <Badge
-          variant={status === 'published' ? 'default' : 'secondary'}
+          variant={status === 'published' ? 'active' : 'secondary'}
           className="absolute top-3 left-3"
         >
           {status === 'published'
