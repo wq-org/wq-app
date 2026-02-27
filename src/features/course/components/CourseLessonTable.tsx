@@ -21,7 +21,7 @@ import { HoldToDeleteIconButton } from '@/components/ui/holdDeleteIconButton'
 import type { Lesson } from '../types/lesson.types'
 import { EmptyLessonsView } from './EmptyLessonsView'
 import { useTranslation } from 'react-i18next'
-import type { HoldDeleteTooltipProps } from './TopicBadge'
+import type { HoldDeleteTooltipProps } from '../types/topics.types'
 
 export type OnViewLesson = (lessonId: string) => void
 export type OnDeleteLesson = (lessonId: string) => void

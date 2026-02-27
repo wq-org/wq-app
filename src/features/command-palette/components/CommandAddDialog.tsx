@@ -204,8 +204,8 @@ const CommandAddDialog = ({ role, onCourseCreated }: CommandAddDialogProps) => {
                 className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-colors text-left w-full animate-in fade-in-0 slide-in-from-bottom-2 active:animate-in active:zoom-in-95"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gray-100">
-                    <Icon className="w-5 h-5 text-gray-700" />
+                  <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-2">
+                    <Icon className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">{option.label}</div>
@@ -308,7 +308,7 @@ const CommandAddDialog = ({ role, onCourseCreated }: CommandAddDialogProps) => {
           </Button>
           <Button
             type="submit"
-            variant="default"
+            variant="darkblue"
             disabled={!title.trim() || !description.trim() || loading}
             className="w-full active:animate-in active:zoom-in-95"
           >

@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import { Plus } from 'lucide-react'
 
 export default function GameStudio() {
   const { t } = useTranslation('features.gameStudio')
@@ -89,10 +90,11 @@ export default function GameStudio() {
         <div className="flex justify-end w-full">
           <Button
             onClick={handleCreateGame}
-            variant="default"
+            variant="darkblue"
             disabled={creating || loading}
             className="active:animate-in active:zoom-in-95"
           >
+            <Plus size="4" />
             {creating ? t('page.creating') : t('page.createGame')}
           </Button>
         </div>

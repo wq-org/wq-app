@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FileText, MoreVertical, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
@@ -12,14 +12,22 @@ export default function UploadedFileItem({ file, onRemove }: UploadedFileItemPro
   const [preview, setPreview] = useState<string | null>(null)
   const isImage = file.type.startsWith('image/')
 
-  // Generate preview for images
-  if (isImage && !preview) {
+  useEffect(() => {
+    if (!isImage) {
+      setPreview(null)
+      return
+    }
+
     const reader = new FileReader()
     reader.onloadend = () => {
       setPreview(reader.result as string)
     }
     reader.readAsDataURL(file)
-  }
+
+    return () => {
+      reader.onloadend = null
+    }
+  }, [file, isImage])
 
   // Format file size
   const formatFileSize = (bytes: number): string => {

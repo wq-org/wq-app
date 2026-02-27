@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Check } from 'lucide-react'
 import { Container, AppNavigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Button } from '@/components/ui/button'
@@ -185,9 +186,10 @@ export default function SettingsLayout({
 
               <Button
                 type="submit"
-                variant="default"
+                variant="darkblue"
                 disabled={!hasChanges}
               >
+                <Check className="h-4 w-4" />
                 {t('profile.actions.save')}
               </Button>
             </form>

@@ -173,7 +173,7 @@ export default function Course() {
 
         <div className="flex justify-end">
           <Button
-            variant="default"
+            variant="darkblue"
             className="self-start"
             onClick={addTopic}
             disabled={loading || !newTopic.trim() || !newTopicDescription.trim()}

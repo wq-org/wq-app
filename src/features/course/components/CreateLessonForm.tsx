@@ -79,7 +79,7 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
       </div>
       <div className="flex justify-end">
         <Button
-          variant="default"
+          variant="darkblue"
           onClick={handleCreateLesson}
           disabled={loading || !bothFieldsFilled}
         >

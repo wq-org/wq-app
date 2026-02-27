@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Text } from '@/components/ui/text'
 import {
   Stepper,
@@ -149,36 +150,43 @@ export default function FileStepperForm({
   return (
     <div className="w-120">
       {/* Stepper Navigation */}
-      <Stepper
-        value={currentStep}
-        onValueChange={setCurrentStep}
-        orientation="horizontal"
+      <ScrollArea
+        className="h-24 w-full max-w-full pb-2"
+        scrollbars="horizontal"
       >
-        {files.map((file, index) => (
-          <div
-            key={file.id}
-            className="flex items-center"
+        <div className="inline-flex min-w-max pr-2">
+          <Stepper
+            value={currentStep}
+            onValueChange={setCurrentStep}
+            orientation="horizontal"
           >
-            <StepperItem step={index + 1}>
-              <StepperTrigger>
-                <StepperIndicator>
-                  {isStepCompleted(index + 1) ? <Check className="h-5 w-5" /> : index + 1}
-                </StepperIndicator>
-                <StepperTitle className="text-xs max-w-[80px] truncate">
-                  {(() => {
-                    // Use original filename for stepper title, not the form input
-                    const displayTitle = file.file.name.split('.')[0]
-                    return displayTitle.length > 10
-                      ? `${displayTitle.substring(0, 10)}...`
-                      : displayTitle
-                  })()}
-                </StepperTitle>
-              </StepperTrigger>
-            </StepperItem>
-            {index < files.length - 1 && <StepperSeparator />}
-          </div>
-        ))}
-      </Stepper>
+            {files.map((file, index) => (
+              <div
+                key={file.id}
+                className="flex items-center"
+              >
+                <StepperItem step={index + 1}>
+                  <StepperTrigger>
+                    <StepperIndicator>
+                      {isStepCompleted(index + 1) ? <Check className="h-5 w-5" /> : index + 1}
+                    </StepperIndicator>
+                    <StepperTitle className="text-xs max-w-[80px] truncate">
+                      {(() => {
+                        // Use original filename for stepper title, not the form input
+                        const displayTitle = file.file.name.split('.')[0]
+                        return displayTitle.length > 10
+                          ? `${displayTitle.substring(0, 10)}...`
+                          : displayTitle
+                      })()}
+                    </StepperTitle>
+                  </StepperTrigger>
+                </StepperItem>
+                {index < files.length - 1 && <StepperSeparator />}
+              </div>
+            ))}
+          </Stepper>
+        </div>
+      </ScrollArea>
 
       {/* Current File Form */}
       {currentFile && (
@@ -259,6 +267,7 @@ export default function FileStepperForm({
             </Button>
             <Button
               onClick={handleNext}
+              variant="darkblue"
               disabled={!currentFormData.title.trim()}
             >
               {currentStep === files.length ? t('upload.stepper.done') : t('upload.stepper.next')}
