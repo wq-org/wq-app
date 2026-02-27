@@ -27,9 +27,27 @@
   "page": {
     "notFound": "Kurs nicht gefunden",
     "addTopicPlaceholder": "Neues Thema hinzufügen",
+    "addTopicDescriptionPlaceholder": "Beschreibung zum Thema hinzufügen",
     "topicsTitle": "Themen",
     "lessonsForTopic": "Lektionen für: {{topic}}",
-    "lessonsForTopicDescription": "Entdecke die verfügbaren Lektionen für dieses Thema"
+    "lessonsForTopicDescription": "Entdecke die verfügbaren Lektionen für dieses Thema",
+    "emptyState": {
+      "title": "Kurs konnte nicht gefunden werden",
+      "description": "Bitte lade die Seite neu oder kontaktiere die Institutions- oder Kursverwaltung."
+    }
+  },
+  "createLesson": {
+    "titlePlaceholder": "Neue Lektion hinzufügen",
+    "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)",
+    "button": "Lektion erstellen",
+    "toasts": {
+      "success": "Lektion erstellt",
+      "error": "Lektion konnte nicht erstellt werden"
+    }
+  },
+  "emptyTopics": {
+    "title": "Neues Thema hinzufügen",
+    "description": "Es gibt noch kein Thema. Nutze das Eingabefeld und klicke auf das Plus-Symbol."
   },
   "layout": {
     "tabs": {
@@ -57,6 +75,11 @@
     }
   },
   "topic": {
+    "button": "Thema erstellen",
+    "toasts": {
+      "createSuccess": "Thema erstellt",
+      "createError": "Thema konnte nicht erstellt werden"
+    },
     "deleteDialog": {
       "title": "Thema löschen",
       "description": "Möchtest du \"{{name}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",

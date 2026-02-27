@@ -18,6 +18,21 @@ export const buttonVariants = cva(
         confirm:
           'text-blue-500 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/30',
         active: '!h-auto text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-50',
+        darkblue:
+          'text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 transition-all duration-200 active:animate-in active:zoom-in-95',
+        violet:
+          'border-0 bg-transparent text-[oklch(var(--oklch-violet))] hover:opacity-80 hover:bg-[oklch(var(--oklch-violet)/0.12)] hover:text-[oklch(var(--oklch-violet))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        indigo:
+          'border-0 bg-transparent text-[oklch(var(--oklch-indigo))] hover:opacity-80 hover:bg-[oklch(var(--oklch-indigo)/0.12)] hover:text-[oklch(var(--oklch-indigo))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        blue: 'border-0 bg-transparent text-[oklch(var(--oklch-blue))] hover:opacity-80 hover:bg-[oklch(var(--oklch-blue)/0.12)] hover:text-[oklch(var(--oklch-blue))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        cyan: 'border-0 bg-transparent text-[oklch(var(--oklch-cyan))] hover:opacity-80 hover:bg-[oklch(var(--oklch-cyan)/0.12)] hover:text-[oklch(var(--oklch-cyan))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        teal: 'border-0 bg-transparent text-[oklch(var(--oklch-teal))] hover:opacity-80 hover:bg-[oklch(var(--oklch-teal)/0.12)] hover:text-[oklch(var(--oklch-teal))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        green:
+          'border-0 bg-transparent text-[oklch(var(--oklch-green))] hover:opacity-80 hover:bg-[oklch(var(--oklch-green)/0.12)] hover:text-[oklch(var(--oklch-green))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        lime: 'border-0 bg-transparent text-[oklch(var(--oklch-lime))] hover:opacity-80 hover:bg-[oklch(var(--oklch-lime)/0.12)] hover:text-[oklch(var(--oklch-lime))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        orange:
+          'border-0 bg-transparent text-[oklch(var(--oklch-orange))] hover:opacity-80 hover:bg-[oklch(var(--oklch-orange)/0.12)] hover:text-[oklch(var(--oklch-orange))] transition-all duration-200 active:animate-in active:zoom-in-95',
+        pink: 'border-0 bg-transparent text-[oklch(var(--oklch-pink))] hover:opacity-80 hover:bg-[oklch(var(--oklch-pink)/0.12)] hover:text-[oklch(var(--oklch-pink))] transition-all duration-200 active:animate-in active:zoom-in-95',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

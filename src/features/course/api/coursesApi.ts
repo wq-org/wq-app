@@ -100,7 +100,8 @@ export async function deleteCourse(courseId: string): Promise<void> {
 export async function createTopic(
   courseId: string,
   name: string,
-): Promise<{ id: string; name: string; course_id: string }> {
+  description: string,
+): Promise<{ id: string; name: string; course_id: string; description: string }> {
   const now = new Date().toISOString()
 
   const { data: existingTopics, error: fetchError } = await supabase
@@ -123,6 +124,7 @@ export async function createTopic(
     .insert({
       title: name.trim(),
       course_id: courseId,
+      description: description,
       order_index: nextOrderIndex,
       created_at: now,
     })
@@ -138,6 +140,7 @@ export async function createTopic(
     id: data.id,
     name: data.title,
     course_id: data.course_id,
+    description: description,
   }
 }
 
@@ -146,10 +149,10 @@ export async function createTopic(
  */
 export async function getTopicsByCourseId(
   courseId: string,
-): Promise<{ id: string; name: string; course_id: string }[]> {
+): Promise<{ id: string; name: string; course_id: string; description: string }[]> {
   const { data, error } = await supabase
     .from('topics')
-    .select('id, title, course_id')
+    .select('id, title, course_id, description')
     .eq('course_id', courseId)
     .order('order_index', { ascending: true })
 
@@ -162,6 +165,7 @@ export async function getTopicsByCourseId(
     id: topic.id,
     name: topic.title,
     course_id: topic.course_id,
+    description: topic.description,
   }))
 }
 

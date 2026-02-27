@@ -3,13 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useCourse } from '@/contexts/course'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2 } from 'lucide-react'
+import { Plus, MessageSquareWarning } from 'lucide-react'
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
-import {
-  TopicBadge,
-  type Topic,
-  type HoldDeleteTooltipProps,
-} from '@/features/course/components/TopicBadge'
+import { TopicBadge } from '@/features/course/components/TopicBadge'
 import { CreateLessonForm } from '@/features/course/components/CreateLessonForm'
 import { CourseLessonTable } from '@/features/course/components/CourseLessonTable'
 import { EmptyLessonsView } from '@/features/course/components/EmptyLessonsView'
@@ -19,6 +15,10 @@ import { createTopic, deleteTopic, getTopicsByCourseId } from '@/features/course
 import { Text } from '@/components/ui/text'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
+import type { HoldDeleteTooltipProps, Topic } from '../types/topics.types'
+import { Textarea } from '@/components/ui/textarea'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import { toast } from 'sonner'
 
 export default function Course() {
   const { t } = useTranslation('features.course')
@@ -37,6 +37,7 @@ export default function Course() {
   const navigate = useNavigate()
   const { fetchCourseById, selectedCourse } = useCourse()
   const [newTopic, setNewTopic] = useState('')
+  const [newTopicDescription, setNewTopicDescription] = useState('')
   const [topics, setTopics] = useState<Topic[]>([])
   const [topicsLoading, setTopicsLoading] = useState(true)
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null)
@@ -97,14 +98,18 @@ export default function Course() {
 
     setLoading(true)
     try {
-      const createdTopic = await createTopic(courseId, newTopic.trim())
+      const createdTopic = await createTopic(courseId, newTopic.trim(), newTopicDescription)
       const topic: Topic = {
         id: createdTopic.id,
         name: createdTopic.name,
+        description: createdTopic.description,
       }
       setTopics((prev) => [...prev, topic])
       setNewTopic('')
+      setNewTopicDescription('')
+      toast.success(t('topic.toasts.createSuccess'))
     } catch (error) {
+      toast.error(t('topic.toasts.createError'))
       console.error('Failed to create topic:', error)
     } finally {
       setLoading(false)
@@ -127,39 +132,63 @@ export default function Course() {
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      addTopic()
-    }
-  }
-
   if (!courseId) {
-    return <div>{t('page.notFound')}</div>
+    return (
+      <Empty className="w-full animate-in fade-in-0 slide-in-from-bottom-5 duration-300 border border-dashed border-gray-200 rounded-xl p-6">
+        <EmptyHeader>
+          <EmptyMedia
+            variant="icon"
+            className="bg-gray-50 border border-gray-200 text-gray-400"
+          >
+            <MessageSquareWarning className="w-8 h-8 text-gray-400" />
+          </EmptyMedia>
+          <EmptyTitle className="text-sm font-normal text-gray-500">
+            {t('page.emptyState.title')}
+          </EmptyTitle>
+          <EmptyDescription className="text-xs text-gray-400">
+            {t('page.emptyState.description')}
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    )
   }
 
   return (
     <div className="flex flex-col gap-6 pb-32">
-      <div className="flex items-center gap-4">
-        <Input
-          value={newTopic}
-          onChange={(e) => setNewTopic(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder={t('page.addTopicPlaceholder')}
-          className="flex-1   px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
-        />
-        <Button
-          variant="default"
-          size="icon"
-          onClick={addTopic}
-          disabled={loading || !newTopic.trim()}
-          className="rounded-full font-semibold hover:scale-105 active:scale-95 transition-all duration-200 animate-in fade-in zoom-in-50 duration-300"
-        >
-          {loading ? (
-            <Loader2 className="w-6 h-6 text-white animate-spin" />
-          ) : (
-            <Plus className="w-6 h-6 text-white" />
-          )}
-        </Button>
+      <div className="flex flex-col  gap-4">
+        <div className="flex flex-col w-full gap-2">
+          <Input
+            value={newTopic}
+            onChange={(e) => setNewTopic(e.target.value)}
+            placeholder={t('page.addTopicPlaceholder')}
+            className="flex-1   px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
+          />
+          <Textarea
+            value={newTopicDescription}
+            onChange={(e) => setNewTopicDescription(e.target.value)}
+            placeholder={t('page.addTopicDescriptionPlaceholder')}
+            className="flex-1   px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <Button
+            variant="default"
+            className="self-start"
+            onClick={addTopic}
+            disabled={loading || !newTopic.trim() || !newTopicDescription.trim()}
+          >
+            {loading ? (
+              <Spinner
+                variant="white"
+                size="sm"
+              />
+            ) : (
+              <Plus className="w-6 h-6 text-white" />
+            )}
+            <Text variant="small">{t('topic.button')}</Text>
+          </Button>
+        </div>
       </div>
 
       <Text
@@ -210,7 +239,9 @@ export default function Course() {
               variant="body"
               className="text-gray-500 mt-1"
             >
-              {t('page.lessonsForTopicDescription')}
+              {!selectedTopic?.description?.trim()
+                ? t('page.lessonsForTopicDescription')
+                : selectedTopic.description}
             </Text>
           </div>
 

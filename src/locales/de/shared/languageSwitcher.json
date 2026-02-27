@@ -1,0 +1,13 @@
+{
+  "triggerLabel": "Aktuelle Sprache: {{language}}",
+  "languages": {
+    "de": {
+      "name": "Deutsch",
+      "switchLabel": "Zu Deutsch wechseln"
+    },
+    "en": {
+      "name": "Englisch",
+      "switchLabel": "Zu Englisch wechseln"
+    }
+  }
+}

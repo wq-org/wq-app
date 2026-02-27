@@ -17,7 +17,7 @@ export function Logo({ className, showText = true, ...props }: LogoProps) {
         alt="WQ Health"
         className={cn('h-5 w-5', !showText && 'h-full w-full')}
       />
-      {showText && <span className="text-sm font-bold">WQ Health</span>}
+      {showText && <span className="text-sm font-bold">WQ</span>}
     </div>
   )
 }

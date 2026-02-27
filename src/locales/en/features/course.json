@@ -27,9 +27,27 @@
   "page": {
     "notFound": "Course not found",
     "addTopicPlaceholder": "Add new topic",
+    "addTopicDescriptionPlaceholder": "Add Description to Topic",
     "topicsTitle": "Topics",
     "lessonsForTopic": "Lessons for: {{topic}}",
-    "lessonsForTopicDescription": "Explore the available lessons for this topic"
+    "lessonsForTopicDescription": "Explore the available lessons for this topic",
+    "emptyState": {
+      "title": "Course cannot be found",
+      "description": "Please reload the page or contact the institution or course admin."
+    }
+  },
+  "createLesson": {
+    "titlePlaceholder": "Add new lesson",
+    "descriptionPlaceholder": "Lesson description (max. 120 characters)",
+    "button": "Create Lesson",
+    "toasts": {
+      "success": "Lesson created",
+      "error": "Could not create lesson"
+    }
+  },
+  "emptyTopics": {
+    "title": "Add a new topic",
+    "description": "No topic exists yet. Use the input field and click the plus button."
   },
   "layout": {
     "tabs": {
@@ -57,6 +75,11 @@
     }
   },
   "topic": {
+    "button": "Create Topic",
+    "toasts": {
+      "createSuccess": "Topic created",
+      "createError": "Could not create topic"
+    },
     "deleteDialog": {
       "title": "Delete Topic",
       "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",

@@ -2,9 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useLesson } from '@/contexts/lesson'
 import { Textarea } from '@/components/ui/textarea'
+import { Text } from '@/components/ui/text'
+import Spinner from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 export interface CreateLessonFormProps {
   topicId?: string
@@ -13,6 +17,7 @@ export interface CreateLessonFormProps {
 }
 
 export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateLessonFormProps) {
+  const { t } = useTranslation('features.course')
   const [newLesson, setNewLesson] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,25 +43,15 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
       } else {
         navigate(`/teacher/lesson/${createdLesson.id}`)
       }
+      toast.success(t('createLesson.toasts.success'))
       setNewLesson('')
       setDescription('')
       onLessonCreated?.()
     } catch (error) {
+      toast.error(t('createLesson.toasts.error'))
       console.error('Failed to create lesson:', error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleTitleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && bothFieldsFilled) {
-      handleCreateLesson()
-    }
-  }
-
-  const handleDescriptionKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && e.ctrlKey && bothFieldsFilled) {
-      handleCreateLesson()
     }
   }
 
@@ -65,8 +60,7 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
       <Input
         value={newLesson}
         onChange={(e) => setNewLesson(e.target.value)}
-        onKeyPress={handleTitleKeyPress}
-        placeholder="Neue Lektion hinzufügen"
+        placeholder={t('createLesson.titlePlaceholder')}
         className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
       />
       <div className="flex flex-col w-full">
@@ -77,9 +71,8 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
               setDescription(e.target.value)
             }
           }}
-          onKeyPress={handleDescriptionKeyPress}
           maxLength={120}
-          placeholder="Beschreibung der Lektion (max. 120 Zeichen)"
+          placeholder={t('createLesson.descriptionPlaceholder')}
           className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 resize-none h-24"
         />
         <div className="text-right text-xs text-gray-400 mt-1">{description.length}/120</div>
@@ -87,16 +80,18 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
       <div className="flex justify-end">
         <Button
           variant="default"
-          size="icon"
           onClick={handleCreateLesson}
           disabled={loading || !bothFieldsFilled}
-          className="rounded-full font-semibold hover:scale-105 active:scale-95 transition-all duration-200 animate-in fade-in zoom-in-50 duration-300"
         >
           {loading ? (
-            <Loader2 className="w-6 h-6 text-white animate-spin" />
+            <Spinner
+              size="sm"
+              variant="white"
+            />
           ) : (
             <Plus className="w-6 h-6 text-white" />
           )}
+          <Text variant="small">{t('createLesson.button')}</Text>
         </Button>
       </div>
     </div>

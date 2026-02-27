@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
-import { TopicBadge, type Topic } from '@/features/course/components/TopicBadge'
+import { TopicBadge } from '@/features/course/components/TopicBadge'
 import { CourseLessonTable } from '@/features/course/components/CourseLessonTable'
 import { EmptyLessonsView } from '@/features/course/components/EmptyLessonsView'
 import type { Lesson } from '@/features/course/types/lesson.types'
@@ -10,6 +10,7 @@ import { getLessonsByTopicId } from '@/features/course/api/lessonsApi'
 import { getTopicsByCourseId } from '@/features/course/api/coursesApi'
 import { Text } from '@/components/ui/text'
 import Spinner from '@/components/ui/spinner'
+import type { Topic } from '../types/topics.types'
 
 export interface CoursePreviewTabProps {
   courseId: string
@@ -117,7 +118,7 @@ export default function CoursePreviewTab({ courseId, onLessonView }: CoursePrevi
               variant="body"
               className="text-gray-500 mt-1"
             >
-              {t('page.lessonsForTopicDescription')}
+              {selectedTopic.description}
             </Text>
           </div>
 

@@ -77,7 +77,7 @@ export default function UploadedFileItem({ file, onRemove }: UploadedFileItemPro
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors">
       {/* Icon or Image Preview */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {isImage && preview ? (
           <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100">
             <img

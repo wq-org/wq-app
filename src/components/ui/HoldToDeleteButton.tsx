@@ -30,6 +30,16 @@ const progressFillClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
   delete: 'bg-red-200',
   confirm: 'bg-blue-200',
   active: 'bg-emerald-200',
+  darkblue: 'bg-blue-200',
+  violet: 'bg-[oklch(var(--oklch-violet)/0.18)]',
+  indigo: 'bg-[oklch(var(--oklch-indigo)/0.18)]',
+  blue: 'bg-[oklch(var(--oklch-blue)/0.18)]',
+  cyan: 'bg-[oklch(var(--oklch-cyan)/0.18)]',
+  teal: 'bg-[oklch(var(--oklch-teal)/0.18)]',
+  green: 'bg-[oklch(var(--oklch-green)/0.18)]',
+  lime: 'bg-[oklch(var(--oklch-lime)/0.18)]',
+  orange: 'bg-[oklch(var(--oklch-orange)/0.18)]',
+  pink: 'bg-[oklch(var(--oklch-pink)/0.18)]',
 }
 
 /** Text + icon color when holding (contrasts with progress fill) */
@@ -43,6 +53,16 @@ const contentHoldClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
   delete: 'text-red-600',
   confirm: 'text-blue-600',
   active: 'text-emerald-700',
+  darkblue: 'text-blue-700',
+  violet: 'text-[oklch(var(--oklch-violet))]',
+  indigo: 'text-[oklch(var(--oklch-indigo))]',
+  blue: 'text-[oklch(var(--oklch-blue))]',
+  cyan: 'text-[oklch(var(--oklch-cyan))]',
+  teal: 'text-[oklch(var(--oklch-teal))]',
+  green: 'text-[oklch(var(--oklch-green))]',
+  lime: 'text-[oklch(var(--oklch-lime))]',
+  orange: 'text-[oklch(var(--oklch-orange))]',
+  pink: 'text-[oklch(var(--oklch-pink))]',
 }
 
 function HoldToDeleteButton({

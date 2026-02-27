@@ -136,6 +136,18 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* https://oklch.fyi/ */
+  --oklch-violet: 0.8 0.193 280;
+  --oklch-indigo: 0.8 0.193 254.9;
+  --oklch-blue: 0.8 0.193 220;
+  --oklch-cyan: 0.8 0.193 180;
+  --oklch-teal: 0.8 0.193 140;
+  --oklch-green: 0.8 0.193 100;
+  --oklch-lime: 0.8 0.193 60;
+  --oklch-orange: 0.8 0.193 20;
+  --oklch-pink: 0.8 0.193 0;
+  --oklch-darkblue: 0.45 0.14 254;
 }
 
 .dark {
@@ -170,6 +182,18 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* https://oklch.fyi/ */
+  --oklch-violet: 0.8 0.193 280;
+  --oklch-indigo: 0.8 0.193 254.9;
+  --oklch-blue: 0.8 0.12 220;
+  --oklch-cyan: 0.8 0.193 180;
+  --oklch-teal: 0.8 0.193 140;
+  --oklch-green: 0.8 0.193 100;
+  --oklch-lime: 0.8 0.193 60;
+  --oklch-orange: 0.82 0.16 45;
+  --oklch-pink: 0.8 0.193 0;
+  --oklch-darkblue: 0.45 0.14 254;
 }
 
 @layer base {

@@ -7,20 +7,19 @@ import { Text } from '@/components/ui/text'
 const flags: Record<string, string> = {
   US: '🇺🇸',
   DE: '🇩🇪',
-  // FR: '🇫🇷',
-  // ES: '🇪🇸',
 }
 
 const languages = [
-  { code: 'de', name: 'Deutsch', flag: 'DE' },
-  { code: 'en', name: 'English', flag: 'US' },
-  // { code: "fr", name: "Français", flag: "FR" },
-  // { code: "es", name: "Español", flag: "ES" },
-]
+  { code: 'de', flag: 'DE' },
+  { code: 'en', flag: 'US' },
+] as const
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation()
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
+  const { i18n, t } = useTranslation('shared.languageSwitcher')
+  const currentLanguage =
+    languages.find(
+      (lang) => i18n.language === lang.code || i18n.language.startsWith(`${lang.code}-`),
+    ) || languages[0]
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode)
@@ -33,6 +32,10 @@ export function LanguageSwitcher() {
           variant="ghost"
           size="icon"
           className="h-10 w-10 rounded-full hover:bg-accent gap-1"
+          aria-label={t('triggerLabel', {
+            language: t(`languages.${currentLanguage.code}.name`),
+          })}
+          title={t(`languages.${currentLanguage.code}.name`)}
         >
           <Text
             as="span"
@@ -52,9 +55,12 @@ export function LanguageSwitcher() {
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
+              aria-label={t(`languages.${lang.code}.switchLabel`)}
+              title={t(`languages.${lang.code}.name`)}
               className={cn(
                 'w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-accent transition-colors flex items-center gap-2',
-                i18n.language === lang.code && 'bg-accent',
+                (i18n.language === lang.code || i18n.language.startsWith(`${lang.code}-`)) &&
+                  'bg-accent',
               )}
             >
               <Text
@@ -67,7 +73,7 @@ export function LanguageSwitcher() {
                 as="span"
                 variant="small"
               >
-                {lang.name}
+                {t(`languages.${lang.code}.name`)}
               </Text>
             </button>
           ))}

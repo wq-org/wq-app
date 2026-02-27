@@ -24,7 +24,7 @@ export function GameProjectCard({
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <SkeletonNodeGraph className="rounded-t-3xl rounded-b-none w-full h-48 overflow-hidden" />
         <Badge
-          variant={status === 'published' ? 'active' : 'secondary'}
+          variant={status === 'published' ? 'default' : 'secondary'}
           className="absolute top-3 left-3"
         >
           {status === 'published'
@@ -68,9 +68,8 @@ export function GameProjectCard({
           </CardDescription>
           <div className="flex items-center justify-end gap-2 mt-auto">
             <Button
-              variant="ghost"
+              variant="darkblue"
               onClick={() => onOpen?.()}
-              className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200 active:animate-in active:zoom-in-95"
             >
               <Text
                 as="p"

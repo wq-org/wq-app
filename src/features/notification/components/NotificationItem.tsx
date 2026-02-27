@@ -34,7 +34,7 @@ export default function NotificationItem({
       )}
     >
       {/* Avatar */}
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <Avatar className={cn('h-12 w-12', notification.avatar?.color)}>
           {notification.avatar?.src && (
             <AvatarImage

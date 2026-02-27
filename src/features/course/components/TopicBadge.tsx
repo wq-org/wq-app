@@ -3,30 +3,7 @@ import { Separator } from '@/components/ui/separator'
 import { Check } from 'lucide-react'
 import { HoldToDeleteIconButton } from '@/components/ui/holdDeleteIconButton'
 import { Text } from '@/components/ui/text'
-
-export interface Topic {
-  id: string
-  name: string
-}
-
-export interface HoldDeleteTooltipProps {
-  tooltipDelayDuration?: number
-  tooltipTitle?: string
-  tooltipDescription?: string
-  tooltipHoldMessage?: string | ((seconds: number) => string)
-  tooltipDeletingIn?: (seconds: number) => string
-  tooltipDeleting?: string
-  holdDuration?: number
-}
-
-interface TopicBadgeProps {
-  topic: Topic
-  isSelected: boolean
-  index: number
-  onToggle: (topic: Topic) => void
-  onDelete?: (topic: Topic) => void
-  holdDeleteTooltip?: HoldDeleteTooltipProps
-}
+import type { TopicBadgeProps } from '../types/topics.types'
 
 export function TopicBadge({
   topic,

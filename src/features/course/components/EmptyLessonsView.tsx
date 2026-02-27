@@ -1,4 +1,4 @@
-import { FileText, Plus } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 
 export function EmptyLessonsView() {
@@ -15,9 +15,9 @@ export function EmptyLessonsView() {
           füge eine neue Lektion hinzu
         </EmptyTitle>
         <EmptyDescription className="text-xs text-gray-400">
-          <span className="inline-flex items-center gap-2">
-            Benutze das Eingabefeld und klicke auf das <Plus className="w-4 h-4 text-gray-400" />{' '}
-            Symbol, um eine neue Lektion zu erstellen.
+          <span className=" items-center gap-2">
+            Benutze das Eingabefeld und klicke auf das Create Lesson Symbol, um eine neue Lektion zu
+            erstellen.
           </span>
         </EmptyDescription>
       </EmptyHeader>

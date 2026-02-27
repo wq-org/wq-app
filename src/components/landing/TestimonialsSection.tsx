@@ -26,10 +26,8 @@ export function TestimonialsSection() {
               </Avatar>
 
               <div className="space-y-1 border-l pl-6">
-                <cite className="font-medium not-italic">Godfred Amoah Sefa, M.Sc.</cite>
-                <span className="text-muted-foreground block text-sm">
-                  Developer & Game Designer
-                </span>
+                <cite className="font-medium not-italic">Godfred Amoah Sefa, B.Sc.</cite>
+                <span className="text-muted-foreground block text-sm">Developer</span>
               </div>
             </div>
           </blockquote>

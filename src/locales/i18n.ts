@@ -11,6 +11,9 @@ import settingsDE from './de/settings.json'
 // DE imports - Layout
 import layoutDashboardLayoutDE from './de/layout/dashboardLayout.json'
 
+// DE imports - Shared
+import sharedLanguageSwitcherDE from './de/shared/languageSwitcher.json'
+
 // DE imports - Features (alphabetically ordered to match directory structure)
 import featuresAdminDE from './de/features/admin.json'
 import featuresAuthDE from './de/features/auth.json'
@@ -38,6 +41,9 @@ import settingsEN from './en/settings.json'
 
 // EN imports - Layout
 import layoutDashboardLayoutEN from './en/layout/dashboardLayout.json'
+
+// EN imports - Shared
+import sharedLanguageSwitcherEN from './en/shared/languageSwitcher.json'
 
 // EN imports - Features (alphabetically ordered to match directory structure)
 import featuresAdminEN from './en/features/admin.json'
@@ -81,6 +87,8 @@ i18n.use(initReactI18next).init({
       'features.uploadFiles': featuresUploadFilesEN,
       // Layout namespaces
       'layout.dashboardLayout': layoutDashboardLayoutEN,
+      // Shared namespaces
+      'shared.languageSwitcher': sharedLanguageSwitcherEN,
     },
     de: {
       // Root level namespaces (alphabetically ordered)
@@ -108,6 +116,8 @@ i18n.use(initReactI18next).init({
       'features.uploadFiles': featuresUploadFilesDE,
       // Layout namespaces
       'layout.dashboardLayout': layoutDashboardLayoutDE,
+      // Shared namespaces
+      'shared.languageSwitcher': sharedLanguageSwitcherDE,
     },
   },
   lng: 'de',
@@ -138,6 +148,8 @@ i18n.use(initReactI18next).init({
     'features.uploadFiles',
     // Layout namespaces
     'layout.dashboardLayout',
+    // Shared namespaces
+    'shared.languageSwitcher',
   ],
   defaultNS: 'common',
   interpolation: { escapeValue: false },
