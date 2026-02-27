@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next'
 import AppWrapper from '@/components/layout/AppWrapper'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import LessonEditor from '@/features/course/components/LessonEditor'
 import { getLessonById } from '@/features/course/api/lessonsApi'
+import { getCourseById } from '@/features/course/api/coursesApi'
 import type { Lesson } from '@/features/course/types/lesson.types'
+import type { Course } from '@/features/course/types/course.types'
+import LessonPreviewContent from '@/features/course/components/LessonPreviewContent'
 
 function parseLessonContent(raw: unknown): Record<string, unknown> {
   if (raw == null || raw === '') return {}
@@ -24,8 +26,9 @@ function parseLessonContent(raw: unknown): Record<string, unknown> {
 
 export default function LessonView() {
   const { t } = useTranslation('features.lesson')
-  const { lessonId } = useParams<{ lessonId: string }>()
+  const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const [lesson, setLesson] = useState<Lesson | null>(null)
+  const [course, setCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -56,6 +59,30 @@ export default function LessonView() {
     }
   }, [lessonId])
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadCourse() {
+      if (!courseId) {
+        setCourse(null)
+        return
+      }
+
+      try {
+        const data = await getCourseById(courseId)
+        if (!cancelled) setCourse(data)
+      } catch (error) {
+        console.error('Error loading course for lesson preview:', error)
+        if (!cancelled) setCourse(null)
+      }
+    }
+
+    void loadCourse()
+    return () => {
+      cancelled = true
+    }
+  }, [courseId])
+
   const contentValue = useMemo(() => parseLessonContent(lesson?.content), [lesson?.content])
 
   return (
@@ -78,31 +105,24 @@ export default function LessonView() {
             {t('page.notFound', { defaultValue: 'Lesson not found' })}
           </Text>
         ) : (
-          <div className="rounded-2xl border bg-white p-6">
-            <Text
-              as="h1"
-              variant="h1"
-              className="text-3xl font-semibold"
-            >
-              {lesson.title?.trim() || t('page.fallbackTitle')}
-            </Text>
-            {lesson.description ? (
-              <Text
-                as="p"
-                variant="body"
-                className="mt-2 text-muted-foreground"
-              >
-                {lesson.description}
-              </Text>
-            ) : null}
-
-            <LessonEditor
-              className="mt-6 rounded-xl border bg-background"
-              value={contentValue}
-              readOnly
-              placeholder={t('page.editorPlaceholder')}
-            />
-          </div>
+          <LessonPreviewContent
+            title={lesson.title?.trim() || t('page.fallbackTitle')}
+            description={
+              lesson.description?.trim() ||
+              t('page.headerDescription', {
+                defaultValue: 'Write a short summary to introduce this lesson.',
+              })
+            }
+            value={contentValue}
+            previewTitle={t('page.previewTitle', { defaultValue: 'Preview' })}
+            previewHint={t('page.previewHint', {
+              defaultValue: 'Read-only preview of the lesson content.',
+            })}
+            headingsNavLabel={t('page.headingsNavLabel', { defaultValue: 'On this page' })}
+            loadingLabel={t('layout.loading')}
+            editorPlaceholder={t('page.editorPlaceholder')}
+            themeId={course?.theme_id}
+          />
         )}
       </div>
     </AppWrapper>

@@ -97,6 +97,7 @@ export async function getMyAcceptedCourses(): Promise<EnrollmentCourse[]> {
         description,
         teacher_id,
         institution_id,
+        theme_id,
         is_published,
         created_at,
         updated_at,

@@ -60,6 +60,7 @@ export function useCourses() {
         const course = await createCourse(profile.user_id, {
           title: data.title,
           description: data.description,
+          theme_id: data.theme_id,
         })
 
         await fetchCourses()

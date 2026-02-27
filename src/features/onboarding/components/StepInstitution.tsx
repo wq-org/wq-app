@@ -93,7 +93,7 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
           </Button>
           <Button
             type="button"
-            variant="default"
+            variant="darkblue"
             onClick={handleContinue}
             disabled={selectedIds.length === 0}
           >

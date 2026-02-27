@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS public.courses (
   description TEXT,
   teacher_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
   institution_id UUID REFERENCES public.institutions(id) ON DELETE SET NULL,
+  theme_id TEXT NOT NULL DEFAULT 'blue',
   is_published BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -166,6 +167,7 @@ CREATE TABLE IF NOT EXISTS public.games (
   game_type game_type NOT NULL,
   teacher_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
   topic_id UUID,
+  theme_id TEXT NOT NULL DEFAULT 'blue',
   game_config JSONB NOT NULL,
   status game_status DEFAULT 'draft',
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -175,6 +177,20 @@ CREATE TABLE IF NOT EXISTS public.games (
   is_draft BOOLEAN DEFAULT true,
   published_at TIMESTAMPTZ
 );
+
+ALTER TABLE public.courses
+DROP CONSTRAINT IF EXISTS courses_theme_id_check;
+
+ALTER TABLE public.courses
+ADD CONSTRAINT courses_theme_id_check
+CHECK (theme_id IN ('violet', 'indigo', 'blue', 'cyan', 'teal', 'green', 'lime', 'orange', 'pink', 'darkblue'));
+
+ALTER TABLE public.games
+DROP CONSTRAINT IF EXISTS games_theme_id_check;
+
+ALTER TABLE public.games
+ADD CONSTRAINT games_theme_id_check
+CHECK (theme_id IN ('violet', 'indigo', 'blue', 'cyan', 'teal', 'green', 'lime', 'orange', 'pink', 'darkblue'));
 
 -- =============================================================================
 -- INDEXES

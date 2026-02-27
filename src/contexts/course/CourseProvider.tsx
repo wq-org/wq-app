@@ -68,6 +68,7 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const course = await createCourseApi(profile.user_id, {
           title: data.title,
           description: data.description,
+          theme_id: data.theme_id,
         })
 
         // Refresh courses list

@@ -168,7 +168,7 @@ export function ProfileInstitutionView({ institutionId }: ProfileInstitutionView
 
             <div className="flex flex-wrap items-center gap-2 pt-2">
               <Button
-                variant="default"
+                variant="darkblue"
                 className="gap-2 w-fit"
                 onClick={onFollowClick}
               >

@@ -291,7 +291,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       <div className="flex justify-end gap-4 py-11">
         <Button
           type="button"
-          variant="default"
+          variant="darkblue"
           onClick={handleContinue}
           disabled={!isFormValid}
         >

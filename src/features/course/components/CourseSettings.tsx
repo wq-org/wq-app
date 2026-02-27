@@ -7,12 +7,14 @@ import { Switch } from '@/components/ui/switch'
 import { getCourseById, updateCourse, deleteCourse } from '@/features/course/api/coursesApi'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
-import { Loader2 } from 'lucide-react'
+
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
+import type { ThemeId } from '@/lib/themes'
 
 interface CourseSettingsProps {
   courseId: string
@@ -29,9 +31,11 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
   const [deleting, setDeleting] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [themeId, setThemeId] = useState<ThemeId>('blue')
   const [isPublished, setIsPublished] = useState(false)
   const [originalTitle, setOriginalTitle] = useState('')
   const [originalDescription, setOriginalDescription] = useState('')
+  const [originalThemeId, setOriginalThemeId] = useState<ThemeId>('blue')
   const [hasChanges, setHasChanges] = useState(false)
 
   useEffect(() => {
@@ -41,9 +45,11 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
         const course = await getCourseById(courseId)
         setTitle(course.title || '')
         setDescription(course.description || '')
+        setThemeId(course.theme_id || 'blue')
         setIsPublished(course.is_published || false)
         setOriginalTitle(course.title || '')
         setOriginalDescription(course.description || '')
+        setOriginalThemeId(course.theme_id || 'blue')
       } catch (error) {
         console.error('Error fetching course:', error)
       } finally {
@@ -57,10 +63,19 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
   }, [courseId])
 
   useEffect(() => {
-    const changed = title !== originalTitle || description !== originalDescription
+    const changed =
+      title !== originalTitle || description !== originalDescription || themeId !== originalThemeId
     setHasChanges(changed)
     onUnsavedChange?.(changed)
-  }, [title, description, originalTitle, originalDescription, onUnsavedChange])
+  }, [
+    title,
+    description,
+    themeId,
+    originalTitle,
+    originalDescription,
+    originalThemeId,
+    onUnsavedChange,
+  ])
 
   const handleSaveChanges = async () => {
     if (!hasChanges) return
@@ -70,9 +85,11 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
       await updateCourse(courseId, {
         title,
         description,
+        theme_id: themeId,
       })
       setOriginalTitle(title)
       setOriginalDescription(description)
+      setOriginalThemeId(themeId)
       setHasChanges(false)
       onUnsavedChange?.(false)
       toast.success(t('settings.toasts.saveSuccess'), {
@@ -176,6 +193,21 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
           />
         </div>
 
+        <div className="flex flex-col gap-3">
+          <Label>{t('settings.themeLabel')}</Label>
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-muted-foreground"
+          >
+            {t('settings.themeHint')}
+          </Text>
+          <DefaultBackgroundGallery
+            selectedId={themeId}
+            onSelect={setThemeId}
+          />
+        </div>
+
         <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">
           <div className="flex flex-col gap-1">
             <Label
@@ -205,14 +237,17 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
 
         <div className="flex  items-center justify-end gap-4 py-4 border-t">
           <Button
-            variant="default"
+            variant="darkblue"
             onClick={handleSaveChanges}
             disabled={!hasChanges || saving}
             className="gap-2"
           >
             {saving ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Spinner
+                  variant="white"
+                  size="sm"
+                />
                 {t('settings.saving')}
               </>
             ) : (

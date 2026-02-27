@@ -197,6 +197,7 @@ export default function Dashboard() {
                   id: course.id,
                   title: course.title,
                   description: course.description,
+                  themeId: course.theme_id,
                   teacherAvatar: course.teacher?.avatar_url || undefined,
                   teacherInitials: teacherName?.charAt(0).toUpperCase() || 'T',
                 } satisfies CourseCardProps

@@ -33,14 +33,16 @@
     "overviewTab": "Overview",
     "settingsTab": "Settings",
     "noContent": "No content available",
-    "deleteHint": "Hold the button below for 3 seconds to delete this node."
+    "deleteHint": "Hold the button below for 3 seconds to delete this node.",
+    "overviewAriaLabel": "Show overview tab",
+    "settingsAriaLabel": "Show settings tab"
   },
   "holdDelete": {
     "title": "Delete",
     "description": "This action cannot be undone.",
     "holdMessage": "Hold for {{seconds}} seconds to delete.",
     "deletingIn": "Deleting in {{seconds}}s",
-    "deleting": "Deleting…"
+    "deleting": "Deleting\u2026"
   },
   "previewDrawer": {
     "title": "Game Simulation",
@@ -99,7 +101,9 @@
       "rollbackFailed": "Failed to rollback",
       "unpublished": "Game unpublished",
       "unpublishFailed": "Failed to unpublish"
-    }
+    },
+    "themeLabel": "Preview Theme",
+    "themeHint": "Choose the saved preview background for this project card."
   },
   "gameNodeSettings": {
     "titleLabel": "Title",
@@ -127,7 +131,9 @@
     "fieldTitle": "Title",
     "titlePlaceholder": "Enter game title",
     "fieldDescription": "Description",
-    "descriptionPlaceholder": "Enter game description"
+    "descriptionPlaceholder": "Enter game description",
+    "themeLabel": "Preview Theme",
+    "themeHint": "Choose the saved preview background for this project."
   },
   "endDialog": {
     "title": "Configure End Node",

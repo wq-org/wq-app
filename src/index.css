@@ -138,15 +138,15 @@ body {
   --sidebar-ring: oklch(0.708 0 0);
 
   /* https://oklch.fyi/ */
-  --oklch-violet: 0.8 0.193 280;
-  --oklch-indigo: 0.8 0.193 254.9;
-  --oklch-blue: 0.8 0.193 220;
-  --oklch-cyan: 0.8 0.193 180;
-  --oklch-teal: 0.8 0.193 140;
-  --oklch-green: 0.8 0.193 100;
-  --oklch-lime: 0.8 0.193 60;
-  --oklch-orange: 0.8 0.193 20;
-  --oklch-pink: 0.8 0.193 0;
+  --oklch-violet: 0.76 0.18 305;
+  --oklch-indigo: 0.74 0.15 275;
+  --oklch-blue: 0.78 0.14 245;
+  --oklch-cyan: 0.8 0.13 215;
+  --oklch-teal: 0.78 0.14 185;
+  --oklch-green: 0.8 0.16 150;
+  --oklch-lime: 0.84 0.18 125;
+  --oklch-orange: 0.82 0.17 55;
+  --oklch-pink: 0.8 0.17 10;
   --oklch-darkblue: 0.45 0.14 254;
 }
 
@@ -184,15 +184,15 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 
   /* https://oklch.fyi/ */
-  --oklch-violet: 0.8 0.193 280;
-  --oklch-indigo: 0.8 0.193 254.9;
-  --oklch-blue: 0.8 0.12 220;
-  --oklch-cyan: 0.8 0.193 180;
-  --oklch-teal: 0.8 0.193 140;
-  --oklch-green: 0.8 0.193 100;
-  --oklch-lime: 0.8 0.193 60;
-  --oklch-orange: 0.82 0.16 45;
-  --oklch-pink: 0.8 0.193 0;
+  --oklch-violet: 0.76 0.18 305;
+  --oklch-indigo: 0.74 0.15 275;
+  --oklch-blue: 0.78 0.14 245;
+  --oklch-cyan: 0.8 0.13 215;
+  --oklch-teal: 0.78 0.14 185;
+  --oklch-green: 0.8 0.16 150;
+  --oklch-lime: 0.84 0.18 125;
+  --oklch-orange: 0.82 0.17 55;
+  --oklch-pink: 0.8 0.17 10;
   --oklch-darkblue: 0.45 0.14 254;
 }
 

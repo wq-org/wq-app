@@ -160,7 +160,7 @@ export default function LessonSettings({
 
           <div className="flex items-center justify-end gap-4 py-4 border-t">
             <Button
-              variant="default"
+              variant="darkblue"
               onClick={handleSaveChanges}
               disabled={!hasChanges || saving}
               className="gap-2"

@@ -6,47 +6,52 @@
     "titlePlaceholder": "Kurstitel",
     "descriptionLabel": "Beschreibung",
     "descriptionPlaceholder": "Kursbeschreibung",
-    "publishedLabel": "Veröffentlicht",
-    "publishedHint": "Diesen Kurs für Lernende sichtbar machen",
-    "save": "Änderungen speichern",
+    "publishedLabel": "Ver\u00f6ffentlicht",
+    "publishedHint": "Diesen Kurs f\u00fcr Lernende sichtbar machen",
+    "save": "\u00c4nderungen speichern",
     "saving": "Speichern...",
-    "deleteAction": "Kurs löschen",
+    "deleteAction": "Kurs l\u00f6schen",
     "errors": {
-      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
-      "deleteFailed": "Kurs konnte nicht gelöscht werden. Bitte versuche es erneut.",
-      "publishStatusFailed": "Veröffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      "saveFailed": "\u00c4nderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Kurs konnte nicht gel\u00f6scht werden. Bitte versuche es erneut.",
+      "publishStatusFailed": "Ver\u00f6ffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
     },
     "toasts": {
-      "saveSuccess": "Änderungen gespeichert",
+      "saveSuccess": "\u00c4nderungen gespeichert",
       "saveSuccessDescription": "Deine Kursdetails wurden aktualisiert.",
-      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
-      "deleteFailed": "Kurs konnte nicht gelöscht werden. Bitte versuche es erneut.",
-      "publishStatusFailed": "Veröffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
-    }
+      "saveFailed": "\u00c4nderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Kurs konnte nicht gel\u00f6scht werden. Bitte versuche es erneut.",
+      "publishStatusFailed": "Ver\u00f6ffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
+    },
+    "themeLabel": "Thema",
+    "themeHint": "Wahle den Standardhintergrund fur den Kurs, wenn kein eigenes Bild verwendet wird."
   },
   "page": {
     "notFound": "Kurs nicht gefunden",
-    "addTopicPlaceholder": "Neues Thema hinzufügen",
-    "addTopicDescriptionPlaceholder": "Beschreibung zum Thema hinzufügen",
+    "addTopicPlaceholder": "Neues Thema hinzuf\u00fcgen",
+    "addTopicDescriptionPlaceholder": "Beschreibung zum Thema hinzuf\u00fcgen",
     "topicsTitle": "Themen",
-    "lessonsForTopic": "Lektionen für: {{topic}}",
-    "lessonsForTopicDescription": "Entdecke die verfügbaren Lektionen für dieses Thema",
+    "lessonsForTopic": "Lektionen f\u00fcr: {{topic}}",
+    "lessonsForTopicDescription": "Entdecke die verf\u00fcgbaren Lektionen f\u00fcr dieses Thema",
     "emptyState": {
       "title": "Kurs konnte nicht gefunden werden",
       "description": "Bitte lade die Seite neu oder kontaktiere die Institutions- oder Kursverwaltung."
-    }
+    },
+    "lessonsTitle": "Lektionen"
   },
   "createLesson": {
-    "titlePlaceholder": "Neue Lektion hinzufügen",
+    "titlePlaceholder": "Neue Lektion hinzuf\u00fcgen",
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)",
     "button": "Lektion erstellen",
     "toasts": {
       "success": "Lektion erstellt",
       "error": "Lektion konnte nicht erstellt werden"
-    }
+    },
+    "titleLabel": "Titel",
+    "descriptionLabel": "Beschreibung"
   },
   "emptyTopics": {
-    "title": "Neues Thema hinzufügen",
+    "title": "Neues Thema hinzuf\u00fcgen",
     "description": "Es gibt noch kein Thema. Nutze das Eingabefeld und klicke auf das Plus-Symbol."
   },
   "layout": {
@@ -57,8 +62,8 @@
       "analytics": "Analytik"
     },
     "unsavedChanges": {
-      "title": "Ungespeicherte Änderungen",
-      "description": "Beim Wechsel der Registerkarte oder beim Verlassen der Seite gehen Änderungen möglicherweise verloren.",
+      "title": "Ungespeicherte \u00c4nderungen",
+      "description": "Beim Wechsel der Registerkarte oder beim Verlassen der Seite gehen \u00c4nderungen m\u00f6glicherweise verloren.",
       "stay": "Bleiben",
       "continueAnyway": "Trotzdem fortfahren"
     }
@@ -81,16 +86,18 @@
       "createError": "Thema konnte nicht erstellt werden"
     },
     "deleteDialog": {
-      "title": "Thema löschen",
-      "description": "Möchtest du \"{{name}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
-      "confirm": "Löschen",
+      "title": "Thema l\u00f6schen",
+      "description": "M\u00f6chtest du \"{{name}}\" wirklich l\u00f6schen? Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+      "confirm": "L\u00f6schen",
       "cancel": "Abbrechen"
-    }
+    },
+    "titleLabel": "Titel",
+    "descriptionLabel": "Beschreibung"
   },
   "card": {
-    "published": "Veröffentlicht",
-    "unpublished": "Nicht veröffentlicht",
-    "open": "Öffnen",
+    "published": "Ver\u00f6ffentlicht",
+    "unpublished": "Nicht ver\u00f6ffentlicht",
+    "open": "\u00d6ffnen",
     "imageAlt": "Kurs"
   },
   "join": {
@@ -112,7 +119,7 @@
     "requests": {
       "title": "Beitrittsanfragen",
       "subtitle": "Anfragen von Lernenden nach Kurs gruppiert",
-      "empty": "Keine Anfragen für diesen Filter.",
+      "empty": "Keine Anfragen f\u00fcr diesen Filter.",
       "unknownCourse": "Unbenannter Kurs"
     },
     "filters": {
@@ -132,7 +139,7 @@
   },
   "dashboard": {
     "empty": {
-      "noFollowsTitle": "Noch keinen Lehrkräften gefolgt",
+      "noFollowsTitle": "Noch keinen Lehrkr\u00e4ften gefolgt",
       "noFollowsDescription": "Folge einer Lehrkraft, um Zugriff auf deren Kurse anzufragen.",
       "pendingOnlyTitle": "Anfragen sind ausstehend",
       "pendingOnlyDescription": "Deine Anfragen warten auf die Freigabe der Lehrkraft.",

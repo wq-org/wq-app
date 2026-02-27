@@ -46,7 +46,9 @@ export default function GameNodeLayout({
       {!hideSettingsTab && (
         <div className="flex gap-12 border-b mb-6">
           <button
+            type="button"
             onClick={() => setActiveTab('overview')}
+            aria-label={t('nodeLayout.overviewAriaLabel')}
             className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
               activeTab === 'overview'
                 ? 'text-black border-black font-medium animate-in zoom-in-95'
@@ -64,7 +66,9 @@ export default function GameNodeLayout({
             </Text>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('settings')}
+            aria-label={t('nodeLayout.settingsAriaLabel')}
             className={`text-xl border-b-2 flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
               activeTab === 'settings'
                 ? 'text-black border-black font-medium animate-in zoom-in-95'

@@ -12,12 +12,15 @@ import { toast } from 'sonner'
 import type { SettingsDrawerProps } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
+import type { ThemeId } from '@/lib/themes'
 
 export default function SettingsDrawer({
   open,
   onOpenChange,
   title: initialTitle = '',
   description: initialDescription = '',
+  themeId: initialThemeId = 'blue',
   version = 1,
   rollbackVersions = [],
   onSave,
@@ -29,6 +32,7 @@ export default function SettingsDrawer({
   const { t } = useTranslation('features.gameStudio')
   const [localTitle, setLocalTitle] = useState(initialTitle)
   const [localDescription, setLocalDescription] = useState(initialDescription)
+  const [localThemeId, setLocalThemeId] = useState<ThemeId>(initialThemeId)
   const [isSaving, setIsSaving] = useState(false)
   const [isUnpublishing, setIsUnpublishing] = useState(false)
 
@@ -37,8 +41,9 @@ export default function SettingsDrawer({
     if (open) {
       setLocalTitle(initialTitle)
       setLocalDescription(initialDescription)
+      setLocalThemeId(initialThemeId)
     }
-  }, [open, initialTitle, initialDescription])
+  }, [open, initialTitle, initialDescription, initialThemeId])
 
   const handleClose = () => onOpenChange(false)
 
@@ -50,6 +55,7 @@ export default function SettingsDrawer({
       await onSave({
         title: localTitle,
         description: localDescription,
+        theme_id: localThemeId,
       })
       toast.success(t('settingsDrawer.toasts.saved'))
       handleClose()
@@ -147,6 +153,21 @@ export default function SettingsDrawer({
               onChange={(e) => setLocalDescription(e.target.value)}
               placeholder={t('settingsDrawer.projectDescriptionPlaceholder')}
               rows={4}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">{t('settingsDrawer.themeLabel')}</Label>
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-muted-foreground"
+            >
+              {t('settingsDrawer.themeHint')}
+            </Text>
+            <DefaultBackgroundGallery
+              selectedId={localThemeId}
+              onSelect={setLocalThemeId}
             />
           </div>
 

@@ -22,7 +22,9 @@
       "saveFailed": "Failed to save changes. Please try again.",
       "deleteFailed": "Failed to delete course. Please try again.",
       "publishStatusFailed": "Failed to update publish status. Please try again."
-    }
+    },
+    "themeLabel": "Theme",
+    "themeHint": "Choose the default course background when no custom image is used."
   },
   "page": {
     "notFound": "Course not found",
@@ -34,7 +36,8 @@
     "emptyState": {
       "title": "Course cannot be found",
       "description": "Please reload the page or contact the institution or course admin."
-    }
+    },
+    "lessonsTitle": "Lessons"
   },
   "createLesson": {
     "titlePlaceholder": "Add new lesson",
@@ -43,7 +46,9 @@
     "toasts": {
       "success": "Lesson created",
       "error": "Could not create lesson"
-    }
+    },
+    "titleLabel": "Title",
+    "descriptionLabel": "Description"
   },
   "emptyTopics": {
     "title": "Add a new topic",
@@ -85,7 +90,9 @@
       "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
       "confirm": "Delete",
       "cancel": "Cancel"
-    }
+    },
+    "titleLabel": "Title",
+    "descriptionLabel": "Description"
   },
   "card": {
     "published": "Published",

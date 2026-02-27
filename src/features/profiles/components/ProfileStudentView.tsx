@@ -216,6 +216,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
       title: course.title,
       description: course.description,
       image: undefined,
+      themeId: course.theme_id,
       teacherAvatar: teacherAvatarUrl || undefined,
       teacherInitials,
     }

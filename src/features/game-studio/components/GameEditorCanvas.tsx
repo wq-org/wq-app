@@ -51,6 +51,7 @@ import { deleteFile } from '@/features/files/api/filesApi'
 import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
+import type { ThemeId } from '@/lib/themes'
 
 const nodeTypes = {
   gameStart: GameStartNode,
@@ -101,6 +102,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedNodeType, setSelectedNodeType] = useState<string | null>(null)
   const [gameTitle, setGameTitle] = useState<string>(fallbackTitle)
+  const [gameThemeId, setGameThemeId] = useState<ThemeId>('blue')
   const [projectVersion, setProjectVersion] = useState<number>(1)
   const [isPublished, setIsPublished] = useState(false)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
@@ -123,6 +125,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   useEffect(() => {
     if (!projectId) {
       setLoadState('idle')
+      setGameThemeId('blue')
       return
     }
     setLoadState('loading')
@@ -165,6 +168,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         setNodes(loadedNodes)
         setEdges(loadedEdges)
         setGameTitle(game.title || fallbackTitle)
+        setGameThemeId(game.theme_id || 'blue')
         setProjectVersion(game.version ?? 1)
         setLoadState('loaded')
       })
@@ -760,6 +764,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       await updateGameForStudio(projectId, {
         title: gameTitle,
         description,
+        theme_id: gameThemeId,
         game_config: gameConfig,
       })
       toast.success('Project saved.')
@@ -767,7 +772,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       console.error(err)
       toast.error('Failed to save project.')
     }
-  }, [projectId, getUserId, nodes, edges, gameTitle])
+  }, [projectId, getUserId, nodes, edges, gameTitle, gameThemeId])
 
   const handleLeaveProject = useCallback(async () => {
     try {
@@ -791,6 +796,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       await updateGameForStudio(projectId, {
         title: gameTitle,
         description,
+        theme_id: gameThemeId,
         game_config: gameConfig,
       })
       await publishGame(projectId)
@@ -799,11 +805,11 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       console.error(err)
       throw err
     }
-  }, [projectId, nodes, edges, gameTitle])
+  }, [projectId, nodes, edges, gameTitle, gameThemeId])
 
   // Handler for SettingsDrawer onSave
   const handleSettingsSave = useCallback(
-    async (payload: { title: string; description: string }) => {
+    async (payload: { title: string; description: string; theme_id: ThemeId }) => {
       if (!projectId) {
         toast.error('Open a project from Game Studio to save.')
         return
@@ -813,10 +819,12 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         await updateGameForStudio(projectId, {
           title: payload.title,
           description: payload.description,
+          theme_id: payload.theme_id,
         })
 
         // Update local canvas state
         setGameTitle(payload.title)
+        setGameThemeId(payload.theme_id)
 
         // Update Start node's description
         setNodes((prevNodes) =>
@@ -871,7 +879,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [projectId])
 
-  const handleStartSave = (data: { title: string; description: string }) => {
+  const handleStartSave = (data: { title: string; description: string; theme_id: ThemeId }) => {
     const startNodeId = nodes.find((n) => n.type === 'gameStart')?.id
     if (!startNodeId) {
       toast.error('Cannot save: no Start node in this project.')
@@ -880,6 +888,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     if (data.title) {
       setGameTitle(data.title)
     }
+    setGameThemeId(data.theme_id)
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         node.id === startNodeId && node.type === 'gameStart'
@@ -1008,6 +1017,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     updateGameForStudio(projectId, {
       title: gameTitle,
       description,
+      theme_id: gameThemeId,
       game_config: gameConfig,
     })
       .then(() => {
@@ -1017,7 +1027,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         console.error(err)
         toast.error('Failed to save project.')
       })
-  }, [nodes, edges, gameTitle, projectId, getUserId])
+  }, [nodes, edges, gameTitle, gameThemeId, projectId, getUserId])
 
   const handleEndDelete = () => {
     if (selectedNodeId) {
@@ -1277,6 +1287,7 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         version={projectVersion}
         rollbackVersions={[]}
         onSave={handleSettingsSave}
+        themeId={gameThemeId}
         onRollback={handleSettingsRollback}
         onDelete={handleSettingsDelete}
         isPublished={isPublished}
@@ -1301,11 +1312,12 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         onOpenChange={setIsStartDialogOpen}
         onSave={handleStartSave}
         nodeId={nodes.find((n) => n.type === 'gameStart')?.id}
-        initialData={
-          nodes.find((n) => n.type === 'gameStart')?.data as
+        initialData={{
+          ...(nodes.find((n) => n.type === 'gameStart')?.data as
             | { title?: string; label?: string; description?: string }
-            | undefined
-        }
+            | undefined),
+          theme_id: gameThemeId,
+        }}
       />
       <IfElseGameDialog
         open={isIfElseDialogOpen}

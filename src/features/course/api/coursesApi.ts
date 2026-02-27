@@ -7,7 +7,11 @@ import type { Course, UpdateCourseData } from '../types/course.types'
  */
 export async function createCourse(
   teacherId: string,
-  { title, description }: { title: string; description: string },
+  {
+    title,
+    description,
+    theme_id,
+  }: { title: string; description: string; theme_id?: UpdateCourseData['theme_id'] },
 ): Promise<Course> {
   const institutionId = await getUserInstitutionId(teacherId)
 
@@ -16,6 +20,7 @@ export async function createCourse(
     .insert({
       title,
       description,
+      ...(theme_id ? { theme_id } : {}),
       teacher_id: teacherId,
       institution_id: institutionId,
       is_published: false,

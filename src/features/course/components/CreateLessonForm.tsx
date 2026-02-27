@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import { Plus } from 'lucide-react'
 import { useLesson } from '@/contexts/lesson'
 import { Textarea } from '@/components/ui/textarea'
@@ -57,14 +58,25 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <Input
-        value={newLesson}
-        onChange={(e) => setNewLesson(e.target.value)}
-        placeholder={t('createLesson.titlePlaceholder')}
-        className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
-      />
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="new-lesson-title">{t('createLesson.titleLabel')}</Label>
+        <Input
+          id="new-lesson-title"
+          value={newLesson}
+          onChange={(e) => setNewLesson(e.target.value)}
+          placeholder={t('createLesson.titlePlaceholder')}
+          className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
+        />
+      </div>
       <div className="flex flex-col w-full">
+        <Label
+          htmlFor="new-lesson-description"
+          className="mb-2"
+        >
+          {t('createLesson.descriptionLabel')}
+        </Label>
         <Textarea
+          id="new-lesson-description"
           value={description}
           onChange={(e) => {
             if (e.target.value.length <= 120) {

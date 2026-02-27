@@ -188,6 +188,7 @@ const TeacherProfileView = () => {
     title: course.title,
     description: course.description,
     image: undefined,
+    themeId: course.theme_id,
     teacherAvatar: signedAvatarUrl || undefined,
     teacherInitials: profile.display_name?.charAt(0).toUpperCase() || 'T',
   }))

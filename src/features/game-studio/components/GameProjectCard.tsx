@@ -6,11 +6,13 @@ import { ArrowRight } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import type { GameProjectCardProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
-import SkeletonNodeGraph from './SkeletonNodeGraph'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { getThemeBackgroundStyle } from '@/lib/themes'
 
 export function GameProjectCard({
   title,
   description,
+  themeId,
   version,
   status,
   onOpen,
@@ -22,7 +24,23 @@ export function GameProjectCard({
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
-        <SkeletonNodeGraph className="rounded-t-3xl rounded-b-none w-full h-48 overflow-hidden" />
+        <AspectRatio
+          ratio={16 / 9}
+          className="w-full"
+        >
+          <div
+            className="flex h-full w-full items-center justify-center rounded-t-3xl rounded-b-none"
+            style={getThemeBackgroundStyle(themeId)}
+          >
+            <Text
+              as="span"
+              variant="h1"
+              className="select-none text-white/25"
+            >
+              {resolvedTitle.charAt(0).toUpperCase()}
+            </Text>
+          </div>
+        </AspectRatio>
         <Badge
           variant={status === 'published' ? 'default' : 'secondary'}
           className="absolute top-3 left-3"

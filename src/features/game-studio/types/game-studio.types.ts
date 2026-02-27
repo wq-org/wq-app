@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import type { Node, Edge } from '@xyflow/react'
+import type { ThemeId } from '@/lib/themes'
 
 // ========== Core Types ==========
 export interface GameNodeTemplate {
@@ -91,9 +92,9 @@ export interface GameImagePinNodeProps {
 export interface StartGameDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave?: (data: { title: string; description: string }) => void
+  onSave?: (data: { title: string; description: string; theme_id: ThemeId }) => void
   nodeId?: string
-  initialData?: { title?: string; label?: string; description?: string }
+  initialData?: { title?: string; label?: string; description?: string; theme_id?: ThemeId }
 }
 
 export interface EndGameDialogProps {
@@ -161,9 +162,14 @@ export interface SettingsDrawerProps {
   projectId?: string
   title?: string
   description?: string
+  themeId?: ThemeId
   version?: number
   rollbackVersions?: { id: string; version: number }[]
-  onSave?: (payload: { title: string; description: string }) => void | Promise<void>
+  onSave?: (payload: {
+    title: string
+    description: string
+    theme_id: ThemeId
+  }) => void | Promise<void>
   onRollback?: (versionId: string) => void | Promise<void>
   onDelete?: () => void
   /** Whether the game is published (visible to students). */
@@ -203,6 +209,7 @@ export interface GameProjectCardProps {
   id?: string
   title?: string
   description?: string
+  themeId?: ThemeId
   version?: number
   status?: 'draft' | 'published'
   onOpen?: () => void
@@ -232,6 +239,7 @@ export interface GameProjectCardListProps {
     id: string
     title?: string
     description?: string
+    themeId?: ThemeId
     version?: number
     status?: 'draft' | 'published'
   }>

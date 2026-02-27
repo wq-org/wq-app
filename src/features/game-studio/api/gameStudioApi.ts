@@ -2,6 +2,7 @@ import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
 import { supabase } from '@/lib/supabase'
 import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
+import type { ThemeId } from '@/lib/themes'
 
 export interface GameForStudio {
   id: string
@@ -10,6 +11,7 @@ export interface GameForStudio {
   teacher_id: string
   topic_id: string | null
   game_type: string
+  theme_id: ThemeId
   game_config: FlowGameConfig | null
   status: string | null
   version: number | null
@@ -59,6 +61,7 @@ export async function createGameForStudio(
 export interface UpdateGameForStudioPayload {
   title?: string
   description?: string
+  theme_id?: ThemeId
   game_config?: FlowGameConfig
 }
 
@@ -75,6 +78,7 @@ export async function updateGameForStudio(
   }
   if (payload.title !== undefined) updates.title = payload.title
   if (payload.description !== undefined) updates.description = payload.description
+  if (payload.theme_id !== undefined) updates.theme_id = payload.theme_id
   if (payload.game_config !== undefined) updates.game_config = payload.game_config
 
   const { data, error } = await supabase
@@ -186,7 +190,7 @@ export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardP
 
   const { data, error } = await supabase
     .from('games')
-    .select('id, title, description, version, status')
+    .select('id, title, description, version, status, theme_id')
     .in('teacher_id', followedIds)
     .eq('status', 'published')
     .order('updated_at', { ascending: false })
@@ -204,6 +208,7 @@ export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardP
       description: string | null
       version: number | null
       status: string | null
+      theme_id: ThemeId
     }) => ({
       id: row.id,
       title: row.title || 'Untitled Game',

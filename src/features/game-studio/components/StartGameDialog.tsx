@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import type { StartGameDialogProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
+import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
+import type { ThemeId } from '@/lib/themes'
 
 function getTitleFromData(initialData: StartGameDialogProps['initialData']): string {
   if (!initialData) return ''
@@ -26,6 +28,10 @@ function getDescriptionFromData(initialData: StartGameDialogProps['initialData']
   return initialData.description
 }
 
+function getThemeIdFromData(initialData: StartGameDialogProps['initialData']): ThemeId {
+  return initialData?.theme_id ?? 'blue'
+}
+
 export default function StartGameDialog({
   open,
   onOpenChange,
@@ -35,6 +41,7 @@ export default function StartGameDialog({
   const { t } = useTranslation('features.gameStudio')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [themeId, setThemeId] = useState<ThemeId>('blue')
   const prevOpenRef = useRef(false)
 
   // Sync from node data only when dialog opens so we show persisted values and don't overwrite edits
@@ -46,22 +53,25 @@ export default function StartGameDialog({
       if (justOpened && initialData) {
         setTitle(getTitleFromData(initialData))
         setDescription(getDescriptionFromData(initialData))
+        setThemeId(getThemeIdFromData(initialData))
       }
     } else {
       setTitle('')
       setDescription('')
+      setThemeId('blue')
     }
   }, [open, initialData])
 
   const handleSave = () => {
     if (!title.trim() || !description.trim()) return
-    onSave?.({ title: title.trim(), description: description.trim() })
+    onSave?.({ title: title.trim(), description: description.trim(), theme_id: themeId })
     onOpenChange(false)
   }
 
   const handleCancel = () => {
     setTitle('')
     setDescription('')
+    setThemeId('blue')
     onOpenChange(false)
   }
 
@@ -94,6 +104,14 @@ export default function StartGameDialog({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
+            />
+          </div>
+          <div className="flex flex-col gap-3">
+            <Label>{t('startDialog.themeLabel')}</Label>
+            <p className="text-sm text-muted-foreground">{t('startDialog.themeHint')}</p>
+            <DefaultBackgroundGallery
+              selectedId={themeId}
+              onSelect={setThemeId}
             />
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import { AVATAR_PLACEHOLDER_SRC, DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
+import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/course/types/course.types'
@@ -21,6 +21,8 @@ import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Text } from '@/components/ui/text'
 import { getFollowedTeacherCount } from '@/features/profiles/api/followApi'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { getThemeBackgroundStyle } from '@/lib/themes'
 
 // Modified CourseCard for profile view - shows "Join" instead of "View" and no published badge
 function ProfileCourseCard({
@@ -28,20 +30,39 @@ function ProfileCourseCard({
   title,
   description,
   image,
+  themeId,
   teacherAvatar,
   teacherInitials = 'U',
   onJoin,
 }: CourseCardProps & { onJoin?: (id: string) => void }) {
-  const courseImage = image || DEFAULT_COURSE_BACKGROUND
-
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
-        <img
-          src={courseImage}
-          alt="Course"
-          className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
-        />
+        <AspectRatio
+          ratio={16 / 9}
+          className="w-full"
+        >
+          {image ? (
+            <img
+              src={image}
+              alt="Course"
+              className="rounded-t-3xl rounded-b-none h-full w-full object-cover"
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center rounded-t-3xl rounded-b-none"
+              style={getThemeBackgroundStyle(themeId)}
+            >
+              <Text
+                as="span"
+                variant="h1"
+                className="select-none text-white/25"
+              >
+                {title.charAt(0).toUpperCase()}
+              </Text>
+            </div>
+          )}
+        </AspectRatio>
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         {/* Header */}
@@ -329,6 +350,7 @@ const StudentProfileView = () => {
       title: course.title,
       description: course.description,
       image: undefined,
+      themeId: course.theme_id,
       teacherAvatar: teacherAvatarUrl || undefined,
       teacherInitials,
     }

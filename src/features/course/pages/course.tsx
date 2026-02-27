@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useCourse } from '@/contexts/course'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Plus, MessageSquareWarning } from 'lucide-react'
+import { MessageSquareWarning } from 'lucide-react'
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
 import { TopicBadge } from '@/features/course/components/TopicBadge'
 import { CreateLessonForm } from '@/features/course/components/CreateLessonForm'
+import { CreateTopicForm } from '@/features/course/components/CreateTopicForm'
 import { CourseLessonTable } from '@/features/course/components/CourseLessonTable'
 import { EmptyLessonsView } from '@/features/course/components/EmptyLessonsView'
 import type { Lesson } from '@/features/course/types/lesson.types'
@@ -16,7 +15,6 @@ import { Text } from '@/components/ui/text'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import type { HoldDeleteTooltipProps, Topic } from '../types/topics.types'
-import { Textarea } from '@/components/ui/textarea'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { toast } from 'sonner'
 
@@ -155,50 +153,21 @@ export default function Course() {
 
   return (
     <div className="flex flex-col gap-6 pb-32">
-      <div className="flex flex-col  gap-4">
-        <div className="flex flex-col w-full gap-2">
-          <Input
-            value={newTopic}
-            onChange={(e) => setNewTopic(e.target.value)}
-            placeholder={t('page.addTopicPlaceholder')}
-            className="flex-1   px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
-          />
-          <Textarea
-            value={newTopicDescription}
-            onChange={(e) => setNewTopicDescription(e.target.value)}
-            placeholder={t('page.addTopicDescriptionPlaceholder')}
-            className="flex-1   px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
-          />
-        </div>
-
-        <div className="flex justify-end">
-          <Button
-            variant="darkblue"
-            className="self-start"
-            onClick={addTopic}
-            disabled={loading || !newTopic.trim() || !newTopicDescription.trim()}
-          >
-            {loading ? (
-              <Spinner
-                variant="white"
-                size="sm"
-              />
-            ) : (
-              <Plus className="w-6 h-6 text-white" />
-            )}
-            <Text variant="small">{t('topic.button')}</Text>
-          </Button>
-        </div>
-      </div>
-
       <Text
         as="p"
-        variant="body"
+        variant="h1"
         className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl"
       >
         {t('page.topicsTitle')}
       </Text>
-
+      <CreateTopicForm
+        title={newTopic}
+        description={newTopicDescription}
+        loading={loading}
+        onTitleChange={setNewTopic}
+        onDescriptionChange={setNewTopicDescription}
+        onCreate={addTopic}
+      />
       {topicsLoading ? (
         <div className="flex items-center justify-center py-8">
           <Spinner
@@ -246,6 +215,13 @@ export default function Course() {
           </div>
 
           <div className="mb-6">
+            <Text
+              as="h3"
+              variant="h3"
+              className="mb-4 text-xl font-semibold text-gray-900"
+            >
+              {t('createLesson.button')}
+            </Text>
             <CreateLessonForm
               topicId={selectedTopic.id}
               courseId={courseId}
@@ -262,6 +238,13 @@ export default function Course() {
             />
           </div>
 
+          <Text
+            as="h3"
+            variant="h3"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-2xl"
+          >
+            {t('page.lessonsTitle')}
+          </Text>
           {lessonsLoading ? (
             <div className="flex items-center justify-center py-12">
               <Spinner

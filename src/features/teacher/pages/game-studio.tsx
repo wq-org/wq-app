@@ -34,6 +34,7 @@ export default function GameStudio() {
             id: g.id,
             title: g.title || t('page.fallbackUntitledGame'),
             description: g.description ?? t('page.fallbackNoDescription'),
+            themeId: g.theme_id,
             version: g.version ?? undefined,
             status: g.status === 'published' ? 'published' : 'draft',
           })),

@@ -372,7 +372,7 @@ export async function getUserInstitutionId(userId: string): Promise<string | nul
  */
 export async function createCourse(
   teacherId: string,
-  { title, description }: { title: string; description: string },
+  { title, description, theme_id }: { title: string; description: string; theme_id?: string },
 ) {
   // Get teacher's institution_id
   const institutionId = await getUserInstitutionId(teacherId)
@@ -382,6 +382,7 @@ export async function createCourse(
     .insert({
       title,
       description,
+      ...(theme_id ? { theme_id } : {}),
       teacher_id: teacherId,
       institution_id: institutionId,
       is_published: false,
@@ -434,7 +435,7 @@ export async function getCourseById(courseId: string) {
  */
 export async function updateCourse(
   courseId: string,
-  updates: { title?: string; description?: string; is_published?: boolean },
+  updates: { title?: string; description?: string; theme_id?: string; is_published?: boolean },
 ) {
   const { data, error } = await supabase
     .from('courses')

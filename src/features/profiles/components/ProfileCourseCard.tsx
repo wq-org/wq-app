@@ -3,12 +3,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, UserPlus } from 'lucide-react'
-import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import type { CourseCardProps } from '@/features/course/types/course.types'
 import type { EnrollmentStatus } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { getThemeBackgroundStyle } from '@/lib/themes'
 
 interface ProfileCourseCardProps extends CourseCardProps {
   onJoin?: (id: string) => void
@@ -22,6 +23,7 @@ export function ProfileCourseCard({
   title,
   description,
   image,
+  themeId,
   teacherAvatar,
   teacherInitials = 'U',
   onJoin,
@@ -31,7 +33,6 @@ export function ProfileCourseCard({
   joinDisabled = false,
 }: ProfileCourseCardProps) {
   const { t } = useTranslation('features.course')
-  const courseImage = image || DEFAULT_COURSE_BACKGROUND
   const canJoin = joinStatus !== 'accepted'
   const isJoined = joinStatus === 'accepted'
   const canOpen = isJoined && typeof onView === 'function'
@@ -40,11 +41,31 @@ export function ProfileCourseCard({
   return (
     <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
-        <img
-          src={courseImage}
-          alt="Course"
-          className="rounded-t-3xl rounded-b-none w-full h-48 object-cover"
-        />
+        <AspectRatio
+          ratio={16 / 9}
+          className="w-full"
+        >
+          {image ? (
+            <img
+              src={image}
+              alt={t('card.imageAlt')}
+              className="rounded-t-3xl rounded-b-none h-full w-full object-cover"
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center rounded-t-3xl rounded-b-none"
+              style={getThemeBackgroundStyle(themeId)}
+            >
+              <Text
+                as="span"
+                variant="h1"
+                className="select-none text-white/25"
+              >
+                {title.charAt(0).toUpperCase()}
+              </Text>
+            </div>
+          )}
+        </AspectRatio>
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         {/* Header */}

@@ -15,6 +15,7 @@ import type { FileItem } from '@/features/files/types/files.types'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { GamePlayList } from '@/features/game-play'
+import type { CourseCardProps } from '@/features/course/types/course.types'
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -167,7 +168,16 @@ export default function Dashboard() {
             <EmptyCourseView />
           ) : (
             <CourseCardList
-              courses={courses}
+              courses={courses.map(
+                (course) =>
+                  ({
+                    id: course.id,
+                    title: course.title,
+                    description: course.description,
+                    is_published: course.is_published,
+                    themeId: course.theme_id,
+                  }) satisfies CourseCardProps,
+              )}
               onCourseView={handleCardView}
             />
           ))}

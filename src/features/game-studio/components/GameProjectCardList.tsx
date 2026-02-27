@@ -13,6 +13,7 @@ export default function GameProjectCardList({ projects, onOpen }: GameProjectCar
             id={project.id}
             title={project.title ?? 'Untitled Project'}
             description={project.description ?? 'No description'}
+            themeId={project.themeId}
             version={project.version}
             status={project.status}
             onOpen={() => onOpen?.(project.id)}
