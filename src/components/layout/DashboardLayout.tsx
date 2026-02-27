@@ -1,6 +1,5 @@
 import { AppNavigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
 import { Button } from '../ui/button'
@@ -12,6 +11,7 @@ import { QuoteOfTheDay } from '@/components/ui/quote'
 import { useTranslation } from 'react-i18next'
 import type { Roles } from './config'
 import { Text } from '@/components/ui/text'
+import { BlurredImage } from '@/components/ui/blurred-image'
 
 interface DashboardLayoutProps {
   imageUrl?: string
@@ -53,10 +53,13 @@ export default function DashboardLayout({
   customTabs,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
+  const [useFaviconFallback, setUseFaviconFallback] = useState(false)
+  const [avatarFailed, setAvatarFailed] = useState(false)
   const defaultTabs = getDashboardTabs(role as Roles)
   const dashboardTabs = customTabs || defaultTabs
   const { t, i18n } = useTranslation('features.teacher')
   const { t: tLayout } = useTranslation('layout.dashboardLayout')
+  const avatarSrc = useFaviconFallback || !imageUrl ? '/favicon.ico' : imageUrl
 
   function handleTabClick(tabId: string) {
     setActiveTab(tabId)
@@ -75,10 +78,29 @@ export default function DashboardLayout({
           <Container className="flex flex-col gap-4">
             <div className="flex gap-4 items-start">
               <div className="flex flex-col gap-5 max-w-[600px]">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={imageUrl || 'https://github.com/shadcn.png'} />
-                  <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
+                <div className="relative h-24 w-24">
+                  {!avatarFailed ? (
+                    <BlurredImage
+                      src={avatarSrc}
+                      alt={userName}
+                      isBlurred
+                      className="h-full w-full rounded-full object-cover"
+                      containerClassName="h-full w-full overflow-visible"
+                      backdropClassName="rounded-full scale-125 opacity-75"
+                      onError={() => {
+                        if (!useFaviconFallback && imageUrl) {
+                          setUseFaviconFallback(true)
+                          return
+                        }
+                        setAvatarFailed(true)
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center rounded-full bg-muted text-xl font-semibold text-foreground">
+                      {userName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
                 <div className="flex flex-col gap-1">
                   <Text
                     as="p"

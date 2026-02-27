@@ -98,9 +98,7 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const userProfile = {
     name: display_name || 'admin',
     email: email || 'admin@wq-app.de',
-    avatar:
-      avatar_url ||
-      'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_brazil_01.png',
+    avatar: avatar_url || '/favicon.ico',
   }
   const role = getRole()
 

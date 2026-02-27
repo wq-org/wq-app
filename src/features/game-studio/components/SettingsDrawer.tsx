@@ -244,15 +244,16 @@ export default function SettingsDrawer({
 
           {/* Bottom Actions */}
           <div className="flex flex-col gap-3 pt-4 border-t">
-            <HoldToDeleteButton onDelete={handleDelete}>
-              {t('settingsDrawer.holdToDelete')}
-            </HoldToDeleteButton>
             <Button
               onClick={handleSave}
               disabled={isSaving}
+              variant="darkblue"
             >
               {isSaving ? t('common.saving') : t('common.save')}
             </Button>
+            <HoldToDeleteButton onDelete={handleDelete}>
+              {t('settingsDrawer.holdToDelete')}
+            </HoldToDeleteButton>
           </div>
         </div>
       </DrawerContent>

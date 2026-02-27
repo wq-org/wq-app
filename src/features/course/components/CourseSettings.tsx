@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
 import type { ThemeId } from '@/lib/themes'
+import { Check } from 'lucide-react'
 
 interface CourseSettingsProps {
   courseId: string
@@ -236,6 +237,12 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
         </div>
 
         <div className="flex  items-center justify-end gap-4 py-4 border-t">
+          <HoldToDeleteButton
+            loading={deleting}
+            onDelete={handleDeleteCourse}
+          >
+            {t('settings.deleteAction')}
+          </HoldToDeleteButton>
           <Button
             variant="darkblue"
             onClick={handleSaveChanges}
@@ -251,16 +258,10 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
                 {t('settings.saving')}
               </>
             ) : (
-              t('settings.save')
+              <Check />
             )}
+            {t('settings.save')}
           </Button>
-
-          <HoldToDeleteButton
-            loading={deleting}
-            onDelete={handleDeleteCourse}
-          >
-            {t('settings.deleteAction')}
-          </HoldToDeleteButton>
         </div>
       </div>
     </div>

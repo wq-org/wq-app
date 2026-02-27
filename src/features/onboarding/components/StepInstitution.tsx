@@ -175,7 +175,7 @@ export default function StepInstitution({ onNext, onBack, initialData }: StepIns
                       )}
                     </div>
                     {isSelected && (
-                      <div className="flex-shrink-0 ml-4">
+                      <div className="shrink-0 ml-4">
                         <div className="rounded-full bg-primary p-1">
                           <Check className="w-4 h-4 text-white" />
                         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { ChevronsLeftRight, LayoutDashboard, Settings, X } from 'lucide-react'
+import { Check, ChevronsLeftRight, LayoutDashboard, Settings, X } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import SelectTabs from '@/components/shared/tabs/SelectTabs'
 import {
@@ -41,6 +41,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
   const [expanded, setExpanded] = useState(false)
   const [filename, setFilename] = useState(file.filename)
   const [deleteInProgress, setDeleteInProgress] = useState(false)
+  const [saveInProgress, setSaveInProgress] = useState(false)
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [newFile, setNewFile] = useState<File | null>(null)
@@ -199,6 +200,7 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
       return
     }
 
+    setSaveInProgress(true)
     try {
       let newStoragePath = file.storagePath
       let newFilename = file.filename
@@ -270,6 +272,8 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
     } catch (error) {
       console.error('Error saving changes:', error)
       toast.error(t('toasts.saveUnexpected'))
+    } finally {
+      setSaveInProgress(false)
     }
   }
 
@@ -536,13 +540,6 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                         {t('editor.reset')}
                       </Button>
                       <div className="flex gap-2">
-                        <Button
-                          onClick={handleSaveChanges}
-                          disabled={!hasChanges}
-                          className="active:animate-in active:zoom-in-95"
-                        >
-                          {t('editor.saveChanges')}
-                        </Button>
                         <HoldToDeleteButton
                           onDelete={handleDelete}
                           loading={deleteInProgress}
@@ -550,6 +547,23 @@ export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: F
                         >
                           {t('deleteDialog.action')}
                         </HoldToDeleteButton>
+                        <Button
+                          variant="darkblue"
+                          onClick={handleSaveChanges}
+                          disabled={!hasChanges || saveInProgress}
+                          className="active:animate-in active:zoom-in-95"
+                        >
+                          {saveInProgress ? (
+                            <Spinner
+                              variant="darkblue"
+                              size="xs"
+                              speed={1750}
+                            />
+                          ) : (
+                            <Check className="h-4 w-4" />
+                          )}
+                          {t('editor.saveChanges')}
+                        </Button>
                       </div>
                     </div>
                   </div>

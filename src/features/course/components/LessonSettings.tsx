@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Trash2, Loader2 } from 'lucide-react'
+import { Trash2, Check } from 'lucide-react'
 import { deleteLesson } from '@/features/course/api/lessonsApi'
 import { useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
@@ -159,22 +159,6 @@ export default function LessonSettings({
           </div>
 
           <div className="flex items-center justify-end gap-4 py-4 border-t">
-            <Button
-              variant="darkblue"
-              onClick={handleSaveChanges}
-              disabled={!hasChanges || saving}
-              className="gap-2"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {t('settings.saving', { defaultValue: 'Saving...' })}
-                </>
-              ) : (
-                t('settings.save', { defaultValue: 'Save Changes' })
-              )}
-            </Button>
-
             <HoldToDeleteButton
               onDelete={handleDelete}
               className="gap-2"
@@ -182,6 +166,22 @@ export default function LessonSettings({
             >
               {t('settings.deleteAction', { defaultValue: 'Delete Lesson' })}
             </HoldToDeleteButton>
+            <Button
+              variant="darkblue"
+              onClick={handleSaveChanges}
+              disabled={!hasChanges || saving}
+            >
+              {saving ? (
+                <>
+                  <Spinner />
+                  {t('settings.saving', { defaultValue: 'Saving...' })}
+                </>
+              ) : (
+                <Check />
+              )}
+
+              {t('settings.save', { defaultValue: 'Saving...' })}
+            </Button>
           </div>
         </div>
       </div>

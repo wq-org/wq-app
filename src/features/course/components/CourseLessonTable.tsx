@@ -116,7 +116,7 @@ export function CourseLessonTable({
                   </span>
                 </TableCell>
                 <TableCell className="text-center w-[120px] shrink-0 align-middle whitespace-nowrap">
-                  <div className="flex items-center justify-center gap-2 min-h-[2.25rem]">
+                  <div className="flex items-center justify-center gap-2 min-h-9">
                     <Button
                       variant="ghost"
                       size="sm"

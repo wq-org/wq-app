@@ -1,5 +1,5 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Text } from '@/components/ui/text'
 import { THEME_IDS, getThemeBackgroundStyle, type ThemeId } from '@/lib/themes'
 import { cn } from '@/lib/utils'
@@ -16,7 +16,7 @@ export default function DefaultBackgroundGallery({
   className,
 }: DefaultBackgroundGalleryProps) {
   return (
-    <ScrollArea
+    <BlurredScrollArea
       className={cn('w-full rounded-xl border', className)}
       scrollbars="horizontal"
     >
@@ -52,6 +52,6 @@ export default function DefaultBackgroundGallery({
           )
         })}
       </div>
-    </ScrollArea>
+    </BlurredScrollArea>
   )
 }

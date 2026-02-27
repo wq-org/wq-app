@@ -7,6 +7,7 @@ type BlurredScrollAreaProps = React.ComponentPropsWithoutRef<typeof ScrollAreaPr
   children: React.ReactNode
   viewportClassName?: string
   fadeClassName?: string
+  scrollbars?: 'vertical' | 'horizontal' | 'both'
   orientation?: 'vertical' | 'horizontal'
   hideScrollBar?: boolean
   shadowSize?: number
@@ -18,14 +19,18 @@ type ShadowState = {
 }
 
 function createMaskImage({
-  orientation,
+  scrollbars,
   shadowSize,
   shadowState,
 }: {
-  orientation: 'vertical' | 'horizontal'
+  scrollbars: 'vertical' | 'horizontal' | 'both'
   shadowSize: number
   shadowState: ShadowState
 }) {
+  if (scrollbars === 'both') {
+    return undefined
+  }
+
   if (!shadowState.start && !shadowState.end) {
     return undefined
   }
@@ -33,7 +38,7 @@ function createMaskImage({
   const startSize = shadowState.start ? `${shadowSize}px` : '0px'
   const endSize = shadowState.end ? `${shadowSize}px` : '0px'
 
-  if (orientation === 'horizontal') {
+  if (scrollbars === 'horizontal') {
     return `linear-gradient(to right, transparent 0, black ${startSize}, black calc(100% - ${endSize}), transparent 100%)`
   }
 
@@ -45,11 +50,13 @@ export function BlurredScrollArea({
   className,
   viewportClassName,
   fadeClassName,
+  scrollbars,
   orientation = 'vertical',
   hideScrollBar = false,
   shadowSize = 40,
   ...props
 }: BlurredScrollAreaProps) {
+  const resolvedScrollbars = scrollbars ?? orientation
   const viewportRef = React.useRef<HTMLDivElement>(null)
   const [shadowState, setShadowState] = React.useState<ShadowState>({
     start: false,
@@ -61,8 +68,15 @@ export function BlurredScrollArea({
 
     if (!viewport) return
 
+    if (resolvedScrollbars === 'both') {
+      setShadowState((current) =>
+        current.start === false && current.end === false ? current : { start: false, end: false },
+      )
+      return
+    }
+
     const nextState =
-      orientation === 'horizontal'
+      resolvedScrollbars === 'horizontal'
         ? {
             start: viewport.scrollLeft > 0,
             end: viewport.scrollLeft < viewport.scrollWidth - viewport.clientWidth - 1,
@@ -75,7 +89,7 @@ export function BlurredScrollArea({
     setShadowState((current) =>
       current.start === nextState.start && current.end === nextState.end ? current : nextState,
     )
-  }, [orientation])
+  }, [resolvedScrollbars])
 
   React.useEffect(() => {
     const viewport = viewportRef.current
@@ -116,11 +130,11 @@ export function BlurredScrollArea({
   const maskImage = React.useMemo(
     () =>
       createMaskImage({
-        orientation,
+        scrollbars: resolvedScrollbars,
         shadowSize,
         shadowState,
       }),
-    [orientation, shadowSize, shadowState],
+    [resolvedScrollbars, shadowSize, shadowState],
   )
 
   const viewportMaskStyle: React.CSSProperties = maskImage
@@ -135,7 +149,7 @@ export function BlurredScrollArea({
   return (
     <ScrollAreaPrimitive.Root
       data-slot="blurred-scroll-area"
-      data-orientation={orientation}
+      data-orientation={resolvedScrollbars}
       className={cn(
         'relative min-h-0 overflow-hidden rounded-[inherit]',
         '**:data-[slot=scroll-area-thumb]:rounded-full **:data-[slot=scroll-area-thumb]:bg-neutral-400/60',
@@ -149,7 +163,7 @@ export function BlurredScrollArea({
         style={viewportMaskStyle}
         className={cn(
           'size-full rounded-[inherit] transition-[mask-image,-webkit-mask-image] duration-200 ease-out outline-none',
-          orientation === 'horizontal' && 'whitespace-nowrap',
+          resolvedScrollbars === 'horizontal' && 'whitespace-nowrap',
           viewportClassName,
           fadeClassName,
         )}
@@ -157,8 +171,13 @@ export function BlurredScrollArea({
         {children}
       </ScrollAreaPrimitive.Viewport>
 
-      {!hideScrollBar ? <ScrollBar orientation={orientation} /> : null}
-      {!hideScrollBar && orientation === 'vertical' ? <ScrollAreaPrimitive.Corner /> : null}
+      {!hideScrollBar && (resolvedScrollbars === 'vertical' || resolvedScrollbars === 'both') && (
+        <ScrollBar />
+      )}
+      {!hideScrollBar && (resolvedScrollbars === 'horizontal' || resolvedScrollbars === 'both') && (
+        <ScrollBar orientation="horizontal" />
+      )}
+      {!hideScrollBar && resolvedScrollbars === 'both' ? <ScrollAreaPrimitive.Corner /> : null}
     </ScrollAreaPrimitive.Root>
   )
 }
