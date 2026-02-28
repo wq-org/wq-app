@@ -9,6 +9,7 @@
 
 INSERT INTO public.institutions (
   -- Basic Information
+  id,
   name,
   slug,
   type,
@@ -61,6 +62,7 @@ INSERT INTO public.institutions (
 )
 VALUES (
   -- Basic Information
+  '846fadc7-2463-4045-9b15-f5c0bc69e633'::uuid,
   'Kreiskliniken Reutlingen',
   'kreiskliniken-reutlingen',
   'hospital',
