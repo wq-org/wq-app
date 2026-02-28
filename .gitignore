@@ -47,3 +47,5 @@ profiles.md
 games.md
 institution.md
 *.csv
+csv/
+*.py
