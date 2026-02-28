@@ -1,11 +1,11 @@
-import { ProfileView } from '@/features/profiles/components/ProfileView'
-import { CommandPalette } from '@/features/command-palette'
+import { Navigate, useParams } from 'react-router-dom'
 
 export default function StudentViewPage() {
+  const { id } = useParams<{ id: string }>()
   return (
-    <>
-      <ProfileView />
-      <CommandPalette commandBarContext="student" />
-    </>
+    <Navigate
+      to={id ? `/profile/${id}` : '/student/dashboard'}
+      replace
+    />
   )
 }

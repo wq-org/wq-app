@@ -191,7 +191,7 @@ export default function ImageTermMatchGame({
       })
       .catch(() => setGalleryImages([]))
       .finally(() => setGalleryLoading(false))
-  }, [getUserId, getRole])
+  }, [getUserId, getRole, getUserInstitutionId])
 
   const handleImageSelected = (files: File[]) => {
     if (files.length === 0) return

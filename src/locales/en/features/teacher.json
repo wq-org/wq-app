@@ -18,5 +18,8 @@
   "view": {
     "title": "Teacher View",
     "description": "Teacher content will be displayed here."
+  },
+  "profile": {
+    "followToSee": "Follow this teacher to see their courses and games."
   }
 }

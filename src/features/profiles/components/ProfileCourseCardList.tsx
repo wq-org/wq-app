@@ -1,9 +1,8 @@
 import { ProfileCourseCard } from './ProfileCourseCard'
-import type { CourseCardProps } from '@/features/course/types/course.types'
-import type { EnrollmentStatus } from '@/features/course/types/course.types'
+import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
 
 interface ProfileCourseCardListProps {
-  courses: CourseCardProps[]
+  courses: ProfileCourseCardData[]
   onCourseJoin?: (id: string) => void
   onCourseView?: (id: string) => void
   enrollmentStatusMap?: Record<string, EnrollmentStatus>

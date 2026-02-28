@@ -5,7 +5,7 @@ import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/course/types/course.types'
-import type { CourseCardProps } from '@/features/course/types/course.types'
+import type { ProfileCourseCardData } from '@/features/course/types/course.types'
 import { getDashboardTabs } from '@/components/layout/config'
 import { supabase } from '@/lib/supabase'
 import { EmptyCourseView } from '@/features/course'
@@ -206,7 +206,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   }
 
   // Map courses to CourseCardProps format
-  const courseCards: CourseCardProps[] = courses.map((course) => {
+  const courseCards: ProfileCourseCardData[] = courses.map((course) => {
     const teacherAvatarUrl = course.teacher_profile?.avatar_url
     const teacherName = course.teacher_profile?.display_name
     const teacherInitials = teacherName?.charAt(0).toUpperCase() || 'T'

@@ -44,6 +44,8 @@ export interface CourseCardProps {
   onView?: (id: string) => void
 }
 
+export type ProfileCourseCardData = CourseCardProps
+
 export type EnrollmentStatus = 'accepted'
 
 export interface CourseEnrollment {

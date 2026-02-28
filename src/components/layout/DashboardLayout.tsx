@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import type { Roles } from './config'
 import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
+import SelectTabs from '@/components/shared/tabs/SelectTabs'
 
 interface DashboardLayoutProps {
   imageUrl?: string
@@ -60,6 +61,11 @@ export default function DashboardLayout({
   const { t, i18n } = useTranslation('features.teacher')
   const { t: tLayout } = useTranslation('layout.dashboardLayout')
   const avatarSrc = useFaviconFallback || !imageUrl ? '/favicon.ico' : imageUrl
+  const translatedTabs = dashboardTabs.map((tab) => ({
+    id: tab.id,
+    icon: tab.icon,
+    title: tLayout(`tabs.${tab.id}`),
+  }))
 
   function handleTabClick(tabId: string) {
     setActiveTab(tabId)
@@ -246,32 +252,11 @@ export default function DashboardLayout({
           <section className="pt-8 rounded-2xl bg-gray-100 min-h-[560px] pb-8">
             <Container className="h-full min-h-0">
               <div className="flex flex-wrap justify-between items-center">
-                <div className="flex flex-wrap gap-12">
-                  {dashboardTabs.map((tab) => {
-                    const Icon = tab.icon
-                    return (
-                      <Text
-                        as="span"
-                        variant="small"
-                        key={tab.id}
-                        onClick={() => handleTabClick(tab.id)}
-                        className={`text-xl border-b-2  flex gap-2 items-center pb-2 cursor-pointer transition-colors ${
-                          activeTab === tab.id
-                            ? 'text-black border-b-2 border-black'
-                            : 'text-black/40 hover:text-black/60'
-                        }`}
-                      >
-                        <Icon />
-                        <Text
-                          as="p"
-                          variant="body"
-                        >
-                          {tLayout(`tabs.${tab.id}`)}
-                        </Text>
-                      </Text>
-                    )
-                  })}
-                </div>
+                <SelectTabs
+                  tabs={translatedTabs}
+                  activeTabId={activeTab}
+                  onTabChange={handleTabClick}
+                />
               </div>
 
               <Container className="flex w-full px-0 flex-1 min-h-[420px]">{children}</Container>

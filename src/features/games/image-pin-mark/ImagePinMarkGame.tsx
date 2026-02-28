@@ -333,7 +333,7 @@ export default function ImagePinMarkGame({
       })
       .catch(() => setGalleryImages([]))
       .finally(() => setGalleryLoading(false))
-  }, [getUserId, getRole])
+  }, [getUserId, getRole, getUserInstitutionId])
 
   // Capture editor image dimensions when we have squares (e.g. from initialData) so drop hit-test can scale
   useEffect(() => {

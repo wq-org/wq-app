@@ -16,7 +16,7 @@ import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFil
 import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
 import { getMyAcceptedCourses, type EnrollmentCourse } from '@/features/course/api/enrollmentsApi'
 import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
-import type { CourseCardProps, EnrollmentStatus } from '@/features/course/types/course.types'
+import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
 
@@ -200,7 +200,7 @@ export default function Dashboard() {
                   themeId: course.theme_id,
                   teacherAvatar: course.teacher?.avatar_url || undefined,
                   teacherInitials: teacherName?.charAt(0).toUpperCase() || 'T',
-                } satisfies CourseCardProps
+                } satisfies ProfileCourseCardData
               })}
               enrollmentStatusMap={acceptedCourses.reduce<Record<string, EnrollmentStatus>>(
                 (acc, course) => {

@@ -17,5 +17,8 @@
   "view": {
     "title": "Lehrendenansicht",
     "description": "Inhalte für Lehrende werden hier angezeigt."
+  },
+  "profile": {
+    "followToSee": "Folge dieser Lehrkraft, um ihre Kurse und Spiele zu sehen."
   }
 }

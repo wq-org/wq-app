@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority'
 
-const inheritBlueContent = '[&_span]:text-blue-500 [&_p]:text-blue-500 [&_svg]:text-blue-500'
+export const inheritBlueContent = '[&_span]:text-blue-500 [&_p]:text-blue-500 [&_svg]:text-blue-500'
 const inheritVioletContent =
   '[&_span]:text-[oklch(var(--oklch-violet))] [&_p]:text-[oklch(var(--oklch-violet))] [&_svg]:text-[oklch(var(--oklch-violet))]'
 const inheritIndigoContent =

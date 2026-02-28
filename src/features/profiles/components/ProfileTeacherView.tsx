@@ -14,8 +14,7 @@ import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course } from '@/features/course/types/course.types'
-import type { CourseCardProps } from '@/features/course/types/course.types'
-import type { EnrollmentStatus } from '@/features/course/types/course.types'
+import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { getDashboardTabs } from '@/components/layout/config'
 import { EmptyCourseView } from '@/features/course'
@@ -169,7 +168,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   }
 
   // Map courses to CourseCardProps format
-  const courseCards: CourseCardProps[] = courses.map((course) => ({
+  const courseCards: ProfileCourseCardData[] = courses.map((course) => ({
     id: course.id,
     title: course.title,
     description: course.description,

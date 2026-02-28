@@ -3,15 +3,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, UserPlus } from 'lucide-react'
-import type { CourseCardProps } from '@/features/course/types/course.types'
-import type { EnrollmentStatus } from '@/features/course/types/course.types'
+import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 
-interface ProfileCourseCardProps extends CourseCardProps {
+interface ProfileCourseCardProps extends ProfileCourseCardData {
   onJoin?: (id: string) => void
   joinStatus?: EnrollmentStatus
   isLoadingJoin?: boolean
