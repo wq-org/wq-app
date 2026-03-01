@@ -23,5 +23,159 @@
     "resetPassword": "Reset Password",
     "verifyEmail": "Verify Email",
     "default": "Page"
+  },
+  "landing": {
+    "groups": {
+      "success": {
+        "label": "Your Success"
+      },
+      "solutions": {
+        "label": "Solutions For"
+      },
+      "platform": {
+        "label": "Platform"
+      },
+      "science": {
+        "label": "Science"
+      },
+      "mission": {
+        "label": "Mission"
+      }
+    },
+    "items": {
+      "endLearningApathy": {
+        "title": "End Learning Apathy",
+        "description": "Why traditional learning platforms now fail."
+      },
+      "intuitiveGaming": {
+        "title": "Intuition Through Gaming",
+        "description": "How serious games turn theory into practical competence."
+      },
+      "teachers": {
+        "title": "Teachers",
+        "description": "Move from instructor to game designer."
+      },
+      "learners": {
+        "title": "Learners",
+        "description": "Learn with flow, feedback, and clear progress."
+      },
+      "institutions": {
+        "title": "Institutions",
+        "description": "A modern operating system for schools and universities."
+      },
+      "workspace": {
+        "title": "Learning Workspace",
+        "description": "Courses, files, and collaboration in one place."
+      },
+      "gameStudio": {
+        "title": "WQ Game Studio",
+        "description": "Build serious games without code."
+      },
+      "analytics": {
+        "title": "Competency Analytics",
+        "description": "Measure real capability, not just grades."
+      },
+      "wqConcept": {
+        "title": "The WQ Concept",
+        "description": "Instruction grounded in MDA and DPE learning models."
+      },
+      "evidence": {
+        "title": "Evidence & Studies",
+        "description": "Learning outcomes supported by research."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "description": "Rethinking education through interaction."
+      },
+      "partners": {
+        "title": "Partners & Network",
+        "description": "See who already trusts the platform."
+      },
+      "collaboration": {
+        "title": "Cloud & Collaboration",
+        "description": "Shared files, chat, and cloud work in one flow."
+      },
+      "pricing": {
+        "title": "Pricing",
+        "description": "Choose the setup that fits your institution."
+      },
+      "woundCare": {
+        "title": "Case Study: Wound Care",
+        "description": "A proof point for training complex clinical judgment."
+      },
+      "blog": {
+        "title": "Blog (Learning Insights)",
+        "description": "Research, product thinking, and practical teaching insights."
+      },
+      "helpCenter": {
+        "title": "Help Center",
+        "description": "Documentation and support for teams using WQ."
+      },
+      "security": {
+        "title": "Security Proof",
+        "description": "How we establish trust for institutional adoption."
+      },
+      "privacy": {
+        "title": "Privacy (GDPR)",
+        "description": "Data protection principles for educational environments."
+      },
+      "compliance": {
+        "title": "Compliance",
+        "description": "The controls and policies that support responsible usage."
+      },
+      "licenses": {
+        "title": "Licenses",
+        "description": "Clear licensing for schools, universities, and teams."
+      },
+      "contact": {
+        "title": "Contact",
+        "description": "Get in touch with the WQ team."
+      }
+    },
+    "footer": {
+      "groups": {
+        "platform": "Platform",
+        "success": "Your Success",
+        "science": "Science",
+        "trust": "Trust & Legal"
+      },
+      "items": {
+        "workspace": "Learning Workspace",
+        "gameStudio": "WQ Game Studio",
+        "analytics": "Competency Analytics",
+        "collaboration": "Cloud & Collaboration",
+        "pricing": "Pricing",
+        "institutions": "For Schools & Universities",
+        "teachers": "For Teachers",
+        "learners": "For Learners",
+        "woundCare": "Case Study: Wound Care",
+        "wqConcept": "The WQ Concept (MDA/DPE)",
+        "evidence": "Evidence & Studies",
+        "vision": "Our Mission",
+        "blog": "Blog (Learning Insights)",
+        "helpCenter": "Help Center",
+        "security": "Security Proof",
+        "privacy": "Privacy (GDPR)",
+        "compliance": "Compliance",
+        "licenses": "Licenses"
+      },
+      "meta": {
+        "rights": "© {{year}} WQ Health, All rights reserved",
+        "attribution": "Godfred Amoah Sefa - Developer in collaboration with Astrid Probst, M.Sc., APN Wound Management Kreiskliniken Reutlingen gGmbH - Gabriela Tullius - Reutlingen University"
+      }
+    },
+    "cta": {
+      "startFree": "Start Free",
+      "bookDemo": "Book Demo",
+      "contact": "Contact"
+    },
+    "hero": {
+      "title": "Interactive learning built for real competence",
+      "description": "A serious learning platform that helps teachers design better experiences and helps learners build usable skills."
+    },
+    "mobile": {
+      "open": "Open menu",
+      "close": "Close menu"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -8,105 +9,24 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
-import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu-styles'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-interface NavItem {
-  label: string
-  href?: string
-  items?: { title: string; description: string; href: string }[]
-}
-
-const navItems: NavItem[] = [
-  {
-    label: 'Problem & Lösung',
-    items: [
-      {
-        title: 'Herausforderung',
-        description: 'Die Bildungslandschaft im Wandel.',
-        href: '#problem',
-      },
-      {
-        title: 'Unsere Lösung',
-        description: 'Gamifizierte Lernplattform für nachhaltigen Erfolg.',
-        href: '#loesung',
-      },
-    ],
-  },
-  {
-    label: 'Für wen?',
-    items: [
-      { title: 'Lehrende', description: 'Für Pädagogen und Dozenten.', href: '#lehrende' },
-      { title: 'Lernende', description: 'Für Studierende und Schüler:innen.', href: '#lernende' },
-      {
-        title: 'Institutionen',
-        description: 'Für Schulen und Hochschulen.',
-        href: '#institutionen',
-      },
-    ],
-  },
-  {
-    label: 'Produkt (Plattform)',
-    items: [
-      {
-        title: 'Plattform-Features',
-        description: 'Übersicht aller Funktionen.',
-        href: '#features',
-      },
-      { title: 'Spiele-Editor', description: 'Eigene Lernspiele erstellen.', href: '#editor' },
-      { title: 'Analytics', description: 'Fortschritt und Engagement messen.', href: '#analytics' },
-    ],
-  },
-  {
-    label: 'Didaktik & Evidenz',
-    items: [
-      {
-        title: 'Didaktisches Konzept',
-        description: 'Wissenschaftlich fundierter Ansatz.',
-        href: '#didaktik',
-      },
-      { title: 'Evidenzbasierung', description: 'Studien und Evaluierungen.', href: '#evidenz' },
-    ],
-  },
-  {
-    label: 'Über WQ',
-    items: [
-      { title: 'Über uns', description: 'Unser Team und unsere Vision.', href: '#ueber-uns' },
-      { title: 'Partner', description: 'Kooperationen und Netzwerk.', href: '#partner' },
-    ],
-  },
-  {
-    label: 'Kontakt / Demo',
-    href: '#kontakt',
-    items: [
-      {
-        title: 'Kontakt aufnehmen',
-        description: 'Schreiben Sie uns eine Nachricht.',
-        href: '#kontakt',
-      },
-      { title: 'Demo buchen', description: 'Lernen Sie die Plattform kennen.', href: '#demo' },
-    ],
-  },
-]
+import { landingNavigationGroups } from '@/components/shared/navigation/navigation-content'
 
 const linkClass =
   'block w-full rounded-sm px-3 py-2.5 text-left text-sm text-foreground no-underline outline-none transition-colors hover:bg-muted/80'
 
 interface NavigationProps {
   showCtaButton?: boolean
-  ctaLabel?: 'Pilot starten' | 'Demo anfragen'
+  ctaLabel?: string
   className?: string
 }
 
-export default function Navigation({
-  showCtaButton = true,
-  ctaLabel = 'Pilot starten',
-  className,
-}: NavigationProps) {
+export default function Navigation({ showCtaButton = true, ctaLabel, className }: NavigationProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { t } = useTranslation('navigation')
 
   return (
     <header
@@ -124,70 +44,64 @@ export default function Navigation({
           <Logo showText={false} />
         </Link>
 
-        {/* Desktop nav */}
         <NavigationMenu
           viewport={false}
           className="hidden flex-1 items-center justify-center lg:flex"
         >
           <NavigationMenuList className="ml-0 flex flex-1 flex-wrap justify-center gap-1">
-            {navItems.map((item) => (
-              <NavigationMenuItem key={item.label}>
-                {item.items && item.items.length > 0 ? (
-                  <>
-                    <NavigationMenuTrigger className="bg-transparent [&_svg]:hidden">
-                      {item.label}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                        {item.items.map((subItem) => (
-                          <li key={subItem.title}>
-                            <NavigationMenuLink asChild>
-                              <a
-                                href={subItem.href}
-                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                              >
-                                <div className="text-sm font-medium leading-none">
-                                  {subItem.title}
-                                </div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  {subItem.description}
-                                </p>
-                              </a>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </>
-                ) : (
-                  <NavigationMenuLink asChild>
-                    <a
-                      href={item.href ?? '#'}
-                      className={cn(navigationMenuTriggerStyle())}
-                    >
-                      {item.label}
-                    </a>
-                  </NavigationMenuLink>
-                )}
+            {landingNavigationGroups.map((group) => (
+              <NavigationMenuItem key={group.key}>
+                <NavigationMenuTrigger className="bg-transparent [&_svg]:hidden">
+                  {t(`landing.groups.${group.key}.label`)}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {group.items.map((subItem) => (
+                      <li key={subItem.key}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={subItem.href}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="text-sm font-medium leading-none">
+                              {t(`landing.items.${subItem.key}.title`)}
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              {t(`landing.items.${subItem.key}.description`)}
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* CTA + mobile toggle */}
         <div className="flex shrink-0 items-center gap-2">
           {showCtaButton && (
-            <Button
-              asChild
-              size="sm"
-            >
-              <Link to="/auth/signup">{ctaLabel}</Link>
-            </Button>
+            <>
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+              >
+                <Link to="/auth/login">{t('pages.login')}</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+              >
+                <Link to="/auth/signup">{ctaLabel ?? t('landing.cta.startFree')}</Link>
+              </Button>
+            </>
           )}
           <button
             type="button"
-            aria-label={mobileOpen ? 'Menü schließen' : 'Menü öffnen'}
-            onClick={() => setMobileOpen((o) => !o)}
+            aria-label={mobileOpen ? t('landing.mobile.close') : t('landing.mobile.open')}
+            onClick={() => setMobileOpen((open) => !open)}
             className="-mr-2 flex p-2 lg:hidden"
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -195,43 +109,49 @@ export default function Navigation({
         </div>
       </div>
 
-      {/* Mobile nav - scrollable */}
       {mobileOpen && (
         <nav className="border-t bg-background/80 backdrop-blur-md lg:hidden">
           <div className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
             <ul className="flex flex-col gap-0.5 p-4">
-              {navItems.map((item) =>
-                item.items && item.items.length > 0 ? (
-                  <li key={item.label}>
-                    <span className="block px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                      {item.label}
-                    </span>
-                    <ul className="mb-2 flex flex-col">
-                      {item.items.map((subItem) => (
-                        <li key={subItem.title}>
-                          <a
-                            href={subItem.href}
-                            onClick={() => setMobileOpen(false)}
-                            className={linkClass}
-                          >
-                            {subItem.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ) : (
-                  <li key={item.label}>
-                    <a
-                      href={item.href ?? '#'}
-                      onClick={() => setMobileOpen(false)}
-                      className={linkClass}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ),
+              {showCtaButton && (
+                <li className="mb-3 flex flex-col gap-2">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Link to="/auth/login">{t('pages.login')}</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="sm"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Link to="/auth/signup">{ctaLabel ?? t('landing.cta.startFree')}</Link>
+                  </Button>
+                </li>
               )}
+              {landingNavigationGroups.map((group) => (
+                <li key={group.key}>
+                  <span className="block px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t(`landing.groups.${group.key}.label`)}
+                  </span>
+                  <ul className="mb-2 flex flex-col">
+                    {group.items.map((subItem) => (
+                      <li key={subItem.key}>
+                        <Link
+                          to={subItem.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={linkClass}
+                        >
+                          {t(`landing.items.${subItem.key}.title`)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
             </ul>
           </div>
         </nav>

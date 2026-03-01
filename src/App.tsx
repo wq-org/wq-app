@@ -10,6 +10,7 @@ import {
 import Institution from './features/institution/pages/institution'
 import Test from './user/pages/test'
 import Home from './user/pages/home'
+import LandingPage from './user/pages/landing'
 
 import StudentDashboard from './features/student/pages/dashboard'
 import StudentSettings from './features/student/pages/settings'
@@ -80,6 +81,94 @@ function App() {
             <Route
               path="/"
               element={<Home />}
+            />
+            <Route
+              path="/success/end-learning-apathy"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/success/intuitive-gaming"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/solutions/teachers"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/solutions/learners"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/solutions/institutions"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/platform/workspace"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/platform/game-studio"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/platform/analytics"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/platform/collaboration"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/platform/pricing"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/science/wq-concept"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/science/evidence"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/mission/vision"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/mission/partners"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/contact"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/success/wound-care"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/science/blog"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/science/help-center"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/trust/security"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/trust/privacy"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/trust/compliance"
+              element={<LandingPage />}
+            />
+            <Route
+              path="/trust/licenses"
+              element={<LandingPage />}
             />
             <Route
               path="/test"

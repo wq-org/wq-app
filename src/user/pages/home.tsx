@@ -1,5 +1,4 @@
 import { HeroSection } from '@/components/landing/HeroSection'
-import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
 import { FooterSection } from '@/components/landing/FooterSection'
 import { LanguageSwitcher } from '@/components/shared/i18n/LanguageSwitcher'
 import Navigation from '@/components/shared/navigation/Navigation'
@@ -14,7 +13,6 @@ export default function Home() {
         <LanguageSwitcher />
       </div>
       <HeroSection />
-      <TestimonialsSection />
       <FooterSection />
     </div>
   )

@@ -1,39 +1,35 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 
 export function HeroSection() {
-  return (
-    <section
-      className="relative flex h-screen min-h-screen flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-6"
-      style={{ backgroundImage: `url(${DEFAULT_COURSE_BACKGROUND})` }}
-    >
-      <div
-        className="absolute inset-0 bg-black/30"
-        aria-hidden
-      />
+  const { t } = useTranslation('navigation')
 
-      <div className="relative z-10 flex flex-col items-center justify-center gap-6 text-center">
-        <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-white drop-shadow-md sm:text-4xl md:text-5xl lg:text-6xl">
-          Interaktives Lernen für echte Kompetenz
+  return (
+    <section className="bg-background px-6 pt-28 pb-20 md:pt-36 md:pb-28">
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
+        <h1 className="max-w-4xl text-balance text-5xl font-medium text-foreground md:text-6xl xl:text-7xl">
+          {t('landing.hero.title')}
         </h1>
-        <p className="max-w-2xl text-lg font-medium text-white/95 drop-shadow-sm sm:text-xl">
-          Gebaut für Schulen gemacht für Lernende.
+        <p className="mt-8 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
+          {t('landing.hero.description')}
         </p>
 
-        <div className="mt-4 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:max-w-none sm:justify-center">
+        <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
             asChild
             size="lg"
+            className="px-5 text-base"
           >
-            <Link to="/auth/signup">Demo anfordern</Link>
+            <Link to="/auth/signup">{t('landing.cta.startFree')}</Link>
           </Button>
           <Button
             asChild
             size="lg"
-            variant="outline"
+            variant="ghost"
+            className="px-5 text-base"
           >
-            <Link to="#kontakt">Kontakt</Link>
+            <Link to="/contact">{t('landing.cta.contact')}</Link>
           </Button>
         </div>
       </div>
