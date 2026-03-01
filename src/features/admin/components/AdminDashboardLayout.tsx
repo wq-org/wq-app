@@ -30,6 +30,7 @@ import { TeamSwitcher } from '@/components/shared/team-switcher'
 import { useUser } from '@/contexts/user'
 import { useEffect } from 'react'
 import { NavMain } from '@/components/shared/nav-main'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 // This is sample data.
 const data = {
@@ -96,9 +97,9 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   const { email, avatar_url, display_name } = profile || {}
   const userProfile = {
-    name: display_name || 'admin',
-    email: email || 'admin@wq-app.de',
-    avatar: avatar_url || '/favicon.ico',
+    name: display_name || 'user',
+    email: email || 'user@wq-app.de',
+    avatar: avatar_url || DEFAULT_INSTITUTION_IMAGE,
   }
   const role = getRole()
 

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
@@ -13,7 +14,7 @@ export function Logo({ className, showText = true, ...props }: LogoProps) {
       {...props}
     >
       <img
-        src="/favicon.ico"
+        src={DEFAULT_INSTITUTION_IMAGE}
         alt="WQ Health"
         className={cn('h-5 w-5', !showText && 'h-full w-full')}
       />

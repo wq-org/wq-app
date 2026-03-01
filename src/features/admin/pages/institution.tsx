@@ -18,6 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Logo } from '@/components/ui/logo'
 import type { InstitutionStatus, InstitutionRow } from '../types/institution.types'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 const STATUS_VARIANT: Record<
   InstitutionStatus,
@@ -109,7 +110,7 @@ export default function AdminInstitution() {
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
                           <AvatarImage
-                            src={inst.image_url ?? '/favicon.ico'}
+                            src={inst.image_url ?? DEFAULT_INSTITUTION_IMAGE}
                             alt={`${inst.name} logo`}
                           />
                           <AvatarFallback>

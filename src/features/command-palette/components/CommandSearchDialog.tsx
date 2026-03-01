@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
-const SEARCH_AVATAR_FALLBACK = '/favicon.ico'
 const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {
   student: 'roles.student',
   teacher: 'roles.teacher',
@@ -26,7 +26,7 @@ function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title
   return (
     <Avatar className="w-12 h-12">
       <AvatarImage
-        src={url || SEARCH_AVATAR_FALLBACK}
+        src={url || DEFAULT_INSTITUTION_IMAGE}
         alt={title}
         className="rounded-full w-12 h-12"
       />

@@ -13,6 +13,7 @@ import type { Roles } from './config'
 import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
 import SelectTabs from '@/components/shared/tabs/SelectTabs'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 interface DashboardLayoutProps {
   imageUrl?: string
@@ -60,7 +61,7 @@ export default function DashboardLayout({
   const dashboardTabs = customTabs || defaultTabs
   const { t, i18n } = useTranslation('features.teacher')
   const { t: tLayout } = useTranslation('layout.dashboardLayout')
-  const avatarSrc = useFaviconFallback || !imageUrl ? '/favicon.ico' : imageUrl
+  const avatarSrc = useFaviconFallback || !imageUrl ? DEFAULT_INSTITUTION_IMAGE : imageUrl
   const translatedTabs = dashboardTabs.map((tab) => ({
     id: tab.id,
     icon: tab.icon,
