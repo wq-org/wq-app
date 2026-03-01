@@ -1,11 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { IncomingChatMessageBubble } from '@/components/chat/IncomingChatMessageBubble'
-import { ReceivingChatMessageBubble } from '@/components/chat/ReceivingChatMessageBubble'
-import type { ChatHistoryMessage } from '@/components/chat/types'
+import { IncomingChatMessageBubble } from '@/components/shared/chat/IncomingChatMessageBubble'
+import { ReceivingChatMessageBubble } from '@/components/shared/chat/ReceivingChatMessageBubble'
+import type { ChatHistoryMessage } from '@/components/shared/chat/types'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
-import TypingIndicator from '@/components/ui/typing-indicator'
 import { cn } from '@/lib/utils'
 
 type ChatHistoryProps = {
@@ -14,6 +13,20 @@ type ChatHistoryProps = {
   incomingAvatarUrl?: string
   incomingAvatarFallback?: string
   autoScroll?: boolean
+}
+
+function TypingIndicator() {
+  return (
+    <div className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-3 py-2 shadow-sm">
+      {[0, 1, 2].map((index) => (
+        <span
+          key={index}
+          className="size-1.5 animate-pulse rounded-full bg-neutral-400"
+          style={{ animationDelay: `${index * 120}ms` }}
+        />
+      ))}
+    </div>
+  )
 }
 
 export function ChatHistory({
@@ -63,7 +76,7 @@ export function ChatHistory({
         ))}
 
         <div className="flex justify-start">
-          <TypingIndicator size="sm" />
+          <TypingIndicator />
         </div>
 
         <div ref={bottomRef} />

@@ -1,6 +1,6 @@
-import { ChatImageList } from '@/components/chat/ChatImageList'
+import { ChatImageList } from '@/components/shared/chat/ChatImageList'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import type { ChatMessageBubbleProps } from '@/components/chat/types'
+import type { ChatMessageBubbleProps } from '@/components/shared/chat/types'
 import { cn } from '@/lib/utils'
 
 export function IncomingChatMessageBubble({

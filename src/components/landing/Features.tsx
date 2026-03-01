@@ -42,7 +42,7 @@ export function Features() {
       id="solution"
       className="py-12 md:py-20 lg:py-32"
     >
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-muted/30 sm:inset-6 sm:rounded-b-3xl dark:block"></div>
+      <div className="absolute inset-0 -z-10 bg-linear-to-b from-transparent to-muted/30 sm:inset-6 sm:rounded-b-3xl dark:block"></div>
       <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16 lg:space-y-20">
         <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center">
           <h2 className="text-balance text-4xl font-semibold lg:text-6xl">
@@ -114,7 +114,7 @@ export function Features() {
 
           <div className="relative flex overflow-hidden rounded-3xl border bg-background p-2">
             <div className="absolute inset-0 right-0 ml-auto w-16 border-l bg-[repeating-linear-gradient(-45deg,var(--color-border),var(--color-border)_1px,transparent_1px,transparent_8px)]"></div>
-            <div className="relative aspect-[76/59] w-[calc(3/4*100%+3rem)] rounded-2xl">
+            <div className="relative aspect-76/59 w-[calc(3/4*100%+3rem)] rounded-2xl">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`${activeItem}-id`}
@@ -126,7 +126,7 @@ export function Features() {
                 >
                   <img
                     src={images[activeItem].image}
-                    className="size-full object-cover object-left-top dark:mix-blend-lighten"
+                    className="size-full object-cover object-top-left dark:mix-blend-lighten"
                     alt={images[activeItem].alt}
                   />
                 </motion.div>

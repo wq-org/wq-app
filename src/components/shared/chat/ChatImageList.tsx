@@ -1,7 +1,6 @@
-import { Stack } from '@/components/stack'
 import { cn } from '@/lib/utils'
-import { ChatImage } from '@/components/chat/ChatImage'
-import type { ChatImageItem } from '@/components/chat/types'
+import { ChatImage } from '@/components/shared/chat/ChatImage'
+import type { ChatImageItem } from '@/components/shared/chat/types'
 
 type ChatImageListProps = {
   images?: ChatImageItem[]
@@ -29,8 +28,9 @@ export function ChatImageList({ images, className }: ChatImageListProps) {
 
   const normalizedImages = images.map((image, index) => normalizeChatImage(image, index))
 
-  if (images.length === 1) {
+  if (normalizedImages.length === 1) {
     const image = normalizedImages[0]
+
     return (
       <div className={cn(className)}>
         <ChatImage
@@ -43,22 +43,16 @@ export function ChatImageList({ images, className }: ChatImageListProps) {
   }
 
   return (
-    <div className={cn(className)}>
-      <Stack
-        randomRotation
-        sensitivity={170}
-        sendToBackOnClick
-        cards={normalizedImages.map((image, index) => (
-          <img
-            key={index}
-            src={image.src}
-            alt={image.alt}
-            crossOrigin="anonymous"
-            className="h-full w-full object-cover"
-            draggable={false}
-          />
-        ))}
-      />
+    <div className={cn('grid grid-cols-2 gap-2', className)}>
+      {normalizedImages.map((image, index) => (
+        <ChatImage
+          key={`${image.src}-${index}`}
+          src={image.src}
+          alt={image.alt}
+          ratio={image.ratio}
+          className="w-full"
+        />
+      ))}
     </div>
   )
 }
