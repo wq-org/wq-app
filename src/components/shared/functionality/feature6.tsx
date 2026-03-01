@@ -86,9 +86,9 @@ export function Feature6({
                 >
                   {!shouldRenderIconInside ? <Icon className="h-8 w-8 stroke-1" /> : null}
                   {hasPreview ? (
-                    <div className="mt-4">
+                    <div className="mt-4 flex-1">
                       <AspectRatio
-                        ratio={card.wide ? 21 / 9 : 16 / 9}
+                        ratio={card.wide ? 21 / 9 : 1}
                         className="w-full overflow-hidden rounded-xl"
                       >
                         <div
