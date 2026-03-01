@@ -80,7 +80,7 @@ export default function StartGameDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw] max-w-[min(1080px,calc(100vw-2rem))] [&_button[data-slot='dialog-close']]:text-blue-500 [&_button[data-slot='dialog-close']]:hover:text-blue-600">
+      <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw]! max-w-[1080px]!">
         <DialogHeader>
           <DialogTitle>{t('startDialog.title')}</DialogTitle>
           <DialogDescription className="sr-only">{t('startDialog.description')}</DialogDescription>
@@ -124,6 +124,7 @@ export default function StartGameDialog({
             {t('common.cancel')}
           </Button>
           <Button
+            variant="darkblue"
             onClick={handleSave}
             disabled={!title.trim() || !description.trim()}
           >

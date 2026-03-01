@@ -83,7 +83,7 @@ export default function EndGameDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw] max-w-[min(1080px,calc(100vw-2rem))]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto w-[90vw]! max-w-[1080px]!">
         <DialogHeader>
           <DialogTitle>{t('endDialog.title')}</DialogTitle>
           <DialogDescription className="sr-only">{t('endDialog.description')}</DialogDescription>
@@ -138,6 +138,7 @@ export default function EndGameDialog({
             {t('common.cancel')}
           </Button>
           <Button
+            variant="darkblue"
             onClick={handleSave}
             disabled={!title.trim() || !description.trim()}
           >

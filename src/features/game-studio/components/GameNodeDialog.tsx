@@ -295,6 +295,7 @@ export default function GameNodeDialog({
             {t('common.cancel')}
           </Button>
           <Button
+            variant="darkblue"
             onClick={handleSave}
             disabled={saving}
           >

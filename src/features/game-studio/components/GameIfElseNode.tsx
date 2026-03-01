@@ -1,15 +1,23 @@
 import { Handle, Position } from '@xyflow/react'
-import { GitBranch } from 'lucide-react'
+import { Split } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { GameIfElseNodeProps } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
 const MAX_LABEL_LENGTH = 24
 
 export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
+  const { t } = useTranslation('features.gameStudio')
   const fullLabel = data?.label || (data as GameIfElseNodeProps['data'])?.title || 'If / else'
   const displayLabel =
     fullLabel.length > MAX_LABEL_LENGTH ? `${fullLabel.slice(0, MAX_LABEL_LENGTH)}…` : fullLabel
+  const routeLabel =
+    data?.correctPath === 'B'
+      ? t('common.nodeB')
+      : data?.correctPath === 'A'
+        ? t('common.nodeA')
+        : null
 
   return (
     <div
@@ -25,8 +33,8 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
         id="left"
         onClick={(e) => e.stopPropagation()}
       />
-      <div className="p-2 rounded-lg border border-orange-500/20 bg-orange-500/10 flex items-center justify-center shrink-0">
-        <GitBranch className="w-4 h-4 text-orange-500" />
+      <div className="p-2 rounded-lg border border-blue-500/20 bg-orange-500/10 flex items-center justify-center shrink-0">
+        <Split className="w-4 h-4 text-orange-500" />
       </div>
       <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
         <Tooltip>
@@ -47,24 +55,14 @@ export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) 
             {fullLabel}
           </TooltipContent>
         </Tooltip>
-        {data?.condition && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Text
-                as="span"
-                variant="small"
-                className="text-xs text-gray-500 truncate block"
-              >
-                {data.condition}
-              </Text>
-            </TooltipTrigger>
-            <TooltipContent
-              side="top"
-              sideOffset={6}
-            >
-              {data.condition}
-            </TooltipContent>
-          </Tooltip>
+        {routeLabel && (
+          <Text
+            as="span"
+            variant="small"
+            className="text-xs text-gray-500 truncate block"
+          >
+            {t('ifElseDialog.correctRouteLabel', { node: routeLabel })}
+          </Text>
         )}
       </div>
       <Handle

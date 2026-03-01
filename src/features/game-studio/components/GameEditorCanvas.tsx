@@ -912,7 +912,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     data: {
       title?: string
       description?: string
-      condition?: string
+      correctMessage?: string
+      wrongMessage?: string
       correctPath?: 'A' | 'B'
     },
     nodeId?: string,
@@ -928,7 +929,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         const nextData = { ...node.data }
         if (data.title !== undefined) nextData.label = data.title
         if (data.description !== undefined) nextData.description = data.description
-        if (data.condition !== undefined) nextData.condition = data.condition
+        if (data.correctMessage !== undefined) nextData.correctMessage = data.correctMessage
+        if (data.wrongMessage !== undefined) nextData.wrongMessage = data.wrongMessage
         if (data.correctPath !== undefined) nextData.correctPath = data.correctPath
         return { ...node, data: nextData }
       }),
@@ -1331,6 +1333,8 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
                     label?: string
                     description?: string
                     condition?: string
+                    correctMessage?: string
+                    wrongMessage?: string
                     correctPath?: 'A' | 'B'
                   }
                 | undefined)

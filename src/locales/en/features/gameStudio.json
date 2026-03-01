@@ -35,7 +35,9 @@
     "noContent": "No content available",
     "deleteHint": "Hold the button below for 3 seconds to delete this node.",
     "overviewAriaLabel": "Show overview tab",
-    "settingsAriaLabel": "Show settings tab"
+    "settingsAriaLabel": "Show settings tab",
+    "editorTab": "Editor",
+    "editorAriaLabel": "Show editor tab"
   },
   "holdDelete": {
     "title": "Delete",
@@ -113,7 +115,7 @@
   },
   "ifElseDialog": {
     "title": "Configure If/Else Node",
-    "description": "Configure the if/else node title, description, condition, and correct path",
+    "description": "Configure how this branch node routes players after a correct or wrong result.",
     "fieldTitle": "Title",
     "titlePlaceholder": "Enter node title",
     "fieldDescription": "Description",
@@ -123,7 +125,26 @@
     "noIncomingNode": "No incoming node",
     "outgoingNodes": "Outgoing Nodes",
     "noOutgoingNodes": "No outgoing nodes",
-    "correctAnswerRoute": "When user answers correctly"
+    "correctAnswerRoute": "When user answers correctly",
+    "editorAlertTitle": "Branch node",
+    "editorAlertDescription": "This node routes players to different paths based on whether the previous answer was correct or wrong. Use the messages below to explain each outcome.",
+    "overviewAlertTitle": "Route overview",
+    "overviewAlertDescription": "Choose which route counts as the correct branch, then review both outgoing targets below.",
+    "fieldCorrectMessage": "Message after a correct previous answer",
+    "correctMessagePlaceholder": "Explain what happens when the previous answer was correct",
+    "fieldWrongMessage": "Message after a wrong previous answer",
+    "wrongMessagePlaceholder": "Explain what happens when the previous answer was wrong",
+    "routeSelectionTitle": "Route for the correct answer",
+    "routeSelectionHint": "The blue branch node stays neutral. Orange marks the route that players follow after a correct result.",
+    "routeSelectionOptionA": "Use Node A when the previous answer was correct.",
+    "routeSelectionOptionB": "Use Node B when the previous answer was correct.",
+    "routeCardCorrect": "Correct answer goes here",
+    "routeCardWrong": "Wrong answer goes here",
+    "routeCardNotConnected": "No connected node yet",
+    "routeCardNoDescription": "No description available",
+    "nodeTypeBadge": "Branch node",
+    "activeRoute": "Active",
+    "correctRouteLabel": "Correct answer -> {{node}}"
   },
   "startDialog": {
     "title": "Configure Start Node",
@@ -162,13 +183,16 @@
   "previewIfElse": {
     "ifElseFallback": "If / else",
     "routingLogic": "Routing Logic",
-    "routingDescription": "This node chooses the next slide based on:",
+    "routingDescription": "This node sends players to the next slide based on the previous result.",
     "condition": "Condition",
     "noCondition": "No condition set yet.",
     "outgoingPaths": "Outgoing paths",
     "pathLabel": "Path",
     "notConnected": "Not connected",
-    "correctRoute": "Correct route"
+    "correctRoute": "Correct route",
+    "legacyCondition": "Legacy condition",
+    "branchMessage": "Branch message",
+    "noMessage": "No message set yet."
   },
   "gameProjectCard": {
     "untitledProject": "Untitled Project",

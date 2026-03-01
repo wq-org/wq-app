@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, Square, StickyNote, Image as ImageIcon, MapPin, GitBranch } from 'lucide-react'
+import { Search, Square, StickyNote, Image as ImageIcon, MapPin, Split } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import type { SidebarItem } from '../types/game-studio.types'
@@ -44,7 +44,7 @@ export default function GameSidebar() {
     {
       id: 'if-else',
       label: t('sidebar.logic.ifElse'),
-      icon: GitBranch,
+      icon: Split,
       category: 'logic',
       nodeType: 'gameIfElse',
     },
@@ -71,7 +71,7 @@ export default function GameSidebar() {
   )
 
   return (
-    <div className="absolute left-4 top-4 z-10 w-64">
+    <div className="absolute left-4 top-4 z-10">
       <div className="flex flex-col w-full bg-white border border-border rounded-2xl shadow-lg">
         {/* Search Bar */}
         <div className="p-4 border-b border-border">
@@ -123,7 +123,7 @@ export default function GameSidebar() {
                             : 'text-blue-500 bg-blue-500/10 border-blue-500/20',
                         )}
                       >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <Icon className="h-4 w-4 shrink-0" />
                       </div>
                       <Text
                         as="span"
@@ -169,7 +169,7 @@ export default function GameSidebar() {
                           'text-orange-500 bg-orange-500/10 border-orange-500/20',
                         )}
                       >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <Icon className="h-4 w-4 shrink-0" />
                       </div>
                       <Text
                         as="span"

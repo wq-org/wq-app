@@ -35,7 +35,9 @@
     "noContent": "Kein Inhalt verf\u00fcgbar",
     "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu l\u00f6schen.",
     "overviewAriaLabel": "Ubersicht anzeigen",
-    "settingsAriaLabel": "Einstellungen anzeigen"
+    "settingsAriaLabel": "Einstellungen anzeigen",
+    "editorTab": "Editor",
+    "editorAriaLabel": "Editor anzeigen"
   },
   "holdDelete": {
     "title": "L\u00f6schen",
@@ -113,7 +115,7 @@
   },
   "ifElseDialog": {
     "title": "Wenn/Sonst-Knoten konfigurieren",
-    "description": "Konfiguriere Titel, Beschreibung, Bedingung und den korrekten Pfad des Wenn/Sonst-Knotens",
+    "description": "Konfiguriere, wie dieser Verzweigungsknoten Spielende nach einem richtigen oder falschen Ergebnis weiterleitet.",
     "fieldTitle": "Titel",
     "titlePlaceholder": "Knotentitel eingeben",
     "fieldDescription": "Beschreibung",
@@ -123,7 +125,26 @@
     "noIncomingNode": "Kein eingehender Knoten",
     "outgoingNodes": "Ausgehende Knoten",
     "noOutgoingNodes": "Keine ausgehenden Knoten",
-    "correctAnswerRoute": "Bei richtiger Antwort"
+    "correctAnswerRoute": "Bei richtiger Antwort",
+    "editorAlertTitle": "Verzweigungsknoten",
+    "editorAlertDescription": "Dieser Knoten leitet Spielende auf unterschiedliche Pfade weiter, je nachdem ob die vorherige Antwort richtig oder falsch war. Nutze die Nachrichten unten, um beide Ergebnisse klar zu beschreiben.",
+    "overviewAlertTitle": "\u00dcberblick der Pfade",
+    "overviewAlertDescription": "W\u00e4hle zuerst, welcher Pfad als richtiger Weg gilt, und pr\u00fcfe dann beide ausgehenden Ziele.",
+    "fieldCorrectMessage": "Nachricht nach einer richtigen vorherigen Antwort",
+    "correctMessagePlaceholder": "Beschreibe, was nach einer richtigen vorherigen Antwort passiert",
+    "fieldWrongMessage": "Nachricht nach einer falschen vorherigen Antwort",
+    "wrongMessagePlaceholder": "Beschreibe, was nach einer falschen vorherigen Antwort passiert",
+    "routeSelectionTitle": "Pfad f\u00fcr die richtige Antwort",
+    "routeSelectionHint": "Der blaue Verzweigungsknoten bleibt neutral. Orange markiert den Pfad, den Spielende nach einem richtigen Ergebnis nehmen.",
+    "routeSelectionOptionA": "Nutze Knoten A, wenn die vorherige Antwort richtig war.",
+    "routeSelectionOptionB": "Nutze Knoten B, wenn die vorherige Antwort richtig war.",
+    "routeCardCorrect": "Richtige Antwort f\u00fchrt hierhin",
+    "routeCardWrong": "Falsche Antwort f\u00fchrt hierhin",
+    "routeCardNotConnected": "Noch kein Knoten verbunden",
+    "routeCardNoDescription": "Keine Beschreibung verf\u00fcgbar",
+    "nodeTypeBadge": "Verzweigungsknoten",
+    "activeRoute": "Aktiv",
+    "correctRouteLabel": "Richtige Antwort -> {{node}}"
   },
   "startDialog": {
     "title": "Startknoten konfigurieren",
@@ -162,13 +183,16 @@
   "previewIfElse": {
     "ifElseFallback": "Wenn / sonst",
     "routingLogic": "Routing-Logik",
-    "routingDescription": "Dieser Knoten w\u00e4hlt den n\u00e4chsten Slide basierend auf:",
+    "routingDescription": "Dieser Knoten sendet Spielende je nach vorherigem Ergebnis zum n\u00e4chsten Slide.",
     "condition": "Bedingung",
     "noCondition": "Noch keine Bedingung gesetzt.",
     "outgoingPaths": "Ausgehende Pfade",
     "pathLabel": "Pfad",
     "notConnected": "Nicht verbunden",
-    "correctRoute": "Korrekter Pfad"
+    "correctRoute": "Korrekter Pfad",
+    "legacyCondition": "Veraltete Bedingung",
+    "branchMessage": "Pfadnachricht",
+    "noMessage": "Noch keine Nachricht gesetzt."
   },
   "gameProjectCard": {
     "untitledProject": "Unbenanntes Projekt",

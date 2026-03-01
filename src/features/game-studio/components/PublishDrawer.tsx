@@ -166,6 +166,7 @@ export default function PublishDrawer({
           )}
           <HoldConfirmButton
             onConfirm={handlePublish}
+            variant="darkblue"
             className="rounded-lg w-full"
             disabled={!canPublish || publishing}
           >

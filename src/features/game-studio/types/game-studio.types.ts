@@ -30,6 +30,9 @@ export interface GameNodeData {
   title?: string
   description?: string
   condition?: string
+  correctMessage?: string
+  wrongMessage?: string
+  correctPath?: 'A' | 'B'
   gameType?: string
 }
 
@@ -57,6 +60,9 @@ export interface GameIfElseNodeProps {
     title?: string
     onClick?: () => void
     condition?: string
+    correctMessage?: string
+    wrongMessage?: string
+    correctPath?: 'A' | 'B'
   }
   selected?: boolean
 }
@@ -113,6 +119,8 @@ export interface IfElseGameDialogProps {
       title?: string
       description?: string
       condition?: string
+      correctMessage?: string
+      wrongMessage?: string
       correctPath?: 'A' | 'B'
     },
     nodeId?: string,
@@ -122,6 +130,8 @@ export interface IfElseGameDialogProps {
     label?: string
     description?: string
     condition?: string
+    correctMessage?: string
+    wrongMessage?: string
     correctPath?: 'A' | 'B'
   }
   nodeId?: string

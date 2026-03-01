@@ -9,6 +9,8 @@ interface PreviewIfElseSlideProps {
   title?: string
   description?: string
   condition?: string
+  correctMessage?: string
+  wrongMessage?: string
   correctPath?: 'A' | 'B'
   branches?: {
     A?: string
@@ -19,38 +21,64 @@ interface PreviewIfElseSlideProps {
 function BranchRow({
   label,
   destination,
+  message,
   active,
   pathPrefix,
   notConnectedLabel,
-  correctRouteLabel,
+  activeRouteLabel,
+  branchMessageLabel,
+  noMessageLabel,
 }: {
   label: 'A' | 'B'
   destination?: string
+  message?: string
   active: boolean
   pathPrefix: string
   notConnectedLabel: string
-  correctRouteLabel: string
+  activeRouteLabel: string
+  branchMessageLabel: string
+  noMessageLabel: string
 }) {
   return (
     <div
       className={cn(
         'flex items-center justify-between gap-3 rounded-lg border px-3 py-2',
-        active && 'border-primary/40 bg-primary/5',
+        active && 'border-orange-500/30 bg-orange-500/5',
       )}
     >
-      <div className="flex items-center gap-2 min-w-0">
-        <Badge variant={active ? 'default' : 'outline'}>
-          {pathPrefix} {label}
-        </Badge>
-        <Text
-          as="span"
-          variant="small"
-          className="text-sm text-foreground truncate"
-        >
-          {destination && destination.trim() ? destination : notConnectedLabel}
-        </Text>
+      <div className="flex min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <Badge variant={active ? 'orange' : 'outline'}>
+            {active ? activeRouteLabel : pathPrefix} {label}
+          </Badge>
+          <Text
+            as="span"
+            variant="small"
+            className="text-sm text-foreground truncate"
+          >
+            {destination && destination.trim() ? destination : notConnectedLabel}
+          </Text>
+        </div>
+        <div className="flex min-w-0 flex-col gap-1">
+          <Text
+            as="span"
+            variant="small"
+            className="text-xs font-medium text-muted-foreground"
+          >
+            {branchMessageLabel}
+          </Text>
+          <Text
+            as="span"
+            variant="small"
+            className="text-sm text-muted-foreground"
+          >
+            {message && message.trim() ? message : noMessageLabel}
+          </Text>
+        </div>
       </div>
-      {active && <Badge variant="secondary">{correctRouteLabel}</Badge>}
+      <Badge variant={active ? 'orange' : 'outline'}>
+        {pathPrefix} {label}
+      </Badge>
     </div>
   )
 }
@@ -59,6 +87,8 @@ export function PreviewIfElseSlide({
   title,
   description,
   condition,
+  correctMessage,
+  wrongMessage,
   correctPath = 'A',
   branches,
 }: PreviewIfElseSlideProps) {
@@ -66,6 +96,8 @@ export function PreviewIfElseSlide({
   const displayTitle = title?.trim() || t('previewIfElse.ifElseFallback')
   const displayDescription = description?.trim() || ''
   const displayCondition = condition?.trim() || ''
+  const displayCorrectMessage = correctMessage?.trim() || ''
+  const displayWrongMessage = wrongMessage?.trim() || ''
 
   return (
     <div className="space-y-6">
@@ -91,28 +123,20 @@ export function PreviewIfElseSlide({
           </Text>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Text
-              as="p"
-              variant="body"
-              className="text-xs text-muted-foreground"
-            >
-              {t('previewIfElse.condition')}
-            </Text>
-            {displayCondition ? (
-              <div className="rounded-md border bg-muted px-3 py-2 text-sm text-foreground">
-                {displayCondition}
-              </div>
-            ) : (
+          {displayCondition ? (
+            <div className="space-y-2">
               <Text
                 as="p"
                 variant="body"
-                className="text-sm text-muted-foreground"
+                className="text-xs text-muted-foreground"
               >
-                {t('previewIfElse.noCondition')}
+                {t('previewIfElse.legacyCondition')}
               </Text>
-            )}
-          </div>
+              <div className="rounded-md border bg-muted px-3 py-2 text-sm text-foreground">
+                {displayCondition}
+              </div>
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Text
               as="p"
@@ -124,18 +148,24 @@ export function PreviewIfElseSlide({
             <BranchRow
               label="A"
               destination={branches?.A}
+              message={correctPath === 'A' ? displayCorrectMessage : displayWrongMessage}
               active={correctPath === 'A'}
               pathPrefix={t('previewIfElse.pathLabel')}
               notConnectedLabel={t('previewIfElse.notConnected')}
-              correctRouteLabel={t('previewIfElse.correctRoute')}
+              activeRouteLabel={t('previewIfElse.correctRoute')}
+              branchMessageLabel={t('previewIfElse.branchMessage')}
+              noMessageLabel={t('previewIfElse.noMessage')}
             />
             <BranchRow
               label="B"
               destination={branches?.B}
+              message={correctPath === 'B' ? displayCorrectMessage : displayWrongMessage}
               active={correctPath === 'B'}
               pathPrefix={t('previewIfElse.pathLabel')}
               notConnectedLabel={t('previewIfElse.notConnected')}
-              correctRouteLabel={t('previewIfElse.correctRoute')}
+              activeRouteLabel={t('previewIfElse.correctRoute')}
+              branchMessageLabel={t('previewIfElse.branchMessage')}
+              noMessageLabel={t('previewIfElse.noMessage')}
             />
           </div>
         </CardContent>

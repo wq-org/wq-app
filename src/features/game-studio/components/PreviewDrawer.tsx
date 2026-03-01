@@ -137,6 +137,10 @@ export default function PreviewDrawer({
                 const description =
                   typeof data?.description === 'string' ? data.description : undefined
                 const condition = typeof data?.condition === 'string' ? data.condition : undefined
+                const correctMessage =
+                  typeof data?.correctMessage === 'string' ? data.correctMessage : undefined
+                const wrongMessage =
+                  typeof data?.wrongMessage === 'string' ? data.wrongMessage : undefined
                 const correctPath = (data?.correctPath as 'A' | 'B' | undefined) ?? 'A'
                 return (
                   <div
@@ -147,6 +151,8 @@ export default function PreviewDrawer({
                       title={title}
                       description={description}
                       condition={condition}
+                      correctMessage={correctMessage}
+                      wrongMessage={wrongMessage}
                       correctPath={correctPath}
                       branches={getIfElseBranches(node.id, nodes, edges)}
                     />
