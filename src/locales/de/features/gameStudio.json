@@ -192,7 +192,16 @@
     "correctRoute": "Korrekter Pfad",
     "legacyCondition": "Veraltete Bedingung",
     "branchMessage": "Pfadnachricht",
-    "noMessage": "Noch keine Nachricht gesetzt."
+    "noMessage": "Noch keine Nachricht gesetzt.",
+    "logicSummary": "Dies ist ein Logik-Slide. Er bestimmt den n\u00e4chsten Slide aus dem vorherigen Ergebnis und zeigt keinen normalen Spielinhalt an.",
+    "correctOutcome": "Wenn die vorherige Antwort richtig war, gehe zu {{node}}: {{destination}}.",
+    "wrongOutcome": "Wenn die vorherige Antwort falsch war, gehe zu {{node}}: {{destination}}.",
+    "messageLine": "Nachricht: {{message}}",
+    "legacyConditionLine": "Veraltete Bedingung: {{condition}}",
+    "missingPreviousResultTitle": "Beende zuerst den vorherigen Slide",
+    "missingPreviousResultDescription": "Dieser Logik-Slide kann die n\u00e4chste Route erst ausw\u00e4hlen, wenn der vorherige Slide gepr\u00fcft wurde.",
+    "missingMessageTitle": "Bearbeite diesen Logik-Slide, um fortzufahren",
+    "missingMessageDescription": "F\u00fcge die ben\u00f6tigte Pfadnachricht im Wenn/Sonst-Knoten hinzu, bevor dieser Ablauf fortgesetzt werden kann."
   },
   "gameProjectCard": {
     "untitledProject": "Unbenanntes Projekt",

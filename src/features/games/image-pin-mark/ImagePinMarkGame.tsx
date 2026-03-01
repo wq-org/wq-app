@@ -1019,6 +1019,7 @@ export default function ImagePinMarkGame({
                   <div className="flex items-center justify-start">
                     <Button
                       type="button"
+                      variant="darkblue"
                       onClick={handleCheckAnswers}
                       disabled={pinPositions.length === 0}
                       className="gap-2"

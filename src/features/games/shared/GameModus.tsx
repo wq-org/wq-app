@@ -28,11 +28,7 @@ export function GameModus({ nodes, className }: GameModusProps) {
   return (
     <div className={cn('flex flex-col gap-6 flex-1 min-h-0', className)}>
       <div className="flex justify-center shrink-0">
-        <StatsDisplay
-          correctAnswers={0}
-          wrongAnswers={0}
-          score={0}
-        />
+        <StatsDisplay value={0} />
       </div>
       <ContainerSlider fillHeight>
         {nodes.map((node) => {

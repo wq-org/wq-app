@@ -681,6 +681,7 @@ export default function ImageTermMatchGame({
       <div className="flex items-center justify-start">
         <Button
           type="button"
+          variant="darkblue"
           onClick={() => {
             const result = computeImageTermResults(terms, previewSelectedTermIds, pointsWhenCorrect)
             onResultsRevealed?.(result.correct, result.wrong, result.score)

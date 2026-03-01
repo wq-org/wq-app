@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Node, Edge } from '@xyflow/react'
+import confetti from 'canvas-confetti'
 import { ContainerSlider } from '@/components/shared'
 import { StatsDisplay } from '@/features/games/shared/StatsDisplay'
 import { NODE_TYPE_TO_GAME } from '@/features/games/shared/nodeTypeToGame'
-import { getPreviewPath } from '@/features/game-studio/utils/flowOrder'
+import { getSessionPath, resolveIfElseNode } from '@/features/game-studio/utils/flowOrder'
 import { PreviewStartEndSlide } from '@/features/game-studio/components/PreviewStartEndSlide'
 import { PreviewIfElseSlide } from '@/features/game-studio/components/PreviewIfElseSlide'
 import { useGamePlay } from '@/contexts/game-play'
@@ -35,27 +36,8 @@ function getTitleAndDescription(data: Record<string, unknown> | undefined): {
   return { title, description }
 }
 
-function getNodeLabel(node?: Node | null): string {
-  if (!node) return ''
-  const data = node.data as Record<string, unknown> | undefined
-  const label =
-    (typeof data?.label === 'string' && data.label.trim() ? data.label : null) ??
-    (typeof data?.title === 'string' && data.title.trim() ? data.title : null) ??
-    ''
-  return label || node.id
-}
-
-function getIfElseBranches(nodeId: string, nodes: Node[], edges: Edge[]) {
-  const outgoingEdges = edges.filter((e) => e.source === nodeId)
-  const branches: { A?: string; B?: string } = {}
-  outgoingEdges.forEach((edge) => {
-    const targetNode = nodes.find((n) => n.id === edge.target)
-    const label = getNodeLabel(targetNode)
-    const handleId = edge.sourceHandle ?? ''
-    if (handleId === 'right-top') branches.A = label
-    if (handleId === 'right-bottom') branches.B = label
-  })
-  return branches
+function isPlayableNodeType(type: string | undefined) {
+  return type === 'gameParagraph' || type === 'gameImageTerms' || type === 'gameImagePin'
 }
 
 export function GamePlayView({
@@ -63,24 +45,43 @@ export function GamePlayView({
   edges,
   correctAnswers: correctProp = 0,
   wrongAnswers: wrongProp = 0,
-  score: scoreProp = 0,
   onBack,
 }: GamePlayViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const gamePlay = useGamePlay()
+  const confettiTriggeredRef = useRef(false)
   const correctAnswers = gamePlay ? gamePlay.correctAnswers : correctProp
   const wrongAnswers = gamePlay ? gamePlay.wrongAnswers : wrongProp
-  const score = gamePlay ? gamePlay.score : scoreProp
+  const resultsByNode = gamePlay?.resultsByNode ?? {}
 
-  const path = useMemo(() => getPreviewPath(nodes, edges), [nodes, edges])
+  const path = useMemo(
+    () => getSessionPath(nodes, edges, resultsByNode),
+    [edges, nodes, resultsByNode],
+  )
   const { startNode, pathNodes, endNode } = path
 
   const slideCount = (startNode ? 1 : 0) + pathNodes.length + (endNode ? 1 : 0)
   const startActive = startNode ? currentIndex === 0 : false
   const endActive = endNode ? currentIndex === slideCount - 1 : false
+  const playableNodes = pathNodes.filter((node) => isPlayableNodeType(node.type))
 
   const startData = getTitleAndDescription(startNode?.data as Record<string, unknown> | undefined)
   const endData = getTitleAndDescription(endNode?.data as Record<string, unknown> | undefined)
+
+  useEffect(() => {
+    if (!endActive || !endNode || confettiTriggeredRef.current || wrongAnswers > 0) return
+    if (playableNodes.length === 0) return
+
+    const hasResultsForAllPlayableNodes = playableNodes.every((node) => resultsByNode[node.id])
+    if (!hasResultsForAllPlayableNodes) return
+
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    })
+    confettiTriggeredRef.current = true
+  }, [endActive, endNode, playableNodes, resultsByNode, wrongAnswers])
 
   if (slideCount === 0) {
     return (
@@ -111,11 +112,7 @@ export function GamePlayView({
           </Button>
         )}
         <div className="flex-1 flex justify-center min-w-0">
-          <StatsDisplay
-            correctAnswers={correctAnswers}
-            wrongAnswers={wrongAnswers}
-            score={score}
-          />
+          <StatsDisplay value={correctAnswers} />
         </div>
         {onBack && (
           <div
@@ -146,8 +143,7 @@ export function GamePlayView({
               (typeof data?.label === 'string' && data.label.trim() ? data.label : null) ??
               'If / else'
             const description = typeof data?.description === 'string' ? data.description : undefined
-            const condition = typeof data?.condition === 'string' ? data.condition : undefined
-            const correctPath = (data?.correctPath as 'A' | 'B' | undefined) ?? 'A'
+            const resolution = resolveIfElseNode(node, nodes, edges, resultsByNode)
             return (
               <div
                 key={node.id}
@@ -156,9 +152,8 @@ export function GamePlayView({
                 <PreviewIfElseSlide
                   title={title}
                   description={description}
-                  condition={condition}
-                  correctPath={correctPath}
-                  branches={getIfElseBranches(node.id, nodes, edges)}
+                  message={resolution.message ?? undefined}
+                  alertState={resolution.blockReason}
                 />
               </div>
             )

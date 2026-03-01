@@ -6,9 +6,6 @@ export const BACKGROUND_HUMAN =
 export const DEFAULT_COURSE_BACKGROUND =
   'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/background_img.png'
 
-export const DEFAULT_LESSON_BACKGROUND =
-  'https://jocymjpiyvtgpmkxhzrb.supabase.co/storage/v1/object/public/backgrounds/human_watching_phone.JPG'
-
 // Institution Constants
 export const DEFAULT_INSTITUTION_IMAGE = '/favicon.ico'
 

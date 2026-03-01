@@ -192,7 +192,16 @@
     "correctRoute": "Correct route",
     "legacyCondition": "Legacy condition",
     "branchMessage": "Branch message",
-    "noMessage": "No message set yet."
+    "noMessage": "No message set yet.",
+    "logicSummary": "This is a logic slide. It decides the next slide from the previous result and does not show normal game content.",
+    "correctOutcome": "If the previous answer was correct, go to {{node}}: {{destination}}.",
+    "wrongOutcome": "If the previous answer was wrong, go to {{node}}: {{destination}}.",
+    "messageLine": "Message: {{message}}",
+    "legacyConditionLine": "Legacy condition: {{condition}}",
+    "missingPreviousResultTitle": "Complete the previous slide first",
+    "missingPreviousResultDescription": "This logic slide cannot choose the next route until the previous slide has been checked.",
+    "missingMessageTitle": "Edit this logic slide to continue",
+    "missingMessageDescription": "Add the required branch message in the If/Else node editor before this flow can continue."
   },
   "gameProjectCard": {
     "untitledProject": "Untitled Project",

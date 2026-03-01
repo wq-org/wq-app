@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react'
+import { useGamePlayState } from '@/contexts/game-play'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { PreviewDrawerProps } from '../types/game-studio.types'
 import { ContainerSlider } from '@/components/shared'
 import { StatsDisplay } from '@/features/games/shared/StatsDisplay'
 import { NODE_TYPE_TO_GAME } from '@/features/games/shared/nodeTypeToGame'
-import { getPreviewPath } from '../utils/flowOrder'
+import { getSessionPath, resolveIfElseNode } from '../utils/flowOrder'
 import { PreviewStartEndSlide } from './PreviewStartEndSlide'
 import { PreviewIfElseSlide } from './PreviewIfElseSlide'
-import type { Node, Edge } from '@xyflow/react'
+import type { Node } from '@xyflow/react'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
@@ -25,29 +26,6 @@ function getTitleAndDescription(data: Record<string, unknown> | undefined): {
   return { title, description }
 }
 
-function getNodeLabel(node?: Node | null): string {
-  if (!node) return ''
-  const data = node.data as Record<string, unknown> | undefined
-  const label =
-    (typeof data?.label === 'string' && data.label.trim() ? data.label : null) ??
-    (typeof data?.title === 'string' && data.title.trim() ? data.title : null) ??
-    ''
-  return label || node.id
-}
-
-function getIfElseBranches(nodeId: string, nodes: Node[], edges: Edge[]) {
-  const outgoingEdges = edges.filter((e) => e.source === nodeId)
-  const branches: { A?: string; B?: string } = {}
-  outgoingEdges.forEach((edge) => {
-    const targetNode = nodes.find((n) => n.id === edge.target)
-    const label = getNodeLabel(targetNode)
-    const handleId = edge.sourceHandle ?? ''
-    if (handleId === 'right-top') branches.A = label
-    if (handleId === 'right-bottom') branches.B = label
-  })
-  return branches
-}
-
 export default function PreviewDrawer({
   open,
   onOpenChange,
@@ -56,8 +34,12 @@ export default function PreviewDrawer({
 }: PreviewDrawerProps) {
   const { t } = useTranslation('features.gameStudio')
   const [currentIndex, setCurrentIndex] = useState(0)
+  const simulationState = useGamePlayState()
 
-  const path = useMemo(() => getPreviewPath(nodes, edges), [nodes, edges])
+  const path = useMemo(
+    () => getSessionPath(nodes, edges, simulationState.resultsByNode),
+    [edges, nodes, simulationState.resultsByNode],
+  )
   const { startNode, pathNodes, endNode } = path
 
   const slideCount = (startNode ? 1 : 0) + pathNodes.length + (endNode ? 1 : 0)
@@ -107,11 +89,7 @@ export default function PreviewDrawer({
         </DialogHeader>
         <div className={cn('overflow-auto flex-1 flex flex-col min-h-0 p-4 space-y-4')}>
           <div className="flex justify-center shrink-0">
-            <StatsDisplay
-              correctAnswers={0}
-              wrongAnswers={0}
-              score={0}
-            />
+            <StatsDisplay value={simulationState.correctAnswers} />
           </div>
           <ContainerSlider
             fillHeight
@@ -136,12 +114,12 @@ export default function PreviewDrawer({
                   t('previewDrawer.ifElseFallback')
                 const description =
                   typeof data?.description === 'string' ? data.description : undefined
-                const condition = typeof data?.condition === 'string' ? data.condition : undefined
-                const correctMessage =
-                  typeof data?.correctMessage === 'string' ? data.correctMessage : undefined
-                const wrongMessage =
-                  typeof data?.wrongMessage === 'string' ? data.wrongMessage : undefined
-                const correctPath = (data?.correctPath as 'A' | 'B' | undefined) ?? 'A'
+                const resolution = resolveIfElseNode(
+                  node,
+                  nodes,
+                  edges,
+                  simulationState.resultsByNode,
+                )
                 return (
                   <div
                     key={node.id}
@@ -150,11 +128,8 @@ export default function PreviewDrawer({
                     <PreviewIfElseSlide
                       title={title}
                       description={description}
-                      condition={condition}
-                      correctMessage={correctMessage}
-                      wrongMessage={wrongMessage}
-                      correctPath={correctPath}
-                      branches={getIfElseBranches(node.id, nodes, edges)}
+                      message={resolution.message ?? undefined}
+                      alertState={resolution.blockReason}
                     />
                   </div>
                 )
@@ -170,6 +145,9 @@ export default function PreviewDrawer({
                   <GameComponent
                     initialData={node.data}
                     previewOnly
+                    onResultsRevealed={(correct, wrong, score) =>
+                      simulationState.reportResult(node.id, correct, wrong, score)
+                    }
                   />
                 </div>
               )

@@ -940,6 +940,7 @@ export default function ParagraphLineSelectGame({
       <div className="flex items-center justify-start">
         <Button
           type="button"
+          variant="darkblue"
           onClick={handleCheckAnswers}
           disabled={!hasAtLeastOneSelection}
           className="gap-2"

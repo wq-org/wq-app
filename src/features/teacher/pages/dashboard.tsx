@@ -199,10 +199,7 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-        {/* Students tab commented out (school tab) */}
-        {/* {selectedTab === 'students' && <StudentCardList students={[]} />} */}
       </DashboardLayout>
-
       <CommandPalette
         commandBarContext="teacher"
         onCourseCreated={fetchCourses}
