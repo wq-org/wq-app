@@ -6,7 +6,7 @@ export function HeroSection() {
   const { t } = useTranslation('navigation')
 
   return (
-    <section className="bg-background px-6 pt-28 pb-20 md:pt-36 md:pb-28">
+    <section className="bg-background px-6 pt-28 md:pt-36 md:pb-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
         <h1 className="max-w-4xl text-balance text-5xl font-medium text-foreground md:text-6xl xl:text-7xl">
           {t('landing.hero.title')}

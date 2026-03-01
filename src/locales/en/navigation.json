@@ -173,6 +173,31 @@
       "title": "Interactive learning built for real competence",
       "description": "A serious learning platform that helps teachers design better experiences and helps learners build usable skills."
     },
+    "home": {
+      "gameStudio": {
+        "badge": "Game Studio",
+        "title": "Build learning worlds that truly reach your students — without writing code.",
+        "description": "Move beyond passive lecture-heavy teaching. With WQ Game Studio, you become the architect of interactive learning experiences. Use the no-code editor to build clinical scenarios where learners develop skill through action. Endogenous game mechanics and research-based MDA models turn knowledge into real intuition. Set the standard in your institution and help students grow through immediate visual feedback.",
+        "cards": {
+          "scenarioEditor": {
+            "title": "No-Code Scenario Editor",
+            "description": "Build complex learning worlds as easily as creating a presentation. The drag-and-drop interface lets you create interactive simulations without writing a single line of code."
+          },
+          "didactics": {
+            "title": "Didactic Integration (MDA & DPE)",
+            "description": "Apply research-backed models directly inside the design process. Connect learning goals with mechanics so true learning-through-action becomes part of every scenario."
+          },
+          "feedback": {
+            "title": "Endogenous Feedback System",
+            "description": "Turn passive knowledge into intuition. Learners receive immediate visual feedback for each decision, so practical competence develops safely through repeated interaction."
+          },
+          "analytics": {
+            "title": "Competency-Based Analytics",
+            "description": "Track more than grades. Follow how decision-making and problem-solving skills evolve through deeper learning data and more meaningful teaching signals."
+          }
+        }
+      }
+    },
     "mobile": {
       "open": "Open menu",
       "close": "Close menu"

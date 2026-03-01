@@ -173,6 +173,31 @@
       "title": "Interaktives Lernen für echte Kompetenz",
       "description": "Eine Lernplattform für Lehrkräfte und Lernende, die Wissen in anwendbare Fähigkeiten übersetzt."
     },
+    "home": {
+      "gameStudio": {
+        "badge": "Game-Studio",
+        "title": "Erschaffe Lernwelten, die deine Schüler wirklich erreichen – ganz ohne Programmieren.",
+        "description": "Schluss mit trockenem Frontalunterricht. Mit dem WQ Game Studio wirst du zum Architekten interaktiver Lernerfahrungen. Nutze unseren No-Code-Editor, um klinische Szenarien zu bauen, in denen deine Schüler durch aktives Handeln lernen. Dank endogener Spielmechanik und wissenschaftlicher MDA-Modelle verwandeln wir Wissen in echte Intuition. Setze den Standard in deiner Institution und erlebe, wie deine Schüler durch unmittelbares visuelles Feedback über sich hinauswachsen",
+        "cards": {
+          "scenarioEditor": {
+            "title": "No-Code Szenarien-Editor",
+            "description": "Erschaffe komplexe Lernwelten so einfach wie eine Präsentation. Mit unserem Drag-and-Drop-Interface baust du interaktive Simulationen ohne eine einzige Zeile Code zu schreiben"
+          },
+          "didactics": {
+            "title": "Didaktik-Integration (MDA & DPE)",
+            "description": "Nutze wissenschaftlich fundierte Modelle direkt im Designprozess. Verknüpfe Lernziele nahtlos mit Spielmechaniken, um echtes „Lernen durch Handeln“ zu ermöglichen"
+          },
+          "feedback": {
+            "title": "Endogenes Feedback-System",
+            "description": "Verwandle passives Wissen in Intuition. Deine Schüler erhalten unmittelbares visuelles Feedback auf jede Entscheidung, wodurch Handlungskompetenz spielerisch in einer sicheren Umgebung trainiert wird"
+          },
+          "analytics": {
+            "title": "Kompetenz-basierte Analytics",
+            "description": "Sieh mehr als nur Noten. Verfolge die Entwicklung des Entscheidungsmanagements und der Problemlösungsfähigkeiten deiner Klasse durch tiefgehende Datenanalysen"
+          }
+        }
+      }
+    },
     "mobile": {
       "open": "Menü öffnen",
       "close": "Menü schließen"
