@@ -174,6 +174,7 @@ export default function Settings() {
         hasChanges={hasChanges() && !isSaving}
         linkedInError={linkedInError}
         avatarOptions={avatarOptions}
+        selectedAvatarPath={selectedAvatar}
         linkedInValue={linkedIn}
       />
       <CommandPalette commandBarContext="student" />

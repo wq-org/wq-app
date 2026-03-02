@@ -6,13 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
 import { Label } from '../ui/label'
-import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import type { Profile } from '@/contexts/user'
 import Spinner from '../ui/spinner'
 import AvatarDrawer from './AvatarDrawer'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import type { AvatarOption } from '@/features/onboarding/types/onboarding.types'
 
 interface SettingsLayoutProps {
   children?: React.ReactNode
@@ -24,8 +23,9 @@ interface SettingsLayoutProps {
   onSave?: () => void
   hasChanges?: boolean
   linkedInError?: string | null
-  avatarOptions?: Array<{ name: string; src: string; emoji: string }>
+  avatarOptions?: AvatarOption[]
   onAvatarSelect?: (avatarPath: string) => void
+  selectedAvatarPath?: string
   linkedInValue?: string
 }
 
@@ -41,15 +41,13 @@ export default function SettingsLayout({
   linkedInError,
   avatarOptions = [],
   onAvatarSelect,
+  selectedAvatarPath,
   linkedInValue = '',
 }: SettingsLayoutProps) {
   const { t } = useTranslation('settings')
   const [name, setName] = useState(profile?.display_name || '')
   const [linkedIn, setLinkedIn] = useState(linkedInValue)
   const [aboutMe, setAboutMe] = useState(profile?.description || '')
-
-  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
-  const avatarSrc = signedAvatarUrl || profile?.avatar_url || AVATAR_PLACEHOLDER_SRC
   const displayNameInitial = profile?.display_name?.charAt(0).toUpperCase() || 'A'
 
   // Update local state when profile changes
@@ -112,7 +110,8 @@ export default function SettingsLayout({
           <Container className="flex flex-col items-start w-full gap-3">
             <div className="relative animate-in fade-in-0 zoom-in-95">
               <AvatarDrawer
-                avatarSrc={avatarSrc}
+                avatarPath={selectedAvatarPath || profile?.avatar_url || ''}
+                selectedAvatarPath={selectedAvatarPath || profile?.avatar_url || ''}
                 displayNameInitial={displayNameInitial}
                 displayName={profile?.display_name}
                 avatarOptions={avatarOptions}

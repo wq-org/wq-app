@@ -46,7 +46,7 @@ const avatars = [
     name: 'Igptq',
   },
   {
-    url: 'https://github.com/shadcn.png',
+    url: '/favicon.ico',
     name: 'Shadcn',
   },
 ]

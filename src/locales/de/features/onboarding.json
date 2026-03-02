@@ -1,4 +1,34 @@
 {
+  "steps": {
+    "account": {
+      "title": "Konto",
+      "description": "Erstelle dein Konto"
+    },
+    "avatar": {
+      "title": "Avatar",
+      "description": "Wähle deinen Avatar"
+    },
+    "institution": {
+      "title": "Institution",
+      "description": "Folge Institutionen"
+    },
+    "finish": {
+      "title": "Fertig",
+      "description": "Onboarding abschließen"
+    }
+  },
+  "avatarStep": {
+    "header": {
+      "title": "Wähle deinen Avatar",
+      "subtitle": "Such dir den Stil aus, der dich bei WQ Health repräsentiert."
+    },
+    "emptyTitle": "Keine Avatare verfügbar.",
+    "emptyDescription": "Bitte prüfe deinen Supabase-Storage-Bucket: avatars/meta_data/ und avatars/faces/",
+    "actions": {
+      "back": "Zurück",
+      "continue": "Weiter"
+    }
+  },
   "finish": {
     "successDialog": {
       "title": "Willkommen bei WQ Health! 🎉",

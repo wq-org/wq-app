@@ -59,7 +59,7 @@ const avatars = [
     url: 'https://ocuhrvjuonijfnhwmgjb.supabase.co/storage/v1/object/public/avatars/avatar_male_Igptq_01.png',
     name: 'Igptq',
   },
-  { url: 'https://github.com/shadcn.png', name: 'Shadcn' },
+  { url: '/favicon.ico', name: 'Shadcn' },
   { url: 'https://github.com/hngngn.png', name: 'Hngngn' },
 ]
 

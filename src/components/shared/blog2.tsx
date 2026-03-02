@@ -21,8 +21,8 @@ const defaultPosts: Blog2Post[] = [
   {
     id: 'post-1',
     category: 'News',
-    authorName: 'John Johnsen',
-    authorAvatar: 'https://github.com/shadcn.png',
+    authorName: 'John John',
+    authorAvatar: '/favicon.ico',
     title: 'Pay supplier invoices',
     description:
       'Managing a small business today is already tough. Avoid further complications by ditching outdated, tedious trade methods.',
@@ -31,8 +31,8 @@ const defaultPosts: Blog2Post[] = [
   {
     id: 'post-2',
     category: 'News',
-    authorName: 'John Johnsen',
-    authorAvatar: 'https://github.com/shadcn.png',
+    authorName: 'John',
+    authorAvatar: '/favicon.ico',
     title: 'Pay supplier invoices',
     description:
       'Managing a small business today is already tough. Avoid further complications by ditching outdated, tedious trade methods.',
@@ -40,8 +40,8 @@ const defaultPosts: Blog2Post[] = [
   {
     id: 'post-3',
     category: 'News',
-    authorName: 'John Johnsen',
-    authorAvatar: 'https://github.com/shadcn.png',
+    authorName: 'John',
+    authorAvatar: '/favicon.ico',
     title: 'Pay supplier invoices',
     description:
       'Managing a small business today is already tough. Avoid further complications by ditching outdated, tedious trade methods.',

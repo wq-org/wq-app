@@ -1,4 +1,4 @@
-export const AVATAR_PLACEHOLDER_SRC = 'https://github.com/shadcn.png'
+export const AVATAR_PLACEHOLDER_SRC = '/favicon.ico'
 
 // Background Images
 export const BACKGROUND_HUMAN =

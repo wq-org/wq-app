@@ -1,5 +1,6 @@
 // Components
 export { default as StepAccount } from './components/StepAccount'
+export { default as StepAvatar } from './components/StepAvatar'
 export { default as StepFinish } from './components/StepFinish'
 export { default as StepInstitution } from './components/StepInstitution'
 export { default as SuccessPage } from './components/SuccessPage'
