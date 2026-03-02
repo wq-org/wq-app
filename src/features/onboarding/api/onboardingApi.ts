@@ -15,7 +15,7 @@ export async function fetchAvatars(): Promise<AvatarOption[]> {
     if (error || !files) {
       console.error('Error fetching avatars:', error)
       // Return fallback avatar
-      return [{ name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' }]
+      return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
     }
 
     // Filter for JSON metadata files only
@@ -23,7 +23,7 @@ export async function fetchAvatars(): Promise<AvatarOption[]> {
 
     if (jsonFiles.length === 0) {
       console.error('No JSON metadata files found in avatars/meta_data/')
-      return [{ name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' }]
+      return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
     }
 
     // Fetch metadata and pair with PNG images
@@ -65,13 +65,13 @@ export async function fetchAvatars(): Promise<AvatarOption[]> {
 
     if (validAvatars.length === 0) {
       console.error('No valid avatars could be loaded')
-      return [{ name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' }]
+      return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
     }
 
     return validAvatars
   } catch (err) {
     console.error('Error loading avatars:', err)
-    return [{ name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' }]
+    return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
   }
 }
 

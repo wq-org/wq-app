@@ -9,36 +9,62 @@ import {
   StepperSeparator,
 } from '@/components/ui/stepper'
 import { CheckIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
 import StepAccount from '../components/StepAccount'
+import StepAvatar from '../components/StepAvatar'
 import StepInstitution from '../components/StepInstitution'
 import StepFinish from '../components/StepFinish'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
-import type { AccountData, Institution } from '../types/onboarding.types'
+import type {
+  AccountData,
+  AccountDetailsData,
+  AvatarOption,
+  Institution,
+} from '../types/onboarding.types'
 import { AppNavigation } from '@/components/shared'
 import { PageTitle } from '@/components/layout/PageTitle'
+import { useTranslation } from 'react-i18next'
 
 export default function Onboarding() {
   const navigate = useNavigate()
   const { pendingRole, profile } = useUser()
+  const { t } = useTranslation('features.onboarding')
   const [step, setStep] = useState(1)
-  const [accountData, setAccountData] = useState<AccountData | null>(null)
+  const [accountDetails, setAccountDetails] = useState<AccountDetailsData | null>(null)
+  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(null)
   const [institutions, setInstitutions] = useState<Institution[]>([])
+
+  const accountData = useMemo<AccountData | null>(() => {
+    if (!accountDetails || !selectedAvatar) {
+      return null
+    }
+
+    return {
+      ...accountDetails,
+      avatar: selectedAvatar,
+    }
+  }, [accountDetails, selectedAvatar])
+
   const handleStepChange = (nextStep: number) => {
     setStep((prev) => (nextStep <= prev ? nextStep : prev))
   }
 
-  const handleAccountNext = (data: AccountData) => {
-    setAccountData(data)
+  const handleAccountNext = (data: AccountDetailsData) => {
+    setAccountDetails(data)
     setStep(2)
+  }
+
+  const handleAvatarNext = (avatar: AvatarOption) => {
+    setSelectedAvatar(avatar)
+    setStep(3)
   }
 
   const handleInstitutionNext = (selectedInstitutions: Institution[]) => {
     setInstitutions(selectedInstitutions)
-    setStep(3)
+    setStep(4)
   }
 
   const handleFinish = () => {
@@ -83,8 +109,8 @@ export default function Onboarding() {
                 )}
               </StepperIndicator>
               <div>
-                <StepperTitle>Account</StepperTitle>
-                <StepperDescription>Create your account</StepperDescription>
+                <StepperTitle>{t('steps.account.title')}</StepperTitle>
+                <StepperDescription>{t('steps.account.description')}</StepperDescription>
               </div>
             </StepperTrigger>
           </StepperItem>
@@ -104,8 +130,8 @@ export default function Onboarding() {
                 )}
               </StepperIndicator>
               <div>
-                <StepperTitle>Institution</StepperTitle>
-                <StepperDescription>Follow institutions</StepperDescription>
+                <StepperTitle>{t('steps.avatar.title')}</StepperTitle>
+                <StepperDescription>{t('steps.avatar.description')}</StepperDescription>
               </div>
             </StepperTrigger>
           </StepperItem>
@@ -113,31 +139,64 @@ export default function Onboarding() {
           <StepperItem step={3}>
             <StepperTrigger onClick={() => step > 3 && setStep(3)}>
               <StepperIndicator>
+                {step > 3 ? (
+                  <CheckIcon className="w-5 h-5" />
+                ) : (
+                  <Text
+                    as="span"
+                    variant="small"
+                  >
+                    3
+                  </Text>
+                )}
+              </StepperIndicator>
+              <div>
+                <StepperTitle>{t('steps.institution.title')}</StepperTitle>
+                <StepperDescription>{t('steps.institution.description')}</StepperDescription>
+              </div>
+            </StepperTrigger>
+          </StepperItem>
+          <StepperSeparator />
+          <StepperItem step={4}>
+            <StepperTrigger onClick={() => step > 4 && setStep(4)}>
+              <StepperIndicator>
                 <Text
                   as="span"
                   variant="small"
                 >
-                  3
+                  4
                 </Text>
               </StepperIndicator>
               <div>
-                <StepperTitle>Finish</StepperTitle>
-                <StepperDescription>Complete onboarding</StepperDescription>
+                <StepperTitle>{t('steps.finish.title')}</StepperTitle>
+                <StepperDescription>{t('steps.finish.description')}</StepperDescription>
               </div>
             </StepperTrigger>
           </StepperItem>
         </Stepper>
         <div className="mt-8 w-full max-w-xl">
-          {step === 1 && <StepAccount onNext={handleAccountNext} />}
-          {step === 2 && (
-            <StepInstitution
-              onNext={handleInstitutionNext}
-              onBack={() => setStep(1)}
+          {step === 1 && (
+            <StepAccount
+              onNext={handleAccountNext}
+              initialData={accountDetails || undefined}
             />
           )}
-          {step === 3 && accountData && (
-            <StepFinish
+          {step === 2 && (
+            <StepAvatar
+              onNext={handleAvatarNext}
+              onBack={() => setStep(1)}
+              initialAvatarSrc={selectedAvatar?.src}
+            />
+          )}
+          {step === 3 && (
+            <StepInstitution
+              onNext={handleInstitutionNext}
               onBack={() => setStep(2)}
+            />
+          )}
+          {step === 4 && accountData && (
+            <StepFinish
+              onBack={() => setStep(3)}
               onFinish={handleFinish}
               accountData={accountData}
               institutions={institutions}

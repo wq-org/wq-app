@@ -1,8 +1,17 @@
-export interface AvatarOption {
+export interface AvatarDisplayAttributes {
   name: string
-  src: string
+  description: string
   emoji: string
-  description?: string
+}
+
+export interface AvatarOption extends AvatarDisplayAttributes {
+  src: string
+}
+
+export interface AccountDetailsData {
+  username: string
+  displayName: string
+  description: string
 }
 
 export interface Institution {
@@ -14,21 +23,19 @@ export interface Institution {
   website: string | null
 }
 
-export interface AccountData {
-  username: string
-  displayName: string
-  description: string
+export interface AccountData extends AccountDetailsData {
   avatar: AvatarOption
 }
 
 export interface StepAccountProps {
-  onNext: (data: AccountData) => void
-  initialData?: {
-    username: string
-    displayName: string
-    description: string
-    avatarIndex: number
-  }
+  onNext: (data: AccountDetailsData) => void
+  initialData?: AccountDetailsData
+}
+
+export interface StepAvatarProps {
+  onNext: (avatar: AvatarOption) => void
+  onBack: () => void
+  initialAvatarSrc?: string
 }
 
 export interface StepInstitutionProps {

@@ -1,14 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Spinner from '@/components/ui/spinner'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import { fetchAvatars } from '../api/onboardingApi'
-import type { StepAccountProps, AvatarOption } from '../types/onboarding.types'
+import type { StepAccountProps } from '../types/onboarding.types'
 import { validateUsername } from '@/lib/validations'
 import { Text } from '@/components/ui/text'
 
@@ -16,41 +11,7 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   const [username, setUsername] = useState(initialData?.username || '')
   const [displayName, setDisplayName] = useState(initialData?.displayName || '')
   const [description, setDescription] = useState(initialData?.description || '')
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(initialData?.avatarIndex || 0)
-  const [avatars, setAvatars] = useState<AvatarOption[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [usernameError, setUsernameError] = useState<string | null>(null)
-
-  // Calculate safe avatar index and get signed URL
-  // Must be at the top level, before any conditional returns
-  const safeAvatarIndex = Math.min(selectedAvatarIndex, avatars.length - 1)
-  const selectedAvatar = avatars[safeAvatarIndex]
-  const { url: signedAvatarUrl } = useAvatarUrl(selectedAvatar?.src)
-
-  // Fetch avatars from API
-  useEffect(() => {
-    async function loadAvatars() {
-      try {
-        const fetchedAvatars = await fetchAvatars()
-        setAvatars(fetchedAvatars)
-      } catch (error) {
-        console.error('Error loading avatars:', error)
-        setAvatars([{ name: 'Willfryd', src: 'https://github.com/shadcn.png', emoji: '🎉' }])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadAvatars()
-  }, [])
-
-  const handlePreviousAvatar = () => {
-    setSelectedAvatarIndex((prev) => (prev === 0 ? avatars.length - 1 : prev - 1))
-  }
-
-  const handleNextAvatar = () => {
-    setSelectedAvatarIndex((prev) => (prev === avatars.length - 1 ? 0 : prev + 1))
-  }
 
   const remainingChars = 120 - description.length
 
@@ -67,7 +28,6 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
   }
 
   const handleContinue = () => {
-    // Validate before continuing
     if (!validateUsername(username)) {
       setUsernameError(
         'Username must be 3-20 characters and contain only letters, numbers, and underscores',
@@ -79,138 +39,14 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
       username,
       displayName,
       description,
-      avatar: avatars[selectedAvatarIndex],
     })
   }
 
   const isFormValid =
     validateUsername(username) && displayName.trim() !== '' && description.trim() !== ''
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner
-          variant="light"
-          size="xl"
-          speed={1750}
-        />
-      </div>
-    )
-  }
-
-  // Check if avatars array is empty after loading
-  if (!avatars || avatars.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 gap-4">
-        <Text
-          as="p"
-          variant="body"
-          className="text-muted-foreground"
-        >
-          No avatars available.
-        </Text>
-        <Text
-          as="p"
-          variant="body"
-          className="text-sm text-gray-500"
-        >
-          Please check your Supabase storage bucket: avatars/meta_data/ and avatars/faces/
-        </Text>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col gap-8">
-      {/* Avatar Selection */}
-      <div className="flex flex-col items-center gap-4">
-        <Label className="text-base font-light">
-          <Text
-            as="h2"
-            variant="h2"
-            className="text-3xl font-light mb-2"
-          >
-            Choose Your Avatar
-          </Text>
-        </Label>
-        <div className="flex items-center gap-6">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={handlePreviousAvatar}
-            className="rounded-full"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-
-          <div className="relative flex flex-col items-center gap-3">
-            <Avatar className="w-32 h-32">
-              <AvatarImage
-                src={signedAvatarUrl || selectedAvatar.src}
-                alt={selectedAvatar.name}
-                className="object-cover"
-              />
-              <AvatarFallback>{selectedAvatar.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-center gap-2">
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-2xl"
-                >
-                  {selectedAvatar.emoji}
-                </Text>
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-sm font-medium text-foreground"
-                >
-                  {selectedAvatar.name}
-                </Text>
-              </div>
-              {selectedAvatar.description && (
-                <Text
-                  as="p"
-                  variant="body"
-                  className="text-xs text-muted-foreground text-center max-w-xs"
-                >
-                  {selectedAvatar.description}
-                </Text>
-              )}
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={handleNextAvatar}
-            className="rounded-full"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Avatar Indicators */}
-        <div className="flex gap-2">
-          {avatars.map((avatar, index) => (
-            <button
-              key={avatar.name}
-              type="button"
-              onClick={() => setSelectedAvatarIndex(index)}
-              className={`transition-all duration-200 ${
-                index === selectedAvatarIndex ? 'text-2xl' : 'text-lg opacity-40 hover:opacity-70'
-              }`}
-            >
-              {avatar.emoji}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Form Fields */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Label
@@ -287,7 +123,6 @@ export default function StepAccount({ onNext, initialData }: StepAccountProps) {
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex justify-end gap-4 py-11">
         <Button
           type="button"
