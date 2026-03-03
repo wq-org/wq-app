@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { type ThemeId, isThemeId } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 import { heartVariants, type HeartVariantProps } from './heart-variant'
 
 interface HeartProps {
   size?: HeartVariantProps['size']
+  color?: ThemeId
   variant?: HeartVariantProps['variant']
   className?: string
   interactive?: boolean
@@ -17,6 +19,7 @@ const HEART_PATH =
 
 export default function Heart({
   size = 'default',
+  color,
   variant = 'violet',
   className,
   interactive = false,
@@ -67,6 +70,9 @@ export default function Heart({
   }, [isAnimating])
 
   const resolvedLiked = interactive ? isLiked : liked
+  const resolvedVariant =
+    color ?? (typeof variant === 'string' && isThemeId(variant) ? variant : 'violet')
+
   const icon = (
     <>
       <style>{`
@@ -81,7 +87,7 @@ export default function Heart({
         viewBox="0 0 24 22"
         fill="none"
         aria-hidden="true"
-        className={cn(heartVariants({ variant, size }), className)}
+        className={cn(heartVariants({ variant: resolvedVariant, size }), className)}
         style={{
           animation: isAnimating ? 'heart-beat 420ms ease-in-out 1' : undefined,
           transformOrigin: 'center',
@@ -113,7 +119,7 @@ export default function Heart({
       }}
       aria-label={resolvedLiked ? 'Unlike' : 'Like'}
       aria-pressed={resolvedLiked}
-      className="inline-flex items-center justify-center rounded-full p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {icon}
     </button>

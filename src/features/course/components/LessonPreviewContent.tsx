@@ -1,4 +1,5 @@
 import { Text } from '@/components/ui/text'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
@@ -75,7 +76,7 @@ export default function LessonPreviewContent({
     <div className={cn('relative', previewHeadings.length > 0 && 'flex gap-4', className)}>
       {previewHeadings.length > 0 && (
         <aside
-          className="sticky top-24 z-30 w-52 shrink-0 self-start rounded-2xl border bg-card/50 px-4 py-3 backdrop-blur"
+          className="sticky top-24 z-30 h-112 w-52 shrink-0 self-start rounded-2xl border bg-card/50 px-4 py-3 backdrop-blur"
           role="navigation"
           aria-label={headingsNavLabel}
         >
@@ -86,24 +87,26 @@ export default function LessonPreviewContent({
           >
             {headingsNavLabel}
           </Text>
-          <nav className="flex flex-col gap-0.5">
-            {previewHeadings.map((heading) => (
-              <button
-                key={heading.blockId}
-                type="button"
-                onClick={() => scrollToHeading(heading)}
-                className={cn(
-                  'text-left text-sm text-foreground hover:text-primary hover:underline',
-                  heading.level === 1 && 'font-semibold',
-                  heading.level === 2 && 'pl-2 font-medium',
-                  heading.level === 3 && 'pl-4',
-                  heading.level === 4 && 'pl-6 text-muted-foreground',
-                )}
-              >
-                {heading.text}
-              </button>
-            ))}
-          </nav>
+          <ScrollArea className="h-[calc(100%-2rem)]">
+            <nav className="flex flex-col gap-1">
+              {previewHeadings.map((heading) => (
+                <button
+                  key={heading.blockId}
+                  type="button"
+                  onClick={() => scrollToHeading(heading)}
+                  className={cn(
+                    'text-left text-sm text-foreground hover:text-blue-500',
+                    heading.level === 1 && 'font-semibold',
+                    heading.level === 2 && 'pl-2 font-medium',
+                    heading.level === 3 && 'pl-4',
+                    heading.level === 4 && 'pl-6 text-muted-foreground',
+                  )}
+                >
+                  <span className="block wrap-break-word line-clamp-2">{heading.text}</span>
+                </button>
+              ))}
+            </nav>
+          </ScrollArea>
         </aside>
       )}
 
