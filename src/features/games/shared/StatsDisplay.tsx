@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Heart from '@/components/ui/heart'
+import { Separator } from '@/components/ui/separator'
 import { SlideCounter } from '@/components/ui/SlideCounter'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
@@ -41,11 +42,11 @@ export function StatsDisplay({ value, className }: StatsDisplayProps) {
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-4 rounded-full border border-border bg-background px-3 py-2 shadow-sm',
+        'inline-flex items-center rounded-full border border-border bg-background px-3 py-2 shadow-sm',
         className,
       )}
     >
-      <div className="relative shrink-0">
+      <div className="shrink-0">
         <Avatar className="size-10 border border-border bg-muted/50">
           <AvatarImage
             src={avatarSrc}
@@ -55,15 +56,23 @@ export function StatsDisplay({ value, className }: StatsDisplayProps) {
           />
           <AvatarFallback className="bg-transparent font-medium">{avatarFallback}</AvatarFallback>
         </Avatar>
-        <div className="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full border border-border bg-background shadow-sm">
-          <Heart
-            size="xl"
-            variant="violet"
-            triggerAnimation={heartAnimationTrigger}
-          />
-        </div>
       </div>
-      <div className="min-w-[1.5rem]">
+      <Separator
+        orientation="vertical"
+        className="mx-3 h-7"
+      />
+      <div className="flex shrink-0 items-center justify-center">
+        <Heart
+          size="xl"
+          color="pink"
+          triggerAnimation={heartAnimationTrigger}
+        />
+      </div>
+      <Separator
+        orientation="vertical"
+        className="mx-3 h-7"
+      />
+      <div className="flex min-w-8 items-center justify-center text-center">
         <SlideCounter
           value={value}
           className="text-lg font-medium tracking-tight text-foreground"

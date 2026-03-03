@@ -12,6 +12,7 @@ export const heartVariants = cva(
         blue: 'text-[oklch(var(--oklch-blue))]',
         darkblue: 'text-[oklch(var(--oklch-darkblue))]',
         cyan: 'text-[oklch(var(--oklch-cyan))]',
+        teal: 'text-[oklch(var(--oklch-teal))]',
         green: 'text-[oklch(var(--oklch-green))]',
         lime: 'text-[oklch(var(--oklch-lime))]',
         orange: 'text-[oklch(var(--oklch-orange))]',
