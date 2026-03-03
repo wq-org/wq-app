@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 
 // ─── Color palette ─────────────────────────────────────────────────────────
@@ -102,7 +102,9 @@ function HeartButton({ size = 72, oklchVal, defaultLiked = false, onChange }: He
         ease: 'power2.out',
         yoyo: true,
         repeat: 1,
-        onComplete: () => gsap.to(el, { scale: 1, duration: 0.14, ease: 'back.out(3)' }),
+        onComplete: () => {
+          gsap.to(el, { scale: 1, duration: 0.14, ease: 'back.out(3)' })
+        },
       },
     )
   }, [reduced])
