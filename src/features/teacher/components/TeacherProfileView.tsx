@@ -34,6 +34,9 @@ async function fetchTeacherGames(teacherId: string): Promise<GameCardProps[]> {
       id: game.id,
       title: game.title || 'Untitled Game',
       description: game.description ?? 'No description available',
+      themeId: game.theme_id,
+      version: game.version ?? undefined,
+      status: 'published',
       route: `/play/${game.id}`,
     }))
 }
@@ -198,6 +201,9 @@ const TeacherProfileView = () => {
   )
 
   const joinDisabled = !isStudentViewingTeacher || !isFollowing
+  const handleCourseView = (courseId: string) => {
+    navigate(`/student/course/${courseId}`)
+  }
 
   return (
     <DashboardLayout
@@ -237,6 +243,7 @@ const TeacherProfileView = () => {
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
+            onCourseView={handleCourseView}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
             joinDisabled={joinDisabled}

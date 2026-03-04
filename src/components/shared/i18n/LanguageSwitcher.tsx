@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -16,17 +17,27 @@ const languages = [
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation('shared.languageSwitcher')
+  const [open, setOpen] = useState(false)
   const currentLanguage =
     languages.find(
       (lang) => i18n.language === lang.code || i18n.language.startsWith(`${lang.code}-`),
     ) || languages[0]
 
   const handleLanguageChange = (languageCode: string) => {
+    if (i18n.language === languageCode || i18n.language.startsWith(`${languageCode}-`)) {
+      setOpen(false)
+      return
+    }
+
     i18n.changeLanguage(languageCode)
+    setOpen(false)
   }
 
   return (
-    <Popover>
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="ghost"

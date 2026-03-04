@@ -59,6 +59,34 @@ import featuresStudentEN from './en/features/student.json'
 import featuresTeacherEN from './en/features/teacher.json'
 import featuresUploadFilesEN from './en/features/uploadFiles.json'
 
+const LANGUAGE_STORAGE_KEY = 'wq-app:language'
+const SUPPORTED_LANGUAGES = ['de', 'en'] as const
+
+type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]
+
+function normalizeLanguage(language?: string | null): SupportedLanguage | null {
+  if (!language) {
+    return null
+  }
+
+  const baseLanguage = language.toLowerCase().split('-')[0]
+  return SUPPORTED_LANGUAGES.includes(baseLanguage as SupportedLanguage)
+    ? (baseLanguage as SupportedLanguage)
+    : null
+}
+
+function getStoredLanguage(): SupportedLanguage | undefined {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  try {
+    return normalizeLanguage(window.localStorage.getItem(LANGUAGE_STORAGE_KEY)) ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
 i18n.use(initReactI18next).init({
   resources: {
     en: {
@@ -120,7 +148,7 @@ i18n.use(initReactI18next).init({
       'shared.languageSwitcher': sharedLanguageSwitcherDE,
     },
   },
-  lng: 'de',
+  lng: getStoredLanguage() ?? 'de',
   fallbackLng: 'en',
   ns: [
     // Root level namespaces (alphabetically ordered)
@@ -154,6 +182,27 @@ i18n.use(initReactI18next).init({
   defaultNS: 'common',
   interpolation: { escapeValue: false },
 })
+
+const persistLanguage = (language: string) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const normalizedLanguage = normalizeLanguage(language)
+
+  if (!normalizedLanguage) {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, normalizedLanguage)
+  } catch {
+    // Ignore storage write failures and keep runtime language switching functional.
+  }
+}
+
+i18n.off('languageChanged', persistLanguage)
+i18n.on('languageChanged', persistLanguage)
 
 export default i18n
 

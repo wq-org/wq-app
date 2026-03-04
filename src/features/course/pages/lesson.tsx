@@ -12,6 +12,37 @@ import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
 import LessonPreviewContent from '@/features/course/components/LessonPreviewContent'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { MessageCircleQuestionMark } from 'lucide-react'
+
+const LESSON_GUIDES = [
+  {
+    value: 'learning-goal',
+    label: 'Learning Goal',
+    description:
+      'Click inside the text editor first, then start with one or two sentences that explain what the learner should understand or be able to do by the end of this lesson.',
+  },
+  {
+    value: 'section-structure',
+    label: 'Section Structure',
+    description:
+      'Click inside the text editor first, then break the lesson into short sections with clear headings so students can scan and return to key ideas easily.',
+  },
+  {
+    value: 'concrete-example',
+    label: 'Concrete Example',
+    description:
+      'Click inside the text editor first, then add one practical example, scenario, or demonstration that makes the main concept easier to apply.',
+  },
+  {
+    value: 'wrap-up',
+    label: 'Wrap Up',
+    description:
+      'Click inside the text editor first, then end with a short recap, reflection prompt, or quick check so students can confirm what they learned.',
+  },
+] as const
+
+type LessonGuideValue = (typeof LESSON_GUIDES)[number]['value']
 
 function parseContent(raw: unknown): Record<string, unknown> | undefined {
   if (raw == null || raw === '') return undefined
@@ -43,6 +74,7 @@ export default function Lesson() {
   const [activeTab, setActiveTab] = useState<'overview' | 'preview' | 'settings'>(
     () => initialTabFromNav ?? 'overview',
   )
+  const [selectedGuide, setSelectedGuide] = useState<LessonGuideValue>(LESSON_GUIDES[0].value)
 
   useEffect(() => {
     if (initialTabFromNav != null) {
@@ -275,9 +307,68 @@ export default function Lesson() {
     </div>
   )
 
+  const activeGuide =
+    LESSON_GUIDES.find((guide) => guide.value === selectedGuide) ?? LESSON_GUIDES[0]
+
   const overviewContent = (
     <div className="relative flex flex-col gap-6">
       <div className="animate-in fade-in-0 slide-in-from-bottom-4">{lessonHeroBanner}</div>
+
+      <div className="flex flex-col items-end gap-3">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full bg-white px-4 shadow-sm"
+            >
+              <MessageCircleQuestionMark className="size-4" />
+              <Text
+                as="span"
+                variant="body"
+              >
+                Help
+              </Text>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            className="w-full max-w-md rounded-2xl border bg-white/85 p-4 shadow-lg backdrop-blur-md"
+          >
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {LESSON_GUIDES.map((guide) => (
+                  <Button
+                    key={guide.value}
+                    type="button"
+                    variant={selectedGuide === guide.value ? 'default' : 'outline'}
+                    className="rounded-full"
+                    onClick={() => setSelectedGuide(guide.value)}
+                  >
+                    {guide.label}
+                  </Button>
+                ))}
+              </div>
+              <div className="rounded-2xl border bg-white/70 p-4 text-left">
+                <Text
+                  as="p"
+                  variant="small"
+                  className="font-semibold text-foreground"
+                >
+                  {activeGuide.label}
+                </Text>
+                <Text
+                  as="p"
+                  variant="small"
+                  className="mt-2 leading-6 text-muted-foreground"
+                >
+                  {activeGuide.description}
+                </Text>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
       {editorValue !== undefined ? (
         <LessonEditor
@@ -286,6 +377,7 @@ export default function Lesson() {
           value={editorValue}
           onChange={handleEditorChange}
           placeholder={t('page.editorPlaceholder')}
+          autoFocusWhenEmpty={activeTab === 'overview'}
         />
       ) : (
         <div className="flex min-h-[280px] w-full items-center justify-center rounded-2xl border bg-muted/30">
