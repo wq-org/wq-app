@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
@@ -59,7 +60,8 @@ async function getPublishedCourses(): Promise<
 async function getPublishedGames(): Promise<GameCardProps[]> {
   const { data, error } = await supabase
     .from('games')
-    .select('id, title, description')
+    .select('id, title, description, version, status, theme_id')
+    .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(20)
 
@@ -68,12 +70,24 @@ async function getPublishedGames(): Promise<GameCardProps[]> {
     throw error
   }
 
-  return (data || []).map((game: { id: string; title: string; description: string }) => ({
-    id: game.id,
-    title: game.title || 'Untitled Game',
-    description: game.description || 'No description available',
-    route: `/game-studio/${game.id}`,
-  }))
+  return (data || []).map(
+    (game: {
+      id: string
+      title: string
+      description: string | null
+      version: number | null
+      status: string | null
+      theme_id: string
+    }) => ({
+      id: game.id,
+      title: game.title || 'Untitled Game',
+      description: game.description || 'No description available',
+      themeId: game.theme_id as GameCardProps['themeId'],
+      version: game.version ?? undefined,
+      status: 'published',
+      route: `/play/${game.id}`,
+    }),
+  )
 }
 
 export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
@@ -89,6 +103,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   )
   const [followedTeacherIds, setFollowedTeacherIds] = useState<string[]>([])
   const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null)
+  const navigate = useNavigate()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { t } = useTranslation('features.course')
   const { getRole } = useUser()
@@ -197,8 +212,13 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   }
 
   const handleGamePlay = (route?: string) => {
-    // TODO: Implement game play functionality
-    console.log('Play game:', route)
+    if (route) {
+      navigate(route)
+    }
+  }
+
+  const handleCourseView = (courseId: string) => {
+    navigate(`/student/course/${courseId}`)
   }
 
   const handleClickTab = (tabId: string) => {
@@ -254,6 +274,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
+            onCourseView={handleCourseView}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
             joinDisabledByCourseId={joinDisabledByCourseId}

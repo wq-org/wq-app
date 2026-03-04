@@ -67,6 +67,7 @@ export function GamePlayList() {
             id={game.id}
             title={game.title || 'Untitled Game'}
             description={game.description || 'No description'}
+            themeId={game.theme_id}
             version={game.version ?? undefined}
             status="published"
             onPlay={() => handlePlay(game.id)}

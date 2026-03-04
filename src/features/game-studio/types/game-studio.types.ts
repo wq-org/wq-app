@@ -235,6 +235,7 @@ export interface GameCardProps {
   onPlay?: () => void
   /** Optional image URL for the top of the card. */
   imageUrl?: string
+  themeId?: ThemeId
   version?: number
   status?: 'draft' | 'published'
 }

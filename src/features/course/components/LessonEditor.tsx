@@ -1,4 +1,4 @@
-import { useMemo, type MouseEvent } from 'react'
+import { useEffect, useMemo, useRef, type MouseEvent } from 'react'
 import YooptaEditor, { createYooptaEditor } from '@yoopta/editor'
 import Paragraph from '@yoopta/paragraph'
 import { HeadingOne, HeadingTwo, HeadingThree } from '@yoopta/headings'
@@ -38,6 +38,52 @@ interface LessonEditorProps {
   readOnly?: boolean
   className?: string
   placeholder?: string
+  autoFocusWhenEmpty?: boolean
+}
+
+function getTextFromNode(node: unknown): string {
+  if (node == null) return ''
+  if (typeof node === 'string') return node
+  if (Array.isArray(node)) return node.map((item) => getTextFromNode(item)).join('')
+  if (typeof node !== 'object') return ''
+
+  const record = node as Record<string, unknown>
+
+  if (typeof record.text === 'string') {
+    return record.text
+  }
+
+  if (Array.isArray(record.children)) {
+    return record.children.map((child) => getTextFromNode(child)).join('')
+  }
+
+  if (Array.isArray(record.value)) {
+    return record.value.map((child) => getTextFromNode(child)).join('')
+  }
+
+  return ''
+}
+
+function isLessonValueEmpty(value?: Record<string, unknown>): boolean {
+  if (!value || typeof value !== 'object') {
+    return true
+  }
+
+  if (Object.keys(value).length === 0) {
+    return true
+  }
+
+  const blocks = Array.isArray(value.blocks) ? value.blocks : Object.values(value)
+
+  if (blocks.length === 0) {
+    return true
+  }
+
+  const combinedText = blocks
+    .map((block) => getTextFromNode(block))
+    .join('')
+    .trim()
+  return combinedText.length === 0
 }
 
 function normalizeHref(href: string): string {
@@ -53,16 +99,47 @@ export default function LessonEditor({
   readOnly = false,
   className = '',
   placeholder = 'Type / to open the menu...',
+  autoFocusWhenEmpty = false,
 }: LessonEditorProps) {
   const editor = useMemo(() => createYooptaEditor(), [])
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const hasHandledInitialFocusRef = useRef(false)
   const editorTools = readOnly ? undefined : TOOLS
+  const isEmptyValue = useMemo(() => isLessonValueEmpty(value), [value])
   const editorClassName = cn(
     'w-full',
-    '[&_.yoopta-editor]:mx-auto [&_.yoopta-editor]:w-full [&_.yoopta-editor]:max-w-6xl [&_.yoopta-editor]:px-8 [&_.yoopta-editor]:py-10',
+    '[&_.yoopta-editor]:mx-auto [&_.yoopta-editor]:min-h-[1126px] [&_.yoopta-editor]:w-full [&_.yoopta-editor]:max-w-6xl [&_.yoopta-editor]:px-8 [&_.yoopta-editor]:py-10',
     '[&_.yoopta-slate]:mx-auto [&_.yoopta-slate]:w-full [&_.yoopta-slate]:max-w-4xl',
     '[&_.yoopta-slate_a]:text-blue-600 [&_.yoopta-slate_a]:underline [&_.yoopta-slate_a]:underline-offset-2',
     className,
   )
+
+  useEffect(() => {
+    if (!isEmptyValue) {
+      hasHandledInitialFocusRef.current = true
+    }
+  }, [isEmptyValue])
+
+  useEffect(() => {
+    if (readOnly || !autoFocusWhenEmpty || !isEmptyValue || hasHandledInitialFocusRef.current) {
+      return
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const editableSurface = containerRef.current?.querySelector(
+        '[contenteditable="true"]',
+      ) as HTMLElement | null
+
+      if (!editableSurface) {
+        return
+      }
+
+      editableSurface.focus()
+      hasHandledInitialFocusRef.current = true
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [autoFocusWhenEmpty, isEmptyValue, readOnly])
 
   const handleLinkClick = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement | null
@@ -81,6 +158,7 @@ export default function LessonEditor({
 
   return (
     <div
+      ref={containerRef}
       className={editorClassName}
       onMouseDownCapture={handleLinkClick}
     >
@@ -92,7 +170,7 @@ export default function LessonEditor({
         value={value as never}
         onChange={(newValue: Record<string, unknown>) => onChange?.(newValue)}
         readOnly={readOnly}
-        autoFocus={!readOnly}
+        autoFocus={!readOnly && isEmptyValue}
         placeholder={placeholder}
         width="100%"
       />

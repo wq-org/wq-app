@@ -213,6 +213,7 @@ export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardP
       id: row.id,
       title: row.title || 'Untitled Game',
       description: row.description ?? 'No description available',
+      themeId: row.theme_id,
       version: row.version ?? undefined,
       status: (row.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
       route: `/play/${row.id}`,

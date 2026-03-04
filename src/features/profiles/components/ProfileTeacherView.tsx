@@ -37,6 +37,9 @@ async function fetchTeacherGames(teacherId: string): Promise<GameCardProps[]> {
       id: g.id,
       title: g.title || 'Untitled Game',
       description: g.description ?? 'No description available',
+      themeId: g.theme_id,
+      version: g.version ?? undefined,
+      status: 'published',
       route: `/play/${g.id}`,
     }))
 }
@@ -163,6 +166,10 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
     if (route) navigate(route)
   }
 
+  const handleCourseView = (courseId: string) => {
+    navigate(`/student/course/${courseId}`)
+  }
+
   const handleClickTab = (tabId: string) => {
     setSelectedTab(tabId)
   }
@@ -220,6 +227,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
           <ProfileCourseCardList
             courses={courseCards}
             onCourseJoin={handleCourseJoin}
+            onCourseView={handleCourseView}
             enrollmentStatusMap={enrollmentStatusMap}
             loadingCourseId={loadingCourseId}
             joinDisabled={!isStudentViewingTeacher || !isFollowing}

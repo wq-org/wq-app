@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
 import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
@@ -189,7 +189,8 @@ async function getPublishedCourses(): Promise<
 async function getPublishedGames(): Promise<GameCardProps[]> {
   const { data, error } = await supabase
     .from('games')
-    .select('id, title, description')
+    .select('id, title, description, version, status, theme_id')
+    .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(20)
 
@@ -198,17 +199,29 @@ async function getPublishedGames(): Promise<GameCardProps[]> {
     throw error
   }
 
-  // Map games to GameCardProps format
-  return (data || []).map((game: { id: string; title: string; description: string }) => ({
-    id: game.id,
-    title: game.title || 'Untitled Game',
-    description: game.description || 'No description available',
-    route: `/game-studio/${game.id}`, // You can adjust this route as needed
-  }))
+  return (data || []).map(
+    (game: {
+      id: string
+      title: string
+      description: string | null
+      version: number | null
+      status: string | null
+      theme_id: string
+    }) => ({
+      id: game.id,
+      title: game.title || 'Untitled Game',
+      description: game.description || 'No description available',
+      themeId: game.theme_id as GameCardProps['themeId'],
+      version: game.version ?? undefined,
+      status: 'published',
+      route: `/play/${game.id}`,
+    }),
+  )
 }
 
 const StudentProfileView = () => {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [courses, setCourses] = useState<
     (Course & { teacher_profile?: { avatar_url?: string; display_name?: string } })[]
@@ -306,8 +319,9 @@ const StudentProfileView = () => {
   }
 
   const handleGamePlay = (route?: string) => {
-    // TODO: Implement game play functionality
-    console.log('Play game:', route)
+    if (route) {
+      navigate(route)
+    }
   }
 
   const handleClickTab = (tabId: string) => {

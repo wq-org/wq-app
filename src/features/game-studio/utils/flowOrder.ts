@@ -248,7 +248,7 @@ export function getSessionPath(
       if (resolution.blockReason || !resolution.branch) {
         break
       }
-      const branch: 'A' | 'B' = resolution.branch
+      const branch = resolution.branch
 
       nextEdge =
         nextEdges.find((edge) => (edge.sourceHandle ?? '') === getBranchHandle(branch)) ??

@@ -13,9 +13,19 @@ export default function GameCardList({ games, onGamePlay }: GameCardListProps) {
             id={game.id}
             title={game.title}
             description={game.description}
+            imageUrl={game.imageUrl}
+            themeId={game.themeId}
             version={game.version}
             status={game.status}
-            onPlay={() => onGamePlay?.(game.route)}
+            button={game.button}
+            onPlay={() => {
+              if (game.onPlay) {
+                game.onPlay()
+                return
+              }
+
+              onGamePlay?.(game.route)
+            }}
           />
         </div>
       ))}
