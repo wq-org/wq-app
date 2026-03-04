@@ -4,8 +4,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
-import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import { CharacterCounter } from '@/components/ui/CharacterCounter'
 
 export interface GameInformationProps {
   title: string
@@ -21,6 +21,7 @@ export default function GameInformation({
   onDescriptionChange,
 }: GameInformationProps) {
   const { t } = useTranslation('features.games')
+  const remainingDescriptionCharacters = MAX_DESCRIPTION_LENGTH - description.length
 
   return (
     <Card>
@@ -39,16 +40,7 @@ export default function GameInformation({
           />
         </div>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="description">{t('gameInformation.fields.description')}</Label>
-            <Text
-              as="span"
-              variant="small"
-              className="text-xs text-muted-foreground"
-            >
-              {description.length}/{MAX_DESCRIPTION_LENGTH}
-            </Text>
-          </div>
+          <Label htmlFor="description">{t('gameInformation.fields.description')}</Label>
           <Textarea
             id="description"
             placeholder={t('gameInformation.placeholders.description')}
@@ -57,6 +49,12 @@ export default function GameInformation({
             maxLength={MAX_DESCRIPTION_LENGTH}
             className="min-h-20"
           />
+          <div className="flex justify-end">
+            <CharacterCounter
+              count={remainingDescriptionCharacters}
+              size={22}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

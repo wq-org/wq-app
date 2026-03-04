@@ -4,7 +4,11 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { IncomingChatMessageBubble } from '@/components/chat/IncomingChatMessageBubble'
 import { ReceivingChatMessageBubble } from '@/components/chat/ReceivingChatMessageBubble'
-import type { ChatHistoryMessage, ChatHistoryTextMessage } from '@/components/chat/types'
+import type {
+  ChatBubbleGroupPosition,
+  ChatHistoryMessage,
+  ChatHistoryTextMessage,
+} from '@/components/chat/types'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
@@ -13,6 +17,7 @@ type ChatHistoryProps = {
   className?: string
   incomingAvatarUrl?: string
   incomingAvatarFallback?: string
+  autoScroll?: boolean
 }
 
 function isTextMessage(message: ChatHistoryMessage): message is ChatHistoryTextMessage {
@@ -40,6 +45,40 @@ function resolveCustomComponent(message: ChatHistoryMessage) {
   return null
 }
 
+function getGroupPosition(messages: ChatHistoryMessage[], index: number): ChatBubbleGroupPosition {
+  const currentMessage = messages[index]
+  if (!currentMessage || !isTextMessage(currentMessage)) {
+    return 'single'
+  }
+
+  const previousMessage = messages[index - 1]
+  const nextMessage = messages[index + 1]
+
+  const hasPreviousSibling =
+    previousMessage !== undefined &&
+    isTextMessage(previousMessage) &&
+    previousMessage.direction === currentMessage.direction
+
+  const hasNextSibling =
+    nextMessage !== undefined &&
+    isTextMessage(nextMessage) &&
+    nextMessage.direction === currentMessage.direction
+
+  if (hasPreviousSibling && hasNextSibling) {
+    return 'middle'
+  }
+
+  if (hasPreviousSibling) {
+    return 'last'
+  }
+
+  if (hasNextSibling) {
+    return 'first'
+  }
+
+  return 'single'
+}
+
 function TypingIndicator({ className }: { className?: string }) {
   return (
     <div
@@ -64,14 +103,16 @@ export function ChatHistory({
   className,
   incomingAvatarUrl,
   incomingAvatarFallback,
+  autoScroll = true,
 }: ChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (!autoScroll) return
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [autoScroll, messages])
 
-  const renderMessage = (message: ChatHistoryMessage): ReactNode => {
+  const renderMessage = (message: ChatHistoryMessage, index: number): ReactNode => {
     const customComponent = resolveCustomComponent(message)
     if (customComponent) {
       return customComponent
@@ -87,6 +128,7 @@ export function ChatHistory({
           text={message.text}
           time={message.time}
           images={message.images}
+          groupPosition={getGroupPosition(messages, index)}
         />
       )
     }
@@ -98,6 +140,7 @@ export function ChatHistory({
         images={message.images}
         avatarUrl={incomingAvatarUrl}
         avatarFallback={incomingAvatarFallback}
+        groupPosition={getGroupPosition(messages, index)}
       />
     )
   }
@@ -110,8 +153,8 @@ export function ChatHistory({
       )}
     >
       <div className="flex min-h-full flex-col gap-4 pt-5 pb-6">
-        {messages.map((message) => {
-          const renderedMessage = renderMessage(message)
+        {messages.map((message, index) => {
+          const renderedMessage = renderMessage(message, index)
 
           if (!renderedMessage) return null
 

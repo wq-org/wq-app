@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import type {
   CSSProperties,
   ReactNode,
@@ -36,10 +36,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Check, Minus, Plus, X } from 'lucide-react'
 import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
-import GameResultTable from '@/features/games/shared/GameResultTable'
 import PointsInput from '@/features/games/shared/PointsInput'
 import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
 import FeedbackInput from '@/features/games/shared/FeedbackInput'
+import GameSimulationResponse from '@/features/games/shared/GameSimulationResponse'
+import {
+  buildGameSimulationSummary,
+  type GameSimulationResponseData,
+} from '@/features/games/shared/buildGameSimulationSummary'
 import { Badge } from '@/components/ui/badge'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
@@ -212,6 +216,9 @@ export default function ImagePinMarkGame({
   const [editingPoints, setEditingPoints] = useState<Record<number, string>>({})
   const [editingPointsWhenWrong, setEditingPointsWhenWrong] = useState<Record<number, string>>({})
   const [resultsRevealed, setResultsRevealed] = useState(false)
+  const [simulationResponse, setSimulationResponse] = useState<GameSimulationResponseData | null>(
+    null,
+  )
   const [refDimensions, setRefDimensions] = useState<{ width: number; height: number } | null>(null)
   const imageContainerRef = useRef<HTMLDivElement>(null)
   const previewImageRef = useRef<HTMLImageElement>(null)
@@ -436,9 +443,32 @@ export default function ImagePinMarkGame({
     )
   }
 
-  const handleCheckAnswers = () => {
+  const buildSimulationResponse = useCallback(() => {
     const result = computeImagePinResults(squares, pinPositions)
-    onResultsRevealed?.(result.correct, result.wrong, result.score)
+    const status =
+      result.correct === result.rows.length
+        ? 'correct'
+        : result.correct > 0
+          ? ('mixed' as const)
+          : ('wrong' as const)
+
+    return {
+      rawResult: result,
+      response: buildGameSimulationSummary({
+        rows: result.rows,
+        totalEarned: result.totalEarned,
+        totalMax: result.totalMax,
+        status,
+        correctCount: result.correct,
+        wrongCount: result.wrong,
+      }),
+    }
+  }, [pinPositions, squares])
+
+  const handleCheckAnswers = () => {
+    const { rawResult, response } = buildSimulationResponse()
+    onResultsRevealed?.(rawResult.correct, rawResult.wrong, rawResult.score)
+    setSimulationResponse(response)
     setResultsRevealed(true)
   }
 
@@ -492,6 +522,10 @@ export default function ImagePinMarkGame({
     if (lockSelectionAfterReveal && resultsRevealed) {
       setDragPosition(null)
       return
+    }
+    if (resultsRevealed) {
+      setResultsRevealed(false)
+      setSimulationResponse(null)
     }
     const { active, over } = event
 
@@ -663,6 +697,8 @@ export default function ImagePinMarkGame({
                   setSelectedStoragePath(null)
                   setSquares([])
                   setPinPositions([])
+                  setResultsRevealed(false)
+                  setSimulationResponse(null)
                 }}
               >
                 <X className="w-4 h-4 mr-2" />
@@ -829,7 +865,7 @@ export default function ImagePinMarkGame({
   )
 
   const previewContent = (
-    <div className="space-y-6">
+    <div className="relative space-y-6 pb-40">
       <GameInformationCard
         title={title}
         description={description}
@@ -993,28 +1029,6 @@ export default function ImagePinMarkGame({
                   </div>
                 )}
 
-                {resultsRevealed &&
-                  squares.length > 0 &&
-                  (() => {
-                    const result = computeImagePinResults(squares, pinPositions)
-                    return (
-                      <>
-                        <GameResultTable
-                          rows={result.rows}
-                          totalEarned={result.totalEarned}
-                          totalMax={result.totalMax}
-                          title="Results"
-                          columnLabels={{
-                            statement: 'Question',
-                            selectedAnswers: 'Placement',
-                            result: 'Result',
-                            footer: 'Overall',
-                          }}
-                        />
-                      </>
-                    )
-                  })()}
-
                 {squares.length > 0 && (
                   <div className="flex items-center justify-start">
                     <Button
@@ -1044,6 +1058,8 @@ export default function ImagePinMarkGame({
           )}
         </CardContent>
       </Card>
+
+      <GameSimulationResponse response={simulationResponse} />
     </div>
   )
 

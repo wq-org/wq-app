@@ -34,6 +34,8 @@ export type ChatHistoryComponentMessage = ChatHistoryMessageBase & {
 
 export type ChatHistoryMessage = ChatHistoryTextMessage | ChatHistoryComponentMessage
 
+export type ChatBubbleGroupPosition = 'single' | 'first' | 'middle' | 'last'
+
 export type ChatMessageBubbleProps = {
   text: string
   time: string
@@ -41,4 +43,5 @@ export type ChatMessageBubbleProps = {
   className?: string
   avatarUrl?: string
   avatarFallback?: string
+  groupPosition?: ChatBubbleGroupPosition
 }

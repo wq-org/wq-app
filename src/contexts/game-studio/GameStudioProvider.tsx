@@ -2,22 +2,34 @@ import React, { useState, useCallback } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import { GameStudioContext, type GameStudioContextValue, type GameNode } from './GameStudioContext'
 
+function getInitialNodes(): Node[] {
+  return [
+    {
+      id: 'start-1',
+      type: 'gameStart',
+      position: { x: 0, y: 0 },
+      data: { label: 'Start' },
+    },
+  ]
+}
+
 export const GameStudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedNode, setSelectedNode] = useState<GameNode | null>(null)
-  const [nodes, setNodes] = useState<Node[]>([])
+  const [nodes, setNodes] = useState<Node[]>(() => getInitialNodes())
   const [edges, setEdges] = useState<Edge[]>([])
 
   const addNode = useCallback(
     (position: { x: number; y: number }, data?: { title?: string; description?: string }) => {
       const newNodeId = `action-${Date.now()}`
+      const title = data?.title || 'Paragraph'
       const newNode: Node = {
         id: newNodeId,
-        type: 'gameAction',
+        type: 'gameParagraph',
         position,
         data: {
-          label: data?.title || 'Action',
+          label: title,
           gameType: data?.description || '',
-          title: data?.title || 'Action',
+          title,
           description: data?.description || '',
         },
       }

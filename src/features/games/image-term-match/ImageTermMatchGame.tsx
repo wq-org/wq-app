@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Plus, Minus, X, Check, CheckCircle2, Circle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,8 +13,12 @@ import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
 import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
 import PointsInput from '@/features/games/shared/PointsInput'
 import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
-import GameResultTable from '@/features/games/shared/GameResultTable'
 import FeedbackInput from '@/features/games/shared/FeedbackInput'
+import GameSimulationResponse from '@/features/games/shared/GameSimulationResponse'
+import {
+  buildGameSimulationSummary,
+  type GameSimulationResponseData,
+} from '@/features/games/shared/buildGameSimulationSummary'
 import { Badge } from '@/components/ui/badge'
 import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
@@ -63,6 +67,9 @@ export default function ImageTermMatchGame({
   const [terms, setTerms] = useState<Term[]>(() => getInitialTerms(initialData))
   const [previewSelectedTermIds, setPreviewSelectedTermIds] = useState<string[]>([])
   const [resultsRevealed, setResultsRevealed] = useState(false)
+  const [simulationResponse, setSimulationResponse] = useState<GameSimulationResponseData | null>(
+    null,
+  )
   const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
   const [editingPenalty, setEditingPenalty] = useState<Record<string, string>>({})
 
@@ -257,6 +264,35 @@ export default function ImageTermMatchGame({
       prev.map((t) => (t.id === termId ? { ...t, feedbackWhenCorrect: value } : t)),
     )
   }
+
+  const buildSimulationResponse = useCallback(() => {
+    const result = computeImageTermResults(terms, previewSelectedTermIds, pointsWhenCorrect)
+    const status =
+      result.correct > 0 ? 'correct' : result.earned > 0 ? ('mixed' as const) : ('wrong' as const)
+
+    return {
+      rawResult: result,
+      response: buildGameSimulationSummary({
+        rows: [
+          {
+            key: 'image-term',
+            statementText: result.statementText,
+            statementTruncated: result.statementTruncated,
+            selectedAnswerTexts: result.selectedAnswerTexts,
+            earned: result.earned,
+            max: result.max,
+            feedback: result.feedbackText,
+            feedbackVariant: result.feedbackVariant,
+          },
+        ],
+        totalEarned: result.earned,
+        totalMax: result.max,
+        status,
+        correctCount: status === 'wrong' ? 0 : 1,
+        wrongCount: status === 'correct' ? 0 : 1,
+      }),
+    }
+  }, [pointsWhenCorrect, previewSelectedTermIds, terms])
 
   const handleTermFeedbackWhenWrongChange = (termId: string, value: string) => {
     setTerms((prev) => prev.map((t) => (t.id === termId ? { ...t, feedbackWhenWrong: value } : t)))
@@ -553,7 +589,7 @@ export default function ImageTermMatchGame({
 
   // Preview Content
   const previewContent = (
-    <div className="space-y-6">
+    <div className="relative space-y-6 pb-40">
       <GameInformationCard
         title={title}
         description={description}
@@ -606,7 +642,7 @@ export default function ImageTermMatchGame({
                   <Button
                     key={term.id}
                     variant="outline"
-                    className={`h-auto py-4 px-4 flex items-center justify-start gap-3 ${
+                    className={`h-auto min-h-16 py-4 px-4 flex min-w-0 items-start justify-start gap-3 ${
                       isSelected ? 'ring-2 ring-primary/50 bg-muted/50 border-primary/30' : ''
                     } ${
                       !isSelected
@@ -615,6 +651,10 @@ export default function ImageTermMatchGame({
                     }`}
                     onClick={() => {
                       if (lockSelectionAfterReveal && resultsRevealed) return
+                      if (resultsRevealed) {
+                        setResultsRevealed(false)
+                        setSimulationResponse(null)
+                      }
                       if (singleCorrect) {
                         setPreviewSelectedTermIds((prev) =>
                           prev.includes(term.id) ? [] : [term.id],
@@ -632,14 +672,14 @@ export default function ImageTermMatchGame({
                     <Text
                       as="span"
                       variant="small"
-                      className={`font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
+                      className={`shrink-0 pt-0.5 font-semibold text-lg ${isSelected ? 'text-foreground' : 'text-black dark:text-foreground'}`}
                     >
                       {letter}.
                     </Text>
                     <Text
                       as="span"
                       variant="small"
-                      className={`flex-1 text-left ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
+                      className={`min-w-0 flex-1 whitespace-normal break-all text-left leading-relaxed ${isSelected ? 'text-foreground font-medium' : 'text-black dark:text-foreground'}`}
                     >
                       {term.value}
                     </Text>
@@ -652,39 +692,14 @@ export default function ImageTermMatchGame({
 
       <Separator />
 
-      {resultsRevealed &&
-        (() => {
-          const result = computeImageTermResults(terms, previewSelectedTermIds, pointsWhenCorrect)
-          const rows = [
-            {
-              key: 'image-term',
-              statementText: result.statementText,
-              statementTruncated: result.statementTruncated,
-              selectedAnswerTexts: result.selectedAnswerTexts,
-              earned: result.earned,
-              max: result.max,
-              feedback: result.feedbackText,
-              feedbackVariant: result.feedbackVariant,
-            },
-          ]
-          return (
-            <div className="space-y-4">
-              <GameResultTable
-                rows={rows}
-                totalEarned={result.earned}
-                totalMax={result.max}
-              />
-            </div>
-          )
-        })()}
-
       <div className="flex items-center justify-start">
         <Button
           type="button"
           variant="darkblue"
           onClick={() => {
-            const result = computeImageTermResults(terms, previewSelectedTermIds, pointsWhenCorrect)
-            onResultsRevealed?.(result.correct, result.wrong, result.score)
+            const { rawResult, response } = buildSimulationResponse()
+            onResultsRevealed?.(rawResult.correct, rawResult.wrong, rawResult.score)
+            setSimulationResponse(response)
             setResultsRevealed(true)
           }}
           disabled={previewSelectedTermIds.length === 0}
@@ -705,6 +720,8 @@ export default function ImageTermMatchGame({
           </Text>
         </div>
       )}
+
+      <GameSimulationResponse response={simulationResponse} />
     </div>
   )
 

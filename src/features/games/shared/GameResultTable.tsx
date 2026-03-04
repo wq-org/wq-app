@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 import FeedbackDisplay from './FeedbackDisplay'
 import { useTranslation } from 'react-i18next'
 
@@ -50,6 +51,8 @@ export interface GameResultTableProps {
   title?: string
   /** Optional column/footer labels; omit to use defaults. */
   columnLabels?: GameResultTableColumnLabels
+  /** Wrap content for readable compact panels instead of truncating. */
+  wrapContent?: boolean
 }
 
 /**
@@ -61,6 +64,7 @@ export default function GameResultTable({
   totalMax,
   title,
   columnLabels,
+  wrapContent = false,
 }: GameResultTableProps) {
   const { t } = useTranslation('features.games')
   if (rows.length === 0) return null
@@ -98,56 +102,82 @@ export default function GameResultTable({
               key={row.key}
               className="animate-in fade-in-0 slide-in-from-bottom-2"
             >
-              <TableCell className="max-w-[200px]">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Text
-                      as="span"
-                      variant="small"
-                      className="truncate block cursor-default"
-                    >
-                      {row.statementTruncated}
-                    </Text>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    className="max-w-sm"
+              <TableCell className="max-w-[200px] min-w-0 align-top">
+                {wrapContent ? (
+                  <Text
+                    as="span"
+                    variant="small"
+                    className="block whitespace-normal break-all leading-relaxed"
                   >
                     {row.statementText}
-                  </TooltipContent>
-                </Tooltip>
+                  </Text>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="truncate block cursor-default"
+                      >
+                        {row.statementTruncated}
+                      </Text>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="max-w-sm"
+                    >
+                      {row.statementText}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </TableCell>
-              <TableCell className="max-w-[200px]">
+              <TableCell className="max-w-[200px] min-w-0 align-top">
                 {row.selectedAnswerTexts.length === 0 ? (
                   t('resultTable.emptyValue')
                 ) : (
                   <div className="flex flex-col gap-1">
-                    {row.selectedAnswerTexts.map((text, i) => (
-                      <Tooltip key={i}>
-                        <TooltipTrigger asChild>
-                          <Text
-                            as="span"
-                            variant="small"
-                            className="truncate block cursor-default"
-                          >
-                            {text}
-                          </Text>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          side="top"
-                          className="max-w-sm"
+                    {row.selectedAnswerTexts.map((text, i) =>
+                      wrapContent ? (
+                        <Text
+                          key={i}
+                          as="span"
+                          variant="small"
+                          className="block whitespace-normal break-all leading-relaxed"
                         >
                           {text}
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
+                        </Text>
+                      ) : (
+                        <Tooltip key={i}>
+                          <TooltipTrigger asChild>
+                            <Text
+                              as="span"
+                              variant="small"
+                              className="truncate block cursor-default"
+                            >
+                              {text}
+                            </Text>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="max-w-sm"
+                          >
+                            {text}
+                          </TooltipContent>
+                        </Tooltip>
+                      ),
+                    )}
                   </div>
                 )}
               </TableCell>
-              <TableCell className="whitespace-nowrap text-muted-foreground text-sm">
+              <TableCell className="whitespace-nowrap text-muted-foreground text-sm align-top">
                 {row.earned}/{row.max}
               </TableCell>
-              <TableCell className="max-w-60 min-w-0 wrap-break-word whitespace-normal">
+              <TableCell
+                className={cn(
+                  'max-w-60 min-w-0 wrap-break-word whitespace-normal align-top',
+                  wrapContent && 'min-w-[12rem]',
+                )}
+              >
                 <FeedbackDisplay
                   feedback={row.feedback}
                   variant={row.feedbackVariant}

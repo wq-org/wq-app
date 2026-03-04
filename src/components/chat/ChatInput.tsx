@@ -12,14 +12,14 @@ interface ChatInputProps {
 
 export function ChatInput({ onSend }: ChatInputProps) {
   const [message, setMessage] = useState('')
+  const trimmedMessage = message.trim()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const nextMessage = message.trim()
-    if (!nextMessage) return
+    if (!trimmedMessage) return
 
-    onSend(nextMessage)
+    onSend(trimmedMessage)
     setMessage('')
   }
 
@@ -32,12 +32,13 @@ export function ChatInput({ onSend }: ChatInputProps) {
         value={message}
         onChange={(event) => setMessage(event.target.value)}
         placeholder="Type a message..."
-        className="h-11 rounded-2xl border-neutral-200 bg-white"
+        className="h-12 rounded-full border-neutral-200 bg-white px-5 shadow-none focus-visible:border-neutral-300 focus-visible:ring-0"
       />
       <Button
         type="submit"
         size="icon"
-        className="h-11 w-11 rounded-2xl"
+        disabled={!trimmedMessage}
+        className="h-12 w-12 rounded-full bg-chat-bubble-blue text-white hover:opacity-90 disabled:opacity-40 disabled:text-white"
         aria-label="Send message"
       >
         <SendHorizontal className="size-4" />

@@ -62,15 +62,20 @@ const nodeTypes = {
   gameIfElse: GameIfElseNode,
 }
 
-const initialNodes: Node[] = [
-  {
-    id: 'start-1',
-    type: 'gameStart',
-    position: { x: 0, y: 0 },
-    data: { label: 'Start' },
-  },
-]
-const initialEdges: Edge[] = []
+function getDefaultCanvasNodes(): Node[] {
+  return [
+    {
+      id: 'start-1',
+      type: 'gameStart',
+      position: { x: 0, y: 0 },
+      data: { label: 'Start' },
+    },
+  ]
+}
+
+function getDefaultCanvasEdges(): Edge[] {
+  return []
+}
 
 export interface GameEditorCanvasProps {
   projectId?: string
@@ -80,16 +85,9 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const { t } = useTranslation('features.gameStudio')
   const fallbackTitle = t('editorCanvas.defaultTitle')
   // ========== Context & State Management ==========
-  const {
-    nodes: contextNodes,
-    setNodes: setContextNodes,
-    setEdges: setContextEdges,
-    addNode: addContextNode,
-  } = useGameStudioContext()
+  const { nodes, edges, setNodes, setEdges } = useGameStudioContext()
   const { getUserId, getUserInstitutionId } = useUser()
   const navigate = useNavigate()
-  const [nodes, setNodes] = useState<Node[]>(initialNodes)
-  const [edges, setEdges] = useState<Edge[]>(initialEdges)
   const [loadState, setLoadState] = useState<'idle' | 'loading' | 'loaded' | 'error'>(
     projectId ? 'loading' : 'idle',
   )
@@ -116,9 +114,6 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
   const isDroppingRef = useRef(false) // Prevent duplicate drop notifications
-  const isSyncingRef = useRef(false)
-  const setContextNodesRef = useRef(setContextNodes)
-  const setContextEdgesRef = useRef(setContextEdges)
   const pendingEndSavePersistRef = useRef(false)
 
   // ========== Load project when projectId is set ==========
@@ -126,6 +121,9 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     if (!projectId) {
       setLoadState('idle')
       setGameThemeId('blue')
+      setGameTitle(fallbackTitle)
+      setNodes(getDefaultCanvasNodes())
+      setEdges(getDefaultCanvasEdges())
       return
     }
     setLoadState('loading')
@@ -135,6 +133,22 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           setIsPublished(game.status === 'published')
         }
         if (!game?.game_config?.nodes?.length) {
+          const defaultNodes = getDefaultCanvasNodes().map((node) =>
+            node.type === 'gameStart'
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    description: game?.description?.trim() ?? '',
+                  },
+                }
+              : node,
+          )
+          setNodes(defaultNodes)
+          setEdges(getDefaultCanvasEdges())
+          setGameTitle(game?.title || fallbackTitle)
+          setGameThemeId(game?.theme_id || 'blue')
+          setProjectVersion(game?.version ?? 1)
           setLoadState('loaded')
           return
         }
@@ -253,87 +267,6 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [])
 
-  // Sync context nodes with React Flow nodes
-  useEffect(() => {
-    if (contextNodes.length > 0) {
-      // Merge context nodes with existing nodes, avoiding duplicates
-      setNodes((prevNodes) => {
-        const existingIds = new Set(prevNodes.map((n) => n.id))
-        const newNodes = contextNodes.filter((n) => !existingIds.has(n.id))
-
-        if (newNodes.length > 0) {
-          const lastNode = prevNodes[prevNodes.length - 1]
-          const updatedNodes = [...prevNodes]
-
-          newNodes.forEach((newNode) => {
-            // Calculate position for new node (below the last node)
-            const position = lastNode
-              ? { x: lastNode.position.x, y: lastNode.position.y + 150 }
-              : newNode.position || { x: 100, y: 100 }
-
-            // Create appropriate click handler based on node type
-            let onClickHandler: () => void
-            if (newNode.type === 'gameStart') {
-              onClickHandler = () => {
-                setSelectedNodeId(newNode.id)
-                setIsStartDialogOpen(true)
-              }
-            } else if (newNode.type === 'gameIfElse') {
-              onClickHandler = () => {
-                setSelectedNodeId(newNode.id)
-                setIsIfElseDialogOpen(true)
-              }
-            } else if (newNode.type === 'gameEnd') {
-              onClickHandler = () => {
-                setSelectedNodeId(newNode.id)
-                setIsEndDialogOpen(true)
-              }
-            } else {
-              onClickHandler = () => {
-                setSelectedNodeId(newNode.id)
-                setSelectedNodeType(newNode.type || null)
-                setIsGameNodeDialogOpen(true)
-              }
-            }
-
-            const nodeWithHandlers: Node = {
-              ...newNode,
-              position,
-              data: {
-                ...newNode.data,
-                onClick: onClickHandler,
-              },
-            }
-
-            updatedNodes.push(nodeWithHandlers)
-          })
-
-          return updatedNodes
-        }
-
-        return prevNodes
-      })
-    }
-  }, [contextNodes])
-
-  // Keep refs updated
-  useEffect(() => {
-    setContextNodesRef.current = setContextNodes
-    setContextEdgesRef.current = setContextEdges
-  }, [setContextNodes, setContextEdges])
-
-  // Sync React Flow nodes and edges back to context when they change
-  useEffect(() => {
-    if (!isSyncingRef.current && nodes.length > 0) {
-      isSyncingRef.current = true
-      setContextNodesRef.current(nodes)
-      setContextEdgesRef.current(edges)
-      setTimeout(() => {
-        isSyncingRef.current = false
-      }, 100)
-    }
-  }, [nodes, edges])
-
   // ========== React Flow Handlers ==========
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -413,56 +346,10 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           }
         }
 
-        // Update node data with onClick handlers - use memoized handler creator
-        const nodesWithHandlers = updatedNodes.map((node) => {
-          const baseData = node.data || {}
-
-          if (!baseData.onClick) {
-            if (node.type === 'gameStart') {
-              return {
-                ...node,
-                data: {
-                  ...baseData,
-                  onClick: createNodeClickHandler(node.id, 'gameStart'),
-                },
-              }
-            }
-            if (node.type === 'gameIfElse') {
-              return {
-                ...node,
-                data: {
-                  ...baseData,
-                  onClick: createNodeClickHandler(node.id, 'gameIfElse'),
-                },
-              }
-            }
-            if (node.type === 'gameEnd') {
-              return {
-                ...node,
-                data: {
-                  ...baseData,
-                  onClick: createNodeClickHandler(node.id, 'gameEnd'),
-                },
-              }
-            }
-            if (['gameParagraph', 'gameImageTerms', 'gameImagePin'].includes(node.type || '')) {
-              return {
-                ...node,
-                data: {
-                  ...baseData,
-                  onClick: createNodeClickHandler(node.id, node.type || null),
-                },
-              }
-            }
-          }
-
-          return node
-        })
-
-        return nodesWithHandlers
+        return updatedNodes
       })
     },
-    [nodes, checkNodeConstraints, createNodeClickHandler],
+    [nodes, checkNodeConstraints],
   )
 
   const onEdgesChange = useCallback((changes: EdgeChange[]) => {
@@ -703,22 +590,14 @@ export default function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
-      // Only add node if clicking on empty space (not on a node) and in select mode
       if (interactionMode !== 'select') return
       if ((event.target as HTMLElement).closest('.react-flow__node')) {
         return
       }
-
-      // Use React Flow's screenToFlowPosition to convert screen coordinates to flow coordinates
-      if (reactFlowInstance.current) {
-        const position = reactFlowInstance.current.screenToFlowPosition({
-          x: event.clientX,
-          y: event.clientY,
-        })
-        addContextNode(position)
-      }
+      setSelectedNodeId(null)
+      setSelectedNodeType(null)
     },
-    [addContextNode, interactionMode],
+    [interactionMode],
   )
 
   const onInit = useCallback(

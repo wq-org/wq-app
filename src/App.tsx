@@ -33,6 +33,7 @@ import Onboarding from './features/onboarding/pages/onboarding'
 import { UserProvider } from './contexts/user'
 import { CourseProvider } from './contexts/course'
 import { LessonProvider } from './contexts/lesson'
+import { GameStudioProvider } from './contexts/game-studio'
 import RequireAuth from './components/auth/RequireAuth'
 import RequireOnboarding from './components/auth/RequireOnboarding'
 import { Toaster } from './components/ui/sonner'
@@ -375,15 +376,17 @@ function App() {
                 element={
                   <RequireAuth>
                     <RequireOnboarding>
-                      <AppWrapper
-                        role="teacher"
-                        commandBarContext="game-studio"
-                        className="flex flex-col h-screen"
-                      >
-                        <div className="flex-1 w-full">
-                          <GameEditorCanvasWithProjectId />
-                        </div>
-                      </AppWrapper>
+                      <GameStudioProvider>
+                        <AppWrapper
+                          role="teacher"
+                          commandBarContext="game-studio"
+                          className="flex flex-col h-screen"
+                        >
+                          <div className="flex-1 w-full">
+                            <GameEditorCanvasWithProjectId />
+                          </div>
+                        </AppWrapper>
+                      </GameStudioProvider>
                     </RequireOnboarding>
                   </RequireAuth>
                 }

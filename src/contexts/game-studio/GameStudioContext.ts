@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, type Dispatch, type SetStateAction } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 
 export interface GameNode {
@@ -19,10 +19,13 @@ export interface GameStudioContextValue {
     data?: { title?: string; description?: string },
   ) => void
   updateNode: (nodeId: string, updates: { title?: string; description?: string }) => void
-  setNodes: (nodes: Node[]) => void
-  setEdges: (edges: Edge[]) => void
+  setNodes: Dispatch<SetStateAction<Node[]>>
+  setEdges: Dispatch<SetStateAction<Edge[]>>
   getNode: (nodeId: string) => Node | undefined
 }
+
+const noopSetNodes = (() => undefined) as Dispatch<SetStateAction<Node[]>>
+const noopSetEdges = (() => undefined) as Dispatch<SetStateAction<Edge[]>>
 
 export const GameStudioContext = createContext<GameStudioContextValue>({
   selectedNode: null,
@@ -31,8 +34,8 @@ export const GameStudioContext = createContext<GameStudioContextValue>({
   setSelectedNode: () => {},
   addNode: () => {},
   updateNode: () => {},
-  setNodes: () => {},
-  setEdges: () => {},
+  setNodes: noopSetNodes,
+  setEdges: noopSetEdges,
   getNode: () => undefined,
 })
 

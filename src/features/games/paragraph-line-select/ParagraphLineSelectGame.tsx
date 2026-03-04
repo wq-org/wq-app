@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { Check, CheckCircle2, X, Plus, Trash2, Pencil, Minus, CircleX } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
@@ -16,8 +16,12 @@ import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
 import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
 import PointsInput from '@/features/games/shared/PointsInput'
 import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
-import GameResultTable from '@/features/games/shared/GameResultTable'
 import FeedbackInput from '@/features/games/shared/FeedbackInput'
+import GameSimulationResponse from '@/features/games/shared/GameSimulationResponse'
+import {
+  buildGameSimulationSummary,
+  type GameSimulationResponseData,
+} from '@/features/games/shared/buildGameSimulationSummary'
 import { useGameEditorContext } from '@/contexts/game-studio'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
@@ -73,6 +77,9 @@ export default function ParagraphLineSelectGame({
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswer[]>([])
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null)
   const [resultsRevealed, setResultsRevealed] = useState(false)
+  const [simulationResponse, setSimulationResponse] = useState<GameSimulationResponseData | null>(
+    null,
+  )
   const [editingPoints, setEditingPoints] = useState<Record<string, string>>({})
   const [editingPenalty, setEditingPenalty] = useState<Record<string, string>>({})
   const [editingOption, setEditingOption] = useState<{
@@ -279,6 +286,10 @@ export default function ParagraphLineSelectGame({
   // Handle answer selection in preview (toggle: same option again deselects)
   const handleAnswerSelect = (sentenceNumber: number, optionId: string) => {
     if (lockSelectionAfterReveal && resultsRevealed) return
+    if (resultsRevealed) {
+      setResultsRevealed(false)
+      setSimulationResponse(null)
+    }
     const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
     const multi = config ? hasMultipleCorrectOptions(config) : false
     setSelectedAnswers((prev) => {
@@ -314,28 +325,53 @@ export default function ParagraphLineSelectGame({
     return selectedAnswers.filter((a) => a.sentenceNumber === sentenceNumber).map((a) => a.optionId)
   }
 
-  const handleCheckAnswers = () => {
-    const { totalEarned, totalMax } = computeParagraphResults(
+  const buildSimulationResponse = useCallback(() => {
+    const { rows, totalEarned, totalMax } = computeParagraphResults(
       sentenceConfigs,
-      getSelectedIdsForScoring,
+      (sentenceNumber) => {
+        const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
+        const multi = config ? hasMultipleCorrectOptions(config) : false
+        if (multi) {
+          return selectedAnswers
+            .filter((answer) => answer.sentenceNumber === sentenceNumber)
+            .map((answer) => answer.optionId)
+        }
+        const answer = selectedAnswers.find((item) => item.sentenceNumber === sentenceNumber)
+        return answer ? [answer.optionId] : []
+      },
     )
     const correct = totalMax > 0 && totalEarned === totalMax ? 1 : 0
     const wrong = 1 - correct
-    onResultsRevealed?.(correct, wrong, totalEarned)
+    const status =
+      correct > 0 ? 'correct' : totalEarned > 0 ? ('mixed' as const) : ('wrong' as const)
+    const correctCount = rows.filter((row) => row.earned > 0).length
+    const wrongCount = Math.max(0, rows.length - correctCount)
+
+    return {
+      rawResult: {
+        correct,
+        wrong,
+        score: totalEarned,
+      },
+      response: buildGameSimulationSummary({
+        rows,
+        totalEarned,
+        totalMax,
+        status,
+        correctCount,
+        wrongCount,
+      }),
+    }
+  }, [selectedAnswers, sentenceConfigs])
+
+  const handleCheckAnswers = () => {
+    const { rawResult, response } = buildSimulationResponse()
+    onResultsRevealed?.(rawResult.correct, rawResult.wrong, rawResult.score)
+    setSimulationResponse(response)
     setResultsRevealed(true)
   }
 
   const hasAtLeastOneSelection = selectedAnswers.length > 0
-
-  const getSelectedIdsForScoring = (sentenceNumber: number): string[] => {
-    const config = sentenceConfigs.find((c) => c.sentenceNumber === sentenceNumber)
-    const multi = config ? hasMultipleCorrectOptions(config) : false
-    return multi
-      ? getSelectedAnswers(sentenceNumber)
-      : getSelectedAnswer(sentenceNumber) != null
-        ? [getSelectedAnswer(sentenceNumber)!]
-        : []
-  }
 
   const totalQuestions = sentences.length
   const totalPoints = sentenceConfigs.reduce((sum, config) => {
@@ -803,7 +839,7 @@ export default function ParagraphLineSelectGame({
   )
 
   const previewContent = (
-    <div className="space-y-6">
+    <div className="relative space-y-6 pb-40">
       <GameInformationCard
         title={title}
         description={description}
@@ -920,23 +956,6 @@ export default function ParagraphLineSelectGame({
 
       <Separator />
 
-      {/* Results table: only visible after user clicks Check */}
-      {resultsRevealed &&
-        (() => {
-          const { rows, totalEarned, totalMax } = computeParagraphResults(
-            sentenceConfigs,
-            getSelectedIdsForScoring,
-          )
-          if (rows.length === 0) return null
-          return (
-            <GameResultTable
-              rows={rows}
-              totalEarned={totalEarned}
-              totalMax={totalMax}
-            />
-          )
-        })()}
-
       <div className="flex items-center justify-start">
         <Button
           type="button"
@@ -949,6 +968,8 @@ export default function ParagraphLineSelectGame({
           Check
         </Button>
       </div>
+
+      <GameSimulationResponse response={simulationResponse} />
     </div>
   )
 
