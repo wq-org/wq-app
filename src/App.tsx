@@ -11,6 +11,7 @@ import Institution from './features/institution/pages/institution'
 import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
+import ChangelogPage from './user/pages/changelog'
 
 import StudentDashboard from './features/student/pages/dashboard'
 import StudentSettings from './features/student/pages/settings'
@@ -169,6 +170,10 @@ function App() {
             <Route
               path="/trust/licenses"
               element={<LandingPage />}
+            />
+            <Route
+              path="/changelog"
+              element={<ChangelogPage />}
             />
             <Route
               path="/test"
