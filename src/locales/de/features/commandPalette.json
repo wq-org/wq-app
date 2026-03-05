@@ -45,6 +45,10 @@
     "fieldTitlePlaceholder": "{{type}} Titel",
     "fieldDescriptionLabel": "{{type}} Beschreibung",
     "fieldDescriptionPlaceholder": "{{type}} Beschreibung",
+    "themeLabel": "Kurs-Design",
+    "themeHint": "Wähle den Standardhintergrund für die Kurskarte, bevor du den Kurs erstellst.",
+    "gameThemeLabel": "Spiel-Vorschau",
+    "gameThemeHint": "Wähle den Standardhintergrund für die Spielkarte, bevor du das Spiel erstellst.",
     "actions": {
       "cancel": "Abbrechen",
       "creating": "Wird erstellt...",

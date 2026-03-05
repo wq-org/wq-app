@@ -28,7 +28,7 @@ export interface GameForStudio {
  */
 export async function createGameForStudio(
   teacherId: string,
-  payload: { title?: string; description?: string } = {},
+  payload: { title?: string; description?: string; theme_id?: ThemeId } = {},
 ): Promise<GameForStudio> {
   const title = payload.title?.trim() || 'Untitled Game'
   const description = payload.description?.trim() || ''
@@ -46,6 +46,7 @@ export async function createGameForStudio(
       status: 'draft',
       is_draft: true,
       version: 1,
+      ...(payload.theme_id ? { theme_id: payload.theme_id } : {}),
     })
     .select()
     .single()

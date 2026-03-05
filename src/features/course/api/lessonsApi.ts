@@ -1,15 +1,18 @@
 import { supabase } from '@/lib/supabase'
 import type { Lesson, CreateLessonData } from '../types/lesson.types'
+import { createYooptaStarterContentJson } from '../utils/yooptaContent'
 
 /**
  * Create a new lesson
  */
 export async function createLesson(data: CreateLessonData): Promise<Lesson> {
+  const normalizedContent = data.content?.trim() ? data.content : createYooptaStarterContentJson()
+
   const { data: lesson, error } = await supabase
     .from('lessons')
     .insert({
       title: data.title.trim(),
-      content: data.content || '',
+      content: normalizedContent,
       description: data.description || '',
       topic_id: data.topic_id,
     })

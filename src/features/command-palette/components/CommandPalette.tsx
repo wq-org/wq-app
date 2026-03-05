@@ -497,6 +497,10 @@ export default function CommandPalette({
                   <CommandAddDialog
                     role={effectiveRole}
                     onCourseCreated={onCourseCreated}
+                    onRequestClose={() => {
+                      setOpen(false)
+                      setActiveDialog(undefined)
+                    }}
                   />
                 )}
               </Container>

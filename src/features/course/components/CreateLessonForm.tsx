@@ -10,6 +10,7 @@ import { Text } from '@/components/ui/text'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { createYooptaStarterContentJson } from '@/features/course/utils/yooptaContent'
 
 export interface CreateLessonFormProps {
   topicId?: string
@@ -34,7 +35,7 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
     try {
       const createdLesson = await createLesson({
         title: newLesson.trim(),
-        content: '',
+        content: createYooptaStarterContentJson(),
         description: description.trim(),
         topic_id: topicId as string,
       })

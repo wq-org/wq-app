@@ -14,6 +14,10 @@ import LessonPreviewContent from '@/features/course/components/LessonPreviewCont
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { MessageCircleQuestionMark } from 'lucide-react'
+import {
+  createYooptaStarterContentJson,
+  createYooptaStarterContentObject,
+} from '@/features/course/utils/yooptaContent'
 
 const LESSON_GUIDES = [
   {
@@ -63,12 +67,21 @@ export default function Lesson() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
-  const navState = location.state as { initialTab?: 'overview' | 'preview' | 'settings' } | null
+  const navState = location.state as {
+    initialTab?: 'overview' | 'preview' | 'settings'
+    title?: string
+    description?: string
+    topicId?: string
+  } | null
   const initialTabFromNav = navState?.initialTab
+  const draftLessonTitle = typeof navState?.title === 'string' ? navState.title : undefined
+  const draftLessonDescription =
+    typeof navState?.description === 'string' ? navState.description : undefined
+  const draftLessonTopicId = typeof navState?.topicId === 'string' ? navState.topicId : undefined
   const { lesson, fetchLessonById, createLesson, updateLesson } = useLesson()
   const { selectedCourse, fetchCourseById } = useCourse()
   const [editorValue, setEditorValue] = useState<Record<string, unknown> | undefined>(undefined)
-  const [, setIsInitialContentLoading] = useState(true)
+  const [isInitialContentLoading, setIsInitialContentLoading] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [hasUnsavedSettingsChanges, setHasUnsavedSettingsChanges] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'preview' | 'settings'>(
@@ -113,19 +126,13 @@ export default function Lesson() {
       setEditorValue(undefined)
       setIsInitialContentLoading(true)
 
-      const state = location.state as {
-        title?: string
-        description?: string
-        topicId?: string
-      } | null
-
-      if (state?.title && state?.topicId) {
+      if (draftLessonTitle && draftLessonTopicId) {
         try {
           const newLesson = await createLesson({
-            title: state.title,
-            content: '',
-            description: state.description || '',
-            topic_id: state.topicId,
+            title: draftLessonTitle,
+            content: createYooptaStarterContentJson(),
+            description: draftLessonDescription || '',
+            topic_id: draftLessonTopicId,
           })
           if (!cancelled) {
             if (courseId) {
@@ -146,13 +153,13 @@ export default function Lesson() {
       try {
         const fetchedLesson = await fetchLessonById(lessonId)
         if (!cancelled) {
-          setEditorValue(parseContent(fetchedLesson.content) ?? {})
+          setEditorValue(parseContent(fetchedLesson.content) ?? createYooptaStarterContentObject())
           setHasUnsavedChanges(false)
         }
       } catch (error) {
         if (!cancelled) {
           console.error(error)
-          setEditorValue(undefined)
+          setEditorValue(createYooptaStarterContentObject())
         }
       } finally {
         if (!cancelled) {
@@ -166,11 +173,20 @@ export default function Lesson() {
     return () => {
       cancelled = true
     }
-  }, [lessonId, courseId, location.state, fetchLessonById, createLesson, navigate])
+  }, [
+    lessonId,
+    courseId,
+    draftLessonTitle,
+    draftLessonDescription,
+    draftLessonTopicId,
+    fetchLessonById,
+    createLesson,
+    navigate,
+  ])
 
   useEffect(() => {
     if (!lesson || lesson.id !== lessonId) return
-    setEditorValue(parseContent(lesson.content) ?? {})
+    setEditorValue(parseContent(lesson.content) ?? createYooptaStarterContentObject())
     setHasUnsavedChanges(false)
   }, [lessonId, lesson])
 
@@ -370,14 +386,13 @@ export default function Lesson() {
         </Popover>
       </div>
 
-      {editorValue !== undefined ? (
+      {!isInitialContentLoading ? (
         <LessonEditor
           key={`lesson-${lessonId}`}
           className="w-full border rounded-2xl flex-1 animate-in fade-in-0 slide-in-from-bottom-4 bg-white"
           value={editorValue}
           onChange={handleEditorChange}
           placeholder={t('page.editorPlaceholder')}
-          autoFocusWhenEmpty={activeTab === 'overview'}
         />
       ) : (
         <div className="flex min-h-[280px] w-full items-center justify-center rounded-2xl border bg-muted/30">
@@ -405,7 +420,7 @@ export default function Lesson() {
       title={lessonTitle}
       description={lessonDescription}
       value={editorValue}
-      loading={editorValue === undefined}
+      loading={isInitialContentLoading}
       previewTitle={t('page.previewTitle', { defaultValue: 'Preview' })}
       previewHint={t('page.previewHint', {
         defaultValue: 'Read-only preview of the lesson content.',

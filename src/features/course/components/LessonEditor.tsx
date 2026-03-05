@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type MouseEvent } from 'react'
+import { useMemo, useRef, type MouseEvent } from 'react'
 import YooptaEditor, { createYooptaEditor } from '@yoopta/editor'
 import Paragraph from '@yoopta/paragraph'
 import { HeadingOne, HeadingTwo, HeadingThree } from '@yoopta/headings'
@@ -8,6 +8,7 @@ import { Bold, Italic, Underline, Strike } from '@yoopta/marks'
 import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list'
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar'
 import { cn } from '@/lib/utils'
+import { createYooptaStarterContentObject } from '@/features/course/utils/yooptaContent'
 
 const plugins = [
   Paragraph,
@@ -38,52 +39,30 @@ interface LessonEditorProps {
   readOnly?: boolean
   className?: string
   placeholder?: string
-  autoFocusWhenEmpty?: boolean
 }
 
-function getTextFromNode(node: unknown): string {
-  if (node == null) return ''
-  if (typeof node === 'string') return node
-  if (Array.isArray(node)) return node.map((item) => getTextFromNode(item)).join('')
-  if (typeof node !== 'object') return ''
-
-  const record = node as Record<string, unknown>
-
-  if (typeof record.text === 'string') {
-    return record.text
-  }
-
-  if (Array.isArray(record.children)) {
-    return record.children.map((child) => getTextFromNode(child)).join('')
-  }
-
-  if (Array.isArray(record.value)) {
-    return record.value.map((child) => getTextFromNode(child)).join('')
-  }
-
-  return ''
-}
-
-function isLessonValueEmpty(value?: Record<string, unknown>): boolean {
+function isInvalidYooptaValue(value?: Record<string, unknown>): boolean {
   if (!value || typeof value !== 'object') {
     return true
   }
 
-  if (Object.keys(value).length === 0) {
-    return true
-  }
-
-  const blocks = Array.isArray(value.blocks) ? value.blocks : Object.values(value)
-
+  const blocks = Object.values(value)
   if (blocks.length === 0) {
     return true
   }
 
-  const combinedText = blocks
-    .map((block) => getTextFromNode(block))
-    .join('')
-    .trim()
-  return combinedText.length === 0
+  return blocks.some((block) => {
+    if (!block || typeof block !== 'object') {
+      return true
+    }
+
+    const record = block as Record<string, unknown>
+    return (
+      !Array.isArray(record.value) ||
+      typeof record.id !== 'string' ||
+      typeof record.type !== 'string'
+    )
+  })
 }
 
 function normalizeHref(href: string): string {
@@ -99,13 +78,18 @@ export default function LessonEditor({
   readOnly = false,
   className = '',
   placeholder = 'Type / to open the menu...',
-  autoFocusWhenEmpty = false,
 }: LessonEditorProps) {
   const editor = useMemo(() => createYooptaEditor(), [])
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const hasHandledInitialFocusRef = useRef(false)
+  const starterContentRef = useRef<Record<string, unknown>>(createYooptaStarterContentObject())
   const editorTools = readOnly ? undefined : TOOLS
-  const isEmptyValue = useMemo(() => isLessonValueEmpty(value), [value])
+  const needsStarterFallback = useMemo(() => isInvalidYooptaValue(value), [value])
+  const normalizedValue = useMemo(() => {
+    if (needsStarterFallback) {
+      return starterContentRef.current as never
+    }
+    return value as never
+  }, [needsStarterFallback, value])
   const editorClassName = cn(
     'w-full',
     '[&_.yoopta-editor]:mx-auto [&_.yoopta-editor]:min-h-[1126px] [&_.yoopta-editor]:w-full [&_.yoopta-editor]:max-w-6xl [&_.yoopta-editor]:px-8 [&_.yoopta-editor]:py-10',
@@ -113,33 +97,6 @@ export default function LessonEditor({
     '[&_.yoopta-slate_a]:text-blue-600 [&_.yoopta-slate_a]:underline [&_.yoopta-slate_a]:underline-offset-2',
     className,
   )
-
-  useEffect(() => {
-    if (!isEmptyValue) {
-      hasHandledInitialFocusRef.current = true
-    }
-  }, [isEmptyValue])
-
-  useEffect(() => {
-    if (readOnly || !autoFocusWhenEmpty || !isEmptyValue || hasHandledInitialFocusRef.current) {
-      return
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      const editableSurface = containerRef.current?.querySelector(
-        '[contenteditable="true"]',
-      ) as HTMLElement | null
-
-      if (!editableSurface) {
-        return
-      }
-
-      editableSurface.focus()
-      hasHandledInitialFocusRef.current = true
-    })
-
-    return () => window.cancelAnimationFrame(frame)
-  }, [autoFocusWhenEmpty, isEmptyValue, readOnly])
 
   const handleLinkClick = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement | null
@@ -167,10 +124,10 @@ export default function LessonEditor({
         plugins={plugins}
         marks={marks}
         tools={editorTools}
-        value={value as never}
+        value={normalizedValue}
         onChange={(newValue: Record<string, unknown>) => onChange?.(newValue)}
         readOnly={readOnly}
-        autoFocus={!readOnly && isEmptyValue}
+        autoFocus={false}
         placeholder={placeholder}
         width="100%"
       />

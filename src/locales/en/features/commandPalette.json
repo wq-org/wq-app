@@ -45,6 +45,10 @@
     "fieldTitlePlaceholder": "{{type}} Title",
     "fieldDescriptionLabel": "{{type}} Description",
     "fieldDescriptionPlaceholder": "{{type}} Description",
+    "themeLabel": "Course Theme",
+    "themeHint": "Choose the default background for the course card before you create it.",
+    "gameThemeLabel": "Game Preview",
+    "gameThemeHint": "Choose the default background for the game card before you create it.",
     "actions": {
       "cancel": "Cancel",
       "creating": "Creating...",

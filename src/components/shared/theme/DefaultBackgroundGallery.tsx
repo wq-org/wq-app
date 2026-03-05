@@ -8,19 +8,26 @@ interface DefaultBackgroundGalleryProps {
   selectedId: ThemeId
   onSelect: (id: ThemeId) => void
   className?: string
+  compact?: boolean
 }
 
 export default function DefaultBackgroundGallery({
   selectedId,
   onSelect,
   className,
+  compact = false,
 }: DefaultBackgroundGalleryProps) {
   return (
     <BlurredScrollArea
-      className={cn('w-full rounded-xl border', className)}
+      className={cn('w-full max-w-full rounded-xl border', className)}
       scrollbars="horizontal"
     >
-      <div className="flex min-w-max gap-3 px-4 py-4">
+      <div
+        className={cn(
+          'flex w-max min-w-full',
+          compact ? 'gap-2 px-2 py-2' : 'gap-2 px-3 py-3 sm:gap-3 sm:px-4 sm:py-4',
+        )}
+      >
         {THEME_IDS.map((themeId) => {
           const isSelected = selectedId === themeId
           return (
@@ -30,24 +37,27 @@ export default function DefaultBackgroundGallery({
               onClick={() => onSelect(themeId)}
               aria-pressed={isSelected}
               aria-label={`Select ${themeId} theme`}
-              className="group w-20 shrink-0 text-left"
+              className={cn('group shrink-0 text-left', compact ? 'w-6' : 'w-14 sm:w-16')}
             >
               <AspectRatio ratio={1}>
                 <div
                   className={cn(
-                    'h-full w-full rounded-xl border-4 transition-transform duration-200 group-hover:scale-[0.98]',
-                    isSelected ? 'border-[oklch(var(--oklch-darkblue))]' : 'border-transparent',
+                    'h-full w-full transition-transform duration-200 group-hover:scale-[0.98]',
+                    compact ? 'rounded-md border-2' : 'rounded-xl border-4',
+                    isSelected ? 'border-blue-500' : 'border-transparent',
                   )}
                   style={getThemeBackgroundStyle(themeId)}
                 />
               </AspectRatio>
-              <Text
-                as="span"
-                variant="small"
-                className="mt-2 block uppercase text-muted-foreground"
-              >
-                {themeId.charAt(0).toUpperCase() + themeId.slice(1)}
-              </Text>
+              {!compact ? (
+                <Text
+                  as="span"
+                  variant="small"
+                  className="mt-1 block truncate text-center uppercase text-muted-foreground"
+                >
+                  {themeId.charAt(0).toUpperCase() + themeId.slice(1)}
+                </Text>
+              ) : null}
             </button>
           )
         })}
