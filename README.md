@@ -14,9 +14,14 @@ Stack: **React (Vite) + TypeScript + Tailwind/Radix/ShadCN + Supabase (Postgres,
 
 ---
 
-## 1) Start the Frontend (Vite)
+## This starts the local Supabase stack (database, auth, storage, etc.)
 
 ```bash
-npm install
-npm run start
+supabase start
 ```
+## To stop everything:
+
+```bash
+supabase stop
+```
+
