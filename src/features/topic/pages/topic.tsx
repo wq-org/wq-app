@@ -124,7 +124,7 @@ export default function Topic() {
                 variant="h1"
                 className="text-2xl font-semibold"
               >
-                Topic{': '}
+                Topic{':  '}
               </Text>
               <Text
                 as="h1"
