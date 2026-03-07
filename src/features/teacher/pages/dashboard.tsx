@@ -16,6 +16,57 @@ import type { FileListItem } from '@/components/shared/upload-files/types/upload
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { GamePlayList } from '@/features/game-play'
 import type { CourseCardProps } from '@/features/course/types/course.types'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Text } from '@/components/ui/text'
+import { X } from 'lucide-react'
+import { getTeacherFollowers, type TeacherFollowerProfile } from '@/features/profiles/api/followApi'
+import { useTranslation } from 'react-i18next'
+
+function FollowerRow({
+  follower,
+  fallbackLabel,
+}: {
+  follower: TeacherFollowerProfile
+  fallbackLabel: string
+}) {
+  const { url: signedAvatarUrl } = useAvatarUrl(follower.avatar_url || '')
+  const displayName = follower.display_name?.trim() || follower.username?.trim() || fallbackLabel
+  const initials = displayName.charAt(0).toUpperCase()
+
+  return (
+    <div className="flex items-center justify-between rounded-2xl border bg-white px-4 py-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <Avatar className="h-10 w-10">
+          <AvatarImage
+            src={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
+            alt={displayName}
+          />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <Text
+            as="p"
+            variant="body"
+            className="font-medium truncate"
+          >
+            {displayName}
+          </Text>
+          {follower.username ? (
+            <Text
+              as="p"
+              variant="small"
+              className="text-muted-foreground truncate"
+            >
+              @{follower.username}
+            </Text>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -52,6 +103,7 @@ function formatFileSize(bytes: number): string {
 }
 
 export default function Dashboard() {
+  const { t } = useTranslation('features.teacher')
   const [selectedTab, setSelectedTab] = useState<string>('courses')
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { courses, loading: coursesLoading, fetchCourses, setSelectedCourse } = useCourse()
@@ -59,6 +111,9 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
+  const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false)
+  const [followersLoading, setFollowersLoading] = useState(false)
+  const [followers, setFollowers] = useState<TeacherFollowerProfile[]>([])
 
   // Fetch courses when profile is loaded
   useEffect(() => {
@@ -131,6 +186,20 @@ export default function Dashboard() {
     navigate(`/teacher/course/${id}`)
   }
 
+  const handleOpenFollowersDrawer = useCallback(async () => {
+    setIsFollowersDrawerOpen(true)
+    setFollowersLoading(true)
+    try {
+      const list = await getTeacherFollowers()
+      setFollowers(list)
+    } catch (error) {
+      console.error('Failed to load followers:', error)
+      setFollowers([])
+    } finally {
+      setFollowersLoading(false)
+    }
+  }, [])
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -153,6 +222,7 @@ export default function Dashboard() {
         description={profile?.description || 'Welcome to your dashboard'}
         role="teacher"
         followCount={profile?.follow_count ?? 0}
+        onViewFollowerList={handleOpenFollowersDrawer}
         onClickTab={(tabId: string) => handleClickTab(tabId)}
       >
         {selectedTab === 'courses' &&
@@ -205,6 +275,59 @@ export default function Dashboard() {
         onCourseCreated={fetchCourses}
         onFilesUploaded={loadFiles}
       />
+
+      <Drawer
+        direction="right"
+        open={isFollowersDrawerOpen}
+        onOpenChange={setIsFollowersDrawerOpen}
+      >
+        <DrawerContent className="h-screen w-[60vw]! max-w-xl! sm:max-w-xl!">
+          <DrawerHeader>
+            <div className="flex items-center justify-between">
+              <DrawerTitle>{t('followersDrawer.title')}</DrawerTitle>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={() => setIsFollowersDrawerOpen(false)}
+                aria-label={t('followersDrawer.close')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DrawerHeader>
+
+          <div className="px-4 pb-6 space-y-3 overflow-y-auto">
+            {followersLoading ? (
+              <div className="flex flex-col items-center justify-center gap-2 py-8">
+                <Spinner
+                  variant="gray"
+                  size="md"
+                />
+                <Text
+                  as="p"
+                  variant="small"
+                  className="text-muted-foreground"
+                >
+                  {t('followersDrawer.loading')}
+                </Text>
+              </div>
+            ) : followers.length === 0 ? (
+              <div className="rounded-2xl border bg-muted/20 p-4 text-center text-muted-foreground">
+                {t('followersDrawer.empty')}
+              </div>
+            ) : (
+              followers.map((follower) => (
+                <FollowerRow
+                  key={follower.user_id}
+                  follower={follower}
+                  fallbackLabel={t('followersDrawer.studentFallback')}
+                />
+              ))
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }

@@ -3,7 +3,12 @@
     "columns": {
       "type": "Typ",
       "filename": "Dateiname",
-      "size": "Größe"
+      "size": "Größe",
+      "action": "Aktion",
+      "actions": "Aktionen"
+    },
+    "actions": {
+      "open": "Öffnen"
     }
   },
   "empty": {
