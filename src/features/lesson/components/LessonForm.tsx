@@ -1,35 +1,34 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Plus } from 'lucide-react'
-import { useLesson } from '@/contexts/lesson'
-import { Textarea } from '@/components/ui/textarea'
-import { Text } from '@/components/ui/text'
-import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { useLesson } from '@/contexts/lesson'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import Spinner from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
+import { Textarea } from '@/components/ui/textarea'
 import { createYooptaStarterContentJson } from '@/features/course/utils/yooptaContent'
 
-export interface CreateLessonFormProps {
+export interface LessonFormProps {
   topicId?: string
   courseId?: string
   onLessonCreated?: () => void
 }
 
-export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateLessonFormProps) {
+export default function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormProps) {
   const { t } = useTranslation('features.course')
   const [newLesson, setNewLesson] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { createLesson } = useLesson()
-
-  const bothFieldsFilled = !!newLesson.trim() && !!description.trim() && !!topicId
+  const bothFieldsFilled = Boolean(newLesson.trim() && description.trim() && topicId)
 
   const handleCreateLesson = async () => {
-    if (!bothFieldsFilled) return
+    if (!bothFieldsFilled || !topicId) return
 
     setLoading(true)
     try {
@@ -37,7 +36,7 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
         title: newLesson.trim(),
         content: createYooptaStarterContentJson(),
         description: description.trim(),
-        topic_id: topicId as string,
+        topic_id: topicId,
       })
 
       if (courseId) {
@@ -58,7 +57,7 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
         <Label htmlFor="new-lesson-title">{t('createLesson.titleLabel')}</Label>
         <Input
@@ -66,10 +65,10 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
           value={newLesson}
           onChange={(e) => setNewLesson(e.target.value)}
           placeholder={t('createLesson.titlePlaceholder')}
-          className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-300"
+          className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20"
         />
       </div>
-      <div className="flex flex-col w-full">
+      <div className="flex w-full flex-col">
         <Label
           htmlFor="new-lesson-description"
           className="mb-2"
@@ -86,9 +85,9 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
           }}
           maxLength={120}
           placeholder={t('createLesson.descriptionPlaceholder')}
-          className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 resize-none h-24"
+          className="h-24 w-full resize-none px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20"
         />
-        <div className="text-right text-xs text-gray-400 mt-1">{description.length}/120</div>
+        <div className="mt-1 text-right text-xs text-gray-400">{description.length}/120</div>
       </div>
       <div className="flex justify-end">
         <Button
@@ -102,7 +101,7 @@ export function CreateLessonForm({ topicId, courseId, onLessonCreated }: CreateL
               variant="white"
             />
           ) : (
-            <Plus className="w-6 h-6 text-white" />
+            <Plus className="h-6 w-6 text-white" />
           )}
           <Text variant="small">{t('createLesson.button')}</Text>
         </Button>

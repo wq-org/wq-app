@@ -4,6 +4,8 @@ export interface Lesson {
   content: string
   topic_id: string
   description: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface CreateLessonData {
@@ -11,10 +13,4 @@ export interface CreateLessonData {
   content: string
   topic_id: string
   description: string
-}
-
-export interface LessonCardProps {
-  lesson: Lesson
-  index: number
-  onView?: (lessonId: string) => void
 }

@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useParams, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Eye, Settings, BarChart2 } from 'lucide-react'
+import { useParams, useLocation, useNavigate, Outlet } from 'react-router-dom'
 import AppWrapper from '@/components/layout/AppWrapper'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
-import SelectTabs, { type TabItem } from '@/components/shared/tabs/SelectTabs'
 import { useCourse } from '@/contexts/course'
 import CourseSettings from '@/features/course/components/CourseSettings'
 import CoursePreviewTab from '@/features/course/components/CoursePreviewTab'
+import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/workspace'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -15,19 +14,14 @@ export default function CourseLayout() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const location = useLocation()
-  const { fetchCourseById } = useCourse()
-  const [activeTab, setActiveTab] = useState<string>('overview')
+  const navigate = useNavigate()
+  const { fetchCourseById, selectedCourse } = useCourse()
+  const [activeTab, setActiveTab] = useState<WorkspaceTabId>('editor')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const pendingTabRef = useRef<string | null>(null)
-  const courseTabs: TabItem[] = [
-    { id: 'overview', icon: LayoutDashboard, title: t('layout.tabs.overview') },
-    { id: 'preview', icon: Eye, title: t('layout.tabs.preview') },
-    { id: 'settings', icon: Settings, title: t('layout.tabs.settings') },
-    { id: 'analytics', icon: BarChart2, title: t('layout.tabs.analytics') },
-  ]
+  const pendingTabRef = useRef<WorkspaceTabId | null>(null)
 
   const handleTabChange = useCallback(
-    (requestedTab: string) => {
+    (requestedTab: WorkspaceTabId) => {
       if (requestedTab === activeTab) return
       if (hasUnsavedChanges) {
         pendingTabRef.current = requestedTab
@@ -93,8 +87,8 @@ export default function CourseLayout() {
     return () => window.removeEventListener('beforeunload', onBeforeUnload)
   }, [hasUnsavedChanges])
 
-  // Child route under this layout (e.g. course overview or lesson) is rendered here.
-  const isLessonRoute = /\/lesson\/[^/]+$/.test(location.pathname)
+  // Child routes under this layout (e.g. topic or lesson pages) are rendered directly.
+  const isNestedContentRoute = /\/(topic|lesson)\/[^/]+\/?$/.test(location.pathname)
 
   useEffect(() => {
     if (courseId) {
@@ -121,29 +115,35 @@ export default function CourseLayout() {
   return (
     <AppWrapper role="teacher">
       <div className="flex flex-col gap-6 w-full mx-auto p-6">
-        {isLessonRoute ? (
-          /* Outlet: renders the matched child route (e.g. Lesson page). Needed so nested routes under this layout show here. */
+        {isNestedContentRoute ? (
+          // Nested content routes (topic and lesson) provide their own workspace layouts.
           <Outlet />
         ) : (
-          <>
-            <SelectTabs
-              tabs={courseTabs}
-              activeTabId={activeTab}
-              onTabChange={handleTabChange}
-              className="border-b"
-            />
-            <div className="mt-6">
-              {activeTab === 'overview' && <Outlet />}
-              {activeTab === 'preview' && <CoursePreviewTab courseId={courseId} />}
-              {activeTab === 'settings' && (
-                <CourseSettings
-                  courseId={courseId}
-                  onUnsavedChange={setHasUnsavedChanges}
-                />
-              )}
-              {activeTab === 'analytics' && <div className="flex flex-col gap-6 pb-32" />}
-            </div>
-          </>
+          <FeatureWorkspaceLayout
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            tabTitles={{
+              editor: t('layout.tabs.editor', { defaultValue: 'Editor' }),
+              overview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
+              settings: t('layout.tabs.settings', { defaultValue: 'Settings' }),
+              analytics: t('layout.tabs.analytics', { defaultValue: 'Analytics' }),
+            }}
+            editorContent={<Outlet />}
+            overviewContent={
+              <CoursePreviewTab
+                courseId={courseId}
+                themeId={selectedCourse?.theme_id}
+                onTopicView={(topicId) => navigate(`/teacher/course/${courseId}/topic/${topicId}`)}
+              />
+            }
+            settingsContent={
+              <CourseSettings
+                courseId={courseId}
+                onUnsavedChange={setHasUnsavedChanges}
+              />
+            }
+            analyticsContent={<div className="flex flex-col gap-6 pb-32" />}
+          />
         )}
       </div>
     </AppWrapper>
