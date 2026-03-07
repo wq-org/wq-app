@@ -1,17 +1,26 @@
+export interface RelativeUpdatedTimeLabels {
+  updatedRecently: string
+  updatedWithRelative: (relativeValue: string) => string
+}
+
 export function formatRelativeUpdatedTime(
   updatedAt?: string,
   createdAt?: string,
   locale?: string,
+  labels?: RelativeUpdatedTimeLabels,
 ): string {
   const sourceDate = updatedAt ?? createdAt
+  const updatedRecentlyLabel = labels?.updatedRecently ?? 'Updated recently'
+  const withRelativeLabel =
+    labels?.updatedWithRelative ?? ((relativeValue) => `Updated ${relativeValue}`)
 
   if (!sourceDate) {
-    return 'Updated recently'
+    return updatedRecentlyLabel
   }
 
   const date = new Date(sourceDate)
   if (Number.isNaN(date.getTime())) {
-    return 'Updated recently'
+    return updatedRecentlyLabel
   }
 
   const diffMs = date.getTime() - Date.now()
@@ -31,10 +40,10 @@ export function formatRelativeUpdatedTime(
   for (const threshold of thresholds) {
     if (absMs >= threshold.ms) {
       const value = Math.round(diffMs / threshold.ms)
-      return `Updated ${formatter.format(value, threshold.unit)}`
+      return withRelativeLabel(formatter.format(value, threshold.unit))
     }
   }
 
   const seconds = Math.round(diffMs / 1000)
-  return `Updated ${formatter.format(seconds, 'second')}`
+  return withRelativeLabel(formatter.format(seconds, 'second'))
 }

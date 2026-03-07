@@ -37,6 +37,14 @@
     "titlePlaceholder": "New lesson",
     "descriptionPlaceholder": "Lesson description (max 120 characters)"
   },
+  "toolbar": {
+    "searchPlaceholder": "Search lessons by title or description..."
+  },
+  "card": {
+    "subheading": "Lesson",
+    "updatedRecently": "Updated recently",
+    "updatedRelative": "Updated {{relative}}"
+  },
   "layout": {
     "loading": "Loading...",
     "tabs": {

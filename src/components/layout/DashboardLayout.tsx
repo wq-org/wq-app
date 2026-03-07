@@ -34,6 +34,7 @@ interface DashboardLayoutProps {
   /** When set (student dashboard), show followed teachers count badge next to role/university. */
   followedTeacherCount?: number
   customTabs?: DashboardTab[] // Optional custom tabs to override default
+  onViewFollowerList?: () => void
 }
 
 export default function DashboardLayout({
@@ -53,6 +54,7 @@ export default function DashboardLayout({
   followCount,
   followedTeacherCount,
   customTabs,
+  onViewFollowerList,
 }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState('courses')
   const [useFaviconFallback, setUseFaviconFallback] = useState(false)
@@ -142,7 +144,10 @@ export default function DashboardLayout({
             <div className="flex gap-4 items-center flex-wrap">
               <Badge variant="secondary">{universityName || t('badges.university')}</Badge>
               {role?.toLowerCase() === 'student' && followedTeacherCount !== undefined && (
-                <Badge variant="secondary">
+                <Badge
+                  variant="secondary"
+                  onClick={onViewFollowerList}
+                >
                   {t('badges.followedTeachers', {
                     formattedCount: (followedTeacherCount ?? 0).toLocaleString(
                       i18n.language === 'de' ? 'de-DE' : 'en-US',
