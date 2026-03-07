@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { toast } from 'sonner'
@@ -11,7 +11,8 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
 import { TopicForm, TopicCardList } from '@/features/topic'
 import TopicsToolbar from '@/features/topic/components/TopicsToolbar'
-
+import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { TOPIC_SEARCH_FIELDS } from '@/features/topic/types/topic.types'
 export default function Course() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
@@ -22,18 +23,7 @@ export default function Course() {
   const [newTopicDescription, setNewTopicDescription] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const normalizedSearch = searchQuery.trim().toLowerCase()
-  const filteredTopics = useMemo(() => {
-    if (!normalizedSearch) {
-      return topics
-    }
-
-    return topics.filter((topic) => {
-      const title = topic.title?.toLowerCase() || ''
-      const description = topic.description?.toLowerCase() || ''
-      return title.includes(normalizedSearch) || description.includes(normalizedSearch)
-    })
-  }, [topics, normalizedSearch])
+  const filteredTopics = useSearchFilter(topics, searchQuery, TOPIC_SEARCH_FIELDS)
 
   useEffect(() => {
     if (!courseId) return

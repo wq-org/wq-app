@@ -1,12 +1,15 @@
-import { ScrollArea } from '@/components/ui/scroll-area'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import LessonEditor from '@/features/course/components/LessonEditor'
-import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
+import LessonEditor from '@/features/lesson/components/LessonEditor'
+import {
+  getHeadingsFromLessonValue,
+  type LessonHeading,
+} from '@/features/course/utils/lessonHeadings'
+import LessonHeadingsNavigation from '@/features/lesson/components/LessonHeadingsNavigation'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 
-export interface LessonPreviewContentProps {
+export interface LessonPreviewTabProps {
   title: string
   description: string
   value?: Record<string, unknown>
@@ -20,7 +23,7 @@ export interface LessonPreviewContentProps {
   className?: string
 }
 
-export default function LessonPreviewContent({
+export default function LessonPreviewTab({
   title,
   description,
   value,
@@ -32,10 +35,10 @@ export default function LessonPreviewContent({
   editorPlaceholder,
   themeId,
   className,
-}: LessonPreviewContentProps) {
+}: LessonPreviewTabProps) {
   const previewHeadings = getHeadingsFromLessonValue(value)
 
-  const scrollToHeading = (heading: { blockId: string; elementId?: string }) => {
+  const scrollToHeading = (heading: LessonHeading) => {
     const element =
       (heading.elementId ? document.getElementById(heading.elementId) : null) ??
       document.querySelector(`[data-block-id="${heading.blockId}"]`) ??
@@ -75,42 +78,11 @@ export default function LessonPreviewContent({
 
   return (
     <div className={cn('relative', previewHeadings.length > 0 && 'flex gap-4', className)}>
-      {previewHeadings.length > 0 ? (
-        <aside
-          className="sticky top-24 z-30 h-112 w-52 shrink-0 self-start rounded-2xl border bg-card/50 px-4 py-3 backdrop-blur"
-          role="navigation"
-          aria-label={headingsNavLabel}
-        >
-          <Text
-            as="p"
-            variant="small"
-            className="mb-2 font-semibold text-muted-foreground"
-          >
-            {headingsNavLabel}
-          </Text>
-          <ScrollArea className="h-[calc(100%-2rem)]">
-            <nav className="flex flex-col gap-1">
-              {previewHeadings.map((heading) => (
-                <button
-                  key={heading.blockId}
-                  type="button"
-                  onClick={() => scrollToHeading(heading)}
-                  className={cn(
-                    'text-left text-sm text-foreground hover:text-blue-500',
-                    heading.level === 1 && 'font-semibold',
-                    heading.level === 2 && 'pl-2 font-medium',
-                    heading.level === 3 && 'pl-4',
-                    heading.level === 4 && 'pl-6 text-muted-foreground',
-                  )}
-                >
-                  <span className="line-clamp-2 block wrap-break-word">{heading.text}</span>
-                </button>
-              ))}
-            </nav>
-          </ScrollArea>
-        </aside>
-      ) : null}
-
+      <LessonHeadingsNavigation
+        headings={previewHeadings}
+        label={headingsNavLabel}
+        onHeadingSelect={scrollToHeading}
+      />
       <section className="min-w-0 flex-1 rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4">
         <Text
           as="h2"

@@ -36,3 +36,5 @@ export interface HoldDeleteTooltipProps {
   tooltipDeleting?: string
   holdDuration?: number
 }
+
+export const TOPIC_SEARCH_FIELDS: Array<keyof Topic> = ['title', 'description']

@@ -38,7 +38,7 @@
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
   },
   "toolbar": {
-    "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen..."
+    "searchPlaceholder": "nach Titel oder Beschreibung suchen..."
   },
   "card": {
     "subheading": "Lektion",

@@ -20,10 +20,8 @@ export default function TopicsToolbar({
       <Input
         value={searchValue}
         onChange={(event) => onSearchChange(event.target.value)}
-        placeholder={t('topic.toolbar.searchPlaceholder', {
-          defaultValue: 'Search topics by title or description...',
-        })}
-        className="pr-10 w-64"
+        placeholder={t('topic.toolbar.searchPlaceholder')}
+        className="pr-10 w-80"
       />
     </div>
   )

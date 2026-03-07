@@ -21,10 +21,8 @@ export default function LessonToolBar({
       <Input
         value={searchValue}
         onChange={(event) => onSearchChange(event.target.value)}
-        placeholder={t('toolbar.searchPlaceholder', {
-          defaultValue: 'Search lessons by title or description...',
-        })}
-        className="pr-10 w-64"
+        placeholder={t('toolbar.searchPlaceholder')}
+        className="pr-10 w-80"
       />
     </div>
   )

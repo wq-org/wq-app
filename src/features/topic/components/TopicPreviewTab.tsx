@@ -2,7 +2,10 @@ import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
 import { LessonCardList, type Lesson } from '@/features/lesson'
 import type { ThemeId } from '@/lib/themes'
-
+import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { LESSON_SEARCH_FIELDS } from '@/features/lesson/types/lesson.types'
+import TopicsToolbar from './TopicsToolbar'
+import { useState } from 'react'
 export interface TopicPreviewTabProps {
   lessons: Lesson[]
   themeId?: ThemeId
@@ -19,6 +22,8 @@ export default function TopicPreviewTab({
   description,
 }: TopicPreviewTabProps) {
   const { t } = useTranslation('features.course')
+  const [searchQuery, setSearchQuery] = useState('')
+  const filteredLessons = useSearchFilter(lessons, searchQuery, LESSON_SEARCH_FIELDS)
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,16 +58,13 @@ export default function TopicPreviewTab({
         </div>
       ) : null}
 
-      <Text
-        as="p"
-        variant="body"
-        className="text-2xl"
-      >
-        {t('page.lessonsTitle')}
-      </Text>
+      <TopicsToolbar
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       <LessonCardList
-        lessons={lessons}
+        lessons={filteredLessons}
         themeId={themeId}
         onLessonOpen={onLessonOpen}
       />

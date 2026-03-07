@@ -1,7 +1,7 @@
 import { AppNavigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Badge } from '@/components/ui/badge'
-import { GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
+import { ArrowUpRight, GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Container } from '@/components/shared'
 import { useState } from 'react'
@@ -156,12 +156,19 @@ export default function DashboardLayout({
                 </Badge>
               )}
               {role?.toLowerCase() === 'teacher' && followCount !== undefined && (
-                <Badge variant="secondary">
+                <Badge
+                  variant="secondary"
+                  onClick={onViewFollowerList}
+                  className={
+                    onViewFollowerList ? 'cursor-pointer inline-flex items-center gap-1' : undefined
+                  }
+                >
                   {t('badges.followers', {
                     formattedCount: (followCount ?? 0).toLocaleString(
                       i18n.language === 'de' ? 'de-DE' : 'en-US',
                     ),
                   })}
+                  {onViewFollowerList ? <ArrowUpRight className="h-3.5 w-3.5" /> : null}
                 </Badge>
               )}
               {followCount !== undefined && role?.toLowerCase() !== 'teacher' && (

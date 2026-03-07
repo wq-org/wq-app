@@ -16,6 +16,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { Button } from '@/components/ui/button'
 import TableEmptyView from '@/features/files/components/FilesTableEmptyView'
 import type { FileItem } from '../types/files.types'
 import { FILE_TYPE_CONFIG } from '../types/files.types'
@@ -38,7 +39,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
   const endIndex = startIndex + itemsPerPage
   const currentFiles = files.slice(startIndex, endIndex)
 
-  const handleRowClick = (file: FileItem) => {
+  const handleOpenFile = (file: FileItem) => {
     setSelectedFile(file)
     setIsDrawerOpen(true)
   }
@@ -99,7 +100,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
                 {t('table.columns.filename')}
               </TableHead>
               <TableHead className="text-center text-gray-400 font-light">
-                {t('table.columns.size')}
+                {t('table.columns.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -110,8 +111,7 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
               return (
                 <TableRow
                   key={file.id}
-                  className="border-b last:border-0 cursor-pointer hover:bg-gray-50 transition-colors animate-in fade-in-0 slide-in-from-bottom-2"
-                  onClick={() => handleRowClick(file)}
+                  className="border-b last:border-0 transition-colors animate-in fade-in-0 slide-in-from-bottom-2"
                 >
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center">
@@ -125,7 +125,15 @@ export default function FileTable({ files, onRefresh }: FileTableProps) {
                   <TableCell className="text-left">
                     <div className="flex items-center gap-3 h-10 min-h-10">{file.filename}</div>
                   </TableCell>
-                  <TableCell className="text-center">{file.size}</TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="darkblue"
+                      size="sm"
+                      onClick={() => handleOpenFile(file)}
+                    >
+                      {t('table.actions.open')}
+                    </Button>
+                  </TableCell>
                 </TableRow>
               )
             })}

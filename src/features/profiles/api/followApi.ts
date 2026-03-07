@@ -51,6 +51,13 @@ export async function getFollowedTeacherCount(studentId: string): Promise<number
 
 export type FollowStatus = 'none' | 'accepted'
 
+export interface TeacherFollowerProfile {
+  user_id: string
+  display_name: string | null
+  username: string | null
+  avatar_url: string | null
+}
+
 /**
  * Get follow status for the current user and a teacher.
  * Baseline mode only supports direct follow (accepted) or none.
@@ -76,6 +83,51 @@ export async function getFollowStatus(teacherId: string): Promise<FollowStatus> 
 export async function isFollowing(teacherId: string): Promise<boolean> {
   const status = await getFollowStatus(teacherId)
   return status === 'accepted'
+}
+
+/**
+ * Get followers (students) for the currently authenticated teacher.
+ */
+export async function getTeacherFollowers(): Promise<TeacherFollowerProfile[]> {
+  const currentUserId = await getCurrentUserId()
+  if (!currentUserId) return []
+
+  const { data: followerRows, error: followerError } = await supabase
+    .from('teacher_followers')
+    .select('student_id')
+    .eq('teacher_id', currentUserId)
+
+  if (followerError || !followerRows) {
+    if (followerError) {
+      console.error('Error fetching teacher followers:', followerError)
+    }
+    return []
+  }
+
+  const studentIds = followerRows
+    .map((row: { student_id: string }) => row.student_id)
+    .filter(Boolean)
+
+  if (studentIds.length === 0) return []
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('user_id, display_name, username, avatar_url')
+    .in('user_id', studentIds)
+
+  if (profilesError || !profiles) {
+    if (profilesError) {
+      console.error('Error fetching follower profiles:', profilesError)
+    }
+    return []
+  }
+
+  const orderMap = new Map(studentIds.map((id, index) => [id, index]))
+  return [...profiles].sort((a, b) => {
+    const ai = orderMap.get(a.user_id) ?? Number.MAX_SAFE_INTEGER
+    const bi = orderMap.get(b.user_id) ?? Number.MAX_SAFE_INTEGER
+    return ai - bi
+  }) as TeacherFollowerProfile[]
 }
 
 /** Follow teacher immediately (baseline behavior). */

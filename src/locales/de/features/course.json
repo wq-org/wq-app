@@ -32,6 +32,7 @@
     "addTopicPlaceholder": "Neues Thema hinzuf\u00fcgen",
     "addTopicDescriptionPlaceholder": "Beschreibung zum Thema hinzuf\u00fcgen",
     "topicsTitle": "Themen",
+
     "lessonsForTopic": "Lektionen f\u00fcr: {{topic}}",
     "lessonsForTopicDescription": "Entdecke die verf\u00fcgbaren Lektionen f\u00fcr dieses Thema",
     "emptyState": {
@@ -103,7 +104,7 @@
     "titleLabel": "Titel",
     "descriptionLabel": "Beschreibung",
     "toolbar": {
-      "searchPlaceholder": "Themen nach Titel oder Beschreibung suchen..."
+      "searchPlaceholder": "nach Titel oder Beschreibung suchen..."
     }
   },
   "card": {
