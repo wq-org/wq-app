@@ -49,3 +49,6 @@ institution.md
 *.csv
 csv/
 *.py
+
+
+game_config.json
