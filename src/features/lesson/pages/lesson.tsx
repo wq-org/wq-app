@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import { useCourse } from '@/contexts/course'
-import LessonLayout from '@/features/course/components/LessonLayout'
+import LessonLayout from '@/features/lesson/components/LessonLayout'
+import LessonPreviewTab from '@/features/lesson/components/LessonPreviewTab'
 import LessonSettings from '@/features/course/components/LessonSettings'
 import LessonEditor from '@/features/course/components/LessonEditor'
 import { Button } from '@/components/ui/button'
@@ -10,10 +11,10 @@ import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
-import LessonPreviewContent from '@/features/course/components/LessonPreviewContent'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { MessageCircleQuestionMark } from 'lucide-react'
+import type { WorkspaceTabId } from '@/components/shared/workspace'
 import {
   createYooptaStarterContentJson,
   createYooptaStarterContentObject,
@@ -62,13 +63,30 @@ function parseContent(raw: unknown): Record<string, unknown> | undefined {
   return undefined
 }
 
+function normalizeLessonTab(tab?: string): WorkspaceTabId {
+  switch (tab) {
+    case 'editor':
+      return 'editor'
+    case 'overview':
+      return 'overview'
+    case 'settings':
+      return 'settings'
+    case 'analytics':
+      return 'analytics'
+    case 'preview':
+      return 'overview'
+    default:
+      return 'editor'
+  }
+}
+
 export default function Lesson() {
   const { t } = useTranslation('features.lesson')
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
   const navState = location.state as {
-    initialTab?: 'overview' | 'preview' | 'settings'
+    initialTab?: 'editor' | 'overview' | 'preview' | 'settings' | 'analytics'
     title?: string
     description?: string
     topicId?: string
@@ -84,18 +102,18 @@ export default function Lesson() {
   const [isInitialContentLoading, setIsInitialContentLoading] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [hasUnsavedSettingsChanges, setHasUnsavedSettingsChanges] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview' | 'preview' | 'settings'>(
-    () => initialTabFromNav ?? 'overview',
+  const [activeTab, setActiveTab] = useState<WorkspaceTabId>(() =>
+    normalizeLessonTab(initialTabFromNav),
   )
   const [selectedGuide, setSelectedGuide] = useState<LessonGuideValue>(LESSON_GUIDES[0].value)
 
   useEffect(() => {
     if (initialTabFromNav != null) {
-      setActiveTab(initialTabFromNav)
+      setActiveTab(normalizeLessonTab(initialTabFromNav))
     }
   }, [lessonId, initialTabFromNav])
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingTabRef = useRef<'overview' | 'preview' | 'settings' | null>(null)
+  const pendingTabRef = useRef<WorkspaceTabId | null>(null)
 
   // Route changes can happen without unmounting. Clear pending autosave timers
   // so stale updates from a previous lesson do not fire against a reset context.
@@ -209,7 +227,7 @@ export default function Lesson() {
   )
 
   const handleTabChange = useCallback(
-    (requestedTab: 'overview' | 'preview' | 'settings') => {
+    (requestedTab: WorkspaceTabId) => {
       if (requestedTab === activeTab) return
       if (hasUnsavedSettingsChanges) {
         pendingTabRef.current = requestedTab
@@ -326,7 +344,7 @@ export default function Lesson() {
   const activeGuide =
     LESSON_GUIDES.find((guide) => guide.value === selectedGuide) ?? LESSON_GUIDES[0]
 
-  const overviewContent = (
+  const editorContent = (
     <div className="relative flex flex-col gap-6">
       <div className="animate-in fade-in-0 slide-in-from-bottom-4">{lessonHeroBanner}</div>
 
@@ -415,8 +433,8 @@ export default function Lesson() {
     </div>
   )
 
-  const previewContent = (
-    <LessonPreviewContent
+  const overviewTabContent = (
+    <LessonPreviewTab
       title={lessonTitle}
       description={lessonDescription}
       value={editorValue}
@@ -434,17 +452,33 @@ export default function Lesson() {
 
   return (
     <LessonLayout
-      lessonId={lessonId}
       activeTab={activeTab}
       onTabChange={handleTabChange}
-      overviewContent={overviewContent}
-      previewContent={previewContent}
+      editorContent={editorContent}
+      overviewContent={overviewTabContent}
       settingsContent={
         <LessonSettings
           lessonId={lessonId}
           courseId={courseId}
           onUnsavedChange={setHasUnsavedSettingsChanges}
         />
+      }
+      analyticsContent={
+        <div className="rounded-2xl border bg-white p-6">
+          <Text
+            as="h3"
+            variant="h3"
+          >
+            {t('layout.tabs.analytics', { defaultValue: 'Analytics' })}
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="mt-2 text-muted-foreground"
+          >
+            Lesson analytics will be available soon.
+          </Text>
+        </div>
       }
     />
   )

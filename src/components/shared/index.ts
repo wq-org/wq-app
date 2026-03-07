@@ -21,3 +21,10 @@ export { LanguageSwitcher } from './i18n'
 
 // Wrappers
 export { PageWrapper } from './wrappers'
+
+// Workspace
+export { FeatureWorkspaceLayout } from './workspace'
+export type { WorkspaceTabId } from './workspace'
+
+// Cards
+export { InfoCard } from './InfoCard'

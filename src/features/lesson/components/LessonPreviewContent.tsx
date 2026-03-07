@@ -1,12 +1,12 @@
-import { Text } from '@/components/ui/text'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { cn } from '@/lib/utils'
-import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
-import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
-import LessonEditor from '@/features/course/components/LessonEditor'
 import Spinner from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
+import LessonEditor from '@/features/course/components/LessonEditor'
+import { getHeadingsFromLessonValue } from '@/features/course/utils/lessonHeadings'
+import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
+import { cn } from '@/lib/utils'
 
-interface LessonPreviewContentProps {
+export interface LessonPreviewContentProps {
   title: string
   description: string
   value?: Record<string, unknown>
@@ -36,15 +36,16 @@ export default function LessonPreviewContent({
   const previewHeadings = getHeadingsFromLessonValue(value)
 
   const scrollToHeading = (heading: { blockId: string; elementId?: string }) => {
-    const el =
+    const element =
       (heading.elementId ? document.getElementById(heading.elementId) : null) ??
       document.querySelector(`[data-block-id="${heading.blockId}"]`) ??
       document.getElementById(heading.blockId)
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const heroBanner = (
-    <div className="relative overflow-hidden rounded-2xl border min-h-[260px]">
+    <div className="relative min-h-[260px] overflow-hidden rounded-2xl border">
       <div
         className="absolute inset-0 h-full w-full"
         style={getThemeBackgroundStyle(themeId)}
@@ -74,7 +75,7 @@ export default function LessonPreviewContent({
 
   return (
     <div className={cn('relative', previewHeadings.length > 0 && 'flex gap-4', className)}>
-      {previewHeadings.length > 0 && (
+      {previewHeadings.length > 0 ? (
         <aside
           className="sticky top-24 z-30 h-112 w-52 shrink-0 self-start rounded-2xl border bg-card/50 px-4 py-3 backdrop-blur"
           role="navigation"
@@ -102,13 +103,13 @@ export default function LessonPreviewContent({
                     heading.level === 4 && 'pl-6 text-muted-foreground',
                   )}
                 >
-                  <span className="block wrap-break-word line-clamp-2">{heading.text}</span>
+                  <span className="line-clamp-2 block wrap-break-word">{heading.text}</span>
                 </button>
               ))}
             </nav>
           </ScrollArea>
         </aside>
-      )}
+      ) : null}
 
       <section className="min-w-0 flex-1 rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4">
         <Text

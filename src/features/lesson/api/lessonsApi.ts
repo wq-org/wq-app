@@ -1,9 +1,9 @@
 import { supabase } from '@/lib/supabase'
-import type { Lesson, CreateLessonData } from '../types/lesson.types'
-import { createYooptaStarterContentJson } from '../utils/yooptaContent'
+import { createYooptaStarterContentJson } from '@/features/course/utils/yooptaContent'
+import type { CreateLessonData, Lesson } from '../types/lesson.types'
 
 /**
- * Create a new lesson
+ * Create a new lesson.
  */
 export async function createLesson(data: CreateLessonData): Promise<Lesson> {
   const normalizedContent = data.content?.trim() ? data.content : createYooptaStarterContentJson()
@@ -16,7 +16,7 @@ export async function createLesson(data: CreateLessonData): Promise<Lesson> {
       description: data.description || '',
       topic_id: data.topic_id,
     })
-    .select('id, title, content, description, topic_id')
+    .select('id, title, content, description, topic_id, created_at, updated_at')
     .single()
 
   if (error) {
@@ -28,7 +28,7 @@ export async function createLesson(data: CreateLessonData): Promise<Lesson> {
 }
 
 /**
- * Update a lesson
+ * Update a lesson.
  */
 export async function updateLesson(
   lessonId: string,
@@ -38,7 +38,7 @@ export async function updateLesson(
     .from('lessons')
     .update(updates)
     .eq('id', lessonId)
-    .select('id, title, content, description, topic_id')
+    .select('id, title, content, description, topic_id, created_at, updated_at')
     .single()
 
   if (error) {
@@ -50,12 +50,12 @@ export async function updateLesson(
 }
 
 /**
- * Get a single lesson by ID
+ * Get a single lesson by ID.
  */
 export async function getLessonById(lessonId: string): Promise<Lesson> {
   const { data, error } = await supabase
     .from('lessons')
-    .select('id, title, content, description, topic_id')
+    .select('id, title, content, description, topic_id, created_at, updated_at')
     .eq('id', lessonId)
     .single()
 
@@ -68,7 +68,7 @@ export async function getLessonById(lessonId: string): Promise<Lesson> {
 }
 
 /**
- * Delete a lesson
+ * Delete a lesson.
  */
 export async function deleteLesson(lessonId: string): Promise<void> {
   const { error } = await supabase.from('lessons').delete().eq('id', lessonId)
@@ -80,12 +80,12 @@ export async function deleteLesson(lessonId: string): Promise<void> {
 }
 
 /**
- * Get all lessons for a topic
+ * Get all lessons for a topic.
  */
 export async function getLessonsByTopicId(topicId: string): Promise<Lesson[]> {
   const { data, error } = await supabase
     .from('lessons')
-    .select('id, title, topic_id, content, description')
+    .select('id, title, topic_id, content, description, created_at, updated_at')
     .eq('topic_id', topicId)
     .order('created_at', { ascending: true })
 

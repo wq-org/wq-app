@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Trash2, Check } from 'lucide-react'
-import { deleteLesson } from '@/features/course/api/lessonsApi'
 import { useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
@@ -25,7 +24,12 @@ export default function LessonSettings({
   onUnsavedChange,
 }: LessonSettingsProps) {
   const navigate = useNavigate()
-  const { lesson, fetchLessonById, updateLesson: updateLessonContext } = useLesson()
+  const {
+    lesson,
+    fetchLessonById,
+    updateLesson: updateLessonContext,
+    deleteLesson: deleteLessonContext,
+  } = useLesson()
   const { t } = useTranslation('features.lesson')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -89,7 +93,7 @@ export default function LessonSettings({
 
   const handleDelete = async () => {
     try {
-      await deleteLesson(lessonId)
+      await deleteLessonContext(lessonId)
       if (courseId) {
         navigate(`/teacher/course/${courseId}`)
       } else {

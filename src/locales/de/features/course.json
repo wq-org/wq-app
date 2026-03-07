@@ -56,7 +56,6 @@
   },
   "layout": {
     "tabs": {
-      "overview": "Editor",
       "preview": "Vorschau",
       "settings": "Einstellungen",
       "analytics": "Analytik"

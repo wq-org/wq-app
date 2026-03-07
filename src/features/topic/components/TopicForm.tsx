@@ -1,13 +1,13 @@
+import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
 
-interface CreateTopicFormProps {
+export interface TopicFormProps {
   title: string
   description: string
   loading?: boolean
@@ -16,14 +16,14 @@ interface CreateTopicFormProps {
   onCreate: () => void
 }
 
-export function CreateTopicForm({
+export default function TopicForm({
   title,
   description,
   loading = false,
   onTitleChange,
   onDescriptionChange,
   onCreate,
-}: CreateTopicFormProps) {
+}: TopicFormProps) {
   const { t } = useTranslation('features.course')
   const canCreate = Boolean(title.trim() && description.trim())
 
@@ -47,7 +47,7 @@ export function CreateTopicForm({
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           placeholder={t('page.addTopicDescriptionPlaceholder')}
-          className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20 resize-none h-24"
+          className="h-24 w-full resize-none px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20"
         />
       </div>
 

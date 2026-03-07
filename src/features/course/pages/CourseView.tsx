@@ -84,9 +84,8 @@ export default function CourseView() {
             </div>
             <CoursePreviewTab
               courseId={courseId}
-              onLessonView={(lessonId) =>
-                navigate(`/student/course/${courseId}/lesson/${lessonId}`)
-              }
+              themeId={course.theme_id}
+              onTopicView={(topicId) => navigate(`/student/course/${courseId}/topic/${topicId}`)}
             />
           </>
         )}
