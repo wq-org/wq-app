@@ -37,6 +37,14 @@
     "titlePlaceholder": "Neue Lektion hinzufügen",
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
   },
+  "toolbar": {
+    "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen..."
+  },
+  "card": {
+    "subheading": "Lektion",
+    "updatedRecently": "K\u00fcrzlich aktualisiert",
+    "updatedRelative": "Aktualisiert {{relative}}"
+  },
   "layout": {
     "loading": "Wird geladen...",
     "tabs": {

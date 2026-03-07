@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { toast } from 'sonner'
@@ -10,6 +10,7 @@ import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
 import { TopicForm, TopicCardList } from '@/features/topic'
+import TopicsToolbar from '@/features/topic/components/TopicsToolbar'
 
 export default function Course() {
   const { t } = useTranslation('features.course')
@@ -19,6 +20,20 @@ export default function Course() {
   const { topics, loading, fetchTopicsByCourseId, createTopic } = useTopic()
   const [newTopicTitle, setNewTopicTitle] = useState('')
   const [newTopicDescription, setNewTopicDescription] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+  const filteredTopics = useMemo(() => {
+    if (!normalizedSearch) {
+      return topics
+    }
+
+    return topics.filter((topic) => {
+      const title = topic.title?.toLowerCase() || ''
+      const description = topic.description?.toLowerCase() || ''
+      return title.includes(normalizedSearch) || description.includes(normalizedSearch)
+    })
+  }, [topics, normalizedSearch])
 
   useEffect(() => {
     if (!courseId) return
@@ -86,6 +101,12 @@ export default function Course() {
       >
         {t('page.topicsTitle')}
       </Text>
+
+      <TopicsToolbar
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <Spinner
@@ -93,11 +114,11 @@ export default function Course() {
             size="md"
           />
         </div>
-      ) : topics.length === 0 ? (
+      ) : filteredTopics.length === 0 ? (
         <EmptyTopicsView />
       ) : (
         <TopicCardList
-          topics={topics.map((topic) => ({
+          topics={filteredTopics.map((topic) => ({
             id: topic.id,
             title: topic.title,
             description: topic.description,

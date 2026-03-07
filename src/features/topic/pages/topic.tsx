@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +12,7 @@ import { LessonCardList, LessonForm } from '@/features/lesson'
 import TopicLayout from '@/features/topic/components/TopicLayout'
 import TopicPreviewTab from '@/features/topic/components/TopicPreviewTab'
 import TopicSettings from '@/features/topic/components/TopicSettings'
+import LessonToolBar from '@/features/lesson/components/LessonToolBar'
 import type { WorkspaceTabId } from '@/components/shared/workspace'
 
 export default function Topic() {
@@ -19,9 +20,23 @@ export default function Topic() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<WorkspaceTabId>('editor')
+  const [searchQuery, setSearchQuery] = useState('')
   const { selectedCourse, fetchCourseById } = useCourse()
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
   const { lessons, fetchLessonsByTopicId, loading: lessonLoading } = useLesson()
+
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+  const filteredLessons = useMemo(() => {
+    if (!normalizedSearch) {
+      return lessons
+    }
+
+    return lessons.filter((lesson) => {
+      const title = lesson.title?.toLowerCase() || ''
+      const description = lesson.description?.toLowerCase() || ''
+      return title.includes(normalizedSearch) || description.includes(normalizedSearch)
+    })
+  }, [lessons, normalizedSearch])
 
   useEffect(() => {
     if (courseId && (!selectedCourse || selectedCourse.id !== courseId)) {
@@ -154,6 +169,11 @@ export default function Topic() {
             />
           </div>
 
+          <LessonToolBar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+
           {lessonLoading ? (
             <div className="flex items-center justify-center py-12">
               <Spinner
@@ -163,7 +183,7 @@ export default function Topic() {
             </div>
           ) : (
             <LessonCardList
-              lessons={lessons}
+              lessons={filteredLessons}
               themeId={selectedCourse?.theme_id}
               onLessonOpen={(lessonId) => {
                 navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
@@ -178,7 +198,7 @@ export default function Topic() {
         <TopicPreviewTab
           title={selectedTopic.title}
           description={selectedTopic.description?.trim() || t('page.lessonsForTopicDescription')}
-          lessons={lessons}
+          lessons={filteredLessons}
           themeId={selectedCourse?.theme_id}
           onLessonOpen={(lessonId) => {
             navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {

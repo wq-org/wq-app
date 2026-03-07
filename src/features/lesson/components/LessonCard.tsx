@@ -15,15 +15,26 @@ export interface LessonCardProps {
 }
 
 export default function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
-  const { t, i18n } = useTranslation('features.course')
+  const { t, i18n } = useTranslation(['features.lesson', 'features.course'])
 
   return (
     <InfoCard
       className="max-w-[350px]"
-      subheading="Lesson"
+      subheading={t('card.subheading', { ns: 'features.lesson', defaultValue: 'Lesson' })}
       title={lesson.title}
       description={lesson.description?.trim() || t('lessonTable.noDescription')}
-      content={formatRelativeUpdatedTime(lesson.updated_at, lesson.created_at, i18n.language)}
+      content={formatRelativeUpdatedTime(lesson.updated_at, lesson.created_at, i18n.language, {
+        updatedRecently: t('card.updatedRecently', {
+          ns: 'features.lesson',
+          defaultValue: 'Updated recently',
+        }),
+        updatedWithRelative: (relativeValue) =>
+          t('card.updatedRelative', {
+            ns: 'features.lesson',
+            defaultValue: 'Updated {{relative}}',
+            relative: relativeValue,
+          }),
+      })}
       icon={<StickyNote className="h-5 w-5 text-white" />}
       iconStyle={getThemeBackgroundStyle(themeId)}
       footer={

@@ -28,3 +28,4 @@ export type { WorkspaceTabId } from './workspace'
 
 // Cards
 export { InfoCard } from './InfoCard'
+export { UserCard } from './UserCard'

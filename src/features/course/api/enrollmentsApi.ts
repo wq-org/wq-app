@@ -9,6 +9,16 @@ export interface EnrollmentCourse extends Course {
   } | null
 }
 
+export type CourseMemberType = 'teacher' | 'student'
+
+export interface CourseMember {
+  id: string
+  title: string
+  email: string | null
+  avatar_url: string | null
+  type: CourseMemberType
+}
+
 async function getCurrentUserId(): Promise<string> {
   const {
     data: { user },
@@ -144,4 +154,77 @@ export async function getMyEnrollmentStatusMap(
   })
 
   return statusMap
+}
+
+export async function getCourseMembers(courseId: string): Promise<CourseMember[]> {
+  const { data: course, error: courseError } = await supabase
+    .from('courses')
+    .select('teacher_id')
+    .eq('id', courseId)
+    .single()
+
+  if (courseError) {
+    console.error('Error fetching course owner:', courseError)
+    throw courseError
+  }
+
+  const teacherId = course?.teacher_id as string | undefined
+  if (!teacherId) return []
+
+  const { data: enrollments, error: enrollmentError } = await supabase
+    .from('course_enrollments')
+    .select('student_id, enrolled_at')
+    .eq('course_id', courseId)
+    .order('enrolled_at', { ascending: true })
+
+  if (enrollmentError) {
+    console.error('Error fetching course enrollments:', enrollmentError)
+    throw enrollmentError
+  }
+
+  const memberIds = new Set<string>([teacherId])
+  ;(enrollments || []).forEach((row) => {
+    if (row.student_id) {
+      memberIds.add(row.student_id)
+    }
+  })
+
+  const idList = [...memberIds]
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('user_id, display_name, username, email, avatar_url')
+    .in('user_id', idList)
+
+  if (profilesError) {
+    console.error('Error fetching course member profiles:', profilesError)
+    throw profilesError
+  }
+
+  const profileById = new Map((profiles || []).map((profile) => [profile.user_id, profile]))
+
+  const teacherProfile = profileById.get(teacherId)
+  const teacherMember: CourseMember = {
+    id: teacherId,
+    title: teacherProfile?.display_name || teacherProfile?.username || 'Teacher',
+    email: teacherProfile?.email ?? null,
+    avatar_url: teacherProfile?.avatar_url ?? null,
+    type: 'teacher',
+  }
+
+  const studentMembers: CourseMember[] = (enrollments || [])
+    .map((row) => row.student_id)
+    .filter((studentId): studentId is string => Boolean(studentId))
+    .map((studentId) => {
+      const profile = profileById.get(studentId)
+      return {
+        id: studentId,
+        title: profile?.display_name || profile?.username || 'Student',
+        email: profile?.email ?? null,
+        avatar_url: profile?.avatar_url ?? null,
+        type: 'student' as const,
+      }
+    })
+
+  return [teacherMember, ...studentMembers]
 }

@@ -15,7 +15,7 @@ export default function LessonCardList({ lessons, themeId, onLessonOpen }: Lesso
   }
 
   return (
-    <div className="flex gap-4 flex-wrap">
+    <div className="flex flex-wrap gap-10 animate-in fade-in-0 slide-in-from-bottom-4">
       {lessons.map((lesson) => (
         <LessonCard
           key={lesson.id}

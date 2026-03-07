@@ -28,7 +28,7 @@ export function InfoCard({
 }: InfoCardProps) {
   return (
     <Card className={cn('w-full rounded-2xl border bg-white shadow-sm', className)}>
-      <CardContent className="flex h-full min-h-[180px] flex-col p-5">
+      <CardContent className="flex h-full min-h-[180px] flex-col">
         <div className="flex flex-col gap-2">
           {subheading ? (
             <p className="text-sm font-normal leading-none text-gray-400">{subheading}</p>

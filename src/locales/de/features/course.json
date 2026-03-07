@@ -68,6 +68,11 @@
       "continueAnyway": "Trotzdem fortfahren"
     }
   },
+  "analytics": {
+    "membersTitle": "Kursmitglieder",
+    "membersHint": "Personen, die aktuell in diesem Kurs sind.",
+    "emptyMembers": "Für diesen Kurs wurden noch keine Mitglieder gefunden."
+  },
   "lessonTable": {
     "columns": {
       "title": "Titel",
@@ -96,7 +101,10 @@
       "cancel": "Abbrechen"
     },
     "titleLabel": "Titel",
-    "descriptionLabel": "Beschreibung"
+    "descriptionLabel": "Beschreibung",
+    "toolbar": {
+      "searchPlaceholder": "Themen nach Titel oder Beschreibung suchen..."
+    }
   },
   "card": {
     "published": "Ver\u00f6ffentlicht",

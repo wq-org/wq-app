@@ -69,6 +69,11 @@
       "continueAnyway": "Continue anyway"
     }
   },
+  "analytics": {
+    "membersTitle": "Course Members",
+    "membersHint": "People currently inside this course.",
+    "emptyMembers": "No members found for this course yet."
+  },
   "lessonTable": {
     "columns": {
       "title": "Title",
@@ -97,7 +102,10 @@
       "cancel": "Cancel"
     },
     "titleLabel": "Title",
-    "descriptionLabel": "Description"
+    "descriptionLabel": "Description",
+    "toolbar": {
+      "searchPlaceholder": "Search topics by title or description..."
+    }
   },
   "card": {
     "published": "Published",

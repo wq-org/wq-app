@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
 import CourseSettings from '@/features/course/components/CourseSettings'
 import CoursePreviewTab from '@/features/course/components/CoursePreviewTab'
+import CourseAnalyticsTab from '@/features/course/components/CourseAnalyticsTab'
 import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/workspace'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -142,7 +143,7 @@ export default function CourseLayout() {
                 onUnsavedChange={setHasUnsavedChanges}
               />
             }
-            analyticsContent={<div className="flex flex-col gap-6 pb-32" />}
+            analyticsContent={<CourseAnalyticsTab courseId={courseId} />}
           />
         )}
       </div>
