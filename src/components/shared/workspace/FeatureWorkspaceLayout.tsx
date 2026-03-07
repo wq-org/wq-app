@@ -3,7 +3,7 @@ import { BarChart2, Eye, FilePenLine, Settings } from 'lucide-react'
 import SelectTabs, { type TabItem } from '@/components/shared/tabs/SelectTabs'
 import { cn } from '@/lib/utils'
 
-export type WorkspaceTabId = 'editor' | 'overview' | 'settings' | 'analytics'
+export type WorkspaceTabId = 'editor' | 'preview' | 'settings' | 'analytics'
 
 export interface FeatureWorkspaceLayoutProps {
   tabTitles?: Partial<Record<WorkspaceTabId, string>>
@@ -11,7 +11,7 @@ export interface FeatureWorkspaceLayoutProps {
   activeTab?: WorkspaceTabId
   onTabChange?: (tab: WorkspaceTabId) => void
   editorContent?: ReactNode
-  overviewContent?: ReactNode
+  previewContent?: ReactNode
   settingsContent?: ReactNode
   analyticsContent?: ReactNode
   className?: string
@@ -19,18 +19,18 @@ export interface FeatureWorkspaceLayoutProps {
   contentClassName?: string
 }
 
-const TAB_ORDER: WorkspaceTabId[] = ['editor', 'overview', 'settings', 'analytics']
+const TAB_ORDER: WorkspaceTabId[] = ['editor', 'preview', 'settings', 'analytics']
 
 const TAB_ICON_MAP: Record<WorkspaceTabId, TabItem['icon']> = {
   editor: FilePenLine,
-  overview: Eye,
+  preview: Eye,
   settings: Settings,
   analytics: BarChart2,
 }
 
 const DEFAULT_TAB_TITLES: Record<WorkspaceTabId, string> = {
   editor: 'Editor',
-  overview: 'Overview',
+  preview: 'Preview',
   settings: 'Settings',
   analytics: 'Analytics',
 }
@@ -41,7 +41,7 @@ export default function FeatureWorkspaceLayout({
   activeTab,
   onTabChange,
   editorContent,
-  overviewContent,
+  previewContent,
   settingsContent,
   analyticsContent,
   className,
@@ -79,7 +79,7 @@ export default function FeatureWorkspaceLayout({
 
       <div className={cn('mt-6', contentClassName)}>
         {resolvedActiveTab === 'editor' && editorContent}
-        {resolvedActiveTab === 'overview' && overviewContent}
+        {resolvedActiveTab === 'preview' && previewContent}
         {resolvedActiveTab === 'settings' && settingsContent}
         {resolvedActiveTab === 'analytics' && analyticsContent}
       </div>

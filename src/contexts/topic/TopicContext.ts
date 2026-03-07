@@ -12,6 +12,10 @@ export interface TopicContextValue {
   fetchTopicsByCourseId: (courseId: string) => Promise<Topic[]>
   fetchTopicById: (topicId: string) => Promise<Topic | null>
   createTopic: (courseId: string, data: CreateTopicData) => Promise<Topic>
+  updateTopic: (
+    topicId: string,
+    updates: Partial<{ title: string; description: string }>,
+  ) => Promise<Topic>
   deleteTopic: (topicId: string) => Promise<void>
 }
 
@@ -24,6 +28,7 @@ export const TopicContext = createContext<TopicContextValue>({
   fetchTopicsByCourseId: async () => [],
   fetchTopicById: async () => null,
   createTopic: async () => ({}) as Topic,
+  updateTopic: async () => ({}) as Topic,
   deleteTopic: async () => {},
 })
 

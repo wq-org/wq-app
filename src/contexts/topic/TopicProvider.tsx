@@ -4,6 +4,7 @@ import {
   deleteTopic as deleteTopicApi,
   getTopicById as getTopicByIdApi,
   getTopicsByCourseId,
+  updateTopic as updateTopicApi,
 } from '@/features/topic/api/topicsApi'
 import type { CreateTopicData, Topic } from '@/features/topic/types/topic.types'
 import { TopicContext, type TopicContextValue } from './TopicContext'
@@ -72,6 +73,30 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [],
   )
 
+  const updateTopic = useCallback(
+    async (
+      topicId: string,
+      updates: Partial<{ title: string; description: string }>,
+    ): Promise<Topic> => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const updatedTopic = await updateTopicApi(topicId, updates)
+        setTopics((prev) => prev.map((topic) => (topic.id === topicId ? updatedTopic : topic)))
+        setSelectedTopic((prev) => (prev?.id === topicId ? updatedTopic : prev))
+        return updatedTopic
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to update topic'
+        setError(message)
+        throw err
+      } finally {
+        setLoading(false)
+      }
+    },
+    [],
+  )
+
   const deleteTopic = useCallback(async (topicId: string): Promise<void> => {
     setLoading(true)
     setError(null)
@@ -98,6 +123,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     fetchTopicsByCourseId,
     fetchTopicById,
     createTopic,
+    updateTopic,
     deleteTopic,
   }
 

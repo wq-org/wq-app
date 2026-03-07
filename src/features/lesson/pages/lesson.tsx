@@ -67,14 +67,14 @@ function normalizeLessonTab(tab?: string): WorkspaceTabId {
   switch (tab) {
     case 'editor':
       return 'editor'
-    case 'overview':
-      return 'overview'
     case 'settings':
       return 'settings'
     case 'analytics':
       return 'analytics'
     case 'preview':
-      return 'overview'
+      return 'preview'
+    case 'overview':
+      return 'preview'
     default:
       return 'editor'
   }
@@ -86,7 +86,7 @@ export default function Lesson() {
   const location = useLocation()
   const navigate = useNavigate()
   const navState = location.state as {
-    initialTab?: 'editor' | 'overview' | 'preview' | 'settings' | 'analytics'
+    initialTab?: 'editor' | 'preview' | 'overview' | 'settings' | 'analytics'
     title?: string
     description?: string
     topicId?: string
@@ -433,7 +433,7 @@ export default function Lesson() {
     </div>
   )
 
-  const overviewTabContent = (
+  const previewTabContent = (
     <LessonPreviewTab
       title={lessonTitle}
       description={lessonDescription}
@@ -455,7 +455,7 @@ export default function Lesson() {
       activeTab={activeTab}
       onTabChange={handleTabChange}
       editorContent={editorContent}
-      overviewContent={overviewTabContent}
+      previewContent={previewTabContent}
       settingsContent={
         <LessonSettings
           lessonId={lessonId}

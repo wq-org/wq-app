@@ -6,7 +6,7 @@ export interface TopicLayoutProps {
   activeTab?: WorkspaceTabId
   onTabChange?: (tab: WorkspaceTabId) => void
   editorContent?: ReactNode
-  overviewContent?: ReactNode
+  previewContent?: ReactNode
   settingsContent?: ReactNode
   analyticsContent?: ReactNode
   className?: string
@@ -16,7 +16,7 @@ export default function TopicLayout({
   activeTab,
   onTabChange,
   editorContent,
-  overviewContent,
+  previewContent,
   settingsContent,
   analyticsContent,
   className,
@@ -30,12 +30,12 @@ export default function TopicLayout({
       className={className}
       tabTitles={{
         editor: t('layout.tabs.editor', { defaultValue: 'Editor' }),
-        overview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
+        preview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
         settings: t('layout.tabs.settings', { defaultValue: 'Settings' }),
         analytics: t('layout.tabs.analytics', { defaultValue: 'Analytics' }),
       }}
       editorContent={editorContent}
-      overviewContent={overviewContent}
+      previewContent={previewContent}
       settingsContent={settingsContent}
       analyticsContent={analyticsContent}
     />

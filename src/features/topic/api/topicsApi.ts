@@ -88,3 +88,35 @@ export async function getTopicById(topicId: string): Promise<Topic | null> {
 
   return data as Topic
 }
+
+/**
+ * Update a topic by ID.
+ */
+export async function updateTopic(
+  topicId: string,
+  updates: Partial<{ title: string; description: string }>,
+): Promise<Topic> {
+  const payload: Partial<{ title: string; description: string }> = {}
+
+  if (typeof updates.title === 'string') {
+    payload.title = updates.title.trim()
+  }
+
+  if (typeof updates.description === 'string') {
+    payload.description = updates.description
+  }
+
+  const { data, error } = await supabase
+    .from('topics')
+    .update(payload)
+    .eq('id', topicId)
+    .select('id, course_id, title, description, order_index, created_at, updated_at')
+    .single()
+
+  if (error) {
+    console.error('Error updating topic:', error)
+    throw error
+  }
+
+  return data as Topic
+}

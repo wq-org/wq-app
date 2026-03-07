@@ -28,6 +28,7 @@
   },
   "page": {
     "notFound": "Course not found",
+    "topicLabel": "Topic:",
     "addTopicPlaceholder": "Add new topic",
     "addTopicDescriptionPlaceholder": "Add Description to Topic",
     "topicsTitle": "Topics",
@@ -83,7 +84,11 @@
     "button": "Create Topic",
     "toasts": {
       "createSuccess": "Topic created",
-      "createError": "Could not create topic"
+      "createError": "Could not create topic",
+      "updateSuccess": "Topic updated",
+      "updateError": "Could not update topic",
+      "deleteSuccess": "Topic deleted",
+      "deleteError": "Could not delete topic"
     },
     "deleteDialog": {
       "title": "Delete Topic",

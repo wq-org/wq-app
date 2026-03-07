@@ -31,7 +31,7 @@ export default function TopicPreviewTab({
               variant="h1"
               className="text-2xl font-semibold"
             >
-              Topic{': '}
+              {t('page.topicLabel', { defaultValue: 'Topic:' })}
             </Text>
             <Text
               as="h1"
