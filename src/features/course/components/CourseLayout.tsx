@@ -124,12 +124,12 @@ export default function CourseLayout() {
             onTabChange={handleTabChange}
             tabTitles={{
               editor: t('layout.tabs.editor', { defaultValue: 'Editor' }),
-              overview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
+              preview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
               settings: t('layout.tabs.settings', { defaultValue: 'Settings' }),
               analytics: t('layout.tabs.analytics', { defaultValue: 'Analytics' }),
             }}
             editorContent={<Outlet />}
-            overviewContent={
+            previewContent={
               <CoursePreviewTab
                 courseId={courseId}
                 themeId={selectedCourse?.theme_id}

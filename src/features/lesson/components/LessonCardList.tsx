@@ -15,7 +15,7 @@ export default function LessonCardList({ lessons, themeId, onLessonOpen }: Lesso
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex gap-4 flex-wrap">
       {lessons.map((lesson) => (
         <LessonCard
           key={lesson.id}

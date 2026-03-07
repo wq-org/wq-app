@@ -19,6 +19,7 @@ export default function LessonCard({ lesson, themeId, onOpen }: LessonCardProps)
 
   return (
     <InfoCard
+      className="max-w-[350px]"
       subheading="Lesson"
       title={lesson.title}
       description={lesson.description?.trim() || t('lessonTable.noDescription')}

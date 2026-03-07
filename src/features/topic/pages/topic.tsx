@@ -11,6 +11,7 @@ import { useTopic } from '@/contexts/topic'
 import { LessonCardList, LessonForm } from '@/features/lesson'
 import TopicLayout from '@/features/topic/components/TopicLayout'
 import TopicPreviewTab from '@/features/topic/components/TopicPreviewTab'
+import TopicSettings from '@/features/topic/components/TopicSettings'
 import type { WorkspaceTabId } from '@/components/shared/workspace'
 
 export default function Topic() {
@@ -124,7 +125,7 @@ export default function Topic() {
                 variant="h1"
                 className="text-2xl font-semibold"
               >
-                Topic{':  '}
+                {t('page.topicLabel', { defaultValue: 'Topic:' })}
               </Text>
               <Text
                 as="h1"
@@ -173,7 +174,7 @@ export default function Topic() {
           )}
         </div>
       }
-      overviewContent={
+      previewContent={
         <TopicPreviewTab
           title={selectedTopic.title}
           description={selectedTopic.description?.trim() || t('page.lessonsForTopicDescription')}
@@ -181,28 +182,12 @@ export default function Topic() {
           themeId={selectedCourse?.theme_id}
           onLessonOpen={(lessonId) => {
             navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
-              state: { initialTab: 'overview' },
+              state: { initialTab: 'preview' },
             })
           }}
         />
       }
-      settingsContent={
-        <div className="rounded-2xl border bg-white p-6">
-          <Text
-            as="h3"
-            variant="h3"
-          >
-            {t('layout.tabs.settings', { defaultValue: 'Settings' })}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="mt-2 text-muted-foreground"
-          >
-            Topic settings will be available soon.
-          </Text>
-        </div>
-      }
+      settingsContent={<TopicSettings topicId={selectedTopic.id} />}
       analyticsContent={
         <div className="rounded-2xl border bg-white p-6">
           <Text

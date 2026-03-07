@@ -28,6 +28,7 @@
   },
   "page": {
     "notFound": "Kurs nicht gefunden",
+    "topicLabel": "Thema:",
     "addTopicPlaceholder": "Neues Thema hinzuf\u00fcgen",
     "addTopicDescriptionPlaceholder": "Beschreibung zum Thema hinzuf\u00fcgen",
     "topicsTitle": "Themen",
@@ -82,7 +83,11 @@
     "button": "Thema erstellen",
     "toasts": {
       "createSuccess": "Thema erstellt",
-      "createError": "Thema konnte nicht erstellt werden"
+      "createError": "Thema konnte nicht erstellt werden",
+      "updateSuccess": "Thema aktualisiert",
+      "updateError": "Thema konnte nicht aktualisiert werden",
+      "deleteSuccess": "Thema gel\u00f6scht",
+      "deleteError": "Thema konnte nicht gel\u00f6scht werden"
     },
     "deleteDialog": {
       "title": "Thema l\u00f6schen",
