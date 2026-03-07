@@ -5,6 +5,7 @@ import { HeadingOne, HeadingTwo, HeadingThree } from '@yoopta/headings'
 import { BulletedList, NumberedList } from '@yoopta/lists'
 import Blockquote from '@yoopta/blockquote'
 import { Bold, Italic, Underline, Strike } from '@yoopta/marks'
+import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool'
 import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list'
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar'
 import { cn } from '@/lib/utils'
@@ -30,6 +31,10 @@ const TOOLS = {
   Toolbar: {
     render: DefaultToolbarRender,
     tool: Toolbar,
+  },
+  LinkTool: {
+    tool: LinkTool,
+    render: DefaultLinkToolRender,
   },
 }
 

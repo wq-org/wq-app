@@ -24,7 +24,7 @@ export default function LessonToolBar({
         placeholder={t('toolbar.searchPlaceholder', {
           defaultValue: 'Search lessons by title or description...',
         })}
-        className="pr-10 w-64"
+        className="pr-10 w-80"
       />
     </div>
   )

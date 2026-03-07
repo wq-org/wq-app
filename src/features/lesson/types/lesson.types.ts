@@ -14,3 +14,5 @@ export interface CreateLessonData {
   topic_id: string
   description: string
 }
+
+export const LESSON_SEARCH_FIELDS: Array<keyof Lesson> = ['title', 'description']

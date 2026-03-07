@@ -6,7 +6,9 @@ import { Text } from '@/components/ui/text'
 import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
 import { getTopicsByCourseId, TopicCardList, type Topic } from '@/features/topic'
 import type { ThemeId } from '@/lib/themes'
-
+import LessonToolBar from '@/features/lesson/components/LessonToolBar'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { TOPIC_SEARCH_FIELDS } from '@/features/topic/types/topic.types'
 export interface CoursePreviewTabProps {
   courseId: string
   themeId?: ThemeId
@@ -21,7 +23,9 @@ export default function CoursePreviewTab({
   const { t } = useTranslation('features.course')
   const navigate = useNavigate()
   const [topics, setTopics] = useState<Topic[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [topicsLoading, setTopicsLoading] = useState(true)
+  const filteredTopics = useSearchFilter(topics, searchQuery, TOPIC_SEARCH_FIELDS)
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -54,6 +58,11 @@ export default function CoursePreviewTab({
         {t('page.topicsTitle')}
       </Text>
 
+      <LessonToolBar
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+
       {topicsLoading ? (
         <div className="flex justify-center py-8">
           <Spinner
@@ -61,11 +70,11 @@ export default function CoursePreviewTab({
             size="md"
           />
         </div>
-      ) : topics.length === 0 ? (
+      ) : filteredTopics.length === 0 ? (
         <EmptyTopicsView />
       ) : (
         <TopicCardList
-          topics={topics.map((topic) => ({
+          topics={filteredTopics.map((topic) => ({
             id: topic.id,
             title: topic.title,
             description: topic.description,

@@ -8,7 +8,7 @@ import { getLessonById } from '@/features/lesson/api/lessonsApi'
 import { getCourseById } from '@/features/course/api/coursesApi'
 import type { Lesson } from '@/features/lesson/types/lesson.types'
 import type { Course } from '@/features/course/types/course.types'
-import LessonPreviewContent from '@/features/lesson/components/LessonPreviewContent'
+import LessonPreviewTab from '../components/LessonPreviewTab'
 
 function parseLessonContent(raw: unknown): Record<string, unknown> {
   if (raw == null || raw === '') return {}
@@ -105,7 +105,7 @@ export default function LessonView() {
             {t('page.notFound', { defaultValue: 'Lesson not found' })}
           </Text>
         ) : (
-          <LessonPreviewContent
+          <LessonPreviewTab
             title={lesson.title?.trim() || t('page.fallbackTitle')}
             description={
               lesson.description?.trim() ||

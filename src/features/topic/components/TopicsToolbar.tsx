@@ -23,7 +23,7 @@ export default function TopicsToolbar({
         placeholder={t('topic.toolbar.searchPlaceholder', {
           defaultValue: 'Search topics by title or description...',
         })}
-        className="pr-10 w-64"
+        className="pr-10 w-80"
       />
     </div>
   )

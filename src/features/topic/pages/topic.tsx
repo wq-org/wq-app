@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +14,9 @@ import TopicPreviewTab from '@/features/topic/components/TopicPreviewTab'
 import TopicSettings from '@/features/topic/components/TopicSettings'
 import LessonToolBar from '@/features/lesson/components/LessonToolBar'
 import type { WorkspaceTabId } from '@/components/shared/workspace'
-
+import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { LESSON_SEARCH_FIELDS } from '@/features/lesson/types/lesson.types'
+import { Separator } from '@/components/ui/separator'
 export default function Topic() {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
@@ -25,18 +27,7 @@ export default function Topic() {
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
   const { lessons, fetchLessonsByTopicId, loading: lessonLoading } = useLesson()
 
-  const normalizedSearch = searchQuery.trim().toLowerCase()
-  const filteredLessons = useMemo(() => {
-    if (!normalizedSearch) {
-      return lessons
-    }
-
-    return lessons.filter((lesson) => {
-      const title = lesson.title?.toLowerCase() || ''
-      const description = lesson.description?.toLowerCase() || ''
-      return title.includes(normalizedSearch) || description.includes(normalizedSearch)
-    })
-  }, [lessons, normalizedSearch])
+  const filteredLessons = useSearchFilter(lessons, searchQuery, LESSON_SEARCH_FIELDS)
 
   useEffect(() => {
     if (courseId && (!selectedCourse || selectedCourse.id !== courseId)) {
@@ -159,6 +150,8 @@ export default function Topic() {
             </Text>
           </div>
 
+          <Separator />
+
           <div className="mb-2">
             <LessonForm
               topicId={selectedTopic.id}
@@ -168,6 +161,13 @@ export default function Topic() {
               }}
             />
           </div>
+
+          <Text
+            as="p"
+            variant="h3"
+          >
+            {t('page.lessonsTitle')}
+          </Text>
 
           <LessonToolBar
             searchValue={searchQuery}
@@ -198,7 +198,7 @@ export default function Topic() {
         <TopicPreviewTab
           title={selectedTopic.title}
           description={selectedTopic.description?.trim() || t('page.lessonsForTopicDescription')}
-          lessons={filteredLessons}
+          lessons={lessons}
           themeId={selectedCourse?.theme_id}
           onLessonOpen={(lessonId) => {
             navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
