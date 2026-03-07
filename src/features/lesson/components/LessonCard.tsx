@@ -22,7 +22,10 @@ export default function LessonCard({ lesson, themeId, onOpen }: LessonCardProps)
       className="max-w-[350px]"
       subheading={t('card.subheading', { ns: 'features.lesson', defaultValue: 'Lesson' })}
       title={lesson.title}
-      description={lesson.description?.trim() || t('lessonTable.noDescription')}
+      description={
+        lesson.description?.trim() ||
+        t('lessonTable.noDescription', { ns: 'features.course', defaultValue: 'No description' })
+      }
       content={formatRelativeUpdatedTime(lesson.updated_at, lesson.created_at, i18n.language, {
         updatedRecently: t('card.updatedRecently', {
           ns: 'features.lesson',
@@ -47,7 +50,7 @@ export default function LessonCard({ lesson, themeId, onOpen }: LessonCardProps)
             as="span"
             variant="small"
           >
-            {t('card.open')}
+            {t('card.open', { ns: 'features.course', defaultValue: 'Open' })}
           </Text>
         </Button>
       }
