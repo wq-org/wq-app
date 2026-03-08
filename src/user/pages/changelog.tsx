@@ -12,7 +12,7 @@ import {
   ChangelogEntryTitle,
   ChangelogHeader,
 } from '@/components/ui/changelog'
-import { changelogEntries } from '@/features/changelog/data/changelogEntries'
+import { changelogEntries } from '@/features/landing/components/changelogEntries'
 
 export default function ChangelogPage() {
   return (
@@ -41,15 +41,10 @@ export default function ChangelogPage() {
                 <ChangelogBadgeRow>
                   {entry.badges?.map((badge) => (
                     <ChangelogBadge
-                      key={`${entry.id}-${badge.label}`}
-                      variant={badge.tone}
-                      label={badge.label}
+                      key={`${entry.id}-${badge}`}
+                      variant={badge}
                     />
                   ))}
-                  <ChangelogBadge
-                    variant="deprecated"
-                    label={entry.email}
-                  />
                 </ChangelogBadgeRow>
 
                 <ChangelogEntryTitle>{entry.title}</ChangelogEntryTitle>
@@ -57,18 +52,6 @@ export default function ChangelogPage() {
                 <ChangelogDescription>{entry.summary}</ChangelogDescription>
 
                 <ChangelogBullets items={entry.bullets} />
-
-                <ChangelogDescription className="text-sm text-muted-foreground/80">
-                  Branch: <span className="font-medium text-foreground">{entry.branch}</span>
-                  {'  '}
-                  User: <span className="font-medium text-foreground">{entry.user}</span>
-                </ChangelogDescription>
-
-                {entry.metaNote ? (
-                  <ChangelogDescription className="text-sm italic text-muted-foreground/80">
-                    {entry.metaNote}
-                  </ChangelogDescription>
-                ) : null}
 
                 {index < changelogEntries.length - 1 ? <ChangelogDivider /> : null}
               </ChangelogEntry>

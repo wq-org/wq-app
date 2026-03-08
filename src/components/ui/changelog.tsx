@@ -1,10 +1,13 @@
 import * as React from 'react'
+import { Badge, type VariantProps } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 export type BadgeVariant =
   | 'new'
-  | 'improved'
+  | 'change'
   | 'fix'
+  | 'improvement'
+  | 'feature'
   | 'deprecated'
   | 'breaking'
   | 'security'
@@ -112,20 +115,24 @@ export function ChangelogEntryTitle({
   )
 }
 
-const BADGE_STYLES: Record<string, string> = {
-  new: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-  improved: 'bg-blue-50 text-blue-700 ring-blue-200',
-  fix: 'bg-amber-50 text-amber-700 ring-amber-200',
-  deprecated: 'bg-neutral-100 text-neutral-600 ring-neutral-200',
-  breaking: 'bg-red-50 text-red-700 ring-red-200',
-  security: 'bg-purple-50 text-purple-700 ring-purple-200',
-  docs: 'bg-sky-50 text-sky-700 ring-sky-200',
+const BADGE_VARIANT_MAP: Record<string, VariantProps<typeof Badge>['variant']> = {
+  new: 'green',
+  change: 'blue',
+  fix: 'orange',
+  improvement: 'indigo',
+  feature: 'violet',
+  deprecated: 'secondary',
+  breaking: 'destructive',
+  security: 'darkblue',
+  docs: 'cyan',
 }
 
 const BADGE_LABELS: Record<string, string> = {
   new: 'New',
-  improved: 'Improved',
+  change: 'Change',
   fix: 'Fix',
+  improvement: 'Improvement',
+  feature: 'Feature',
   deprecated: 'Deprecated',
   breaking: 'Breaking',
   security: 'Security',
@@ -141,19 +148,16 @@ export function ChangelogBadge({
   label?: string
   className?: string
 }) {
-  const style = BADGE_STYLES[variant] ?? 'bg-neutral-100 text-neutral-700 ring-neutral-200'
+  const badgeVariant = BADGE_VARIANT_MAP[variant] ?? 'secondary'
   const text = label ?? BADGE_LABELS[variant] ?? variant
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1',
-        style,
-        className,
-      )}
+    <Badge
+      variant={badgeVariant}
+      className={cn('capitalize', className)}
     >
       {text}
-    </span>
+    </Badge>
   )
 }
 
