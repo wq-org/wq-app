@@ -13,7 +13,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Container } from '@/components/shared'
-import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
+
+import { FileDropzone } from '@/components/shared/upload-files'
 import { X } from 'lucide-react'
 
 const FEEDBACK_TYPES = [
@@ -82,7 +83,7 @@ export default function CommandFeedbackForm() {
         <CardContent>
           <form
             onSubmit={handleSubmit}
-            className="flex min-h-[12rem] flex-col"
+            className="flex min-h-48 flex-col"
           >
             <div className="flex flex-col gap-4 pr-2">
               <div className="flex flex-col gap-2">

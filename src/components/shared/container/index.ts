@@ -1,1 +1,2 @@
-export { default as Container } from './Container'
+export { ContainerSlider } from './ContainerSlider'
+export { Container } from './Container'

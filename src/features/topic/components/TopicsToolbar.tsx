@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
-import { Input } from '@/components/ui/input'
 import { useTranslation } from 'react-i18next'
+import ClearableInput from '@/components/shared/inputs/ClearableInput'
 
 export interface TopicsToolbarProps {
   searchValue: string
@@ -17,13 +17,15 @@ export default function TopicsToolbar({
 
   return (
     <div className={cn('flex w-full justify-start', className)}>
-      <Input
+      <ClearableInput
+        showSearchIcon
         value={searchValue}
-        onChange={(event) => onSearchChange(event.target.value)}
+        onValueChange={onSearchChange}
+        label={t('topic.toolbar.searchLabel', { defaultValue: 'Search topics' })}
         placeholder={t('topic.toolbar.searchPlaceholder', {
           defaultValue: 'Search topics by title or description...',
         })}
-        className="pr-10 w-80"
+        className="w-90 pb-0"
       />
     </div>
   )

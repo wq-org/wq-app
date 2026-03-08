@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { getCourseById, updateCourse, deleteCourse } from '@/features/course/api/coursesApi'
@@ -13,9 +11,10 @@ import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
+import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
 import type { ThemeId } from '@/lib/themes'
 import { Check } from 'lucide-react'
+import { TitleDescriptionFields } from '@/components/shared/forms'
 
 interface CourseSettingsProps {
   courseId: string
@@ -170,29 +169,18 @@ export default function CourseSettings({ courseId, onUnsavedChange }: CourseSett
       </div>
 
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="title">{t('settings.titleLabel')}</Label>
-          <Input
-            id="title"
-            type="text"
-            placeholder={t('settings.titlePlaceholder')}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-base"
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="description">{t('settings.descriptionLabel')}</Label>
-          <Textarea
-            id="description"
-            placeholder={t('settings.descriptionPlaceholder')}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="resize-none"
-            rows={4}
-          />
-        </div>
+        <TitleDescriptionFields
+          title={title}
+          description={description}
+          onTitleChange={setTitle}
+          onDescriptionChange={setDescription}
+          titleLabel={t('settings.titleLabel')}
+          descriptionLabel={t('settings.descriptionLabel')}
+          titlePlaceholder={t('settings.titlePlaceholder')}
+          descriptionPlaceholder={t('settings.descriptionPlaceholder')}
+          rows={4}
+          maxDescriptionLength={500}
+        />
 
         <div className="flex flex-col gap-3">
           <Label>{t('settings.themeLabel')}</Label>

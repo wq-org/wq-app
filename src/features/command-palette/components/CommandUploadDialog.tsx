@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Container } from '@/components/shared'
-import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
-import FileStepperForm from '@/components/shared/upload-files/components/FileStepperForm'
+import { FileDropzone, FileStepperForm } from '@/components/shared/upload-files'
+
 import { useFileValidation } from '@/components/shared/upload-files/hooks/useFileValidation'
 import { uploadFilesWithMetadata } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { useUser } from '@/contexts/user'

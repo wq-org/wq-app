@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LandingPageShell } from '@/components/landing/LandingPageShell'
-import { landingPages } from '@/components/shared/navigation/navigation-content'
+import { LandingPageShell, landingPages } from '@/features/landing'
 
 export default function LandingPage() {
   const location = useLocation()

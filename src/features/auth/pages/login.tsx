@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
-import AuthLanguageSwitcher from '../components/AuthLanguageSwitcher'
+import { LanguageSwitcher } from '@/components'
 import { useUser } from '@/contexts/user'
 
 export default function LoginPage() {
@@ -129,7 +129,7 @@ export default function LoginPage() {
   return (
     <AuthCardLayout
       backTo="/"
-      navigationSlot={<AuthLanguageSwitcher />}
+      navigationSlot={<LanguageSwitcher variant="auth" />}
     >
       <div className="flex flex-col gap-6">
         {/* Title */}

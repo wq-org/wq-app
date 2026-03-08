@@ -25,11 +25,13 @@ import {
   Settings,
 } from 'lucide-react'
 
-import { NavUser } from '@/components/shared/nav-user'
-import { TeamSwitcher } from '@/components/shared/team-switcher'
+import {
+  SidebarAccountMenu,
+  SidebarPrimaryNav,
+  SidebarWorkspaceSwitcher,
+} from '@/components/shared/sidebar'
 import { useUser } from '@/contexts/user'
 import { useEffect } from 'react'
-import { NavMain } from '@/components/shared/nav-main'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 // This is sample data.
@@ -122,16 +124,16 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <Sidebar>
         <SidebarHeader>
           <SidebarMenu>
-            <TeamSwitcher teams={data.teams} />
+            <SidebarWorkspaceSwitcher teams={data.teams} />
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
           <SidebarContent>
-            <NavMain items={data.navMain} />
+            <SidebarPrimaryNav items={data.navMain} />
           </SidebarContent>
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={userProfile} />
+          <SidebarAccountMenu user={userProfile} />
         </SidebarFooter>
       </Sidebar>
       <div className="w-full pt-3.5">{children}</div>

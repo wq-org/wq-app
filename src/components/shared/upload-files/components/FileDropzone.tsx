@@ -11,11 +11,7 @@ interface FileDropzoneProps {
   accept?: string // Optional: restrict file types (e.g., 'image/*' or specific MIME types)
 }
 
-export default function FileDropzone({
-  onFilesSelected,
-  disabled = false,
-  accept,
-}: FileDropzoneProps) {
+export function FileDropzone({ onFilesSelected, disabled = false, accept }: FileDropzoneProps) {
   const { t } = useTranslation('features.commandPalette')
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)

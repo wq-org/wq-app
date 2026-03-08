@@ -1,6 +1,6 @@
-import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
+import ClearableInput from '@/components/shared/inputs/ClearableInput'
 
 export interface LessonToolBarProps {
   searchValue: string
@@ -18,13 +18,15 @@ export default function LessonToolBar({
 
   return (
     <div className={cn('flex w-full justify-start', className)}>
-      <Input
+      <ClearableInput
         value={searchValue}
-        onChange={(event) => onSearchChange(event.target.value)}
+        showSearchIcon
+        onValueChange={onSearchChange}
+        label={t('toolbar.searchLabel', { defaultValue: 'Search lessons' })}
         placeholder={t('toolbar.searchPlaceholder', {
           defaultValue: 'Search lessons by title or description...',
         })}
-        className="pr-10 w-80"
+        className="w-90 pb-0"
       />
     </div>
   )

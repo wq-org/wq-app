@@ -14,7 +14,7 @@ import Spinner from '@/components/ui/spinner'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { MessageCircleQuestionMark } from 'lucide-react'
-import type { WorkspaceTabId } from '@/components/shared/workspace'
+import type { WorkspaceTabId } from '@/components/shared/layout'
 import {
   createYooptaStarterContentJson,
   createYooptaStarterContentObject,

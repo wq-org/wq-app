@@ -8,7 +8,7 @@ interface UploadedFileItemProps {
   onRemove?: () => void
 }
 
-export default function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
+export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const isImage = file.type.startsWith('image/')
 

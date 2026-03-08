@@ -32,7 +32,7 @@ import type { LucideIcon } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { NavUser } from '@/components/shared/nav-user'
+import { SidebarAccountMenu } from '@/components/shared/sidebar'
 
 export type NavigationItem = {
   title: string
@@ -138,7 +138,7 @@ export default function InstitutionAdminLayout({ children }: { children: React.R
         </SidebarContent>
         <SidebarMenu></SidebarMenu>
         <SidebarFooter>
-          <NavUser user={userProfile} />
+          <SidebarAccountMenu user={userProfile} />
         </SidebarFooter>
       </Sidebar>
       <p>{children}</p>

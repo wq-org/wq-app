@@ -57,7 +57,9 @@ export function CharacterCounter({
       role="meter"
       aria-valuenow={count}
       aria-valuemax={max}
-      aria-label={`${Math.abs(count)} characters ${count >= 0 ? 'remaining' : 'over limit'}`}
+      aria-label={
+        count >= 0 ? `${count} characters remaining` : `${Math.abs(count)} characters over limit`
+      }
       style={{
         display: 'inline-flex',
         alignItems: 'center',
