@@ -371,4 +371,4 @@ const CommandAddDialog = ({ role, onCourseCreated, onRequestClose }: CommandAddD
   )
 }
 
-export default CommandAddDialog
+export { CommandAddDialog }

@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/text'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import SelectTabs from '@/components/shared/tabs/SelectTabs'
-import NotificationItem from './NotificationItem'
+import { NotificationItem } from './NotificationItem'
 import type { Notification, NotificationAction } from '../types/notification.types'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -49,7 +49,7 @@ function formatTimestamp(value: string): string {
   return date.toLocaleString()
 }
 
-export default function NotificationPanel({ onTotalCountChange }: NotificationPanelProps) {
+export function NotificationPanel({ onTotalCountChange }: NotificationPanelProps) {
   const { t } = useTranslation('features.notification')
   const { getRole } = useUser()
   const [notifications, setNotifications] = useState<Notification[]>([])

@@ -16,7 +16,7 @@ interface CommandUploadDialogProps {
   onSuccess?: () => void
 }
 
-export default function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}) {
+export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}) {
   const { t } = useTranslation('features.commandPalette')
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [showStepper, setShowStepper] = useState(false)

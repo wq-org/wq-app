@@ -2,13 +2,13 @@ import { Bell, BellDot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import NotificationPanel from './NotificationPanel'
+import { NotificationPanel } from './NotificationPanel'
 
 interface NotificationBadgeProps {
   count?: number
 }
 
-export default function NotificationBadge({ count = 0 }: NotificationBadgeProps) {
+export function NotificationBadge({ count = 0 }: NotificationBadgeProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>

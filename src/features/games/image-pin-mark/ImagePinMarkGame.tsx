@@ -16,7 +16,7 @@ import {
 } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { cn } from '@/lib/utils'
-import GameLayout from '@/components/layout/GameLayout'
+import GameLayout from '@/components/layout/GameDialogLayout'
 import ImagePin from './components/ImagePin'
 import SquareMarker from './components/SquareMarker'
 import GameInformation from '@/features/games/shared/GameInformation'

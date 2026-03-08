@@ -37,7 +37,7 @@ function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title
   )
 }
 
-export default function CommandSearch() {
+export function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const { items, loading } = useSearchItems()
   const { t } = useTranslation(['common', 'features.commandPalette'])

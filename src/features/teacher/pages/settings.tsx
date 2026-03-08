@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import CommandPalette from '@/features/command-palette/components/CommandPalette'
+import { CommandPalette } from '@/features/command-palette'
 import SettingsLayout from '@/components/layout/SettingsLayout'
 import { useUser } from '@/contexts/user'
 import Spinner from '@/components/ui/spinner'

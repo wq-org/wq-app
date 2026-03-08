@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container, AppNavigation } from '@/components/shared'
-import CommandPalette from '@/features/command-palette/components/CommandPalette'
+import { CommandPalette } from '@/features/command-palette'
 import { cn } from '@/lib/utils'
 import type { Roles, CommandBarContext } from './config'
 

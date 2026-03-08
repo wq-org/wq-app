@@ -23,7 +23,7 @@ const FEEDBACK_TYPES = [
   { value: 'feature', label: 'Feature Request' },
 ]
 
-export default function CommandFeedbackForm() {
+export function CommandFeedbackForm() {
   const [type, setType] = useState<string>('feedback')
   const [message, setMessage] = useState<string>('')
   const [screenshots, setScreenshots] = useState<File[]>([])

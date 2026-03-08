@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import CommandPalette from '@/features/command-palette/components/CommandPalette'
+import { CommandPalette } from '@/features/command-palette'
 import CourseCardList from '@/features/course/components/CourseCardList'
 import { getDashboardTabs } from '@/components/layout/config'
 import TableView from '@/features/files/components/FilesTableView'

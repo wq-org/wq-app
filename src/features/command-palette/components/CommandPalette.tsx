@@ -21,11 +21,11 @@ import type { Roles, CommandBarContext, CommandBarView } from '@/components/layo
 import { VALID_ROLES } from '@/components/layout/config'
 import { Container } from '@/components/shared'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import CommandSearchDialog from './CommandSearchDialog'
-import CommandFeedbackDialog from './CommandFeedbackDialog'
-import CommandUploadDialog from './CommandUploadDialog'
-import CommandAddDialog from './CommandAddDialog'
-import RestrictedCommandPalette from './RestrictedCommandPalette'
+import { CommandSearch } from './CommandSearchDialog'
+import { CommandFeedbackForm } from './CommandFeedbackDialog'
+import { CommandUploadDialog } from './CommandUploadDialog'
+import { CommandAddDialog } from './CommandAddDialog'
+import { RestrictedCommandPalette } from './RestrictedCommandPalette'
 
 /** View ids that have a dedicated command bar group in commandBarGroups. */
 const COMMAND_BAR_VIEW_IDS: CommandBarView[] = ['game-studio']
@@ -50,7 +50,7 @@ function getDefaultSelectedCommandId(items: CommandBarItem[], pathname: string) 
   return matchedItem?.id ?? items[0]?.id ?? ''
 }
 
-export default function CommandPalette({
+export function CommandPalette({
   commandBarContext,
   className,
   onCourseCreated,
@@ -490,9 +490,9 @@ export default function CommandPalette({
             </Dialog.Description>
             <ScrollArea className="flex-1 h-[100px] overflow-y-auto ">
               <Container className="px-4 py-2">
-                {activeDialog === 'search' && <CommandSearchDialog />}
+                {activeDialog === 'search' && <CommandSearch />}
                 {activeDialog === 'upload' && <CommandUploadDialog onSuccess={onFilesUploaded} />}
-                {activeDialog === 'feedback' && <CommandFeedbackDialog />}
+                {activeDialog === 'feedback' && <CommandFeedbackForm />}
                 {activeDialog === 'add' && (
                   <CommandAddDialog
                     role={effectiveRole}

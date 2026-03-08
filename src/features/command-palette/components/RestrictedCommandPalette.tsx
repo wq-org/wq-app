@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/text'
  * Fallback component displayed when user role is invalid or missing
  * Prevents rendering a broken CommandPalette and guides user to resolve the issue
  */
-export default function RestrictedCommandPalette() {
+export function RestrictedCommandPalette() {
   const navigate = useNavigate()
 
   const handleLoginRedirect = () => {

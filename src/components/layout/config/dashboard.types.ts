@@ -1,5 +1,4 @@
-import type { UserRole } from '@/features/auth/types/auth.types'
-
+import type { UserRole } from '@/features/auth'
 /** Dashboard role type; must match DB profiles.role (snake_case). */
 export type Roles = UserRole
 
