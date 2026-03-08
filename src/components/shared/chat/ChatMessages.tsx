@@ -1,5 +1,5 @@
-import { ChatHistory } from '@/components/chat/ChatHistory'
-import type { ChatHistoryMessage } from '@/components/chat/types'
+import { ChatHistory } from '@/components/shared/chat/ChatHistory'
+import type { ChatHistoryMessage } from '@/components/shared/chat/types'
 import type { Message } from '@/lib/chat-data'
 
 interface ChatMessagesProps {

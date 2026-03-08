@@ -10,6 +10,8 @@ export * from './api/authApi'
 
 // Auth Hooks
 export { default as useAuth } from './hooks/useAuth'
+export { default as RequireAuth } from './components/RequireAuth'
+export { default as RequireOnboarding } from './components/RequireOnboarding'
 
 // Auth Types & role helpers
 export { USER_ROLES, isValidRole, isSuperAdmin, getDashboardPathForRole } from './types/auth.types'

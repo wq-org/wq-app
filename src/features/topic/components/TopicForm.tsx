@@ -1,11 +1,9 @@
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { Textarea } from '@/components/ui/textarea'
+import { TitleDescriptionFields } from '@/components/shared/forms'
 
 export interface TopicFormProps {
   title: string
@@ -29,27 +27,17 @@ export default function TopicForm({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="new-topic-title">{t('topic.titleLabel')}</Label>
-        <Input
-          id="new-topic-title"
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          placeholder={t('page.addTopicPlaceholder')}
-          className="w-full px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="new-topic-description">{t('topic.descriptionLabel')}</Label>
-        <Textarea
-          id="new-topic-description"
-          value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
-          placeholder={t('page.addTopicDescriptionPlaceholder')}
-          className="h-24 w-full resize-none px-5 py-3 text-base transition hover:bg-gray-100 focus:ring-2 focus:ring-primary/20"
-        />
-      </div>
+      <TitleDescriptionFields
+        title={title}
+        description={description}
+        onTitleChange={onTitleChange}
+        onDescriptionChange={onDescriptionChange}
+        titleLabel={t('topic.titleLabel')}
+        descriptionLabel={t('topic.descriptionLabel')}
+        titlePlaceholder={t('page.addTopicPlaceholder')}
+        descriptionPlaceholder={t('page.addTopicDescriptionPlaceholder')}
+        rows={3}
+      />
 
       <div className="flex justify-end">
         <Button

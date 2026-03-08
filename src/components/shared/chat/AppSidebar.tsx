@@ -1,7 +1,7 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import { ChatUserCard } from '@/components/chat/ChatUserCard'
+import { ChatUserCard } from '@/components/shared/chat/ChatUserCard'
 import { Input } from '@/components/ui/input'
 import {
   Sidebar,

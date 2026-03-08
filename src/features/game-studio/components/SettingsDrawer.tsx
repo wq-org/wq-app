@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import type { SettingsDrawerProps } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
+import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
 import type { ThemeId } from '@/lib/themes'
 
 export default function SettingsDrawer({

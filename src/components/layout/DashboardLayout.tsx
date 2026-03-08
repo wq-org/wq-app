@@ -1,13 +1,14 @@
 import { AppNavigation } from '@/components/shared'
 import { PageTitle } from './PageTitle'
 import { Badge } from '@/components/ui/badge'
-import { ArrowUpRight, GraduationCap, Linkedin, Mail, Presentation } from 'lucide-react'
+import { ArrowUpRight, GraduationCap, Mail, Presentation } from 'lucide-react'
+import { LinkedInIcon as LinkedIn } from '../shared/icons'
 import { Button } from '../ui/button'
 import { Container } from '@/components/shared'
 import { useState } from 'react'
 import { getDashboardTabs, type DashboardTab } from './config'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { QuoteOfTheDay } from '@/components/ui/quote'
+import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
 import { useTranslation } from 'react-i18next'
 import type { Roles } from './config'
 import { Text } from '@/components/ui/text'
@@ -226,7 +227,7 @@ export default function DashboardLayout({
                         }
                       }}
                     >
-                      <Linkedin className="text-gray-400" />
+                      <LinkedIn className="text-gray-400" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>{linkedInUrl}</TooltipContent>

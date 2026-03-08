@@ -22,4 +22,29 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ['src/components/**/*.{ts,tsx}', 'src/user/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group: [
+                '@/features/*/api/*',
+                '@/features/*/components/*',
+                '@/features/*/hooks/*',
+                '@/features/*/pages/*',
+                '@/features/*/types/*',
+                '@/features/*/utils/*',
+                '@/features/*/data/*',
+              ],
+              message:
+                'Avoid deep feature imports in shared/user layers. Prefer feature public entrypoints (e.g. `@/features/<feature>`).',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ])

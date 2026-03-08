@@ -1,18 +1,11 @@
-import { Badge } from '@/components/ui/badge'
-import Heart from '@/components/ui/heart'
-import { Onboarding } from '@/features/onboarding'
+import { TitleDescriptionFields } from '@/components/shared/forms'
+import ClearableInput from '@/components/shared/inputs/ClearableInput'
 export default function Test() {
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <Badge
-        hasDashedBorder={true}
-        variant={'violet'}
-      >
-        yeah this answer is correct
-      </Badge>
-
-      <Onboarding />
-      <Heart />
+    <div className="min-h-screen  p-8">
+      <ClearableInput />
+      <TitleDescriptionFields />
+      <section className="py-10"></section>
     </div>
   )
 }

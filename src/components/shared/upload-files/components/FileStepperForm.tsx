@@ -23,12 +23,7 @@ interface FileStepperFormProps {
   onBack?: () => void
 }
 
-export default function FileStepperForm({
-  files,
-  onFileUpdate,
-  onComplete,
-  onBack,
-}: FileStepperFormProps) {
+export function FileStepperForm({ files, onFileUpdate, onComplete, onBack }: FileStepperFormProps) {
   const { t } = useTranslation('features.commandPalette')
   const [currentStep, setCurrentStep] = useState(1)
   const isEditingRef = useRef<string | null>(null)
@@ -170,7 +165,7 @@ export default function FileStepperForm({
                     <StepperIndicator>
                       {isStepCompleted(index + 1) ? <Check className="h-5 w-5" /> : index + 1}
                     </StepperIndicator>
-                    <StepperTitle className="text-xs max-w-[80px] truncate">
+                    <StepperTitle className="text-xs max-w-20 truncate">
                       {(() => {
                         // Use original filename for stepper title, not the form input
                         const displayTitle = file.file.name.split('.')[0]
@@ -193,7 +188,7 @@ export default function FileStepperForm({
         <div className="space-y-6 p-6 bg-white rounded-2xl border">
           <div className="flex items-center gap-4">
             {currentFile.preview ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                 <img
                   src={currentFile.preview}
                   alt={currentFile.file.name}
@@ -201,7 +196,7 @@ export default function FileStepperForm({
                 />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
                 <Text
                   as="span"
                   variant="small"

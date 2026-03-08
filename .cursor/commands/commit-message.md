@@ -1,29 +1,97 @@
-Write a Good Git commit message should contain:
+# Git Commit Message Template (Copy/Paste)
 
-** use always ```nvm use```as command before performing git actions
+> **Pre-flight:** run `nvm use` before any git commands.
 
-- **Brief Summary**: Start with a short summary (50 characters or less) of the changes.
-- **Detailed Description**: Follow up with a more detailed explanation (72 characters per line) if necessary.
-- **Context**: Explain why the change was made and any relevant background.
-- **References**: Include references to issues or tasks (e.g., "Fixes #123") if applicable.
-- **Imperative Mood**: Use the imperative mood (e.g., "Add feature" instead of "Added feature").
-- **Detailed Mode**: write a detailed bullet point change list of what was changed and why.
+## Commit message
 
-
-### Example Format:
 ```
-Short summary of the change
+<type>(<scope>): <imperative summary>
 
-Detailed description (if needed) explaining the why and how.
+Problem
+- What user/system problem existed?
+- What was the observable symptom or risk?
+
+Solution
+- What changed (high-level)?
+- Why this approach (tradeoffs)?
+
+Changes
+- Bullet list of the concrete edits (files/paths + what changed)
+- Mention migrations/RLS/API changes explicitly when relevant
+
+Verification
+- How you verified (commands, pages clicked, scenarios)
+- Include expected result
+
+Performance
+- Any perf impact (bundle size, queries, caching) or "No measurable change"
+
+Security
+- Auth/RLS/permissions/data-handling impact or "No security impact"
+
+Refs
+- Links or issue IDs (e.g., Fixes #123)
+
+Meta
+- Date: <YYYY-MM-DD>
+- Branch: <branch>
+- Author: <name> <email>
 ```
 
-### Tips:
-- Keep it clear and concise.
-- Avoid vague terms like "fix" or "update" without context.
+## Allowed types
 
+- `feat` (new feature)
+- `fix` (bug fix)
+- `refactor` (no behavior change)
+- `perf` (performance)
+- `docs` (docs only)
+- `test` (tests only)
+- `chore` (tooling, deps)
+- `build` (build/CI)
+- `revert` (revert commit)
 
-### Details:
-Date: $(date +"%d.%m.%Y")
-Branch: $(git branch --show-current)
-User: $(git config user.name)
-Email: $(git config user.email)
+## Rules (Codex/Cursor/Claude-friendly)
+
+- Use **imperative** present tense: "Add", "Fix", "Remove", "Refactor".
+- Keep the first line **<= 72 chars**.
+- One logical change per commit. Split unrelated changes.
+- Always explain **why** (context) + **what** (change) + **how verified**.
+- If the change touches DB/RLS/RPC/migrations, mention:
+  - migration filename(s)
+  - policy/function names
+  - rollback note if risky
+
+## Example (filled)
+
+```
+feat(course): add topic page and topic list routing
+
+Problem
+- Teachers couldn’t navigate course → topic cleanly; topic UI lived in course page.
+
+Solution
+- Introduced a dedicated topic route and separated topic components into a topic feature.
+
+Changes
+- src/features/topic/pages/topic.tsx: new topic page
+- src/features/course/pages/course.tsx: replaced lessons list with topic list
+- src/App.tsx: added /teacher/course/:courseId/topic/:topicId route
+
+Verification
+- Manual: create course → create topic → open topic → create lesson → open lesson
+- Expected: no regressions in existing lesson route
+
+Performance
+- No measurable change
+
+Security
+- No security impact (route-only change)
+
+Refs
+- WQ-123
+
+Meta
+- Date: 2026-03-08
+- Branch: feature/topic-split
+- Author: Your Name your@email.com
+```

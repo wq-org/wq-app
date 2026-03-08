@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/workspace'
+import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/layout'
 
 export interface LessonLayoutProps {
   activeTab?: WorkspaceTabId

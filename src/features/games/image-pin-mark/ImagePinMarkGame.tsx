@@ -22,7 +22,7 @@ import SquareMarker from './components/SquareMarker'
 import GameInformation from '@/features/games/shared/GameInformation'
 import GameInformationCard from '@/features/games/shared/GameInformationCard'
 import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
-import FileDropzone from '@/components/shared/upload-files/components/FileDropzone'
+import { FileDropzone } from '@/components/shared/upload-files'
 import {
   Card,
   CardContent,

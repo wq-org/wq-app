@@ -5,11 +5,12 @@ import {
   Gamepad2,
   HardDrive,
   LayoutGrid,
-  Shapes,
+  BookOpen,
   // StickyNote,
   type LucideIcon,
 } from 'lucide-react'
-import { USER_ROLES, isValidRole } from '@/features/auth/types/auth.types'
+
+import { USER_ROLES, isValidRole } from '@/features/auth'
 import type { Roles } from './dashboard.types'
 import i18n from '@/locales/i18n'
 
@@ -38,7 +39,7 @@ const getTabLabel = (tabId: string): string => {
 }
 
 const createTeacherTabs = (): DashboardTab[] => [
-  { id: 'courses', label: getTabLabel('courses'), icon: Shapes },
+  { id: 'courses', label: getTabLabel('courses'), icon: BookOpen },
   { id: 'files', label: getTabLabel('files'), icon: FolderOpen },
   { id: 'games', label: getTabLabel('games'), icon: Gamepad2 },
   // { id: 'students', label: getTabLabel('students'), icon: Users2 },
@@ -46,7 +47,7 @@ const createTeacherTabs = (): DashboardTab[] => [
 ]
 
 const createStudentTabs = (): DashboardTab[] => [
-  { id: 'courses', label: getTabLabel('courses'), icon: Shapes },
+  { id: 'courses', label: getTabLabel('courses'), icon: BookOpen },
   { id: 'games', label: getTabLabel('games'), icon: Gamepad2 },
   { id: 'files', label: getTabLabel('files'), icon: FolderOpen },
   // { id: 'todos', label: getTabLabel('todos'), icon: LayoutList },

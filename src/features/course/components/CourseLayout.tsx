@@ -7,7 +7,7 @@ import { useCourse } from '@/contexts/course'
 import CourseSettings from '@/features/course/components/CourseSettings'
 import CoursePreviewTab from '@/features/course/components/CoursePreviewTab'
 import CourseAnalyticsTab from '@/features/course/components/CourseAnalyticsTab'
-import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/workspace'
+import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/layout'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 

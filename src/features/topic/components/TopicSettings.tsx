@@ -6,11 +6,9 @@ import { toast } from 'sonner'
 import { useTopic } from '@/contexts/topic'
 import { Button } from '@/components/ui/button'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { Textarea } from '@/components/ui/textarea'
+import { TitleDescriptionFields } from '@/components/shared/forms'
 
 export interface TopicSettingsProps {
   topicId: string
@@ -173,29 +171,18 @@ export default function TopicSettings({ topicId, onUnsavedChange }: TopicSetting
       </div>
 
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="topic-title">{t('topic.titleLabel')}</Label>
-          <Input
-            id="topic-title"
-            type="text"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder={t('page.addTopicPlaceholder')}
-            className="text-base"
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="topic-description">{t('topic.descriptionLabel')}</Label>
-          <Textarea
-            id="topic-description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder={t('page.addTopicDescriptionPlaceholder')}
-            rows={4}
-            className="resize-none"
-          />
-        </div>
+        <TitleDescriptionFields
+          title={title}
+          description={description}
+          onTitleChange={setTitle}
+          onDescriptionChange={setDescription}
+          titleLabel={t('topic.titleLabel')}
+          descriptionLabel={t('topic.descriptionLabel')}
+          titlePlaceholder={t('page.addTopicPlaceholder')}
+          descriptionPlaceholder={t('page.addTopicDescriptionPlaceholder')}
+          rows={4}
+          maxDescriptionLength={500}
+        />
 
         <div className="flex items-center justify-end gap-4 border-t py-4">
           <HoldToDeleteButton

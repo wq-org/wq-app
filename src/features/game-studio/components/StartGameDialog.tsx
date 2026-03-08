@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import type { StartGameDialogProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
-import DefaultBackgroundGallery from '@/components/shared/theme/DefaultBackgroundGallery'
+import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
 import type { ThemeId } from '@/lib/themes'
 
 function getTitleFromData(initialData: StartGameDialogProps['initialData']): string {

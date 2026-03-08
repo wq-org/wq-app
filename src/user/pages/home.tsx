@@ -1,9 +1,6 @@
-import { HeroSection } from '@/components/landing/HeroSection'
-import { FooterSection } from '@/components/landing/FooterSection'
-import { LanguageSwitcher } from '@/components/shared/i18n/LanguageSwitcher'
-import Navigation from '@/components/shared/navigation/Navigation'
+import { HeroSection, FooterSection, Feature6, Navigation } from '@/features/landing'
+import { LanguageSwitcher } from '@/components'
 import { Brush, ChartSpline, Microscope, SplinePointer } from 'lucide-react'
-import { Feature6 } from '@/components/shared/functionality/feature6'
 import { useTranslation } from 'react-i18next'
 
 export default function Home() {

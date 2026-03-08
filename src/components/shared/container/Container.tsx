@@ -7,7 +7,7 @@ interface ContainerProps extends React.HTMLAttributes<HTMLElement> {
   className?: string
 }
 
-export default function Container({
+export function Container({
   as: Component = 'section',
   children,
   className,
