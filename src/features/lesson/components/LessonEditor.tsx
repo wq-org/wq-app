@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef, type MouseEvent } from 'react'
 import YooptaEditor, { createYooptaEditor } from '@yoopta/editor'
 import Paragraph from '@yoopta/paragraph'
 import { HeadingOne, HeadingTwo, HeadingThree } from '@yoopta/headings'

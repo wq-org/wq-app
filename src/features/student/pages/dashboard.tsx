@@ -17,6 +17,7 @@ import {
   getMyAcceptedCourses,
   type EnrollmentCourse,
   type EnrollmentStatus,
+  type ProfileCourseCardData,
 } from '@/features/course'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'

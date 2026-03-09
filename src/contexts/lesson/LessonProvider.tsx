@@ -6,7 +6,7 @@ import {
   getLessonById as getLessonByIdApi,
   getLessonsByTopicId as getLessonsByTopicIdApi,
 } from '@/features/lesson'
-import { LessonContext } from './LessonContext'
+import { LessonContext, type LessonContextValue } from './LessonContext'
 import type { Lesson, CreateLessonData } from '@/features/lesson'
 
 export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {

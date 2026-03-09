@@ -11,6 +11,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/
 import { EmptyTopicsView } from '@/features/course'
 import { TopicForm } from '@/features/topic'
 import { TopicsToolbar } from '@/features/topic'
+import { TopicCardList } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
 export default function Course() {

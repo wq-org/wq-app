@@ -8,9 +8,11 @@ import { DashboardLayout } from '@/components/layout'
 import {
   EmptyCourseView,
   getMyEnrollmentStatusMap,
+  requestCourseJoin,
   getTeacherCourses,
   type Course,
   type EnrollmentStatus,
+  type ProfileCourseCardData,
 } from '@/features/course'
 import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { useAvatarUrl } from '@/features/onboarding'
