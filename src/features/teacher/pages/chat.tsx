@@ -1,5 +1,5 @@
 import { ChatComingSoon } from '@/features/chat'
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 
 export default function Chat() {
   return (

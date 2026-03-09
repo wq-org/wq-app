@@ -12,7 +12,7 @@ export interface TopicLayoutProps {
   className?: string
 }
 
-export default function TopicLayout({
+export function TopicLayout({
   activeTab,
   onTabChange,
   editorContent,

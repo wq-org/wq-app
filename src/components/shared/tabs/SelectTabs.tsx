@@ -16,7 +16,7 @@ export interface TabItem {
   title: string
 }
 
-interface SelectTabsProps {
+export interface SelectTabsProps {
   tabs: TabItem[]
   activeTabId: string
   onTabChange: (tabId: string) => void
@@ -25,7 +25,7 @@ interface SelectTabsProps {
   colorVariant?: SelectTabsColorVariant
 }
 
-export default function SelectTabs({
+export function SelectTabs({
   tabs,
   activeTabId,
   onTabChange,

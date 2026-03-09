@@ -1,15 +1,15 @@
-import React, { useState, useCallback } from 'react'
+import { useState, useCallback, type FC, type ReactNode } from 'react'
 import {
   createLesson as createLessonApi,
   deleteLesson as deleteLessonApi,
   updateLesson as updateLessonApi,
   getLessonById as getLessonByIdApi,
   getLessonsByTopicId as getLessonsByTopicIdApi,
-} from '@/features/lesson/api/lessonsApi'
+} from '@/features/lesson'
 import { LessonContext, type LessonContextValue } from './LessonContext'
-import type { Lesson, CreateLessonData } from '@/features/lesson/types/lesson.types'
+import type { Lesson, CreateLessonData } from '@/features/lesson'
 
-export const LessonProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(false)

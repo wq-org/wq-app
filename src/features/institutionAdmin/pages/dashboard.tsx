@@ -1,4 +1,4 @@
-import InstitutionAdminLayout from '@/features/institutionAdmin/components/InstitutionAdminLayout'
+import { InstitutionAdminLayout } from '@/features/institutionAdmin'
 
 export default function InstitutionDashboard() {
   return (

@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { MapPin, Presentation, Users2, Globe, Twitter, Facebook, Instagram } from 'lucide-react'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
-import EmptyTeachersView from './EmptyTeachersView'
-import EmptyStudentView from '@/features/student/components/EmptyStudentView'
+import { EmptyTeachersView } from './EmptyTeachersView'
+import { EmptyStudentView } from '@/features/student'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 
@@ -167,4 +167,4 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default InstitutionView
+export { InstitutionView }

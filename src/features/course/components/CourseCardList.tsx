@@ -1,4 +1,4 @@
-import CourseCard from './CourseCard'
+import { CourseCard } from './CourseCard'
 import type { CourseCardProps } from '../types/course.types'
 
 interface CourseCardListProps {
@@ -6,7 +6,7 @@ interface CourseCardListProps {
   onCourseView?: (id: string) => void
 }
 
-export default function CourseCardList({ courses, onCourseView }: CourseCardListProps) {
+export function CourseCardList({ courses, onCourseView }: CourseCardListProps) {
   return (
     <div className="flex gap-10 flex-wrap animate-in fade-in-0 slide-in-from-bottom-4">
       {courses.map((course, idx) => (

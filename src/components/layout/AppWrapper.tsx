@@ -1,10 +1,10 @@
 import React from 'react'
 import { Container, AppNavigation } from '@/components/shared'
-import CommandPalette from '@/features/command-palette/components/CommandPalette'
+import { CommandPalette } from '@/features/command-palette'
 import { cn } from '@/lib/utils'
 import type { Roles, CommandBarContext } from './config'
 
-interface AppWrapperProps {
+type AppWrapperProps = {
   children: React.ReactNode
   /** User role for layout/navigation; required. */
   role: Roles
@@ -13,7 +13,7 @@ interface AppWrapperProps {
   commandBarContext?: CommandBarContext
 }
 
-function AppWrapper({ children, role, className, commandBarContext }: AppWrapperProps) {
+export function AppWrapper({ children, role, className, commandBarContext }: AppWrapperProps) {
   const effectiveContext: CommandBarContext = commandBarContext ?? role
 
   return (
@@ -24,5 +24,3 @@ function AppWrapper({ children, role, className, commandBarContext }: AppWrapper
     </>
   )
 }
-
-export default AppWrapper

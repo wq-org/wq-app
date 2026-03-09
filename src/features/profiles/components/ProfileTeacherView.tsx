@@ -1,23 +1,27 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import confetti from 'canvas-confetti'
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import { getTeacherCourses } from '@/features/course/api/coursesApi'
-import { getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course/api/enrollmentsApi'
+import { DashboardLayout } from '@/components/layout'
+import {
+  EmptyCourseView,
+  getMyEnrollmentStatusMap,
+  requestCourseJoin,
+  getTeacherCourses,
+  type Course,
+  type EnrollmentStatus,
+  type ProfileCourseCardData,
+} from '@/features/course'
 import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import type { Profile } from '@/contexts/user/UserContext'
-import type { Course } from '@/features/course/types/course.types'
-import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { getDashboardTabs } from '@/components/layout/config'
-import { EmptyCourseView } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import { ProfileCourseCardList } from './ProfileCourseCardList'

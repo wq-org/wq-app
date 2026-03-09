@@ -83,7 +83,7 @@ const items: NavigationItem[] = [
   },
 ]
 
-export default function InstitutionAdminLayout({ children }: { children: React.ReactNode }) {
+export function InstitutionAdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const { profile, loading, getRole } = useUser()
   //  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')

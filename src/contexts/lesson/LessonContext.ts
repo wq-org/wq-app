@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
-import type { Lesson, CreateLessonData } from '@/features/lesson/types/lesson.types'
+import type { Lesson, CreateLessonData } from '@/features/lesson'
 
 // Re-export types for backward compatibility
-export type { Lesson, CreateLessonData } from '@/features/lesson/types/lesson.types'
+export type { Lesson, CreateLessonData } from '@/features/lesson'
 
 export interface LessonContextValue {
   lessons: Lesson[]

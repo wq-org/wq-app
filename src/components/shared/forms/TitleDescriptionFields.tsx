@@ -3,7 +3,7 @@ import { useId, useState } from 'react'
 import { CharacterCounter } from '@/components/ui/character-counter'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import ClearableInput from '@/components/shared/inputs/ClearableInput'
+import { ClearableInput } from '@/components/shared/inputs'
 
 type TitleDescriptionFieldsProps = {
   title?: string

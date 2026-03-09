@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
 import { Check } from 'lucide-react'
-import { Container, AppNavigation } from '@/components/shared'
+import { Container } from '@/components/shared/container'
+import { AppNavigation } from '@/components/shared/AppNavigation'
 import { PageTitle } from './PageTitle'
 import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
@@ -8,12 +8,13 @@ import { Textarea } from '../ui/textarea'
 import { Label } from '../ui/label'
 import type { Profile } from '@/contexts/user'
 import Spinner from '../ui/spinner'
-import AvatarDrawer from './AvatarDrawer'
+import { AvatarDrawer } from './AvatarDrawer'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import type { AvatarOption } from '@/features/onboarding/types/onboarding.types'
+import type { AvatarOption } from '@/features/onboarding'
+import { useState, useEffect } from 'react'
 
-interface SettingsLayoutProps {
+type SettingsLayoutProps = {
   children?: React.ReactNode
   profile?: Profile | null
   loading?: boolean
@@ -29,7 +30,7 @@ interface SettingsLayoutProps {
   linkedInValue?: string
 }
 
-export default function SettingsLayout({
+export function SettingsLayout({
   children,
   profile,
   loading,

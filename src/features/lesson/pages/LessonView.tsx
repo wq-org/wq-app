@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { getLessonById } from '@/features/lesson/api/lessonsApi'
-import { getCourseById } from '@/features/course/api/coursesApi'
-import type { Lesson } from '@/features/lesson/types/lesson.types'
-import type { Course } from '@/features/course/types/course.types'
-import LessonPreviewTab from '../components/LessonPreviewTab'
+import { getLessonById } from '@/features/lesson'
+import { getCourseById } from '@/features/course'
+import type { Lesson } from '@/features/lesson'
+import type { Course } from '@/features/course'
+import { LessonPreviewTab } from '../components/LessonPreviewTab'
 
 function parseLessonContent(raw: unknown): Record<string, unknown> {
   if (raw == null || raw === '') return {}

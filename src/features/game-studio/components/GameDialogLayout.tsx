@@ -15,7 +15,7 @@ interface GameLayoutProps {
 }
 type TabType = 'editor' | 'preview' | 'settings'
 
-export default function GameLayout({
+export function GameLayout({
   children,
   editorContent,
   previewContent,

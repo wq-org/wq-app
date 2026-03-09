@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
-import ClearableInput from '@/components/shared/inputs/ClearableInput'
+import { ClearableInput } from '@/components/shared/inputs'
 
 export interface TopicsToolbarProps {
   searchValue: string
@@ -8,11 +8,7 @@ export interface TopicsToolbarProps {
   className?: string
 }
 
-export default function TopicsToolbar({
-  searchValue,
-  onSearchChange,
-  className,
-}: TopicsToolbarProps) {
+export function TopicsToolbar({ searchValue, onSearchChange, className }: TopicsToolbarProps) {
   const { t } = useTranslation('features.course')
 
   return (

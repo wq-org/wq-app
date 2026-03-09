@@ -1,6 +1,6 @@
 import { StudentCard } from './StudentCard'
 import type { StudentCardProps } from '../types/student.types'
-import EmptyStudentView from './EmptyStudentView'
+import { EmptyStudentView } from './EmptyStudentView'
 
 interface StudentCardListProps {
   students: StudentCardProps[]

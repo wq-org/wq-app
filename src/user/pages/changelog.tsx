@@ -12,7 +12,8 @@ import {
   ChangelogEntryTitle,
   ChangelogHeader,
 } from '@/components/ui/changelog'
-import { changelogEntries } from '@/features/landing/components/changelogEntries'
+
+import { changelogEntries } from '@/features/landing'
 
 export default function ChangelogPage() {
   return (

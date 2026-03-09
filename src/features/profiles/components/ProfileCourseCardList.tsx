@@ -1,5 +1,6 @@
 import { ProfileCourseCard } from './ProfileCourseCard'
-import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
+import type { ProfileCourseCardData } from '@/features/course'
+import type { EnrollmentStatus } from '@/features/course/'
 
 interface ProfileCourseCardListProps {
   courses: ProfileCourseCardData[]

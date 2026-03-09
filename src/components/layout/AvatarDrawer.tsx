@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Edit2Icon, X } from 'lucide-react'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+
 import { Text } from '@/components/ui/text'
 import {
   Drawer,
@@ -14,12 +14,10 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import { cn } from '@/lib/utils'
-import type {
-  AvatarDisplayAttributes,
-  AvatarOption,
-} from '@/features/onboarding/types/onboarding.types'
+import type { AvatarDisplayAttributes, AvatarOption } from '@/features/onboarding'
+import { useAvatarUrl } from '@/features/onboarding'
 
-interface AvatarOptionItemProps {
+type AvatarOptionItemProps = {
   avatar: AvatarOption
   isSelected: boolean
   onSelect: (avatarPath: string) => void
@@ -72,7 +70,7 @@ function AvatarOptionItem({ avatar, isSelected, onSelect }: AvatarOptionItemProp
       type="button"
       onClick={() => onSelect(avatar.src)}
       className={cn(
-        'flex h-[12.5rem] w-[11rem] cursor-pointer flex-col items-center justify-start gap-3 rounded-3xl px-3 py-3 text-center transition-colors duration-200',
+        'flex h-50 w-44 cursor-pointer flex-col items-center justify-start gap-3 rounded-3xl px-3 py-3 text-center transition-colors duration-200',
         isSelected
           ? 'bg-[oklch(var(--oklch-darkblue)/0.08)] ring-1 ring-[oklch(var(--oklch-darkblue)/0.22)]'
           : 'hover:bg-muted/60',
@@ -101,7 +99,7 @@ interface AvatarDrawerProps {
   onAvatarSelect: (avatarPath: string) => void
 }
 
-export default function AvatarDrawer({
+export function AvatarDrawer({
   avatarPath,
   selectedAvatarPath,
   displayNameInitial,

@@ -10,7 +10,7 @@ import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { useAvatarUrl } from '@/features/onboarding'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {
@@ -37,7 +37,7 @@ function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title
   )
 }
 
-export default function CommandSearch() {
+export function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const { items, loading } = useSearchItems()
   const { t } = useTranslation(['common', 'features.commandPalette'])

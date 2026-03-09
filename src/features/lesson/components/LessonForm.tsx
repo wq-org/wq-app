@@ -7,7 +7,7 @@ import { useLesson } from '@/contexts/lesson'
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { createYooptaStarterContentJson } from '@/features/course/utils/yooptaContent'
+import { createYooptaStarterContentJson } from '@/features/course'
 import { TitleDescriptionFields } from '@/components/shared/forms'
 export interface LessonFormProps {
   topicId?: string
@@ -15,7 +15,7 @@ export interface LessonFormProps {
   onLessonCreated?: () => void
 }
 
-export default function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormProps) {
+export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormProps) {
   const { t } = useTranslation('features.course')
   const [newLesson, setNewLesson] = useState('')
   const [description, setDescription] = useState('')

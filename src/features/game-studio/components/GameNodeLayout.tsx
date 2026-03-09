@@ -5,7 +5,8 @@ import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { GameNodePointsContext } from '@/contexts/game-studio'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import SelectTabs, { type TabItem } from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared/tabs'
+import type { TabItem } from '@/components/shared/tabs'
 
 interface GameNodeLayoutProps {
   nodeId?: string
@@ -28,7 +29,7 @@ interface GameNodeLayoutProps {
   hideOverviewTab?: boolean
 }
 
-export default function GameNodeLayout({
+export function GameNodeLayout({
   nodeId,
   gameComponent: GameComponent,
   overviewContent,
@@ -164,3 +165,5 @@ export default function GameNodeLayout({
     </div>
   )
 }
+
+export type { GameNodeLayoutProps }

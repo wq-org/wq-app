@@ -19,10 +19,7 @@ function getAction(notification: Notification): NotificationAction | undefined {
   return undefined
 }
 
-export default function NotificationItem({
-  notification,
-  isActionLoading = false,
-}: NotificationItemProps) {
+export function NotificationItem({ notification, isActionLoading = false }: NotificationItemProps) {
   const { t } = useTranslation('features.notification')
   const action = getAction(notification)
 

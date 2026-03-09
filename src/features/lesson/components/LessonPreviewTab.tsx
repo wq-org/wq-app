@@ -1,14 +1,12 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import LessonEditor from '@/features/lesson/components/LessonEditor'
-import {
-  getHeadingsFromLessonValue,
-  type LessonHeading,
-} from '@/features/course/utils/lessonHeadings'
-import LessonHeadingsNavigation from '@/features/lesson/components/LessonHeadingsNavigation'
+import { LessonEditor } from '@/features/lesson'
+import { getHeadingsFromLessonValue } from '@/features/course'
+import { LessonHeadingsNavigation } from '@/features/lesson'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { cn } from '@/lib/utils'
+import type { LessonHeading } from '@/features/course'
 
 export interface LessonPreviewTabProps {
   title: string
@@ -24,7 +22,7 @@ export interface LessonPreviewTabProps {
   className?: string
 }
 
-export default function LessonPreviewTab({
+export function LessonPreviewTab({
   title,
   description,
   value,

@@ -23,7 +23,7 @@ interface ClearableInputProps {
   showSearchIcon?: boolean
 }
 
-const ClearableInput = ({
+export const ClearableInput = ({
   value,
   defaultValue = '',
   onValueChange,
@@ -109,5 +109,3 @@ const ClearableInput = ({
     </div>
   )
 }
-
-export default ClearableInput

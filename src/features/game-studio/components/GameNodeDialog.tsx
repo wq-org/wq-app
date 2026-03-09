@@ -13,7 +13,7 @@ import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatch
 import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame'
 import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame'
 import type { GameNodeDialogProps } from '../types/game-studio.types'
-import GameNodeLayout from './GameNodeLayout'
+import { GameNodeLayout } from './GameNodeLayout'
 import { GameEditorProvider } from '@/contexts/game-studio'
 import { logColor } from '@/lib/utils'
 import { toast } from 'sonner'

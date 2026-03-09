@@ -1,9 +1,8 @@
-export { default as AppWrapper } from './AppWrapper'
-export { default as DashboardLayout } from './DashboardLayout'
-export { default as CourseLayout } from '../../features/course/components/CourseLayout'
-export { default as GameLayout } from './GameLayout'
-export { default as SettingsLayout } from './SettingsLayout'
-export { default as AvatarDrawer } from './AvatarDrawer'
+export { AppWrapper } from './AppWrapper'
+export { DashboardLayout } from './DashboardLayout'
+export { GameLayout } from '../../features/game-studio/components/GameDialogLayout'
+export { SettingsLayout } from './SettingsLayout'
+export { AvatarDrawer } from './AvatarDrawer'
 export { PageTitle } from './PageTitle'
 
 // Config exports

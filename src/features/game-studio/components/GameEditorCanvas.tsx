@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Text } from '@/components/ui/text'
 import {
   ReactFlow,
@@ -47,8 +47,8 @@ import {
 } from '../api/gameStudioApi'
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
-import { deleteFile } from '@/features/files/api/filesApi'
-import { deleteGame } from '@/features/command-palette/api/commandPaletteApi'
+import { deleteFile } from '@/features/files'
+import { deleteGame } from '@/features/command-palette'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import type { ThemeId } from '@/lib/themes'

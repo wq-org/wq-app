@@ -1,12 +1,14 @@
 // Components
-export { default as CommandFeedbackForm } from './components/CommandFeedbackDialog'
-export { default as CommandList } from './components/CommandList'
-export { default as CommandPalette } from './components/CommandPalette'
-export { default as CommandSearch } from './components/CommandSearchDialog'
-export { default as CommandShortcut } from './components/CommandShortcut'
-export { default as CommandUploadForm } from './components/CommandUploadForm'
-export { default as CommandAddDialog } from './components/CommandAddDialog'
-export { default as CommandUploadDialog } from './components/CommandUploadDialog'
+export { CommandFeedbackForm } from './components/CommandFeedbackDialog'
+export { CommandList } from './components/CommandList'
+export { CommandPalette } from './components/CommandPalette'
+export { CommandSearch } from './components/CommandSearchDialog'
+export { CommandShortcut } from './components/CommandShortcut'
+export { CommandUploadForm } from './components/CommandUploadForm'
+export { CommandAddDialog } from './components/CommandAddDialog'
+export { CommandUploadDialog } from './components/CommandUploadDialog'
+export { RestrictedCommandPalette } from './components/RestrictedCommandPalette'
+export { UploadedFileItem } from './components/UploadedFileItem'
 
 // Hooks
 export * from './hooks'

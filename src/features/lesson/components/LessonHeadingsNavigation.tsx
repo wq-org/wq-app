@@ -1,6 +1,6 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Text } from '@/components/ui/text'
-import type { LessonHeading } from '@/features/course/utils/lessonHeadings'
+import type { LessonHeading } from '@/features/course'
 import { cn } from '@/lib/utils'
 
 export interface LessonHeadingsNavigationProps {
@@ -10,7 +10,7 @@ export interface LessonHeadingsNavigationProps {
   className?: string
 }
 
-export default function LessonHeadingsNavigation({
+export function LessonHeadingsNavigation({
   headings,
   label,
   onHeadingSelect,

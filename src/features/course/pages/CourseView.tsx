@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import CoursePreviewTab from '@/features/course/components/CoursePreviewTab'
-import { getCourseById } from '@/features/course/api/coursesApi'
-import type { Course } from '@/features/course/types/course.types'
+import { CoursePreviewTab } from '@/features/course'
+import { getCourseById } from '@/features/course'
+import type { Course } from '@/features/course'
 import { useTranslation } from 'react-i18next'
 
 export default function CourseView() {

@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { useAvatarUrl } from '@/features/onboarding'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 

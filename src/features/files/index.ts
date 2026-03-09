@@ -1,10 +1,12 @@
 // Components
-export { default as FilesCard } from './components/FilesCard'
-export { default as TableView } from './components/FilesTableView'
-export { default as TableEmptyView } from './components/FilesTableEmptyView'
+export { FilesCard } from './components/FilesCard'
+export { FileTable as FilesTableView } from './components/FilesTableView'
+export { FilesTableEmptyView } from './components/FilesTableEmptyView'
+export { FileTable as TableView } from './components/FilesTableView'
+export { FilesTableEmptyView as TableEmptyView } from './components/FilesTableEmptyView'
 
 // Types
-export type * from './types/files.types'
+export * from './types/files.types'
 
 // API
 export * from './api/filesApi'

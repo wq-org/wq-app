@@ -1,5 +1,5 @@
 // Navigation
-export { AppNavigation } from './navigation'
+export { AppNavigation } from './AppNavigation'
 
 // Container
 export { Container } from './container/Container'

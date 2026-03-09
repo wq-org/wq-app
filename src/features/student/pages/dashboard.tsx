@@ -1,24 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import DashboardLayout from '@/components/layout/DashboardLayout'
+import { DashboardLayout } from '@/components/layout'
 import { CommandPalette } from '@/features/command-palette'
-import TableView from '@/features/files/components/FilesTableView'
-import type { FileItem } from '@/features/files/types/files.types'
+import { TableView } from '@/features/files'
+import type { FileItem } from '@/features/files'
 import { getPublishedGamesFromFollowedTeachers } from '@/features/game-studio/api/gameStudioApi'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import Spinner from '@/components/ui/spinner'
+import { useAvatarUrl } from '@/features/onboarding'
 import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
-import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
-import { getMyAcceptedCourses, type EnrollmentCourse } from '@/features/course/api/enrollmentsApi'
-import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
-import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course/types/course.types'
+import { getFollowedTeacherIds, ProfileCourseCardList } from '@/features/profiles'
+import {
+  getMyAcceptedCourses,
+  type EnrollmentCourse,
+  type EnrollmentStatus,
+  type ProfileCourseCardData,
+} from '@/features/course'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
+import Spinner from '@/components/ui/spinner'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
   const extension = filename.split('.').pop()?.toUpperCase() || ''

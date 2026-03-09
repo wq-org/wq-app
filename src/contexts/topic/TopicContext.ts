@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
-import type { CreateTopicData, Topic } from '@/features/topic/types/topic.types'
+import type { CreateTopicData, Topic } from '@/features/topic'
 
-export type { Topic, CreateTopicData } from '@/features/topic/types/topic.types'
+export type { Topic, CreateTopicData } from '@/features/topic'
 
 export interface TopicContextValue {
   topics: Topic[]

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { createCourse } from '@/features/course/api/coursesApi'
+import { createCourse } from '@/features/course'
 import { createInstitution } from '@/features/auth/api/authApi'
 import { createGameForStudio } from '@/features/game-studio/api/gameStudioApi'
 import { useUser } from '@/contexts/user'
@@ -371,4 +371,4 @@ const CommandAddDialog = ({ role, onCourseCreated, onRequestClose }: CommandAddD
   )
 }
 
-export default CommandAddDialog
+export { CommandAddDialog }

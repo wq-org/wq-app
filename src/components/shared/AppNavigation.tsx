@@ -4,7 +4,7 @@ import { Bell, BellDot, LogOut, ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import NotificationPanel from '@/features/notification/components/NotificationPanel'
+import { NotificationPanel } from '@/features/notification'
 import { LanguageSwitcher } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
@@ -18,7 +18,7 @@ interface AppNavigationProps {
   authenticated?: boolean
 }
 
-const AppNavigation = ({
+export const AppNavigation = ({
   currentPageName,
   children,
   className,
@@ -111,5 +111,3 @@ const AppNavigation = ({
     </div>
   )
 }
-
-export default AppNavigation

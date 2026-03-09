@@ -1,16 +1,8 @@
 import { createContext, useContext } from 'react'
-import type {
-  Course,
-  CreateCourseData,
-  UpdateCourseData,
-} from '@/features/course/types/course.types'
+import type { Course, CreateCourseData, UpdateCourseData } from '@/features/course'
 
 // Re-export types for backward compatibility
-export type {
-  Course,
-  CreateCourseData,
-  UpdateCourseData,
-} from '@/features/course/types/course.types'
+export type { Course, CreateCourseData, UpdateCourseData } from '@/features/course'
 
 export interface CourseContextValue {
   courses: Course[]

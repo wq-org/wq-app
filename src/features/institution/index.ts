@@ -1,15 +1,8 @@
 // Components
-export { default as InstitutionProfileView } from './components/InstitutionProfileView'
-export { default as InstitutionView } from './components/InstitutionView'
+export { InstitutionProfileView } from './components/InstitutionProfileView'
+export { InstitutionView } from './components/InstitutionView'
+export { EmptyTeachersView } from './components/EmptyTeachersView'
 
 // Pages
-export { default as Institution } from './pages/institution'
-
-// Types
-// Add types when available
-
-// API
-// Add API exports when available
-
-// Hooks
-// Add hooks exports when available
+export { default as InstitutionPage } from './pages/institution'
+export { default as InstitutionViewPage } from './pages/view'

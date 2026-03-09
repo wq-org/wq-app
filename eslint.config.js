@@ -6,6 +6,32 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
+const FEATURE_DEEP_IMPORT_PATTERNS = [
+  '@/features/*/api/*',
+  '@/features/*/components/*',
+  '@/features/*/hooks/*',
+  '@/features/*/pages/*',
+  '@/features/*/types/*',
+  '@/features/*/utils/*',
+  '@/features/*/data/*',
+  '@/features/*/config/*',
+  '@/features/*/constants/*',
+]
+
+const RESTRICTED_FEATURES = [
+  'lesson',
+  'onboarding',
+  'command-palette',
+  'files',
+  'course',
+  'topic',
+  'student',
+  'teacher',
+  'institution',
+  'institutionAdmin',
+  'profiles',
+]
+
 export default defineConfig([
   globalIgnores(['dist']),
   {
@@ -23,28 +49,37 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/components/**/*.{ts,tsx}', 'src/user/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'warn',
         {
           patterns: [
             {
-              group: [
-                '@/features/*/api/*',
-                '@/features/*/components/*',
-                '@/features/*/hooks/*',
-                '@/features/*/pages/*',
-                '@/features/*/types/*',
-                '@/features/*/utils/*',
-                '@/features/*/data/*',
-              ],
+              group: FEATURE_DEEP_IMPORT_PATTERNS,
               message:
-                'Avoid deep feature imports in shared/user layers. Prefer feature public entrypoints (e.g. `@/features/<feature>`).',
+                'Avoid deep feature imports. Use `@/features/<feature>` public barrels or local relative imports in the same feature.',
             },
           ],
         },
       ],
     },
   },
+  ...RESTRICTED_FEATURES.map((featureName) => ({
+    files: [`src/features/${featureName}/**/*.{ts,tsx}`],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group: [...FEATURE_DEEP_IMPORT_PATTERNS, `!@/features/${featureName}/*`],
+              message:
+                'Avoid deep imports into other features. Use `@/features/<feature>` public barrels; same-feature imports are allowed.',
+            },
+          ],
+        },
+      ],
+    },
+  })),
 ])

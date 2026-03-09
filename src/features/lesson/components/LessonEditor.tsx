@@ -9,7 +9,7 @@ import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool'
 import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list'
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar'
 import { cn } from '@/lib/utils'
-import { createYooptaStarterContentObject } from '@/features/course/utils/yooptaContent'
+import { createYooptaStarterContentObject } from '@/features/course'
 
 const plugins = [
   Paragraph,
@@ -77,7 +77,7 @@ function normalizeHref(href: string): string {
   return `https://${trimmed}`
 }
 
-export default function LessonEditor({
+export function LessonEditor({
   value,
   onChange,
   readOnly = false,

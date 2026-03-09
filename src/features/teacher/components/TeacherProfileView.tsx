@@ -2,27 +2,24 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import DashboardLayout from '@/components/layout/DashboardLayout'
+import { DashboardLayout } from '@/components/layout'
 import { getCompleteProfile } from '@/features/auth/api/authApi'
-import { getTeacherCourses } from '@/features/course/api/coursesApi'
-import { getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course/api/enrollmentsApi'
+import { getTeacherCourses } from '@/features/course'
+import { getMyEnrollmentStatusMap } from '@/features/course'
+import { requestCourseJoin } from '@/features/course'
 import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
-import { useFollow } from '@/features/profiles/hooks/useFollow'
-import { ProfileCourseCardList } from '@/features/profiles/components/ProfileCourseCardList'
+import { useFollow } from '@/features/profiles'
+import { ProfileCourseCardList } from '@/features/profiles'
 import { getDashboardTabs } from '@/components/layout/config'
 import { EmptyCourseView } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
 import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { Profile } from '@/contexts/user/UserContext'
-import type {
-  Course,
-  CourseCardProps,
-  EnrollmentStatus,
-} from '@/features/course/types/course.types'
+import type { Course, CourseCardProps, EnrollmentStatus } from '@/features/course'
 import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Text } from '@/components/ui/text'
 
@@ -271,4 +268,4 @@ const TeacherProfileView = () => {
   )
 }
 
-export default TeacherProfileView
+export { TeacherProfileView }

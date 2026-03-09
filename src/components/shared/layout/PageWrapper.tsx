@@ -1,7 +1,7 @@
-import { AppNavigation } from '../navigation'
 import { PageTitle } from '@/components/layout/PageTitle'
 import { Container } from '../container/Container'
 import { cn } from '@/lib/utils'
+import { AppNavigation } from '../AppNavigation'
 
 export function PageWrapper({
   children,

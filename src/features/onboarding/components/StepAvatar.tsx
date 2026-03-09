@@ -107,7 +107,7 @@ function AvatarSlide({ avatar, isSelected, onSelect }: AvatarSlideProps) {
   )
 }
 
-export default function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps) {
+export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps) {
   const { t } = useTranslation('features.onboarding')
   const [api, setApi] = useState<CarouselApi>()
   const [avatars, setAvatars] = useState<AvatarOption[]>([])

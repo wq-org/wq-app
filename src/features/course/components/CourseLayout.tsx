@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useLocation, useNavigate, Outlet } from 'react-router-dom'
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
-import CourseSettings from '@/features/course/components/CourseSettings'
-import CoursePreviewTab from '@/features/course/components/CoursePreviewTab'
-import CourseAnalyticsTab from '@/features/course/components/CourseAnalyticsTab'
+import { CourseSettings } from '@/features/course'
+import { CoursePreviewTab } from '@/features/course'
+import { CourseAnalyticsTab } from '@/features/course'
 import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/layout'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-export default function CourseLayout() {
+export function CourseLayout() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const location = useLocation()

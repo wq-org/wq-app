@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import EmptyProjectsView from '@/features/game-studio/components/EmptyProjectsView'
