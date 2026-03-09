@@ -7,30 +7,34 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
 } from './features/auth'
-import Institution from './features/institution/pages/institution'
 import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
 import ChangelogPage from './user/pages/changelog'
-
-import StudentDashboard from './features/student/pages/dashboard'
-import StudentSettings from './features/student/pages/settings'
-import StudentChat from './features/student/pages/chat'
-import TeacherChat from './features/teacher/pages/chat'
-
-import TeacherDashboard from './features/teacher/pages/dashboard'
-import TeacherSettings from './features/teacher/pages/settings'
-import GameStudio from './features/teacher/pages/game-studio'
+import { InstitutionPage as Institution, InstitutionViewPage } from '@/features/institution'
+import {
+  StudentDashboardPage as StudentDashboard,
+  StudentSettingsPage as StudentSettings,
+  StudentChatPage as StudentChat,
+  StudentViewPage,
+} from '@/features/student'
+import {
+  TeacherDashboardPage as TeacherDashboard,
+  TeacherSettingsPage as TeacherSettings,
+  TeacherGameStudioPage as GameStudio,
+  TeacherChatPage as TeacherChat,
+  TeacherViewPage,
+} from '@/features/teacher'
 import PlayGamePage from './features/game-play/pages/PlayGamePage'
 import { Error404 } from './components'
-import CourseLayout from './features/course/components/CourseLayout'
-import CoursePage from './features/course/pages/course'
-import CourseView from './features/course/pages/CourseView'
-import LessonPage from './features/lesson/pages/lesson'
-import LessonView from './features/lesson/pages/LessonView'
-import LessonRedirect from './features/lesson/pages/LessonRedirect'
-import { TopicPage, TopicViewPage } from './features/topic'
-import Onboarding from './features/onboarding/pages/onboarding'
+import { CourseLayout, CoursePage, CourseViewPage as CourseView } from '@/features/course'
+import {
+  LessonPage,
+  LessonRedirectPage as LessonRedirect,
+  LessonViewPage as LessonView,
+} from '@/features/lesson'
+import { TopicPage, TopicViewPage } from '@/features/topic'
+import { OnboardingPage as Onboarding } from '@/features/onboarding'
 
 import { UserProvider } from './contexts/user'
 import { CourseProvider } from './contexts/course'
@@ -38,12 +42,9 @@ import { LessonProvider } from './contexts/lesson'
 import { TopicProvider } from './contexts/topic'
 import { RequireAuth, RequireOnboarding } from '@/features/auth'
 import { Toaster } from './components/ui/sonner'
-import AppWrapper from './components/layout/AppWrapper'
+import { AppWrapper } from './components/layout'
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
-import TeacherViewPage from './features/teacher/pages/view'
-import InstitutionViewPage from './features/institution/pages/view'
-import StudentViewPage from './features/student/pages/view'
-import ProfileViewPage from './features/profiles/pages/view'
+import { ProfileViewPage } from '@/features/profiles'
 
 import AdminUsers from './features/admin/pages/users'
 import AdminInstitution from './features/admin/pages/institution'

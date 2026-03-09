@@ -1,4 +1,4 @@
-import TopicCard from './TopicCard'
+import { TopicCard } from './TopicCard'
 import type { TopicCardProps } from '../types/topic.types'
 
 interface TopicCardListProps {
@@ -6,7 +6,7 @@ interface TopicCardListProps {
   onTopicView?: (id: string) => void
 }
 
-export default function TopicCardList({ topics, onTopicView }: TopicCardListProps) {
+export function TopicCardList({ topics, onTopicView }: TopicCardListProps) {
   return (
     <div className="flex flex-wrap gap-10 animate-in fade-in-0 slide-in-from-bottom-4">
       {topics.map((topic) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import AdminDashboardLayout from '@/features/admin/components/AdminDashboardLayout'
+import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
 import { fetchInstitutions } from '../api/institutionApi'
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'

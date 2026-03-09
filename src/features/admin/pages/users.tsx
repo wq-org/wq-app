@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { UserCheck, UserX } from 'lucide-react'
-import AdminDashboardLayout from '@/features/admin/components/AdminDashboardLayout'
+
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,6 +31,7 @@ import {
   setUserActiveStatus,
   type AdminUserRow,
 } from '../api/userApi'
+import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
 
 function initialsFromName(name?: string | null, username?: string | null): string {
   const source = name?.trim() || username?.trim() || 'U'

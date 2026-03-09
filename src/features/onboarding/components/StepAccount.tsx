@@ -7,7 +7,7 @@ import type { StepAccountProps } from '../types/onboarding.types'
 import { validateUsername } from '@/lib/validations'
 import { Text } from '@/components/ui/text'
 
-export default function StepAccount({ onNext, initialData }: StepAccountProps) {
+export function StepAccount({ onNext, initialData }: StepAccountProps) {
   const [username, setUsername] = useState(initialData?.username || '')
   const [displayName, setDisplayName] = useState(initialData?.displayName || '')
   const [description, setDescription] = useState(initialData?.description || '')

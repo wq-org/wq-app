@@ -1,4 +1,4 @@
-import AdminDashboardLayout from '@/features/admin/components/AdminDashboardLayout'
+import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
 
 export default function AdminDashboard() {
   return (

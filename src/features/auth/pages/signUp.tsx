@@ -19,7 +19,7 @@ import Spinner from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
-import SelectTabs from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import type { TabItem } from '@/components/shared/tabs/SelectTabs'
 import { LanguageSwitcher } from '@/components'
 

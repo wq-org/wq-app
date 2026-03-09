@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { createYooptaStarterContentJson } from '@/features/course/utils/yooptaContent'
+import { createYooptaStarterContentJson } from '@/features/course'
 import type { CreateLessonData, Lesson } from '../types/lesson.types'
 
 /**

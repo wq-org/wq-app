@@ -1,3 +1,3 @@
-export default function InstitutionProfileView() {
+export function InstitutionProfileView() {
   return <div></div>
 }

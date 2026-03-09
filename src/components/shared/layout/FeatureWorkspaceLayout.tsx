@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { BarChart2, Eye, FilePenLine, Settings } from 'lucide-react'
-import SelectTabs, { type TabItem } from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared/tabs/'
+import type { TabItem } from '@/components/shared/tabs/'
 import { cn } from '@/lib/utils'
 
 export type WorkspaceTabId = 'editor' | 'preview' | 'settings' | 'analytics'

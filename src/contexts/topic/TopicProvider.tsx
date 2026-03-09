@@ -1,15 +1,15 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState, type FC, type ReactNode } from 'react'
 import {
   createTopic as createTopicApi,
   deleteTopic as deleteTopicApi,
   getTopicById as getTopicByIdApi,
   getTopicsByCourseId,
   updateTopic as updateTopicApi,
-} from '@/features/topic/api/topicsApi'
-import type { CreateTopicData, Topic } from '@/features/topic/types/topic.types'
+} from '@/features/topic'
+import type { CreateTopicData, Topic } from '@/features/topic'
 import { TopicContext, type TopicContextValue } from './TopicContext'
 
-export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TopicProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [topics, setTopics] = useState<Topic[]>([])
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null)
   const [loading, setLoading] = useState(false)

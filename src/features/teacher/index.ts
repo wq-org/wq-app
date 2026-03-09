@@ -1,17 +1,10 @@
 // Components
-export { default as TeacherProfileView } from './components/TeacherProfileView'
-export { default as TeacherView } from './components/TeacherView'
+export { TeacherProfileView } from './components/TeacherProfileView'
+export { TeacherView } from './components/TeacherView'
 
 // Pages
-export { default as TeacherDashboard } from './pages/dashboard'
-export { default as TeacherSettings } from './pages/settings'
-export { default as GameStudio } from './pages/game-studio'
-
-// Types
-// Add types when available
-
-// API
-// Add API exports when available
-
-// Hooks
-// Add hooks exports when available
+export { default as TeacherDashboardPage } from './pages/dashboard'
+export { default as TeacherSettingsPage } from './pages/settings'
+export { default as TeacherGameStudioPage } from './pages/game-studio'
+export { default as TeacherChatPage } from './pages/chat'
+export { default as TeacherViewPage } from './pages/view'

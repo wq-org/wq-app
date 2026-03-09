@@ -8,14 +8,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 import type { TopicCardProps } from '../types/topic.types'
 
-export default function TopicCard({
-  id,
-  title,
-  description,
-  themeId,
-  ctaLabel,
-  onView,
-}: TopicCardProps) {
+export function TopicCard({ id, title, description, themeId, ctaLabel, onView }: TopicCardProps) {
   const { t } = useTranslation('features.course')
 
   return (

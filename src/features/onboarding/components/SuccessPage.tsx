@@ -20,7 +20,7 @@ interface SuccessPageProps {
   onClickHandler?: () => void
 }
 
-export default function SuccessPage({
+export function SuccessPage({
   isOpen,
   title = 'Welcome to WQ Health!',
   description = 'Your account has been set up successfully. You are now ready to start your journey with us.',

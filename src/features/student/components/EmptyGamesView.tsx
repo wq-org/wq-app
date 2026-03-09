@@ -2,7 +2,7 @@ import { Gamepad2 } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
 
-export default function EmptyGamesView() {
+export function EmptyGamesView() {
   const { t } = useTranslation('features.student')
 
   return (

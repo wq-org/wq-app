@@ -15,7 +15,7 @@ export interface TopicSettingsProps {
   onUnsavedChange?: (dirty: boolean) => void
 }
 
-export default function TopicSettings({ topicId, onUnsavedChange }: TopicSettingsProps) {
+export function TopicSettings({ topicId, onUnsavedChange }: TopicSettingsProps) {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()

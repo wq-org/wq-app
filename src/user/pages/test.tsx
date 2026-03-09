@@ -1,5 +1,5 @@
 import { TitleDescriptionFields } from '@/components/shared/forms'
-import ClearableInput from '@/components/shared/inputs/ClearableInput'
+import { ClearableInput } from '@/components/shared/inputs'
 export default function Test() {
   return (
     <div className="min-h-screen  p-8">

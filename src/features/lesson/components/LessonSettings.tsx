@@ -18,11 +18,7 @@ export interface LessonSettingsProps {
   onUnsavedChange?: (dirty: boolean) => void
 }
 
-export default function LessonSettings({
-  lessonId,
-  courseId,
-  onUnsavedChange,
-}: LessonSettingsProps) {
+export function LessonSettings({ lessonId, courseId, onUnsavedChange }: LessonSettingsProps) {
   const navigate = useNavigate()
   const {
     lesson,

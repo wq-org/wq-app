@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { getCourseById } from '@/features/course/api/coursesApi'
+import { getCourseById } from '@/features/course'
 import { getLessonsByTopicId, type Lesson } from '@/features/lesson'
-import TopicPreviewTab from '@/features/topic/components/TopicPreviewTab'
-import { getTopicById } from '@/features/topic/api/topicsApi'
-import type { Topic } from '@/features/topic/types/topic.types'
-import type { Course } from '@/features/course/types/course.types'
+import { TopicPreviewTab } from '@/features/topic'
+import { getTopicById } from '@/features/topic'
+import type { Topic } from '@/features/topic'
+import type { Course } from '@/features/course'
 
 export default function TopicView() {
   const { t } = useTranslation('features.course')

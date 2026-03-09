@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { UserCard } from '@/components/shared'
-import { getCourseMembers, type CourseMember } from '@/features/course/api/enrollmentsApi'
+import { getCourseMembers, type CourseMember } from '@/features/course'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
 const ROLE_LABEL_KEY_MAP: Record<CourseMember['type'], string> = {
@@ -15,7 +15,7 @@ export interface CourseAnalyticsTabProps {
   courseId: string
 }
 
-export default function CourseAnalyticsTab({ courseId }: CourseAnalyticsTabProps) {
+export function CourseAnalyticsTab({ courseId }: CourseAnalyticsTabProps) {
   const { t } = useTranslation(['features.course', 'common'])
   const [loading, setLoading] = useState(true)
   const [members, setMembers] = useState<CourseMember[]>([])

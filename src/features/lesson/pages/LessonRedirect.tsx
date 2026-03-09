@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
-import { getLessonById } from '@/features/lesson/api/lessonsApi'
-import { getTopicById } from '@/features/topic/api/topicsApi'
+import { getLessonById } from '@/features/lesson'
+import { getTopicById } from '@/features/topic'
 import Spinner from '@/components/ui/spinner'
 
 /**

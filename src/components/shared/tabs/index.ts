@@ -1,2 +1,2 @@
-export { default as SelectTabs } from './SelectTabs'
-export type { TabItem } from './SelectTabs'
+export { SelectTabs } from './SelectTabs'
+export type { SelectTabsProps, TabItem } from './SelectTabs'

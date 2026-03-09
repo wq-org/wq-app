@@ -94,7 +94,7 @@ const data = {
   ],
 }
 
-const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
+export function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const { profile, loading, getRole } = useUser()
 
   const { email, avatar_url, display_name } = profile || {}
@@ -140,5 +140,3 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
     </Layout>
   )
 }
-
-export default AdminDashboardLayout

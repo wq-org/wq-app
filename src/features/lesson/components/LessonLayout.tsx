@@ -12,7 +12,7 @@ export interface LessonLayoutProps {
   className?: string
 }
 
-export default function LessonLayout({
+export function LessonLayout({
   activeTab,
   onTabChange,
   editorContent,

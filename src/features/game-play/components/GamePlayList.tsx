@@ -5,7 +5,7 @@ import type { GameForStudio } from '@/features/game-studio/api/gameStudioApi'
 import { GameCard } from './GameCard'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
-import EmptyGamesView from '@/features/student/components/EmptyGamesView'
+import { EmptyGamesView } from '@/features/student'
 
 export function GamePlayList() {
   const [games, setGames] = useState<GameForStudio[]>([])

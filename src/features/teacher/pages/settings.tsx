@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { CommandPalette } from '@/features/command-palette'
-import SettingsLayout from '@/components/layout/SettingsLayout'
+import { SettingsLayout } from '@/components/layout/SettingsLayout'
 import { useUser } from '@/contexts/user'
 import Spinner from '@/components/ui/spinner'
-import { updateProfile } from '@/features/auth/api/authApi'
-import { fetchAvatars } from '@/features/onboarding/api/onboardingApi'
+import { updateProfile } from '@/features/auth'
+import { fetchAvatars } from '@/features/onboarding'
 import { validateLinkedInUrl } from '@/lib/validations'
 import { toast } from 'sonner'
-import type { AvatarOption } from '@/features/onboarding/types/onboarding.types'
+import type { AvatarOption } from '@/features/onboarding'
 
 export default function Settings() {
   const { profile, loading, getUserId, refreshProfile } = useUser()

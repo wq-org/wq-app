@@ -18,7 +18,7 @@ import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 import type { IfElseGameDialogProps } from '../types/game-studio.types'
-import GameNodeLayout from './GameNodeLayout'
+import { GameNodeLayout } from './GameNodeLayout'
 import { useTranslation } from 'react-i18next'
 
 type IfElsePath = 'A' | 'B'

@@ -1,11 +1,15 @@
 // Components
-export { default as CourseCard } from './components/CourseCard'
-export { default as CourseCardList } from './components/CourseCardList'
-export { default as CourseLayout } from './components/CourseLayout'
-export { default as CourseSettings } from './components/CourseSettings'
-export { default as CoursePreviewTab } from './components/CoursePreviewTab'
+export { CourseCard } from './components/CourseCard'
+export { CourseCardList } from './components/CourseCardList'
+export { CourseLayout } from './components/CourseLayout'
+export { CourseSettings } from './components/CourseSettings'
+export { CoursePreviewTab } from './components/CoursePreviewTab'
 export type { CoursePreviewTabProps } from './components/CoursePreviewTab'
-export { default as EmptyCourseView } from './components/EmptyCourseView'
+export { CourseAnalyticsTab } from './components/CourseAnalyticsTab'
+export type { CourseAnalyticsTabProps } from './components/CourseAnalyticsTab'
+export { EmptyCourseView } from './components/EmptyCourseView'
+export { EmptyTopicsView } from './components/EmptyTopicsView'
+export { EmptyLessonsView } from './components/EmptyLessonsView'
 
 // Pages
 export { default as CoursePage } from './pages/course'
@@ -15,8 +19,12 @@ export { default as CourseViewPage } from './pages/CourseView'
 export { useCourses } from './hooks/useCourses'
 
 // Types
-export type * from './types/course.types'
+export * from './types/course.types'
 
 // API
 export * from './api/coursesApi'
 export * from './api/enrollmentsApi'
+
+// Utils
+export * from './utils/lessonHeadings'
+export * from './utils/yooptaContent'

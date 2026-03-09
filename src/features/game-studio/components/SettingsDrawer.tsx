@@ -34,7 +34,7 @@ export default function SettingsDrawer({
   const [localDescription, setLocalDescription] = useState(initialDescription)
   const [localThemeId, setLocalThemeId] = useState<ThemeId>(initialThemeId)
   const [isSaving, setIsSaving] = useState(false)
-  const [isUnpublishing, setIsUnpublishing] = useState(false)
+  const [isUnpublishPending, setIsUnpublishPending] = useState(false)
 
   // Update local state when props change (e.g., when drawer opens with new data)
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function SettingsDrawer({
   const handleUnpublishToggle = async (checked: boolean) => {
     if (checked) return
     if (!onUnpublish) return
-    setIsUnpublishing(true)
+    setIsUnpublishPending(true)
     try {
       await onUnpublish()
       toast.success(t('settingsDrawer.toasts.unpublished'))
@@ -98,7 +98,7 @@ export default function SettingsDrawer({
       console.error(err)
       toast.error(t('settingsDrawer.toasts.unpublishFailed'))
     } finally {
-      setIsUnpublishing(false)
+      setIsUnpublishPending(false)
     }
   }
 
@@ -198,7 +198,7 @@ export default function SettingsDrawer({
               <Switch
                 checked={isPublished}
                 onCheckedChange={handleUnpublishToggle}
-                disabled={!isPublished || isUnpublishing}
+                disabled={!isPublished || isUnpublishPending}
               />
             </div>
           </div>

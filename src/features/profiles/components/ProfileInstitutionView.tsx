@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Presentation, Users2, Globe, Twitter, Facebook, Instagram } from 'lucide-react'
-import EmptyTeachersView from '@/features/institution/components/EmptyTeachersView'
-import EmptyStudentView from '@/features/student/components/EmptyStudentView'
+import { EmptyTeachersView } from '@/features/institution'
+import { EmptyStudentView } from '@/features/student'
 import { Text } from '@/components/ui/text'
 
 interface InstitutionAddress {

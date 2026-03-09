@@ -1,7 +1,7 @@
 import { Building2 } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 
-export default function EmptyInstitutionView() {
+export function EmptyInstitutionView() {
   return (
     <Empty className="w-full animate-in fade-in-0 slide-in-from-bottom-5 duration-300 border border-dashed border-gray-200 rounded-xl p-12">
       <EmptyHeader>

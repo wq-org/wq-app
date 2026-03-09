@@ -3,23 +3,19 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
-import { getTopicsByCourseId, TopicCardList, type Topic } from '@/features/topic'
+import { EmptyTopicsView } from '@/features/course'
+import type { Topic } from '@/features/topic'
 import type { ThemeId } from '@/lib/themes'
-import LessonToolBar from '@/features/lesson/components/LessonToolBar'
+import { LessonToolBar } from '@/features/lesson'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { TOPIC_SEARCH_FIELDS } from '@/features/topic/types/topic.types'
+import { getTopicsByCourseId, TOPIC_SEARCH_FIELDS } from '@/features/topic'
 export interface CoursePreviewTabProps {
   courseId: string
   themeId?: ThemeId
   onTopicView?: (topicId: string) => void
 }
 
-export default function CoursePreviewTab({
-  courseId,
-  themeId,
-  onTopicView,
-}: CoursePreviewTabProps) {
+export function CoursePreviewTab({ courseId, themeId, onTopicView }: CoursePreviewTabProps) {
   const { t } = useTranslation('features.course')
   const navigate = useNavigate()
   const [topics, setTopics] = useState<Topic[]>([])

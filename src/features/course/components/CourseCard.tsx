@@ -1,4 +1,3 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -7,11 +6,11 @@ import { ArrowRight } from 'lucide-react'
 import type { CourseCardProps } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { useAvatarUrl } from '@/features/onboarding'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
-
-export default function CourseCard({
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+export function CourseCard({
   id,
   title,
   description,

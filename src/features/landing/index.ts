@@ -10,3 +10,5 @@ export {
   landingPages,
   landingStandalonePages,
 } from './components/navigation/navigation-content'
+
+export { changelogEntries } from './components/changelogEntries'

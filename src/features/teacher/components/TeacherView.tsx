@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 
-export default function TeacherView() {
+export function TeacherView() {
   const { t } = useTranslation('features.teacher')
 
   return (

@@ -1,4 +1,4 @@
-import AppWrapper from '@/components/layout/AppWrapper'
+import { AppWrapper } from '@/components/layout'
 import GameEditorCanvas from '../components/GameEditorCanvas'
 
 export default function GameStudioView() {

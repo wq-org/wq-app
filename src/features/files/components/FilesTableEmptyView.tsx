@@ -2,7 +2,7 @@ import { Files, Upload } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
 
-export default function FilesTableEmptyView() {
+export function FilesTableEmptyView() {
   const { t } = useTranslation('features.files')
 
   return (

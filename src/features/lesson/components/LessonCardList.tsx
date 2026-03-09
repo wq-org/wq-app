@@ -1,7 +1,7 @@
 import type { ThemeId } from '@/lib/themes'
-import { EmptyLessonsView } from '@/features/course/components/EmptyLessonsView'
+import { EmptyLessonsView } from '@/features/course'
 import type { Lesson } from '../types/lesson.types'
-import LessonCard from './LessonCard'
+import { LessonCard } from './LessonCard'
 
 export interface LessonCardListProps {
   lessons: Lesson[]
@@ -9,7 +9,7 @@ export interface LessonCardListProps {
   onLessonOpen?: (lessonId: string) => void
 }
 
-export default function LessonCardList({ lessons, themeId, onLessonOpen }: LessonCardListProps) {
+export function LessonCardList({ lessons, themeId, onLessonOpen }: LessonCardListProps) {
   if (lessons.length === 0) {
     return <EmptyLessonsView />
   }

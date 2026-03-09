@@ -13,10 +13,10 @@ import { useTranslation } from 'react-i18next'
 import type { Roles } from './config'
 import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
-import SelectTabs from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
-interface DashboardLayoutProps {
+type DashboardLayoutProps = {
   imageUrl?: string
   userName: string
   username?: string
@@ -38,7 +38,7 @@ interface DashboardLayoutProps {
   onViewFollowerList?: () => void
 }
 
-export default function DashboardLayout({
+export function DashboardLayout({
   imageUrl,
   userName,
   username,

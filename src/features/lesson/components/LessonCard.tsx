@@ -14,7 +14,7 @@ export interface LessonCardProps {
   onOpen?: (lessonId: string) => void
 }
 
-export default function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
+export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
   const { t, i18n } = useTranslation(['features.lesson', 'features.course'])
 
   return (

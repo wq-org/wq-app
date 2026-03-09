@@ -1,4 +1,4 @@
-import { getFollowedTeacherIds } from '@/features/profiles/api/followApi'
+import { getFollowedTeacherIds } from '@/features/profiles'
 import { supabase } from '@/lib/supabase'
 import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'

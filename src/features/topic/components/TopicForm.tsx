@@ -14,7 +14,7 @@ export interface TopicFormProps {
   onCreate: () => void
 }
 
-export default function TopicForm({
+export function TopicForm({
   title,
   description,
   loading = false,

@@ -8,11 +8,11 @@ import { useTopic } from '@/contexts/topic'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
-import { EmptyTopicsView } from '@/features/course/components/EmptyTopicsView'
-import { TopicForm, TopicCardList } from '@/features/topic'
-import TopicsToolbar from '@/features/topic/components/TopicsToolbar'
+import { EmptyTopicsView } from '@/features/course'
+import { TopicForm } from '@/features/topic'
+import { TopicsToolbar } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { TOPIC_SEARCH_FIELDS } from '@/features/topic/types/topic.types'
+import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
 export default function Course() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()

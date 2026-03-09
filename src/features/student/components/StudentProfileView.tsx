@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import { getCompleteProfile } from '@/features/auth/api/authApi'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
+import { DashboardLayout } from '@/components/layout'
+import { getCompleteProfile } from '@/features/auth'
+import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import type { Profile } from '@/contexts/user/UserContext'
-import type { Course } from '@/features/course/types/course.types'
-import type { CourseCardProps } from '@/features/course/types/course.types'
+import type { Course } from '@/features/course'
+import type { CourseCardProps } from '@/features/course'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -17,10 +17,10 @@ import { getDashboardTabs } from '@/components/layout/config'
 import { supabase } from '@/lib/supabase'
 import { EmptyCourseView } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
-import GameCardList from '@/features/game-studio/components/GameCardList'
-import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
+import { GameCardList } from '@/features/game-studio'
+import type { GameCardProps } from '@/features/game-studio'
 import { Text } from '@/components/ui/text'
-import { getFollowedTeacherCount } from '@/features/profiles/api/followApi'
+import { getFollowedTeacherCount } from '@/features/profiles'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 
@@ -427,4 +427,4 @@ const StudentProfileView = () => {
   )
 }
 
-export default StudentProfileView
+export { StudentProfileView }

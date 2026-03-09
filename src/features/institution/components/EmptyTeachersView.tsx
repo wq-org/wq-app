@@ -2,7 +2,7 @@ import { Presentation, SearchIcon } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
 
-export default function EmptyTeachersView() {
+export function EmptyTeachersView() {
   const { t } = useTranslation('features.institution')
 
   return (

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Check, ChevronsLeftRight, LayoutDashboard, Settings, X } from 'lucide-react'
 import { Text } from '@/components/ui/text'
-import SelectTabs from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import {
   Drawer,
   DrawerContent,
@@ -34,7 +34,7 @@ interface FilesCardProps {
   onFileDeleted?: () => void
 }
 
-export default function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCardProps) {
+export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCardProps) {
   const { getUserId, getRole } = useUser()
   const { t } = useTranslation('features.files')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')

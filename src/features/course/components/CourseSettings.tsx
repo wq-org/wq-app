@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { getCourseById, updateCourse, deleteCourse } from '@/features/course/api/coursesApi'
+import { getCourseById, updateCourse, deleteCourse } from '@/features/course'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
-
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
@@ -21,7 +20,7 @@ interface CourseSettingsProps {
   onUnsavedChange?: (dirty: boolean) => void
 }
 
-export default function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProps) {
+export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProps) {
   const { t } = useTranslation('features.course')
   const navigate = useNavigate()
   const { profile } = useUser()

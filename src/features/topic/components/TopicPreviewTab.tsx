@@ -3,8 +3,8 @@ import { Text } from '@/components/ui/text'
 import { LessonCardList, type Lesson } from '@/features/lesson'
 import type { ThemeId } from '@/lib/themes'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { LESSON_SEARCH_FIELDS } from '@/features/lesson/types/lesson.types'
-import TopicsToolbar from './TopicsToolbar'
+import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
+import { TopicsToolbar } from './TopicsToolbar'
 import { useState } from 'react'
 export interface TopicPreviewTabProps {
   lessons: Lesson[]
@@ -14,7 +14,7 @@ export interface TopicPreviewTabProps {
   description?: string
 }
 
-export default function TopicPreviewTab({
+export function TopicPreviewTab({
   lessons,
   themeId,
   onLessonOpen,

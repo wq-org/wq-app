@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Search, Check } from 'lucide-react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import EmptyInstitutionView from './EmptyInstitutionView'
+import { EmptyInstitutionView } from './EmptyInstitutionView'
 import Spinner from '@/components/ui/spinner'
 import { fetchInstitutions } from '../api/onboardingApi'
 import type { StepInstitutionProps, Institution } from '../types/onboarding.types'
 import { Text } from '@/components/ui/text'
 
-export default function StepInstitution({ onNext, onBack, initialData }: StepInstitutionProps) {
+export function StepInstitution({ onNext, onBack, initialData }: StepInstitutionProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>(initialData || [])
   const [institutions, setInstitutions] = useState<Institution[]>([])

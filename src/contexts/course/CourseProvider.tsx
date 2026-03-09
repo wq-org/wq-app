@@ -1,20 +1,16 @@
-import React, { useState, useCallback } from 'react'
+import { useState, useCallback, type FC, type ReactNode } from 'react'
 import {
   getTeacherCourses,
   getCourseById,
   createCourse as createCourseApi,
   updateCourse as updateCourseApi,
   deleteCourse as deleteCourseApi,
-} from '@/features/course/api/coursesApi'
+} from '@/features/course'
 import { useUser } from '../user'
 import { CourseContext, type CourseContextValue } from './CourseContext'
-import type {
-  Course,
-  CreateCourseData,
-  UpdateCourseData,
-} from '@/features/course/types/course.types'
+import type { Course, CreateCourseData, UpdateCourseData } from '@/features/course'
 
-export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CourseProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(false)

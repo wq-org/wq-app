@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
 import { upsertProfile, updateProfile } from '@/features/auth/api/authApi'
 import { useUser } from '@/contexts/user'
-import { useAvatarUrl } from '@/features/onboarding/hooks/useAvatarUrl'
-import SuccessPage from './SuccessPage'
+import { useAvatarUrl } from '@/features/onboarding'
+import { SuccessPage } from './SuccessPage'
 import { linkUserInstitutions } from '../api/onboardingApi'
 import type { StepFinishProps } from '../types/onboarding.types'
 import { toast } from 'sonner'
@@ -15,12 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { USER_ROLES } from '@/features/auth/types/auth.types'
 
-export default function StepFinish({
-  onBack,
-  onFinish,
-  accountData,
-  institutions,
-}: StepFinishProps) {
+export function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
   const { session, pendingRole, profile, setPendingRole, refreshProfile } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)

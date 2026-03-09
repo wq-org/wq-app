@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import { useCourse } from '@/contexts/course'
-import LessonLayout from '@/features/lesson/components/LessonLayout'
-import LessonPreviewTab from '@/features/lesson/components/LessonPreviewTab'
-import LessonSettings from '@/features/lesson/components/LessonSettings'
-import LessonEditor from '@/features/lesson/components/LessonEditor'
+import { LessonLayout } from '@/features/lesson'
+import { LessonPreviewTab } from '@/features/lesson'
+import { LessonSettings } from '@/features/lesson'
+import { LessonEditor } from '@/features/lesson'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
@@ -15,10 +15,7 @@ import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle }
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { MessageCircleQuestionMark } from 'lucide-react'
 import type { WorkspaceTabId } from '@/components/shared/layout'
-import {
-  createYooptaStarterContentJson,
-  createYooptaStarterContentObject,
-} from '@/features/course/utils/yooptaContent'
+import { createYooptaStarterContentJson, createYooptaStarterContentObject } from '@/features/course'
 
 const LESSON_GUIDES = [
   {
