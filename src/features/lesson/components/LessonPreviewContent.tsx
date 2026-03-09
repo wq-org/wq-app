@@ -1,11 +1,11 @@
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import LessonEditor from '@/features/lesson/components/LessonEditor'
+import { LessonEditor } from '@/features/lesson/components/LessonEditor'
 import {
   getHeadingsFromLessonValue,
   type LessonHeading,
 } from '@/features/course/utils/lessonHeadings'
-import LessonHeadingsNavigation from '@/features/lesson/components/LessonHeadingsNavigation'
+import { LessonHeadingsNavigation } from '@/features/lesson/components/LessonHeadingsNavigation'
 import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 
