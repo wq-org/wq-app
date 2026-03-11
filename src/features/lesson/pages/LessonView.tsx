@@ -8,7 +8,7 @@ import { getLessonById } from '@/features/lesson'
 import { getCourseById } from '@/features/course'
 import type { Lesson } from '@/features/lesson'
 import type { Course } from '@/features/course'
-import { LessonPreviewTab } from '../components/LessonPreviewTab'
+import { LessonPreview } from '@/features/lesson'
 
 function parseLessonContent(raw: unknown): Record<string, unknown> {
   if (raw == null || raw === '') return {}
@@ -105,7 +105,7 @@ export default function LessonView() {
             {t('page.notFound', { defaultValue: 'Lesson not found' })}
           </Text>
         ) : (
-          <LessonPreviewTab
+          <LessonPreview
             title={lesson.title?.trim() || t('page.fallbackTitle')}
             description={
               lesson.description?.trim() ||

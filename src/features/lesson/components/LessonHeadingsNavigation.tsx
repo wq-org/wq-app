@@ -49,7 +49,7 @@ export function LessonHeadingsNavigation({
             side="right"
             showCloseButton={false}
             overlayClassName="pointer-events-none bg-black/30 backdrop-blur-md"
-            className="w-[22rem] border-l border-border/60 bg-background/72 p-0 shadow-2xl backdrop-blur-xl sm:max-w-[22rem]"
+            className="w-88 border-l border-border/60 bg-background/72 p-0 shadow-2xl backdrop-blur-xl sm:max-w-88"
           >
             <SheetHeader className="border-b border-border/60 px-4 py-3">
               <div className="flex items-center justify-between gap-2">
@@ -84,7 +84,7 @@ export function LessonHeadingsNavigation({
                         heading.level === 4 && 'pl-6 text-muted-foreground',
                       )}
                     >
-                      <span className="line-clamp-2 block break-words leading-snug">
+                      <span className="line-clamp-2 block wrap-break-word leading-snug">
                         {heading.text}
                       </span>
                     </button>

@@ -3,48 +3,18 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useLesson } from '@/contexts/lesson'
 import { useCourse } from '@/contexts/course'
 import { LessonLayout } from '@/features/lesson'
-import { LessonPreviewTab } from '@/features/lesson'
+import { LessonPreview } from '@/features/lesson'
 import { LessonSettings } from '@/features/lesson'
 import { LessonEditor } from '@/features/lesson'
-import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
-import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { MessageCircleQuestionMark } from 'lucide-react'
 import type { WorkspaceTabId } from '@/components/shared/layout'
 import { createYooptaStarterContentJson, createYooptaStarterContentObject } from '@/features/course'
-
-const LESSON_GUIDES = [
-  {
-    value: 'learning-goal',
-    label: 'Learning Goal',
-    description:
-      'Click inside the text editor first, then start with one or two sentences that explain what the learner should understand or be able to do by the end of this lesson.',
-  },
-  {
-    value: 'section-structure',
-    label: 'Section Structure',
-    description:
-      'Click inside the text editor first, then break the lesson into short sections with clear headings so students can scan and return to key ideas easily.',
-  },
-  {
-    value: 'concrete-example',
-    label: 'Concrete Example',
-    description:
-      'Click inside the text editor first, then add one practical example, scenario, or demonstration that makes the main concept easier to apply.',
-  },
-  {
-    value: 'wrap-up',
-    label: 'Wrap Up',
-    description:
-      'Click inside the text editor first, then end with a short recap, reflection prompt, or quick check so students can confirm what they learned.',
-  },
-] as const
-
-type LessonGuideValue = (typeof LESSON_GUIDES)[number]['value']
+import { showUnsavedChangesToast } from '@/components/shared/toasts'
+import { LessonHeroBannerSection } from '../components/LessonHeroBannerSection'
+import { LessonGuidePopoverSection } from '../components/LessonGuidePopoverSection'
+import { LESSON_GUIDES, type LessonGuideValue } from '../constants/lessonGuides'
 
 function parseContent(raw: unknown): Record<string, unknown> | undefined {
   if (raw == null || raw === '') return undefined
@@ -226,53 +196,23 @@ export default function Lesson() {
   const handleTabChange = useCallback(
     (requestedTab: WorkspaceTabId) => {
       if (requestedTab === activeTab) return
-      if (hasUnsavedSettingsChanges) {
+      const isLeavingSettingsWithUnsavedChanges =
+        activeTab === 'settings' && requestedTab !== 'settings' && hasUnsavedSettingsChanges
+
+      if (isLeavingSettingsWithUnsavedChanges) {
         pendingTabRef.current = requestedTab
-        toast.custom(
-          (id) => (
-            <div className="flex flex-col gap-2 rounded-lg border bg-background p-4 shadow-md">
-              <Text
-                as="p"
-                variant="body"
-                className="font-semibold"
-              >
-                {t('unsavedChanges.title')}
-              </Text>
-              <Text
-                as="p"
-                variant="small"
-                className="text-muted-foreground"
-              >
-                {t('unsavedChanges.description')}
-              </Text>
-              <div className="mt-2 flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-foreground border-border"
-                  onClick={() => {
-                    pendingTabRef.current = null
-                    toast.dismiss(id)
-                  }}
-                >
-                  {t('unsavedChanges.stay')}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    const tab = pendingTabRef.current
-                    pendingTabRef.current = null
-                    toast.dismiss(id)
-                    if (tab) setActiveTab(tab)
-                  }}
-                >
-                  {t('unsavedChanges.continueAnyway')}
-                </Button>
-              </div>
-            </div>
-          ),
-          { duration: Infinity },
-        )
+        showUnsavedChangesToast({
+          t,
+          onStay: () => {
+            pendingTabRef.current = null
+          },
+          onContinue: () => {
+            const tab = pendingTabRef.current
+            pendingTabRef.current = null
+            setHasUnsavedSettingsChanges(false)
+            if (tab) setActiveTab(tab)
+          },
+        })
         return
       }
       setActiveTab(requestedTab)
@@ -309,97 +249,22 @@ export default function Lesson() {
       defaultValue: 'Write a short summary to introduce this lesson.',
     })
 
-  const lessonHeroBanner = (
-    <div className="relative overflow-hidden rounded-2xl border min-h-[260px]">
-      <div
-        className="absolute inset-0 h-full w-full"
-        style={getThemeBackgroundStyle(selectedCourse?.theme_id)}
-      />
-      <div className="relative z-10 flex min-h-[260px] items-center justify-center px-6 py-10">
-        <div className="max-w-3xl text-center text-foreground">
-          <Text
-            as="h1"
-            variant="h1"
-            className="text-4xl font-semibold tracking-tight md:text-5xl"
-            style={getThemeTitleStyle(selectedCourse?.theme_id)}
-          >
-            {lessonTitle}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="mt-4 text-base font-semibold leading-7 md:text-lg"
-            style={getThemeDescriptionStyle(selectedCourse?.theme_id)}
-          >
-            {lessonDescription}
-          </Text>
-        </div>
-      </div>
-    </div>
-  )
-
-  const activeGuide =
-    LESSON_GUIDES.find((guide) => guide.value === selectedGuide) ?? LESSON_GUIDES[0]
-
   const editorContent = (
     <div className="relative flex flex-col gap-6">
-      <div className="animate-in fade-in-0 slide-in-from-bottom-4">{lessonHeroBanner}</div>
-
-      <div className="flex flex-col items-end gap-3">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-full bg-white px-4 shadow-sm"
-            >
-              <MessageCircleQuestionMark className="size-4" />
-              <Text
-                as="span"
-                variant="body"
-              >
-                Help
-              </Text>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="w-full max-w-md rounded-2xl border bg-white/85 p-4 shadow-lg backdrop-blur-md"
-          >
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {LESSON_GUIDES.map((guide) => (
-                  <Button
-                    key={guide.value}
-                    type="button"
-                    variant={selectedGuide === guide.value ? 'default' : 'outline'}
-                    className="rounded-full"
-                    onClick={() => setSelectedGuide(guide.value)}
-                  >
-                    {guide.label}
-                  </Button>
-                ))}
-              </div>
-              <div className="rounded-2xl border bg-white/70 p-4 text-left">
-                <Text
-                  as="p"
-                  variant="small"
-                  className="font-semibold text-foreground"
-                >
-                  {activeGuide.label}
-                </Text>
-                <Text
-                  as="p"
-                  variant="small"
-                  className="mt-2 leading-6 text-muted-foreground"
-                >
-                  {activeGuide.description}
-                </Text>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+      <div className="animate-in fade-in-0 slide-in-from-bottom-4">
+        <LessonHeroBannerSection
+          title={lessonTitle}
+          description={lessonDescription}
+          themeId={selectedCourse?.theme_id}
+        />
       </div>
+
+      <LessonGuidePopoverSection
+        guides={LESSON_GUIDES}
+        selectedGuide={selectedGuide}
+        onSelectGuide={(value) => setSelectedGuide(value as LessonGuideValue)}
+        helpLabel={t('page.helpLabel', { defaultValue: 'Help' })}
+      />
 
       {!isInitialContentLoading ? (
         <LessonEditor
@@ -431,7 +296,7 @@ export default function Lesson() {
   )
 
   const previewTabContent = (
-    <LessonPreviewTab
+    <LessonPreview
       title={lessonTitle}
       description={lessonDescription}
       value={editorValue}
@@ -444,6 +309,10 @@ export default function Lesson() {
       loadingLabel={t('layout.loading')}
       editorPlaceholder={t('page.editorPlaceholder')}
       themeId={selectedCourse?.theme_id}
+      guides={LESSON_GUIDES}
+      selectedGuide={selectedGuide}
+      onGuideChange={(value) => setSelectedGuide(value as LessonGuideValue)}
+      helpLabel={t('page.helpLabel', { defaultValue: 'Help' })}
     />
   )
 

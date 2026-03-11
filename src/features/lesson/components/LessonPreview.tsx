@@ -1,15 +1,13 @@
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { LessonEditor } from '@/features/lesson/components/LessonEditor'
-import {
-  getHeadingsFromLessonValue,
-  type LessonHeading,
-} from '@/features/course/utils/lessonHeadings'
-import { LessonHeadingsNavigation } from '@/features/lesson/components/LessonHeadingsNavigation'
-import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
-import { cn } from '@/lib/utils'
+import { LessonEditor } from '@/features/lesson'
+import { getHeadingsFromLessonValue } from '@/features/course'
+import { LessonHeadingsNavigation } from '@/features/lesson'
+import type { LessonHeading } from '@/features/course'
+import { LessonGuidePopoverSection } from './LessonGuidePopoverSection'
+import { LessonHeroBannerSection } from './LessonHeroBannerSection'
 
-export interface LessonPreviewTabProps {
+export interface LessonPreviewProps {
   title: string
   description: string
   value?: Record<string, unknown>
@@ -21,9 +19,17 @@ export interface LessonPreviewTabProps {
   editorPlaceholder: string
   themeId?: string
   className?: string
+  guides?: readonly {
+    readonly value: string
+    readonly label: string
+    readonly description: string
+  }[]
+  selectedGuide?: string
+  onGuideChange?: (guideValue: string) => void
+  helpLabel?: string
 }
 
-export default function LessonPreviewTab({
+export function LessonPreview({
   title,
   description,
   value,
@@ -35,7 +41,11 @@ export default function LessonPreviewTab({
   editorPlaceholder,
   themeId,
   className,
-}: LessonPreviewTabProps) {
+  guides,
+  selectedGuide,
+  onGuideChange,
+  helpLabel,
+}: LessonPreviewProps) {
   const previewHeadings = getHeadingsFromLessonValue(value)
 
   const scrollToHeading = (heading: LessonHeading) => {
@@ -47,43 +57,15 @@ export default function LessonPreviewTab({
     element?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  const heroBanner = (
-    <div className="relative min-h-[260px] overflow-hidden rounded-2xl border">
-      <div
-        className="absolute inset-0 h-full w-full"
-        style={getThemeBackgroundStyle(themeId)}
-      />
-      <div className="relative z-10 flex min-h-[260px] items-center justify-center px-6 py-10">
-        <div className="max-w-3xl text-center text-foreground">
-          <Text
-            as="h1"
-            variant="h1"
-            className="text-4xl font-semibold tracking-tight md:text-5xl"
-            style={getThemeTitleStyle(themeId)}
-          >
-            {title}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="mt-4 text-base font-semibold leading-7 md:text-lg"
-            style={getThemeDescriptionStyle(themeId)}
-          >
-            {description}
-          </Text>
-        </div>
-      </div>
-    </div>
-  )
-
   return (
-    <div className={cn('relative', previewHeadings.length > 0 && 'flex gap-4', className)}>
+    <div className={className ? `relative ${className}` : 'relative'}>
       <LessonHeadingsNavigation
         headings={previewHeadings}
         label={headingsNavLabel}
         onHeadingSelect={scrollToHeading}
+        className="fixed top-24 right-4 z-50 hidden w-40 lg:block"
       />
-      <section className="min-w-0 flex-1 rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4">
+      <section className="rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4">
         <Text
           as="h2"
           variant="h2"
@@ -99,7 +81,24 @@ export default function LessonPreviewTab({
           {previewHint}
         </Text>
 
-        <div className="mt-4 animate-in fade-in-0 slide-in-from-bottom-4">{heroBanner}</div>
+        <div className="mt-4 animate-in fade-in-0 slide-in-from-bottom-4">
+          <LessonHeroBannerSection
+            title={title}
+            description={description}
+            themeId={themeId}
+          />
+        </div>
+
+        {guides && selectedGuide && onGuideChange ? (
+          <div className="mt-4">
+            <LessonGuidePopoverSection
+              guides={guides}
+              selectedGuide={selectedGuide}
+              onSelectGuide={onGuideChange}
+              helpLabel={helpLabel}
+            />
+          </div>
+        ) : null}
 
         {loading ? (
           <div className="mt-4 flex min-h-[200px] items-center justify-center rounded-xl border bg-muted/30">

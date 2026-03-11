@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Trash2, Check } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +8,7 @@ import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Text } from '@/components/ui/text'
+import { TitleDescriptionFields } from '@/components/shared/forms'
 
 export interface LessonSettingsProps {
   lessonId: string
@@ -134,29 +132,18 @@ export function LessonSettings({ lessonId, courseId, onUnsavedChange }: LessonSe
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="title">{t('settings.titleLabel')}</Label>
-            <Input
-              id="title"
-              type="text"
-              placeholder={t('settings.titlePlaceholder')}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-base"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="description">{t('settings.descriptionLabel')}</Label>
-            <Textarea
-              id="description"
-              placeholder={t('settings.descriptionPlaceholder')}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="resize-none"
-              rows={4}
-            />
-          </div>
+          <TitleDescriptionFields
+            title={title}
+            description={description}
+            onTitleChange={setTitle}
+            onDescriptionChange={setDescription}
+            titlePlaceholder={t('settings.titlePlaceholder')}
+            descriptionPlaceholder={t('settings.descriptionPlaceholder')}
+            titleLabel={t('settings.titleLabel')}
+            descriptionLabel={t('settings.descriptionLabel')}
+            maxDescriptionLength={500}
+            rows={4}
+          />
 
           <div className="flex items-center justify-end gap-4 py-4 border-t">
             <HoldToDeleteButton
