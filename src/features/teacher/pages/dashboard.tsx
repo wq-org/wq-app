@@ -161,9 +161,9 @@ export default function Dashboard() {
     }
   }, [getUserId, getRole, loading, getUserInstitutionId])
 
-  // Fetch files when profile is loaded and user is on files tab
+  // Fetch files when profile is loaded and user is on cloud tab
   useEffect(() => {
-    if (selectedTab === 'files') {
+    if (selectedTab === 'cloud') {
       loadFiles()
     }
   }, [profile?.role, profile?.user_id, loading, selectedTab, loadFiles])
@@ -249,7 +249,7 @@ export default function Dashboard() {
 
         {selectedTab === 'games' && <GamePlayList />}
 
-        {selectedTab === 'files' &&
+        {selectedTab === 'cloud' &&
           (filesLoading ? (
             <div className="flex items-center justify-center py-12">
               <Spinner
