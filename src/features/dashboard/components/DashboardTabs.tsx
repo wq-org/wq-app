@@ -1,14 +1,8 @@
-import type { ComponentType } from 'react'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
-
-type DashboardTabItem = {
-  id: string
-  title: string
-  icon: ComponentType<{ className?: string }>
-}
+import type { TabItem } from '@/components/shared/tabs'
 
 type DashboardTabsProps = {
-  tabs: DashboardTabItem[]
+  tabs: TabItem[]
   activeTabId: string
   onTabChange: (tabId: string) => void
 }

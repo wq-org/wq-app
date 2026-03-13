@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react'
 import { GraduationCap, Mail, Pencil, School } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FeatureStrip, type FeatureItem } from '@/components/shared/FeatureStrip'
+import { cn } from '@/lib/utils'
 
 type DashboardMetaBadgesProps = {
   role: string
@@ -11,6 +12,64 @@ type DashboardMetaBadgesProps = {
   institutionName?: string
   institutionSlug?: string
   userEmail?: string
+}
+
+type DashboardMetaItem = {
+  id: string
+  topLabel: string
+  bottomLabel: string
+  icon?: ReactNode
+  value?: string
+  onClick?: () => void
+  ariaLabel?: string
+}
+
+function DashboardMetaBadgeItem({
+  item,
+  className,
+}: {
+  item: DashboardMetaItem
+  className?: string
+}) {
+  const content = (
+    <>
+      <span className="text-[11px] text-muted-foreground truncate">{item.topLabel}</span>
+
+      {item.value ? (
+        <span className="text-2xl font-semibold leading-none text-foreground">{item.value}</span>
+      ) : (
+        <span className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground [&>svg]:size-4">
+          {item.icon}
+        </span>
+      )}
+
+      <span className="text-xs text-muted-foreground truncate">{item.bottomLabel}</span>
+    </>
+  )
+
+  if (item.onClick) {
+    return (
+      <button
+        type="button"
+        onClick={item.onClick}
+        aria-label={item.ariaLabel}
+        className={cn(
+          'flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 transition-colors hover:bg-muted/60',
+          className,
+        )}
+      >
+        {content}
+      </button>
+    )
+  }
+
+  return (
+    <div
+      className={cn('flex min-w-0 flex-col items-center justify-center gap-1 px-3 py-2', className)}
+    >
+      {content}
+    </div>
+  )
 }
 
 export function DashboardMetaBadges({
@@ -29,9 +88,9 @@ export function DashboardMetaBadges({
     return value.toLocaleString(i18n.language === 'de' ? 'de-DE' : 'en-US')
   }, [followCount, followedTeacherCount, i18n.language, role])
 
-  const items = useMemo<FeatureItem[]>(() => {
-    const followersItem: FeatureItem = {
-      kind: 'stat',
+  const items = useMemo<DashboardMetaItem[]>(() => {
+    const followersItem: DashboardMetaItem = {
+      id: 'followers',
       topLabel: t('meta.followersTopLabel'),
       value: formattedFollowerCount,
       bottomLabel:
@@ -43,19 +102,19 @@ export function DashboardMetaBadges({
     return [
       followersItem,
       {
-        kind: 'icon',
+        id: 'institution',
         topLabel: institutionName || t('meta.institutionFallbackName'),
         icon: <School />,
         bottomLabel: institutionSlug || t('meta.institutionFallbackSlug'),
       },
       {
-        kind: 'icon',
+        id: 'email',
         topLabel: t('meta.schoolMailTopLabel'),
         icon: <Mail />,
         bottomLabel: userEmail || t('meta.schoolMailBottomFallback'),
       },
       {
-        kind: 'icon',
+        id: 'role',
         topLabel: t('meta.roleTopLabel'),
         icon: role === 'teacher' ? <GraduationCap /> : <Pencil />,
         bottomLabel: role === 'teacher' ? t('meta.roleTeacher') : t('meta.roleStudent'),
@@ -71,5 +130,16 @@ export function DashboardMetaBadges({
     userEmail,
   ])
 
-  return <FeatureStrip items={items} />
+  return (
+    <section className="w-full rounded-2xl border border-border/60 bg-background/90 p-1">
+      <div className="grid grid-cols-2 gap-1 md:grid-cols-4">
+        {items.map((item) => (
+          <DashboardMetaBadgeItem
+            key={item.id}
+            item={item}
+          />
+        ))}
+      </div>
+    </section>
+  )
 }
