@@ -16,22 +16,25 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user/UserContext'
 
-export function SidebarPrimaryNav({
-  items,
-  routePrefix,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+type SidebarPrimaryNavSubItem = {
+  title: string
+  url: string
+}
+
+type SidebarPrimaryNavItem = {
+  title: string
+  url: string
+  icon?: LucideIcon
+  isActive?: boolean
+  items?: readonly SidebarPrimaryNavSubItem[]
+}
+
+type SidebarPrimaryNavProps = {
+  items: readonly SidebarPrimaryNavItem[]
   routePrefix?: string
-}) {
+}
+
+export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps) {
   const navigate = useNavigate()
   const { getRole } = useUser()
 

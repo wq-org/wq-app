@@ -16,7 +16,7 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
   const { t } = useTranslation('features.commandPalette')
 
   const availableOptions = ADD_OPTIONS.filter((option) =>
-    role ? option.availableForRoles.includes(role) : true,
+    role ? option.availableForRoles.some((availableRole) => availableRole === role) : true,
   )
 
   return (
