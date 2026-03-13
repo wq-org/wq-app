@@ -87,5 +87,5 @@ Verified: upload file → stored under cloud bucket ✓
 
 DB: 20260312000001_storage_bucket_files_to_cloud.sql
     Policies: "Users can upload to cloud", "Users can read from cloud"
-Security: RLS policies recreated with bucket_id = 'cloud' — behaviour unchanged
+Security: RLS policies recreated with bucket_id = 'cloud' — behave unchanged
 ```
