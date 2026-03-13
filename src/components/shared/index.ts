@@ -23,6 +23,8 @@ export type { WorkspaceTabId } from './layout'
 // Cards
 export { InfoCard } from './InfoCard'
 export { UserCard } from './UserCard'
+export { FeatureStrip, FeatureStripItem } from './FeatureStrip'
+export type { FeatureItem, FeatureStripProps, FeatureStripItemProps } from './FeatureStrip'
 
 // Sidebar
 export { SidebarPrimaryNav, SidebarAccountMenu, SidebarWorkspaceSwitcher } from './sidebar'

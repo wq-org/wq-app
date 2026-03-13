@@ -1,7 +1,5 @@
 import { supabase } from '@/lib/supabase'
-
-const BUCKET_NAME = 'files'
-
+import { STORAGE_BUCKETS } from '@/lib/constants'
 /**
  * Gets a signed URL for a file in storage (for private files)
  *
@@ -19,7 +17,7 @@ export async function getFileSignedUrl(
     }
 
     const { data, error } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(STORAGE_BUCKETS.cloud)
       .createSignedUrl(path, expiresIn)
 
     if (error) {
@@ -46,7 +44,7 @@ export function getFilePublicUrl(path: string): string | null {
       return null
     }
 
-    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
+    const { data } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(path)
     return data?.publicUrl || null
   } catch (error) {
     console.error('Error getting public URL:', error)
@@ -69,7 +67,7 @@ export async function getFileBlobUrl(path: string): Promise<string | null> {
 
     console.log('Downloading file:', path)
 
-    const { data, error } = await supabase.storage.from(BUCKET_NAME).download(path)
+    const { data, error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).download(path)
 
     if (error) {
       console.error('Error downloading file:', error)
@@ -107,7 +105,7 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
 
     console.log('Deleting file:', path)
 
-    const { error } = await supabase.storage.from(BUCKET_NAME).remove([path])
+    const { error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).remove([path])
 
     if (error) {
       console.error('Supabase delete error:', error)
@@ -163,7 +161,7 @@ export async function renameFile(
 
     // Download the file
     const { data: fileData, error: downloadError } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(STORAGE_BUCKETS.cloud)
       .download(oldPath)
 
     if (downloadError || !fileData) {
@@ -176,7 +174,7 @@ export async function renameFile(
 
     // Upload with new name
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(STORAGE_BUCKETS.cloud)
       .upload(newPath, fileData, {
         cacheControl: '3600',
         upsert: false,
@@ -191,7 +189,9 @@ export async function renameFile(
     }
 
     // Delete old file
-    const { error: deleteError } = await supabase.storage.from(BUCKET_NAME).remove([oldPath])
+    const { error: deleteError } = await supabase.storage
+      .from(STORAGE_BUCKETS.cloud)
+      .remove([oldPath])
 
     if (deleteError) {
       console.error('Supabase delete error during rename:', deleteError)

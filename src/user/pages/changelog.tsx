@@ -1,5 +1,5 @@
 import { FooterSection, Navigation } from '@/features/landing'
-import { LanguageSwitcher } from '@/components'
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 import {
   Changelog,
   ChangelogBadge,

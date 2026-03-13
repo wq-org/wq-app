@@ -31,7 +31,7 @@ import {
   setUserActiveStatus,
   type AdminUserRow,
 } from '../api/userApi'
-import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
 function initialsFromName(name?: string | null, username?: string | null): string {
   const source = name?.trim() || username?.trim() || 'U'
@@ -158,7 +158,7 @@ export default function AdminUsers() {
   }
 
   return (
-    <AdminDashboardLayout>
+    <AdminWorkspaceShell>
       <div className="flex flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
           <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
@@ -363,6 +363,6 @@ export default function AdminUsers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AdminDashboardLayout>
+    </AdminWorkspaceShell>
   )
 }

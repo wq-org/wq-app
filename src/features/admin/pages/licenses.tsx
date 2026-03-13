@@ -1,5 +1,5 @@
-import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
 export default function AdminLicenses() {
-  return <AdminDashboardLayout>Licenses</AdminDashboardLayout>
+  return <AdminWorkspaceShell>Licenses</AdminWorkspaceShell>
 }

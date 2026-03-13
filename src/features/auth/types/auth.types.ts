@@ -28,6 +28,13 @@ export interface UserProfile {
   description: string | null
   linkedin_url: string | null
   follow_count?: number | null
+  userInstitutionId?: string | null
+  institution?: {
+    id: string
+    name: string | null
+    slug: string | null
+    email: string | null
+  } | null
   created_at?: string
   updated_at?: string
 }
@@ -44,7 +51,7 @@ export function getDashboardPathForRole(role: UserRole | null): string {
     case USER_ROLES.SUPER_ADMIN:
       return '/super_admin/dashboard'
     case USER_ROLES.INSTITUTION_ADMIN:
-      return '/teacher/dashboard'
+      return '/institution_admin/dashboard'
     case USER_ROLES.TEACHER:
       return '/teacher/dashboard'
     case USER_ROLES.STUDENT:

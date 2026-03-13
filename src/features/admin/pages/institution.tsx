@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { fetchInstitutions } from '../api/institutionApi'
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'
@@ -56,7 +56,7 @@ export default function AdminInstitution() {
   }, [])
 
   return (
-    <AdminDashboardLayout>
+    <AdminWorkspaceShell>
       <div className="flex flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
           <h1 className="text-2xl font-semibold text-gray-900">Institutions</h1>
@@ -144,6 +144,6 @@ export default function AdminInstitution() {
           </div>
         )}
       </div>
-    </AdminDashboardLayout>
+    </AdminWorkspaceShell>
   )
 }

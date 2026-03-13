@@ -26,7 +26,7 @@ import {
   TeacherViewPage,
 } from '@/features/teacher'
 import PlayGamePage from './features/game-play/pages/PlayGamePage'
-import { Error404 } from './components'
+import { NotFoundPage } from './user/pages/not-found'
 import { CourseLayout, CoursePage, CourseViewPage as CourseView } from '@/features/course'
 import {
   LessonPage,
@@ -45,16 +45,27 @@ import { Toaster } from './components/ui/sonner'
 import { AppWrapper } from './components/layout'
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
 import { ProfileViewPage } from '@/features/profiles'
-
-import AdminUsers from './features/admin/pages/users'
-import AdminInstitution from './features/admin/pages/institution'
-import AdminAnalytics from './features/admin/pages/analytics'
-import AdminDashboard from './features/admin/pages/dashboard'
-import AdminBilling from './features/admin/pages/billing'
-import AdminFeatures from './features/admin/pages/features'
-import AdminSystem from './features/admin/pages/system'
-import AdminLicenses from './features/admin/pages/licenses'
-import NewInstitution from './features/admin/pages/newInstitution'
+import {
+  AdminAnalyticsPage as AdminAnalytics,
+  AdminBillingPage as AdminBilling,
+  AdminDashboard,
+  AdminFeaturesPage as AdminFeatures,
+  AdminInstitutionPage as AdminInstitution,
+  AdminLicensesPage as AdminLicenses,
+  AdminNewInstitutionPage as NewInstitution,
+  AdminSystemPage as AdminSystem,
+  AdminUsersPage as AdminUsers,
+} from '@/features/admin'
+import {
+  InstitutionAdminAnalyticsPage,
+  InstitutionAdminBillingPage,
+  InstitutionAdminCoursesPage,
+  InstitutionAdminDashboardPage,
+  InstitutionAdminLicensesPage,
+  InstitutionAdminSettingsPage,
+  InstitutionAdminStudentsPage,
+  InstitutionAdminTeachersPage,
+} from '@/features/institutionAdmin'
 
 function GameEditorCanvasWithProjectId() {
   const { id } = useParams<{ id: string }>()
@@ -293,6 +304,83 @@ function App() {
                   element={
                     <RequireAuth>
                       <AdminSystem />
+                    </RequireAuth>
+                  }
+                />
+              </Route>
+
+              {/* Institution Admin Routes (require auth) */}
+              <Route path="/institution_admin">
+                <Route
+                  index
+                  element={
+                    <Navigate
+                      to="/institution_admin/dashboard"
+                      replace
+                    />
+                  }
+                />
+                <Route
+                  path="dashboard"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminDashboardPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="teacher"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminTeachersPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="students"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminStudentsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="licenses"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminLicensesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="billing"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminBillingPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCoursesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="analytics"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminAnalyticsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="settings"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminSettingsPage />
                     </RequireAuth>
                   }
                 />
@@ -567,7 +655,7 @@ function App() {
               {/* Catch-all 404 route - must be last */}
               <Route
                 path="*"
-                element={<Error404 />}
+                element={<NotFoundPage />}
               />
             </Routes>
           </LessonProvider>

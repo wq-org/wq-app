@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DashboardLayout } from '@/components/layout'
+import { LearningDashboardShell } from '@/features/dashboard'
 import { CommandPalette } from '@/features/command-palette'
 import { TableView } from '@/features/files'
 import type { FileItem } from '@/features/files'
-import { getPublishedGamesFromFollowedTeachers } from '@/features/game-studio/api/gameStudioApi'
-import GameCardList from '@/features/game-studio/components/GameCardList'
-import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
+import {
+  getPublishedGamesFromFollowedTeachers,
+  GameCardList,
+  type GameCardProps,
+} from '@/features/game-studio'
 import { useAvatarUrl } from '@/features/onboarding'
 import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
@@ -172,7 +174,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <DashboardLayout
+      <LearningDashboardShell
         imageUrl={signedAvatarUrl || undefined}
         userName={profile?.display_name || 'Student'}
         username={profile?.username || undefined}
@@ -180,6 +182,8 @@ export default function Dashboard() {
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to your dashboard'}
         role="student"
+        institutionName={profile?.institution?.name || undefined}
+        institutionSlug={profile?.institution?.slug || undefined}
         followedTeacherCount={followedTeacherIds.length}
         onClickTab={handleClickTab}
       >
@@ -260,7 +264,7 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-      </DashboardLayout>
+      </LearningDashboardShell>
 
       <CommandPalette
         commandBarContext="student"

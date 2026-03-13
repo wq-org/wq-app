@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
-import { isValidRole } from '@/features/auth/types/auth.types'
+import { isValidRole } from '../types/auth.types'
 
 export interface AuthApiResponse {
   success: boolean
@@ -285,15 +285,39 @@ export async function getCompleteProfile(userId: string) {
   }
 
   const userInstitutionId = await getUserInstitutionId(userId)
+  let institution: {
+    id: string
+    name: string | null
+    slug: string | null
+    email: string | null
+  } | null = null
+
+  if (userInstitutionId) {
+    const { data: institutionData, error: institutionError } = await supabase
+      .from('institutions')
+      .select('id, name, slug, email')
+      .eq('id', userInstitutionId)
+      .maybeSingle()
+
+    if (institutionError) {
+      console.error('Error fetching institution data:', institutionError)
+      throw institutionError
+    }
+
+    institution = institutionData
+      ? {
+          id: institutionData.id,
+          name: institutionData.name,
+          slug: institutionData.slug,
+          email: institutionData.email,
+        }
+      : null
+  }
 
   const response = {
     ...data,
     userInstitutionId,
-  }
-
-  if (error) {
-    console.error('Error fetching complete profile:', error)
-    throw error
+    institution,
   }
 
   return response

@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
-import { getCompleteProfile, logoutUser } from '@/features/auth/api/authApi'
+import { getCompleteProfile, logoutUser, type UserRole } from '@/features/auth'
 import { UserContext, type Profile, type UserContextValue } from './UserContext'
-import type { Roles } from '@/components/layout/config'
 import type { Session } from '@supabase/supabase-js'
 
 const PENDING_ROLE_KEY = 'wq_pending_role'
@@ -101,18 +100,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return null
   }
 
-  const getRole = (): Roles | null => {
+  const getRole = (): UserRole | null => {
     if (profile?.role) {
-      return profile.role as Roles
+      return profile.role
     }
     return null
   }
 
   const getUserInstitutionId = (): string | null => {
-    if (profile?.userInstitutionId) {
-      return profile.userInstitutionId as string
-    }
-    return null
+    return profile?.userInstitutionId ?? null
   }
 
   // Logout function that clears all state and storage

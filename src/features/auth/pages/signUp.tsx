@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { GraduationCap, Presentation, Building2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { USER_ROLES } from '@/features/auth/types/auth.types'
+import { USER_ROLES } from '@/features/auth'
 import { signUpUser } from '../api/authApi'
 import { useUser } from '@/contexts/user'
 import Spinner from '@/components/ui/spinner'
@@ -21,7 +21,7 @@ import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import type { TabItem } from '@/components/shared/tabs/SelectTabs'
-import { LanguageSwitcher } from '@/components'
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 
 const roleTabs: TabItem[] = [
   { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },

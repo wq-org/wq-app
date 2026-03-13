@@ -19,7 +19,9 @@ export {
   createGameForStudio,
   updateGameForStudio,
   publishGame,
+  unpublishGame,
   getGameForStudio,
   getTeacherFlowGames,
+  getPublishedGamesFromFollowedTeachers,
 } from './api/gameStudioApi'
 export type { GameForStudio, UpdateGameForStudioPayload } from './api/gameStudioApi'

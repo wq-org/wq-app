@@ -2,25 +2,23 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { DashboardLayout } from '@/components/layout'
-import { getCompleteProfile } from '@/features/auth/api/authApi'
+import { LearningDashboardShell } from '@/features/dashboard'
+import { getCompleteProfile } from '@/features/auth'
 import { getTeacherCourses } from '@/features/course'
 import { getMyEnrollmentStatusMap } from '@/features/course'
 import { requestCourseJoin } from '@/features/course'
-import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
+import { GameCardList, getTeacherFlowGames, type GameCardProps } from '@/features/game-studio'
 import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useFollow } from '@/features/profiles'
 import { ProfileCourseCardList } from '@/features/profiles'
-import { getDashboardTabs } from '@/components/layout/config'
+import { getDashboardTabs } from '@/features/dashboard'
 import { EmptyCourseView } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
-import GameCardList from '@/features/game-studio/components/GameCardList'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course, CourseCardProps, EnrollmentStatus } from '@/features/course'
-import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
 import { Text } from '@/components/ui/text'
 
 async function fetchTeacherGames(teacherId: string): Promise<GameCardProps[]> {
@@ -203,7 +201,7 @@ const TeacherProfileView = () => {
   }
 
   return (
-    <DashboardLayout
+    <LearningDashboardShell
       imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
       userName={profile.display_name || 'Teacher'}
       username={profile.username || undefined}
@@ -211,6 +209,8 @@ const TeacherProfileView = () => {
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="teacher"
+      institutionName={profile.institution?.name || undefined}
+      institutionSlug={profile.institution?.slug || undefined}
       customTabs={coursesAndGamesTabs}
       onClickTab={setSelectedTab}
       followCount={profile.follow_count ?? 0}
@@ -264,7 +264,7 @@ const TeacherProfileView = () => {
             onGamePlay={(route) => route && navigate(route)}
           />
         ))}
-    </DashboardLayout>
+    </LearningDashboardShell>
   )
 }
 

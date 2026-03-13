@@ -1,3 +1,5 @@
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+
 export default function AdminSettings() {
-  return <>Settings</>
+  return <AdminWorkspaceShell>Settings</AdminWorkspaceShell>
 }

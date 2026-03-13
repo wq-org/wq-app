@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { FileText, MoreVertical, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getFileTypeConfig } from '@/components/shared/upload-files/types/upload.types'
 import { Text } from '@/components/ui/text'
+import { getFileTypeStyle } from '@/components/shared/upload-files/utils/fileTypeStyle'
 
 interface UploadedFileItemProps {
   file: File
@@ -37,8 +37,7 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
-  // Get file type configuration
-  const config = getFileTypeConfig(file.name)
+  const config = getFileTypeStyle(file.name)
 
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors">

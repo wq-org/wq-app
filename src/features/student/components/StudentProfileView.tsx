@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { DashboardLayout } from '@/components/layout'
+import { LearningDashboardShell } from '@/features/dashboard'
 import { getCompleteProfile } from '@/features/auth'
 import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
-import { getDashboardTabs } from '@/components/layout/config'
+import { getDashboardTabs } from '@/features/dashboard'
 import { supabase } from '@/lib/supabase'
 import { EmptyCourseView } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
@@ -376,7 +376,7 @@ const StudentProfileView = () => {
   )
 
   return (
-    <DashboardLayout
+    <LearningDashboardShell
       imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
       userName={profile.display_name || 'Student'}
       username={profile.username || undefined}
@@ -384,6 +384,8 @@ const StudentProfileView = () => {
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="student"
+      institutionName={profile.institution?.name || undefined}
+      institutionSlug={profile.institution?.slug || undefined}
       followedTeacherCount={followedTeacherCount}
       customTabs={coursesAndGamesTabs}
       onClickTab={handleClickTab}
@@ -423,7 +425,7 @@ const StudentProfileView = () => {
             onGamePlay={handleGamePlay}
           />
         ))}
-    </DashboardLayout>
+    </LearningDashboardShell>
   )
 }
 

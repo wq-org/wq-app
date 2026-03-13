@@ -1,5 +1,5 @@
-import { InstitutionAdminLayout } from '@/features/institutionAdmin'
+import { AdminWorkspaceShell } from '@/features/admin'
 
 export default function AdminSettings() {
-  return <InstitutionAdminLayout>Settings</InstitutionAdminLayout>
+  return <AdminWorkspaceShell role="institution_admin">Settings</AdminWorkspaceShell>
 }

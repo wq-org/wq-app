@@ -27,5 +27,18 @@
     "empty": "Noch keine Follower.",
     "close": "Follower-Liste schließen",
     "studentFallback": "Schüler"
+  },
+  "meta": {
+    "followersTopLabel": "Follower",
+    "followersBottomTeacher": "Schüler folgen",
+    "followersBottomStudent": "Lehrkräfte gefolgt",
+    "institutionFallbackName": "Institution",
+    "institutionFallbackSlug": "Kein Slug",
+    "schoolMailTopLabel": "Schul-E-Mail",
+    "schoolMailBottomFallback": "Keine E-Mail",
+    "linkedinFallback": "Kein LinkedIn-Profil",
+    "roleTopLabel": "Rolle",
+    "roleTeacher": "Lehrkraft",
+    "roleStudent": "Schüler"
   }
 }

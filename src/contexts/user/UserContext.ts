@@ -1,5 +1,4 @@
-import type { UserRole } from '@/features/auth/types/auth.types'
-import type { Roles } from '@/components/layout/config'
+import type { UserRole } from '@/features/auth'
 import { createContext, useContext } from 'react'
 import type { Session } from '@supabase/supabase-js'
 
@@ -14,7 +13,13 @@ export interface Profile {
   description: string | null
   linkedin_url: string | null
   follow_count?: number | null
-  userInstitutionId: string
+  userInstitutionId: string | null
+  institution?: {
+    id: string
+    name: string | null
+    slug: string | null
+    email: string | null
+  } | null
 }
 
 export interface UserContextValue {
@@ -26,7 +31,7 @@ export interface UserContextValue {
   clearPendingRole: () => void
   refreshProfile: () => Promise<void>
   getUserId: () => string | null
-  getRole: () => Roles | null
+  getRole: () => UserRole | null
   getUserInstitutionId: () => string | null
   logout: () => Promise<void>
 }

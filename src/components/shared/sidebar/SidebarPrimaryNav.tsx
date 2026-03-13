@@ -18,6 +18,7 @@ import { useUser } from '@/contexts/user/UserContext'
 
 export function SidebarPrimaryNav({
   items,
+  routePrefix,
 }: {
   items: {
     title: string
@@ -29,6 +30,7 @@ export function SidebarPrimaryNav({
       url: string
     }[]
   }[]
+  routePrefix?: string
 }) {
   const navigate = useNavigate()
   const { getRole } = useUser()
@@ -36,6 +38,12 @@ export function SidebarPrimaryNav({
   const role = getRole()
 
   function navigateTo(path: string) {
+    if (routePrefix) {
+      navigate(`${routePrefix}${path}`)
+      return
+    }
+
+    if (!role) return
     navigate(`/${role}${path}`)
   }
   function navigateToSubPath(...args: string[]) {

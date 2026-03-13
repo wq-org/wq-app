@@ -15,7 +15,6 @@ import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/Para
 import type { GameNodeDialogProps } from '../types/game-studio.types'
 import { GameNodeLayout } from './GameNodeLayout'
 import { GameEditorProvider } from '@/contexts/game-studio'
-import { logColor } from '@/lib/utils'
 import { toast } from 'sonner'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
@@ -90,69 +89,6 @@ export default function GameNodeDialog({
       const gameData = getGameDataRef.current?.()
 
       if (nodeType === 'gameParagraph' && gameData && typeof gameData === 'object') {
-        const data = gameData as {
-          title?: string
-          description?: string
-          paragraphText?: string
-          sentenceConfigs?: Array<{
-            sentenceNumber: number
-            sentenceText: string
-            options: Array<{
-              id: string
-              text: string
-              isCorrect: boolean
-              points?: number
-              pointsWhenWrong?: number
-            }>
-            pointsWhenCorrect?: number
-            feedbackWhenCorrect?: string
-            feedbackWhenWrong?: string
-          }>
-          selectedAnswers?: Array<{ sentenceNumber: number; optionId: string }>
-        }
-
-        const gamesPayload = {
-          title: data.title ?? '',
-          description: data.description ?? '',
-          game_type: 'paragraph_line_select',
-          game_config: {
-            paragraphText: data.paragraphText ?? '',
-            questions: (data.sentenceConfigs ?? []).map((q) => ({
-              sentenceNumber: q.sentenceNumber,
-              sentenceText: q.sentenceText,
-              options: q.options.map((o) => ({
-                id: o.id,
-                text: o.text,
-                isCorrect: o.isCorrect,
-                points: o.points,
-                pointsWhenWrong: o.pointsWhenWrong,
-              })),
-              pointsWhenCorrect: q.pointsWhenCorrect,
-              feedbackWhenCorrect: q.feedbackWhenCorrect,
-              feedbackWhenWrong: q.feedbackWhenWrong,
-            })),
-          },
-          // Placeholders for DB fields
-          id: '(uuid)',
-          teacher_id: '(uuid)',
-          topic_id: '(uuid)',
-          status: 'draft',
-          version: 1,
-        }
-
-        const gameSessionsPayload = {
-          game_id: '(uuid)',
-          student_id: '(uuid)',
-          score: 0,
-          completed: false,
-          session_data: {
-            selectedAnswers: data.selectedAnswers ?? [],
-          },
-          progress_data: null,
-        }
-
-        logColor('games', gamesPayload, 'db')
-        logColor('game_sessions', gameSessionsPayload, 'react')
         onSave?.({ points, paragraphGameData: gameData }, nodeId)
         onOpenChange(false)
         return

@@ -1,5 +1,5 @@
 import { HeroSection, FooterSection, Feature6, Navigation } from '@/features/landing'
-import { LanguageSwitcher } from '@/components'
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 import { Brush, ChartSpline, Microscope, SplinePointer } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 

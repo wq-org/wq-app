@@ -4,7 +4,7 @@ import { useUser } from '@/contexts/user'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Text } from '@/components/ui/text'
 
-const Error404 = () => {
+export const NotFoundPage = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const role = getRole()
@@ -127,5 +127,3 @@ const Error404 = () => {
     </div>
   )
 }
-
-export default Error404

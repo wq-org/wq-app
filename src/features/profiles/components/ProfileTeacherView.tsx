@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import confetti from 'canvas-confetti'
-import { DashboardLayout } from '@/components/layout'
+import { LearningDashboardShell } from '@/features/dashboard'
 import {
   EmptyCourseView,
   getMyEnrollmentStatusMap,
@@ -14,16 +14,14 @@ import {
   type EnrollmentStatus,
   type ProfileCourseCardData,
 } from '@/features/course'
-import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
+import { GameCardList, getTeacherFlowGames, type GameCardProps } from '@/features/game-studio'
 import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import type { Profile } from '@/contexts/user/UserContext'
-import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
-import { getDashboardTabs } from '@/components/layout/config'
+import { getDashboardTabs } from '@/features/dashboard'
 import { EmptyGamesView } from '@/features/student'
-import GameCardList from '@/features/game-studio/components/GameCardList'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
 import { useFollow } from '../hooks/useFollow'
 import { toast } from 'sonner'
@@ -194,7 +192,7 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
   )
 
   return (
-    <DashboardLayout
+    <LearningDashboardShell
       imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
       userName={profile.display_name || 'Teacher'}
       username={profile.username || undefined}
@@ -202,6 +200,8 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="teacher"
+      institutionName={profile.institution?.name || undefined}
+      institutionSlug={profile.institution?.slug || undefined}
       customTabs={coursesAndGamesTabs}
       onClickTab={handleClickTab}
       followCount={profile.follow_count ?? 0}
@@ -254,6 +254,6 @@ export function ProfileTeacherView({ profile, userId }: ProfileTeacherViewProps)
             onGamePlay={handleGamePlay}
           />
         ))}
-    </DashboardLayout>
+    </LearningDashboardShell>
   )
 }

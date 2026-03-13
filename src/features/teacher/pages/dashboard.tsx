@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DashboardLayout } from '@/components/layout'
+import { LearningDashboardShell } from '@/features/dashboard'
 import { CommandPalette } from '@/features/command-palette'
 import { CourseCardList, EmptyCourseView, type CourseCardProps } from '@/features/course'
-import { getDashboardTabs } from '@/components/layout/config'
 import { TableView, type FileItem } from '@/features/files'
 import { useUser } from '@/contexts/user'
 import { useCourse } from '@/contexts/course'
@@ -169,10 +168,7 @@ export default function Dashboard() {
     }
   }, [profile?.role, profile?.user_id, loading, selectedTab, loadFiles])
 
-  const handleClickTab = (id: string) => {
-    const currentTab = getDashboardTabs('teacher').filter((tab) => tab.id === id)[0].id
-    setSelectedTab(currentTab)
-  }
+  const handleClickTab = (id: string) => setSelectedTab(id)
 
   function handleCardView(id: string) {
     // Find the course in the list and store it in context
@@ -210,7 +206,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <DashboardLayout
+      <LearningDashboardShell
         imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
         userName={profile?.display_name || 'Teacher'}
         username={profile?.username || undefined}
@@ -218,6 +214,8 @@ export default function Dashboard() {
         linkedInUrl={profile?.linkedin_url || undefined}
         description={profile?.description || 'Welcome to your dashboard'}
         role="teacher"
+        institutionName={profile?.institution?.name || undefined}
+        institutionSlug={profile?.institution?.slug || undefined}
         followCount={profile?.follow_count ?? 0}
         onViewFollowerList={handleOpenFollowersDrawer}
         onClickTab={(tabId: string) => handleClickTab(tabId)}
@@ -266,7 +264,7 @@ export default function Dashboard() {
               onRefresh={loadFiles}
             />
           ))}
-      </DashboardLayout>
+      </LearningDashboardShell>
       <CommandPalette
         commandBarContext="teacher"
         onCourseCreated={fetchCourses}

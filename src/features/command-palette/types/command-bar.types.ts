@@ -1,6 +1,12 @@
 // src/features/command-palette/types/command-bar.types.ts
 import type { ComponentType } from 'react'
-import type { CommandBarContext } from '@/components/layout/config'
+import type { UserRole } from '@/features/auth'
+
+export type CommandBarView = 'game-studio'
+
+export type CommandRoleContext = UserRole
+
+export type CommandBarContext = CommandRoleContext | CommandBarView
 
 /**
  * Known imperative actions triggered from the command bar.
@@ -42,7 +48,7 @@ export type CommandBarGroup = {
   items: CommandBarItem[]
 }
 
-export interface CommandPaletteProps {
+export type CommandPaletteProps = {
   children?: React.ReactNode
   /** Which command bar to show: a role (teacher, student, …) or a view (e.g. game-studio). */
   commandBarContext: CommandBarContext
@@ -52,7 +58,7 @@ export interface CommandPaletteProps {
   onFilesUploaded?: () => void
 }
 
-export interface Game {
+export type Game = {
   id: string
   title: string
   description: string
@@ -62,14 +68,14 @@ export interface Game {
   updated_at: string
 }
 
-export interface CreateGameData {
+export type CreateGameData = {
   title: string
   description: string
   teacher_id: string
   institution_id?: string
 }
 
-export interface UpdateGameData {
+export type UpdateGameData = {
   title?: string
   description?: string
 }

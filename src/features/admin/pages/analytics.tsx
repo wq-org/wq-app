@@ -1,5 +1,5 @@
-import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
 export default function AdminAnalytics() {
-  return <AdminDashboardLayout>Analytics</AdminDashboardLayout>
+  return <AdminWorkspaceShell>Analytics</AdminWorkspaceShell>
 }

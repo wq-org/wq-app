@@ -28,5 +28,18 @@
     "empty": "No followers yet.",
     "close": "Close followers drawer",
     "studentFallback": "Student"
+  },
+  "meta": {
+    "followersTopLabel": "Followers",
+    "followersBottomTeacher": "Students follow",
+    "followersBottomStudent": "Teachers followed",
+    "institutionFallbackName": "Institution",
+    "institutionFallbackSlug": "No slug",
+    "schoolMailTopLabel": "School Mail",
+    "schoolMailBottomFallback": "No email",
+    "linkedinFallback": "No LinkedIn profile",
+    "roleTopLabel": "Role",
+    "roleTeacher": "Teacher",
+    "roleStudent": "Student"
   }
 }

@@ -1,9 +1,9 @@
-import { useId, useState } from 'react'
-
-import { CharacterCounter } from '@/components/ui/character-counter'
+// components/shared/title-description-fields.tsx
+import { useControllableState } from '@/hooks/use-controllable-state'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
-import { ClearableInput } from '@/components/shared/inputs'
 
 type TitleDescriptionFieldsProps = {
   title?: string
@@ -12,23 +12,14 @@ type TitleDescriptionFieldsProps = {
   onDescriptionChange?: (value: string) => void
   titlePlaceholder?: string
   descriptionPlaceholder?: string
-  titleLabel?: string
-  descriptionLabel?: string
-  titleId?: string
-  descriptionId?: string
   maxDescriptionLength?: number
   rows?: number
   className?: string
-  showTitleSeparator?: boolean
+  titleLabel?: string
+  descriptionLabel?: string
   showCharacterCounter?: boolean
-  titleInputClassName?: string
   hasInput?: boolean
-  descriptionClassName?: string
-  onExceedMaxDescriptionLength?: (
-    isExceeded: boolean,
-    currentLength: number,
-    maxLength: number,
-  ) => void
+  onExceedMaxDescriptionLength?: (isExceeded: boolean, current: number, max: number) => void
 }
 
 export const TitleDescriptionFields = ({
@@ -41,90 +32,59 @@ export const TitleDescriptionFields = ({
   descriptionPlaceholder = 'Description',
   titleLabel = 'Title',
   descriptionLabel = 'Description',
-  titleId,
-  descriptionId,
   maxDescriptionLength = 500,
   rows = 4,
   className,
-  showTitleSeparator = true,
   showCharacterCounter = true,
-  titleInputClassName,
-  descriptionClassName,
   onExceedMaxDescriptionLength,
 }: TitleDescriptionFieldsProps) => {
-  const generatedTitleId = useId()
-  const generatedDescriptionId = useId()
-  const resolvedTitleId = titleId ?? generatedTitleId
-  const resolvedDescriptionId = descriptionId ?? generatedDescriptionId
+  const [titleValue, setTitleValue] = useControllableState({
+    value: title,
+    defaultValue: '',
+    onChange: onTitleChange,
+  })
 
-  const [internalTitle, setInternalTitle] = useState('')
-  const [internalDescription, setInternalDescription] = useState('')
-
-  const isTitleControlled = title !== undefined
-  const isDescriptionControlled = description !== undefined
-
-  const titleValue = isTitleControlled ? title : internalTitle
-  const descriptionValue = isDescriptionControlled ? description : internalDescription
-  const remainingCharacterCount = maxDescriptionLength - descriptionValue.length
-
-  const handleTitleChange = (nextTitle: string) => {
-    if (!isTitleControlled) {
-      setInternalTitle(nextTitle)
-    }
-    onTitleChange?.(nextTitle)
-  }
-
-  const handleDescriptionChange = (nextDescription: string) => {
-    const isExceeded = nextDescription.length > maxDescriptionLength
-    onExceedMaxDescriptionLength?.(isExceeded, nextDescription.length, maxDescriptionLength)
-
-    if (!isDescriptionControlled) {
-      setInternalDescription(nextDescription)
-    }
-    onDescriptionChange?.(nextDescription)
-  }
+  const [descriptionValue, setDescriptionValue] = useControllableState({
+    value: description,
+    defaultValue: '',
+    onChange: onDescriptionChange,
+  })
 
   return (
-    <div className={cn('bg-white px-5 py-4 border-neutral-200 border rounded-3xl', className)}>
+    <FieldCard className={className}>
       {hasInput && (
-        <ClearableInput
-          id={resolvedTitleId}
-          value={titleValue}
-          onValueChange={handleTitleChange}
-          placeholder={titlePlaceholder}
-          label={titleLabel}
-          showSeparator={showTitleSeparator}
-          inputClassName={titleInputClassName}
-        />
+        <div>
+          <Label
+            htmlFor={titleLabel}
+            className="sr-only"
+          >
+            {descriptionLabel}
+          </Label>
+          <FieldInput
+            value={titleValue}
+            onValueChange={setTitleValue}
+            label="Title"
+            placeholder={titlePlaceholder}
+            showSeparator
+          />
+        </div>
       )}
-
       <Label
-        htmlFor={resolvedDescriptionId}
+        htmlFor={descriptionLabel}
         className="sr-only"
       >
         {descriptionLabel}
       </Label>
-      <textarea
-        id={resolvedDescriptionId}
-        className={cn(
-          'placeholder:text-muted-foreground disabled:opacity-50 w-full my-4 outline-none resize-none px-3 py-2 min-h-16',
-          descriptionClassName,
-        )}
-        placeholder={descriptionPlaceholder}
-        data-slot="textarea"
-        rows={rows}
+      <FieldTextarea
         value={descriptionValue}
-        onChange={(event) => handleDescriptionChange(event.target.value)}
+        onValueChange={setDescriptionValue}
+        label="Description"
+        placeholder={descriptionPlaceholder}
+        maxLength={maxDescriptionLength}
+        rows={rows}
+        showCounter={showCharacterCounter}
+        onExceedLength={onExceedMaxDescriptionLength}
       />
-      {showCharacterCounter ? (
-        <div className="flex justify-end mr-4">
-          <CharacterCounter
-            count={remainingCharacterCount}
-            max={maxDescriptionLength}
-            size={20}
-          />
-        </div>
-      ) : null}
-    </div>
+    </FieldCard>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getCompleteProfile } from '@/features/auth/api/authApi'
+import { getCompleteProfile } from '@/features/auth'
 import type { Profile } from '@/contexts/user/UserContext'
 
 export function useProfile(userId: string | undefined) {

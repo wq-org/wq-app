@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import InstitutionInformationForm from '../components/InstitutionInformationForm'
 import { createInstitution } from '../api/institutionApi'
 import { useUser } from '@/contexts/user'
@@ -38,7 +38,7 @@ export default function NewInstitution() {
 
   if (loading) {
     return (
-      <AdminDashboardLayout>
+      <AdminWorkspaceShell>
         <div className="flex items-center justify-center min-h-[400px]">
           <Spinner
             variant="gray"
@@ -46,18 +46,18 @@ export default function NewInstitution() {
             speed={1750}
           />
         </div>
-      </AdminDashboardLayout>
+      </AdminWorkspaceShell>
     )
   }
 
   return (
-    <AdminDashboardLayout>
+    <AdminWorkspaceShell>
       <div className="flex flex-col items-center gap-4 py-8">
         <InstitutionInformationForm
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />
       </div>
-    </AdminDashboardLayout>
+    </AdminWorkspaceShell>
   )
 }

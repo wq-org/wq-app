@@ -14,11 +14,11 @@ import type {
   CommandBarGroup,
   ActionId,
   CommandPaletteProps,
+  CommandRoleContext,
 } from '../types/command-bar.types'
-import { getBarGroups } from '../config/commandBarGroups'
+import { getCommandBarGroups } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
-import type { Roles, CommandBarContext, CommandBarView } from '@/components/layout/config'
-import { VALID_ROLES } from '@/components/layout/config'
+import { isCommandBarView, normalizeCommandRole, VALID_COMMAND_ROLES } from '../config/commandRoles'
 import { Container } from '@/components/shared'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CommandSearch } from './CommandSearchDialog'
@@ -27,18 +27,11 @@ import { CommandUploadDialog } from './CommandUploadDialog'
 import { CommandAddDialog } from './CommandAddDialog'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
 
-/** View ids that have a dedicated command bar group in commandBarGroups. */
-const COMMAND_BAR_VIEW_IDS: CommandBarView[] = ['game-studio']
-
 const activeStyles = {
   text: 'text-blue-500',
   bg: 'bg-blue-100',
   border: 'border-transparent',
 } as const
-
-function isCommandBarView(context: CommandBarContext): context is CommandBarView {
-  return COMMAND_BAR_VIEW_IDS.includes(context as CommandBarView)
-}
 
 function matchesRoute(item: CommandBarItem, pathname: string) {
   if (!item.to) return false
@@ -112,16 +105,27 @@ export function CommandPalette({
   const { getRole } = useUser()
   const { t } = useTranslation('features.commandPalette')
 
-  // Resolve effective user role: when context is a view (e.g. game-studio), use user role for 'user' group
-  const effectiveRole: Roles = isCommandBarView(commandBarContext)
-    ? (getRole() as Roles) || 'teacher'
-    : (commandBarContext as Roles)
+  const normalizedContextRole = normalizeCommandRole(commandBarContext)
+  const normalizedUserRole = normalizeCommandRole(getRole())
+  const defaultRole: CommandRoleContext = 'teacher'
 
   const isValidContext =
     commandBarContext &&
-    (VALID_ROLES.includes(commandBarContext as Roles) || isCommandBarView(commandBarContext))
+    (VALID_COMMAND_ROLES.includes(commandBarContext as CommandRoleContext) ||
+      isCommandBarView(commandBarContext))
 
-  const roleForGroups: Roles = isValidContext ? effectiveRole : 'teacher'
+  // Resolve effective user role: when context is a view (e.g. game-studio), use user role for the 'user' group.
+  const roleForGroups: CommandRoleContext = (() => {
+    if (!isValidContext) {
+      return defaultRole
+    }
+
+    if (isCommandBarView(commandBarContext)) {
+      return normalizedUserRole ?? defaultRole
+    }
+
+    return normalizedContextRole ?? defaultRole
+  })()
 
   // Centralized handlers for imperative actions referenced by actionId
   const actionHandlers: Partial<Record<ActionId, () => void>> = {
@@ -134,18 +138,16 @@ export function CommandPalette({
   }
 
   const commandBarGroup = useMemo<CommandBarGroup[]>(
-    () => getBarGroups(roleForGroups),
-    [roleForGroups],
+    () => getCommandBarGroups(roleForGroups, commandBarContext),
+    [roleForGroups, commandBarContext],
   )
 
   // When context is a view (e.g. game-studio), use that view's group; otherwise use role group
   const primaryGroup = useMemo(() => {
-    const groupId = isCommandBarView(commandBarContext)
-      ? commandBarContext
-      : (commandBarContext as Roles)
+    const groupId = isCommandBarView(commandBarContext) ? commandBarContext : roleForGroups
 
     return commandBarGroup.find((group) => group.id === groupId) ?? commandBarGroup[0]
-  }, [commandBarContext, commandBarGroup])
+  }, [commandBarContext, roleForGroups, commandBarGroup])
   const displayedUserItems = useMemo(
     () => commandBarGroup.find((group) => group.id === 'user')?.items ?? [],
     [commandBarGroup],
@@ -495,7 +497,7 @@ export function CommandPalette({
                 {activeDialog === 'feedback' && <CommandFeedbackForm />}
                 {activeDialog === 'add' && (
                   <CommandAddDialog
-                    role={effectiveRole}
+                    role={roleForGroups}
                     onCourseCreated={onCourseCreated}
                     onRequestClose={() => {
                       setOpen(false)

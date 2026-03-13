@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { USER_ROLES } from '@/features/auth/types/auth.types'
+import { USER_ROLES } from '@/features/auth'
 import Spinner from '@/components/ui/spinner'
 import { useProfile } from '../hooks/useProfile'
 import { ProfileTeacherView } from './ProfileTeacherView'

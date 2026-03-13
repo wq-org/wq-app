@@ -91,7 +91,7 @@ function AvatarSlide({ avatar, isSelected, onSelect }: AvatarSlideProps) {
         )}
         aria-label={`Select ${avatar.name}`}
       >
-        <div className="mx-auto aspect-square w-full max-w-[7rem] overflow-hidden rounded-full">
+        <div className="mx-auto aspect-square w-full max-w-28 overflow-hidden rounded-full">
           <BlurredImage
             src={imageSrc}
             alt={avatar.name}
@@ -226,7 +226,7 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
         {selectedAvatar ? (
           <>
             <div className="flex w-full max-w-sm flex-col items-center gap-4">
-              <div className="aspect-square w-full max-w-[15.5rem] overflow-hidden rounded-full">
+              <div className="aspect-square w-full max-w-62 overflow-hidden rounded-full">
                 <BlurredImage
                   src={heroImageSrc}
                   alt={selectedAvatar.name}

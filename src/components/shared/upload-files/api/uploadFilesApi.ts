@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { STORAGE_BUCKETS } from '@/lib/constants'
 import type {
   UploadedFile,
   FileUploadResult,
@@ -7,8 +8,6 @@ import type {
   FetchFilesResult,
   FetchFilesOptions,
 } from '../types/upload.types'
-
-const BUCKET_NAME = 'files'
 
 /** Only teachers → teacher for storage path; all other roles stay as passed. */
 function pathRole(role: string): string {
@@ -92,10 +91,12 @@ export async function uploadFile({
 
     // Upload file to Supabase storage
     // Note: Supabase automatically creates folders if they don't exist
-    const { data, error } = await supabase.storage.from(BUCKET_NAME).upload(storagePath, file, {
-      cacheControl: '3600',
-      upsert: false, // Set to true if you want to overwrite existing files
-    })
+    const { data, error } = await supabase.storage
+      .from(STORAGE_BUCKETS.cloud)
+      .upload(storagePath, file, {
+        cacheControl: '3600',
+        upsert: false, // Set to true if you want to overwrite existing files
+      })
 
     if (error) {
       console.error('Supabase upload error:', error)
@@ -115,7 +116,7 @@ export async function uploadFile({
     }
 
     // Get public URL for the uploaded file
-    const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(data.path)
+    const { data: urlData } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(data.path)
 
     const publicUrl = urlData?.publicUrl
 
@@ -291,7 +292,7 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
 
     console.log('Deleting file:', path)
 
-    const { error } = await supabase.storage.from(BUCKET_NAME).remove([path])
+    const { error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).remove([path])
 
     if (error) {
       console.error('Supabase delete error:', error)
@@ -326,7 +327,7 @@ export function getFilePublicUrl(path: string): string | null {
       return null
     }
 
-    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
+    const { data } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(path)
     return data?.publicUrl || null
   } catch (error) {
     console.error('Error getting public URL:', error)
@@ -368,7 +369,7 @@ export async function renameFile(
 
     // Download the file
     const { data: fileData, error: downloadError } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(STORAGE_BUCKETS.cloud)
       .download(oldPath)
 
     if (downloadError || !fileData) {
@@ -381,7 +382,7 @@ export async function renameFile(
 
     // Upload with new name
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(STORAGE_BUCKETS.cloud)
       .upload(newPath, fileData, {
         cacheControl: '3600',
         upsert: false,
@@ -396,7 +397,9 @@ export async function renameFile(
     }
 
     // Delete old file
-    const { error: deleteError } = await supabase.storage.from(BUCKET_NAME).remove([oldPath])
+    const { error: deleteError } = await supabase.storage
+      .from(STORAGE_BUCKETS.cloud)
+      .remove([oldPath])
 
     if (deleteError) {
       console.error('Supabase delete error during rename:', deleteError)
@@ -466,7 +469,7 @@ export async function fetchFilesByRole(
     const storagePath = `${institutionId}/${pathRole(role)}/${userId}/`
 
     // Fetch files from Supabase storage
-    const { data, error } = await supabase.storage.from(BUCKET_NAME).list(storagePath, {
+    const { data, error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).list(storagePath, {
       limit: options?.limit || 100,
       sortBy: options?.sortBy || { column: 'name', order: 'asc' },
     })

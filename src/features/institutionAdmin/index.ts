@@ -1,7 +1,3 @@
-// Components
-export { InstitutionAdminLayout } from './components/InstitutionAdminLayout'
-export type { NavigationItem } from './components/InstitutionAdminLayout'
-
 // Pages
 export { default as InstitutionAdminDashboardPage } from './pages/dashboard'
 export { default as InstitutionAdminAnalyticsPage } from './pages/analytics'

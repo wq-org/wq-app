@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import Spinner from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
-import { FailedToLoad } from '@/components'
+
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 
 interface FilesCardProps {
@@ -356,7 +356,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                               className="w-full h-full object-contain bg-white"
                             />
                           ) : (
-                            <FailedToLoad />
+                            <p>failed to load</p>
                           )}
                         </AspectRatio>
                       </div>
@@ -381,7 +381,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                               />
                             </div>
                           ) : (
-                            <FailedToLoad />
+                            <p>failed to load</p>
                           )}
                         </AspectRatio>
                       </div>
@@ -402,7 +402,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                             />
                           </div>
                         ) : (
-                          <FailedToLoad />
+                          <p>failed to load</p>
                         )}
                       </div>
                     )}

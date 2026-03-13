@@ -1,5 +1,5 @@
-import { AdminDashboardLayout } from '../components/AdminDashboardLayout'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
 export default function AdminBilling() {
-  return <AdminDashboardLayout>Billing</AdminDashboardLayout>
+  return <AdminWorkspaceShell>Billing</AdminWorkspaceShell>
 }

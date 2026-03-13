@@ -11,7 +11,7 @@ import {
 import { CheckIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
+import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
 import { StepAccount } from '../components/StepAccount'
 import { StepAvatar } from '../components/StepAvatar'
 import { StepInstitution } from '../components/StepInstitution'

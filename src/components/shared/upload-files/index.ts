@@ -11,3 +11,6 @@ export type * from './types/upload.types'
 
 // API
 export * from './api/uploadFilesApi'
+
+// Utils
+export * from './utils/fileTypeStyle'

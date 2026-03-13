@@ -1,17 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DashboardLayout } from '@/components/layout'
+import { LearningDashboardShell } from '@/features/dashboard'
 import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course, EnrollmentStatus, ProfileCourseCardData } from '@/features/course'
-import { getDashboardTabs } from '@/components/layout/config'
+import { getDashboardTabs } from '@/features/dashboard'
 import { supabase } from '@/lib/supabase'
 import { EmptyCourseView, getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
-import GameCardList from '@/features/game-studio/components/GameCardList'
-import type { GameCardProps } from '@/features/game-studio/types/game-studio.types'
+import { GameCardList, type GameCardProps } from '@/features/game-studio'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
@@ -245,7 +244,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   )
 
   return (
-    <DashboardLayout
+    <LearningDashboardShell
       imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
       userName={profile.display_name || 'Student'}
       username={profile.username || undefined}
@@ -253,6 +252,8 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
       linkedInUrl={profile.linkedin_url || undefined}
       description={profile.description || 'No description available'}
       role="student"
+      institutionName={profile.institution?.name || undefined}
+      institutionSlug={profile.institution?.slug || undefined}
       customTabs={coursesAndGamesTabs}
       onClickTab={handleClickTab}
     >
@@ -295,6 +296,6 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
             onGamePlay={handleGamePlay}
           />
         ))}
-    </DashboardLayout>
+    </LearningDashboardShell>
   )
 }

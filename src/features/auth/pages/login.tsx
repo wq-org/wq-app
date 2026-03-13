@@ -15,10 +15,10 @@ import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
-import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
+import { getDashboardPathForRole, type UserRole } from '@/features/auth'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
-import { LanguageSwitcher } from '@/components'
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 import { useUser } from '@/contexts/user'
 
 export default function LoginPage() {
