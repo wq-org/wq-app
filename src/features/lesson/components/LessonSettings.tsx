@@ -8,7 +8,9 @@ import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Text } from '@/components/ui/text'
-import { TitleDescriptionFields } from '@/components/shared/forms'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
 
 export interface LessonSettingsProps {
   lessonId: string
@@ -132,18 +134,22 @@ export function LessonSettings({ lessonId, courseId, onUnsavedChange }: LessonSe
         </div>
 
         <div className="flex flex-col gap-6">
-          <TitleDescriptionFields
-            title={title}
-            description={description}
-            onTitleChange={setTitle}
-            onDescriptionChange={setDescription}
-            titlePlaceholder={t('settings.titlePlaceholder')}
-            descriptionPlaceholder={t('settings.descriptionPlaceholder')}
-            titleLabel={t('settings.titleLabel')}
-            descriptionLabel={t('settings.descriptionLabel')}
-            maxDescriptionLength={500}
-            rows={4}
-          />
+          <FieldCard>
+            <FieldInput
+              value={title}
+              onValueChange={setTitle}
+              label={t('settings.titleLabel')}
+              placeholder={t('settings.titlePlaceholder')}
+            />
+            <FieldTextarea
+              value={description}
+              onValueChange={setDescription}
+              label={t('settings.descriptionLabel')}
+              placeholder={t('settings.descriptionPlaceholder')}
+              maxLength={500}
+              rows={4}
+            />
+          </FieldCard>
 
           <div className="flex items-center justify-end gap-4 py-4 border-t">
             <HoldToDeleteButton

@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { TitleDescriptionFields } from '@/components/shared/forms'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
 
 export interface TopicSettingsProps {
   topicId: string
@@ -171,18 +173,22 @@ export function TopicSettings({ topicId, onUnsavedChange }: TopicSettingsProps) 
       </div>
 
       <div className="flex flex-col gap-6">
-        <TitleDescriptionFields
-          title={title}
-          description={description}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          titleLabel={t('topic.titleLabel')}
-          descriptionLabel={t('topic.descriptionLabel')}
-          titlePlaceholder={t('page.addTopicPlaceholder')}
-          descriptionPlaceholder={t('page.addTopicDescriptionPlaceholder')}
-          rows={4}
-          maxDescriptionLength={500}
-        />
+        <FieldCard>
+          <FieldInput
+            value={title}
+            onValueChange={setTitle}
+            label={t('topic.titleLabel')}
+            placeholder={t('page.addTopicPlaceholder')}
+          />
+          <FieldTextarea
+            value={description}
+            onValueChange={setDescription}
+            label={t('topic.descriptionLabel')}
+            placeholder={t('page.addTopicDescriptionPlaceholder')}
+            rows={4}
+            maxLength={500}
+          />
+        </FieldCard>
 
         <div className="flex items-center justify-end gap-4 border-t py-4">
           <HoldToDeleteButton

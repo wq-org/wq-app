@@ -4,8 +4,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Text } from '@/components/ui/text'
-import { TitleDescriptionFields } from '@/components/shared/forms'
 import { ColorPicker } from '@/components/shared'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
 import { TYPE_LABEL_KEYS } from '../config/commandAddOptions'
 import type { CommandAddState } from '../hooks/useCommandAdd'
 
@@ -79,20 +81,24 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
                 />
               </div>
             ) : null}
-            <TitleDescriptionFields
-              title={state.title}
-              description={state.description}
-              onTitleChange={state.setTitle}
-              onDescriptionChange={state.setDescription}
-              titleLabel={t('addDialog.fieldTitleLabel', { type: typeLabel })}
-              titlePlaceholder={t('addDialog.fieldTitlePlaceholder', { type: typeLabel })}
-              descriptionLabel={t('addDialog.fieldDescriptionLabel', { type: typeLabel })}
-              descriptionPlaceholder={t('addDialog.fieldDescriptionPlaceholder', {
-                type: typeLabel,
-              })}
-              rows={3}
-              maxDescriptionLength={280}
-            />
+            <FieldCard>
+              <FieldInput
+                value={state.title}
+                onValueChange={state.setTitle}
+                label={t('addDialog.fieldTitleLabel', { type: typeLabel })}
+                placeholder={t('addDialog.fieldTitlePlaceholder', { type: typeLabel })}
+              />
+              <FieldTextarea
+                value={state.description}
+                onValueChange={state.setDescription}
+                label={t('addDialog.fieldDescriptionLabel', { type: typeLabel })}
+                placeholder={t('addDialog.fieldDescriptionPlaceholder', {
+                  type: typeLabel,
+                })}
+                rows={3}
+                maxLength={280}
+              />
+            </FieldCard>
           </CardContent>
         </ScrollArea>
 

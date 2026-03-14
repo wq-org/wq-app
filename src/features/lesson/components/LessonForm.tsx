@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { createYooptaStarterContentJson } from '@/features/course'
-import { TitleDescriptionFields } from '@/components/shared/forms'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
 export interface LessonFormProps {
   topicId?: string
   courseId?: string
@@ -56,22 +58,26 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <TitleDescriptionFields
-          title={newLesson}
-          description={description}
-          onTitleChange={setNewLesson}
-          onDescriptionChange={(nextDescription) => {
-            if (nextDescription.length <= 120) {
-              setDescription(nextDescription)
-            }
-          }}
-          titleLabel={t('createLesson.titleLabel')}
-          descriptionLabel={t('createLesson.descriptionLabel')}
-          titlePlaceholder={t('createLesson.titlePlaceholder')}
-          descriptionPlaceholder={t('createLesson.descriptionPlaceholder')}
-          maxDescriptionLength={120}
-          rows={3}
-        />
+        <FieldCard>
+          <FieldInput
+            value={newLesson}
+            onValueChange={setNewLesson}
+            label={t('createLesson.titleLabel')}
+            placeholder={t('createLesson.titlePlaceholder')}
+          />
+          <FieldTextarea
+            value={description}
+            onValueChange={(nextDescription) => {
+              if (nextDescription.length <= 120) {
+                setDescription(nextDescription)
+              }
+            }}
+            label={t('createLesson.descriptionLabel')}
+            placeholder={t('createLesson.descriptionPlaceholder')}
+            maxLength={120}
+            rows={3}
+          />
+        </FieldCard>
       </div>
       <div className="flex justify-end">
         <Button

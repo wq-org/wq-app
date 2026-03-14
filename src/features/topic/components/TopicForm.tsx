@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { TitleDescriptionFields } from '@/components/shared/forms'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
 
 export interface TopicFormProps {
   title: string
@@ -27,17 +29,21 @@ export function TopicForm({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <TitleDescriptionFields
-        title={title}
-        description={description}
-        onTitleChange={onTitleChange}
-        onDescriptionChange={onDescriptionChange}
-        titleLabel={t('topic.titleLabel')}
-        descriptionLabel={t('topic.descriptionLabel')}
-        titlePlaceholder={t('page.addTopicPlaceholder')}
-        descriptionPlaceholder={t('page.addTopicDescriptionPlaceholder')}
-        rows={3}
-      />
+      <FieldCard>
+        <FieldInput
+          value={title}
+          onValueChange={onTitleChange}
+          label={t('topic.titleLabel')}
+          placeholder={t('page.addTopicPlaceholder')}
+        />
+        <FieldTextarea
+          value={description}
+          onValueChange={onDescriptionChange}
+          label={t('topic.descriptionLabel')}
+          placeholder={t('page.addTopicDescriptionPlaceholder')}
+          rows={3}
+        />
+      </FieldCard>
 
       <div className="flex justify-end">
         <Button
