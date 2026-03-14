@@ -19,7 +19,7 @@ interface ClearableInputProps {
   className?: string
   inputClassName?: string
   clearButtonLabel?: string
-  showSeparator?: boolean
+  hideSeparator?: boolean
   showSearchIcon?: boolean
 }
 
@@ -36,7 +36,7 @@ export const ClearableInput = ({
   className,
   inputClassName,
   clearButtonLabel = 'Clear input',
-  showSeparator = true,
+  hideSeparator = false,
   showSearchIcon = false,
 }: ClearableInputProps) => {
   const generatedId = useId()
@@ -70,7 +70,7 @@ export const ClearableInput = ({
         {label}
       </Label>
 
-      {showSearchIcon && (
+      {hideSeparator && (
         <div className="absolute left-3 top-9 -translate-y-1/2 h-5 w-5 text-gray-200">
           <Search className="mr-3 h-4 w-4 text-gray-400" />
         </div>
@@ -91,9 +91,9 @@ export const ClearableInput = ({
         autoFocus={autoFocus}
         disabled={disabled}
       />
-      {showSeparator ? <Separator /> : null}
+      {!hideSeparator ? <Separator /> : null}
 
-      {inputValue.trim() && (
+      {!disabled && inputValue.trim() && (
         <Button
           type="button"
           size="icon"

@@ -49,3 +49,7 @@ institution.md
 *.csv
 csv/
 *.py
+
+.claude/repo-index.md
+.claude/ui-registry.md
+

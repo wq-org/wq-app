@@ -5,11 +5,12 @@ import { cn } from '@/lib/utils'
 
 type FieldInputProps = {
   value: string
-  onValueChange: (value: string) => void
+  onValueChange?: (value: string) => void
   label: string
   placeholder?: string
   id?: string
-  showSeparator?: boolean
+  disabled?: boolean
+  hideSeparator?: boolean
   inputClassName?: string
   className?: string
 }
@@ -20,7 +21,8 @@ export const FieldInput = ({
   label,
   placeholder = label,
   id,
-  showSeparator = false,
+  disabled = false,
+  hideSeparator = false,
   inputClassName,
   className,
 }: FieldInputProps) => {
@@ -35,7 +37,8 @@ export const FieldInput = ({
         onValueChange={onValueChange}
         placeholder={placeholder}
         label={label}
-        showSeparator={showSeparator}
+        hideSeparator={hideSeparator}
+        disabled={disabled}
         inputClassName={inputClassName}
       />
     </div>

@@ -225,31 +225,3 @@ export function QuantityStepper({
     </div>
   )
 }
-
-// ─── Demo ─────────────────────────────────────────────────────────────────────
-
-export default function QuantityStepperDemo() {
-  const [qty, setQty] = React.useState(99)
-
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-white p-8">
-      <div className="flex w-full max-w-xs flex-col gap-6">
-        <QuantityStepper
-          value={qty}
-          onChange={setQty}
-          min={1}
-          max={99}
-        />
-        <QuantityStepper
-          defaultValue={3}
-          disabled
-        />
-        <QuantityStepper
-          defaultValue={1}
-          min={1}
-          max={5}
-        />
-      </div>
-    </div>
-  )
-}

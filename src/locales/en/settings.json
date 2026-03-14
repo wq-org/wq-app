@@ -1,5 +1,20 @@
 {
   "profile": {
+    "roles": {
+      "teacher": "Teacher",
+      "student": "Student",
+      "institution_admin": "Institution admin",
+      "super_admin": "Super admin"
+    },
+    "sections": {
+      "avatarTitle": "Avatar",
+      "avatarHint": "Choose the avatar shown on your profile and in game stats.",
+      "profileTitle": "Profile",
+      "profileHint": "Manage your public profile details.",
+      "roleHint": "Current role: {{role}}",
+      "accountTitle": "Account",
+      "accountHint": "These fields are managed by your account and are read-only."
+    },
     "fields": {
       "name": {
         "label": "Name",
@@ -23,7 +38,20 @@
       }
     },
     "actions": {
-      "save": "Save Changes"
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "reset": "Reset"
+    },
+    "validation": {
+      "linkedinInvalid": "Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username).",
+      "fixLinkedInBeforeSave": "Please fix the LinkedIn URL before saving."
+    },
+    "toasts": {
+      "avatarLoadError": "Failed to load avatars.",
+      "saveSuccess": "Profile updated successfully.",
+      "saveError": "Failed to update profile. Please try again.",
+      "userIdMissing": "User ID not found.",
+      "profileNotAvailable": "Profile data is currently unavailable."
     }
   }
 }

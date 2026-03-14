@@ -16,6 +16,9 @@ export type { TabItem } from './tabs'
 // i18n
 export { LanguageSwitcher } from './LanguageSwitcher'
 
+// Theme
+export { default as DefaultBackgroundGallery } from './DefaultBackgroundGallery'
+
 // Cards
 export { InfoCard } from './InfoCard'
 export { UserCard } from './UserCard'

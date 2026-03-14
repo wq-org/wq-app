@@ -1,5 +1,20 @@
 {
   "profile": {
+    "roles": {
+      "teacher": "Lehrkraft",
+      "student": "Lernende:r",
+      "institution_admin": "Institutions-Admin",
+      "super_admin": "Super-Admin"
+    },
+    "sections": {
+      "avatarTitle": "Avatar",
+      "avatarHint": "Wähle den Avatar für dein Profil und die Spielstatistiken.",
+      "profileTitle": "Profil",
+      "profileHint": "Verwalte deine öffentlichen Profildaten.",
+      "roleHint": "Aktuelle Rolle: {{role}}",
+      "accountTitle": "Konto",
+      "accountHint": "Diese Felder werden vom Konto verwaltet und sind schreibgeschützt."
+    },
     "fields": {
       "name": {
         "label": "Name",
@@ -23,7 +38,20 @@
       }
     },
     "actions": {
-      "save": "Änderungen speichern"
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert...",
+      "reset": "Zurücksetzen"
+    },
+    "validation": {
+      "linkedinInvalid": "Bitte gib eine gültige LinkedIn-URL ein (z. B. https://www.linkedin.com/in/username).",
+      "fixLinkedInBeforeSave": "Bitte korrigiere die LinkedIn-URL vor dem Speichern."
+    },
+    "toasts": {
+      "avatarLoadError": "Avatare konnten nicht geladen werden.",
+      "saveSuccess": "Profil erfolgreich aktualisiert.",
+      "saveError": "Profil konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+      "userIdMissing": "Benutzer-ID wurde nicht gefunden.",
+      "profileNotAvailable": "Profildaten sind aktuell nicht verfügbar."
     }
   }
 }

@@ -9,7 +9,7 @@ export { EmptyFollowsView } from './components/EmptyFollowsView'
 
 // Pages
 export { default as StudentDashboardPage } from './pages/dashboard'
-export { default as StudentSettingsPage } from './pages/settings'
+export { StudentSettingsPage } from './pages/settings'
 export { default as StudentChatPage } from './pages/chat'
 export { default as StudentViewPage } from './pages/view'
 
