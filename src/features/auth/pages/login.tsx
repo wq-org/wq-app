@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth'
 import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
-import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
+import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { AUTH_GRID_ICONS } from '../constants'
 import { Check } from 'lucide-react'
@@ -127,7 +127,12 @@ export default function LoginPage() {
     <AuthCardLayout
       backTo="/"
       backgroundIcons={AUTH_GRID_ICONS}
-      navigationSlot={<LanguageSwitcher variant="auth" />}
+      navigationSlot={
+        <div className="flex items-center gap-2">
+          <ThemeModeToggle variant="auth" />
+          <LanguageSwitcher variant="auth" />
+        </div>
+      }
     >
       <div className="flex flex-col gap-6">
         {/* Title */}
@@ -155,7 +160,7 @@ export default function LoginPage() {
         >
           <div className="flex justify-between">
             <Label>{t('login.email')}</Label>
-            {emailError && <p className="px-1 text-xs text-red-500">{emailError}</p>}
+            {emailError && <p className="px-1 text-xs text-destructive">{emailError}</p>}
           </div>
           <FieldInput
             id="email"
@@ -167,14 +172,16 @@ export default function LoginPage() {
             onValueChange={handleEmailChange}
             autoComplete="email"
             required
-            inputClassName={emailError ? 'text-red-500 placeholder:text-red-300' : undefined}
+            inputClassName={
+              emailError ? 'text-destructive placeholder:text-destructive/60' : undefined
+            }
           />
 
           <div className="flex items-center justify-between px-1 pt-2">
             <Label>{t('login.password')}</Label>
             <Link
               to="/auth/forgot-password"
-              className="text-sm underline-offset-4 hover:underline"
+              className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
               {t('login.forgot')}
             </Link>

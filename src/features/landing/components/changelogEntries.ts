@@ -20,6 +20,35 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-03-14-auth-reset-flow-refresh',
+    date: '14 March 2026',
+    title: 'Improve password recovery and auth screen flow',
+    summary:
+      'Signing in and recovering an account now feels clearer. Reset links are validated earlier, auth feedback is more consistent, and the entry screens use a cleaner shared layout.',
+    bullets: [
+      'password reset now detects invalid or expired recovery links before showing the reset form',
+      'forgot password, login, and sign-up screens now give clearer validation and status feedback',
+      'auth cards and supporting backgrounds were refined so entry flows feel more consistent across screens',
+      'auth and onboarding copy was updated in English and German to match the new reset and success states',
+      'Added dark mode option',
+    ],
+    badges: ['fix', 'improvement'],
+  },
+  {
+    id: '2026-03-13-dashboard-shell-command-add-refactor',
+    date: '13 March 2026',
+    title: 'Unify dashboard shells and simplify the add flow',
+    summary:
+      'Dashboard layouts now share a cleaner structure, and the command palette add flow is split into smaller, easier-to-follow steps for a more consistent workspace experience.',
+    bullets: [
+      'admin and institution dashboard areas now use one shared shell, which removes layout duplication and keeps navigation more consistent',
+      'the command palette add flow was split into focused selection and form steps, making the create flow clearer for users',
+      'command availability and role-based action rules were centralized so commands appear more predictably across workspaces',
+      'file upload and related page wiring were aligned with the shared command flow to reduce friction when adding new content',
+    ],
+    badges: ['change', 'improvement'],
+  },
+  {
     id: '2026-03-08-topic-lesson-workspace-refresh',
     date: '8 March 2026',
     title: 'Refresh topic and lesson workspace flow',

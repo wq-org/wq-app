@@ -98,8 +98,8 @@ export function Feature6({
                           {shouldRenderIconInside ? (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <Card
-                                className={`rounded-2xl p-4 shadow-sm ${
-                                  card.isBlurred ? 'bg-white/80 backdrop-blur-md' : 'bg-white'
+                                className={`rounded-2xl border-border/70 p-4 shadow-sm ${
+                                  card.isBlurred ? 'bg-card/80 backdrop-blur-md' : 'bg-card/95'
                                 }`}
                               >
                                 <Icon className="h-8 w-8 stroke-2" />

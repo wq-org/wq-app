@@ -1,15 +1,14 @@
 import { useState, type ReactElement } from 'react'
 import { Button } from '@/components/ui/button'
-import { Bell, BellDot, ChevronLeft, LogOut, Moon, Sun } from 'lucide-react'
+import { Bell, BellDot, ChevronLeft, LogOut } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { NotificationPanel } from '@/features/notification'
-import { LanguageSwitcher } from '@/components/shared'
+import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
-import { useTheme } from '@/hooks/useTheme'
 
 interface AppNavigationProps {
   className?: string
@@ -22,7 +21,6 @@ export const AppNavigation = ({
 }: AppNavigationProps): ReactElement => {
   const navigate = useNavigate()
   const { logout } = useUser()
-  const { mode, setMode } = useTheme()
   const [notificationCount, setNotificationCount] = useState(0)
 
   const handleOnClickLogout = async () => {
@@ -34,10 +32,6 @@ export const AppNavigation = ({
       console.error('Logout error:', error)
       toast.error('Failed to logout. Please try again.')
     }
-  }
-
-  const handleToggleMode = () => {
-    setMode(mode === 'dark' ? 'light' : 'dark')
   }
 
   return (
@@ -60,18 +54,7 @@ export const AppNavigation = ({
 
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-card/90 px-2 py-2 text-foreground shadow-sm backdrop-blur supports-backdrop-filter:bg-card/75">
             <LanguageSwitcher />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleToggleMode}
-              className="h-10 w-10 rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
-              aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {mode === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              <span className="sr-only">
-                {mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              </span>
-            </Button>
+            <ThemeModeToggle />
             {authenticated && (
               <>
                 <div className="h-6 w-px bg-border/80" />

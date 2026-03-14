@@ -90,7 +90,7 @@ export function HeroSection() {
   const { t } = useTranslation('navigation')
 
   return (
-    <section className="min-h-screen bg-white">
+    <section className="min-h-screen bg-background">
       <GridIconBackground
         icons={HERO_ICONS}
         className="min-h-screen"
@@ -116,7 +116,7 @@ export function HeroSection() {
                 asChild
                 size="lg"
                 variant="ghost"
-                className="px-5 text-base"
+                className="px-5 text-base text-foreground hover:text-foreground"
               >
                 <Link to="/contact">{t('landing.cta.contact')}</Link>
               </Button>

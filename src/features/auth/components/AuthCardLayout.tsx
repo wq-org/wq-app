@@ -21,25 +21,25 @@ export default function AuthCardLayout({
   backgroundIcons,
 }: AuthCardLayoutProps) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <GridIconBackground
         icons={backgroundIcons}
         className="min-h-screen px-4 py-8 md:px-6"
       >
         <div className="flex min-h-screen items-center justify-center">
           <div
-            className="pointer-events-none absolute inset-0 bg-white/55 backdrop-blur-[1px]"
+            className="pointer-events-none absolute inset-0 bg-background/55 backdrop-blur-[1px] dark:bg-background/72"
             aria-hidden
           />
 
           <div
             className={cn(
-              'relative z-10 flex w-full max-w-[900px] overflow-hidden rounded-2xl bg-white shadow-2xl',
+              'relative z-10 flex w-full max-w-[900px] overflow-hidden rounded-2xl border border-border/80 bg-card/95 text-card-foreground shadow-2xl backdrop-blur-sm',
               'min-h-[540px]',
               className,
             )}
           >
-            <div className="hidden w-[40%] bg-white p-6 md:flex">
+            <div className="hidden w-[40%] border-r border-border/70 bg-muted/40 p-6 md:flex">
               <IconPreviewCardSquare
                 icon={Globe}
                 backgroundColor="oklch(var(--oklch-blue))"
@@ -52,7 +52,7 @@ export default function AuthCardLayout({
                 <Link
                   to={backTo}
                   aria-label="Back"
-                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-gray-100 hover:text-foreground"
+                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   <MoveLeft className="size-5" />
                 </Link>

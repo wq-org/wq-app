@@ -11,6 +11,7 @@ export type { TabItem } from './tabs'
 
 // i18n
 export { LanguageSwitcher } from './LanguageSwitcher'
+export { ThemeModeToggle } from './ThemeModeToggle'
 
 // Theme
 export { AccentPicker } from './AccentPicker'

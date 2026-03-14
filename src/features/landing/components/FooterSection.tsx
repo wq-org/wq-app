@@ -7,7 +7,7 @@ export function FooterSection() {
   const { t } = useTranslation('navigation')
 
   return (
-    <footer className="border-b bg-white pt-20 dark:bg-transparent">
+    <footer className="border-b bg-background pt-20">
       <div className="mx-auto max-w-5xl px-6">
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-2">

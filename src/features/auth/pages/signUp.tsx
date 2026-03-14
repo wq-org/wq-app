@@ -15,7 +15,7 @@ import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import type { TabItem } from '@/components/shared/tabs/SelectTabs'
-import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
+import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
 import { Label } from '@/components/ui/label'
 
@@ -104,7 +104,12 @@ export default function SignUpPage() {
     <AuthCardLayout
       backTo="/"
       backgroundIcons={AUTH_GRID_ICONS}
-      navigationSlot={<LanguageSwitcher variant="auth" />}
+      navigationSlot={
+        <div className="flex items-center gap-2">
+          <ThemeModeToggle variant="auth" />
+          <LanguageSwitcher variant="auth" />
+        </div>
+      }
     >
       <div className="flex flex-col gap-6">
         {/* Title */}
@@ -148,9 +153,11 @@ export default function SignUpPage() {
             value={email}
             onValueChange={handleEmailChange}
             required
-            inputClassName={emailError ? 'text-red-500 placeholder:text-red-300' : undefined}
+            inputClassName={
+              emailError ? 'text-destructive placeholder:text-destructive/60' : undefined
+            }
           />
-          {emailError && <p className="px-1 text-xs text-red-500">{emailError}</p>}
+          {emailError && <p className="px-1 text-xs text-destructive">{emailError}</p>}
 
           <Label>{t('signUp.password')}</Label>
 

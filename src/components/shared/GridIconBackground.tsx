@@ -65,6 +65,9 @@ const DEFAULT_ICONS: IconEntry[] = [
   },
 ]
 
+const GRID_BACKGROUND_MASK =
+  'radial-gradient(ellipse 72% 62% at 50% 50%, transparent 18%, color-mix(in srgb, var(--background) 35%, transparent) 62%, var(--background) 100%)'
+
 // ─── Bounce keyframes (injected once) ────────────────────────────────────────
 
 const BOUNCE_CSS = `
@@ -121,7 +124,7 @@ function IconChip({ entry, zoneIndex }: IconChipProps) {
       className={cn(
         'absolute flex items-center justify-center',
         'h-12 w-12 rounded-2xl border',
-        'shadow-sm backdrop-blur-[2px]',
+        'shadow-sm backdrop-blur-[2px] dark:shadow-black/20',
         bgColor,
         borderColor,
       )}
@@ -168,8 +171,7 @@ export function GridIconBackground({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, var(--background) 100%)',
+          background: GRID_BACKGROUND_MASK,
         }}
       />
 
