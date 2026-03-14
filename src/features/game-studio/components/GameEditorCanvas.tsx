@@ -36,7 +36,7 @@ import { useGameStudioContext } from '@/contexts/game-studio'
 import SettingsDrawer from './SettingsDrawer'
 import PreviewDrawer from './PreviewDrawer'
 import PublishDrawer from './PublishDrawer'
-import { DEFAULT_PARAGRAPH, MAX_END_NODE_INCOMING_CONNECTIONS } from '@/lib/constants'
+import { MAX_END_NODE_INCOMING_CONNECTIONS } from '../constants'
 import type { GameNodeData } from '../types/game-studio.types'
 import { useUser } from '@/contexts/user'
 import {
@@ -52,6 +52,7 @@ import { deleteGame } from '@/features/command-palette'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import type { ThemeId } from '@/lib/themes'
+import { DEFAULT_PARAGRAPH } from '@/features/games/paragraph-line-select'
 
 const nodeTypes = {
   gameStart: GameStartNode,

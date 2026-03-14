@@ -1,5 +1,5 @@
 import { Text } from '@/components/ui/text'
-import { getThemeBackgroundStyle, getThemeDescriptionStyle, getThemeTitleStyle } from '@/lib/themes'
+import { getThemeBackgroundStyle } from '@/lib/themes'
 
 interface LessonHeroBannerSectionProps {
   title: string
@@ -23,16 +23,14 @@ export function LessonHeroBannerSection({
           <Text
             as="h1"
             variant="h1"
-            className="text-4xl font-semibold tracking-tight md:text-5xl"
-            style={getThemeTitleStyle(themeId)}
+            className="text-4xl font-semibold tracking-tight text-white drop-shadow-sm md:text-5xl"
           >
             {title}
           </Text>
           <Text
             as="p"
             variant="body"
-            className="mt-4 text-base font-semibold leading-7 md:text-lg"
-            style={getThemeDescriptionStyle(themeId)}
+            className="mt-4 text-base font-semibold leading-7 text-white/90 drop-shadow-sm md:text-lg"
           >
             {description}
           </Text>

@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import AuthCardLayout from '../components/AuthCardLayout'
 import PasswordResetSuccessDrawer from '../components/PasswordResetSuccessDrawer'
-import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 import Spinner from '@/components/ui/spinner'
 
 type PageState = 'loading' | 'invalid' | 'form' | 'success'
@@ -140,10 +139,7 @@ export default function ResetPasswordPage() {
   // Loading state -- verifying the reset link
   if (pageState === 'loading') {
     return (
-      <AuthCardLayout
-        backTo="/auth/login"
-        backgroundImage={DEFAULT_COURSE_BACKGROUND}
-      >
+      <AuthCardLayout backTo="/auth/login">
         <div className="flex flex-col items-center justify-center gap-4 py-12">
           <Spinner
             variant="gray"
@@ -165,10 +161,7 @@ export default function ResetPasswordPage() {
   // Invalid / expired link state
   if (pageState === 'invalid') {
     return (
-      <AuthCardLayout
-        backTo="/auth/login"
-        backgroundImage={DEFAULT_COURSE_BACKGROUND}
-      >
+      <AuthCardLayout backTo="/auth/login">
         <div className="flex flex-col items-center gap-4 text-center">
           <Text
             as="h1"
@@ -198,10 +191,7 @@ export default function ResetPasswordPage() {
   // Form state -- enter new password
   return (
     <>
-      <AuthCardLayout
-        backTo="/auth/login"
-        backgroundImage={DEFAULT_COURSE_BACKGROUND}
-      >
+      <AuthCardLayout backTo="/auth/login">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-1 text-center">
             <Text

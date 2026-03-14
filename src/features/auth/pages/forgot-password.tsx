@@ -7,7 +7,6 @@ import { Text } from '@/components/ui/text'
 import { requestPasswordReset } from '../api/authApi'
 import { toast } from 'sonner'
 import AuthCardLayout from '../components/AuthCardLayout'
-import { DEFAULT_COURSE_BACKGROUND } from '@/lib/constants'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -36,10 +35,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthCardLayout
-      backTo="/auth/login"
-      backgroundImage={DEFAULT_COURSE_BACKGROUND}
-    >
+    <AuthCardLayout backTo="/auth/login">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-1 text-center">
           <Text
@@ -95,8 +91,7 @@ export default function ForgotPasswordPage() {
                 Check your email for a password reset link. It may take a few minutes to arrive.
               </FieldDescription>
               <Button
-                type="button"
-                variant="outline"
+                variant="darkblue"
                 onClick={() => navigate('/auth/login')}
                 className="mt-4 w-full"
               >

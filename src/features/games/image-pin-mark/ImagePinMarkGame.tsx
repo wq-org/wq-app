@@ -49,8 +49,8 @@ import { getFileBlobUrl } from '@/features/files'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ImageCarousel } from '@/components/shared/media'
 import type { ImageCarouselImage } from '@/components/shared/media'
-import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants'
-import { constrainDescription } from '@/lib/validations'
+import { MAX_IMAGE_PIN_SQUARES } from './constants'
+import { constrainDescription } from '../shared/description'
 import { computeImagePinResults } from '@/features/games/image-pin-mark/utils/imagePinScoring'
 
 /** Default size (width/height) for new squares; matches SquareMarker DEFAULT_SIZE. */

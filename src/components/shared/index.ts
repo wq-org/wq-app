@@ -14,6 +14,9 @@ export { LanguageSwitcher } from './LanguageSwitcher'
 
 // Theme
 export { ColorPicker } from './ColorPicker'
+export { GridIconBackground } from './GridIconBackground'
+export type { IconEntry } from './GridIconBackground'
+export { IconPreviewCardSquare, IconPreviewCardWide } from './IconPreviewCard'
 
 // Avatar
 export { AvatarDrawer } from './AvatarDrawer'

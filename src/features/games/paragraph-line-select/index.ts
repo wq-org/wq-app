@@ -12,3 +12,6 @@ export type * from './types'
 
 // API
 // Add API exports when available
+
+// Constants
+export { DEFAULT_PARAGRAPH, QUESTION_SEPARATOR, MAX_PARAGRAPH_VOTING_OPTIONS } from './constants'

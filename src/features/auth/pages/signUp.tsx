@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { GraduationCap, Presentation, Building2 } from 'lucide-react'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldSeparator } from '@/components/ui/field'
+import { GraduationCap, Presentation, Building2, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '@/features/auth'
@@ -22,6 +16,8 @@ import AuthCardLayout from '../components/AuthCardLayout'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import type { TabItem } from '@/components/shared/tabs/SelectTabs'
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
+import { AUTH_GRID_ICONS } from '../constants'
+import { Label } from '@/components/ui/label'
 
 const roleTabs: TabItem[] = [
   { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
@@ -107,6 +103,7 @@ export default function SignUpPage() {
   return (
     <AuthCardLayout
       backTo="/"
+      backgroundIcons={AUTH_GRID_ICONS}
       navigationSlot={<LanguageSwitcher variant="auth" />}
     >
       <div className="flex flex-col gap-6">
@@ -140,74 +137,72 @@ export default function SignUpPage() {
           onSubmit={handleOnSubmitSignUp}
           className="flex flex-col gap-4"
         >
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="email">{t('signUp.email')}</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                placeholder={t('common.placeholder.email')}
-                name="email"
-                required
-                className={`bg-gray-50 ${emailError ? 'border-red-500' : ''}`}
+          <Label>{t('signUp.email')}</Label>
+
+          <FieldInput
+            id="email"
+            type="email"
+            name="email"
+            label={t('signUp.email')}
+            placeholder={t('common.placeholder.email')}
+            value={email}
+            onValueChange={handleEmailChange}
+            required
+            inputClassName={emailError ? 'text-red-500 placeholder:text-red-300' : undefined}
+          />
+          {emailError && <p className="px-1 text-xs text-red-500">{emailError}</p>}
+
+          <Label>{t('signUp.password')}</Label>
+
+          <FieldInput
+            id="password"
+            type="password"
+            name="password"
+            label={t('signUp.password')}
+            placeholder={t('common.placeholder.password')}
+            value={password}
+            onValueChange={setPassword}
+            autoComplete="new-password"
+            required
+          />
+
+          <Label>{t('signUp.repeatPassword')}</Label>
+
+          <FieldInput
+            id="repeat-password"
+            type="password"
+            name="repeat-password"
+            label={t('signUp.repeatPassword')}
+            placeholder={t('common.placeholder.repeatPassword')}
+            value={repeatPassword}
+            onValueChange={setRepeatPassword}
+            autoComplete="new-password"
+            required
+          />
+          {repeatPassword && password !== repeatPassword && (
+            <p className="px-1 text-xs text-destructive">
+              {t('signUp.passwordMismatch') || 'Passwords do not match'}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            disabled={!isFormValid || isLoading}
+            className="mt-2 w-full cursor-pointer"
+            variant="darkblue"
+          >
+            {isLoading ? (
+              <Spinner
+                variant="white"
+                size="sm"
               />
-              {emailError && (
-                <FieldDescription className="text-red-500 text-sm">{emailError}</FieldDescription>
-              )}
-            </Field>
+            ) : (
+              <Check />
+            )}
+            {t('signUp.submit')}
+          </Button>
 
-            <Field>
-              <FieldLabel htmlFor="password">{t('signUp.password')}</FieldLabel>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t('common.placeholder.password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-gray-50"
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="repeat-password">{t('signUp.repeatPassword')}</FieldLabel>
-              <Input
-                id="repeat-password"
-                type="password"
-                value={repeatPassword}
-                onChange={(e) => setRepeatPassword(e.target.value)}
-                placeholder={t('common.placeholder.repeatPassword')}
-                required
-                className="bg-gray-50"
-              />
-              {repeatPassword && password !== repeatPassword && (
-                <FieldDescription className="text-destructive">
-                  {t('signUp.passwordMismatch') || 'Passwords do not match'}
-                </FieldDescription>
-              )}
-            </Field>
-
-            <Field>
-              <Button
-                type="submit"
-                disabled={!isFormValid || isLoading}
-                className="w-full cursor-pointer"
-              >
-                {isLoading ? (
-                  <Spinner
-                    variant="white"
-                    size="sm"
-                  />
-                ) : (
-                  t('signUp.submit')
-                )}
-              </Button>
-            </Field>
-
-            <FieldSeparator>{t('signUp.or')}</FieldSeparator>
-          </FieldGroup>
+          <FieldSeparator>{t('signUp.or')}</FieldSeparator>
         </form>
         <div className="flex justify-center items-center gap-0">
           <Text
@@ -217,7 +212,7 @@ export default function SignUpPage() {
             {t('signUp.hasAccount')}{' '}
           </Text>
           <Button
-            variant="link"
+            variant="ghost"
             onClick={() => navigate('/auth/login')}
             className="hover:text-primary transition-colors"
           >

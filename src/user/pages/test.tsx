@@ -9,26 +9,6 @@ import type { ThemeId } from '@/lib/themes'
 
 const TEST_IMAGES = [
   'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/i4eUoAWwFtFE--A_A-aopQ/1960x1102.jpg',
-  'https://is1-ssl.mzstatic.com/image/thumb/1A5UrdlUF6-zEu5cfQvZag/2500x1406.jpg',
 ]
 const TEST_VIDEO_URL = 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4'
 const TEST_PDF_URL = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'

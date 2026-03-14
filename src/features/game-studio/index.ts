@@ -25,3 +25,6 @@ export {
   getPublishedGamesFromFollowedTeachers,
 } from './api/gameStudioApi'
 export type { GameForStudio, UpdateGameForStudioPayload } from './api/gameStudioApi'
+
+// Constants
+export { MAX_END_NODE_INCOMING_CONNECTIONS } from './constants'

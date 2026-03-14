@@ -1,8 +1,8 @@
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants'
-import { constrainDescription } from '@/lib/validations'
+import { MAX_DESCRIPTION_LENGTH } from './constants'
+import { constrainDescription } from './description'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 

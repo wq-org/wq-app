@@ -12,3 +12,6 @@ export type * from './types'
 
 // API
 // Add API exports when available
+
+// Constants
+export { MAX_IMAGE_TERM_OPTIONS } from './constants'

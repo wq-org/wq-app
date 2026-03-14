@@ -1,14 +1,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldSeparator } from '@/components/ui/field'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authApi'
 import Spinner from '@/components/ui/spinner'
@@ -20,6 +14,9 @@ import { validateEmail } from '@/lib/validations'
 import AuthCardLayout from '../components/AuthCardLayout'
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 import { useUser } from '@/contexts/user'
+import { AUTH_GRID_ICONS } from '../constants'
+import { Check } from 'lucide-react'
+import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -129,6 +126,7 @@ export default function LoginPage() {
   return (
     <AuthCardLayout
       backTo="/"
+      backgroundIcons={AUTH_GRID_ICONS}
       navigationSlot={<LanguageSwitcher variant="auth" />}
     >
       <div className="flex flex-col gap-6">
@@ -155,67 +153,63 @@ export default function LoginPage() {
           onSubmit={handleLogin}
           className="flex flex-col gap-4"
         >
-          <FieldGroup>
-            <Field>
-              <div className="flex  justify-between">
-                <FieldLabel htmlFor="email">{t('login.email')}</FieldLabel>
-                {emailError && (
-                  <FieldDescription className="text-red-500 text-xs">{emailError}</FieldDescription>
-                )}
-              </div>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t('common.placeholder.email')}
-                value={email}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                autoComplete="email"
-                name="email"
-                className={`bg-gray-50 ${emailError ? 'border-red-500' : ''}`}
+          <div className="flex justify-between">
+            <Label> {t('login.email')}</Label>
+            {emailError && <p className="px-1 text-xs text-red-500">{emailError}</p>}
+          </div>
+          <FieldInput
+            id="email"
+            type="email"
+            name="email"
+            label={t('login.email')}
+            placeholder={t('common.placeholder.email')}
+            value={email}
+            onValueChange={handleEmailChange}
+            autoComplete="email"
+            required
+            inputClassName={emailError ? 'text-red-500 placeholder:text-red-300' : undefined}
+          />
+
+          <div className="flex items-center justify-between px-1 pt-2">
+            <Label>{t('login.password')}</Label>
+            <a
+              href="/auth/forgot-password"
+              className="text-sm underline-offset-4 hover:underline"
+            >
+              {t('login.forgot')}
+            </a>
+          </div>
+          <FieldInput
+            id="password"
+            type="password"
+            name="password"
+            label={t('login.password')}
+            placeholder={t('common.placeholder.password')}
+            value={password}
+            onValueChange={setPassword}
+            autoComplete="current-password"
+            required
+          />
+
+          <Button
+            type="submit"
+            variant="darkblue"
+            disabled={!isFormValid || isLoading}
+            className="mt-2 w-full cursor-pointer"
+          >
+            {isLoading ? (
+              <Spinner
+                variant="white"
+                size="xs"
+                speed={1750}
               />
-            </Field>
+            ) : (
+              <Check />
+            )}
+            {t('login.submit')}
+          </Button>
 
-            <Field>
-              <div className="flex items-center">
-                <FieldLabel htmlFor="password">{t('login.password')}</FieldLabel>
-                <a
-                  href="/auth/forgot-password"
-                  className="ml-auto text-sm underline-offset-4 hover:underline"
-                >
-                  {t('login.forgot')}
-                </a>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                name="password"
-                className="bg-gray-50"
-              />
-            </Field>
-
-            <Field>
-              <Button
-                type="submit"
-                disabled={!isFormValid || isLoading}
-                className="w-full cursor-pointer"
-              >
-                {isLoading ? (
-                  <Spinner
-                    variant="white"
-                    size="xs"
-                    speed={1750}
-                  />
-                ) : (
-                  t('login.submit')
-                )}
-              </Button>
-            </Field>
-
-            <FieldSeparator>{t('login.or')}</FieldSeparator>
-          </FieldGroup>
+          <FieldSeparator>{t('login.or')}</FieldSeparator>
         </form>
         <div className="flex justify-center items-center gap-0">
           <Text
@@ -225,11 +219,11 @@ export default function LoginPage() {
             {t('login.noAccount')}{' '}
           </Text>
           <Button
-            variant="link"
+            variant="ghost"
             onClick={() => navigate('/auth/signUp')}
             className="hover:text-primary transition-colors"
           >
-            {t('signUp.loginLink')}
+            {t('login.signUpLink')}
           </Button>
         </div>
       </div>

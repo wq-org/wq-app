@@ -14,7 +14,10 @@ interface ClearableInputProps {
   label?: string
   id?: string
   name?: string
+  type?: React.HTMLInputTypeAttribute
   autoFocus?: boolean
+  autoComplete?: string
+  required?: boolean
   disabled?: boolean
   className?: string
   inputClassName?: string
@@ -31,7 +34,10 @@ export const ClearableInput = ({
   label = 'Input',
   id,
   name,
+  type = 'text',
   autoFocus = false,
+  autoComplete,
+  required = false,
   disabled = false,
   className,
   inputClassName,
@@ -79,7 +85,7 @@ export const ClearableInput = ({
       <input
         id={inputId}
         name={name}
-        type="text"
+        type={type}
         placeholder={placeholder}
         value={inputValue}
         onChange={handleInputChange}
@@ -89,11 +95,13 @@ export const ClearableInput = ({
           inputClassName,
         )}
         autoFocus={autoFocus}
+        autoComplete={autoComplete}
+        required={required}
         disabled={disabled}
       />
       {!hideSeparator ? <Separator /> : null}
 
-      {!disabled && inputValue.trim() && (
+      {!disabled && inputValue.trim() && type !== 'password' && (
         <Button
           type="button"
           size="icon"

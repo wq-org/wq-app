@@ -21,12 +21,8 @@ import FeedbackInput from '@/features/games/shared/FeedbackInput'
 import { useGameEditorContext } from '@/contexts/game-studio'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
-import {
-  DEFAULT_PARAGRAPH,
-  QUESTION_SEPARATOR,
-  MAX_PARAGRAPH_VOTING_OPTIONS,
-} from '@/lib/constants'
-import { constrainDescription } from '@/lib/validations'
+import { DEFAULT_PARAGRAPH, QUESTION_SEPARATOR, MAX_PARAGRAPH_VOTING_OPTIONS } from './constants'
+import { constrainDescription } from '../shared/description'
 import type {
   VotingOption,
   SentenceConfig,
