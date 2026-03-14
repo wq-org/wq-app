@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, type ReactElement } from 'react'
 import { Button } from '@/components/ui/button'
 import { Bell, BellDot, LogOut, ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -8,25 +8,20 @@ import { NotificationPanel } from '@/features/notification'
 import { LanguageSwitcher } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
-import { Text } from '@/components/ui/text'
 import { Badge } from '@/components/ui/badge'
 
 interface AppNavigationProps {
-  currentPageName?: string
-  children?: React.ReactNode
   className?: string
   authenticated?: boolean
 }
 
 export const AppNavigation = ({
-  currentPageName,
-  children,
   className,
   authenticated = true,
-}: AppNavigationProps): React.ReactElement => {
+}: AppNavigationProps): ReactElement => {
   const navigate = useNavigate()
   const { logout } = useUser()
-  const [notificationCount, setNotificationCount] = React.useState(0)
+  const [notificationCount, setNotificationCount] = useState(0)
 
   const handleOnClickLogout = async () => {
     try {
@@ -42,27 +37,19 @@ export const AppNavigation = ({
   return (
     <div
       className={cn('sticky top-0 z-40 w-full pointer-events-none', className)}
-      style={{ ['--app-nav-height' as string]: '82px' }}
+      style={{ ['--app-nav-height' as string]: '70x' }}
     >
-      <div className="container mx-auto max-w-7xl px-4 py-3">
+      <div className="container mx-auto max-w-6xl px-4 py-3">
         <div className="flex items-center justify-between gap-4 pointer-events-none">
-          <div className="flex items-center gap-3 rounded-full border bg-card/50 backdrop-blur px-4 py-2 shadow-sm pointer-events-auto">
+          <div className="flex items-center gap-3 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm pointer-events-auto">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => window.history.back()}
               className="h-8 w-8 rounded-full hover:bg-accent"
             >
-              <ChevronLeft className="h-5 w-5 text-gray-600" />
+              <ChevronLeft className="h-5 w-5 bg-text-primary" />
             </Button>
-            <div className="h-6 w-px bg-border" />
-            <Text
-              as="h1"
-              variant="h1"
-              className="text-lg font-normal text-gray-700"
-            >
-              {children || currentPageName || 'Page Title'}
-            </Text>
           </div>
 
           <div className="flex items-center gap-2 rounded-full border bg-card/50 backdrop-blur px-2 py-2 shadow-sm pointer-events-auto">
@@ -99,7 +86,7 @@ export const AppNavigation = ({
                   variant="ghost"
                   size="icon"
                   onClick={handleOnClickLogout}
-                  className="h-10 w-10 rounded-full hover:bg-accent hover:text-red-600"
+                  className="rounded-full"
                 >
                   <LogOut className="h-5 w-5 text-gray-600" />
                 </Button>

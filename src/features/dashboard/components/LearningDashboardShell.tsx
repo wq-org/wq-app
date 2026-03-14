@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AppNavigation } from '@/components/shared/AppNavigation'
 import { Container } from '@/components/shared/container'
-import { PageTitle } from '@/components/layout/PageTitle'
 import { getDashboardTabs } from '../config/dashboardTabs'
 import type { DashboardRole, DashboardTab } from '../types/dashboard.types'
 import { DashboardActions } from './DashboardActions'
@@ -73,9 +72,7 @@ export function LearningDashboardShell({
 
   return (
     <div>
-      <AppNavigation>
-        <PageTitle />
-      </AppNavigation>
+      <AppNavigation />
 
       <div className="flex flex-col">
         <section className="rounded-2xl h-full">

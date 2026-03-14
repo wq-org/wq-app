@@ -13,7 +13,7 @@ import { TopicLayout } from '@/features/topic'
 import { TopicPreviewTab } from '@/features/topic'
 import { TopicSettings } from '@/features/topic'
 import { LessonToolBar } from '@/features/lesson'
-import type { WorkspaceTabId } from '@/components/shared/layout'
+import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
 import { Separator } from '@/components/ui/separator'
@@ -21,7 +21,7 @@ export default function Topic() {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<WorkspaceTabId>('editor')
+  const [activeTab, setActiveTab] = useState<TopicTabId>('editor')
   const [searchQuery, setSearchQuery] = useState('')
   const { selectedCourse, fetchCourseById } = useCourse()
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
@@ -121,7 +121,8 @@ export default function Topic() {
     <TopicLayout
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      editorContent={
+    >
+      {activeTab === 'editor' ? (
         <div className="flex flex-col gap-6 pb-32">
           <div className="space-y-1">
             <div className="flex gap-2">
@@ -193,8 +194,9 @@ export default function Topic() {
             />
           )}
         </div>
-      }
-      previewContent={
+      ) : null}
+
+      {activeTab === 'preview' ? (
         <TopicPreviewTab
           title={selectedTopic.title}
           description={selectedTopic.description?.trim() || t('page.lessonsForTopicDescription')}
@@ -206,9 +208,11 @@ export default function Topic() {
             })
           }}
         />
-      }
-      settingsContent={<TopicSettings topicId={selectedTopic.id} />}
-      analyticsContent={
+      ) : null}
+
+      {activeTab === 'settings' ? <TopicSettings topicId={selectedTopic.id} /> : null}
+
+      {activeTab === 'analytics' ? (
         <div className="rounded-2xl border bg-white p-6">
           <Text
             as="h3"
@@ -224,7 +228,7 @@ export default function Topic() {
             Topic analytics will be available soon.
           </Text>
         </div>
-      }
-    />
+      ) : null}
+    </TopicLayout>
   )
 }

@@ -1,7 +1,6 @@
 import { Check } from 'lucide-react'
 import { Container } from '@/components/shared/container'
 import { AppNavigation } from '@/components/shared/AppNavigation'
-import { PageTitle } from './PageTitle'
 import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
@@ -87,9 +86,7 @@ export function SettingsLayout({
   if (loading) {
     return (
       <>
-        <AppNavigation>
-          <PageTitle />
-        </AppNavigation>
+        <AppNavigation />
         <div className="w-screen h-screen flex items-center justify-center">
           <Spinner
             variant="gray"
@@ -103,9 +100,7 @@ export function SettingsLayout({
 
   return (
     <>
-      <AppNavigation>
-        <PageTitle />
-      </AppNavigation>
+      <AppNavigation />
       <div className="w-screen h-screen">
         <section className="animate-in fade-in-0 slide-in-from-bottom-4">
           <Container className="flex flex-col items-start w-full gap-3">

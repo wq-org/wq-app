@@ -1,43 +1,34 @@
 import type { ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
-import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/layout'
+import { cn } from '@/lib/utils'
+import { LessonTabs, type LessonTabId } from './LessonTabs'
 
-export interface LessonLayoutProps {
-  activeTab?: WorkspaceTabId
-  onTabChange?: (tab: WorkspaceTabId) => void
-  editorContent?: ReactNode
-  previewContent?: ReactNode
-  settingsContent?: ReactNode
-  analyticsContent?: ReactNode
+export interface LessonWorkspaceShellProps {
+  activeTab: LessonTabId
+  onTabChange: (tab: LessonTabId) => void
+  children: ReactNode
   className?: string
+  tabsClassName?: string
+  contentClassName?: string
 }
 
-export function LessonLayout({
+export function LessonWorkspaceShell({
   activeTab,
   onTabChange,
-  editorContent,
-  previewContent,
-  settingsContent,
-  analyticsContent,
+  children,
   className,
-}: LessonLayoutProps) {
-  const { t } = useTranslation('features.lesson')
-
+  tabsClassName,
+  contentClassName,
+}: LessonWorkspaceShellProps) {
   return (
-    <FeatureWorkspaceLayout
-      activeTab={activeTab}
-      onTabChange={onTabChange}
-      className={className}
-      tabTitles={{
-        editor: t('layout.tabs.editor', { defaultValue: 'Editor' }),
-        preview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
-        settings: t('layout.tabs.settings', { defaultValue: 'Settings' }),
-        analytics: t('layout.tabs.analytics', { defaultValue: 'Analytics' }),
-      }}
-      editorContent={editorContent}
-      previewContent={previewContent}
-      settingsContent={settingsContent}
-      analyticsContent={analyticsContent}
-    />
+    <div className={cn('flex w-full flex-col gap-6', className)}>
+      <LessonTabs
+        activeTabId={activeTab}
+        onTabChange={onTabChange}
+        className={cn('border-b', tabsClassName)}
+      />
+      <div className={cn(contentClassName)}>{children}</div>
+    </div>
   )
 }
+
+export const LessonLayout = LessonWorkspaceShell

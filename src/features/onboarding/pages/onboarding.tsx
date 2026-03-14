@@ -25,7 +25,6 @@ import type {
   Institution,
 } from '../types/onboarding.types'
 import { AppNavigation } from '@/components/shared'
-import { PageTitle } from '@/components/layout/PageTitle'
 import { useTranslation } from 'react-i18next'
 
 export default function Onboarding() {
@@ -85,9 +84,7 @@ export default function Onboarding() {
 
   return (
     <div>
-      <AppNavigation>
-        <PageTitle />
-      </AppNavigation>
+      <AppNavigation />
       <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
         <Stepper
           value={step}

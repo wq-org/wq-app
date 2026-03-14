@@ -14,10 +14,11 @@ export interface TabItem {
   id: string
   icon: LucideIcon
   title: string
+  disabled?: boolean
 }
 
 export interface SelectTabsProps {
-  tabs: TabItem[]
+  tabs: readonly TabItem[]
   activeTabId: string
   onTabChange: (tabId: string) => void
   className?: string
@@ -44,6 +45,7 @@ export function SelectTabs({
             key={tab.id}
             type="button"
             onClick={() => onTabChange(tab.id)}
+            disabled={tab.disabled}
             className={selectTabButtonVariants({
               layout: variant,
               tone: colorVariant,

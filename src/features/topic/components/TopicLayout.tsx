@@ -1,43 +1,34 @@
 import type { ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
-import { FeatureWorkspaceLayout, type WorkspaceTabId } from '@/components/shared/layout'
+import { cn } from '@/lib/utils'
+import { TopicTabs, type TopicTabId } from './TopicTabs'
 
-export interface TopicLayoutProps {
-  activeTab?: WorkspaceTabId
-  onTabChange?: (tab: WorkspaceTabId) => void
-  editorContent?: ReactNode
-  previewContent?: ReactNode
-  settingsContent?: ReactNode
-  analyticsContent?: ReactNode
+export interface TopicWorkspaceShellProps {
+  activeTab: TopicTabId
+  onTabChange: (tab: TopicTabId) => void
+  children: ReactNode
   className?: string
+  tabsClassName?: string
+  contentClassName?: string
 }
 
-export function TopicLayout({
+export function TopicWorkspaceShell({
   activeTab,
   onTabChange,
-  editorContent,
-  previewContent,
-  settingsContent,
-  analyticsContent,
+  children,
   className,
-}: TopicLayoutProps) {
-  const { t } = useTranslation('features.course')
-
+  tabsClassName,
+  contentClassName,
+}: TopicWorkspaceShellProps) {
   return (
-    <FeatureWorkspaceLayout
-      activeTab={activeTab}
-      onTabChange={onTabChange}
-      className={className}
-      tabTitles={{
-        editor: t('layout.tabs.editor', { defaultValue: 'Editor' }),
-        preview: t('layout.tabs.preview', { defaultValue: 'Preview' }),
-        settings: t('layout.tabs.settings', { defaultValue: 'Settings' }),
-        analytics: t('layout.tabs.analytics', { defaultValue: 'Analytics' }),
-      }}
-      editorContent={editorContent}
-      previewContent={previewContent}
-      settingsContent={settingsContent}
-      analyticsContent={analyticsContent}
-    />
+    <div className={cn('flex w-full flex-col gap-6', className)}>
+      <TopicTabs
+        activeTabId={activeTab}
+        onTabChange={onTabChange}
+        className={cn('border-b', tabsClassName)}
+      />
+      <div className={cn(contentClassName)}>{children}</div>
+    </div>
   )
 }
+
+export const TopicLayout = TopicWorkspaceShell

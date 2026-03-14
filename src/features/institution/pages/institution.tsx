@@ -1,4 +1,4 @@
-import { Container, PageWrapper } from '@/components/shared'
+import { Container } from '@/components/shared/container'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -52,7 +52,7 @@ export default function Institution({
     { key: 'instagram', label: t('links.instagram'), url: cleanUrl(links?.instagram) },
   ].filter((link) => link.url)
   return (
-    <PageWrapper className="flex flex-col gap-8 items-start w-fit">
+    <div className="flex flex-col gap-8 items-start w-fit">
       <div className="flex flex-col gap-4 items-start ">
         <Avatar className="w-24 h-24">
           <AvatarImage src={avatarUrl} />
@@ -149,6 +149,6 @@ export default function Institution({
         </div>
         {children}
       </Container>
-    </PageWrapper>
+    </div>
   )
 }

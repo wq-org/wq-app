@@ -9,9 +9,9 @@ import { LessonEditor } from '@/features/lesson'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
-import type { WorkspaceTabId } from '@/components/shared/layout'
 import { createYooptaStarterContentJson, createYooptaStarterContentObject } from '@/features/course'
 import { showUnsavedChangesToast } from '@/components/shared/toasts'
+import type { LessonTabId } from '@/features/lesson'
 import { LessonHeroBannerSection } from '../components/LessonHeroBannerSection'
 import { LessonGuidePopoverSection } from '../components/LessonGuidePopoverSection'
 import { LESSON_GUIDES, type LessonGuideValue } from '../constants/lessonGuides'
@@ -30,7 +30,7 @@ function parseContent(raw: unknown): Record<string, unknown> | undefined {
   return undefined
 }
 
-function normalizeLessonTab(tab?: string): WorkspaceTabId {
+function normalizeLessonTab(tab?: string): LessonTabId {
   switch (tab) {
     case 'editor':
       return 'editor'
@@ -69,7 +69,7 @@ export default function Lesson() {
   const [isInitialContentLoading, setIsInitialContentLoading] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [hasUnsavedSettingsChanges, setHasUnsavedSettingsChanges] = useState(false)
-  const [activeTab, setActiveTab] = useState<WorkspaceTabId>(() =>
+  const [activeTab, setActiveTab] = useState<LessonTabId>(() =>
     normalizeLessonTab(initialTabFromNav),
   )
   const [selectedGuide, setSelectedGuide] = useState<LessonGuideValue>(LESSON_GUIDES[0].value)
@@ -80,7 +80,7 @@ export default function Lesson() {
     }
   }, [lessonId, initialTabFromNav])
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingTabRef = useRef<WorkspaceTabId | null>(null)
+  const pendingTabRef = useRef<LessonTabId | null>(null)
 
   // Route changes can happen without unmounting. Clear pending autosave timers
   // so stale updates from a previous lesson do not fire against a reset context.
@@ -194,7 +194,7 @@ export default function Lesson() {
   )
 
   const handleTabChange = useCallback(
-    (requestedTab: WorkspaceTabId) => {
+    (requestedTab: LessonTabId) => {
       if (requestedTab === activeTab) return
       const isLeavingSettingsWithUnsavedChanges =
         activeTab === 'settings' && requestedTab !== 'settings' && hasUnsavedSettingsChanges
@@ -320,16 +320,17 @@ export default function Lesson() {
     <LessonLayout
       activeTab={activeTab}
       onTabChange={handleTabChange}
-      editorContent={editorContent}
-      previewContent={previewTabContent}
-      settingsContent={
+    >
+      {activeTab === 'editor' ? editorContent : null}
+      {activeTab === 'preview' ? previewTabContent : null}
+      {activeTab === 'settings' ? (
         <LessonSettings
           lessonId={lessonId}
           courseId={courseId}
           onUnsavedChange={setHasUnsavedSettingsChanges}
         />
-      }
-      analyticsContent={
+      ) : null}
+      {activeTab === 'analytics' ? (
         <div className="rounded-2xl border bg-white p-6">
           <Text
             as="h3"
@@ -345,7 +346,7 @@ export default function Lesson() {
             Lesson analytics will be available soon.
           </Text>
         </div>
-      }
-    />
+      ) : null}
+    </LessonLayout>
   )
 }

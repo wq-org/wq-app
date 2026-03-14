@@ -82,10 +82,6 @@ export type { TabItem } from './tabs'
 // i18n
 export { LanguageSwitcher } from './LanguageSwitcher'
 
-// Layout
-export { PageWrapper, FeatureWorkspaceLayout } from './layout'
-export type { WorkspaceTabId } from './layout'
-
 // Cards
 export { InfoCard } from './InfoCard'
 export { UserCard } from './UserCard'

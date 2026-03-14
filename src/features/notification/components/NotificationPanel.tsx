@@ -25,7 +25,7 @@ export function NotificationPanel({ onTotalCountChange }: NotificationPanelProps
   )
 
   return (
-    <div className="w-90 rounded-4xl border bg-card/70 p-4 shadow-md backdrop-blur">
+    <div className="p-4">
       <div className="space-y-4">
         <Text
           as="h1"
@@ -39,14 +39,8 @@ export function NotificationPanel({ onTotalCountChange }: NotificationPanelProps
           activeTabId={activeTab}
           onTabChange={(tabId) => setActiveTab(tabId as TabId)}
           variant="compact"
+          className="border-b"
         />
-        <Text
-          as="p"
-          variant="body"
-          className="text-sm text-muted-foreground"
-        >
-          Notifications coming soon.
-        </Text>
       </div>
     </div>
   )
