@@ -14,7 +14,6 @@
  *   className       Extra classes on the root
  */
 
-import * as React from 'react'
 import { BookOpen, type LucideIcon } from 'lucide-react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Card } from '@/components/ui/card'
