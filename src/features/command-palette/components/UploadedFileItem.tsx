@@ -40,11 +40,11 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
   const config = getFileTypeStyle(file.name)
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-accent/40">
       {/* Icon or Image Preview */}
       <div className="flex-shrink-0">
         {isImage && preview ? (
-          <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100">
+          <div className="h-12 w-12 overflow-hidden rounded-xl bg-muted">
             <img
               src={preview}
               alt={file.name}
@@ -65,14 +65,14 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
         <Text
           as="p"
           variant="body"
-          className="text-sm font-medium text-gray-900 truncate"
+          className="truncate text-sm font-medium text-foreground"
         >
           {file.name}
         </Text>
         <Text
           as="p"
           variant="body"
-          className="text-xs text-gray-500"
+          className="text-xs text-muted-foreground"
         >
           {formatFileSize(file.size)}
         </Text>
@@ -83,7 +83,7 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
         <Button
           variant="ghost"
           size="icon-sm"
-          className="h-8 w-8 text-gray-400 hover:text-gray-600"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
         >
           <MoreVertical className="h-4 w-4" />
         </Button>
@@ -92,7 +92,7 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
             variant="ghost"
             size="icon-sm"
             onClick={onRemove}
-            className="h-8 w-8 text-gray-400 hover:text-red-600"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
           >
             <X className="h-4 w-4" />
           </Button>

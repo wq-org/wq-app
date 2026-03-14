@@ -172,7 +172,7 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
 
   return (
     <div className="px-0">
-      <Card className="w-full shadow-none border-0 px-0 py-0">
+      <Card className="w-full border-0 bg-transparent px-0 py-0 shadow-none">
         <CardContent className="p-0 space-y-6">
           {!showStepper ? (
             <FileDropzone
@@ -182,20 +182,20 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
           ) : (
             <>
               {isUploading && (
-                <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white rounded-2xl border">
+                <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-card p-6">
                   <Loader2 className="w-8 h-8 text-primary animate-spin" />
                   <div className="text-center">
                     <Text
                       as="p"
                       variant="body"
-                      className="text-sm font-medium text-gray-900"
+                      className="text-sm font-medium text-foreground"
                     >
                       {t('upload.progress.uploading')}
                     </Text>
                     <Text
                       as="p"
                       variant="body"
-                      className="text-xs text-gray-500 mt-1"
+                      className="mt-1 text-xs text-muted-foreground"
                     >
                       {t('upload.progress.complete', { percent: uploadProgress.toFixed(0) })}
                     </Text>

@@ -28,8 +28,8 @@ import { RestrictedCommandPalette } from './RestrictedCommandPalette'
 
 const activeStyles = {
   text: 'text-blue-500',
-  bg: 'bg-blue-100',
-  border: 'border-transparent',
+  bg: 'bg-blue-500/12',
+  border: 'border-blue-500/20',
 } as const
 
 function matchesRoute(item: CommandBarItem, pathname: string) {
@@ -377,14 +377,14 @@ export function CommandPalette({
             }
           }}
         >
-          <div className="h-2 w-16 rounded-full bg-gray-400 dark:bg-gray-500" />
+          <div className="h-2 w-16 rounded-full bg-muted-foreground/40" />
         </button>
         <Tooltip.Provider delayDuration={200}>
           <div
             ref={paletteRef}
             className={cn(
               className,
-              'pointer-events-auto mx-auto flex items-center justify-center rounded-full border bg-background/80 backdrop-blur shadow-xl px-4 py-3 w-fit',
+              'pointer-events-auto mx-auto flex items-center justify-center rounded-full border border-border/70 bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl w-fit',
             )}
             role="region"
             aria-label="Quick actions"
@@ -482,7 +482,7 @@ export function CommandPalette({
         <Dialog.Portal>
           <Dialog.Content
             className={
-              'fixed bottom-30 rounded-4xl left-1/2 z-50 w-full max-w-lg -translate-x-1/2  border bg-white   overflow-hidden flex flex-col'
+              'fixed bottom-30 left-1/2 z-50 flex w-full max-w-lg -translate-x-1/2 flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-xl'
             }
           >
             <Dialog.Title className="sr-only">Command Palette</Dialog.Title>

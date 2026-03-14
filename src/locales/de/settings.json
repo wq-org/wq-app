@@ -1,4 +1,7 @@
 {
+  "appearance": {
+    "accentColor": "Akzentfarbe"
+  },
   "profile": {
     "roles": {
       "teacher": "Lehrkraft",

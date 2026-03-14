@@ -156,7 +156,6 @@ export function SettingsProfileForm({
           className="w-full md:min-w-[280px] md:flex-1"
         />
       </div>
-
       <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"

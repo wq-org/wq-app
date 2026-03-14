@@ -77,8 +77,8 @@ export const ClearableInput = ({
       </Label>
 
       {hideSeparator && (
-        <div className="absolute left-3 top-9 -translate-y-1/2 h-5 w-5 text-gray-200">
-          <Search className="mr-3 h-4 w-4 text-gray-400" />
+        <div className="absolute left-3 top-9 h-5 w-5 -translate-y-1/2 text-muted-foreground">
+          <Search className="mr-3 h-4 w-4 text-muted-foreground" />
         </div>
       )}
 
@@ -106,7 +106,7 @@ export const ClearableInput = ({
           type="button"
           size="icon"
           variant="ghost"
-          className="p-1 rounded-full hover:bg-gray-100 absolute right-2 top-1/2 -translate-y-1/2"
+          className="absolute right-2 top-1/2 rounded-full p-1 -translate-y-1/2 hover:bg-accent"
           onClick={handleClear}
           aria-label={clearButtonLabel}
           disabled={disabled || inputValue.length === 0}

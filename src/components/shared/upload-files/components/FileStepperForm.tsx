@@ -185,10 +185,10 @@ export function FileStepperForm({ files, onFileUpdate, onComplete, onBack }: Fil
 
       {/* Current File Form */}
       {currentFile && (
-        <div className="space-y-6 p-6 bg-white rounded-2xl border">
+        <div className="space-y-6 rounded-2xl border border-border bg-card p-6">
           <div className="flex items-center gap-4">
             {currentFile.preview ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-muted">
                 <img
                   src={currentFile.preview}
                   alt={currentFile.file.name}
@@ -196,11 +196,11 @@ export function FileStepperForm({ files, onFileUpdate, onComplete, onBack }: Fil
                 />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-muted">
                 <Text
                   as="span"
                   variant="small"
-                  className="text-xs text-gray-500"
+                  className="text-xs text-muted-foreground"
                 >
                   {currentFile.file.name.split('.').pop()?.toUpperCase()}
                 </Text>
@@ -210,14 +210,14 @@ export function FileStepperForm({ files, onFileUpdate, onComplete, onBack }: Fil
               <Text
                 as="p"
                 variant="body"
-                className="text-sm font-medium text-gray-900 truncate"
+                className="truncate text-sm font-medium text-foreground"
               >
                 {currentFile.file.name}
               </Text>
               <Text
                 as="p"
                 variant="body"
-                className="text-xs text-gray-500"
+                className="text-xs text-muted-foreground"
               >
                 {(currentFile.file.size / 1024 / 1024).toFixed(2)} MB
               </Text>
@@ -241,7 +241,7 @@ export function FileStepperForm({ files, onFileUpdate, onComplete, onBack }: Fil
                     variant="ghost"
                     size="icon"
                     onClick={() => handleFilenameChange('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors h-8 w-8"
+                    className="absolute right-3 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full p-1 transition-colors hover:bg-accent"
                     aria-label={t('upload.stepper.clearInputAria')}
                   >
                     <X className="h-4 w-4" />
@@ -252,7 +252,7 @@ export function FileStepperForm({ files, onFileUpdate, onComplete, onBack }: Fil
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center justify-between border-t border-border pt-4">
             <Button
               variant="outline"
               onClick={handlePrevious}

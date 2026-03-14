@@ -23,7 +23,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
   const shouldShowThemePicker = state.selectedType === 'course' || state.selectedType === 'game'
 
   return (
-    <Card className="mx-auto flex h-[min(72vh,560px)] w-full max-w-md flex-col border-0 shadow-none animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
+    <Card className="mx-auto flex h-[min(72vh,560px)] w-full max-w-md flex-col border-0 bg-transparent shadow-none animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
       <form
         className="flex min-h-0 flex-1 flex-col gap-5 animate-in fade-in-0 slide-in-from-bottom-2"
         onSubmit={async (event) => {
@@ -43,14 +43,14 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
             >
               <MoveLeft className="h-4 w-4" />
             </Button>
-            <CardTitle className="text-xl text-gray-900">
+            <CardTitle className="text-xl text-foreground">
               {t('addDialog.formTitle', { type: typeLabel })}
             </CardTitle>
           </div>
           <Text
             as="p"
             variant="body"
-            className="mt-2 text-sm font-normal text-gray-500"
+            className="mt-2 text-sm font-normal text-muted-foreground"
           >
             {t('addDialog.formSubtitle', { type: typeLabel.toLowerCase() })}
           </Text>
@@ -60,7 +60,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
           <CardContent className="flex w-full flex-col gap-6 px-0 animate-in fade-in-0 slide-in-from-bottom-2">
             {shouldShowThemePicker ? (
               <div className="flex min-w-0 flex-col gap-3">
-                <Label className="font-normal text-gray-700">
+                <Label className="font-normal text-foreground">
                   {state.selectedType === 'course'
                     ? t('addDialog.themeLabel')
                     : t('addDialog.gameThemeLabel')}
@@ -68,7 +68,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
                 <Text
                   as="p"
                   variant="body"
-                  className="text-sm font-normal text-gray-500"
+                  className="text-sm font-normal text-muted-foreground"
                 >
                   {state.selectedType === 'course'
                     ? t('addDialog.themeHint')

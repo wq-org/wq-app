@@ -269,7 +269,7 @@ export default function Lesson() {
       {!isInitialContentLoading ? (
         <LessonEditor
           key={`lesson-${lessonId}`}
-          className="w-full border rounded-2xl flex-1 animate-in fade-in-0 slide-in-from-bottom-4 bg-white"
+          className="w-full flex-1 rounded-2xl border border-border bg-card animate-in fade-in-0 slide-in-from-bottom-4"
           value={editorValue}
           onChange={handleEditorChange}
           placeholder={t('page.editorPlaceholder')}
@@ -331,7 +331,7 @@ export default function Lesson() {
         />
       ) : null}
       {activeTab === 'analytics' ? (
-        <div className="rounded-2xl border bg-white p-6">
+        <div className="rounded-2xl border border-border bg-card p-6">
           <Text
             as="h3"
             variant="h3"

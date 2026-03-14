@@ -168,7 +168,8 @@ export function GridIconBackground({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, white 100%)',
+          background:
+            'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, var(--background) 100%)',
         }}
       />
 
@@ -254,15 +255,15 @@ const DEMO_ICONS: IconEntry[] = [
 
 export default function GridIconBackgroundDemo() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Full-page hero usage */}
       <GridIconBackground
         icons={DEMO_ICONS}
         className="min-h-screen"
       >
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-neutral-900">Learn anything.</h1>
-          <p className="max-w-sm text-base text-neutral-500">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">Learn anything.</h1>
+          <p className="max-w-sm text-base text-muted-foreground">
             A reusable background component with a grid pattern and floating icon chips.
           </p>
         </div>

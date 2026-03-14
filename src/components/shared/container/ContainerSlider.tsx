@@ -62,7 +62,7 @@ export function ContainerSlider({
   )
 
   const sideArrowClass =
-    'shrink-0 rounded-full bg-background/80 shadow-md border border-gray-200 hover:bg-accent dark:border-gray-700 self-center'
+    'self-center shrink-0 rounded-full border border-border bg-background/80 text-foreground shadow-md hover:bg-accent'
 
   return (
     <div
@@ -142,10 +142,10 @@ export function ContainerSlider({
                 type="button"
                 onClick={() => scrollTo(i)}
                 className={cn(
-                  'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 rounded-full',
+                  'rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
                   i === index
-                    ? 'w-8 h-3 bg-gray-800 dark:bg-gray-200'
-                    : 'w-3 h-3 bg-gray-400 rounded-full hover:bg-gray-500 dark:bg-gray-500 dark:hover:bg-gray-400',
+                    ? 'h-3 w-8 bg-foreground'
+                    : 'h-3 w-3 bg-muted-foreground/40 hover:bg-muted-foreground/60',
                 )}
                 aria-label={`Go to slide ${i + 1}`}
                 aria-current={i === index ? 'true' : 'false'}

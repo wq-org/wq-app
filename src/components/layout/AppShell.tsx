@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react'
+import { useLayoutEffect, type ReactNode } from 'react'
 import { AppNavigation } from './AppNavigation'
 import { CommandPalette } from '@/features/command-palette'
 import { cn } from '@/lib/utils'
 import type { UserRole } from '@/features/auth'
 import type { CommandBarContext } from '@/features/command-palette'
+import { useTheme } from '@/hooks/useTheme'
 
 type AppShellProps = {
   children: ReactNode
@@ -16,6 +17,11 @@ type AppShellProps = {
 
 export function AppShell({ children, role, className, commandBarContext }: AppShellProps) {
   const effectiveContext: CommandBarContext = commandBarContext ?? role
+  const { applyStoredTheme } = useTheme()
+
+  useLayoutEffect(() => {
+    applyStoredTheme()
+  }, [applyStoredTheme])
 
   return (
     <>

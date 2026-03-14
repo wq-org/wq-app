@@ -76,12 +76,12 @@ function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
             key={i}
             className="relative inline-flex h-3.5 w-3.5"
           >
-            <StarIcon className="h-3.5 w-3.5 text-neutral-300" />
+            <StarIcon className="h-3.5 w-3.5 text-muted-foreground/30" />
             <span
               className="absolute inset-0 overflow-hidden"
               style={{ width: filled ? '100%' : `${fillPct}%` }}
             >
-              <StarIcon className="h-3.5 w-3.5 fill-neutral-500 text-neutral-500" />
+              <StarIcon className="h-3.5 w-3.5 fill-current text-foreground/70" />
             </span>
           </span>
         )
@@ -109,23 +109,23 @@ export function FeatureStripItem({ item, className }: FeatureStripItemProps) {
   const content = (
     <>
       {/* Top label */}
-      <span className="max-w-full truncate text-xs font-medium text-neutral-500">
+      <span className="max-w-full truncate text-xs font-medium text-muted-foreground">
         {item.topLabel}
       </span>
 
       {/* Middle — rating number / stat value / icon */}
       {item.kind === 'rating' && (
-        <span className="text-2xl font-bold leading-none text-neutral-500">
+        <span className="text-2xl font-bold leading-none text-foreground">
           {item.rating.toFixed(1)}
         </span>
       )}
 
       {item.kind === 'stat' && (
-        <span className="text-2xl font-bold leading-none text-neutral-500">{item.value}</span>
+        <span className="text-2xl font-bold leading-none text-foreground">{item.value}</span>
       )}
 
       {item.kind === 'icon' && (
-        <span className="flex h-7 w-7 items-center justify-center text-neutral-500 [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5]">
+        <span className="flex h-7 w-7 items-center justify-center text-foreground [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5]">
           {item.icon}
         </span>
       )}
@@ -139,7 +139,9 @@ export function FeatureStripItem({ item, className }: FeatureStripItemProps) {
       )}
 
       {(item.kind === 'stat' || item.kind === 'icon') && item.bottomLabel && (
-        <span className="max-w-full truncate text-[11px] text-neutral-400">{item.bottomLabel}</span>
+        <span className="max-w-full truncate text-[11px] text-muted-foreground">
+          {item.bottomLabel}
+        </span>
       )}
 
       {/* Spacer when no bottom content so cells align */}
@@ -178,7 +180,7 @@ export type FeatureStripProps = {
 export function FeatureStrip({ items, className }: FeatureStripProps) {
   return (
     <div className={cn('w-full', className)}>
-      <Separator className="bg-neutral-200" />
+      <Separator className="bg-border" />
       <div className="flex items-stretch">
         {items.map((item, i) => (
           <React.Fragment key={i}>
@@ -186,13 +188,13 @@ export function FeatureStrip({ items, className }: FeatureStripProps) {
             {i < items.length - 1 && (
               <Separator
                 orientation="vertical"
-                className="my-2 bg-neutral-200"
+                className="my-2 bg-border"
               />
             )}
           </React.Fragment>
         ))}
       </div>
-      <Separator className="bg-neutral-200" />
+      <Separator className="bg-border" />
     </div>
   )
 }

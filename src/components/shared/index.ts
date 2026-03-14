@@ -13,6 +13,7 @@ export type { TabItem } from './tabs'
 export { LanguageSwitcher } from './LanguageSwitcher'
 
 // Theme
+export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
 export { GridIconBackground } from './GridIconBackground'
 export type { IconEntry } from './GridIconBackground'

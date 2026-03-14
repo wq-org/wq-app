@@ -89,17 +89,17 @@ export function FileTable({ files, onRefresh }: FileTableProps) {
 
   return (
     <div className="w-full flex flex-col items-stretch gap-2 animate-in fade-in-0 slide-in-from-bottom-4">
-      <div className="w-full bg-white rounded-4xl shadow p-6 animate-in fade-in-0 slide-in-from-bottom-4">
+      <div className="w-full rounded-4xl border border-border bg-card p-6 shadow-sm animate-in fade-in-0 slide-in-from-bottom-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-gray-400 font-light w-[60px]">
+              <TableHead className="w-[60px] text-center font-light text-muted-foreground">
                 {t('table.columns.type')}
               </TableHead>
-              <TableHead className="text-left text-gray-400 font-light">
+              <TableHead className="text-left font-light text-muted-foreground">
                 {t('table.columns.filename')}
               </TableHead>
-              <TableHead className="text-center text-gray-400 font-light">
+              <TableHead className="text-center font-light text-muted-foreground">
                 {t('table.columns.actions')}
               </TableHead>
             </TableRow>
@@ -123,7 +123,9 @@ export function FileTable({ files, onRefresh }: FileTableProps) {
                     </div>
                   </TableCell>
                   <TableCell className="text-left">
-                    <div className="flex items-center gap-3 h-10 min-h-10">{file.filename}</div>
+                    <div className="flex h-10 min-h-10 items-center gap-3 text-foreground">
+                      {file.filename}
+                    </div>
                   </TableCell>
                   <TableCell className="text-center">
                     <Button

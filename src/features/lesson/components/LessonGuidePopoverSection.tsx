@@ -31,7 +31,7 @@ export function LessonGuidePopoverSection({
           <Button
             type="button"
             variant="outline"
-            className="rounded-full bg-white px-4 shadow-sm"
+            className="rounded-full border-border bg-card/90 px-4 shadow-sm hover:bg-muted"
           >
             <MessageCircleQuestionMark className="size-4" />
             <Text
@@ -44,7 +44,7 @@ export function LessonGuidePopoverSection({
         </PopoverTrigger>
         <PopoverContent
           align="end"
-          className="w-full max-w-md rounded-2xl border bg-white/85 p-4 shadow-lg backdrop-blur-md"
+          className="w-full max-w-md rounded-2xl border border-border bg-popover/92 p-4 shadow-lg backdrop-blur-md"
         >
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
@@ -60,7 +60,7 @@ export function LessonGuidePopoverSection({
                 </Button>
               ))}
             </div>
-            <div className="rounded-2xl border bg-white/70 p-4 text-left">
+            <div className="rounded-2xl border border-border bg-card/80 p-4 text-left">
               <Text
                 as="p"
                 variant="small"

@@ -316,7 +316,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
             </DrawerHeader>
 
             <div className="flex flex-col flex-1 overflow-hidden">
-              <div className="border-b px-6 pt-4 shrink-0">
+              <div className="shrink-0 border-b border-border px-6 pt-4">
                 <SelectTabs
                   variant="compact"
                   tabs={[
@@ -336,7 +336,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                 {activeTab === 'overview' && (
                   <div className="flex flex-col space-y-6">
                     {isImage && (
-                      <div className="w-full rounded-lg overflow-hidden border bg-gray-100">
+                      <div className="w-full overflow-hidden rounded-lg border border-border bg-muted">
                         <AspectRatio
                           ratio={16 / 9}
                           className="w-full"
@@ -353,16 +353,16 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                             <img
                               src={fileUrl}
                               alt={file.filename}
-                              className="w-full h-full object-contain bg-white"
+                              className="h-full w-full bg-background object-contain"
                             />
                           ) : (
-                            <p>failed to load</p>
+                            <p className="text-sm text-muted-foreground">failed to load</p>
                           )}
                         </AspectRatio>
                       </div>
                     )}
                     {isPDF && (
-                      <div className="w-full rounded-lg overflow-hidden border bg-gray-100">
+                      <div className="w-full overflow-hidden rounded-lg border border-border bg-muted">
                         <AspectRatio
                           ratio={4 / 3}
                           className="w-full max-h-[70vh]"
@@ -381,13 +381,13 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                               />
                             </div>
                           ) : (
-                            <p>failed to load</p>
+                            <p className="text-sm text-muted-foreground">failed to load</p>
                           )}
                         </AspectRatio>
                       </div>
                     )}
                     {isVideo && (
-                      <div className="w-full rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center p-4">
+                      <div className="flex w-full items-center justify-center overflow-hidden rounded-lg border border-border bg-muted p-4">
                         {fileUrl ? (
                           <VideoPreview
                             videoUrl={fileUrl}
@@ -402,7 +402,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                             />
                           </div>
                         ) : (
-                          <p>failed to load</p>
+                          <p className="text-sm text-muted-foreground">failed to load</p>
                         )}
                       </div>
                     )}
@@ -412,7 +412,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                       <Separator />
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-xs text-gray-500">
+                          <Label className="text-xs text-muted-foreground">
                             {t('drawer.overview.filename')}
                           </Label>
                           <Text
@@ -424,7 +424,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                           </Text>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-xs text-gray-500">
+                          <Label className="text-xs text-muted-foreground">
                             {t('drawer.overview.size')}
                           </Label>
                           <Text
@@ -436,7 +436,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                           </Text>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-xs text-gray-500">
+                          <Label className="text-xs text-muted-foreground">
                             {t('drawer.overview.type')}
                           </Label>
                           <Text
@@ -469,7 +469,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                       <Label>{t('drawer.settings.replaceFile')}</Label>
                       {newFilePreview ? (
                         <div className="space-y-2">
-                          <div className="w-full aspect-video rounded-lg overflow-hidden border bg-gray-100">
+                          <div className="aspect-video w-full overflow-hidden rounded-lg border border-border bg-muted">
                             <img
                               src={newFilePreview}
                               alt={t('drawer.settings.newFilePreviewAlt')}
@@ -490,7 +490,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                         </div>
                       ) : newFile ? (
                         <div className="space-y-2">
-                          <div className="p-4 border rounded-lg bg-gray-50">
+                          <div className="rounded-lg border border-border bg-muted/50 p-4">
                             <Text
                               as="p"
                               variant="body"
@@ -501,7 +501,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                             <Text
                               as="p"
                               variant="body"
-                              className="text-xs text-gray-500"
+                              className="text-xs text-muted-foreground"
                             >
                               {(newFile.size / 1024 / 1024).toFixed(2)} MB
                             </Text>
@@ -526,7 +526,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="flex items-center justify-between border-t border-border pt-4">
                       <Button
                         variant="outline"
                         onClick={() => {

@@ -51,7 +51,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
           className={cn(
             'h-10 w-10 rounded-full gap-1',
             isAuthVariant
-              ? 'shrink-0 bg-white p-0 shadow-sm border border-gray-200 hover:bg-white/95 flex items-center justify-center'
+              ? 'flex shrink-0 items-center justify-center border-border bg-card p-0 text-foreground shadow-sm hover:bg-accent'
               : 'hover:bg-accent',
           )}
           aria-label={t('triggerLabel', {
@@ -71,7 +71,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
       <PopoverContent
         className={cn(
           isAuthVariant
-            ? 'w-72 rounded-3xl border border-gray-200 bg-white p-4 shadow-lg'
+            ? 'w-72 rounded-3xl border border-border bg-popover p-4 text-popover-foreground shadow-lg'
             : 'w-48 p-2 rounded-2xl mt-4',
         )}
         align={isAuthVariant ? 'start' : 'end'}
@@ -86,14 +86,14 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
               title={t(`languages.${lang.code}.name`)}
               className={cn(
                 isAuthVariant
-                  ? 'flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition-colors'
+                  ? 'flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm text-foreground transition-colors'
                   : 'w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-accent transition-colors flex items-center gap-2',
                 i18n.language === lang.code || i18n.language.startsWith(`${lang.code}-`)
                   ? isAuthVariant
-                    ? 'bg-gray-100'
+                    ? 'bg-muted'
                     : 'bg-accent'
                   : isAuthVariant
-                    ? 'hover:bg-gray-50'
+                    ? 'hover:bg-accent'
                     : undefined,
               )}
             >

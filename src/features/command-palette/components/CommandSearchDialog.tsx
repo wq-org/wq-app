@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { X, Search } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
@@ -30,7 +31,7 @@ function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title
         alt={title}
         className="rounded-full w-12 h-12"
       />
-      <AvatarFallback className="text-xl rounded-full w-12 h-12 flex items-center justify-center bg-gray-200">
+      <AvatarFallback className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-xl text-foreground">
         {title.charAt(0).toUpperCase()}
       </AvatarFallback>
     </Avatar>
@@ -62,21 +63,21 @@ export function CommandSearch() {
 
   return (
     <>
-      <div className="flex items-center border-b px-4 py-3">
-        <Search className="mr-3 h-4 w-4 text-gray-400" />
-        <input
+      <div className="flex items-center border-b border-border px-4 py-3">
+        <Search className="mr-3 h-4 w-4 text-muted-foreground" />
+        <Input
           type="text"
           placeholder={t('search.placeholder', { ns: 'features.commandPalette' })}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 outline-none text-sm"
+          className="h-auto flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none focus-visible:ring-0"
           autoFocus
         />
         <Dialog.Close asChild>
           <Button
             size={'icon'}
             variant={'ghost'}
-            className="p-1 rounded-full hover:bg-gray-100"
+            className="rounded-full p-1 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -101,7 +102,7 @@ export function CommandSearch() {
               >
                 <Card
                   onClick={() => handleClickItem(item)}
-                  className="border-0 rounded-2xl shadow-none w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer"
+                  className="w-full cursor-pointer rounded-2xl border-0 bg-transparent px-3 py-2 text-left shadow-none hover:bg-muted focus:bg-muted focus:outline-none"
                 >
                   <div className="flex gap-3">
                     <SearchAvatar
@@ -119,7 +120,7 @@ export function CommandSearch() {
                       <Text
                         as="span"
                         variant="small"
-                        className="text-xs text-gray-400"
+                        className="text-xs text-muted-foreground"
                       >
                         {item.email || 'No email'}
                       </Text>
@@ -136,7 +137,7 @@ export function CommandSearch() {
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-500 text-sm">
+          <div className="p-8 text-center text-sm text-muted-foreground">
             {t('search.noResults', { ns: 'features.commandPalette' })}
           </div>
         )}

@@ -25,12 +25,12 @@ export function NotificationPanel({ onTotalCountChange }: NotificationPanelProps
   )
 
   return (
-    <div className="p-4">
+    <div className="h-full bg-transparent p-4 text-popover-foreground">
       <div className="space-y-4">
         <Text
           as="h1"
           variant="h1"
-          className="text-xl"
+          className="text-xl text-popover-foreground"
         >
           Notifications
         </Text>
@@ -39,7 +39,7 @@ export function NotificationPanel({ onTotalCountChange }: NotificationPanelProps
           activeTabId={activeTab}
           onTabChange={(tabId) => setActiveTab(tabId as TabId)}
           variant="compact"
-          className="border-b"
+          className="border-b border-border"
         />
       </div>
     </div>

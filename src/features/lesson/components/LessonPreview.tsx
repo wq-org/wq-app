@@ -65,7 +65,7 @@ export function LessonPreview({
         onHeadingSelect={scrollToHeading}
         className="fixed top-24 right-4 z-50 hidden w-40 lg:block"
       />
-      <section className="rounded-2xl border bg-white p-6 animate-in fade-in-0 slide-in-from-bottom-4">
+      <section className="rounded-2xl border border-border bg-card p-6 animate-in fade-in-0 slide-in-from-bottom-4">
         <Text
           as="h2"
           variant="h2"

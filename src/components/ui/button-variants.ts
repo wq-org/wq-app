@@ -1,6 +1,5 @@
 import { cva } from 'class-variance-authority'
 
-export const inheritBlueContent = '[&_span]:text-blue-500 [&_p]:text-blue-500 [&_svg]:text-blue-500'
 const inheritVioletContent =
   '[&_span]:text-[oklch(var(--oklch-violet))] [&_p]:text-[oklch(var(--oklch-violet))] [&_svg]:text-[oklch(var(--oklch-violet))]'
 const inheritIndigoContent =
@@ -38,7 +37,15 @@ export const buttonVariants = cva(
         confirm:
           'text-blue-500 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/30',
         active: '!h-auto text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-50',
-        darkblue: `text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 transition-all duration-200 active:animate-in active:zoom-in-95 ${inheritBlueContent}`,
+        darkblue: [
+          'border-0',
+          'text-blue-500',
+          'hover:bg-blue-100',
+          'hover:text-blue-500',
+          'hover:opacity-80',
+          'transition-all duration-200',
+          'active:animate-in active:zoom-in-95',
+        ].join(' '),
         violet: `border-0 bg-transparent text-[oklch(var(--oklch-violet))] hover:opacity-80 hover:bg-[oklch(var(--oklch-violet)/0.12)] hover:text-[oklch(var(--oklch-violet))] transition-all duration-200 active:animate-in active:zoom-in-95 ${inheritVioletContent}`,
         indigo: `border-0 bg-transparent text-[oklch(var(--oklch-indigo))] hover:opacity-80 hover:bg-[oklch(var(--oklch-indigo)/0.12)] hover:text-[oklch(var(--oklch-indigo))] transition-all duration-200 active:animate-in active:zoom-in-95 ${inheritIndigoContent}`,
         blue: `border-0 bg-transparent text-[oklch(var(--oklch-blue))] hover:opacity-80 hover:bg-[oklch(var(--oklch-blue)/0.12)] hover:text-[oklch(var(--oklch-blue))] transition-all duration-200 active:animate-in active:zoom-in-95 ${inheritBlueOklchContent}`,

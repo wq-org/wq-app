@@ -40,9 +40,9 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
   )
 
   return (
-    <Card className="w-full max-w-[350px] rounded-2xl border bg-white shadow-sm">
+    <Card className="w-full max-w-[350px] rounded-2xl border border-border bg-card shadow-sm">
       <CardContent className="flex h-full min-h-[180px] flex-col">
-        <p className="text-sm font-normal leading-none text-gray-400">
+        <p className="text-sm font-normal leading-none text-muted-foreground">
           {t('card.subheading', { ns: 'features.lesson', defaultValue: 'Lesson' })}
         </p>
 
@@ -60,10 +60,10 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
           </Avatar>
 
           <div className="min-w-0 flex-1">
-            <span className="block truncate text-[15px] font-semibold leading-tight text-gray-900">
+            <span className="block truncate text-[15px] font-semibold leading-tight text-foreground">
               {lesson.title}
             </span>
-            <span className="block line-clamp-2 text-[13px] font-normal leading-tight text-gray-400">
+            <span className="block line-clamp-2 text-[13px] font-normal leading-tight text-muted-foreground">
               {updatedText}
             </span>
           </div>
@@ -76,7 +76,7 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
           <div className="self-end shrink-0">
             <Button
               variant="ghost"
-              className="border-0 text-blue-500 hover:bg-blue-100 hover:text-blue-500"
+              className="border-0 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
               onClick={() => onOpen?.(lesson.id)}
             >
               <Text

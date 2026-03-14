@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { ALL_ALLOWED_TYPES } from '../types/upload.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 
 interface FileDropzoneProps {
   onFilesSelected: (files: File[]) => void
@@ -58,19 +59,14 @@ export function FileDropzone({ onFilesSelected, disabled = false, accept }: File
 
   return (
     <div
-      className={`
-                relative flex flex-col items-center justify-center
-                min-h-[200px] rounded-2xl border-2 border-dashed
-                transition-colors cursor-pointer py-8
-                animate-in fade-in-0 slide-in-from-bottom-2
-                ${
-                  disabled
-                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
-                    : isDragging
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
-                }
-            `}
+      className={cn(
+        'relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed py-8 transition-colors animate-in fade-in-0 slide-in-from-bottom-2',
+        disabled
+          ? 'cursor-not-allowed border-border bg-muted/60 opacity-50'
+          : isDragging
+            ? 'border-primary bg-primary/5'
+            : 'border-border bg-muted/40 hover:bg-accent/70',
+      )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -89,7 +85,7 @@ export function FileDropzone({ onFilesSelected, disabled = false, accept }: File
       <div className="flex flex-col items-center gap-4 pointer-events-none">
         <Button
           variant="outline"
-          className="flex items-center gap-2 bg-white pointer-events-none animate-in fade-in-0 zoom-in-95"
+          className="pointer-events-none flex items-center gap-2 border-border bg-card text-foreground animate-in fade-in-0 zoom-in-95"
           disabled={disabled}
         >
           <Upload className="w-5 h-5" />
@@ -99,14 +95,14 @@ export function FileDropzone({ onFilesSelected, disabled = false, accept }: File
           <Text
             as="p"
             variant="body"
-            className="text-gray-600 text-sm"
+            className="text-sm text-muted-foreground"
           >
             {t('upload.dropzone.title')}
           </Text>
           <Text
             as="p"
             variant="body"
-            className="text-gray-400 text-xs"
+            className="text-xs text-muted-foreground"
           >
             {t('upload.dropzone.description')}
           </Text>

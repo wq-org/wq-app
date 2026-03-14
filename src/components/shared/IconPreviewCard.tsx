@@ -40,11 +40,11 @@ function IconChip({
   return (
     <Card
       className={cn(
-        'rounded-2xl p-3 shadow-sm border-0',
-        blurred ? 'bg-white/80 backdrop-blur-md' : 'bg-white',
+        'gap-0 rounded-2xl border-border p-3 shadow-sm',
+        blurred ? 'bg-card/80 backdrop-blur-md' : 'bg-card',
       )}
     >
-      <Icon className="h-8 w-8 stroke-2 text-neutral-800" />
+      <Icon className="h-8 w-8 stroke-2 text-foreground" />
     </Card>
   )
 }
@@ -53,7 +53,7 @@ function IconChip({
 
 function PreviewContent({
   icon,
-  backgroundColor = '#e2e8f0',
+  backgroundColor = 'var(--muted)',
   blurred = true,
 }: IconPreviewCardProps) {
   return (
@@ -119,9 +119,11 @@ import { GraduationCap, FlaskConical, Music, Globe } from 'lucide-react'
 
 export default function IconPreviewCardDemo() {
   return (
-    <div className="min-h-screen bg-neutral-100 p-8 flex flex-col gap-8 items-center">
+    <div className="flex min-h-screen flex-col items-center gap-8 bg-background p-8 text-foreground">
       <div className="w-full max-w-lg flex flex-col gap-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">16 : 9</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          16 : 9
+        </p>
 
         <IconPreviewCardWide
           icon={GraduationCap}
@@ -139,7 +141,9 @@ export default function IconPreviewCardDemo() {
       </div>
 
       <div className="w-full max-w-xs flex flex-col gap-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">1 : 1</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          1 : 1
+        </p>
 
         <IconPreviewCardSquare
           icon={Globe}

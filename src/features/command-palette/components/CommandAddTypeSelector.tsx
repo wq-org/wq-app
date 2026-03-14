@@ -20,13 +20,13 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
   )
 
   return (
-    <Card className="mx-auto flex w-full max-w-md flex-col border-0 shadow-none animate-in fade-in-0 zoom-in-95">
+    <Card className="mx-auto flex w-full max-w-md flex-col border-0 bg-transparent shadow-none animate-in fade-in-0 zoom-in-95">
       <CardHeader className="items-center p-0">
-        <CardTitle className="text-xl text-gray-900">{t('addDialog.title')}</CardTitle>
+        <CardTitle className="text-xl text-foreground">{t('addDialog.title')}</CardTitle>
         <Text
           as="p"
           variant="body"
-          className="mt-2 text-sm font-normal text-gray-500"
+          className="mt-2 text-sm font-normal text-muted-foreground"
         >
           {t('addDialog.subtitle')}
         </Text>
@@ -39,18 +39,18 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
               key={type}
               type="button"
               onClick={() => onSelect(type)}
-              className="flex w-full items-center justify-between rounded-lg border border-gray-200 p-4 text-left transition-colors hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm"
+              className="flex w-full items-center justify-between rounded-lg border border-border bg-card/60 p-4 text-left transition-colors hover:bg-muted/80 hover:shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-2">
                   <Icon className="h-5 w-5 text-blue-500" />
                 </div>
                 <div>
-                  <div className="font-medium text-gray-900">{t(labelKey)}</div>
-                  <div className="text-sm text-gray-500">{t(descriptionKey)}</div>
+                  <div className="font-medium text-foreground">{t(labelKey)}</div>
+                  <div className="text-sm text-muted-foreground">{t(descriptionKey)}</div>
                 </div>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
             </button>
           ))}
         </CardContent>

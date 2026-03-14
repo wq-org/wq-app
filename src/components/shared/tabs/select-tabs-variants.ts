@@ -1,37 +1,59 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
-const activeToneClasses = {
-  default: 'border-black text-black',
-  violet: 'border-[oklch(var(--oklch-violet))] text-[oklch(var(--oklch-violet))]',
-  indigo: 'border-[oklch(var(--oklch-indigo))] text-[oklch(var(--oklch-indigo))]',
-  blue: 'border-[oklch(var(--oklch-blue))] text-[oklch(var(--oklch-blue))]',
-  cyan: 'border-[oklch(var(--oklch-cyan))] text-[oklch(var(--oklch-cyan))]',
-  teal: 'border-[oklch(var(--oklch-teal))] text-[oklch(var(--oklch-teal))]',
-  green: 'border-[oklch(var(--oklch-green))] text-[oklch(var(--oklch-green))]',
-  lime: 'border-[oklch(var(--oklch-lime))] text-[oklch(var(--oklch-lime))]',
-  orange: 'border-[oklch(var(--oklch-orange))] text-[oklch(var(--oklch-orange))]',
-  pink: 'border-[oklch(var(--oklch-pink))] text-[oklch(var(--oklch-pink))]',
-  darkblue: 'border-blue-500 text-blue-500 active:animate-in active:zoom-in-95',
+const tabToneVariants = {
+  default: '',
+  violet: '',
+  indigo: '',
+  blue: '',
+  cyan: '',
+  teal: '',
+  green: '',
+  lime: '',
+  orange: '',
+  pink: '',
+  darkblue: '',
 } as const
 
-const inactiveToneHoverClasses = {
-  default:
-    'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-black/60 hover:[&_span]:text-black/60',
-  violet:
-    'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-violet)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-violet)/0.6)]',
-  indigo:
-    'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-indigo)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-indigo)/0.6)]',
-  blue: 'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-blue)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-blue)/0.6)]',
-  cyan: 'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-cyan)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-cyan)/0.6)]',
-  teal: 'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-teal)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-teal)/0.6)]',
-  green:
-    'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-green)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-green)/0.6)]',
-  lime: 'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-lime)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-lime)/0.6)]',
-  orange:
-    'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-orange)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-orange)/0.6)]',
-  pink: 'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-[oklch(var(--oklch-pink)/0.6)] hover:[&_span]:text-[oklch(var(--oklch-pink)/0.6)]',
-  darkblue:
-    'border-transparent [&_svg]:text-black/40 [&_span]:text-black/40 hover:[&_svg]:text-blue-500/60 hover:[&_span]:text-blue-500/60 transition-colors duration-200',
+const activeToneClasses = {
+  default: 'border-foreground',
+  violet: 'border-[oklch(var(--oklch-violet))]',
+  indigo: 'border-[oklch(var(--oklch-indigo))]',
+  blue: 'border-[oklch(var(--oklch-blue))]',
+  cyan: 'border-[oklch(var(--oklch-cyan))]',
+  teal: 'border-[oklch(var(--oklch-teal))]',
+  green: 'border-[oklch(var(--oklch-green))]',
+  lime: 'border-[oklch(var(--oklch-lime))]',
+  orange: 'border-[oklch(var(--oklch-orange))]',
+  pink: 'border-[oklch(var(--oklch-pink))]',
+  darkblue: 'border-blue-500 active:animate-in active:zoom-in-95',
+} as const
+
+const inactiveToneClasses = {
+  default: 'border-transparent',
+  violet: 'border-transparent',
+  indigo: 'border-transparent',
+  blue: 'border-transparent',
+  cyan: 'border-transparent',
+  teal: 'border-transparent',
+  green: 'border-transparent',
+  lime: 'border-transparent',
+  orange: 'border-transparent',
+  pink: 'border-transparent',
+  darkblue: 'border-transparent',
+} as const
+
+const inactiveToneTextClasses = {
+  default: 'text-muted-foreground group-hover:text-foreground',
+  violet: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-violet))]',
+  indigo: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-indigo))]',
+  blue: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-blue))]',
+  cyan: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-cyan))]',
+  teal: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-teal))]',
+  green: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-green))]',
+  lime: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-lime))]',
+  orange: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-orange))]',
+  pink: 'text-muted-foreground group-hover:text-[oklch(var(--oklch-pink))]',
+  darkblue: 'text-muted-foreground group-hover:text-blue-500',
 } as const
 
 const activeToneCompoundVariants = [
@@ -49,17 +71,17 @@ const activeToneCompoundVariants = [
 ] as const
 
 const inactiveToneCompoundVariants = [
-  { tone: 'default', active: false, className: inactiveToneHoverClasses.default },
-  { tone: 'violet', active: false, className: inactiveToneHoverClasses.violet },
-  { tone: 'indigo', active: false, className: inactiveToneHoverClasses.indigo },
-  { tone: 'blue', active: false, className: inactiveToneHoverClasses.blue },
-  { tone: 'cyan', active: false, className: inactiveToneHoverClasses.cyan },
-  { tone: 'teal', active: false, className: inactiveToneHoverClasses.teal },
-  { tone: 'green', active: false, className: inactiveToneHoverClasses.green },
-  { tone: 'lime', active: false, className: inactiveToneHoverClasses.lime },
-  { tone: 'orange', active: false, className: inactiveToneHoverClasses.orange },
-  { tone: 'pink', active: false, className: inactiveToneHoverClasses.pink },
-  { tone: 'darkblue', active: false, className: inactiveToneHoverClasses.darkblue },
+  { tone: 'default', active: false, className: inactiveToneClasses.default },
+  { tone: 'violet', active: false, className: inactiveToneClasses.violet },
+  { tone: 'indigo', active: false, className: inactiveToneClasses.indigo },
+  { tone: 'blue', active: false, className: inactiveToneClasses.blue },
+  { tone: 'cyan', active: false, className: inactiveToneClasses.cyan },
+  { tone: 'teal', active: false, className: inactiveToneClasses.teal },
+  { tone: 'green', active: false, className: inactiveToneClasses.green },
+  { tone: 'lime', active: false, className: inactiveToneClasses.lime },
+  { tone: 'orange', active: false, className: inactiveToneClasses.orange },
+  { tone: 'pink', active: false, className: inactiveToneClasses.pink },
+  { tone: 'darkblue', active: false, className: inactiveToneClasses.darkblue },
 ] as const
 
 export const selectTabsContainerVariants = cva('', {
@@ -75,14 +97,14 @@ export const selectTabsContainerVariants = cva('', {
 })
 
 export const selectTabButtonVariants = cva(
-  'flex items-center gap-2 border-b-2 focus:outline-none transition-all',
+  'group flex items-center gap-2 border-b-2 focus:outline-none transition-colors disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       layout: {
         default: 'pb-2',
         compact: 'pb-1.5',
       },
-      tone: activeToneClasses,
+      tone: tabToneVariants,
       active: {
         true: '',
         false: '',
@@ -99,22 +121,10 @@ export const selectTabButtonVariants = cva(
 
 export const selectTabIconVariants = cva('', {
   variants: {
-    tone: {
-      default: '',
-      violet: '',
-      indigo: '',
-      blue: '',
-      cyan: '',
-      teal: '',
-      green: '',
-      lime: '',
-      orange: '',
-      pink: '',
-      darkblue: '',
-    },
+    tone: tabToneVariants,
     active: {
       true: '',
-      false: 'text-black/40',
+      false: '',
     },
     layout: {
       default: '',
@@ -125,7 +135,7 @@ export const selectTabIconVariants = cva('', {
     {
       active: true,
       tone: 'default',
-      className: 'text-black',
+      className: 'text-foreground',
     },
     {
       active: true,
@@ -180,7 +190,57 @@ export const selectTabIconVariants = cva('', {
     {
       active: false,
       tone: 'default',
-      className: 'text-black/40',
+      className: inactiveToneTextClasses.default,
+    },
+    {
+      active: false,
+      tone: 'violet',
+      className: inactiveToneTextClasses.violet,
+    },
+    {
+      active: false,
+      tone: 'indigo',
+      className: inactiveToneTextClasses.indigo,
+    },
+    {
+      active: false,
+      tone: 'blue',
+      className: inactiveToneTextClasses.blue,
+    },
+    {
+      active: false,
+      tone: 'cyan',
+      className: inactiveToneTextClasses.cyan,
+    },
+    {
+      active: false,
+      tone: 'teal',
+      className: inactiveToneTextClasses.teal,
+    },
+    {
+      active: false,
+      tone: 'green',
+      className: inactiveToneTextClasses.green,
+    },
+    {
+      active: false,
+      tone: 'lime',
+      className: inactiveToneTextClasses.lime,
+    },
+    {
+      active: false,
+      tone: 'orange',
+      className: inactiveToneTextClasses.orange,
+    },
+    {
+      active: false,
+      tone: 'pink',
+      className: inactiveToneTextClasses.pink,
+    },
+    {
+      active: false,
+      tone: 'darkblue',
+      className: inactiveToneTextClasses.darkblue,
     },
   ],
   defaultVariants: {
@@ -196,29 +256,17 @@ export const selectTabTextVariants = cva('', {
       default: 'text-xl',
       compact: 'text-sm',
     },
-    tone: {
-      default: '',
-      violet: '',
-      indigo: '',
-      blue: '',
-      cyan: '',
-      teal: '',
-      green: '',
-      lime: '',
-      orange: '',
-      pink: '',
-      darkblue: '',
-    },
+    tone: tabToneVariants,
     active: {
       true: 'font-medium',
-      false: 'text-black/40 font-medium',
+      false: 'font-medium',
     },
   },
   compoundVariants: [
     {
       active: true,
       tone: 'default',
-      className: 'text-black font-medium',
+      className: 'text-foreground font-medium',
     },
     {
       active: true,
@@ -273,7 +321,57 @@ export const selectTabTextVariants = cva('', {
     {
       active: false,
       tone: 'default',
-      className: 'text-black/40',
+      className: inactiveToneTextClasses.default,
+    },
+    {
+      active: false,
+      tone: 'violet',
+      className: inactiveToneTextClasses.violet,
+    },
+    {
+      active: false,
+      tone: 'indigo',
+      className: inactiveToneTextClasses.indigo,
+    },
+    {
+      active: false,
+      tone: 'blue',
+      className: inactiveToneTextClasses.blue,
+    },
+    {
+      active: false,
+      tone: 'cyan',
+      className: inactiveToneTextClasses.cyan,
+    },
+    {
+      active: false,
+      tone: 'teal',
+      className: inactiveToneTextClasses.teal,
+    },
+    {
+      active: false,
+      tone: 'green',
+      className: inactiveToneTextClasses.green,
+    },
+    {
+      active: false,
+      tone: 'lime',
+      className: inactiveToneTextClasses.lime,
+    },
+    {
+      active: false,
+      tone: 'orange',
+      className: inactiveToneTextClasses.orange,
+    },
+    {
+      active: false,
+      tone: 'pink',
+      className: inactiveToneTextClasses.pink,
+    },
+    {
+      active: false,
+      tone: 'darkblue',
+      className: inactiveToneTextClasses.darkblue,
     },
   ],
   defaultVariants: {
