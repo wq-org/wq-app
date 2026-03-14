@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Text } from '@/components/ui/text'
 import { TitleDescriptionFields } from '@/components/shared/forms'
-import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
+import { ColorPicker } from '@/components/shared'
 import { TYPE_LABEL_KEYS } from '../config/commandAddOptions'
 import type { CommandAddState } from '../hooks/useCommandAdd'
 
@@ -87,7 +87,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
                     ? t('addDialog.themeHint')
                     : t('addDialog.gameThemeHint')}
                 </Text>
-                <DefaultBackgroundGallery
+                <ColorPicker
                   selectedId={state.themeId}
                   onSelect={state.setThemeId}
                   compact

@@ -4,27 +4,27 @@ import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
 
-export interface GalleryImage {
+export type ImageCarouselImage = {
   url: string
   title: string
   /** Optional storage path for selecting from fetched files; passed to onSelect. */
   storagePath?: string
 }
 
-export type ImageGalleryItem = string | GalleryImage
+export type ImageCarouselItem = string | ImageCarouselImage
 
-export interface ImageGalleryProps {
+export type ImageCarouselProps = {
   /** Array of image URLs (strings) or objects with url and title. */
-  images: ImageGalleryItem[]
+  images: ImageCarouselItem[]
   /** Called when an image is clicked. */
-  onSelect?: (image: GalleryImage) => void
+  onSelect?: (image: ImageCarouselImage) => void
   /** Optional class name for the root container. */
   className?: string
   /** Max length for title truncation (character count). Default 40. */
   titleMaxLength?: number
 }
 
-function normalizeImages(images: ImageGalleryItem[]): GalleryImage[] {
+function normalizeImages(images: ImageCarouselItem[]): ImageCarouselImage[] {
   return images.map((item) =>
     typeof item === 'string'
       ? { url: item, title: '' }
@@ -38,12 +38,12 @@ function truncateTitle(title: string, maxLength: number): string {
   return `${title.slice(0, maxLength).trim()}…`
 }
 
-export function ImageGallery({
+export function ImageCarousel({
   images,
   onSelect,
   className,
   titleMaxLength = 40,
-}: ImageGalleryProps) {
+}: ImageCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const normalized = normalizeImages(images)
 

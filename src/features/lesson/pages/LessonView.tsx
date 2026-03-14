@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AppWrapper } from '@/components/layout'
+import { AppShell } from '@/components/layout'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { getLessonById } from '@/features/lesson'
@@ -86,8 +86,8 @@ export default function LessonView() {
   const contentValue = useMemo(() => parseLessonContent(lesson?.content), [lesson?.content])
 
   return (
-    <AppWrapper role="student">
-      <div className="flex flex-col gap-6 w-full mx-auto p-6">
+    <AppShell role="student">
+      <div className="container flex w-full flex-col gap-6 py-6">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Spinner
@@ -125,6 +125,6 @@ export default function LessonView() {
           />
         )}
       </div>
-    </AppWrapper>
+    </AppShell>
   )
 }

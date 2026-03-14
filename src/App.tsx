@@ -42,7 +42,7 @@ import { LessonProvider } from './contexts/lesson'
 import { TopicProvider } from './contexts/topic'
 import { RequireAuth, RequireOnboarding } from '@/features/auth'
 import { Toaster } from './components/ui/sonner'
-import { AppWrapper } from './components/layout'
+import { AppShell } from './components/layout'
 import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
 import { ProfileViewPage } from '@/features/profiles'
 import {
@@ -76,12 +76,12 @@ function PlayRouteWrapper() {
   const { getRole } = useUser()
   const role = getRole() ?? 'student'
   return (
-    <AppWrapper
+    <AppShell
       role={role}
       className="flex flex-col h-screen"
     >
       <PlayGamePage />
-    </AppWrapper>
+    </AppShell>
   )
 }
 
@@ -475,7 +475,7 @@ function App() {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <AppWrapper
+                        <AppShell
                           role="teacher"
                           commandBarContext="game-studio"
                           className="flex flex-col h-screen"
@@ -483,7 +483,7 @@ function App() {
                           <div className="flex-1 w-full">
                             <GameEditorCanvasWithProjectId />
                           </div>
-                        </AppWrapper>
+                        </AppShell>
                       </RequireOnboarding>
                     </RequireAuth>
                   }

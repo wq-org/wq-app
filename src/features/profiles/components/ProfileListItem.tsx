@@ -6,7 +6,7 @@ import { useAvatarUrl } from '@/features/onboarding'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
-export interface UserCardProps {
+export type ProfileListItemProps = {
   title: string
   email?: string | null
   avatarPath?: string | null
@@ -15,57 +15,54 @@ export interface UserCardProps {
   className?: string
 }
 
-function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title: string }) {
+function ProfileAvatar({ avatarPath, title }: { avatarPath?: string | null; title: string }) {
   const { url } = useAvatarUrl(avatarPath)
 
   return (
-    <Avatar className="h-12 w-12">
+    <Avatar className="size-12 shrink-0">
       <AvatarImage
         src={url || DEFAULT_INSTITUTION_IMAGE}
         alt={title}
-        className="h-12 w-12 rounded-full"
       />
-      <AvatarFallback className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-xl">
-        {title.charAt(0).toUpperCase()}
-      </AvatarFallback>
+      <AvatarFallback className="bg-muted text-xl">{title.charAt(0).toUpperCase()}</AvatarFallback>
     </Avatar>
   )
 }
 
-export function UserCard({
+export function ProfileListItem({
   title,
   email,
   avatarPath,
   roleLabel,
   onClick,
   className,
-}: UserCardProps) {
+}: ProfileListItemProps) {
   return (
     <Card
       onClick={onClick}
       className={cn(
         'w-full rounded-2xl border-0 px-3 py-2 text-left shadow-none',
-        onClick ? 'cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:outline-none' : '',
+        onClick ? 'cursor-pointer hover:bg-accent focus:bg-accent focus:outline-none' : '',
         className,
       )}
     >
       <div className="flex gap-3">
-        <SearchAvatar
+        <ProfileAvatar
           avatarPath={avatarPath}
           title={title}
         />
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-0 flex-col gap-1">
           <Text
             as="span"
             variant="small"
-            className="text-sm font-medium"
+            className="truncate text-sm font-medium"
           >
             {title}
           </Text>
           <Text
             as="span"
             variant="small"
-            className="text-xs text-gray-400"
+            className="truncate text-xs text-muted-foreground"
           >
             {email || 'No email'}
           </Text>

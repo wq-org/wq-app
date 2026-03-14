@@ -1,4 +1,4 @@
-import { AvatarDrawer } from '@/components/layout'
+import { AvatarDrawer } from '@/components/shared'
 import { FieldCard } from '@/components/ui/field-card'
 import { Text } from '@/components/ui/text'
 import type { AvatarOption } from '@/features/onboarding'

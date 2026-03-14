@@ -24,7 +24,7 @@ import type {
   AvatarOption,
   Institution,
 } from '../types/onboarding.types'
-import { AppNavigation } from '@/components/shared'
+import { AppNavigation } from '@/components/layout'
 import { useTranslation } from 'react-i18next'
 
 export default function Onboarding() {

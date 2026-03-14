@@ -19,7 +19,6 @@ import type {
 import { getCommandBarGroups } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
 import { isCommandBarView, normalizeCommandRole, VALID_COMMAND_ROLES } from '../config/commandRoles'
-import { Container } from '@/components/shared'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CommandSearch } from './CommandSearchDialog'
 import { CommandFeedbackForm } from './CommandFeedbackDialog'
@@ -491,7 +490,7 @@ export function CommandPalette({
               Quick access to search, upload, feedback, and other actions
             </Dialog.Description>
             <ScrollArea className="flex-1 h-[100px] overflow-y-auto ">
-              <Container className="px-4 py-2">
+              <div className="px-4 py-2">
                 {activeDialog === 'search' && <CommandSearch />}
                 {activeDialog === 'upload' && <CommandUploadDialog onSuccess={onFilesUploaded} />}
                 {activeDialog === 'feedback' && <CommandFeedbackForm />}
@@ -505,7 +504,7 @@ export function CommandPalette({
                     }}
                   />
                 )}
-              </Container>
+              </div>
             </ScrollArea>
           </Dialog.Content>
         </Dialog.Portal>

@@ -1,12 +1,9 @@
-interface SimpleVideoPlayerProps {
+type VideoPreviewProps = {
   videoUrl: string
   fileName?: string
 }
 
-export default function SimpleVideoPlayer({
-  videoUrl,
-  fileName = 'video',
-}: SimpleVideoPlayerProps) {
+export function VideoPreview({ videoUrl, fileName = 'video' }: VideoPreviewProps) {
   return (
     <video
       controls

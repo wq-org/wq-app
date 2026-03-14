@@ -8,7 +8,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import Spinner from '@/components/ui/spinner'
-import { Container } from '@/components/shared/container'
 import {
   SidebarAccountMenu,
   SidebarPrimaryNav,
@@ -71,10 +70,10 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
       </Sidebar>
 
       <main className="w-full">
-        <Container>
+        <div className="container py-8">
           <SidebarTrigger />
           <div className="w-full pt-3.5">{children}</div>
-        </Container>
+        </div>
       </main>
     </SidebarProvider>
   )

@@ -1,12 +1,12 @@
-import React from 'react'
-import { Container, AppNavigation } from '@/components/shared'
+import type { ReactNode } from 'react'
+import { AppNavigation } from './AppNavigation'
 import { CommandPalette } from '@/features/command-palette'
 import { cn } from '@/lib/utils'
 import type { UserRole } from '@/features/auth'
 import type { CommandBarContext } from '@/features/command-palette'
 
-type AppWrapperProps = {
-  children: React.ReactNode
+type AppShellProps = {
+  children: ReactNode
   /** User role for layout/navigation; required. */
   role: UserRole
   className?: string
@@ -14,13 +14,13 @@ type AppWrapperProps = {
   commandBarContext?: CommandBarContext
 }
 
-export function AppWrapper({ children, role, className, commandBarContext }: AppWrapperProps) {
+export function AppShell({ children, role, className, commandBarContext }: AppShellProps) {
   const effectiveContext: CommandBarContext = commandBarContext ?? role
 
   return (
     <>
       <AppNavigation />
-      <Container className={cn(className)}>{children}</Container>
+      <main className={cn('min-h-screen', className)}>{children}</main>
       <CommandPalette commandBarContext={effectiveContext} />
     </>
   )

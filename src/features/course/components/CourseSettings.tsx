@@ -10,7 +10,7 @@ import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
+import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
 import { Check } from 'lucide-react'
 import { TitleDescriptionFields } from '@/components/shared/forms'
@@ -190,7 +190,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
           >
             {t('settings.themeHint')}
           </Text>
-          <DefaultBackgroundGallery
+          <ColorPicker
             selectedId={themeId}
             onSelect={setThemeId}
           />

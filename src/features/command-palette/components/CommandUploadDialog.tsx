@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Container } from '@/components/shared'
 import { FileDropzone, FileStepperForm } from '@/components/shared/upload-files'
 
 import { useFileValidation } from '@/components/shared/upload-files/hooks/useFileValidation'
@@ -172,7 +171,7 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
   }, [])
 
   return (
-    <Container className="px-0">
+    <div className="px-0">
       <Card className="w-full shadow-none border-0 px-0 py-0">
         <CardContent className="p-0 space-y-6">
           {!showStepper ? (
@@ -215,6 +214,6 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
           )}
         </CardContent>
       </Card>
-    </Container>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Edit, Eye, Settings } from 'lucide-react'
-import { Container, SelectTabs } from '@/components/shared'
+import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 
 interface GameLayoutProps {
@@ -26,7 +26,7 @@ export function GameLayout({
   const [activeTab, setActiveTab] = useState<TabType>('editor')
 
   if (previewOnly || playMode) {
-    return <Container className="flex flex-col gap-6 w-full">{previewContent}</Container>
+    return <div className="flex w-full flex-col gap-6">{previewContent}</div>
   }
 
   const tabs: TabItem[] = [
@@ -36,7 +36,7 @@ export function GameLayout({
   ]
 
   return (
-    <Container className="flex flex-col gap-6 w-full">
+    <div className="flex w-full flex-col gap-6">
       {/* Tabs */}
       <SelectTabs
         tabs={tabs}
@@ -50,6 +50,6 @@ export function GameLayout({
         {activeTab === 'preview' && <>{previewContent}</>}
         {activeTab === 'settings' && <>{settingsContent}</>}
       </div>
-    </Container>
+    </div>
   )
 }

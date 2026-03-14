@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { UserCard } from '@/components/shared'
+import { ProfileListItem } from '@/features/profiles'
 import { getCourseMembers, type CourseMember } from '@/features/course'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -96,7 +96,7 @@ export function CourseAnalyticsTab({ courseId }: CourseAnalyticsTabProps) {
             </Text>
           ) : (
             members.map((member) => (
-              <UserCard
+              <ProfileListItem
                 key={`${member.type}-${member.id}`}
                 title={member.title}
                 email={member.email}

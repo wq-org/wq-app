@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useLocation, useNavigate, Outlet } from 'react-router-dom'
-import { AppWrapper } from '@/components/layout'
+import { AppShell } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
@@ -99,8 +99,8 @@ export function CourseWorkspaceShell() {
 
   if (!courseId) {
     return (
-      <AppWrapper role="teacher">
-        <div className="flex flex-col gap-6 w-full mx-auto p-6">
+      <AppShell role="teacher">
+        <div className="container flex w-full flex-col gap-6 py-6">
           <Text
             as="p"
             variant="body"
@@ -109,13 +109,13 @@ export function CourseWorkspaceShell() {
             {t('page.notFound')}
           </Text>
         </div>
-      </AppWrapper>
+      </AppShell>
     )
   }
 
   return (
-    <AppWrapper role="teacher">
-      <div className="flex flex-col gap-6 w-full mx-auto p-6">
+    <AppShell role="teacher">
+      <div className="container flex w-full flex-col gap-6 py-6">
         {isNestedContentRoute ? (
           // Nested content routes (topic and lesson) provide their own workspace layouts.
           <Outlet />
@@ -148,7 +148,7 @@ export function CourseWorkspaceShell() {
           </div>
         )}
       </div>
-    </AppWrapper>
+    </AppShell>
   )
 }
 

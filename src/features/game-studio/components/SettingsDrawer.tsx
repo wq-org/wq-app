@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import type { SettingsDrawerProps } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
+import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
 
 export default function SettingsDrawer({
@@ -165,7 +165,7 @@ export default function SettingsDrawer({
             >
               {t('settingsDrawer.themeHint')}
             </Text>
-            <DefaultBackgroundGallery
+            <ColorPicker
               selectedId={localThemeId}
               onSelect={setLocalThemeId}
             />

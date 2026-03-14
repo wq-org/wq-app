@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import type { StartGameDialogProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
-import DefaultBackgroundGallery from '@/components/shared/DefaultBackgroundGallery'
+import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
 
 function getTitleFromData(initialData: StartGameDialogProps['initialData']): string {
@@ -109,7 +109,7 @@ export default function StartGameDialog({
           <div className="flex flex-col  gap-3">
             <Label>{t('startDialog.themeLabel')}</Label>
             <p className="text-sm text-muted-foreground">{t('startDialog.themeHint')}</p>
-            <DefaultBackgroundGallery
+            <ColorPicker
               selectedId={themeId}
               onSelect={setThemeId}
             />

@@ -1,15 +1,14 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from './app-sidebar'
-import { Container } from '../shared'
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
-        <Container>
+        <div className="container py-8">
           <SidebarTrigger />
           {children}
-        </Container>
+        </div>
       </main>
     </SidebarProvider>
   )

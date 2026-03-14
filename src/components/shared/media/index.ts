@@ -1,4 +1,4 @@
-export { default as SimplePDFViewer } from './SimplePDFViewer'
-export { default as SimpleVideoPlayer } from './SimpleVideoPlayer'
-export { ImageGallery } from './ImageGallery'
-export type { GalleryImage, ImageGalleryItem, ImageGalleryProps } from './ImageGallery'
+export { ImageCarousel } from './ImageCarousel'
+export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './ImageCarousel'
+export { PdfPreview } from './PdfPreview'
+export { VideoPreview } from './VideoPreview'

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { SimplePDFViewer, SimpleVideoPlayer } from '@/components/shared'
+import { PdfPreview, VideoPreview } from '@/components/shared'
 import { FileDropzone } from '@/components/shared/upload-files'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { useUser } from '@/contexts/user'
@@ -368,7 +368,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                           className="w-full max-h-[70vh]"
                         >
                           {fileUrl ? (
-                            <SimplePDFViewer
+                            <PdfPreview
                               pdfUrl={fileUrl}
                               fileName={file.filename}
                             />
@@ -389,7 +389,7 @@ export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCard
                     {isVideo && (
                       <div className="w-full rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center p-4">
                         {fileUrl ? (
-                          <SimpleVideoPlayer
+                          <VideoPreview
                             videoUrl={fileUrl}
                             fileName={file.filename}
                           />

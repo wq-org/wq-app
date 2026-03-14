@@ -12,7 +12,6 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import { Container } from '@/components/shared'
 
 import { FileDropzone } from '@/components/shared/upload-files'
 import { X } from 'lucide-react'
@@ -60,7 +59,7 @@ export function CommandFeedbackForm() {
   }
 
   return (
-    <Container className="px-0 max-h-[70vh] overflow-y-auto">
+    <div className="max-h-[70vh] overflow-y-auto px-0">
       <Card className="w-full shadow-none border-0 px-0 py-0">
         <CardHeader className="pb-2">
           <div className="flex-1">
@@ -176,6 +175,6 @@ export function CommandFeedbackForm() {
           </form>
         </CardContent>
       </Card>
-    </Container>
+    </div>
   )
 }

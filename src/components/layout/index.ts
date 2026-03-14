@@ -1,2 +1,2 @@
-export { AppWrapper } from './AppWrapper'
-export { AvatarDrawer } from './AvatarDrawer'
+export { AppShell } from './AppShell'
+export { AppNavigation } from './AppNavigation'

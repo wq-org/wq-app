@@ -1,9 +1,9 @@
-import { AppWrapper } from '@/components/layout'
+import { AppShell } from '@/components/layout'
 import GameEditorCanvas from '../components/GameEditorCanvas'
 
 export default function GameStudioView() {
   return (
-    <AppWrapper
+    <AppShell
       role="teacher"
       commandBarContext="game-studio"
       className="flex flex-col h-screen"
@@ -11,6 +11,6 @@ export default function GameStudioView() {
       <div className="flex-1 w-full">
         <GameEditorCanvas />
       </div>
-    </AppWrapper>
+    </AppShell>
   )
 }

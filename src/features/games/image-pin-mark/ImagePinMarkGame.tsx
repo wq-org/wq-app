@@ -47,8 +47,8 @@ import { useGameEditorContext } from '@/contexts/game-studio'
 import { useUser } from '@/contexts/user'
 import { getFileBlobUrl } from '@/features/files'
 import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
-import { ImageGallery } from '@/components/shared/media'
-import type { GalleryImage } from '@/components/shared/media'
+import { ImageCarousel } from '@/components/shared/media'
+import type { ImageCarouselImage } from '@/components/shared/media'
 import { MAX_IMAGE_PIN_SQUARES } from '@/lib/constants'
 import { constrainDescription } from '@/lib/validations'
 import { computeImagePinResults } from '@/features/games/image-pin-mark/utils/imagePinScoring'
@@ -204,7 +204,7 @@ export default function ImagePinMarkGame({
   const [imageLoading, setImageLoading] = useState(false)
   const [imageRemovedByUser, setImageRemovedByUser] = useState(false)
   const [selectedStoragePath, setSelectedStoragePath] = useState<string | null>(null)
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [galleryImages, setImageCarouselImages] = useState<ImageCarouselImage[]>([])
   const [galleryLoading, setGalleryLoading] = useState(false)
   const blobUrlRef = useRef<string | null>(null)
   const [squares, setSquares] = useState<Square[]>(initialData?.squares ?? [])
@@ -313,7 +313,7 @@ export default function ImagePinMarkGame({
     })
       .then((result) => {
         if (!result.success || !result.files) {
-          setGalleryImages([])
+          setImageCarouselImages([])
           return
         }
         const imageFiles = result.files.filter((file) => {
@@ -329,9 +329,9 @@ export default function ImagePinMarkGame({
         )
       })
       .then((items) => {
-        if (items) setGalleryImages(items.filter((i) => i.url))
+        if (items) setImageCarouselImages(items.filter((i) => i.url))
       })
-      .catch(() => setGalleryImages([]))
+      .catch(() => setImageCarouselImages([]))
       .finally(() => setGalleryLoading(false))
   }, [getUserId, getRole, getUserInstitutionId])
 
@@ -680,7 +680,7 @@ export default function ImagePinMarkGame({
             </div>
           ) : (
             <div className="min-w-0 max-w-full">
-              <ImageGallery
+              <ImageCarousel
                 images={galleryImages}
                 onSelect={(img) => {
                   if (img.storagePath) {

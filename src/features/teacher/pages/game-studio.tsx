@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AppWrapper } from '@/components/layout'
+import { AppShell } from '@/components/layout'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import EmptyProjectsView from '@/features/game-studio/components/EmptyProjectsView'
@@ -69,54 +69,58 @@ export default function GameStudio() {
   }
 
   return (
-    <AppWrapper
+    <AppShell
       className="flex flex-col gap-12 animate-in fade-in-0 slide-in-from-bottom-4"
       role="teacher"
     >
-      <div className="flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-3">
-        <Text
-          as="h1"
-          variant="h1"
-          className="text-6xl"
-        >
-          {t('page.title')}
-        </Text>
-        <Text
-          as="p"
-          variant="body"
-          className="text-gray-500 mt-2"
-        >
-          {t('page.subtitle')}
-        </Text>
-        <div className="flex justify-end w-full">
-          <Button
-            onClick={handleCreateGame}
-            variant="darkblue"
-            disabled={creating || loading}
-            className="active:animate-in active:zoom-in-95"
+      <div className="container py-6">
+        <div className="flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-3">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-6xl"
           >
-            <Plus size="4" />
-            {creating ? t('page.creating') : t('page.createGame')}
-          </Button>
+            {t('page.title')}
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="mt-2 text-gray-500"
+          >
+            {t('page.subtitle')}
+          </Text>
+          <div className="flex justify-end w-full">
+            <Button
+              onClick={handleCreateGame}
+              variant="darkblue"
+              disabled={creating || loading}
+              className="active:animate-in active:zoom-in-95"
+            >
+              <Plus size="4" />
+              {creating ? t('page.creating') : t('page.createGame')}
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="pb-14 animate-in fade-in-0 slide-in-from-bottom-4">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Spinner
-              variant="gray"
-              size="lg"
+      <div className="container pb-14 animate-in fade-in-0 slide-in-from-bottom-4">
+        <div>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Spinner
+                variant="gray"
+                size="lg"
+              />
+            </div>
+          ) : projects.length === 0 ? (
+            <EmptyProjectsView />
+          ) : (
+            <GameProjectCardList
+              projects={projects}
+              onOpen={(id) => navigate(`/teacher/canvas/${id}`)}
             />
-          </div>
-        ) : projects.length === 0 ? (
-          <EmptyProjectsView />
-        ) : (
-          <GameProjectCardList
-            projects={projects}
-            onOpen={(id) => navigate(`/teacher/canvas/${id}`)}
-          />
-        )}
+          )}
+        </div>
       </div>
-    </AppWrapper>
+    </AppShell>
   )
 }

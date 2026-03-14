@@ -1,11 +1,10 @@
-import { CommandPalette } from '@/features/command-palette'
+import { AppShell } from '@/components/layout'
 import { SettingsPage } from '@/features/settings'
 
 export function TeacherSettingsPage() {
   return (
-    <>
+    <AppShell role="teacher">
       <SettingsPage role="teacher" />
-      <CommandPalette commandBarContext="teacher" />
-    </>
+    </AppShell>
   )
 }

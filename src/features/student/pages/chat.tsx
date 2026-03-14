@@ -1,10 +1,10 @@
 import { ChatComingSoon } from '@/features/chat'
-import { AppWrapper } from '@/components/layout'
+import { AppShell } from '@/components/layout'
 
 export default function Chat() {
   return (
-    <AppWrapper role="student">
+    <AppShell role="student">
       <ChatComingSoon />
-    </AppWrapper>
+    </AppShell>
   )
 }

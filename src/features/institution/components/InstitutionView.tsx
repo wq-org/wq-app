@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import Spinner from '@/components/ui/spinner'
-import { Container } from '@/components/shared'
-import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Presentation, Users2, Globe, Twitter, Facebook, Instagram } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 import { EmptyTeachersView } from './EmptyTeachersView'
@@ -66,7 +65,7 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col gap-8 mb-8 w-full">
       <section className="rounded-2xl h-full">
-        <Container className="flex flex-col gap-4">
+        <div className="container flex flex-col gap-4 py-8">
           <div className="flex flex-col gap-4 items-start">
             <Avatar className="w-24 h-24">
               <AvatarImage src={avatarUrl} />
@@ -140,9 +139,9 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
                 })}
             </div>
           </div>
-        </Container>
+        </div>
         <section className="pt-8 rounded-2xl bg-gray-100 min-h-[calc(95vh-400px)] pb-8">
-          <Container className="h-full">
+          <div className="container h-full py-8">
             <div className="flex flex-wrap justify-between items-center">
               <div className="flex flex-wrap gap-12">
                 <SelectTabs
@@ -153,14 +152,14 @@ const InstitutionView = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
 
-            <Container className="flex w-full px-0 flex-1">
+            <div className="flex w-full flex-1">
               <div className="flex flex-col gap-4">
                 {activeTab === 'teachers' && <EmptyTeachersView />}
                 {activeTab === 'students' && <EmptyStudentView />}
               </div>
               {children}
-            </Container>
-          </Container>
+            </div>
+          </div>
         </section>
       </section>
     </div>

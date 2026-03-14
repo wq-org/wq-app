@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AppNavigation } from '@/components/shared/AppNavigation'
-import { Container } from '@/components/shared/container'
+import { AppNavigation } from '@/components/layout'
 import { getDashboardTabs } from '../config/dashboardTabs'
 import type { DashboardRole, DashboardTab } from '../types/dashboard.types'
 import { DashboardActions } from './DashboardActions'
@@ -83,7 +82,7 @@ export function LearningDashboardShell({
             description={description}
           />
 
-          <Container className="pb-4">
+          <div className="container pb-4">
             <DashboardBadgeRow
               role={normalizedRole}
               followCount={followCount}
@@ -94,7 +93,7 @@ export function LearningDashboardShell({
               userEmail={email}
               linkedInUrl={linkedInUrl}
             />
-          </Container>
+          </div>
 
           <DashboardActions
             userName={userName}
@@ -102,9 +101,9 @@ export function LearningDashboardShell({
             connectButtonLabel={connectButtonLabel}
           />
 
-          <section className="pt-8 rounded-2xl bg-gray-100 min-h-[560px] pb-8">
-            <Container className="h-full min-h-0">
-              <div className="flex flex-wrap justify-between items-center">
+          <section className="pt-8 rounded-2xl bg-muted-foreground/10 min-h-[560px] pb-8">
+            <div className="container h-full min-h-0 flex flex-col gap-8">
+              <div className="flex flex-wrap justify-between  items-center">
                 <DashboardTabs
                   tabs={translatedTabs}
                   activeTabId={activeTab}
@@ -113,7 +112,7 @@ export function LearningDashboardShell({
               </div>
 
               <DashboardContent>{children}</DashboardContent>
-            </Container>
+            </div>
           </section>
         </section>
       </div>

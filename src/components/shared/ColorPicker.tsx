@@ -4,19 +4,19 @@ import { Text } from '@/components/ui/text'
 import { THEME_IDS, getThemeBackgroundStyle, type ThemeId } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 
-interface DefaultBackgroundGalleryProps {
+type ColorPickerProps = {
   selectedId: ThemeId
   onSelect: (id: ThemeId) => void
   className?: string
   compact?: boolean
 }
 
-export default function DefaultBackgroundGallery({
+export function ColorPicker({
   selectedId,
   onSelect,
   className,
   compact = false,
-}: DefaultBackgroundGalleryProps) {
+}: ColorPickerProps) {
   return (
     <BlurredScrollArea
       className={cn('w-full max-w-full rounded-xl border', className)}

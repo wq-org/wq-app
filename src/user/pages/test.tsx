@@ -2,16 +2,10 @@ import { TitleDescriptionFields } from '@/components/shared/forms'
 import { ClearableInput } from '@/components/shared/inputs'
 import { OnboardingPage } from '@/features/onboarding'
 import { QuantityStepper } from '@/components/shared/inputs'
-import {
-  DefaultBackgroundGallery,
-  ImageGallery,
-  SimplePDFViewer,
-  SimpleVideoPlayer,
-  UserCard,
-} from '@/components/shared'
+import { ColorPicker, ImageCarousel, PdfPreview, VideoPreview } from '@/components/shared'
+import { ProfileListItem } from '@/features/profiles'
 import { useState, type ReactNode } from 'react'
 import type { ThemeId } from '@/lib/themes'
-import { InfoCard } from '@/components/shared/InfoCard'
 
 const TEST_IMAGES = [
   'https://is1-ssl.mzstatic.com/image/thumb/x8-VGWym1ynhFRfVPINL9w/1960x1102.jpg',
@@ -48,13 +42,10 @@ export default function Test() {
   return (
     <div className="min-h-screen flex flex-col gap-10  p-8">
       <Container>
-        <UserCard
+        <ProfileListItem
           title="hallo"
           email={'hallo@email.com'}
         />
-      </Container>
-      <Container>
-        <InfoCard title="hallo" />
       </Container>
       <Container>
         <QuantityStepper />
@@ -66,23 +57,23 @@ export default function Test() {
         <TitleDescriptionFields />
       </Container>
       <Container>
-        <ImageGallery images={TEST_IMAGES} />
+        <ImageCarousel images={TEST_IMAGES} />
       </Container>
       <Container>
-        <DefaultBackgroundGallery
+        <ColorPicker
           selectedId={selectedThemeId}
           onSelect={setSelectedThemeId}
         />
       </Container>
       <Container>
-        <SimpleVideoPlayer
+        <VideoPreview
           videoUrl={TEST_VIDEO_URL}
           fileName="Demo video"
         />
       </Container>
       <Container>
         <div className="h-[420px] w-full">
-          <SimplePDFViewer
+          <PdfPreview
             pdfUrl={TEST_PDF_URL}
             fileName="Demo PDF"
           />

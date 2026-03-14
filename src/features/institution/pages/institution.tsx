@@ -1,4 +1,3 @@
-import { Container } from '@/components/shared/container'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -124,7 +123,7 @@ export default function Institution({
         {t('actions.follow')}
       </Button>
 
-      <Container className="flex flex-col gap-4 w-full border min-h-[400px] rounded-3xl">
+      <div className="container flex w-full min-h-[400px] flex-col gap-4 rounded-3xl border py-8">
         <div className="grid grid-cols-2 gap-8 w-full">
           <div className="flex flex-col gap-2">
             <Text
@@ -148,7 +147,7 @@ export default function Institution({
           </div>
         </div>
         {children}
-      </Container>
+      </div>
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Container, AppNavigation } from '@/components/shared'
 import { Text } from '@/components/ui/text'
 import { updateProfile } from '@/features/auth'
 import { fetchAvatars, type AvatarOption } from '@/features/onboarding'
@@ -110,45 +109,42 @@ export function SettingsPage({ role }: SettingsPageProps) {
   }
 
   return (
-    <>
-      <AppNavigation />
-      <div className="w-full min-h-screen">
-        <section className="animate-in fade-in-0 slide-in-from-bottom-4">
-          <Container className="flex w-full items-start justify-center py-6 md:py-10">
-            {loading ? <SettingsLoadingState /> : null}
+    <div className="w-full min-h-screen">
+      <section className="animate-in fade-in-0 slide-in-from-bottom-4">
+        <div className="container flex w-full flex-wrap items-start justify-center gap-6 py-6 md:py-10">
+          {loading ? <SettingsLoadingState /> : null}
 
-            {!loading && !profile ? (
-              <Text
-                as="p"
-                variant="body"
-                className="text-sm text-muted-foreground"
-              >
-                {t('profile.toasts.profileNotAvailable')}
-              </Text>
-            ) : null}
+          {!loading && !profile ? (
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm text-muted-foreground"
+            >
+              {t('profile.toasts.profileNotAvailable')}
+            </Text>
+          ) : null}
 
-            {!loading && profile ? (
-              <SettingsProfileForm
-                key={formKey}
-                role={role}
-                initialValues={{
-                  displayName: profile.display_name ?? '',
-                  linkedIn: profile.linkedin_url ?? '',
-                  aboutMe: profile.description ?? '',
-                }}
-                initialAvatarPath={profile.avatar_url ?? ''}
-                username={profile.username ?? ''}
-                email={profile.email ?? ''}
-                avatarOptions={avatarOptions}
-                linkedInError={linkedInError}
-                isSaving={isSaving}
-                onLinkedInValidate={validateLinkedIn}
-                onSave={handleSave}
-              />
-            ) : null}
-          </Container>
-        </section>
-      </div>
-    </>
+          {!loading && profile ? (
+            <SettingsProfileForm
+              key={formKey}
+              role={role}
+              initialValues={{
+                displayName: profile.display_name ?? '',
+                linkedIn: profile.linkedin_url ?? '',
+                aboutMe: profile.description ?? '',
+              }}
+              initialAvatarPath={profile.avatar_url ?? ''}
+              username={profile.username ?? ''}
+              email={profile.email ?? ''}
+              avatarOptions={avatarOptions}
+              linkedInError={linkedInError}
+              isSaving={isSaving}
+              onLinkedInValidate={validateLinkedIn}
+              onSave={handleSave}
+            />
+          ) : null}
+        </div>
+      </section>
+    </div>
   )
 }

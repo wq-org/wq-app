@@ -1,12 +1,9 @@
-interface SimplePDFViewerProps {
+type PdfPreviewProps = {
   pdfUrl: string
   fileName?: string
 }
 
-export default function SimplePDFViewer({
-  pdfUrl,
-  fileName = 'document.pdf',
-}: SimplePDFViewerProps) {
+export function PdfPreview({ pdfUrl, fileName = 'document.pdf' }: PdfPreviewProps) {
   return (
     <div className="w-full h-full">
       <iframe

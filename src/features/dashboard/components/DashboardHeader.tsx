@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Container } from '@/components/shared/container'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
 import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
@@ -23,7 +22,7 @@ export function DashboardHeader({
   const avatarSrc = useFaviconFallback || !imageUrl ? DEFAULT_INSTITUTION_IMAGE : imageUrl
 
   return (
-    <Container className="flex flex-col gap-4">
+    <section className="container flex flex-col gap-4 py-8">
       <div className="flex gap-4 items-start">
         <div className="flex flex-col gap-5 max-w-[600px]">
           <div className="relative h-24 w-24">
@@ -80,6 +79,6 @@ export function DashboardHeader({
           <QuoteOfTheDay className="max-w-md" />
         </div>
       </div>
-    </Container>
+    </section>
   )
 }

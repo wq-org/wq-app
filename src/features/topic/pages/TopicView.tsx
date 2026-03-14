@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AppWrapper } from '@/components/layout'
+import { AppShell } from '@/components/layout'
 import Spinner from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { getCourseById } from '@/features/course'
@@ -70,8 +70,8 @@ export default function TopicView() {
   }, [courseId, topicId])
 
   return (
-    <AppWrapper role="student">
-      <div className="mx-auto flex w-full flex-col gap-6 p-6">
+    <AppShell role="student">
+      <div className="container flex w-full flex-col gap-6 py-6">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Spinner
@@ -98,6 +98,6 @@ export default function TopicView() {
           />
         )}
       </div>
-    </AppWrapper>
+    </AppShell>
   )
 }

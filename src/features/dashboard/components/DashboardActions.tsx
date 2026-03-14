@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { Container } from '@/components/shared/container'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -17,7 +16,7 @@ export function DashboardActions({
   const { t } = useTranslation('features.teacher')
 
   return (
-    <Container className="pb-4">
+    <div className="container pb-4">
       <div className="flex items-center gap-4">
         {handleFollowClick ? (
           <Tooltip>
@@ -35,6 +34,6 @@ export function DashboardActions({
           </Tooltip>
         ) : null}
       </div>
-    </Container>
+    </div>
   )
 }
