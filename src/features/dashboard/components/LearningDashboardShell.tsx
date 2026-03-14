@@ -1,6 +1,7 @@
+// src/features/[role]/components/LearningDashboardShell.tsx
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AppNavigation } from '@/components/layout'
+import { AppNavigation } from '@/components/layout' // ← moved here
 import { getDashboardTabs } from '../config/dashboardTabs'
 import type { DashboardRole, DashboardTab } from '../types/dashboard.types'
 import { DashboardActions } from './DashboardActions'
@@ -29,7 +30,7 @@ export type LearningDashboardShellProps = {
   onViewFollowerList?: () => void
 }
 
-export function LearningDashboardShell({
+export const LearningDashboardShell = ({
   imageUrl,
   userName,
   username,
@@ -47,13 +48,14 @@ export function LearningDashboardShell({
   followedTeacherCount,
   customTabs,
   onViewFollowerList,
-}: LearningDashboardShellProps) {
+}: LearningDashboardShellProps) => {
   const [activeTab, setActiveTab] = useState('courses')
   const { t: tTeacher } = useTranslation('features.teacher')
   const { t: tLayout } = useTranslation('layout.dashboardLayout')
+
   const normalizedRole = role.toLowerCase()
-  const defaultTabs = getDashboardTabs(role)
-  const dashboardTabs = customTabs || defaultTabs
+  const dashboardTabs = customTabs ?? getDashboardTabs(role)
+
   const translatedTabs = useMemo(
     () =>
       dashboardTabs.map((tab) => ({
@@ -64,17 +66,19 @@ export function LearningDashboardShell({
     [dashboardTabs, tLayout],
   )
 
-  function handleTabClick(tabId: string) {
+  const handleTabClick = (tabId: string) => {
     setActiveTab(tabId)
     onClickTab?.(tabId)
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-background text-foreground">
+      {' '}
+      {/* ← root token */}
       <AppNavigation />
-
       <div className="flex flex-col">
-        <section className="rounded-2xl h-full">
+        {/* HERO ZONE — white/dark bg, inherits from bg-background */}
+        <section>
           <DashboardHeader
             imageUrl={imageUrl}
             userName={userName}
@@ -88,7 +92,7 @@ export function LearningDashboardShell({
               followCount={followCount}
               followedTeacherCount={followedTeacherCount}
               onViewFollowerList={onViewFollowerList}
-              institutionName={institutionName || tTeacher('meta.institutionFallbackName')}
+              institutionName={institutionName ?? tTeacher('meta.institutionFallbackName')}
               institutionSlug={institutionSlug}
               userEmail={email}
               linkedInUrl={linkedInUrl}
@@ -100,20 +104,20 @@ export function LearningDashboardShell({
             handleFollowClick={handleFollowClick}
             connectButtonLabel={connectButtonLabel}
           />
+        </section>
 
-          <section className="pt-8 rounded-2xl bg-muted-foreground/10 min-h-[560px] pb-8">
-            <div className="container h-full min-h-0 flex flex-col gap-8">
-              <div className="flex flex-wrap justify-between  items-center">
-                <DashboardTabs
-                  tabs={translatedTabs}
-                  activeTabId={activeTab}
-                  onTabChange={handleTabClick}
-                />
-              </div>
-
-              <DashboardContent>{children}</DashboardContent>
-            </div>
-          </section>
+        {/* CONTENT ZONE — muted background, full bleed */}
+        <section className="bg-muted min-h-[560px] pb-8 pt-8">
+          {' '}
+          {/* ← bg-muted not bg-muted-foreground/10 */}
+          <div className="container flex h-full min-h-0 flex-col gap-8">
+            <DashboardTabs
+              tabs={translatedTabs}
+              activeTabId={activeTab}
+              onTabChange={handleTabClick}
+            />
+            <DashboardContent>{children}</DashboardContent>
+          </div>
         </section>
       </div>
     </div>

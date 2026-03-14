@@ -42,14 +42,13 @@ dist-ssr
 
 .cursor/rules/db-schema-wq.mdc
 
+
+repo.index.md
+ui-registry.md
 auth.users.md
 profiles.md
 games.md
 institution.md
 *.csv
 csv/
-*.py
-
-.claude/repo-index.md
-.claude/ui-registry.md
 

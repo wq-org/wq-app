@@ -56,21 +56,6 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
 
         <ScrollArea className="min-h-0 flex-1 w-full">
           <CardContent className="flex w-full flex-col gap-6 px-0 animate-in fade-in-0 slide-in-from-bottom-2">
-            <TitleDescriptionFields
-              title={state.title}
-              description={state.description}
-              onTitleChange={state.setTitle}
-              onDescriptionChange={state.setDescription}
-              titleLabel={t('addDialog.fieldTitleLabel', { type: typeLabel })}
-              titlePlaceholder={t('addDialog.fieldTitlePlaceholder', { type: typeLabel })}
-              descriptionLabel={t('addDialog.fieldDescriptionLabel', { type: typeLabel })}
-              descriptionPlaceholder={t('addDialog.fieldDescriptionPlaceholder', {
-                type: typeLabel,
-              })}
-              rows={3}
-              maxDescriptionLength={280}
-            />
-
             {shouldShowThemePicker ? (
               <div className="flex min-w-0 flex-col gap-3">
                 <Label className="font-normal text-gray-700">
@@ -94,19 +79,24 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
                 />
               </div>
             ) : null}
+            <TitleDescriptionFields
+              title={state.title}
+              description={state.description}
+              onTitleChange={state.setTitle}
+              onDescriptionChange={state.setDescription}
+              titleLabel={t('addDialog.fieldTitleLabel', { type: typeLabel })}
+              titlePlaceholder={t('addDialog.fieldTitlePlaceholder', { type: typeLabel })}
+              descriptionLabel={t('addDialog.fieldDescriptionLabel', { type: typeLabel })}
+              descriptionPlaceholder={t('addDialog.fieldDescriptionPlaceholder', {
+                type: typeLabel,
+              })}
+              rows={3}
+              maxDescriptionLength={280}
+            />
           </CardContent>
         </ScrollArea>
 
         <CardFooter className="flex w-full flex-col gap-3 px-0 animate-in fade-in-0 slide-in-from-bottom-2">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={state.reset}
-            className="w-full active:animate-in active:zoom-in-95"
-            disabled={state.loading}
-          >
-            {t('addDialog.actions.cancel')}
-          </Button>
           <Button
             type="submit"
             variant="darkblue"
@@ -116,6 +106,15 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
             {state.loading
               ? t('addDialog.actions.creating')
               : t('addDialog.actions.create', { type: typeLabel })}
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={state.reset}
+            className="w-full active:animate-in active:zoom-in-95"
+            disabled={state.loading}
+          >
+            {t('addDialog.actions.cancel')}
           </Button>
         </CardFooter>
       </form>

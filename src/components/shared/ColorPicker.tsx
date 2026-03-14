@@ -24,7 +24,7 @@ export function ColorPicker({
     >
       <div
         className={cn(
-          'flex w-max min-w-full',
+          'flex w-max min-w-full justify-around',
           compact ? 'gap-2 px-2 py-2' : 'gap-2 px-3 py-3 sm:gap-3 sm:px-4 sm:py-4',
         )}
       >
