@@ -45,7 +45,7 @@ export interface IconEntry {
 }
 
 export interface GridIconBackgroundProps {
-  icons?: IconEntry[]
+  icons?: readonly IconEntry[]
   /** Extra classes on the root wrapper */
   className?: string
   /** Content rendered on top of the background */

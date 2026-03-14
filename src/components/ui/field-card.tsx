@@ -1,4 +1,3 @@
-// components/ui/field-card.tsx
 import { cn } from '@/lib/utils'
 
 type FieldCardProps = {

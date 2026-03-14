@@ -10,7 +10,7 @@ interface AuthCardLayoutProps {
   backTo?: string
   className?: string
   navigationSlot?: React.ReactNode
-  backgroundIcons?: IconEntry[]
+  backgroundIcons?: readonly IconEntry[]
 }
 
 export default function AuthCardLayout({

@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase'
 import AuthCardLayout from '../components/AuthCardLayout'
 import PasswordResetSuccessDrawer from '../components/PasswordResetSuccessDrawer'
 import Spinner from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 type PageState = 'loading' | 'invalid' | 'form' | 'success'
 
@@ -37,10 +38,11 @@ function getAuthErrorFromUrl(): string | null {
     Boolean(hashParams.get('error')) ||
     Boolean(hashParams.get('error_code'))
 
-  return hasExplicitAuthError ? 'This password reset link is invalid or expired.' : null
+  return hasExplicitAuthError ? '__AUTH_RESET_INVALID__' : null
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation('auth')
   const navigate = useNavigate()
 
   const [pageState, setPageState] = useState<PageState>('loading')
@@ -48,9 +50,7 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const [invalidReason, setInvalidReason] = useState(
-    'This password reset link is no longer valid. Please request a new one.',
-  )
+  const [invalidReason, setInvalidReason] = useState(t('resetPassword.invalidReason'))
 
   // Verify that a valid recovery session exists
   useEffect(() => {
@@ -71,7 +71,12 @@ export default function ResetPasswordPage() {
 
     const explicitAuthError = getAuthErrorFromUrl()
     if (explicitAuthError) {
-      settle('invalid', explicitAuthError)
+      settle(
+        'invalid',
+        explicitAuthError === '__AUTH_RESET_INVALID__'
+          ? t('resetPassword.invalidReason')
+          : explicitAuthError,
+      )
       return () => {}
     }
 
@@ -114,7 +119,7 @@ export default function ResetPasswordPage() {
       if (timeoutId) clearTimeout(timeoutId)
       if (intervalId) clearInterval(intervalId)
     }
-  }, [])
+  }, [t])
 
   const isFormValid =
     newPassword.trim() !== '' && confirmPassword.trim() !== '' && newPassword === confirmPassword
@@ -128,8 +133,9 @@ export default function ResetPasswordPage() {
       setPageState('success')
       setShowSuccess(true)
     } catch (err) {
-      toast.error('Failed to Reset Password', {
-        description: err instanceof Error ? err.message : 'An unexpected error occurred.',
+      toast.error(t('resetPassword.toasts.errorTitle'), {
+        description:
+          err instanceof Error ? err.message : t('resetPassword.toasts.errorDescription'),
       })
     } finally {
       setIsSubmitting(false)
@@ -151,7 +157,7 @@ export default function ResetPasswordPage() {
             variant="body"
             className="text-sm text-muted-foreground"
           >
-            Verifying your reset link...
+            {t('resetPassword.verifying')}
           </Text>
         </div>
       </AuthCardLayout>
@@ -168,7 +174,7 @@ export default function ResetPasswordPage() {
             variant="h1"
             className="text-2xl font-semibold"
           >
-            Invalid or Expired Link
+            {t('resetPassword.invalidTitle')}
           </Text>
           <Text
             as="p"
@@ -178,10 +184,11 @@ export default function ResetPasswordPage() {
             {invalidReason}
           </Text>
           <Button
+            variant="link"
             onClick={() => navigate('/auth/forgot-password')}
             className="mt-2 w-full max-w-xs"
           >
-            Request New Link
+            {t('resetPassword.requestNewLink')}
           </Button>
         </div>
       </AuthCardLayout>
@@ -199,14 +206,14 @@ export default function ResetPasswordPage() {
               variant="h1"
               className="text-2xl font-semibold"
             >
-              Reset Password
+              {t('resetPassword.title')}
             </Text>
             <Text
               as="p"
               variant="body"
               className="text-sm text-muted-foreground text-balance"
             >
-              Enter your new password below.
+              {t('resetPassword.subtitle')}
             </Text>
           </div>
 
@@ -216,32 +223,34 @@ export default function ResetPasswordPage() {
           >
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="new-password">New Password</FieldLabel>
+                <FieldLabel htmlFor="new-password">{t('resetPassword.newPassword')}</FieldLabel>
                 <Input
                   id="new-password"
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  placeholder={t('resetPassword.newPasswordPlaceholder')}
                   required
                   className="bg-gray-50"
                 />
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+                <FieldLabel htmlFor="confirm-password">
+                  {t('resetPassword.confirmPassword')}
+                </FieldLabel>
                 <Input
                   id="confirm-password"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
+                  placeholder={t('resetPassword.confirmPasswordPlaceholder')}
                   required
                   className="bg-gray-50"
                 />
                 {confirmPassword && newPassword !== confirmPassword && (
                   <FieldDescription className="text-destructive">
-                    Passwords do not match
+                    {t('resetPassword.passwordMismatch')}
                   </FieldDescription>
                 )}
               </Field>
@@ -252,7 +261,7 @@ export default function ResetPasswordPage() {
                   disabled={!isFormValid || isSubmitting}
                   className="w-full cursor-pointer"
                 >
-                  {isSubmitting ? 'Resetting...' : 'Reset Password'}
+                  {isSubmitting ? t('resetPassword.submitting') : t('resetPassword.submit')}
                 </Button>
               </Field>
             </FieldGroup>

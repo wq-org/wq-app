@@ -212,7 +212,7 @@ export default function SignUpPage() {
             {t('signUp.hasAccount')}{' '}
           </Text>
           <Button
-            variant="ghost"
+            variant="link"
             onClick={() => navigate('/auth/login')}
             className="hover:text-primary transition-colors"
           >

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldSeparator } from '@/components/ui/field'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authApi'
 import Spinner from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
@@ -154,7 +154,7 @@ export default function LoginPage() {
           className="flex flex-col gap-4"
         >
           <div className="flex justify-between">
-            <Label> {t('login.email')}</Label>
+            <Label>{t('login.email')}</Label>
             {emailError && <p className="px-1 text-xs text-red-500">{emailError}</p>}
           </div>
           <FieldInput
@@ -172,12 +172,12 @@ export default function LoginPage() {
 
           <div className="flex items-center justify-between px-1 pt-2">
             <Label>{t('login.password')}</Label>
-            <a
-              href="/auth/forgot-password"
+            <Link
+              to="/auth/forgot-password"
               className="text-sm underline-offset-4 hover:underline"
             >
               {t('login.forgot')}
-            </a>
+            </Link>
           </div>
           <FieldInput
             id="password"
@@ -219,7 +219,7 @@ export default function LoginPage() {
             {t('login.noAccount')}{' '}
           </Text>
           <Button
-            variant="ghost"
+            variant="link"
             onClick={() => navigate('/auth/signUp')}
             className="hover:text-primary transition-colors"
           >

@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useUser } from '@/contexts/user'
-import { getDashboardPathForRole, type UserRole } from '@/features/auth/types/auth.types'
+import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
 
 interface SuccessPageProps {
   isOpen: boolean
