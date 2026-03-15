@@ -9,6 +9,7 @@ import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 
 interface AppNavigationProps {
   className?: string
@@ -54,10 +55,14 @@ export const AppNavigation = ({
 
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-card/90 px-2 py-2 text-foreground shadow-sm backdrop-blur supports-backdrop-filter:bg-card/75">
             <LanguageSwitcher />
+            <Separator orientation="vertical" />
             <ThemeModeToggle />
             {authenticated && (
               <>
-                <div className="h-6 w-px bg-border/80" />
+                <Separator
+                  orientation="vertical"
+                  className="bg-border/80"
+                />
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -82,7 +87,10 @@ export const AppNavigation = ({
                     <NotificationPanel onTotalCountChange={setNotificationCount} />
                   </PopoverContent>
                 </Popover>
-                <div className="h-6 w-px bg-border/80" />
+                <Separator
+                  orientation="vertical"
+                  className="bg-border/80"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
