@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import type { Node, Edge } from '@xyflow/react'
-import { getGameForStudio } from '@/features/game-studio/api/gameStudioApi'
+import { getGameForStudio } from '@/features/game-studio'
 import { GamePlayView } from '../components/GamePlayView'
 import { GamePlayProvider } from '@/contexts/game-play'
-import { getDashboardPathForRole } from '@/features/auth/types/auth.types'
+import { getDashboardPathForRole } from '@/features/auth'
 import { useUser } from '@/contexts/user'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { ArrowLeft } from 'lucide-react'
 
-export default function PlayGamePage() {
+export function PlayGamePage() {
   const { gameId } = useParams<{ gameId: string }>()
   const navigate = useNavigate()
   const { getRole } = useUser()

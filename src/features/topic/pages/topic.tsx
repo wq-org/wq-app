@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useCourse } from '@/contexts/course'
@@ -17,7 +17,7 @@ import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
 import { Separator } from '@/components/ui/separator'
-export default function Topic() {
+export function Topic() {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()

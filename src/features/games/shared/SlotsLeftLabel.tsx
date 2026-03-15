@@ -7,7 +7,7 @@ interface SlotsLeftLabelProps {
   className?: string
 }
 
-export default function SlotsLeftLabel({ current, max, className }: SlotsLeftLabelProps) {
+export function SlotsLeftLabel({ current, max, className }: SlotsLeftLabelProps) {
   return (
     <Text
       as="span"

@@ -14,7 +14,7 @@ export interface PublishGameCheckListProps {
   validationResult: ValidationResult
 }
 
-export default function PublishGameCheckList({ validationResult }: PublishGameCheckListProps) {
+export function PublishGameCheckList({ validationResult }: PublishGameCheckListProps) {
   const { t } = useTranslation('features.gameStudio')
   const { nodeItems, globalErrors } = validationResult
   const hasAnyErrors = globalErrors.length > 0 || nodeItems.some((item) => item.errors.length > 0)

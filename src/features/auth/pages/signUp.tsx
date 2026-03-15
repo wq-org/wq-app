@@ -9,12 +9,12 @@ import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '@/features/auth'
 import { signUpUser } from '../api/authApi'
 import { useUser } from '@/contexts/user'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { validateEmail } from '@/lib/validations'
-import AuthCardLayout from '../components/AuthCardLayout'
-import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
-import type { TabItem } from '@/components/shared/tabs/SelectTabs'
+import { AuthCardLayout } from '../components/AuthCardLayout'
+import { SelectTabs } from '@/components/shared'
+import type { TabItem } from '@/components/shared'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
 import { Label } from '@/components/ui/label'
@@ -25,7 +25,7 @@ const roleTabs: TabItem[] = [
   { id: USER_ROLES.INSTITUTION_ADMIN, icon: Building2, title: 'Institution' },
 ]
 
-export default function SignUpPage() {
+export function SignUpPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { pendingRole, setPendingRole } = useUser()

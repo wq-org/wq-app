@@ -1,5 +1,5 @@
-import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
-import type { TabItem } from '@/components/shared/tabs'
+import { SelectTabs } from '@/components/shared'
+import type { TabItem } from '@/components/shared'
 
 type DashboardTabsProps = {
   tabs: TabItem[]

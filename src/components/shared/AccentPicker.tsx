@@ -21,12 +21,13 @@ export function AccentPicker({ className }: AccentPickerProps) {
       >
         <span
           className={cn(
-            'flex h-10 w-10 items-center justify-center rounded-full',
-            accent === 'default' && 'ring-2 ring-white ring-offset-2 ring-offset-background',
+            'flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background shadow-sm',
+            accent === 'default' &&
+              'ring-2 ring-foreground/20 ring-offset-2 ring-offset-background',
           )}
         >
           <span
-            className="h-10 w-10 rounded-full border border-border/60"
+            className="h-9 w-9 rounded-full border border-black/10 dark:border-white/10"
             style={{ backgroundColor: 'oklch(0.205 0 0)' }}
           />
         </span>
@@ -47,12 +48,12 @@ export function AccentPicker({ className }: AccentPickerProps) {
           >
             <span
               className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-full',
-                isSelected && 'ring-2 ring-white ring-offset-2 ring-offset-background',
+                'flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background shadow-sm',
+                isSelected && 'ring-2 ring-foreground/20 ring-offset-2 ring-offset-background',
               )}
             >
               <span
-                className="h-10 w-10 rounded-full border border-border/60"
+                className="h-9 w-9 rounded-full border border-black/10 dark:border-white/10"
                 style={{ backgroundColor: `oklch(${accentColor.oklch})` }}
               />
             </span>

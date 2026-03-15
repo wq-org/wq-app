@@ -32,12 +32,7 @@ function getThemeIdFromData(initialData: StartGameDialogProps['initialData']): T
   return initialData?.theme_id ?? 'blue'
 }
 
-export default function StartGameDialog({
-  open,
-  onOpenChange,
-  onSave,
-  initialData,
-}: StartGameDialogProps) {
+export function StartGameDialog({ open, onOpenChange, onSave, initialData }: StartGameDialogProps) {
   const { t } = useTranslation('features.gameStudio')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')

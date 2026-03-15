@@ -3,7 +3,7 @@ import { MapPin } from 'lucide-react'
 import type { GameImagePinNodeProps } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
 
-export default function GameImagePinNode({ data, selected }: GameImagePinNodeProps) {
+export function GameImagePinNode({ data, selected }: GameImagePinNodeProps) {
   return (
     <div
       className={`relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px] cursor-pointer hover:shadow-md transition-shadow animate-in fade-in-0 slide-in-from-bottom-2 ${selected ? 'border-2 border-gray-300 animate-in zoom-in-95' : ''}`}

@@ -5,20 +5,20 @@ import { FieldInput } from '@/components/ui/field-input'
 import { FieldSeparator } from '@/components/ui/field'
 import { Link, useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authApi'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth'
 import { validateEmail } from '@/lib/validations'
-import AuthCardLayout from '../components/AuthCardLayout'
+import { AuthCardLayout } from '../components/AuthCardLayout'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { AUTH_GRID_ICONS } from '../constants'
 import { Check } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 
-export default function LoginPage() {
+export function LoginPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { setPendingRole, clearPendingRole } = useUser()

@@ -1,6 +1,6 @@
 import { AdminWorkspaceShell } from '@/features/admin'
 
-export default function InstitutionCourses() {
+export function InstitutionCourses() {
   return (
     <AdminWorkspaceShell role="institution_admin">
       <p>Courses</p>

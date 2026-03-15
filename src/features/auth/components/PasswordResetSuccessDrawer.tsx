@@ -19,7 +19,7 @@ interface PasswordResetSuccessDrawerProps {
   onOpenChange: (open: boolean) => void
 }
 
-export default function PasswordResetSuccessDrawer({
+export function PasswordResetSuccessDrawer({
   open,
   onOpenChange,
 }: PasswordResetSuccessDrawerProps) {

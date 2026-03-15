@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
-import InstitutionInformationForm from '../components/InstitutionInformationForm'
+import { InstitutionInformationForm } from '../components/InstitutionInformationForm'
 import { createInstitution } from '../api/institutionApi'
 import { useUser } from '@/contexts/user'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import type { InstitutionFormData } from '../types/institution.types'
 
-export default function NewInstitution() {
+export function NewInstitution() {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const [loading, setLoading] = useState(false)

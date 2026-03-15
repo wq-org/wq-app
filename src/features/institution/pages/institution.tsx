@@ -26,7 +26,7 @@ interface InstitutionProps {
   children?: React.ReactNode
 }
 
-export default function Institution({
+export function Institution({
   avatarUrl = '#',
   titleText = 'Better tools smooth',
   lighterFirst = 'Be workflow',

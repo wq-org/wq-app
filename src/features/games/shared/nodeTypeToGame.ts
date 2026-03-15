@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react'
-import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame'
-import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame'
-import ImagePinMarkGame from '@/features/games/image-pin-mark/ImagePinMarkGame'
+import { ParagraphLineSelectGame } from '@/features/games/paragraph-line-select'
+import { ImageTermMatchGame } from '@/features/games/image-term-match'
+import { ImagePinMarkGame } from '@/features/games/image-pin-mark'
 
 export interface GameComponentProps {
   initialData?: unknown

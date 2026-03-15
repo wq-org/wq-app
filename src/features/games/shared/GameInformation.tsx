@@ -14,7 +14,7 @@ export interface GameInformationProps {
   onDescriptionChange: (description: string) => void
 }
 
-export default function GameInformation({
+export function GameInformation({
   title,
   description,
   onTitleChange,

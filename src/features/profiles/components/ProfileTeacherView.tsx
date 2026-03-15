@@ -17,7 +17,7 @@ import {
 import { GameCardList, getTeacherFlowGames, type GameCardProps } from '@/features/game-studio'
 import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import type { Profile } from '@/contexts/user/UserContext'
 import { getDashboardTabs } from '@/features/dashboard'

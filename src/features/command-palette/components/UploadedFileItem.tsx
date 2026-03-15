@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { FileText, MoreVertical, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
-import { getFileTypeStyle } from '@/components/shared/upload-files/utils/fileTypeStyle'
+import { getFileTypeStyle } from '@/components/shared'
 
 interface UploadedFileItemProps {
   file: File

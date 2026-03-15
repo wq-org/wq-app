@@ -17,17 +17,17 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import { Button } from '@/components/ui/button'
-import { TableEmptyView } from '@/features/files'
 import type { FileItem } from '../types/files.types'
 import { FILE_TYPE_CONFIG } from '../types/files.types'
-import { FilesCard } from '@/features/files'
+import { FilesCard } from './FilesCard'
+import { FilesTableEmptyView } from './FilesTableEmptyView'
 import { useTranslation } from 'react-i18next'
 
-interface FileTableProps {
+export interface FilesTableViewProps {
   files: FileItem[]
   onRefresh?: () => void
 }
-export function FileTable({ files, onRefresh }: FileTableProps) {
+export function FilesTableView({ files, onRefresh }: FilesTableViewProps) {
   const { t } = useTranslation('features.files')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null)
@@ -84,7 +84,7 @@ export function FileTable({ files, onRefresh }: FileTableProps) {
   }
 
   if (files.length === 0) {
-    return <TableEmptyView />
+    return <FilesTableEmptyView />
   }
 
   return (

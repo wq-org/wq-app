@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import type { Notification, NotificationAction } from '../types/notification.types'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'

@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 
-export default function GameCard({
+export function GameCard({
   title,
   description,
   version,

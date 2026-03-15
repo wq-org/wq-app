@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { getLessonById } from '@/features/lesson'
 import { getTopicById } from '@/features/topic'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 
 /**
  * Redirects legacy /teacher/lesson/:id to /teacher/course/:courseId/lesson/:id
  * by resolving courseId from the lesson's topic.
  */
-export default function LessonRedirect() {
+export function LessonRedirect() {
   const { id: lessonId } = useParams<{ id: string }>()
   const [target, setTarget] = useState<string | null>(null)
   const [error, setError] = useState(false)

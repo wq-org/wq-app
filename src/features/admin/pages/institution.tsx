@@ -6,7 +6,7 @@ import { fetchInstitutions } from '../api/institutionApi'
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ const STATUS_VARIANT: Record<
   suspended: 'destructive',
 }
 
-export default function AdminInstitution() {
+export function AdminInstitution() {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const [institutions, setInstitutions] = useState<InstitutionRow[]>([])

@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { GameNodePointsContext } from '@/contexts/game-studio'
-import GameInformation from '@/features/games/shared/GameInformation'
-import ImageTermMatchGame from '../ImageTermMatchGame'
+import { GameInformation } from '@/features/games/shared/GameInformation'
+import { ImageTermMatchGame } from '../ImageTermMatchGame'
 
 /**
  * Standalone page wrapper for Image Term Match game.
  * Fixes: use @/contexts/game-studio for GameNodePointsContext;
  * GameInformation only accepts title, description, onTitleChange, onDescriptionChange.
  */
-export default function ImageTermMatchGamePage() {
+export function ImageTermMatchGamePage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [points, setPoints] = useState(0)

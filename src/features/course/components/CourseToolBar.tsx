@@ -2,13 +2,13 @@ import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import { ClearableInput } from '@/components/shared'
 
-export interface TopicsToolbarProps {
+export interface CourseToolBarProps {
   searchValue: string
   onSearchChange: (value: string) => void
   className?: string
 }
 
-export function TopicsToolbar({ searchValue, onSearchChange, className }: TopicsToolbarProps) {
+export function CourseToolBar({ searchValue, onSearchChange, className }: CourseToolBarProps) {
   const { t } = useTranslation('features.course')
 
   return (
@@ -17,9 +17,9 @@ export function TopicsToolbar({ searchValue, onSearchChange, className }: Topics
         showSearchIcon
         value={searchValue}
         onValueChange={onSearchChange}
-        label={t('topic.toolbar.searchLabel', { defaultValue: 'Search topics' })}
-        placeholder={t('topic.toolbar.searchPlaceholder', {
-          defaultValue: 'Search topics by title or description...',
+        label={t('course.toolbar.searchLabel', { defaultValue: 'Search courses' })}
+        placeholder={t('course.toolbar.searchPlaceholder', {
+          defaultValue: 'Search courses by title or description...',
         })}
         className="w-90 pb-0"
       />

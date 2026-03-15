@@ -16,7 +16,7 @@ export interface SquareMarkerProps {
   pointerEvents?: 'auto' | 'none'
 }
 
-export default function SquareMarker({
+export function SquareMarker({
   number,
   x,
   y,

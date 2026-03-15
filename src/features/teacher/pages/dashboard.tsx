@@ -2,15 +2,21 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LearningDashboardShell } from '@/features/dashboard'
 import { CommandPalette } from '@/features/command-palette'
-import { CourseCardList, EmptyCourseView, type CourseCardProps } from '@/features/course'
-import { TableView, type FileItem } from '@/features/files'
+import {
+  CourseCardList,
+  CourseToolBar,
+  COURSE_SEARCH_FIELDS,
+  EmptyCourseView,
+  type CourseCardProps,
+} from '@/features/course'
+import { FilesTableView, type FileItem } from '@/features/files'
 import { useUser } from '@/contexts/user'
 import { useCourse } from '@/contexts/course'
 import { useAvatarUrl } from '@/features/onboarding'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
-import Spinner from '@/components/ui/spinner'
-import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
-import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { Spinner } from '@/components/ui/spinner'
+import type { FileListItem } from '@/components/shared'
+import { fetchFilesByRole } from '@/components/shared'
 import { GamePlayList } from '@/features/game-play'
 import { getTeacherFollowers, type TeacherFollowerProfile } from '@/features/profiles'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -19,6 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 function FollowerRow({
   follower,
@@ -98,9 +105,10 @@ function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
-export default function Dashboard() {
+export function Dashboard() {
   const { t } = useTranslation('features.teacher')
   const [selectedTab, setSelectedTab] = useState<string>('courses')
+  const [courseSearchQuery, setCourseSearchQuery] = useState('')
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { courses, loading: coursesLoading, fetchCourses, setSelectedCourse } = useCourse()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
@@ -110,6 +118,7 @@ export default function Dashboard() {
   const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false)
   const [followersLoading, setFollowersLoading] = useState(false)
   const [followers, setFollowers] = useState<TeacherFollowerProfile[]>([])
+  const filteredCourses = useSearchFilter(courses, courseSearchQuery, COURSE_SEARCH_FIELDS)
 
   // Fetch courses when profile is loaded
   useEffect(() => {
@@ -232,19 +241,25 @@ export default function Dashboard() {
           ) : courses.length === 0 ? (
             <EmptyCourseView />
           ) : (
-            <CourseCardList
-              courses={courses.map(
-                (course) =>
-                  ({
-                    id: course.id,
-                    title: course.title,
-                    description: course.description,
-                    is_published: course.is_published,
-                    themeId: course.theme_id,
-                  }) satisfies CourseCardProps,
-              )}
-              onCourseView={handleCardView}
-            />
+            <div className="flex flex-col gap-6">
+              <CourseToolBar
+                searchValue={courseSearchQuery}
+                onSearchChange={setCourseSearchQuery}
+              />
+              <CourseCardList
+                courses={filteredCourses.map(
+                  (course) =>
+                    ({
+                      id: course.id,
+                      title: course.title,
+                      description: course.description,
+                      is_published: course.is_published,
+                      themeId: course.theme_id,
+                    }) satisfies CourseCardProps,
+                )}
+                onCourseView={handleCardView}
+              />
+            </div>
           ))}
 
         {selectedTab === 'games' && <GamePlayList />}
@@ -259,7 +274,7 @@ export default function Dashboard() {
               />
             </div>
           ) : (
-            <TableView
+            <FilesTableView
               files={files}
               onRefresh={loadFiles}
             />

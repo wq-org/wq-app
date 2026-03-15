@@ -21,7 +21,7 @@ export function showUnsavedChangesToast({
 
   toast.custom(
     (id) => (
-      <div className="flex flex-col gap-2 rounded-lg  bg-background p-4 shadow-md">
+      <div className="flex flex-col gap-2 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-xl shadow-black/10 dark:shadow-black/30">
         <Text
           as="p"
           variant="body"

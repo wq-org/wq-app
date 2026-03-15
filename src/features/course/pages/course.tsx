@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useCourse } from '@/contexts/course'
 import { useTopic } from '@/contexts/topic'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { EmptyTopicsView } from '@/features/course'
@@ -14,7 +14,7 @@ import { TopicsToolbar } from '@/features/topic'
 import { TopicCardList } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
-export default function Course() {
+export function Course() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()

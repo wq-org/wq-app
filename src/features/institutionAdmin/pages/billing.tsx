@@ -1,5 +1,5 @@
 import { AdminWorkspaceShell } from '@/features/admin'
 
-export default function AdminBilling() {
+export function AdminBilling() {
   return <AdminWorkspaceShell role="institution_admin">Billing</AdminWorkspaceShell>
 }

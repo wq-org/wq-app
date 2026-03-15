@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { CourseTabs, type CourseTabId } from './CourseTabs'
 
-export function CourseWorkspaceShell() {
+export function CourseLayout() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const location = useLocation()
@@ -151,5 +151,3 @@ export function CourseWorkspaceShell() {
     </AppShell>
   )
 }
-
-export const CourseLayout = CourseWorkspaceShell

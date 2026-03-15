@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { upsertProfile, updateProfile } from '@/features/auth/api/authApi'
+import { upsertProfile, updateProfile, USER_ROLES } from '@/features/auth'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/features/onboarding'
 import { SuccessPage } from './SuccessPage'
@@ -13,7 +13,6 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
-import { USER_ROLES } from '@/features/auth/types/auth.types'
 
 export function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
   const { session, pendingRole, profile, setPendingRole, refreshProfile } = useUser()

@@ -6,7 +6,7 @@ import { useGameStudioContext } from '@/contexts/game-studio'
 import type { GameNodeSettingsProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
 
-export default function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
+export function GameNodeSettings({ nodeId }: GameNodeSettingsProps) {
   const { t } = useTranslation('features.gameStudio')
   const { getNode } = useGameStudioContext()
   const node = nodeId ? getNode(nodeId) : null

@@ -1,6 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom'
 
-export default function TeacherViewPage() {
+export function TeacherViewPage() {
   const { id } = useParams<{ id: string }>()
   return (
     <Navigate

@@ -1,40 +1,35 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useUser } from './contexts/user'
-import {
-  LoginPage,
-  SignUpPage,
-  VerifyEmailPage,
-  ForgotPasswordPage,
-  ResetPasswordPage,
-} from './features/auth'
+import { LoginPage } from './features/auth/pages/login'
+import { SignUpPage } from './features/auth/pages/signUp'
+import { VerifyEmailPage } from './features/auth/pages/verify-email'
+import { ForgotPasswordPage } from './features/auth/pages/forgot-password'
+import { ResetPasswordPage } from './features/auth/pages/reset-password'
 import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
 import ChangelogPage from './user/pages/changelog'
-import { InstitutionPage as Institution, InstitutionViewPage } from '@/features/institution'
-import {
-  StudentDashboardPage as StudentDashboard,
-  StudentSettingsPage as StudentSettings,
-  StudentChatPage as StudentChat,
-  StudentViewPage,
-} from '@/features/student'
-import {
-  TeacherDashboardPage as TeacherDashboard,
-  TeacherSettingsPage as TeacherSettings,
-  TeacherGameStudioPage as GameStudio,
-  TeacherChatPage as TeacherChat,
-  TeacherViewPage,
-} from '@/features/teacher'
-import PlayGamePage from './features/game-play/pages/PlayGamePage'
+import { Institution, InstitutionViewPage } from '@/features/institution'
+import { StudentDashboard } from '@/features/student'
+import { StudentSettingsPage as StudentSettings } from '@/features/student/pages/settings'
+import { Chat as StudentChat } from '@/features/student/pages/chat'
+import { StudentViewPage } from '@/features/student/pages/view'
+import { Dashboard as TeacherDashboard } from '@/features/teacher/pages/dashboard'
+import { TeacherSettingsPage as TeacherSettings } from '@/features/teacher/pages/settings'
+import { GameStudio } from '@/features/teacher/pages/game-studio'
+import { Chat as TeacherChat } from '@/features/teacher/pages/chat'
+import { TeacherViewPage } from '@/features/teacher/pages/view'
+import { PlayGamePage } from './features/game-play/pages/PlayGamePage'
 import { NotFoundPage } from './user/pages/not-found'
-import { CourseLayout, CoursePage, CourseViewPage as CourseView } from '@/features/course'
-import {
-  LessonPage,
-  LessonRedirectPage as LessonRedirect,
-  LessonViewPage as LessonView,
-} from '@/features/lesson'
-import { TopicPage, TopicViewPage } from '@/features/topic'
-import { OnboardingPage as Onboarding } from '@/features/onboarding'
+import { CourseLayout } from '@/features/course'
+import { Course as CoursePage } from '@/features/course/pages/course'
+import { CourseView } from '@/features/course/pages/CourseView'
+import { Lesson as LessonPage } from '@/features/lesson/pages/lesson'
+import { LessonRedirect } from '@/features/lesson/pages/LessonRedirect'
+import { LessonView } from '@/features/lesson/pages/LessonView'
+import { Topic as TopicPage } from '@/features/topic/pages/topic'
+import { TopicView } from '@/features/topic/pages/TopicView'
+import { Onboarding } from '@/features/onboarding/pages/onboarding'
 
 import { UserProvider } from './contexts/user'
 import { CourseProvider } from './contexts/course'
@@ -43,29 +38,25 @@ import { TopicProvider } from './contexts/topic'
 import { RequireAuth, RequireOnboarding } from '@/features/auth'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
-import GameEditorCanvas from './features/game-studio/components/GameEditorCanvas'
-import { ProfileViewPage } from '@/features/profiles'
-import {
-  AdminAnalyticsPage as AdminAnalytics,
-  AdminBillingPage as AdminBilling,
-  AdminDashboard,
-  AdminFeaturesPage as AdminFeatures,
-  AdminInstitutionPage as AdminInstitution,
-  AdminLicensesPage as AdminLicenses,
-  AdminNewInstitutionPage as NewInstitution,
-  AdminSystemPage as AdminSystem,
-  AdminUsersPage as AdminUsers,
-} from '@/features/admin'
-import {
-  InstitutionAdminAnalyticsPage,
-  InstitutionAdminBillingPage,
-  InstitutionAdminCoursesPage,
-  InstitutionAdminDashboardPage,
-  InstitutionAdminLicensesPage,
-  InstitutionAdminSettingsPage,
-  InstitutionAdminStudentsPage,
-  InstitutionAdminTeachersPage,
-} from '@/features/institutionAdmin'
+import { GameEditorCanvas } from '@/features/game-studio'
+import { ProfileViewPage } from '@/features/profiles/pages/view'
+import { AdminAnalytics } from '@/features/admin/pages/analytics'
+import { AdminBilling } from '@/features/admin/pages/billing'
+import { AdminDashboard } from '@/features/admin/pages/dashboard'
+import { AdminFeatures } from '@/features/admin/pages/features'
+import { AdminInstitution } from '@/features/admin/pages/institution'
+import { AdminLicenses } from '@/features/admin/pages/licenses'
+import { NewInstitution } from '@/features/admin/pages/newInstitution'
+import { AdminSystem } from '@/features/admin/pages/system'
+import { AdminUsers } from '@/features/admin/pages/users'
+import { InstitutionDashboard as InstitutionAdminDashboardPage } from '@/features/institutionAdmin/pages/dashboard'
+import { InstitutionTeachers as InstitutionAdminTeachersPage } from '@/features/institutionAdmin/pages/teacher'
+import { InstitutionStudents as InstitutionAdminStudentsPage } from '@/features/institutionAdmin/pages/students'
+import { AdminLicenses as InstitutionAdminLicensesPage } from '@/features/institutionAdmin/pages/licenses'
+import { AdminBilling as InstitutionAdminBillingPage } from '@/features/institutionAdmin/pages/billing'
+import { InstitutionCourses as InstitutionAdminCoursesPage } from '@/features/institutionAdmin/pages/courses'
+import { AdminAnalytics as InstitutionAdminAnalyticsPage } from '@/features/institutionAdmin/pages/analytics'
+import { AdminSettings as InstitutionAdminSettingsPage } from '@/features/institutionAdmin/pages/settings'
 
 function GameEditorCanvasWithProjectId() {
   const { id } = useParams<{ id: string }>()
@@ -609,7 +600,7 @@ function App() {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <TopicViewPage />
+                        <TopicView />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

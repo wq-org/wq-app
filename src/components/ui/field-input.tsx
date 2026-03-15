@@ -1,6 +1,6 @@
 // components/ui/field-input.tsx
 import { useId } from 'react'
-import { ClearableInput } from '@/components/shared/inputs'
+import { ClearableInput } from '@/components/shared'
 import { cn } from '@/lib/utils'
 
 type FieldInputProps = {

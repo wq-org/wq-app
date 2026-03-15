@@ -1,5 +1,5 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export default function AdminBilling() {
+export function AdminBilling() {
   return <AdminWorkspaceShell>Billing</AdminWorkspaceShell>
 }

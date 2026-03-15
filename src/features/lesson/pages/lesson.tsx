@@ -8,9 +8,9 @@ import { LessonSettings } from '@/features/lesson'
 import { LessonEditor } from '@/features/lesson'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { createYooptaStarterContentJson, createYooptaStarterContentObject } from '@/features/course'
-import { showUnsavedChangesToast } from '@/components/shared/toasts'
+import { showUnsavedChangesToast } from '@/components/shared'
 import type { LessonTabId } from '@/features/lesson'
 import { LessonHeroBannerSection } from '../components/LessonHeroBannerSection'
 import { LessonGuidePopoverSection } from '../components/LessonGuidePopoverSection'
@@ -47,7 +47,7 @@ function normalizeLessonTab(tab?: string): LessonTabId {
   }
 }
 
-export default function Lesson() {
+export function Lesson() {
   const { t } = useTranslation('features.lesson')
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()

@@ -1,11 +1,19 @@
-import Navigation from '@/features/landing/components/navigation/Navigation'
+import { useLayoutEffect } from 'react'
+import { Navigation } from '@/features/landing/components/navigation/Navigation'
 import { FooterSection } from '@/features/landing/components/FooterSection'
+import { useTheme } from '@/hooks/useTheme'
 
 interface LandingPageShellProps {
   title: string
 }
 
 export function LandingPageShell({ title }: LandingPageShellProps) {
+  const { applyPublicTheme } = useTheme()
+
+  useLayoutEffect(() => {
+    applyPublicTheme()
+  }, [applyPublicTheme])
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />

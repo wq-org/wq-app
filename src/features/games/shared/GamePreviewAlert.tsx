@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { useTranslation } from 'react-i18next'
 
-export default function GamePreviewAlert() {
+export function GamePreviewAlert() {
   const { t } = useTranslation('features.games')
 
   return (

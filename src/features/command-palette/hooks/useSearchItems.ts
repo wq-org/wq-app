@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { UserRole } from '@/features/auth/types/auth.types'
+import type { UserRole } from '@/features/auth'
 import { fetchProfilesForSearch, type SearchableProfile } from '../api/commandPaletteApi'
 
 export interface SearchItem {

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Moon, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -13,11 +12,7 @@ type ThemeModeToggleProps = {
 }
 
 export function ThemeModeToggle({ variant = 'default', className }: ThemeModeToggleProps) {
-  const { mode, setMode, applyStoredTheme } = useTheme()
-
-  useEffect(() => {
-    applyStoredTheme()
-  }, [applyStoredTheme])
+  const { mode, setMode } = useTheme()
 
   const handleToggleMode = () => {
     setMode(mode === 'dark' ? 'light' : 'dark')

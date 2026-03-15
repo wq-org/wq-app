@@ -3,15 +3,18 @@ import { isAccentId, type AccentId } from '@/lib/themes'
 
 export type ColorMode = 'light' | 'dark'
 export type ThemeAccent = AccentId | 'default'
+type ThemeScope = 'app' | 'public'
 
 const STORAGE_ACCENT = 'wq:accent'
 const STORAGE_MODE = 'wq:mode'
 const DEFAULT_ACCENT: ThemeAccent = 'default'
 const DEFAULT_MODE: ColorMode = 'light'
+const DEFAULT_SCOPE: ThemeScope = 'public'
 
 type ThemeSnapshot = {
   accent: ThemeAccent
   mode: ColorMode
+  scope: ThemeScope
 }
 
 const listeners = new Set<() => void>()
@@ -19,6 +22,7 @@ const listeners = new Set<() => void>()
 let themeSnapshot: ThemeSnapshot = {
   accent: DEFAULT_ACCENT,
   mode: DEFAULT_MODE,
+  scope: DEFAULT_SCOPE,
 }
 
 function isColorMode(value: string | null): value is ColorMode {
@@ -63,10 +67,12 @@ function applyThemeToDocument(snapshot: ThemeSnapshot) {
 
   const root = document.documentElement
 
-  if (snapshot.accent === DEFAULT_ACCENT) {
+  const appliedAccent = snapshot.scope === 'app' ? snapshot.accent : DEFAULT_ACCENT
+
+  if (appliedAccent === DEFAULT_ACCENT) {
     root.removeAttribute('data-accent')
   } else {
-    root.dataset.accent = snapshot.accent
+    root.dataset.accent = appliedAccent
   }
 
   root.classList.toggle('dark', snapshot.mode === 'dark')
@@ -100,6 +106,7 @@ function getServerSnapshot() {
   return {
     accent: DEFAULT_ACCENT,
     mode: DEFAULT_MODE,
+    scope: DEFAULT_SCOPE,
   }
 }
 
@@ -107,6 +114,7 @@ if (typeof window !== 'undefined') {
   themeSnapshot = {
     accent: readStoredAccent(),
     mode: readStoredMode(),
+    scope: DEFAULT_SCOPE,
   }
 }
 
@@ -127,11 +135,23 @@ export function useTheme() {
     })
   }, [])
 
-  const applyStoredTheme = useCallback(() => {
+  const applyAppTheme = useCallback(() => {
     setThemeSnapshot(
       {
         accent: readStoredAccent(),
         mode: readStoredMode(),
+        scope: 'app',
+      },
+      false,
+    )
+  }, [])
+
+  const applyPublicTheme = useCallback(() => {
+    setThemeSnapshot(
+      {
+        accent: readStoredAccent(),
+        mode: readStoredMode(),
+        scope: 'public',
       },
       false,
     )
@@ -141,6 +161,7 @@ export function useTheme() {
     ...snapshot,
     setAccent,
     setMode,
-    applyStoredTheme,
+    applyAppTheme,
+    applyPublicTheme,
   }
 }

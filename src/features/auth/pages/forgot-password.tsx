@@ -6,10 +6,10 @@ import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
 import { requestPasswordReset } from '../api/authApi'
 import { toast } from 'sonner'
-import AuthCardLayout from '../components/AuthCardLayout'
+import { AuthCardLayout } from '../components/AuthCardLayout'
 import { useTranslation } from 'react-i18next'
 
-export default function ForgotPasswordPage() {
+export function ForgotPasswordPage() {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
 

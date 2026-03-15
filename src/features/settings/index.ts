@@ -1,8 +1,7 @@
-export { SettingsPage } from './pages/SettingsPage'
-export { SettingsProfileForm } from './components/SettingsProfileForm'
 export { SettingsAvatarSection } from './components/SettingsAvatarSection'
-export { SettingsReadonlyFields } from './components/SettingsReadonlyFields'
 export { SettingsLoadingState } from './components/SettingsLoadingState'
+export { SettingsProfileForm } from './components/SettingsProfileForm'
+export { SettingsReadonlyFields } from './components/SettingsReadonlyFields'
 export { useSettingsProfileForm } from './hooks/useSettingsProfileForm'
 export { settingsCapabilitiesByRole } from './config/settingsCapabilities'
 export type {

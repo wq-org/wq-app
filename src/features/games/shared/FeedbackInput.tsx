@@ -14,7 +14,7 @@ interface FeedbackInputProps {
   className?: string
 }
 
-export default function FeedbackInput({
+export function FeedbackInput({
   label,
   value,
   onChange,

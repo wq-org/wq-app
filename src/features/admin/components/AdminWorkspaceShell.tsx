@@ -7,12 +7,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import {
   SidebarAccountMenu,
   SidebarPrimaryNav,
   SidebarWorkspaceSwitcher,
-} from '@/components/shared/sidebar'
+} from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import {

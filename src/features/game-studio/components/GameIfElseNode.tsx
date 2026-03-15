@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 const MAX_LABEL_LENGTH = 24
 
-export default function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
+export function GameIfElseNode({ data, selected }: GameIfElseNodeProps) {
   const { t } = useTranslation('features.gameStudio')
   const fullLabel = data?.label || (data as GameIfElseNodeProps['data'])?.title || 'If / else'
   const displayLabel =

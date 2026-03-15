@@ -37,13 +37,7 @@ export interface SpinnerProps
  * A circular loading spinner with customizable color variants and sizes.
  * Based on the Orbit loader animation with stroke-dasharray effect.
  */
-export default function Spinner({
-  className,
-  variant,
-  size,
-  speed = 2000,
-  ...props
-}: SpinnerProps) {
+export function Spinner({ className, variant, size, speed = 2000, ...props }: SpinnerProps) {
   const sizeValue =
     size === 'xs' ? 16 : size === 'sm' ? 24 : size === 'lg' ? 64 : size === 'xl' ? 96 : 40
   const strokeWidth =

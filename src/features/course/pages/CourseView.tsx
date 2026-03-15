@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { CoursePreviewTab } from '@/features/course'
 import { getCourseById } from '@/features/course'
 import type { Course } from '@/features/course'
 import { useTranslation } from 'react-i18next'
 
-export default function CourseView() {
+export function CourseView() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()

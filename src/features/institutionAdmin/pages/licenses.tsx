@@ -1,5 +1,5 @@
 import { AdminWorkspaceShell } from '@/features/admin'
 
-export default function AdminLicenses() {
+export function AdminLicenses() {
   return <AdminWorkspaceShell role="institution_admin">Licenses</AdminWorkspaceShell>
 }

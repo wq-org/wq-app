@@ -17,11 +17,11 @@ type AppShellProps = {
 
 export function AppShell({ children, role, className, commandBarContext }: AppShellProps) {
   const effectiveContext: CommandBarContext = commandBarContext ?? role
-  const { applyStoredTheme } = useTheme()
+  const { applyAppTheme } = useTheme()
 
   useLayoutEffect(() => {
-    applyStoredTheme()
-  }, [applyStoredTheme])
+    applyAppTheme()
+  }, [applyAppTheme])
 
   return (
     <>

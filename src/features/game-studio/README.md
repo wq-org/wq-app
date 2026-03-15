@@ -82,7 +82,7 @@ import GameStudioHeader from '../components/GameStudioHeader'
 import GameEditorCanvas from '../components/GameEditorCanvas'
 import GameSidebar from '../components/GameSidebar'
 
-export default function GameStudio() {
+export function GameStudio() {
   return (
     <>
       <Navigation />
@@ -104,7 +104,7 @@ export default function GameStudio() {
 import { Sparkles, PlusCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export default function GameStudioHeader() {
+export function GameStudioHeader() {
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -129,7 +129,7 @@ export default function GameStudioHeader() {
 
 // src/features/game-studio/components/GameSidebar.tsx
 import { Puzzle, ListTree, Settings, Flag } from 'lucide-react'
-export default function GameSidebar() {
+export function GameSidebar() {
   return (
     <aside className="w-56 bg-gray-50 border rounded-2xl shadow flex flex-col px-4 py-6 gap-4">
       <h3 className="text-lg font-semibold mb-2">Nodes</h3>

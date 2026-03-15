@@ -4,9 +4,12 @@ import confetti from 'canvas-confetti'
 import { ContainerSlider } from '@/components/shared'
 import { StatsDisplay } from '@/features/games/shared/StatsDisplay'
 import { NODE_TYPE_TO_GAME } from '@/features/games/shared/nodeTypeToGame'
-import { getSessionPath, resolveIfElseNode } from '@/features/game-studio/utils/flowOrder'
-import { PreviewStartEndSlide } from '@/features/game-studio/components/PreviewStartEndSlide'
-import { PreviewIfElseSlide } from '@/features/game-studio/components/PreviewIfElseSlide'
+import {
+  getSessionPath,
+  resolveIfElseNode,
+  PreviewStartEndSlide,
+  PreviewIfElseSlide,
+} from '@/features/game-studio'
 import { useGamePlay } from '@/contexts/game-play'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'

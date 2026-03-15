@@ -39,7 +39,7 @@ export interface ImagePinProps
   size?: number
 }
 
-export default function ImagePin({ className, variant, size = 24, ...props }: ImagePinProps) {
+export function ImagePin({ className, variant, size = 24, ...props }: ImagePinProps) {
   return (
     <div
       data-pin

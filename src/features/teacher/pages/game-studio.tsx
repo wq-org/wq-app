@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react'
 import { AppShell } from '@/components/layout'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
-import EmptyProjectsView from '@/features/game-studio/components/EmptyProjectsView'
-import GameProjectCardList from '@/features/game-studio/components/GameProjectCardList'
-import type { GameProjectCardListProps } from '@/features/game-studio/types/game-studio.types'
+import {
+  EmptyProjectsView,
+  GameProjectCardList,
+  createGameForStudio,
+  getTeacherFlowGames,
+  type GameProjectCardListProps,
+} from '@/features/game-studio'
 import { Button } from '@/components/ui/button'
-import { createGameForStudio, getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
 import { toast } from 'sonner'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { Plus } from 'lucide-react'
 
-export default function GameStudio() {
+export function GameStudio() {
   const { t } = useTranslation('features.gameStudio')
   const navigate = useNavigate()
   const { getUserId } = useUser()

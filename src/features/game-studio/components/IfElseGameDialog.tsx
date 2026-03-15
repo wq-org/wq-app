@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 type IfElsePath = 'A' | 'B'
 
-export default function IfElseGameDialog({
+export function IfElseGameDialog({
   open,
   onOpenChange,
   onSave,

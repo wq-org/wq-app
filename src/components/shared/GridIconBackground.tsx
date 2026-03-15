@@ -19,19 +19,7 @@
  */
 
 import * as React from 'react'
-import {
-  BookOpen,
-  GraduationCap,
-  Pencil,
-  FlaskConical,
-  Globe,
-  Calculator,
-  Music,
-  Palette,
-  Microscope,
-  Library,
-  type LucideIcon,
-} from 'lucide-react'
+import { BookOpen, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GridPattern } from '../ui/grid-pattern'
 
@@ -186,90 +174,6 @@ export function GridIconBackground({
 
       {/* Slot for page content */}
       {children && <div className="relative z-10">{children}</div>}
-    </div>
-  )
-}
-
-// ─── Demo ─────────────────────────────────────────────────────────────────────
-
-const DEMO_ICONS: IconEntry[] = [
-  {
-    icon: GraduationCap,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/20',
-  },
-  {
-    icon: BookOpen,
-    color: 'text-indigo-500',
-    bgColor: 'bg-indigo-500/10',
-    borderColor: 'border-indigo-500/20',
-  },
-  {
-    icon: Pencil,
-    color: 'text-pink-500',
-    bgColor: 'bg-pink-500/10',
-    borderColor: 'border-pink-500/20',
-  },
-  {
-    icon: FlaskConical,
-    color: 'text-green-600',
-    bgColor: 'bg-green-600/10',
-    borderColor: 'border-green-600/20',
-  },
-  {
-    icon: Globe,
-    color: 'text-cyan-500',
-    bgColor: 'bg-cyan-500/10',
-    borderColor: 'border-cyan-500/20',
-  },
-  {
-    icon: Calculator,
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/20',
-  },
-  {
-    icon: Music,
-    color: 'text-violet-500',
-    bgColor: 'bg-violet-500/10',
-    borderColor: 'border-violet-500/20',
-  },
-  {
-    icon: Palette,
-    color: 'text-rose-500',
-    bgColor: 'bg-rose-500/10',
-    borderColor: 'border-rose-500/20',
-  },
-  {
-    icon: Microscope,
-    color: 'text-teal-500',
-    bgColor: 'bg-teal-500/10',
-    borderColor: 'border-teal-500/20',
-  },
-  {
-    icon: Library,
-    color: 'text-amber-500',
-    bgColor: 'bg-amber-500/10',
-    borderColor: 'border-amber-500/20',
-  },
-]
-
-export default function GridIconBackgroundDemo() {
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Full-page hero usage */}
-      <GridIconBackground
-        icons={DEMO_ICONS}
-        className="min-h-screen"
-      >
-        <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">Learn anything.</h1>
-          <p className="max-w-sm text-base text-muted-foreground">
-            A reusable background component with a grid pattern and floating icon chips.
-          </p>
-        </div>
-      </GridIconBackground>
     </div>
   )
 }

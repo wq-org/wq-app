@@ -5,23 +5,23 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { FileDropzone } from '@/components/shared/upload-files'
+import { FileDropzone } from '@/components/shared'
 import { GameLayout } from '@/features/game-studio'
-import GameInformation from '@/features/games/shared/GameInformation'
-import GameInformationCard from '@/features/games/shared/GameInformationCard'
-import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
-import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
-import PointsInput from '@/features/games/shared/PointsInput'
-import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
-import GameResultTable from '@/features/games/shared/GameResultTable'
-import FeedbackInput from '@/features/games/shared/FeedbackInput'
+import { GameInformation } from '@/features/games/shared/GameInformation'
+import { GameInformationCard } from '@/features/games/shared/GameInformationCard'
+import { GamePreviewAlert } from '@/features/games/shared/GamePreviewAlert'
+import { GameSummaryCard } from '@/features/games/shared/GameSummaryCard'
+import { PointsInput } from '@/features/games/shared/PointsInput'
+import { SlotsLeftLabel } from '@/features/games/shared/SlotsLeftLabel'
+import { GameResultTable } from '@/features/games/shared/GameResultTable'
+import { FeedbackInput } from '@/features/games/shared/FeedbackInput'
 import { Badge } from '@/components/ui/badge'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { getFileBlobUrl } from '@/features/files'
-import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
-import { ImageCarousel } from '@/components/shared/media'
-import type { ImageCarouselImage } from '@/components/shared/media'
+import { fetchFilesByRole } from '@/components/shared'
+import { ImageCarousel } from '@/components/shared'
+import type { ImageCarouselImage } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { MAX_IMAGE_TERM_OPTIONS } from './constants'
 import { constrainDescription } from '../shared/description'
@@ -38,7 +38,7 @@ function getInitialTerms(initialData: ImageTermMatchGameData | null | undefined)
   return [{ id: '1', value: '' }]
 }
 
-export default function ImageTermMatchGame({
+export function ImageTermMatchGame({
   initialData: initialDataProp,
   onDelete,
   previewOnly,

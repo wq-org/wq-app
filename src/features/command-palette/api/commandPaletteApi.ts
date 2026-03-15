@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { getUserInstitutionId } from '@/features/auth/api/authApi'
-import type { UserRole } from '@/features/auth/types/auth.types'
+import { getUserInstitutionId, type UserRole } from '@/features/auth'
 import type { Game, UpdateGameData } from '../types/command-bar.types'
 
 export interface SearchableProfile {

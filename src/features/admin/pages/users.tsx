@@ -5,7 +5,7 @@ import { UserCheck, UserX } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Logo } from '@/components/ui/logo'
@@ -42,7 +42,7 @@ function initialsFromName(name?: string | null, username?: string | null): strin
     .join('')
 }
 
-export default function AdminUsers() {
+export function AdminUsers() {
   const { getRole } = useUser()
   const [users, setUsers] = useState<AdminUserRow[]>([])
   const [loading, setLoading] = useState(true)

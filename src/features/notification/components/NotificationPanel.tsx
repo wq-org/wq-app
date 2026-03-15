@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Bell, User } from 'lucide-react'
 import { Text } from '@/components/ui/text'
-import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared'
 
 type TabId = 'all' | 'users'
 

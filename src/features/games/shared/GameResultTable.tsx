@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import FeedbackDisplay from './FeedbackDisplay'
+import { FeedbackDisplay } from './FeedbackDisplay'
 import { useTranslation } from 'react-i18next'
 
 export interface GameResultTableRow {
@@ -55,7 +55,7 @@ export interface GameResultTableProps {
 /**
  * Display-only table for game results. Column headers and footer are configurable.
  */
-export default function GameResultTable({
+export function GameResultTable({
   rows,
   totalEarned,
   totalMax,

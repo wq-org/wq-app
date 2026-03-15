@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 
-export default function GameStudioHeader() {
+export function GameStudioHeader() {
   const { t } = useTranslation('features.gameStudio')
 
   return (

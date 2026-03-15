@@ -1,8 +1,8 @@
 import { BarChart2, Eye, FilePenLine, Settings } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SelectTabs } from '@/components/shared/tabs'
-import type { TabItem } from '@/components/shared/tabs'
+import { SelectTabs } from '@/components/shared'
+import type { TabItem } from '@/components/shared'
 
 export type TopicTabId = 'editor' | 'preview' | 'settings' | 'analytics'
 

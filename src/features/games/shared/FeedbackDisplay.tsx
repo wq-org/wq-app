@@ -7,7 +7,7 @@ interface FeedbackDisplayProps {
   className?: string
 }
 
-export default function FeedbackDisplay({ feedback, variant, className }: FeedbackDisplayProps) {
+export function FeedbackDisplay({ feedback, variant, className }: FeedbackDisplayProps) {
   if (feedback === undefined || feedback.trim() === '') {
     return (
       <Text

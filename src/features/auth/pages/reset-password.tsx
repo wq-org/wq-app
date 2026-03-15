@@ -7,9 +7,9 @@ import { Text } from '@/components/ui/text'
 import { resetPassword } from '../api/authApi'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
-import AuthCardLayout from '../components/AuthCardLayout'
-import PasswordResetSuccessDrawer from '../components/PasswordResetSuccessDrawer'
-import Spinner from '@/components/ui/spinner'
+import { AuthCardLayout } from '../components/AuthCardLayout'
+import { PasswordResetSuccessDrawer } from '../components/PasswordResetSuccessDrawer'
+import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 
 type PageState = 'loading' | 'invalid' | 'form' | 'success'
@@ -41,7 +41,7 @@ function getAuthErrorFromUrl(): string | null {
   return hasExplicitAuthError ? '__AUTH_RESET_INVALID__' : null
 }
 
-export default function ResetPasswordPage() {
+export function ResetPasswordPage() {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
 

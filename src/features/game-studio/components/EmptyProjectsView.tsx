@@ -2,7 +2,7 @@ import { Gamepad2 } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
 
-export default function EmptyProjectsView() {
+export function EmptyProjectsView() {
   const { t } = useTranslation('features.gameStudio')
 
   return (

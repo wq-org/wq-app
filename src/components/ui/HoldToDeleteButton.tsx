@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import type { VariantProps } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-variants'
 import { Text } from '@/components/ui/text'
-import Spinner from './spinner'
+import { Spinner } from './spinner'
 
 type HoldToDeleteVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 

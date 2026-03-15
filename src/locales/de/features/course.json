@@ -107,6 +107,12 @@
       "searchPlaceholder": "nach Titel oder Beschreibung suchen..."
     }
   },
+  "course": {
+    "toolbar": {
+      "searchLabel": "Kurse suchen",
+      "searchPlaceholder": "Nach Titel oder Beschreibung suchen..."
+    }
+  },
   "card": {
     "published": "Ver\u00f6ffentlicht",
     "unpublished": "Nicht ver\u00f6ffentlicht",

@@ -44,6 +44,8 @@ export interface CourseCardProps {
   onView?: (id: string) => void
 }
 
+export const COURSE_SEARCH_FIELDS: Array<keyof Course> = ['title', 'description']
+
 export type ProfileCourseCardData = CourseCardProps
 
 export type EnrollmentStatus = 'accepted'

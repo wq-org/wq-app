@@ -6,7 +6,7 @@ import type { SidebarItem } from '../types/game-studio.types'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 
-export default function GameSidebar() {
+export function GameSidebar() {
   const { t } = useTranslation('features.gameStudio')
   const [searchQuery, setSearchQuery] = useState('')
   const nodeItems: SidebarItem[] = [

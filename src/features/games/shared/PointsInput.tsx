@@ -9,7 +9,7 @@ interface PointsInputProps {
   className?: string
 }
 
-export default function PointsInput({ value, onChange, onBlur, className }: PointsInputProps) {
+export function PointsInput({ value, onChange, onBlur, className }: PointsInputProps) {
   const { t } = useTranslation('features.games')
 
   return (

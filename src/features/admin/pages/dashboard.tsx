@@ -1,6 +1,6 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export default function AdminDashboard() {
+export function AdminDashboard() {
   return (
     <>
       <AdminWorkspaceShell>

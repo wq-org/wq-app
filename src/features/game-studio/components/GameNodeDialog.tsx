@@ -9,14 +9,14 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import ImageTermMatchGame from '@/features/games/image-term-match/ImageTermMatchGame'
-import ImagePinMarkGame from '../../games/image-pin-mark/ImagePinMarkGame'
-import ParagraphLineSelectGame from '@/features/games/paragraph-line-select/ParagraphLineSelectGame'
+import { ImageTermMatchGame } from '@/features/games/image-term-match'
+import { ImagePinMarkGame } from '@/features/games/image-pin-mark'
+import { ParagraphLineSelectGame } from '@/features/games/paragraph-line-select'
 import type { GameNodeDialogProps } from '../types/game-studio.types'
 import { GameNodeLayout } from './GameNodeLayout'
 import { GameEditorProvider } from '@/contexts/game-studio'
 import { toast } from 'sonner'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 
 // Map node types to game components and titles (components may accept initialData)
@@ -38,7 +38,7 @@ const nodeTypeToGame: Record<
   },
 }
 
-export default function GameNodeDialog({
+export function GameNodeDialog({
   open,
   onOpenChange,
   nodeType,

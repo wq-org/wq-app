@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LearningDashboardShell } from '@/features/dashboard'
 import { CommandPalette } from '@/features/command-palette'
-import { TableView } from '@/features/files'
+import { FilesTableView } from '@/features/files'
 import type { FileItem } from '@/features/files'
 import {
   getPublishedGamesFromFollowedTeachers,
@@ -12,10 +12,12 @@ import {
 import { useAvatarUrl } from '@/features/onboarding'
 import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
-import type { FileListItem } from '@/components/shared/upload-files/types/upload.types'
-import { fetchFilesByRole } from '@/components/shared/upload-files/api/uploadFilesApi'
+import type { FileListItem } from '@/components/shared'
+import { fetchFilesByRole } from '@/components/shared'
 import { getFollowedTeacherIds, ProfileCourseCardList } from '@/features/profiles'
 import {
+  CourseToolBar,
+  COURSE_SEARCH_FIELDS,
   getMyAcceptedCourses,
   type EnrollmentCourse,
   type EnrollmentStatus,
@@ -23,7 +25,8 @@ import {
 } from '@/features/course'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { useTranslation } from 'react-i18next'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
   const extension = filename.split('.').pop()?.toUpperCase() || ''
@@ -44,11 +47,12 @@ function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
-export default function Dashboard() {
+export function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<string>('courses')
   const [acceptedCourses, setAcceptedCourses] = useState<EnrollmentCourse[]>([])
   const [followedTeacherIds, setFollowedTeacherIds] = useState<string[]>([])
   const [coursesLoading, setCoursesLoading] = useState(false)
+  const [courseSearchQuery, setCourseSearchQuery] = useState('')
   const [games, setGames] = useState<GameCardProps[]>([])
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
@@ -57,6 +61,11 @@ export default function Dashboard() {
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { t } = useTranslation('features.course')
+  const filteredAcceptedCourses = useSearchFilter(
+    acceptedCourses,
+    courseSearchQuery,
+    COURSE_SEARCH_FIELDS,
+  )
 
   useEffect(() => {
     if (selectedTab !== 'courses') return
@@ -197,27 +206,32 @@ export default function Dashboard() {
               />
             </div>
           ) : acceptedCourses.length > 0 ? (
-            <ProfileCourseCardList
-              courses={acceptedCourses.map((course) => {
-                const teacherName = course.teacher?.display_name || ''
-                return {
-                  id: course.id,
-                  title: course.title,
-                  description: course.description,
-                  themeId: course.theme_id,
-                  teacherAvatar: course.teacher?.avatar_url || undefined,
-                  teacherInitials: teacherName?.charAt(0).toUpperCase() || 'T',
-                } satisfies ProfileCourseCardData
-              })}
-              enrollmentStatusMap={acceptedCourses.reduce<Record<string, EnrollmentStatus>>(
-                (acc, course) => {
+            <div className="flex flex-col gap-6">
+              <CourseToolBar
+                searchValue={courseSearchQuery}
+                onSearchChange={setCourseSearchQuery}
+              />
+              <ProfileCourseCardList
+                courses={filteredAcceptedCourses.map((course) => {
+                  const teacherName = course.teacher?.display_name || ''
+                  return {
+                    id: course.id,
+                    title: course.title,
+                    description: course.description,
+                    themeId: course.theme_id,
+                    teacherAvatar: course.teacher?.avatar_url || undefined,
+                    teacherInitials: teacherName?.charAt(0).toUpperCase() || 'T',
+                  } satisfies ProfileCourseCardData
+                })}
+                enrollmentStatusMap={filteredAcceptedCourses.reduce<
+                  Record<string, EnrollmentStatus>
+                >((acc, course) => {
                   acc[course.id] = 'accepted'
                   return acc
-                },
-                {},
-              )}
-              onCourseView={handleCourseView}
-            />
+                }, {})}
+                onCourseView={handleCourseView}
+              />
+            </div>
           ) : followedTeacherIds.length === 0 ? (
             <EmptyFollowsView />
           ) : (
@@ -259,7 +273,7 @@ export default function Dashboard() {
               />
             </div>
           ) : (
-            <TableView
+            <FilesTableView
               files={files}
               onRefresh={loadFiles}
             />

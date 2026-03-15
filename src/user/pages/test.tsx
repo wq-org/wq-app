@@ -1,4 +1,4 @@
-import { OnboardingPage } from '@/features/onboarding'
+import { Onboarding } from '@/features/onboarding/pages/onboarding'
 import type { ReactNode } from 'react'
 
 const Container = ({ children }: { children: ReactNode }) => {
@@ -8,7 +8,7 @@ export default function Test() {
   return (
     <div className="min-h-screen flex flex-col gap-10  p-8">
       <Container>
-        <OnboardingPage />
+        <Onboarding />
       </Container>
     </div>
   )

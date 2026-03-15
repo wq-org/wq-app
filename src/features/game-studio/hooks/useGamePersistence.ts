@@ -16,7 +16,7 @@ export interface UseGamePersistenceOptions {
  * Hook for game project persistence. When projectId is set, save/load call the game studio API.
  * The canvas uses this logic inline; this hook is available for other consumers.
  */
-export default function useGamePersistence(options: UseGamePersistenceOptions): {
+export function useGamePersistence(options: UseGamePersistenceOptions): {
   save: () => Promise<void>
   load: () => Promise<HistoryState | null>
 } {

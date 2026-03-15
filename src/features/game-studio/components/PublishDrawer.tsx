@@ -16,10 +16,10 @@ import {
   getPointsForNode,
   hasParagraphPenalties,
 } from '../utils/publishValidation'
-import PublishGameCheckList from './PublishGameCheckList'
+import { PublishGameCheckList } from './PublishGameCheckList'
 import { useTranslation } from 'react-i18next'
 
-export default function PublishDrawer({
+export function PublishDrawer({
   open,
   onOpenChange,
   nodes = [],

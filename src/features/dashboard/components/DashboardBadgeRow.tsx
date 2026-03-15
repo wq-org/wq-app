@@ -1,7 +1,7 @@
 import { ArrowUpRight, GraduationCap, Mail, Pencil } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LinkedInIcon as LinkedIn } from '@/components/shared/icons'
+import { LinkedInIcon as LinkedIn } from '@/components/shared'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'

@@ -1,10 +1,17 @@
+import { useLayoutEffect } from 'react'
 import { HeroSection, FooterSection, Feature6, Navigation } from '@/features/landing'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
+import { useTheme } from '@/hooks/useTheme'
 import { Brush, ChartSpline, Microscope, SplinePointer } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export default function Home() {
   const { t } = useTranslation('navigation')
+  const { applyPublicTheme } = useTheme()
+
+  useLayoutEffect(() => {
+    applyPublicTheme()
+  }, [applyPublicTheme])
 
   return (
     <div className="relative">

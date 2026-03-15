@@ -1,7 +1,7 @@
 import { AppShell } from '@/components/layout'
-import GameEditorCanvas from '../components/GameEditorCanvas'
+import { GameEditorCanvas } from '../components/GameEditorCanvas'
 
-export default function GameStudioView() {
+export function GameStudioView() {
   return (
     <AppShell
       role="teacher"

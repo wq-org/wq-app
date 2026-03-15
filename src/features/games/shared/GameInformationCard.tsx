@@ -12,7 +12,7 @@ export interface GameInformationCardProps {
   truncateLength?: number
 }
 
-export default function GameInformationCard({
+export function GameInformationCard({
   title,
   description,
   truncateLength = DEFAULT_TRUNCATE_LENGTH,

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { getUserInstitutionId } from '@/features/auth/api/authApi'
+import { getUserInstitutionId } from '@/features/auth'
 import type { Course, UpdateCourseData } from '../types/course.types'
 
 /**

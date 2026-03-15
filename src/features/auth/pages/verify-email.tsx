@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CheckCircle, XCircle } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 
-export default function VerifyEmailPage() {
+export function VerifyEmailPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')

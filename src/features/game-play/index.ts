@@ -1,3 +1,4 @@
 export { GameCard } from './components/GameCard'
 export { GamePlayList } from './components/GamePlayList'
-export { default as PlayGamePage } from './pages/PlayGamePage'
+export { GamePlayView } from './components/GamePlayView'
+export type { GamePlayViewProps } from './components/GamePlayView'

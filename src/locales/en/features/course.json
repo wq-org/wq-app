@@ -107,6 +107,12 @@
       "searchPlaceholder": "Search topics by title or description..."
     }
   },
+  "course": {
+    "toolbar": {
+      "searchLabel": "Search courses",
+      "searchPlaceholder": "Search courses by title or description..."
+    }
+  },
   "card": {
     "published": "Published",
     "unpublished": "Unpublished",

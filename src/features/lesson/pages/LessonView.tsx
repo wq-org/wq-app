@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '@/components/layout'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { getLessonById } from '@/features/lesson'
 import { getCourseById } from '@/features/course'
@@ -24,7 +24,7 @@ function parseLessonContent(raw: unknown): Record<string, unknown> {
   return {}
 }
 
-export default function LessonView() {
+export function LessonView() {
   const { t } = useTranslation('features.lesson')
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const [lesson, setLesson] = useState<Lesson | null>(null)

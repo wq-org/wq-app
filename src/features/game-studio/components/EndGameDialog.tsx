@@ -33,7 +33,7 @@ function getDescriptionFromData(initialData: EndGameDialogProps['initialData']):
   return initialData.description
 }
 
-export default function EndGameDialog({
+export function EndGameDialog({
   open,
   onOpenChange,
   onSave,

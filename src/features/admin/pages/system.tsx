@@ -1,5 +1,5 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export default function AdminSystem() {
+export function AdminSystem() {
   return <AdminWorkspaceShell>System</AdminWorkspaceShell>
 }

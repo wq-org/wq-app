@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
-import { FileDropzone } from '@/components/shared/upload-files'
+import { FileDropzone } from '@/components/shared'
 import { X } from 'lucide-react'
 
 const FEEDBACK_TYPES = [

@@ -12,7 +12,7 @@ export interface GameSummaryCardProps {
   pointsSubtitle?: string
 }
 
-export default function GameSummaryCard({
+export function GameSummaryCard({
   totalQuestions,
   totalPoints,
   questionsLabel,

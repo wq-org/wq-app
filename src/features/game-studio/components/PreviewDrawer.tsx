@@ -26,12 +26,7 @@ function getTitleAndDescription(data: Record<string, unknown> | undefined): {
   return { title, description }
 }
 
-export default function PreviewDrawer({
-  open,
-  onOpenChange,
-  nodes = [],
-  edges = [],
-}: PreviewDrawerProps) {
+export function PreviewDrawer({ open, onOpenChange, nodes = [], edges = [] }: PreviewDrawerProps) {
   const { t } = useTranslation('features.gameStudio')
   const [currentIndex, setCurrentIndex] = useState(0)
   const simulationState = useGamePlayState()

@@ -5,7 +5,7 @@ interface SkeletonNodeGraphProps {
   title?: string
 }
 
-export default function SkeletonNodeGraph({
+export function SkeletonNodeGraph({
   className,
   title = 'Flowchart skeleton',
 }: SkeletonNodeGraphProps) {

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { LessonTabs, type LessonTabId } from './LessonTabs'
 
-export interface LessonWorkspaceShellProps {
+export interface LessonLayoutProps {
   activeTab: LessonTabId
   onTabChange: (tab: LessonTabId) => void
   children: ReactNode
@@ -11,14 +11,14 @@ export interface LessonWorkspaceShellProps {
   contentClassName?: string
 }
 
-export function LessonWorkspaceShell({
+export function LessonLayout({
   activeTab,
   onTabChange,
   children,
   className,
   tabsClassName,
   contentClassName,
-}: LessonWorkspaceShellProps) {
+}: LessonLayoutProps) {
   return (
     <div className={cn('flex w-full flex-col gap-6', className)}>
       <LessonTabs
@@ -30,5 +30,3 @@ export function LessonWorkspaceShell({
     </div>
   )
 }
-
-export const LessonLayout = LessonWorkspaceShell

@@ -27,7 +27,7 @@ import type {
 import { AppNavigation } from '@/components/layout'
 import { useTranslation } from 'react-i18next'
 
-export default function Onboarding() {
+export function Onboarding() {
   const navigate = useNavigate()
   const { pendingRole, profile } = useUser()
   const { t } = useTranslation('features.onboarding')

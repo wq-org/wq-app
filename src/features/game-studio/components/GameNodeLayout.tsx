@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FileText, LayoutDashboard, Settings } from 'lucide-react'
-import GameNodeSettings from './GameNodeSettings'
+import { GameNodeSettings } from './GameNodeSettings'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { GameNodePointsContext } from '@/contexts/game-studio'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import { SelectTabs } from '@/components/shared/tabs'
-import type { TabItem } from '@/components/shared/tabs'
+import { SelectTabs } from '@/components/shared'
+import type { TabItem } from '@/components/shared'
 
 interface GameNodeLayoutProps {
   nodeId?: string

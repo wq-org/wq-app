@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { TopicTabs, type TopicTabId } from './TopicTabs'
 
-export interface TopicWorkspaceShellProps {
+export interface TopicLayoutProps {
   activeTab: TopicTabId
   onTabChange: (tab: TopicTabId) => void
   children: ReactNode
@@ -11,14 +11,14 @@ export interface TopicWorkspaceShellProps {
   contentClassName?: string
 }
 
-export function TopicWorkspaceShell({
+export function TopicLayout({
   activeTab,
   onTabChange,
   children,
   className,
   tabsClassName,
   contentClassName,
-}: TopicWorkspaceShellProps) {
+}: TopicLayoutProps) {
   return (
     <div className={cn('flex w-full flex-col gap-6', className)}>
       <TopicTabs
@@ -30,5 +30,3 @@ export function TopicWorkspaceShell({
     </div>
   )
 }
-
-export const TopicLayout = TopicWorkspaceShell

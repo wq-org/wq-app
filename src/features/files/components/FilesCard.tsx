@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Check, ChevronsLeftRight, LayoutDashboard, Settings, X } from 'lucide-react'
 import { Text } from '@/components/ui/text'
-import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
+import { SelectTabs } from '@/components/shared'
 import {
   Drawer,
   DrawerContent,
@@ -14,15 +14,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { PdfPreview, VideoPreview } from '@/components/shared'
-import { FileDropzone } from '@/components/shared/upload-files'
-import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { FileDropzone } from '@/components/shared'
+import { uploadFile } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import type { FileItem } from '../types/files.types'
 import { getFileBlobUrl, deleteFile, renameFile } from '../api/filesApi'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 
 import { AspectRatio } from '@/components/ui/aspect-ratio'

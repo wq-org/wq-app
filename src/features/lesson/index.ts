@@ -1,38 +1,31 @@
-// Components
-export { LessonForm } from './components/LessonForm'
-export type { LessonFormProps } from './components/LessonForm'
 export { LessonCard } from './components/LessonCard'
 export type { LessonCardProps } from './components/LessonCard'
 export { LessonCardList } from './components/LessonCardList'
 export type { LessonCardListProps } from './components/LessonCardList'
-export { LessonLayout } from './components/LessonLayout'
-export { LessonWorkspaceShell } from './components/LessonLayout'
-export type { LessonWorkspaceShellProps } from './components/LessonLayout'
-export { LessonPreview } from './components/LessonPreview'
-export type { LessonPreviewProps } from './components/LessonPreview'
+export { LessonEditor } from './components/LessonEditor'
+export { LessonForm } from './components/LessonForm'
+export type { LessonFormProps } from './components/LessonForm'
 export { LessonHeadingsNavigation } from './components/LessonHeadingsNavigation'
 export type { LessonHeadingsNavigationProps } from './components/LessonHeadingsNavigation'
-export { LessonEditor } from './components/LessonEditor'
+export { LessonLayout } from './components/LessonLayout'
+export type { LessonLayoutProps } from './components/LessonLayout'
+export { LessonPreview } from './components/LessonPreview'
+export type { LessonPreviewProps } from './components/LessonPreview'
 export { LessonSettings } from './components/LessonSettings'
 export type { LessonSettingsProps } from './components/LessonSettings'
-export { LessonToolBar } from './components/LessonToolBar'
-export type { LessonToolBarProps } from './components/LessonToolBar'
 export { LessonTabs } from './components/LessonTabs'
 export type { LessonTabId, LessonTabItem } from './components/LessonTabs'
-
-// Pages
-export { default as LessonPage } from './pages/lesson'
-export { default as LessonViewPage } from './pages/LessonView'
-export { default as LessonRedirectPage } from './pages/LessonRedirect'
-
-// Hooks
+export { LessonToolBar } from './components/LessonToolBar'
+export type { LessonToolBarProps } from './components/LessonToolBar'
 export { useLessons } from './hooks/useLessons'
-
-// Types
-export * from './types/lesson.types'
-
-// API
-export * from './api/lessonsApi'
-
-// Utils
-export * from './utils/relativeTime'
+export type { Lesson, CreateLessonData } from './types/lesson.types'
+export { LESSON_SEARCH_FIELDS } from './types/lesson.types'
+export {
+  createLesson,
+  updateLesson,
+  getLessonById,
+  deleteLesson,
+  getLessonsByTopicId,
+} from './api/lessonsApi'
+export type { RelativeUpdatedTimeLabels } from './utils/relativeTime'
+export { formatRelativeUpdatedTime } from './utils/relativeTime'

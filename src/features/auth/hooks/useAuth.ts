@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { loginUser as loginApi, signUpUser, logoutUser, type AuthApiResponse } from '../api/authApi'
 import type { LoginData, SignUpData } from '../types/auth.types'
 
-export default function useAuth() {
+export function useAuth() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()

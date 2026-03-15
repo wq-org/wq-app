@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
-import { ClearableInput } from '@/components/shared/inputs'
+import { ClearableInput } from '@/components/shared'
 
 export interface LessonToolBarProps {
   searchValue: string

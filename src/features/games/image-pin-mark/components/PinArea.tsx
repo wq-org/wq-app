@@ -7,7 +7,7 @@ export interface PinAreaProps extends React.HTMLAttributes<HTMLDivElement> {
   onPinMove?: (position: { x: number; y: number }) => void
 }
 
-export default function PinArea({ className, children, onPinMove, ...props }: PinAreaProps) {
+export function PinArea({ className, children, onPinMove, ...props }: PinAreaProps) {
   const [isDragging, setIsDragging] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
 

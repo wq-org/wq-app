@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Search, Check } from 'lucide-react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { EmptyInstitutionView } from './EmptyInstitutionView'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { fetchInstitutions } from '../api/onboardingApi'
 import type { StepInstitutionProps, Institution } from '../types/onboarding.types'
 import { Text } from '@/components/ui/text'

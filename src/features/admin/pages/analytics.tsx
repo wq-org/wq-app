@@ -1,5 +1,5 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export default function AdminAnalytics() {
+export function AdminAnalytics() {
   return <AdminWorkspaceShell>Analytics</AdminWorkspaceShell>
 }

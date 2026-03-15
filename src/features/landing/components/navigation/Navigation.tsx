@@ -24,7 +24,7 @@ interface NavigationProps {
   className?: string
 }
 
-export default function Navigation({ showCtaButton = true, ctaLabel, className }: NavigationProps) {
+export function Navigation({ showCtaButton = true, ctaLabel, className }: NavigationProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { t } = useTranslation('navigation')
 

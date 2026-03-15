@@ -4,7 +4,7 @@ import { useUser } from '@/contexts/user'
 import { ProfileInstitutionView } from '@/features/profiles'
 import { useTranslation } from 'react-i18next'
 
-export default function InstitutionViewPage() {
+export function InstitutionViewPage() {
   const { t } = useTranslation('features.institution')
   const { id } = useParams<{ id: string }>()
   const { getRole } = useUser()

@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import { useLayoutEffect } from 'react'
 import { Globe, MoveLeft } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 import { GridIconBackground, IconPreviewCardSquare } from '@/components/shared'
 import type { IconEntry } from '@/components/shared'
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/hooks/useTheme'
 
 interface AuthCardLayoutProps {
   children: React.ReactNode
@@ -13,13 +15,19 @@ interface AuthCardLayoutProps {
   backgroundIcons?: readonly IconEntry[]
 }
 
-export default function AuthCardLayout({
+export function AuthCardLayout({
   children,
   backTo = '/',
   className,
   navigationSlot,
   backgroundIcons,
 }: AuthCardLayoutProps) {
+  const { applyPublicTheme } = useTheme()
+
+  useLayoutEffect(() => {
+    applyPublicTheme()
+  }, [applyPublicTheme])
+
   return (
     <div className="min-h-screen bg-background">
       <GridIconBackground

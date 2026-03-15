@@ -1,4 +1,4 @@
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { LessonEditor } from '@/features/lesson'
 import { getHeadingsFromLessonValue } from '@/features/course'

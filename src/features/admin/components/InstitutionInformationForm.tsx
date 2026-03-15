@@ -102,7 +102,7 @@ function parseOptionalNumber(value: string): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
-export default function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
+export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
   const [formData, setFormData] = useState<InstitutionFormData>(initialFormData)
   const [isSlugTouched, setIsSlugTouched] = useState(false)
 

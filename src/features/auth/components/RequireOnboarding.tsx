@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 
-export default function RequireOnboarding({ children }: { children: React.ReactNode }) {
+export function RequireOnboarding({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useUser()
 
   if (loading) {

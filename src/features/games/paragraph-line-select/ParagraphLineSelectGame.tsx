@@ -10,14 +10,14 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { GameLayout } from '@/features/game-studio'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
-import GameInformation from '@/features/games/shared/GameInformation'
-import GameInformationCard from '@/features/games/shared/GameInformationCard'
-import GamePreviewAlert from '@/features/games/shared/GamePreviewAlert'
-import GameSummaryCard from '@/features/games/shared/GameSummaryCard'
-import PointsInput from '@/features/games/shared/PointsInput'
-import SlotsLeftLabel from '@/features/games/shared/SlotsLeftLabel'
-import GameResultTable from '@/features/games/shared/GameResultTable'
-import FeedbackInput from '@/features/games/shared/FeedbackInput'
+import { GameInformation } from '@/features/games/shared/GameInformation'
+import { GameInformationCard } from '@/features/games/shared/GameInformationCard'
+import { GamePreviewAlert } from '@/features/games/shared/GamePreviewAlert'
+import { GameSummaryCard } from '@/features/games/shared/GameSummaryCard'
+import { PointsInput } from '@/features/games/shared/PointsInput'
+import { SlotsLeftLabel } from '@/features/games/shared/SlotsLeftLabel'
+import { GameResultTable } from '@/features/games/shared/GameResultTable'
+import { FeedbackInput } from '@/features/games/shared/FeedbackInput'
 import { useGameEditorContext } from '@/contexts/game-studio'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
@@ -45,7 +45,7 @@ function splitIntoQuestions(text: string): string[] {
     .filter((s) => s.length > 0)
 }
 
-export default function ParagraphLineSelectGame({
+export function ParagraphLineSelectGame({
   initialData: initialDataProp,
   onDelete,
   previewOnly,

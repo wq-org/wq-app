@@ -1,5 +1,5 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export default function AdminLicenses() {
+export function AdminLicenses() {
   return <AdminWorkspaceShell>Licenses</AdminWorkspaceShell>
 }

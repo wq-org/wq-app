@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '@/components/layout'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { getCourseById } from '@/features/course'
 import { getLessonsByTopicId, type Lesson } from '@/features/lesson'
@@ -11,7 +11,7 @@ import { getTopicById } from '@/features/topic'
 import type { Topic } from '@/features/topic'
 import type { Course } from '@/features/course'
 
-export default function TopicView() {
+export function TopicView() {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()

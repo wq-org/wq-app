@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getTeacherFlowGames } from '@/features/game-studio/api/gameStudioApi'
-import type { GameForStudio } from '@/features/game-studio/api/gameStudioApi'
+import { getTeacherFlowGames } from '@/features/game-studio'
+import type { GameForStudio } from '@/features/game-studio'
 import { GameCard } from './GameCard'
-import Spinner from '@/components/ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { EmptyGamesView } from '@/features/student'
 
