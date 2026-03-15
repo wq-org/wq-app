@@ -11,7 +11,7 @@ import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {

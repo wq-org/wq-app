@@ -9,7 +9,7 @@ import {
   GameCardList,
   type GameCardProps,
 } from '@/features/game-studio'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared'
@@ -27,6 +27,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/u
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '@/components/ui/spinner'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { StudentFollowersDrawer } from '../components/StudentFollowersDrawer'
 
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
   const extension = filename.split('.').pop()?.toUpperCase() || ''
@@ -57,6 +58,7 @@ export function Dashboard() {
   const [gamesLoading, setGamesLoading] = useState(false)
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
+  const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false)
   const navigate = useNavigate()
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
@@ -169,6 +171,10 @@ export function Dashboard() {
     navigate(`/student/course/${courseId}`)
   }
 
+  const handleOpenFollowersDrawer = () => {
+    setIsFollowersDrawerOpen(true)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -194,6 +200,7 @@ export function Dashboard() {
         institutionName={profile?.institution?.name || undefined}
         institutionSlug={profile?.institution?.slug || undefined}
         followedTeacherCount={followedTeacherIds.length}
+        onViewFollowerList={handleOpenFollowersDrawer}
         onClickTab={handleClickTab}
       >
         {selectedTab === 'courses' &&
@@ -283,6 +290,10 @@ export function Dashboard() {
       <CommandPalette
         commandBarContext="student"
         onFilesUploaded={loadFiles}
+      />
+      <StudentFollowersDrawer
+        open={isFollowersDrawerOpen}
+        onOpenChange={setIsFollowersDrawerOpen}
       />
     </>
   )

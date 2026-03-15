@@ -15,7 +15,7 @@ import {
   type ProfileCourseCardData,
 } from '@/features/course'
 import { GameCardList, getTeacherFlowGames, type GameCardProps } from '@/features/game-studio'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'

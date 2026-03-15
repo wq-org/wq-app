@@ -8,10 +8,11 @@ export { ProfileTeacherView } from './components/ProfileTeacherView'
 export { ProfileView } from './components/ProfileView'
 export { useFollow } from './hooks/useFollow'
 export { useProfile } from './hooks/useProfile'
-export type { FollowStatus, TeacherFollowerProfile, FollowRequestRow } from './api/followApi'
+export type { FollowStatus, FollowProfileSummary, FollowRequestRow } from './api/followApi'
 export {
   getFollowedTeacherIds,
   getFollowedTeacherCount,
+  getFollowedTeacherProfiles,
   getFollowStatus,
   isFollowing,
   getTeacherFollowers,

@@ -26,7 +26,8 @@
     "loading": "Follower werden geladen...",
     "empty": "Noch keine Follower.",
     "close": "Follower-Liste schließen",
-    "studentFallback": "Schüler"
+    "studentFallback": "Schüler",
+    "studentRoleLabel": "Schüler"
   },
   "meta": {
     "followersTopLabel": "Follower",

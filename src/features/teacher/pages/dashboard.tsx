@@ -12,64 +12,14 @@ import {
 import { FilesTableView, type FileItem } from '@/features/files'
 import { useUser } from '@/contexts/user'
 import { useCourse } from '@/contexts/course'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { Spinner } from '@/components/ui/spinner'
 import type { FileListItem } from '@/components/shared'
 import { fetchFilesByRole } from '@/components/shared'
 import { GamePlayList } from '@/features/game-play'
-import { getTeacherFollowers, type TeacherFollowerProfile } from '@/features/profiles'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Text } from '@/components/ui/text'
-import { X } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-
-function FollowerRow({
-  follower,
-  fallbackLabel,
-}: {
-  follower: TeacherFollowerProfile
-  fallbackLabel: string
-}) {
-  const { url: signedAvatarUrl } = useAvatarUrl(follower.avatar_url || '')
-  const displayName = follower.display_name?.trim() || follower.username?.trim() || fallbackLabel
-  const initials = displayName.charAt(0).toUpperCase()
-
-  return (
-    <div className="flex items-center justify-between rounded-2xl border bg-white px-4 py-3">
-      <div className="flex items-center gap-3 min-w-0">
-        <Avatar className="h-10 w-10">
-          <AvatarImage
-            src={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
-            alt={displayName}
-          />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <Text
-            as="p"
-            variant="body"
-            className="font-medium truncate"
-          >
-            {displayName}
-          </Text>
-          {follower.username ? (
-            <Text
-              as="p"
-              variant="small"
-              className="text-muted-foreground truncate"
-            >
-              @{follower.username}
-            </Text>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  )
-}
+import { TeacherFollowersDrawer } from '../components/TeacherFollowersDrawer'
 
 // Helper function to map file extension to FileItem type
 function getFileTypeFromExtension(filename: string): FileItem['type'] {
@@ -106,7 +56,6 @@ function formatFileSize(bytes: number): string {
 }
 
 export function Dashboard() {
-  const { t } = useTranslation('features.teacher')
   const [selectedTab, setSelectedTab] = useState<string>('courses')
   const [courseSearchQuery, setCourseSearchQuery] = useState('')
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
@@ -116,8 +65,6 @@ export function Dashboard() {
   const [files, setFiles] = useState<FileItem[]>([])
   const [filesLoading, setFilesLoading] = useState(false)
   const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false)
-  const [followersLoading, setFollowersLoading] = useState(false)
-  const [followers, setFollowers] = useState<TeacherFollowerProfile[]>([])
   const filteredCourses = useSearchFilter(courses, courseSearchQuery, COURSE_SEARCH_FIELDS)
 
   // Fetch courses when profile is loaded
@@ -188,18 +135,8 @@ export function Dashboard() {
     navigate(`/teacher/course/${id}`)
   }
 
-  const handleOpenFollowersDrawer = useCallback(async () => {
+  const handleOpenFollowersDrawer = useCallback(() => {
     setIsFollowersDrawerOpen(true)
-    setFollowersLoading(true)
-    try {
-      const list = await getTeacherFollowers()
-      setFollowers(list)
-    } catch (error) {
-      console.error('Failed to load followers:', error)
-      setFollowers([])
-    } finally {
-      setFollowersLoading(false)
-    }
   }, [])
 
   if (loading) {
@@ -285,59 +222,10 @@ export function Dashboard() {
         onCourseCreated={fetchCourses}
         onFilesUploaded={loadFiles}
       />
-
-      <Drawer
-        direction="right"
+      <TeacherFollowersDrawer
         open={isFollowersDrawerOpen}
         onOpenChange={setIsFollowersDrawerOpen}
-      >
-        <DrawerContent className="h-screen w-[60vw]! max-w-xl! sm:max-w-xl!">
-          <DrawerHeader>
-            <div className="flex items-center justify-between">
-              <DrawerTitle>{t('followersDrawer.title')}</DrawerTitle>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                onClick={() => setIsFollowersDrawerOpen(false)}
-                aria-label={t('followersDrawer.close')}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </DrawerHeader>
-
-          <div className="px-4 pb-6 space-y-3 overflow-y-auto">
-            {followersLoading ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-8">
-                <Spinner
-                  variant="gray"
-                  size="md"
-                />
-                <Text
-                  as="p"
-                  variant="small"
-                  className="text-muted-foreground"
-                >
-                  {t('followersDrawer.loading')}
-                </Text>
-              </div>
-            ) : followers.length === 0 ? (
-              <div className="rounded-2xl border bg-muted/20 p-4 text-center text-muted-foreground">
-                {t('followersDrawer.empty')}
-              </div>
-            ) : (
-              followers.map((follower) => (
-                <FollowerRow
-                  key={follower.user_id}
-                  follower={follower}
-                  fallbackLabel={t('followersDrawer.studentFallback')}
-                />
-              ))
-            )}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      />
     </>
   )
 }

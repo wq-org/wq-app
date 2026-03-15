@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -41,8 +41,10 @@ export function ProfileListItem({
     <Card
       onClick={onClick}
       className={cn(
-        'w-full rounded-2xl border-0 px-3 py-2 text-left shadow-none',
-        onClick ? 'cursor-pointer hover:bg-accent focus:bg-accent focus:outline-none' : '',
+        'w-full gap-0 rounded-2xl border-border/60 bg-card px-3 py-2 text-left shadow-none transition-colors',
+        onClick
+          ? 'cursor-pointer hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none'
+          : '',
         className,
       )}
     >

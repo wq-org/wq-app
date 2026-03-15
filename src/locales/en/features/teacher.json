@@ -27,7 +27,8 @@
     "loading": "Loading followers...",
     "empty": "No followers yet.",
     "close": "Close followers drawer",
-    "studentFallback": "Student"
+    "studentFallback": "Student",
+    "studentRoleLabel": "Student"
   },
   "meta": {
     "followersTopLabel": "Followers",

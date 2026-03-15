@@ -1,7 +1,8 @@
-import { AvatarDrawer } from '@/components/shared'
+import { SelectAvatarDrawer } from '@/components/shared'
 import { FieldCard } from '@/components/ui/field-card'
 import { Text } from '@/components/ui/text'
 import type { AvatarOption } from '@/features/onboarding'
+import { useTranslation } from 'react-i18next'
 
 type SettingsAvatarSectionProps = {
   avatarPath: string
@@ -24,7 +25,9 @@ export function SettingsAvatarSection({
   hint,
   className,
 }: SettingsAvatarSectionProps) {
+  const { t } = useTranslation('settings')
   const displayNameInitial = displayName.charAt(0).toUpperCase() || 'A'
+  const handleAvatarSelect = canEditAvatar ? onAvatarSelect : () => {}
 
   return (
     <FieldCard className={className}>
@@ -43,13 +46,20 @@ export function SettingsAvatarSection({
           {hint}
         </Text>
         <div className="relative mt-3 w-fit">
-          <AvatarDrawer
+          <SelectAvatarDrawer
             avatarPath={avatarPath}
             selectedAvatarPath={avatarPath}
             displayNameInitial={displayNameInitial}
             displayName={displayName}
             avatarOptions={avatarOptions}
-            onAvatarSelect={canEditAvatar ? onAvatarSelect : () => {}}
+            drawerTitle={t('profile.avatarDrawer.title')}
+            drawerDescription={t('profile.avatarDrawer.description')}
+            triggerAriaLabel={t('profile.avatarDrawer.triggerAriaLabel')}
+            closeLabel={t('profile.avatarDrawer.close')}
+            getSelectAvatarLabel={(avatarName) =>
+              t('profile.avatarDrawer.selectAriaLabel', { avatarName })
+            }
+            onAvatarSelect={handleAvatarSelect}
           />
           {!canEditAvatar ? (
             <div className="absolute inset-0 cursor-not-allowed rounded-full bg-background/40" />

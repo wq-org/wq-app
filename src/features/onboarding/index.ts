@@ -4,7 +4,6 @@ export { StepAvatar } from './components/StepAvatar'
 export { StepFinish } from './components/StepFinish'
 export { StepInstitution } from './components/StepInstitution'
 export { SuccessPage } from './components/SuccessPage'
-export { useAvatarUrl } from './hooks/useAvatarUrl'
 export type {
   AvatarDisplayAttributes,
   AvatarOption,

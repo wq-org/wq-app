@@ -18,6 +18,13 @@
       "accountTitle": "Konto",
       "accountHint": "Diese Felder werden vom Konto verwaltet und sind schreibgeschützt."
     },
+    "avatarDrawer": {
+      "title": "Avatar auswählen",
+      "description": "Wähle den Avatar für dein Profil und die Spielstatistiken aus.",
+      "triggerAriaLabel": "Avatar ändern",
+      "close": "Avatar-Auswahl schließen",
+      "selectAriaLabel": "Avatar {{avatarName}} auswählen"
+    },
     "fields": {
       "name": {
         "label": "Name",

@@ -6,7 +6,7 @@ import { ArrowRight, UserPlus } from 'lucide-react'
 import type { EnrollmentStatus, ProfileCourseCardData } from '@/features/course'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 

@@ -1,7 +1,8 @@
 export { AccentPicker } from './AccentPicker'
-export { AvatarDrawer } from './AvatarDrawer'
 export { ColorPicker } from './ColorPicker'
 export { ContainerSlider } from './container'
+export { FollowersDrawer, SelectAvatarDrawer } from './drawers'
+export type { FollowersDrawerProps, SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
 export { GridIconBackground } from './GridIconBackground'
 export type { IconEntry } from './GridIconBackground'
 export {

@@ -6,7 +6,7 @@ import Heart from '@/components/ui/heart'
 import { Separator } from '@/components/ui/separator'
 import { SlideCounter } from '@/components/ui/SlideCounter'
 import { useUser } from '@/contexts/user'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 

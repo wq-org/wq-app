@@ -18,6 +18,13 @@
       "accountTitle": "Account",
       "accountHint": "These fields are managed by your account and are read-only."
     },
+    "avatarDrawer": {
+      "title": "Choose your avatar",
+      "description": "Select the avatar shown on your profile and in game stats.",
+      "triggerAriaLabel": "Change avatar",
+      "close": "Close avatar drawer",
+      "selectAriaLabel": "Select {{avatarName}} avatar"
+    },
     "fields": {
       "name": {
         "label": "Name",

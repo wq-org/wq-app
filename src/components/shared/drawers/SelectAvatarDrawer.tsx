@@ -1,25 +1,34 @@
 import { useEffect, useState } from 'react'
+import { Edit2Icon, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Edit2Icon, X } from 'lucide-react'
-import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
-
-import { Text } from '@/components/ui/text'
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-  DrawerDescription,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import { Text } from '@/components/ui/text'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import type { AvatarDisplayAttributes, AvatarOption } from '@/features/onboarding'
-import { useAvatarUrl } from '@/features/onboarding'
+
+interface AvatarDisplayAttributes {
+  name: string
+  emoji: string
+  description?: string | null
+}
+
+export interface SelectAvatarOption extends AvatarDisplayAttributes {
+  src: string
+}
 
 type AvatarOptionItemProps = {
-  avatar: AvatarOption
+  avatar: SelectAvatarOption
   isSelected: boolean
+  getSelectAvatarLabel: (avatarName: string) => string
   onSelect: (avatarPath: string) => void
 }
 
@@ -37,7 +46,7 @@ function AvatarMetaText({ avatar }: { avatar: AvatarDisplayAttributes }) {
         <Text
           as="span"
           variant="small"
-          className="truncate font-medium"
+          className="truncate font-medium text-foreground"
         >
           {avatar.name}
         </Text>
@@ -55,7 +64,12 @@ function AvatarMetaText({ avatar }: { avatar: AvatarDisplayAttributes }) {
   )
 }
 
-function AvatarOptionItem({ avatar, isSelected, onSelect }: AvatarOptionItemProps) {
+function AvatarOptionItem({
+  avatar,
+  isSelected,
+  getSelectAvatarLabel,
+  onSelect,
+}: AvatarOptionItemProps) {
   const { url: avatarUrl } = useAvatarUrl(avatar.src)
   const [imageFailed, setImageFailed] = useState(false)
 
@@ -70,14 +84,14 @@ function AvatarOptionItem({ avatar, isSelected, onSelect }: AvatarOptionItemProp
       type="button"
       onClick={() => onSelect(avatar.src)}
       className={cn(
-        'flex h-50 w-44 cursor-pointer flex-col items-center justify-start gap-3 rounded-3xl px-3 py-3 text-center transition-colors duration-200',
+        'flex h-50 w-44 cursor-pointer flex-col items-center justify-start gap-3 rounded-3xl border px-3 py-3 text-center transition-colors duration-200',
         isSelected
-          ? 'bg-[oklch(var(--oklch-darkblue)/0.08)] ring-1 ring-[oklch(var(--oklch-darkblue)/0.22)]'
-          : 'hover:bg-muted/60',
+          ? 'border-foreground/20 bg-accent/60 ring-2 ring-ring/20'
+          : 'border-border bg-card/60 hover:bg-accent/40',
       )}
-      aria-label={`Select ${avatar.name} avatar`}
+      aria-label={getSelectAvatarLabel(avatar.name)}
     >
-      <div className="size-24 shrink-0 overflow-hidden rounded-full">
+      <div className="size-24 shrink-0 overflow-hidden rounded-full border border-border/60 bg-background">
         <img
           src={imageSrc}
           alt={avatar.name}
@@ -90,23 +104,33 @@ function AvatarOptionItem({ avatar, isSelected, onSelect }: AvatarOptionItemProp
   )
 }
 
-interface AvatarDrawerProps {
+export interface SelectAvatarDrawerProps {
   avatarPath: string
   selectedAvatarPath?: string
   displayNameInitial: string
   displayName?: string | null
-  avatarOptions: AvatarOption[]
+  avatarOptions: SelectAvatarOption[]
+  drawerTitle: string
+  drawerDescription: string
+  triggerAriaLabel: string
+  closeLabel: string
+  getSelectAvatarLabel: (avatarName: string) => string
   onAvatarSelect: (avatarPath: string) => void
 }
 
-export function AvatarDrawer({
+export function SelectAvatarDrawer({
   avatarPath,
   selectedAvatarPath,
   displayNameInitial,
   displayName,
   avatarOptions,
+  drawerTitle,
+  drawerDescription,
+  triggerAriaLabel,
+  closeLabel,
+  getSelectAvatarLabel,
   onAvatarSelect,
-}: AvatarDrawerProps) {
+}: SelectAvatarDrawerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [triggerImageFailed, setTriggerImageFailed] = useState(false)
   const { url: signedTriggerAvatarUrl } = useAvatarUrl(avatarPath)
@@ -119,7 +143,7 @@ export function AvatarDrawer({
     ? DEFAULT_INSTITUTION_IMAGE
     : signedTriggerAvatarUrl || DEFAULT_INSTITUTION_IMAGE
 
-  const handleAvatarSelect = (avatarValue: string) => {
+  function handleAvatarSelect(avatarValue: string) {
     onAvatarSelect(avatarValue)
     setIsOpen(false)
   }
@@ -135,41 +159,39 @@ export function AvatarDrawer({
           type="button"
           variant="ghost"
           className="relative h-auto cursor-pointer p-0 hover:bg-transparent"
-          aria-label="Change avatar"
+          aria-label={triggerAriaLabel}
         >
-          <Avatar className="size-24 rounded-full">
+          <Avatar className="size-24 rounded-full border border-border/60 bg-card shadow-sm">
             <AvatarImage
               src={triggerImageSrc}
-              alt={displayName || 'Avatar'}
+              alt={displayName || drawerTitle}
               className="object-cover"
               onError={() => setTriggerImageFailed(true)}
             />
             <AvatarFallback className="text-xl">{displayNameInitial}</AvatarFallback>
           </Avatar>
           <div
-            className="pointer-events-none absolute -right-2 -bottom-2 rounded-full bg-secondary p-2"
+            className="pointer-events-none absolute -bottom-2 -right-2 rounded-full border border-border bg-card p-2 shadow-sm"
             aria-hidden="true"
           >
-            <Edit2Icon className="size-4 text-secondary-foreground" />
+            <Edit2Icon className="size-4 text-foreground" />
           </div>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="h-screen w-[60vw]! max-w-2xl! sm:max-w-2xl!">
+      <DrawerContent className="h-screen w-[60vw]! max-w-2xl! border-border bg-background sm:max-w-2xl!">
         <DrawerHeader>
-          <div className="flex items-center justify-between">
-            <DrawerTitle>Choose Your Avatar</DrawerTitle>
+          <div className="flex items-center justify-between gap-3">
+            <DrawerTitle>{drawerTitle}</DrawerTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(false)}
-              aria-label="Close drawer"
+              aria-label={closeLabel}
             >
               <X className="size-4" />
             </Button>
           </div>
-          <DrawerDescription className="sr-only">
-            Select an avatar from the available options below
-          </DrawerDescription>
+          <DrawerDescription>{drawerDescription}</DrawerDescription>
         </DrawerHeader>
         <div className="flex-1 overflow-y-auto p-4">
           <div className="flex flex-wrap items-start gap-3">
@@ -178,6 +200,7 @@ export function AvatarDrawer({
                 key={avatar.src}
                 avatar={avatar}
                 isSelected={selectedAvatarPath === avatar.src}
+                getSelectAvatarLabel={getSelectAvatarLabel}
                 onSelect={handleAvatarSelect}
               />
             ))}

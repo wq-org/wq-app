@@ -15,7 +15,7 @@ import { Text } from '@/components/ui/text'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { fetchAvatars } from '../api/onboardingApi'
-import { useAvatarUrl } from '../hooks/useAvatarUrl'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import type {
   AvatarDisplayAttributes,
   AvatarOption,

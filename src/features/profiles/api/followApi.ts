@@ -51,11 +51,57 @@ export async function getFollowedTeacherCount(studentId: string): Promise<number
 
 export type FollowStatus = 'none' | 'accepted'
 
-export interface TeacherFollowerProfile {
+export interface FollowProfileSummary {
   user_id: string
   display_name: string | null
   username: string | null
   avatar_url: string | null
+}
+
+async function getProfilesByIds(userIds: readonly string[]): Promise<FollowProfileSummary[]> {
+  if (userIds.length === 0) return []
+
+  const { data: profiles, error } = await supabase
+    .from('profiles')
+    .select('user_id, display_name, username, avatar_url')
+    .in('user_id', userIds)
+
+  if (error || !profiles) {
+    if (error) {
+      console.error('Error fetching follow profiles:', error)
+    }
+
+    return []
+  }
+
+  const orderMap = new Map(userIds.map((id, index) => [id, index]))
+
+  return [...profiles].sort((a, b) => {
+    const firstIndex = orderMap.get(a.user_id) ?? Number.MAX_SAFE_INTEGER
+    const secondIndex = orderMap.get(b.user_id) ?? Number.MAX_SAFE_INTEGER
+    return firstIndex - secondIndex
+  }) as FollowProfileSummary[]
+}
+
+export async function getFollowedTeacherProfiles(): Promise<FollowProfileSummary[]> {
+  const currentUserId = await getCurrentUserId()
+  if (!currentUserId) return []
+
+  const { data, error } = await supabase
+    .from('teacher_followers')
+    .select('teacher_id')
+    .eq('student_id', currentUserId)
+
+  if (error) {
+    console.error('Error fetching followed teacher profiles:', error)
+    return []
+  }
+
+  const teacherIds = (data || [])
+    .map((row: { teacher_id: string }) => row.teacher_id)
+    .filter(Boolean)
+
+  return getProfilesByIds(teacherIds)
 }
 
 /**
@@ -88,7 +134,7 @@ export async function isFollowing(teacherId: string): Promise<boolean> {
 /**
  * Get followers (students) for the currently authenticated teacher.
  */
-export async function getTeacherFollowers(): Promise<TeacherFollowerProfile[]> {
+export async function getTeacherFollowers(): Promise<FollowProfileSummary[]> {
   const currentUserId = await getCurrentUserId()
   if (!currentUserId) return []
 
@@ -108,26 +154,7 @@ export async function getTeacherFollowers(): Promise<TeacherFollowerProfile[]> {
     .map((row: { student_id: string }) => row.student_id)
     .filter(Boolean)
 
-  if (studentIds.length === 0) return []
-
-  const { data: profiles, error: profilesError } = await supabase
-    .from('profiles')
-    .select('user_id, display_name, username, avatar_url')
-    .in('user_id', studentIds)
-
-  if (profilesError || !profiles) {
-    if (profilesError) {
-      console.error('Error fetching follower profiles:', profilesError)
-    }
-    return []
-  }
-
-  const orderMap = new Map(studentIds.map((id, index) => [id, index]))
-  return [...profiles].sort((a, b) => {
-    const ai = orderMap.get(a.user_id) ?? Number.MAX_SAFE_INTEGER
-    const bi = orderMap.get(b.user_id) ?? Number.MAX_SAFE_INTEGER
-    return ai - bi
-  }) as TeacherFollowerProfile[]
+  return getProfilesByIds(studentIds)
 }
 
 /** Follow teacher immediately (baseline behavior). */

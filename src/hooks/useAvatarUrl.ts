@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 
 function isDirectAvatarUrl(path: string): boolean {
   if (!path) return false
+
   return (
     /^https?:\/\//i.test(path) ||
     /^data:/i.test(path) ||
@@ -35,6 +36,7 @@ export function useAvatarUrl(path?: string | null, expiresIn = 3600) {
 
       setUrl(null)
       setLoading(true)
+
       const { data, error } = await supabase.storage
         .from('avatars')
         .createSignedUrl(normalizedPath, expiresIn)
@@ -45,8 +47,10 @@ export function useAvatarUrl(path?: string | null, expiresIn = 3600) {
       } else {
         setUrl(data?.signedUrl || null)
       }
+
       setLoading(false)
     }
+
     void sign()
   }, [path, expiresIn])
 

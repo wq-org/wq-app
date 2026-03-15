@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LearningDashboardShell } from '@/features/dashboard'
-import { useAvatarUrl } from '@/features/onboarding'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { Spinner } from '@/components/ui/spinner'
 import type { Profile } from '@/contexts/user/UserContext'

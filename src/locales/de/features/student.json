@@ -3,6 +3,14 @@
     "title": "Lernendenansicht",
     "description": "Inhalte für Lernende werden hier angezeigt."
   },
+  "followersDrawer": {
+    "title": "Gefolgte Lehrkräfte",
+    "loading": "Gefolgte Lehrkräfte werden geladen...",
+    "empty": "Du folgst aktuell noch keiner Lehrkraft.",
+    "close": "Liste gefolgter Lehrkräfte schließen",
+    "teacherFallback": "Lehrkraft",
+    "teacherRoleLabel": "Lehrkraft"
+  },
   "emptyStudent": {
     "title": "Keine Lernenden gefunden",
     "description": "Nutze die Command Palette, um Lernende zu suchen und deinem Kurs hinzuzufügen."
