@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight } from 'lucide-react'
 import type { CourseCardProps } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
@@ -25,7 +24,7 @@ export function CourseCard({
   const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
 
   return (
-    <Card className="w-[350px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
+    <Card className="w-[320px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <AspectRatio
           ratio={16 / 9}
@@ -97,11 +96,10 @@ export function CourseCard({
           </CardDescription>
           <div className="flex items-center justify-end gap-2 mt-auto">
             <Button
-              variant="ghost"
+              variant="darkblue"
               onClick={() => {
                 onView?.(id)
               }}
-              className="text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200 active:animate-in active:zoom-in-95"
             >
               <Text
                 as="p"
@@ -109,7 +107,6 @@ export function CourseCard({
               >
                 {t('card.open')}
               </Text>
-              <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

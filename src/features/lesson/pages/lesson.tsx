@@ -250,7 +250,7 @@ export function Lesson() {
     })
 
   const editorContent = (
-    <div className="relative flex flex-col gap-6">
+    <div className="relative flex w-full min-w-0 flex-col gap-6">
       <div className="animate-in fade-in-0 slide-in-from-bottom-4">
         <LessonHeroBannerSection
           title={lessonTitle}

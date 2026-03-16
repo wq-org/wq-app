@@ -1,4 +1,3 @@
-import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,7 +11,7 @@ export function TopicCard({ id, title, description, themeId, ctaLabel, onView }:
   const { t } = useTranslation('features.course')
 
   return (
-    <Card className="w-[350px] rounded-4xl px-0 py-0 shadow-xl transition-all duration-200 hover:shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
+    <Card className="w-[320px] rounded-4xl px-0 py-0 shadow-xl transition-all duration-200 hover:shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative flex flex-col items-start justify-start gap-4 px-0">
         <AspectRatio
           ratio={16 / 9}
@@ -67,7 +66,6 @@ export function TopicCard({ id, title, description, themeId, ctaLabel, onView }:
               >
                 {ctaLabel ?? t('card.open')}
               </Text>
-              <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>

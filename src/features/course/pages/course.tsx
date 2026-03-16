@@ -75,7 +75,7 @@ export function Course() {
   }
 
   return (
-    <div className="flex flex-col gap-6 pb-32">
+    <div className="flex w-full min-w-0 flex-col gap-6 pb-32">
       <TopicForm
         title={newTopicTitle}
         description={newTopicDescription}
@@ -93,10 +93,12 @@ export function Course() {
         {t('page.topicsTitle')}
       </Text>
 
-      <TopicsToolbar
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
+      <div className="w-full min-w-0">
+        <TopicsToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-8">

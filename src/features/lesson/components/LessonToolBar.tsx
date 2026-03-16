@@ -13,16 +13,16 @@ export function LessonToolBar({ searchValue, onSearchChange, className }: Lesson
   const { t } = useTranslation('features.lesson')
 
   return (
-    <div className={cn('flex w-full justify-start', className)}>
+    <div className={cn('flex w-full min-w-0 justify-end', className)}>
       <ClearableInput
         value={searchValue}
         showSearchIcon
         onValueChange={onSearchChange}
         label={t('toolbar.searchLabel', { defaultValue: 'Search lessons' })}
         placeholder={t('toolbar.searchPlaceholder', {
-          defaultValue: 'Search lessons by title or description...',
+          defaultValue: 'Search lessons',
         })}
-        className="w-90 pb-0"
+        className="w-full max-w-md shrink-0 pb-0"
       />
     </div>
   )

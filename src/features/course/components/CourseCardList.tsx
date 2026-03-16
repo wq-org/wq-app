@@ -8,7 +8,7 @@ interface CourseCardListProps {
 
 export function CourseCardList({ courses, onCourseView }: CourseCardListProps) {
   return (
-    <div className="flex gap-10 flex-wrap animate-in fade-in-0 slide-in-from-bottom-4">
+    <div className="flex gap-5 flex-wrap animate-in fade-in-0 slide-in-from-bottom-4">
       {courses.map((course, idx) => (
         <div
           key={idx}

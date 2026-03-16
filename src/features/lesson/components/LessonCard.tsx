@@ -75,8 +75,7 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
           </p>
           <div className="self-end shrink-0">
             <Button
-              variant="ghost"
-              className="border-0 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
+              variant="darkblue"
               onClick={() => onOpen?.(lesson.id)}
             >
               <Text

@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import type { GameCardProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +21,7 @@ export function GameCard({
   const { t } = useTranslation('features.gameStudio')
 
   return (
-    <Card className="w-[350px] rounded-4xl px-0 py-0 shadow-xl transition-all duration-200 hover:shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
+    <Card className="w-[320px] rounded-4xl px-0 py-0 shadow-xl transition-all duration-200 hover:shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative gap-4 px-0">
         <AspectRatio
           ratio={16 / 9}
@@ -91,12 +90,11 @@ export function GameCard({
           <div className="flex justify-end">
             <Button
               type="button"
-              variant="ghost"
+              variant="darkblue"
               onClick={(e) => {
                 e.stopPropagation()
                 onPlay?.()
               }}
-              className="border-0 text-blue-500 hover:bg-blue-100 hover:text-blue-500 hover:opacity-80 active:animate-in active:zoom-in-95"
             >
               <Text
                 as="p"
@@ -104,7 +102,6 @@ export function GameCard({
               >
                 {button || t('gameCard.play')}
               </Text>
-              <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
         </div>

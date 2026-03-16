@@ -8,7 +8,7 @@ interface TopicCardListProps {
 
 export function TopicCardList({ topics, onTopicView }: TopicCardListProps) {
   return (
-    <div className="flex flex-wrap gap-10 animate-in fade-in-0 slide-in-from-bottom-4">
+    <div className="flex flex-wrap gap-5 animate-in fade-in-0 slide-in-from-bottom-4">
       {topics.map((topic) => {
         const resolvedView = onTopicView ?? topic.onView
 

@@ -3,7 +3,7 @@ import type { GameCardListProps } from '../types/game-studio.types'
 
 export function GameCardList({ games, onGamePlay }: GameCardListProps) {
   return (
-    <div className="flex flex-wrap gap-6">
+    <div className="flex flex-wrap gap-5">
       {games.map((game) => (
         <div
           key={game.id}

@@ -2,7 +2,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { ArrowRight } from 'lucide-react'
 import { Text } from '@/components/ui/text'
 import type { GameProjectCardProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
@@ -95,7 +94,6 @@ export function GameProjectCard({
               >
                 {t('gameProjectCard.open')}
               </Text>
-              <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

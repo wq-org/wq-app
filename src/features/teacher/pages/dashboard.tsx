@@ -178,11 +178,14 @@ export function Dashboard() {
           ) : courses.length === 0 ? (
             <EmptyCourseView />
           ) : (
-            <div className="flex flex-col gap-6">
-              <CourseToolBar
-                searchValue={courseSearchQuery}
-                onSearchChange={setCourseSearchQuery}
-              />
+            <div className="flex w-full min-w-0 flex-col gap-6">
+              <div className="w-full min-w-0">
+                <CourseToolBar
+                  searchValue={courseSearchQuery}
+                  onSearchChange={setCourseSearchQuery}
+                />
+              </div>
+
               <CourseCardList
                 courses={filteredCourses.map(
                   (course) =>
