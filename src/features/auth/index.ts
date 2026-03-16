@@ -41,3 +41,5 @@ export { LoginPage } from './pages/login'
 export { SignUpPage } from './pages/signUp'
 
 export { VerifyEmailPage } from './pages/verify-email'
+export { ResetPasswordPage } from './pages/reset-password'
+export { ForgotPasswordPage } from './pages/forgot-password'

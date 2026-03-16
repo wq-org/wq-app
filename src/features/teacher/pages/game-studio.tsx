@@ -16,7 +16,7 @@ import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { Plus } from 'lucide-react'
 
-export function GameStudio() {
+const GameStudio = () => {
   const { t } = useTranslation('features.gameStudio')
   const navigate = useNavigate()
   const { getUserId } = useUser()
@@ -127,3 +127,5 @@ export function GameStudio() {
     </AppShell>
   )
 }
+
+export { GameStudio }

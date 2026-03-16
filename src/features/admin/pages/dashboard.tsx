@@ -1,6 +1,6 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export function AdminDashboard() {
+const AdminDashboard = () => {
   return (
     <>
       <AdminWorkspaceShell>
@@ -9,3 +9,5 @@ export function AdminDashboard() {
     </>
   )
 }
+
+export { AdminDashboard }

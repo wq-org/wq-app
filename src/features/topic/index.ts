@@ -27,3 +27,5 @@ export {
   getTopicById,
   updateTopic,
 } from './api/topicsApi'
+export { Topic as TopicPage } from './pages/topic'
+export { TopicView } from './pages/TopicView'

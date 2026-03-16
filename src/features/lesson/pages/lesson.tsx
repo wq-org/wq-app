@@ -47,7 +47,7 @@ function normalizeLessonTab(tab?: string): LessonTabId {
   }
 }
 
-export function Lesson() {
+const Lesson = () => {
   const { t } = useTranslation('features.lesson')
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()
@@ -350,3 +350,5 @@ export function Lesson() {
     </LessonLayout>
   )
 }
+
+export { Lesson }

@@ -17,7 +17,7 @@ import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
 import { Separator } from '@/components/ui/separator'
-export function Topic() {
+const Topic = () => {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()
@@ -232,3 +232,5 @@ export function Topic() {
     </TopicLayout>
   )
 }
+
+export { Topic }

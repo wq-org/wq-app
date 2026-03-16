@@ -1,5 +1,7 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export function AdminBilling() {
+const AdminBilling = () => {
   return <AdminWorkspaceShell>Billing</AdminWorkspaceShell>
 }
+
+export { AdminBilling }

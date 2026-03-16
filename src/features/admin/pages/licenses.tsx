@@ -1,5 +1,7 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export function AdminLicenses() {
+const AdminLicenses = () => {
   return <AdminWorkspaceShell>Licenses</AdminWorkspaceShell>
 }
+
+export { AdminLicenses }

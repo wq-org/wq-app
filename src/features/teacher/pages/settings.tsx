@@ -1,10 +1,12 @@
 import { AppShell } from '@/components/layout'
-import { SettingsPage } from '@/features/settings/pages/SettingsPage'
+import { SettingsPage } from '@/features/settings'
 
-export function TeacherSettingsPage() {
+const TeacherSettingsPage = () => {
   return (
     <AppShell role="teacher">
       <SettingsPage role="teacher" />
     </AppShell>
   )
 }
+
+export { TeacherSettingsPage }

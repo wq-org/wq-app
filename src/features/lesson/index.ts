@@ -29,3 +29,6 @@ export {
 } from './api/lessonsApi'
 export type { RelativeUpdatedTimeLabels } from './utils/relativeTime'
 export { formatRelativeUpdatedTime } from './utils/relativeTime'
+export { Lesson as LessonPage } from './pages/lesson'
+export { LessonRedirect } from './pages/LessonRedirect'
+export { LessonView } from './pages/LessonView'

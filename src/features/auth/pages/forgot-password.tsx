@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { AuthCardLayout } from '../components/AuthCardLayout'
 import { useTranslation } from 'react-i18next'
 
-export function ForgotPasswordPage() {
+export const ForgotPasswordPage = () => {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
 

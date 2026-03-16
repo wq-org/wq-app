@@ -42,7 +42,7 @@ function initialsFromName(name?: string | null, username?: string | null): strin
     .join('')
 }
 
-export function AdminUsers() {
+const AdminUsers = () => {
   const { getRole } = useUser()
   const [users, setUsers] = useState<AdminUserRow[]>([])
   const [loading, setLoading] = useState(true)
@@ -366,3 +366,5 @@ export function AdminUsers() {
     </AdminWorkspaceShell>
   )
 }
+
+export { AdminUsers }

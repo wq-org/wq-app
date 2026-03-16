@@ -45,3 +45,5 @@ export {
   createYooptaStarterContentObject,
   createYooptaStarterContentJson,
 } from './utils/yooptaContent'
+export { Course as CoursePage } from './pages/course'
+export { CourseView } from './pages/CourseView'

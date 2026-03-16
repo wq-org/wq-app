@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/spinner'
  * Redirects legacy /teacher/lesson/:id to /teacher/course/:courseId/lesson/:id
  * by resolving courseId from the lesson's topic.
  */
-export function LessonRedirect() {
+const LessonRedirect = () => {
   const { id: lessonId } = useParams<{ id: string }>()
   const [target, setTarget] = useState<string | null>(null)
   const [error, setError] = useState(false)
@@ -69,3 +69,5 @@ export function LessonRedirect() {
     </div>
   )
 }
+
+export { LessonRedirect }

@@ -2,7 +2,7 @@ import { CommandPalette } from '@/features/command-palette'
 import { useUser } from '@/contexts/user'
 import { ProfileView } from '../components/ProfileView'
 
-export function ProfileViewPage() {
+const ProfileViewPage = () => {
   const { getRole } = useUser()
   const role = getRole() || 'student'
 
@@ -13,3 +13,5 @@ export function ProfileViewPage() {
     </>
   )
 }
+
+export { ProfileViewPage }

@@ -24,7 +24,7 @@ function parseLessonContent(raw: unknown): Record<string, unknown> {
   return {}
 }
 
-export function LessonView() {
+const LessonView = () => {
   const { t } = useTranslation('features.lesson')
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const [lesson, setLesson] = useState<Lesson | null>(null)
@@ -128,3 +128,5 @@ export function LessonView() {
     </AppShell>
   )
 }
+
+export { LessonView }

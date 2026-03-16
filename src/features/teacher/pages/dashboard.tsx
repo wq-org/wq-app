@@ -55,7 +55,7 @@ function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
-export function Dashboard() {
+const Dashboard = () => {
   const [selectedTab, setSelectedTab] = useState<string>('courses')
   const [courseSearchQuery, setCourseSearchQuery] = useState('')
   const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
@@ -232,3 +232,5 @@ export function Dashboard() {
     </>
   )
 }
+
+export { Dashboard }

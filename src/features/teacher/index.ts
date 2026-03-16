@@ -1,3 +1,8 @@
 export { TeacherFollowersDrawer } from './components/TeacherFollowersDrawer'
 export { TeacherProfileView } from './components/TeacherProfileView'
 export { TeacherView } from './components/TeacherView'
+export { Dashboard as TeacherDashboard } from './pages/dashboard'
+export { TeacherSettingsPage } from './pages/settings'
+export { GameStudio } from './pages/game-studio'
+export { Chat as TeacherChat } from './pages/chat'
+export { TeacherViewPage } from './pages/view'

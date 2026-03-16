@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/layout'
-import { SettingsPage } from '@/features/settings/pages/SettingsPage'
+import { SettingsPage } from '@/features/settings'
 
 export const StudentSettingsPage = () => {
   return (

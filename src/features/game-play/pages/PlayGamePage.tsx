@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { ArrowLeft } from 'lucide-react'
 
-export function PlayGamePage() {
+const PlayGamePage = () => {
   const { gameId } = useParams<{ gameId: string }>()
   const navigate = useNavigate()
   const { getRole } = useUser()
@@ -129,3 +129,5 @@ export function PlayGamePage() {
     </GamePlayProvider>
   )
 }
+
+export { PlayGamePage }

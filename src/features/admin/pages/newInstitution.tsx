@@ -8,7 +8,7 @@ import { useUser } from '@/contexts/user'
 import { Spinner } from '@/components/ui/spinner'
 import type { InstitutionFormData } from '../types/institution.types'
 
-export function NewInstitution() {
+const NewInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const [loading, setLoading] = useState(false)
@@ -61,3 +61,5 @@ export function NewInstitution() {
     </AdminWorkspaceShell>
   )
 }
+
+export { NewInstitution }

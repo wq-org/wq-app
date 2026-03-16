@@ -16,3 +16,4 @@ export type {
   StepFinishProps,
 } from './types/onboarding.types'
 export { fetchAvatars, fetchInstitutions, linkUserInstitutions } from './api/onboardingApi'
+export { Onboarding } from './pages/onboarding'

@@ -30,7 +30,7 @@ const STATUS_VARIANT: Record<
   suspended: 'destructive',
 }
 
-export function AdminInstitution() {
+const AdminInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const [institutions, setInstitutions] = useState<InstitutionRow[]>([])
@@ -147,3 +147,5 @@ export function AdminInstitution() {
     </AdminWorkspaceShell>
   )
 }
+
+export { AdminInstitution }

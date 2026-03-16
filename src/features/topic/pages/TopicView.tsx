@@ -11,7 +11,7 @@ import { getTopicById } from '@/features/topic'
 import type { Topic } from '@/features/topic'
 import type { Course } from '@/features/course'
 
-export function TopicView() {
+const TopicView = () => {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()
@@ -101,3 +101,5 @@ export function TopicView() {
     </AppShell>
   )
 }
+
+export { TopicView }

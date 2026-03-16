@@ -1,5 +1,7 @@
 import { AdminWorkspaceShell } from '@/features/admin'
 
-export function AdminBilling() {
+const AdminBilling = () => {
   return <AdminWorkspaceShell role="institution_admin">Billing</AdminWorkspaceShell>
 }
+
+export { AdminBilling }

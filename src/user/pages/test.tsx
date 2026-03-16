@@ -1,4 +1,4 @@
-import { Onboarding } from '@/features/onboarding/pages/onboarding'
+import { Onboarding } from '@/features/onboarding'
 import type { ReactNode } from 'react'
 
 const Container = ({ children }: { children: ReactNode }) => {

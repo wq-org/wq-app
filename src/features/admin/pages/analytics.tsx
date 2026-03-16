@@ -1,5 +1,7 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
-export function AdminAnalytics() {
+const AdminAnalytics = () => {
   return <AdminWorkspaceShell>Analytics</AdminWorkspaceShell>
 }
+
+export { AdminAnalytics }

@@ -1,9 +1,11 @@
 import { AdminWorkspaceShell } from '@/features/admin'
 
-export function InstitutionCourses() {
+const InstitutionCourses = () => {
   return (
     <AdminWorkspaceShell role="institution_admin">
       <p>Courses</p>
     </AdminWorkspaceShell>
   )
 }
+
+export { InstitutionCourses }

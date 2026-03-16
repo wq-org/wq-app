@@ -1,6 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom'
 
-export function TeacherViewPage() {
+const TeacherViewPage = () => {
   const { id } = useParams<{ id: string }>()
   return (
     <Navigate
@@ -9,3 +9,5 @@ export function TeacherViewPage() {
     />
   )
 }
+
+export { TeacherViewPage }

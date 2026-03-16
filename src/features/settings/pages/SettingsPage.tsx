@@ -10,7 +10,7 @@ import type { SettingsPageProps, SettingsSaveValues } from '../types/settings.ty
 import { SettingsProfileForm } from '../components/SettingsProfileForm'
 import { SettingsLoadingState } from '../components/SettingsLoadingState'
 
-export function SettingsPage({ role }: SettingsPageProps) {
+const SettingsPage = ({ role }: SettingsPageProps) => {
   const { t } = useTranslation('settings')
   const { profile, loading, getUserId, refreshProfile } = useUser()
   const [avatarOptions, setAvatarOptions] = useState<AvatarOption[]>([])
@@ -148,3 +148,5 @@ export function SettingsPage({ role }: SettingsPageProps) {
     </div>
   )
 }
+
+export { SettingsPage }

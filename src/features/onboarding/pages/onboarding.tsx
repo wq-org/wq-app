@@ -27,7 +27,7 @@ import type {
 import { AppNavigation } from '@/components/layout'
 import { useTranslation } from 'react-i18next'
 
-export function Onboarding() {
+const Onboarding = () => {
   const navigate = useNavigate()
   const { pendingRole, profile } = useUser()
   const { t } = useTranslation('features.onboarding')
@@ -204,3 +204,5 @@ export function Onboarding() {
     </div>
   )
 }
+
+export { Onboarding }

@@ -10,3 +10,4 @@ export type {
   SettingsPageProps,
   SettingsSaveValues,
 } from './types/settings.types'
+export { SettingsPage } from './pages/SettingsPage'

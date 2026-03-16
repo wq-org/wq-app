@@ -21,3 +21,4 @@ export {
   getTeacherPendingFollowRequests,
   respondFollowRequest,
 } from './api/followApi'
+export { ProfileViewPage } from './pages/view'

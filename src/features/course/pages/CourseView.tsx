@@ -8,7 +8,7 @@ import { getCourseById } from '@/features/course'
 import type { Course } from '@/features/course'
 import { useTranslation } from 'react-i18next'
 
-export function CourseView() {
+const CourseView = () => {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
@@ -93,3 +93,5 @@ export function CourseView() {
     </AppShell>
   )
 }
+
+export { CourseView }

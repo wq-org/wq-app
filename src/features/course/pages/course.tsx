@@ -14,7 +14,7 @@ import { TopicsToolbar } from '@/features/topic'
 import { TopicCardList } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
-export function Course() {
+const Course = () => {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
@@ -123,3 +123,5 @@ export function Course() {
     </div>
   )
 }
+
+export { Course }
