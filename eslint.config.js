@@ -18,6 +18,27 @@ const FEATURE_DEEP_IMPORT_PATTERNS = [
   '@/features/*/constants/*',
 ]
 
+const RELATIVE_FEATURE_DEEP_IMPORT_PATTERNS = [
+  './features/*/api/*',
+  './features/*/components/*',
+  './features/*/hooks/*',
+  './features/*/pages/*',
+  './features/*/types/*',
+  './features/*/utils/*',
+  './features/*/data/*',
+  './features/*/config/*',
+  './features/*/constants/*',
+  '../features/*/api/*',
+  '../features/*/components/*',
+  '../features/*/hooks/*',
+  '../features/*/pages/*',
+  '../features/*/types/*',
+  '../features/*/utils/*',
+  '../features/*/data/*',
+  '../features/*/config/*',
+  '../features/*/constants/*',
+]
+
 const RESTRICTED_FEATURES = [
   'lesson',
   'onboarding',
@@ -56,9 +77,9 @@ export default defineConfig([
         {
           patterns: [
             {
-              group: FEATURE_DEEP_IMPORT_PATTERNS,
+              group: [...FEATURE_DEEP_IMPORT_PATTERNS, ...RELATIVE_FEATURE_DEEP_IMPORT_PATTERNS],
               message:
-                'Avoid deep feature imports. Use `@/features/<feature>` public barrels or local relative imports in the same feature.',
+                'Avoid deep feature imports. Use `@/features/<feature>` public barrels for cross-feature imports, or local relative imports only inside the same feature.',
             },
           ],
         },
@@ -73,9 +94,13 @@ export default defineConfig([
         {
           patterns: [
             {
-              group: [...FEATURE_DEEP_IMPORT_PATTERNS, `!@/features/${featureName}/*`],
+              group: [
+                ...FEATURE_DEEP_IMPORT_PATTERNS,
+                ...RELATIVE_FEATURE_DEEP_IMPORT_PATTERNS,
+                `!@/features/${featureName}/*`,
+              ],
               message:
-                'Avoid deep imports into other features. Use `@/features/<feature>` public barrels; same-feature imports are allowed.',
+                'Avoid deep imports into other features. Use `@/features/<feature>` public barrels; same-feature relative imports are allowed.',
             },
           ],
         },

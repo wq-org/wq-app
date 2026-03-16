@@ -36,3 +36,8 @@ export type {
   ResetPasswordData,
   VerifyEmailData,
 } from './types/auth.types'
+
+export { LoginPage } from './pages/login'
+export { SignUpPage } from './pages/signUp'
+
+export { VerifyEmailPage } from './pages/verify-email'

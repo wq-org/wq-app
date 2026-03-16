@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CheckCircle, XCircle } from 'lucide-react'
 import { Text } from '@/components/ui/text'
+import { useTranslation } from 'react-i18next'
 
-export function VerifyEmailPage() {
+export const VerifyEmailPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation('auth')
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
 
@@ -16,7 +18,7 @@ export function VerifyEmailPage() {
   useEffect(() => {
     async function verifyEmail() {
       if (!token) {
-        setError('Invalid verification link')
+        setError(t('verifyEmail.invalidLink'))
         setIsVerifying(false)
         return
       }
@@ -27,16 +29,15 @@ export function VerifyEmailPage() {
         await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
         setIsSuccess(true)
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Verification failed. Please try again.'
+        const errorMessage = err instanceof Error ? err.message : t('verifyEmail.failedDescription')
         setError(errorMessage)
       } finally {
         setIsVerifying(false)
       }
     }
 
-    verifyEmail()
-  }, [token])
+    void verifyEmail()
+  }, [t, token])
 
   return (
     <div className="w-full container mx-auto max-w-lg h-screen flex items-center justify-center">
@@ -48,14 +49,14 @@ export function VerifyEmailPage() {
               variant="h1"
               className="text-2xl font-light mb-4"
             >
-              Verifying Email...
+              {t('verifyEmail.verifyingTitle')}
             </Text>
             <Text
               as="p"
               variant="body"
               className="text-muted-foreground"
             >
-              Please wait while we verify your email address.
+              {t('verifyEmail.verifyingDescription')}
             </Text>
           </>
         ) : isSuccess ? (
@@ -66,16 +67,16 @@ export function VerifyEmailPage() {
               variant="h1"
               className="text-2xl font-light mb-4"
             >
-              Email Verified!
+              {t('verifyEmail.successTitle')}
             </Text>
             <Text
               as="p"
               variant="body"
               className="text-muted-foreground mb-6"
             >
-              Your email has been successfully verified. You can now log in to your account.
+              {t('verifyEmail.successDescription')}
             </Text>
-            <Button onClick={() => navigate('/')}>Go to Login</Button>
+            <Button onClick={() => navigate('/auth/login')}>{t('verifyEmail.goToLogin')}</Button>
           </>
         ) : (
           <>
@@ -85,16 +86,18 @@ export function VerifyEmailPage() {
               variant="h1"
               className="text-2xl font-light mb-4"
             >
-              Verification Failed
+              {t('verifyEmail.failedTitle')}
             </Text>
             <Text
               as="p"
               variant="body"
               className="text-muted-foreground mb-6"
             >
-              {error || 'Unable to verify your email. The link may be invalid or expired.'}
+              {error || t('verifyEmail.failedDescription')}
             </Text>
-            <Button onClick={() => navigate('/auth/signup')}>Back to Sign Up</Button>
+            <Button onClick={() => navigate('/auth/signUp')}>
+              {t('verifyEmail.backToSignUp')}
+            </Button>
           </>
         )}
       </div>

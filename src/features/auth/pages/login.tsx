@@ -18,7 +18,7 @@ import { AUTH_GRID_ICONS } from '../constants'
 import { Check } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 
-export function LoginPage() {
+export const LoginPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { setPendingRole, clearPendingRole } = useUser()

@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
-import { useUser } from './contexts/user'
-import { LoginPage } from './features/auth/pages/login'
-import { SignUpPage } from './features/auth/pages/signUp'
-import { VerifyEmailPage } from './features/auth/pages/verify-email'
+import { useUser } from '@/contexts/user'
+import { LoginPage } from '@/features/auth'
+import { SignUpPage } from '@/features/auth'
+import { VerifyEmailPage } from '@/features/auth'
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password'
 import { ResetPasswordPage } from './features/auth/pages/reset-password'
 import Test from './user/pages/test'
@@ -11,7 +11,7 @@ import LandingPage from './user/pages/landing'
 import ChangelogPage from './user/pages/changelog'
 import { Institution, InstitutionViewPage } from '@/features/institution'
 import { StudentDashboard } from '@/features/student'
-import { StudentSettingsPage as StudentSettings } from '@/features/student/pages/settings'
+import { StudentSettingsPage } from '@/features/student/pages/settings'
 import { Chat as StudentChat } from '@/features/student/pages/chat'
 import { StudentViewPage } from '@/features/student/pages/view'
 import { Dashboard as TeacherDashboard } from '@/features/teacher/pages/dashboard'
@@ -540,7 +540,7 @@ function App() {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <StudentSettings />
+                        <StudentSettingsPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

@@ -25,7 +25,7 @@ const roleTabs: TabItem[] = [
   { id: USER_ROLES.INSTITUTION_ADMIN, icon: Building2, title: 'Institution' },
 ]
 
-export function SignUpPage() {
+export const SignUpPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { pendingRole, setPendingRole } = useUser()

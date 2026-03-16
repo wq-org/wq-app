@@ -44,23 +44,27 @@ import { SidebarPrimaryNav } from '@/components/shared/sidebar/SidebarPrimaryNav
 
 ---
 
-## Rule 3 — Consumers always import from the top-level barrel
+## Rule 3 — Cross-feature consumers always import from the top-level barrel
 
 ```
 @/components/shared          ← consumers import from here only
 @/components/shared/sidebar  ← never import from here outside shared/
+@/features/auth              ← consumers import from here only
+@/features/auth/pages/login  ← never import from here outside auth/
 ```
 
 ```ts
 // ✅ correct — always the top-level barrel
 import { AppNavigation, ProfileListItem, SelectTabs } from '@/components/shared'
+import { LoginPage } from '@/features/auth'
 
 // ❌ never — exposes internal structure
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import { SelectTabs } from '@/components/shared/tabs'
+import { LoginPage } from '@/features/auth/pages/login'
 ```
 
-The only exception: files **within** the same folder may import siblings directly.
+The only exception: files **within the same feature or folder** may import siblings directly with relative paths.
 
 ---
 
@@ -86,22 +90,23 @@ export { SidebarPrimaryNav, SidebarAccountMenu } from './sidebar'
 
 ## Rule 5 — What belongs in a feature `index.ts`
 
-| ✅ Include                          | ❌ Exclude                           |
-| ----------------------------------- | ------------------------------------ |
-| Components used by other features   | Pages — router imports them directly |
-| Types used across features          | Internal sub-components              |
-| API functions called from outside   | `export *` wildcards                 |
-| Config consumed by the shell or nav | Hooks only used internally           |
+| ✅ Include                        | ❌ Exclude                 |
+| --------------------------------- | -------------------------- |
+| Components used by other features | Internal sub-components    |
+| Types used across features        | `export *` wildcards       |
+| API functions called from outside | Hooks only used internally |
+| Config consumed by shell/nav      | Private feature helpers    |
+| Route pages used by `App.tsx`     | Random deep internals      |
 
 ```ts
 // src/features/admin/index.ts — correct shape
 export { AdminWorkspaceShell } from './components/AdminWorkspaceShell'
 export { getInstitution, updateInstitution } from './api/institutionApi'
 export type * from './types/institution.types'
-
-// Pages are NOT here — imported directly by the router:
-// import { AdminDashboardPage } from '@/features/admin/pages/dashboard'
+export { AdminDashboardPage } from './pages/dashboard'
 ```
+
+Router pages are allowed in a feature barrel when the router needs them. This keeps `App.tsx` aligned with the same public feature boundary as every other cross-feature consumer.
 
 ---
 
@@ -177,8 +182,10 @@ export { QuizCard } from './components/QuizCard'
 export { useQuiz } from './hooks/useQuiz'
 export type * from './types/quiz.types'
 export { getQuizzes, createQuiz } from './api/quizApi'
-// pages/ is NOT exported here
+export { QuizPage } from './pages/quiz'
 ```
+
+Only export route pages that are consumed by the router or another approved app shell boundary. Do not export every page by default.
 
 ---
 
@@ -202,7 +209,8 @@ Question                                     Answer
 Should I use export default?                 Never.
 Where do consumers import shared components? @/components/shared only
 Where do consumers import feature APIs?      @/features/[name] only
-Where do pages get imported?                 Direct path in App.tsx/router only
+Where do cross-feature consumers import from? Top-level barrel only
+Where do router pages get imported?          Usually @/features/[name]
 Does every subfolder need index.ts?          Only if imported from outside the folder
 What changes when I move a file?             Only the barrel — one line
 ```
