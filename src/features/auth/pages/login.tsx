@@ -206,12 +206,11 @@ export const LoginPage = () => {
           >
             {isLoading ? (
               <Spinner
-                variant="white"
+                variant="darkblue"
                 size="xs"
-                speed={1750}
               />
             ) : (
-              <Check />
+              <Check className="h-4 w-4" />
             )}
             {t('login.submit')}
           </Button>

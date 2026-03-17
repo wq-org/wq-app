@@ -200,11 +200,11 @@ export const SignUpPage = () => {
           >
             {isLoading ? (
               <Spinner
-                variant="white"
-                size="sm"
+                variant="darkblue"
+                size="xs"
               />
             ) : (
-              <Check />
+              <Check className="h-4 w-4" />
             )}
             {t('signUp.submit')}
           </Button>
