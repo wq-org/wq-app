@@ -334,6 +334,7 @@ function createNormalizedBlock(rawBlock: unknown, index: number): YooptaBlockDat
     type: blockType,
     value: normalizedValue,
     meta: {
+      align: 'left' as const,
       ...fallbackBlock.meta,
       ...rawMeta,
       order: rawOrder,
@@ -551,6 +552,28 @@ export function removeLessonPage(pages: readonly LessonPage[], pageId: string): 
   const remainingPages = pages.filter((page) => page.id !== pageId)
   if (remainingPages.length === 0) return [createLessonPage(0)]
   return normalizeLessonPages(remainingPages)
+}
+
+export function mergeContentToPage(
+  existing: YooptaContentValue,
+  blocksToAppend: Record<string, unknown>[],
+): YooptaContentValue {
+  const existingBlocks = sortBlocksByOrder(existing)
+
+  const normalizedNew = blocksToAppend
+    .map((raw, index) => createNormalizedBlock(raw, existingBlocks.length + index))
+    .filter((block): block is YooptaBlockData => block != null)
+
+  if (blocksToAppend.length > 0 && normalizedNew.length === 0) {
+    console.warn(
+      '[lessonPages] mergeContentToPage: blocksToAppend had',
+      blocksToAppend.length,
+      'blocks but none were normalized; blocks may have been dropped.',
+    )
+  }
+  if (normalizedNew.length === 0) return existing
+
+  return buildContentFromBlocks([...existingBlocks, ...normalizedNew])
 }
 
 export function buildPageBreakContentLabel(pageNumber: number): string {

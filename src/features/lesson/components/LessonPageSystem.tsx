@@ -86,7 +86,7 @@ export function LessonPageSystem({
               key={page.id}
               className="space-y-8"
             >
-              <div className="mx-auto w-full max-w-[720px]">
+              <div className="w-full">
                 <div className="px-3 pb-4 pt-2 md:px-8 md:pb-8 md:pt-4">
                   <LessonEditor
                     pageId={page.id}
@@ -99,7 +99,7 @@ export function LessonPageSystem({
               </div>
 
               {index < resolvedPages.length - 1 ? (
-                <div className="mx-auto flex w-full max-w-[720px] items-center gap-4 px-4 text-sm text-muted-foreground">
+                <div className="flex w-full items-center gap-4 px-4 text-sm text-muted-foreground">
                   <div className="flex-1 border-t border-dashed border-border" />
                   <span className="whitespace-nowrap">
                     {pageBreakLabel} · {t('page.pageNumberLabel', { number: index + 2 })}
@@ -113,7 +113,7 @@ export function LessonPageSystem({
       </div>
 
       {isEditing ? (
-        <div className="mx-auto flex w-full max-w-[720px] items-center gap-4 px-4">
+        <div className="flex w-full items-center gap-4 px-4">
           <Separator className="flex-1" />
           <Button
             type="button"

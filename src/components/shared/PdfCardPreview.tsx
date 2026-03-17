@@ -48,6 +48,8 @@ export interface PdfCardPreviewProps {
 
 // ─── PdfCardPreview ───────────────────────────────────────────────────────────
 
+const PREVIEW_HEIGHT = 200
+
 export function PdfCardPreview({
   src,
   title,
@@ -56,10 +58,10 @@ export function PdfCardPreview({
   onClick,
   className,
 }: PdfCardPreviewProps) {
-  const handleCardClick = () => onClick?.(src)
   const handleCta = (e: React.MouseEvent) => {
     e.stopPropagation()
     onCta?.(src)
+    onClick?.(src)
   }
 
   // Append #toolbar=0&navpanes=0&scrollbar=0 to hide PDF chrome in iframe
@@ -67,75 +69,53 @@ export function PdfCardPreview({
 
   return (
     <Card
-      onClick={handleCardClick}
       className={cn(
-        // Shell
-        'group w-[220px] overflow-hidden rounded-2xl border border-neutral-200',
-        'bg-white py-0 px-0 shadow-md',
-        'cursor-pointer transition-all duration-200',
-        'hover:shadow-xl hover:-translate-y-0.5',
-        // Animate in
+        'group flex w-[220px] flex-wrap overflow-hidden rounded-2xl border border-neutral-200 bg-white py-0 px-0 shadow-md transition-all duration-200 hover:shadow-lg',
         'animate-in fade-in-0 slide-in-from-bottom-4',
         className,
       )}
     >
-      {/* ── Preview area — 80% of card height ─────────────────────────────── */}
+      {/* ── Preview area ───────────────────────────────────────────────────── */}
       <div
         className="relative w-full overflow-hidden rounded-t-2xl bg-neutral-100"
-        style={{ height: 260 }}
+        style={{ height: PREVIEW_HEIGHT }}
       >
-        {/* Iframe preview — pointer-events-none so card click works */}
         <iframe
           src={iframeSrc}
           title={title}
-          className="absolute inset-0 h-full w-full pointer-events-none select-none"
+          className="pointer-events-none absolute inset-0 h-full w-full select-none"
           style={{ border: 'none' }}
           aria-hidden="true"
           tabIndex={-1}
           loading="lazy"
         />
-
-        {/* Invisible click-capture overlay */}
         <div
-          className="absolute inset-0 z-10"
-          aria-hidden="true"
-        />
-
-        {/* Subtle top-fade so the document bleeds into the footer cleanly */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none z-20"
+          className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none z-20"
           style={{
             background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.6))',
           }}
         />
       </div>
 
-      {/* ── Footer — 20% of card ───────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 px-3 py-3">
-        {/* Icon + title row */}
-        <div className="flex items-start gap-2 min-w-0">
+      {/* ── Footer: title + button (only button clickable) ──────────────────── */}
+      <div className="flex min-w-0 flex-1 flex-wrap items-start gap-2 px-3 py-3">
+        <div className="flex min-w-0 flex-1 items-start gap-2">
           <FileText
             className="mt-[1px] h-4 w-4 shrink-0 text-blue-500"
             strokeWidth={1.75}
           />
           <span
-            className="text-[13px] font-medium text-neutral-800 leading-snug line-clamp-2 min-w-0"
+            className="min-w-0 truncate text-[13px] font-medium leading-snug text-neutral-800"
             title={title}
           >
             {title}
           </span>
         </div>
-
-        {/* CTA button — left-aligned, ghost style */}
         <Button
-          variant="ghost"
+          variant="darkblue"
           size="sm"
           onClick={handleCta}
-          className={cn(
-            'h-7 w-fit px-2 text-[12px] font-medium',
-            'text-blue-500 hover:text-blue-600 hover:bg-blue-50',
-            'justify-start rounded-md',
-          )}
+          className="h-7 w-fit shrink-0 px-2 text-[12px] font-medium"
         >
           {ctaLabel}
         </Button>

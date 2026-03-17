@@ -61,7 +61,7 @@ export {
 } from './utils/createLessonStarterContent'
 export type { LessonHeading } from './utils/lessonHeadings'
 export { getHeadingsFromLessonPages, getHeadingsFromLessonContent } from './utils/lessonHeadings'
-export { createPageBreakBlock, parseYooptaContent } from './utils/lessonPages'
+export { createPageBreakBlock, mergeContentToPage, parseYooptaContent } from './utils/lessonPages'
 export { scrollToLessonHeading } from './utils/scrollToLessonHeading'
 export type {
   CreateLessonData,

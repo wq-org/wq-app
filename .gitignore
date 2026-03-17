@@ -52,3 +52,25 @@ institution.md
 *.csv
 csv/
 
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+.eggs/
+*.manifest
+*.spec
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.so
+
+pdf_worker/__pycache__

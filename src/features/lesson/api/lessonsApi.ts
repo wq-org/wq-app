@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { buildLessonPages, createLessonPage, serializeLessonContent } from '../utils/lessonPages'
 import type { CreateLessonData, Lesson, LessonPage, UpdateLessonData } from '../types/lesson.types'
+import { createDefaultLessonContent } from '../utils/createDefaultLessonContent'
 import { createLessonStarterContentJson } from '../utils/createLessonStarterContent'
 
 const LESSON_SELECT_FIELDS =
@@ -21,8 +22,9 @@ function normalizeLessonRow(row: Record<string, unknown>): Lesson {
 }
 
 function buildCreateLessonPayload(data: CreateLessonData) {
-  const normalizedContent = data.content?.trim() ? data.content : createLessonStarterContentJson()
-  const normalizedPages = normalizePersistedPages(data.pages, normalizedContent)
+  const hasExplicitContent = Boolean(data.content?.trim())
+  const fallbackContent = hasExplicitContent ? data.content : createDefaultLessonContent()
+  const normalizedPages = normalizePersistedPages(data.pages, fallbackContent)
 
   return {
     title: data.title.trim(),

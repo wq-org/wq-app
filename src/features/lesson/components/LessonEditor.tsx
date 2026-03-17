@@ -57,10 +57,19 @@ export function LessonEditor({
     onReady?.(editor)
   }, [editor, onReady])
 
+  useEffect(() => {
+    const current = editor.getEditorValue()
+    const currentKeys = Object.keys(current).sort().join(',')
+    const nextKeys = Object.keys(normalizedValue).sort().join(',')
+    if (currentKeys !== nextKeys) {
+      editor.setEditorValue(normalizedValue)
+    }
+  }, [editor, normalizedValue])
+
   const editorClassName = cn(
     'relative w-full overflow-visible',
     '[&_.yoopta-editor]:relative [&_.yoopta-editor]:min-h-[32rem] [&_.yoopta-editor]:w-full [&_.yoopta-editor]:max-w-none [&_.yoopta-editor]:overflow-visible [&_.yoopta-editor]:px-0 [&_.yoopta-editor]:py-0',
-    '[&_.yoopta-slate]:mx-auto [&_.yoopta-slate]:w-full [&_.yoopta-slate]:max-w-[44rem] [&_.yoopta-slate]:pl-10 [&_.yoopta-slate]:pr-2 sm:[&_.yoopta-slate]:pl-12 md:[&_.yoopta-slate]:pl-14',
+    '[&_.yoopta-slate]:w-full [&_.yoopta-slate]:max-w-none [&_.yoopta-slate]:pl-10 [&_.yoopta-slate]:pr-2 sm:[&_.yoopta-slate]:pl-12 md:[&_.yoopta-slate]:pl-14',
     '[&_.yoopta-slate_a]:text-blue-600 [&_.yoopta-slate_a]:underline [&_.yoopta-slate_a]:underline-offset-2',
     '[&_.yoopta-overlays]:relative [&_.yoopta-overlays]:z-[90]',
     '[&_.yoopta-block-actions]:z-[80]',

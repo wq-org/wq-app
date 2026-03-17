@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { FolderSync } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useLesson } from '@/contexts/lesson'
 import { showUnsavedChangesToast } from '@/components/shared'
@@ -13,7 +15,6 @@ import { LessonTabs, type LessonTabId } from '../components/LessonTabs'
 import { LessonWorkspaceShell } from '../components/LessonWorkspaceShell'
 import { TableOfContentDrawer } from '../components/TableOfContentDrawer'
 import type { LessonPage } from '../types/lesson.types'
-import { createLessonStarterContentJson } from '../utils/createLessonStarterContent'
 import { formatLessonMetaTimestamp } from '../utils/formatLessonMetaTimestamp'
 import { getHeadingsFromLessonPages } from '../utils/lessonHeadings'
 import { scrollToLessonHeading } from '../utils/scrollToLessonHeading'
@@ -58,6 +59,7 @@ const Lesson = () => {
   const [activeTab, setActiveTab] = useState<LessonTabId>(() =>
     normalizeLessonTab(initialTabFromNav),
   )
+  const [isAutoImportOpen, setIsAutoImportOpen] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTabRef = useRef<LessonTabId | null>(null)
 
@@ -93,7 +95,7 @@ const Lesson = () => {
         try {
           const newLesson = await createLesson({
             title: draftLessonTitle,
-            content: createLessonStarterContentJson(),
+            content: '',
             description: draftLessonDescription || '',
             topic_id: draftLessonTopicId,
           })
@@ -150,9 +152,10 @@ const Lesson = () => {
 
   useEffect(() => {
     if (!lesson || lesson.id !== lessonId) return
+    if (hasUnsavedChanges) return
     setLessonPages(lesson.pages)
     setHasUnsavedChanges(false)
-  }, [lesson, lessonId])
+  }, [lesson, lessonId, hasUnsavedChanges])
 
   const savePagesNow = useCallback(
     async (pagesOverride?: LessonPage[]) => {
@@ -256,6 +259,8 @@ const Lesson = () => {
     />
   )
 
+  const resolvedFirstPage = lessonPages[0] ?? null
+
   const lessonActions = (
     <>
       <TableOfContentDrawer
@@ -268,15 +273,26 @@ const Lesson = () => {
         closeLabel={t('page.drawers.closeLabel')}
         onHeadingSelect={scrollToLessonHeading}
       />
-      <AutoImportDrawer
-        triggerLabel={t('page.actions.autoImport')}
-        title={t('page.drawers.autoImport.title')}
-        description={t('page.drawers.autoImport.description')}
-        placeholderTitle={t('page.drawers.autoImport.placeholderTitle')}
-        placeholderDescription={t('page.drawers.autoImport.placeholderDescription')}
-        footerNote={t('page.drawers.autoImport.footerNote')}
-        closeLabel={t('page.drawers.closeLabel')}
-      />
+      <Button
+        type="button"
+        variant="darkblue"
+        className="w-full justify-start bg-card/80 backdrop-blur sm:w-auto lg:w-full"
+        onClick={() => setIsAutoImportOpen(true)}
+      >
+        <FolderSync className="h-4 w-4" />
+        {t('page.actions.autoImport')}
+      </Button>
+      {resolvedFirstPage && (
+        <AutoImportDrawer
+          isOpen={isAutoImportOpen}
+          onClose={() => setIsAutoImportOpen(false)}
+          lessonId={lessonId}
+          pageId={resolvedFirstPage.id}
+          currentContent={resolvedFirstPage.content}
+          onPagesChange={handlePagesChange}
+          lessonPages={lessonPages}
+        />
+      )}
       <LessonHelpDrawer
         triggerLabel={t('page.actions.help')}
         title={t('page.help.title')}

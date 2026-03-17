@@ -51,10 +51,20 @@
       "closeLabel": "Drawer schließen",
       "autoImport": {
         "title": "Auto Import",
-        "description": "Importiere Kontext für diese Lektion aus einer PDF-Seite.",
-        "placeholderTitle": "PDF-Import kommt bald",
-        "placeholderDescription": "Dieser Drawer ist für den späteren Import-Workflow vorbereitet, aber Datei- und Seitenauswahl sind noch nicht verbunden.",
-        "footerNote": "Der PDF-Seitenimport wird hier verbunden, sobald der Extraktions-Workflow bereit ist."
+        "description": "Importiere Lektionsinhalte aus einer PDF-Seite.",
+        "backToFiles": "Zurück zur Dateiauswahl",
+        "noPdfs": "Keine PDFs in deinem Cloud-Speicher gefunden.",
+        "selectPdf": "Auswählen",
+        "open": "Öffnen",
+        "loadingPdf": "PDF wird geladen…",
+        "selectFileToPreview": "Datei zum Vorschau auswählen",
+        "selectFileToPreviewHint": "Wähle eine PDF aus der Liste, um hier eine Vorschau zu sehen.",
+        "pageLabel": "Seite {{current}} von {{total}}",
+        "scanning": "Seite wird gescannt…",
+        "noBlocks": "Keine Textblöcke auf dieser Seite gefunden.",
+        "next": "Nächste Seite",
+        "finish": "Import abschließen",
+        "selectedCount": "{{count}} Block/Blöcke ausgewählt"
       },
       "tableOfContents": {
         "title": "Inhaltsverzeichnis",

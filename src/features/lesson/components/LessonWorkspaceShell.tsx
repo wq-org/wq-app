@@ -33,7 +33,7 @@ export function LessonWorkspaceShell({
     <div className={cn('flex w-full flex-col gap-8', className)}>
       {tabs}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,80vw)_12rem_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,90vw)_12rem_minmax(0,1fr)] lg:items-start">
         <div className="order-2 flex min-w-0 flex-col gap-8 lg:col-start-2 lg:row-start-1">
           <LessonHeroBannerSection
             title={title}

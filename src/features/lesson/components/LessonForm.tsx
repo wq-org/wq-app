@@ -10,7 +10,6 @@ import { Text } from '@/components/ui/text'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
-import { createLessonStarterContentJson } from '../utils/createLessonStarterContent'
 
 export type LessonFormProps = {
   topicId?: string
@@ -34,7 +33,7 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
     try {
       const createdLesson = await createLesson({
         title: newLesson.trim(),
-        content: createLessonStarterContentJson(),
+        content: '',
         description: description.trim(),
         topic_id: topicId,
       })
