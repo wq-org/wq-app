@@ -30,7 +30,7 @@ import {
 import { PlayGamePage } from '@/features/game-play'
 import { NotFoundPage } from './user/pages/not-found'
 import { CourseLayout, CoursePage, CourseView } from '@/features/course'
-import { LessonPage, LessonRedirect, LessonView } from '@/features/lesson'
+import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
 import { Onboarding } from '@/features/onboarding'
 
@@ -434,7 +434,7 @@ const App = () => {
                   />
                   <Route
                     path="lesson/:lessonId"
-                    element={<LessonPage />}
+                    element={<LessonRoute />}
                   />
                 </Route>
                 <Route
