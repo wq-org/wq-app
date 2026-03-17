@@ -1,9 +1,13 @@
 import { useMemo } from 'react'
 
-export function useSearchFilter<T>(items: T[], query: string, fields: Array<keyof T>): T[] {
+export function useSearchFilter<T>(
+  items: readonly T[],
+  query: string,
+  fields: readonly (keyof T)[],
+): T[] {
   return useMemo(() => {
     if (!query.trim()) {
-      return items
+      return [...items]
     }
 
     const normalizedQuery = query.trim().toLowerCase()

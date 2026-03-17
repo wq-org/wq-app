@@ -27,9 +27,7 @@ function getSafeRootElementType(elements: LessonPluginDefinition['elements']): s
     return null
   }
 
-  const entries = Object.entries(elements).filter(
-    (entry): entry is [string, Record<string, unknown>] => isRecord(entry[1]),
-  )
+  const entries = Object.entries(elements).filter(([, value]) => isRecord(value))
 
   if (entries.length === 0) {
     return null
@@ -89,6 +87,10 @@ function isYooptaBlockData(value: unknown): value is YooptaBlockData {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value != null && !Array.isArray(value)
+}
+
+function isRecordWithType(value: unknown): value is Record<string, unknown> & { type: string } {
+  return isRecord(value) && typeof value.type === 'string'
 }
 
 function parsePossiblyEncodedJson(raw: unknown, remainingParses = 2): unknown {
@@ -164,15 +166,13 @@ function resolveBlockTypeAlias(rawType: unknown): string | null {
 
 function getFirstElementType(rawValue: unknown): string | null {
   if (Array.isArray(rawValue)) {
-    const firstEntry = rawValue.find((entry) => isRecord(entry) && typeof entry.type === 'string')
-    return typeof firstEntry?.type === 'string' ? firstEntry.type : null
+    const firstEntry = rawValue.find(isRecordWithType)
+    return firstEntry?.type ?? null
   }
 
   if (isRecord(rawValue)) {
-    const firstEntry = Object.values(rawValue).find(
-      (entry) => isRecord(entry) && typeof entry.type === 'string',
-    )
-    return typeof firstEntry?.type === 'string' ? firstEntry.type : null
+    const firstEntry = Object.values(rawValue).find(isRecordWithType)
+    return firstEntry?.type ?? null
   }
 
   return null
@@ -274,7 +274,7 @@ function normalizeBlockValue(
       const fallbackElement = fallbackValue[Math.min(index, fallbackValue.length - 1)]
       return normalizeSlateElement(item, fallbackElement as SlateElement)
     })
-    .filter((item): item is YooptaBlockData['value'][number] => item != null)
+    .filter((item): item is SlateElement => item != null)
 
   if (normalizedElements.length === 0) {
     return null

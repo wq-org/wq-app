@@ -94,6 +94,8 @@ export const LESSON_BLOCK_TYPES = [
   'Image',
 ] as const
 
+export type LessonBlockType = (typeof LESSON_BLOCK_TYPES)[number]
+
 export type LessonToolbarBlockType = (typeof LESSON_BLOCK_TYPES)[number]
 
 export function buildLessonYooptaPlugins(): readonly YooptaPluginType<
