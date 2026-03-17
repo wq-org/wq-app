@@ -28,6 +28,7 @@
   },
   "page": {
     "notFound": "Course not found",
+    "courseLabel": "Course:",
     "topicLabel": "Topic:",
     "addTopicPlaceholder": "Add new topic",
     "addTopicDescriptionPlaceholder": "Add Description to Topic",

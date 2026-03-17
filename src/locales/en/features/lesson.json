@@ -28,17 +28,199 @@
   },
   "page": {
     "fallbackTitle": "What's your Page about?",
+    "fallbackDescription": "Write a short summary to introduce this lesson.",
     "editorPlaceholder": "Start writing...",
     "headingsNavLabel": "On this page",
     "previewTitle": "Preview",
-    "previewHint": "Read-only preview of the lesson content."
+    "previewHint": "Read-only preview of the lesson content.",
+    "pageBreakLabel": "page break",
+    "pageNumberLabel": "Page {{number}}",
+    "addPage": "Add page",
+    "notFound": "Lesson not found",
+    "actions": {
+      "autoImport": "Auto Import",
+      "help": "Help",
+      "tableOfContents": "Show Menu"
+    },
+    "meta": {
+      "lastUpdatedLabel": "Last updated",
+      "noFilesLinked": "no files linked",
+      "unavailable": "Not available"
+    },
+    "drawers": {
+      "closeLabel": "Close drawer",
+      "autoImport": {
+        "title": "Auto Import",
+        "description": "Import lesson context from a PDF page.",
+        "placeholderTitle": "PDF import is coming soon",
+        "placeholderDescription": "This drawer is ready for the future import workflow, but file and page selection are not connected yet.",
+        "footerNote": "PDF page import will be connected here once the extraction workflow is ready."
+      },
+      "tableOfContents": {
+        "title": "Table of contents",
+        "description": "Jump to a heading in this lesson.",
+        "empty": "No headings available yet.",
+        "open": "Open menu",
+        "hide": "Hide menu",
+        "pageLabel": "Page"
+      }
+    },
+    "help": {
+      "title": "Lesson Help",
+      "description": "Use these patterns to keep worksheets clear and easy to edit.",
+      "sections": {
+        "structure": {
+          "title": "Start with structure",
+          "body": "Open with a clear learning goal, then add the short context learners need before the first task. Keep one idea per page so the worksheet stays readable in editor and preview."
+        },
+        "headings": {
+          "title": "Use headings for navigation",
+          "body": "Add headings whenever the topic changes. The menu drawer reads those headings and turns them into a jump list, so descriptive section titles matter more than decorative labels."
+        },
+        "media": {
+          "title": "Tag media from cloud storage",
+          "body": "Use the block picker or replace buttons to attach existing cloud files. Store only the storage path on the lesson block and let the UI resolve previews at render time."
+        },
+        "pages": {
+          "title": "Split long worksheets into pages",
+          "body": "Use page breaks when the page becomes too dense. Each page should feel like a printable sheet with one focused section and a clear follow-up task."
+        }
+      }
+    },
+    "toolbar": {
+      "writeContent": "Write Content",
+      "blocksTrigger": "Blocks",
+      "blocksTitle": "Insert a block",
+      "blocksDescription": "Choose the next content block for this page.",
+      "link": "Link",
+      "linkTitle": "Link support",
+      "linkDescription": "Select text in the editor to add a link inline, or use Embed from the block list when the URL should render as media.",
+      "edit": "Edit",
+      "layoutFocused": "Focused Layout",
+      "layoutComfortable": "Comfortable Layout",
+      "mobileOn": "Mobile On",
+      "mobileOff": "Mobile",
+      "save": "Save",
+      "saving": "Saving...",
+      "groups": {
+        "block": "Blocks",
+        "media": "Media"
+      },
+      "searchLabel": "Search lessons",
+      "searchPlaceholder": "Search lessons by title or description...",
+      "blocks": {
+        "paragraph": {
+          "label": "Paragraph",
+          "description": "Add a standard text block."
+        },
+        "headingOne": {
+          "label": "Heading 1",
+          "description": "Create a new top-level section."
+        },
+        "headingTwo": {
+          "label": "Heading 2",
+          "description": "Break a section into subsections."
+        },
+        "headingThree": {
+          "label": "Heading 3",
+          "description": "Add a smaller heading inside a subsection."
+        },
+        "bulletedList": {
+          "label": "Bulleted list",
+          "description": "Capture unordered points or reminders."
+        },
+        "numberedList": {
+          "label": "Numbered list",
+          "description": "Show ordered steps or sequences."
+        },
+        "blockquote": {
+          "label": "Quote",
+          "description": "Highlight a quotation or callout."
+        },
+        "image": {
+          "label": "Image",
+          "description": "Attach an image from cloud storage."
+        },
+        "video": {
+          "label": "Video",
+          "description": "Attach a video from cloud storage."
+        },
+        "file": {
+          "label": "File / PDF",
+          "description": "Attach a downloadable file or PDF preview."
+        },
+        "pageBreak": {
+          "label": "Page break",
+          "description": "Split the worksheet into a new page."
+        },
+        "table": {
+          "label": "Table",
+          "description": "Insert a structured table."
+        },
+        "code": {
+          "label": "Code",
+          "description": "Display code or technical snippets."
+        },
+        "steps": {
+          "label": "Steps",
+          "description": "Show a sequence of steps with structure."
+        },
+        "divider": {
+          "label": "Divider",
+          "description": "Separate content visually."
+        },
+        "tabs": {
+          "label": "Tabs",
+          "description": "Group content behind tabs."
+        },
+        "embed": {
+          "label": "Embed",
+          "description": "Embed a supported external URL."
+        },
+        "accordion": {
+          "label": "Accordion",
+          "description": "Hide secondary content behind expandable items."
+        }
+      }
+    },
+    "inlineToolbar": {
+      "headings": "Headings",
+      "headingOneShort": "H1",
+      "headingTwoShort": "H2",
+      "headingThreeShort": "H3",
+      "bulletedList": "Bullets",
+      "numberedList": "Numbers",
+      "blockquote": "Quote",
+      "link": "Link",
+      "linkPlaceholder": "Paste a link",
+      "applyLink": "Apply",
+      "removeLink": "Remove"
+    },
+    "fileTag": {
+      "title": "Attach a cloud file",
+      "description": "Choose an existing file from cloud storage for this lesson block.",
+      "attach": "Attach",
+      "replace": "Replace",
+      "previewAlt": "Lesson media preview",
+      "emptyImage": "Attach an image to show a visual here.",
+      "emptyVideo": "Attach a video to render it inline here.",
+      "emptyFile": "Attach a file or PDF to show it here.",
+      "emptyResults": "No matching cloud files are available yet.",
+      "genericFile": "File",
+      "untitledFile": "Untitled file",
+      "open": "Open",
+      "filters": {
+        "all": "All",
+        "file": "Files",
+        "image": "Images",
+        "pdf": "PDFs",
+        "video": "Videos"
+      }
+    }
   },
   "create": {
     "titlePlaceholder": "New lesson",
     "descriptionPlaceholder": "Lesson description (max 120 characters)"
-  },
-  "toolbar": {
-    "searchPlaceholder": "Search lessons by title or description..."
   },
   "card": {
     "subheading": "Lesson",
@@ -49,8 +231,10 @@
     "loading": "Loading...",
     "tabs": {
       "overview": "Editor",
+      "editor": "Editor",
       "preview": "Preview",
-      "settings": "Settings"
+      "settings": "Settings",
+      "analytics": "Analytics"
     }
   },
   "unsavedChanges": {

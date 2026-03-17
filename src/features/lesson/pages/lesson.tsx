@@ -1,34 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { useLesson } from '@/contexts/lesson'
-import { useCourse } from '@/contexts/course'
-import { LessonLayout } from '@/features/lesson'
-import { LessonPreview } from '@/features/lesson'
-import { LessonSettings } from '@/features/lesson'
-import { LessonEditor } from '@/features/lesson'
-import { Text } from '@/components/ui/text'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Spinner } from '@/components/ui/spinner'
-import { createYooptaStarterContentJson, createYooptaStarterContentObject } from '@/features/course'
+import { Text } from '@/components/ui/text'
+import { useLesson } from '@/contexts/lesson'
 import { showUnsavedChangesToast } from '@/components/shared'
-import type { LessonTabId } from '@/features/lesson'
-import { LessonHeroBannerSection } from '../components/LessonHeroBannerSection'
-import { LessonGuidePopoverSection } from '../components/LessonGuidePopoverSection'
-import { LESSON_GUIDES, type LessonGuideValue } from '../constants/lessonGuides'
-
-function parseContent(raw: unknown): Record<string, unknown> | undefined {
-  if (raw == null || raw === '') return undefined
-  if (typeof raw === 'object' && !Array.isArray(raw)) return raw as Record<string, unknown>
-  if (typeof raw === 'string') {
-    try {
-      const parsed = JSON.parse(raw)
-      if (typeof parsed === 'object' && parsed !== null) return parsed
-    } catch {
-      return undefined
-    }
-  }
-  return undefined
-}
+import { AutoImportDrawer } from '../components/AutoImportDrawer'
+import { LessonHelpDrawer } from '../components/LessonHelpDrawer'
+import { LessonPageSystem } from '../components/LessonPageSystem'
+import { LessonPreview } from '../components/LessonPreview'
+import { LessonSettings } from '../components/LessonSettings'
+import { LessonTabs, type LessonTabId } from '../components/LessonTabs'
+import { LessonWorkspaceShell } from '../components/LessonWorkspaceShell'
+import { TableOfContentDrawer } from '../components/TableOfContentDrawer'
+import type { LessonPage } from '../types/lesson.types'
+import { createLessonStarterContentJson } from '../utils/createLessonStarterContent'
+import { formatLessonMetaTimestamp } from '../utils/formatLessonMetaTimestamp'
+import { getHeadingsFromLessonPages } from '../utils/lessonHeadings'
+import { scrollToLessonHeading } from '../utils/scrollToLessonHeading'
 
 function normalizeLessonTab(tab?: string): LessonTabId {
   switch (tab) {
@@ -39,7 +27,6 @@ function normalizeLessonTab(tab?: string): LessonTabId {
     case 'analytics':
       return 'analytics'
     case 'preview':
-      return 'preview'
     case 'overview':
       return 'preview'
     default:
@@ -48,7 +35,7 @@ function normalizeLessonTab(tab?: string): LessonTabId {
 }
 
 const Lesson = () => {
-  const { t } = useTranslation('features.lesson')
+  const { t, i18n } = useTranslation('features.lesson')
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
@@ -63,68 +50,59 @@ const Lesson = () => {
   const draftLessonDescription =
     typeof navState?.description === 'string' ? navState.description : undefined
   const draftLessonTopicId = typeof navState?.topicId === 'string' ? navState.topicId : undefined
-  const { lesson, fetchLessonById, createLesson, updateLesson } = useLesson()
-  const { selectedCourse, fetchCourseById } = useCourse()
-  const [editorValue, setEditorValue] = useState<Record<string, unknown> | undefined>(undefined)
+  const { lesson, fetchLessonById, createLesson, updateLessonPages } = useLesson()
+  const [lessonPages, setLessonPages] = useState<LessonPage[]>([])
   const [isInitialContentLoading, setIsInitialContentLoading] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [hasUnsavedSettingsChanges, setHasUnsavedSettingsChanges] = useState(false)
   const [activeTab, setActiveTab] = useState<LessonTabId>(() =>
     normalizeLessonTab(initialTabFromNav),
   )
-  const [selectedGuide, setSelectedGuide] = useState<LessonGuideValue>(LESSON_GUIDES[0].value)
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingTabRef = useRef<LessonTabId | null>(null)
 
   useEffect(() => {
     if (initialTabFromNav != null) {
       setActiveTab(normalizeLessonTab(initialTabFromNav))
     }
-  }, [lessonId, initialTabFromNav])
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingTabRef = useRef<LessonTabId | null>(null)
+  }, [initialTabFromNav, lessonId])
 
-  // Route changes can happen without unmounting. Clear pending autosave timers
-  // so stale updates from a previous lesson do not fire against a reset context.
   useEffect(() => {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current)
       saveTimerRef.current = null
     }
-    setHasUnsavedChanges(false)
-  }, [lessonId])
 
-  useEffect(() => {
-    if (!courseId) return
-    if (!selectedCourse || selectedCourse.id !== courseId) {
-      void fetchCourseById(courseId)
-    }
-  }, [courseId, selectedCourse, fetchCourseById])
+    setHasUnsavedChanges(false)
+    setLessonPages([])
+  }, [lessonId])
 
   useEffect(() => {
     let cancelled = false
 
-    const loadLesson = async () => {
+    async function loadLesson() {
       if (!lessonId) {
         setIsInitialContentLoading(false)
         return
       }
 
-      setEditorValue(undefined)
+      setLessonPages([])
       setIsInitialContentLoading(true)
 
       if (draftLessonTitle && draftLessonTopicId) {
         try {
           const newLesson = await createLesson({
             title: draftLessonTitle,
-            content: createYooptaStarterContentJson(),
+            content: createLessonStarterContentJson(),
             description: draftLessonDescription || '',
             topic_id: draftLessonTopicId,
           })
+
           if (!cancelled) {
-            if (courseId) {
-              navigate(`/teacher/course/${courseId}/lesson/${newLesson.id}`, { replace: true })
-            } else {
-              navigate(`/teacher/lesson/${newLesson.id}`, { replace: true })
-            }
+            const nextPath = courseId
+              ? `/teacher/course/${courseId}/lesson/${newLesson.id}`
+              : `/teacher/lesson/${newLesson.id}`
+            navigate(nextPath, { replace: true })
           }
         } catch (error) {
           if (!cancelled) {
@@ -132,19 +110,20 @@ const Lesson = () => {
             setIsInitialContentLoading(false)
           }
         }
+
         return
       }
 
       try {
         const fetchedLesson = await fetchLessonById(lessonId)
         if (!cancelled) {
-          setEditorValue(parseContent(fetchedLesson.content) ?? createYooptaStarterContentObject())
+          setLessonPages(fetchedLesson.pages)
           setHasUnsavedChanges(false)
         }
       } catch (error) {
         if (!cancelled) {
           console.error(error)
-          setEditorValue(createYooptaStarterContentObject())
+          setLessonPages([])
         }
       } finally {
         if (!cancelled) {
@@ -159,43 +138,60 @@ const Lesson = () => {
       cancelled = true
     }
   }, [
-    lessonId,
     courseId,
-    draftLessonTitle,
+    createLesson,
     draftLessonDescription,
+    draftLessonTitle,
     draftLessonTopicId,
     fetchLessonById,
-    createLesson,
+    lessonId,
     navigate,
   ])
 
   useEffect(() => {
     if (!lesson || lesson.id !== lessonId) return
-    setEditorValue(parseContent(lesson.content) ?? createYooptaStarterContentObject())
+    setLessonPages(lesson.pages)
     setHasUnsavedChanges(false)
-  }, [lessonId, lesson])
+  }, [lesson, lessonId])
 
-  const handleEditorChange = useCallback(
-    (newValue: Record<string, unknown>) => {
+  const savePagesNow = useCallback(
+    async (pagesOverride?: LessonPage[]) => {
       if (!lessonId) return
-      setEditorValue(newValue)
+
+      const pagesToSave = pagesOverride ?? lessonPages
+
+      try {
+        await updateLessonPages(pagesToSave, lessonId)
+        setHasUnsavedChanges(false)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    [lessonId, lessonPages, updateLessonPages],
+  )
+
+  const handlePagesChange = useCallback(
+    (nextPages: LessonPage[]) => {
+      if (!lessonId) return
+
+      setLessonPages(nextPages)
       setHasUnsavedChanges(true)
 
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current)
       }
+
       saveTimerRef.current = setTimeout(() => {
-        updateLesson({ content: JSON.stringify(newValue) }, lessonId)
-          .then(() => setHasUnsavedChanges(false))
-          .catch(console.error)
+        void savePagesNow(nextPages)
       }, 1500)
     },
-    [lessonId, updateLesson],
+    [lessonId, savePagesNow],
   )
 
   const handleTabChange = useCallback(
     (requestedTab: LessonTabId) => {
       if (requestedTab === activeTab) return
+
       const isLeavingSettingsWithUnsavedChanges =
         activeTab === 'settings' && requestedTab !== 'settings' && hasUnsavedSettingsChanges
 
@@ -215,19 +211,22 @@ const Lesson = () => {
         })
         return
       }
+
       setActiveTab(requestedTab)
     },
     [activeTab, hasUnsavedSettingsChanges, t],
   )
 
   useEffect(() => {
-    const anyUnsaved = hasUnsavedChanges || hasUnsavedSettingsChanges
-    if (!anyUnsaved) return
-    const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault()
+    const anyUnsavedChanges = hasUnsavedChanges || hasUnsavedSettingsChanges
+    if (!anyUnsavedChanges) return
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
     }
-    window.addEventListener('beforeunload', onBeforeUnload)
-    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [hasUnsavedChanges, hasUnsavedSettingsChanges])
 
   useEffect(() => {
@@ -243,86 +242,87 @@ const Lesson = () => {
   }
 
   const lessonTitle = lesson?.title?.trim() || t('page.fallbackTitle')
-  const lessonDescription =
-    lesson?.description?.trim() ||
-    t('page.headerDescription', {
-      defaultValue: 'Write a short summary to introduce this lesson.',
-    })
+  const lessonDescription = lesson?.description?.trim() || t('page.fallbackDescription')
+  const updatedText =
+    formatLessonMetaTimestamp(lesson?.updated_at, lesson?.created_at, i18n.language) ??
+    t('page.meta.unavailable')
+  const lessonHeadings = getHeadingsFromLessonPages(lessonPages)
 
-  const editorContent = (
-    <div className="relative flex w-full min-w-0 flex-col gap-6">
-      <div className="animate-in fade-in-0 slide-in-from-bottom-4">
-        <LessonHeroBannerSection
-          title={lessonTitle}
-          description={lessonDescription}
-          themeId={selectedCourse?.theme_id}
-        />
-      </div>
-
-      <LessonGuidePopoverSection
-        guides={LESSON_GUIDES}
-        selectedGuide={selectedGuide}
-        onSelectGuide={(value) => setSelectedGuide(value as LessonGuideValue)}
-        helpLabel={t('page.helpLabel', { defaultValue: 'Help' })}
-      />
-
-      {!isInitialContentLoading ? (
-        <LessonEditor
-          key={`lesson-${lessonId}`}
-          className="w-full flex-1 rounded-2xl border border-border bg-card animate-in fade-in-0 slide-in-from-bottom-4"
-          value={editorValue}
-          onChange={handleEditorChange}
-          placeholder={t('page.editorPlaceholder')}
-        />
-      ) : (
-        <div className="flex min-h-[280px] w-full items-center justify-center rounded-2xl border bg-muted/30">
-          <div className="flex flex-col items-center gap-2">
-            <Spinner
-              variant="gray"
-              size="md"
-              speed={1750}
-            />
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('layout.loading')}
-            </Text>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-
-  const previewTabContent = (
-    <LessonPreview
-      title={lessonTitle}
-      description={lessonDescription}
-      value={editorValue}
-      loading={isInitialContentLoading}
-      previewTitle={t('page.previewTitle', { defaultValue: 'Preview' })}
-      previewHint={t('page.previewHint', {
-        defaultValue: 'Read-only preview of the lesson content.',
-      })}
-      headingsNavLabel={t('page.headingsNavLabel', { defaultValue: 'On this page' })}
-      loadingLabel={t('layout.loading')}
-      editorPlaceholder={t('page.editorPlaceholder')}
-      themeId={selectedCourse?.theme_id}
-      guides={LESSON_GUIDES}
-      selectedGuide={selectedGuide}
-      onGuideChange={(value) => setSelectedGuide(value as LessonGuideValue)}
-      helpLabel={t('page.helpLabel', { defaultValue: 'Help' })}
+  const lessonTabs = (
+    <LessonTabs
+      activeTabId={activeTab}
+      onTabChange={handleTabChange}
+      className="border-b"
     />
   )
 
+  const lessonActions = (
+    <>
+      <TableOfContentDrawer
+        headings={lessonHeadings}
+        loading={isInitialContentLoading}
+        triggerLabel={t('page.actions.tableOfContents')}
+        title={t('page.drawers.tableOfContents.title')}
+        description={t('page.drawers.tableOfContents.description')}
+        emptyLabel={t('page.drawers.tableOfContents.empty')}
+        closeLabel={t('page.drawers.closeLabel')}
+        onHeadingSelect={scrollToLessonHeading}
+      />
+      <AutoImportDrawer
+        triggerLabel={t('page.actions.autoImport')}
+        title={t('page.drawers.autoImport.title')}
+        description={t('page.drawers.autoImport.description')}
+        placeholderTitle={t('page.drawers.autoImport.placeholderTitle')}
+        placeholderDescription={t('page.drawers.autoImport.placeholderDescription')}
+        footerNote={t('page.drawers.autoImport.footerNote')}
+        closeLabel={t('page.drawers.closeLabel')}
+      />
+      <LessonHelpDrawer
+        triggerLabel={t('page.actions.help')}
+        title={t('page.help.title')}
+        description={t('page.help.description')}
+        closeLabel={t('page.drawers.closeLabel')}
+      />
+    </>
+  )
+
+  if (activeTab === 'editor' || activeTab === 'preview') {
+    return (
+      <LessonWorkspaceShell
+        tabs={lessonTabs}
+        title={lessonTitle}
+        description={lessonDescription}
+        updatedLabel={t('page.meta.lastUpdatedLabel')}
+        updatedValue={updatedText}
+        filesLabel={t('page.meta.noFilesLinked')}
+        actions={lessonActions}
+      >
+        {activeTab === 'editor' ? (
+          <LessonPageSystem
+            mode="edit"
+            pages={lessonPages}
+            loading={isInitialContentLoading}
+            loadingLabel={t('layout.loading')}
+            onPagesChange={handlePagesChange}
+            pageBreakLabel={t('page.pageBreakLabel')}
+            placeholder={t('page.editorPlaceholder')}
+          />
+        ) : (
+          <LessonPreview
+            pages={lessonPages}
+            loading={isInitialContentLoading}
+            loadingLabel={t('layout.loading')}
+            editorPlaceholder={t('page.editorPlaceholder')}
+            pageBreakLabel={t('page.pageBreakLabel')}
+          />
+        )}
+      </LessonWorkspaceShell>
+    )
+  }
+
   return (
-    <LessonLayout
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
-    >
-      {activeTab === 'editor' ? editorContent : null}
-      {activeTab === 'preview' ? previewTabContent : null}
+    <div className="flex w-full flex-col gap-6">
+      {lessonTabs}
       {activeTab === 'settings' ? (
         <LessonSettings
           lessonId={lessonId}
@@ -347,7 +347,7 @@ const Lesson = () => {
           </Text>
         </div>
       ) : null}
-    </LessonLayout>
+    </div>
   )
 }
 

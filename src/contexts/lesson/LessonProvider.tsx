@@ -3,11 +3,15 @@ import {
   createLesson as createLessonApi,
   deleteLesson as deleteLessonApi,
   updateLesson as updateLessonApi,
+  updateLessonPages as updateLessonPagesApi,
   getLessonById as getLessonByIdApi,
   getLessonsByTopicId as getLessonsByTopicIdApi,
+  type CreateLessonData,
+  type Lesson,
+  type LessonPage,
+  type UpdateLessonData,
 } from '@/features/lesson'
 import { LessonContext, type LessonContextValue } from './LessonContext'
-import type { Lesson, CreateLessonData } from '@/features/lesson'
 
 export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [lessons, setLessons] = useState<Lesson[]>([])
@@ -69,10 +73,7 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [])
 
   const updateLesson = useCallback(
-    async (
-      updates: Partial<{ title: string; content: string; description: string }>,
-      lessonId?: string,
-    ) => {
+    async (updates: UpdateLessonData, lessonId?: string): Promise<Lesson> => {
       const targetLessonId = lessonId ?? lesson?.id
       if (!targetLessonId) {
         throw new Error('No lesson selected')
@@ -88,10 +89,41 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
             existingLesson.id === targetLessonId ? updatedLesson : existingLesson,
           ),
         )
+        return updatedLesson
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to update lesson'
         setError(errorMessage)
         console.error('Error updating lesson:', err)
+        throw err
+      } finally {
+        setLoading(false)
+      }
+    },
+    [lesson?.id],
+  )
+
+  const updateLessonPages = useCallback(
+    async (pages: LessonPage[], lessonId?: string): Promise<Lesson> => {
+      const targetLessonId = lessonId ?? lesson?.id
+      if (!targetLessonId) {
+        throw new Error('No lesson selected')
+      }
+
+      setLoading(true)
+      setError(null)
+      try {
+        const updatedLesson = await updateLessonPagesApi(targetLessonId, pages)
+        setLesson(updatedLesson)
+        setLessons((prev) =>
+          prev.map((existingLesson) =>
+            existingLesson.id === targetLessonId ? updatedLesson : existingLesson,
+          ),
+        )
+        return updatedLesson
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update lesson pages'
+        setError(errorMessage)
+        console.error('Error updating lesson pages:', err)
         throw err
       } finally {
         setLoading(false)
@@ -127,6 +159,7 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
     fetchLessonById,
     createLesson,
     updateLesson,
+    updateLessonPages,
     deleteLesson,
   }
 

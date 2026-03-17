@@ -1,73 +1,32 @@
-import { useMemo, useRef, type MouseEvent } from 'react'
-import YooptaEditor, { createYooptaEditor } from '@yoopta/editor'
-import Paragraph from '@yoopta/paragraph'
-import { HeadingOne, HeadingTwo, HeadingThree } from '@yoopta/headings'
-import { BulletedList, NumberedList } from '@yoopta/lists'
-import Blockquote from '@yoopta/blockquote'
-import { Bold, Italic, Underline, Strike } from '@yoopta/marks'
-import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool'
-import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list'
-import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar'
+import { useEffect, useMemo, type MouseEvent } from 'react'
+import YooptaEditor, {
+  createYooptaEditor,
+  type YooEditor,
+  type YooptaContentValue,
+  type YooptaOnChangeOptions,
+} from '@yoopta/editor'
 import { cn } from '@/lib/utils'
-import { createYooptaStarterContentObject } from '@/features/course'
+import { createEmptyLessonContent, parseYooptaContent } from '../utils/lessonPages'
+import {
+  LESSON_EDITOR_MARKS,
+  LESSON_EDITOR_TOOLS,
+  LESSON_YOOPTA_PLUGINS,
+} from '../config/yooptaBlocks'
+import {
+  LessonEditorPageContextProvider,
+  type LessonFileTagRequest,
+} from './lessonEditorPageContext'
 
-const plugins = [
-  Paragraph,
-  HeadingOne,
-  HeadingTwo,
-  HeadingThree,
-  BulletedList,
-  NumberedList,
-  Blockquote,
-]
-
-const marks = [Bold, Italic, Underline, Strike]
-
-const TOOLS = {
-  ActionMenu: {
-    render: DefaultActionMenuRender,
-    tool: ActionMenuList,
-  },
-  Toolbar: {
-    render: DefaultToolbarRender,
-    tool: Toolbar,
-  },
-  LinkTool: {
-    tool: LinkTool,
-    render: DefaultLinkToolRender,
-  },
-}
-
-interface LessonEditorProps {
-  value?: Record<string, unknown>
-  onChange?: (value: Record<string, unknown>) => void
+export type LessonEditorProps = {
+  pageId: string
+  value?: YooptaContentValue
+  onChange?: (value: YooptaContentValue, options: YooptaOnChangeOptions, editor: YooEditor) => void
+  onFocus?: (editor: YooEditor) => void
+  onReady?: (editor: YooEditor) => void
+  onRequestFileTag?: (request: LessonFileTagRequest) => void
   readOnly?: boolean
   className?: string
   placeholder?: string
-}
-
-function isInvalidYooptaValue(value?: Record<string, unknown>): boolean {
-  if (!value || typeof value !== 'object') {
-    return true
-  }
-
-  const blocks = Object.values(value)
-  if (blocks.length === 0) {
-    return true
-  }
-
-  return blocks.some((block) => {
-    if (!block || typeof block !== 'object') {
-      return true
-    }
-
-    const record = block as Record<string, unknown>
-    return (
-      !Array.isArray(record.value) ||
-      typeof record.id !== 'string' ||
-      typeof record.type !== 'string'
-    )
-  })
 }
 
 function normalizeHref(href: string): string {
@@ -78,28 +37,43 @@ function normalizeHref(href: string): string {
 }
 
 export function LessonEditor({
+  pageId,
   value,
   onChange,
+  onFocus,
+  onReady,
+  onRequestFileTag,
   readOnly = false,
-  className = '',
-  placeholder = 'Type / to open the menu...',
+  className,
+  placeholder = 'Start writing...',
 }: LessonEditorProps) {
   const editor = useMemo(() => createYooptaEditor(), [])
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const starterContentRef = useRef<Record<string, unknown>>(createYooptaStarterContentObject())
-  const editorTools = readOnly ? undefined : TOOLS
-  const needsStarterFallback = useMemo(() => isInvalidYooptaValue(value), [value])
-  const normalizedValue = useMemo(() => {
-    if (needsStarterFallback) {
-      return starterContentRef.current as never
-    }
-    return value as never
-  }, [needsStarterFallback, value])
+  const normalizedValue = useMemo(
+    () => parseYooptaContent(value ?? createEmptyLessonContent()),
+    [value],
+  )
+
+  useEffect(() => {
+    onReady?.(editor)
+  }, [editor, onReady])
+
   const editorClassName = cn(
-    'w-full',
-    '[&_.yoopta-editor]:mx-auto [&_.yoopta-editor]:min-h-[1126px] [&_.yoopta-editor]:w-full [&_.yoopta-editor]:max-w-6xl [&_.yoopta-editor]:px-8 [&_.yoopta-editor]:py-10',
-    '[&_.yoopta-slate]:mx-auto [&_.yoopta-slate]:w-full [&_.yoopta-slate]:max-w-4xl',
+    'relative w-full overflow-visible',
+    '[&_.yoopta-editor]:relative [&_.yoopta-editor]:min-h-[32rem] [&_.yoopta-editor]:w-full [&_.yoopta-editor]:max-w-none [&_.yoopta-editor]:overflow-visible [&_.yoopta-editor]:px-0 [&_.yoopta-editor]:py-0',
+    '[&_.yoopta-slate]:mx-auto [&_.yoopta-slate]:w-full [&_.yoopta-slate]:max-w-[44rem] [&_.yoopta-slate]:pl-10 [&_.yoopta-slate]:pr-2 sm:[&_.yoopta-slate]:pl-12 md:[&_.yoopta-slate]:pl-14',
     '[&_.yoopta-slate_a]:text-blue-600 [&_.yoopta-slate_a]:underline [&_.yoopta-slate_a]:underline-offset-2',
+    '[&_.yoopta-overlays]:relative [&_.yoopta-overlays]:z-[90]',
+    '[&_.yoopta-block-actions]:z-[80]',
+    '[&_.yoopta-block-action-buttons]:rounded-full [&_.yoopta-block-action-buttons]:border [&_.yoopta-block-action-buttons]:border-border/70 [&_.yoopta-block-action-buttons]:bg-background/95 [&_.yoopta-block-action-buttons]:p-1 [&_.yoopta-block-action-buttons]:shadow-sm [&_.yoopta-block-action-buttons]:backdrop-blur-sm',
+    '[&_.yoopta-block-actions-plus]:h-8 [&_.yoopta-block-actions-plus]:w-8 [&_.yoopta-block-actions-plus]:rounded-full [&_.yoopta-block-actions-plus]:text-muted-foreground [&_.yoopta-block-actions-plus:hover]:bg-accent [&_.yoopta-block-actions-plus:hover]:text-foreground',
+    '[&_.yoopta-block-actions-drag]:h-8 [&_.yoopta-block-actions-drag]:w-8 [&_.yoopta-block-actions-drag]:rounded-full [&_.yoopta-block-actions-drag]:text-muted-foreground [&_.yoopta-block-actions-drag:hover]:bg-accent [&_.yoopta-block-actions-drag:hover]:text-foreground',
+    '[&_.yoopta-action-menu-list]:z-[120]',
+    '[&_.yoopta-action-menu-list-content]:rounded-2xl [&_.yoopta-action-menu-list-content]:border-border [&_.yoopta-action-menu-list-content]:bg-card [&_.yoopta-action-menu-list-content]:text-foreground [&_.yoopta-action-menu-list-content]:shadow-lg',
+    '[&_[data-action-menu-item]]:rounded-xl [&_[data-action-menu-item]]:px-2 [&_[data-action-menu-item]]:py-2 [&_[data-action-menu-item]]:text-foreground [&_[data-action-menu-item]]:transition-colors [&_[data-action-menu-item]]:hover:bg-accent [&_[data-action-menu-item]]:hover:text-foreground',
+    '[&_[data-action-menu-item][aria-selected=true]]:bg-accent [&_[data-action-menu-item][aria-selected=true]]:text-foreground',
+    '[&_.yoopta-block-options-menu-content]:rounded-2xl [&_.yoopta-block-options-menu-content]:border-border [&_.yoopta-block-options-menu-content]:bg-card [&_.yoopta-block-options-menu-content]:text-foreground [&_.yoopta-block-options-menu-content]:shadow-lg',
+    '[&_.yoopta-block-options-button]:rounded-lg [&_.yoopta-block-options-button]:text-foreground [&_.yoopta-block-options-button:hover]:bg-accent',
+    '[&_.yoopta-extended-block-actions]:border [&_.yoopta-extended-block-actions]:border-border [&_.yoopta-extended-block-actions]:bg-muted [&_.yoopta-extended-block-actions]:text-muted-foreground',
     className,
   )
 
@@ -108,7 +82,6 @@ export function LessonEditor({
     const link = target?.closest('a[href]') as HTMLAnchorElement | null
     if (!link) return
 
-    // In edit mode, keep normal click behavior and only open on Ctrl/Cmd+Click.
     if (!readOnly && !event.metaKey && !event.ctrlKey) return
 
     const href = normalizeHref(link.getAttribute('href') ?? '')
@@ -119,23 +92,31 @@ export function LessonEditor({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={editorClassName}
-      onMouseDownCapture={handleLinkClick}
+    <LessonEditorPageContextProvider
+      value={{
+        pageId,
+        readOnly,
+        requestFileTag: (request) => onRequestFileTag?.(request),
+      }}
     >
-      <YooptaEditor
-        editor={editor}
-        plugins={plugins}
-        marks={marks}
-        tools={editorTools}
-        value={normalizedValue}
-        onChange={(newValue: Record<string, unknown>) => onChange?.(newValue)}
-        readOnly={readOnly}
-        autoFocus={false}
-        placeholder={placeholder}
-        width="100%"
-      />
-    </div>
+      <div
+        className={editorClassName}
+        onFocusCapture={() => onFocus?.(editor)}
+        onMouseDownCapture={handleLinkClick}
+      >
+        <YooptaEditor
+          editor={editor}
+          plugins={LESSON_YOOPTA_PLUGINS}
+          marks={[...LESSON_EDITOR_MARKS]}
+          tools={readOnly ? undefined : LESSON_EDITOR_TOOLS}
+          value={normalizedValue}
+          onChange={(nextValue, options) => onChange?.(nextValue, options, editor)}
+          readOnly={readOnly}
+          autoFocus={false}
+          placeholder={placeholder}
+          width="100%"
+        />
+      </div>
+    </LessonEditorPageContextProvider>
   )
 }

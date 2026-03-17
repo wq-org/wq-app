@@ -10,6 +10,7 @@ import { CourseAnalyticsTab } from '@/features/course'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { CourseTabs, type CourseTabId } from './CourseTabs'
+import { CourseSectionHeader } from './CourseSectionHeader'
 
 export function CourseLayout() {
   const { t } = useTranslation('features.course')
@@ -127,6 +128,13 @@ export function CourseLayout() {
               className="border-b"
             />
             <div>
+              {(activeTab === 'editor' || activeTab === 'preview') && selectedCourse ? (
+                <CourseSectionHeader
+                  title={selectedCourse.title}
+                  description={selectedCourse.description}
+                  themeId={selectedCourse.theme_id}
+                />
+              ) : null}
               {activeTab === 'editor' ? <Outlet /> : null}
               {activeTab === 'preview' ? (
                 <CoursePreviewTab

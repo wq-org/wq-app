@@ -1,5 +1,7 @@
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
+export { FaqList } from './FaqList'
+export type { FaqItem, FaqListProps } from './FaqList'
 export { ContainerSlider } from './container'
 export { FollowersDrawer, SelectAvatarDrawer } from './drawers'
 export type { FollowersDrawerProps, SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'

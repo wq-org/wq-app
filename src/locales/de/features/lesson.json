@@ -28,29 +28,213 @@
   },
   "page": {
     "fallbackTitle": "Worum geht es auf deiner Seite?",
+    "fallbackDescription": "Schreibe eine kurze Zusammenfassung, die diese Lektion einführt.",
     "editorPlaceholder": "Beginne zu schreiben...",
     "headingsNavLabel": "Inhalte",
     "previewTitle": "Vorschau",
-    "previewHint": "Schreibgeschützte Vorschau der Lektionsinhalte."
+    "previewHint": "Schreibgeschützte Vorschau der Lektionsinhalte.",
+    "pageBreakLabel": "Seitenumbruch",
+    "pageNumberLabel": "Seite {{number}}",
+    "addPage": "Seite hinzufügen",
+    "notFound": "Lektion nicht gefunden",
+    "actions": {
+      "autoImport": "Auto Import",
+      "help": "Hilfe",
+      "tableOfContents": "Menü anzeigen"
+    },
+    "meta": {
+      "lastUpdatedLabel": "Zuletzt aktualisiert",
+      "noFilesLinked": "keine Dateien verknüpft",
+      "unavailable": "Nicht verfügbar"
+    },
+    "drawers": {
+      "closeLabel": "Drawer schließen",
+      "autoImport": {
+        "title": "Auto Import",
+        "description": "Importiere Kontext für diese Lektion aus einer PDF-Seite.",
+        "placeholderTitle": "PDF-Import kommt bald",
+        "placeholderDescription": "Dieser Drawer ist für den späteren Import-Workflow vorbereitet, aber Datei- und Seitenauswahl sind noch nicht verbunden.",
+        "footerNote": "Der PDF-Seitenimport wird hier verbunden, sobald der Extraktions-Workflow bereit ist."
+      },
+      "tableOfContents": {
+        "title": "Inhaltsverzeichnis",
+        "description": "Springe zu einer Überschrift in dieser Lektion.",
+        "empty": "Noch keine Überschriften verfügbar.",
+        "open": "Menü öffnen",
+        "hide": "Menü ausblenden",
+        "pageLabel": "Seite"
+      }
+    },
+    "help": {
+      "title": "Lektionshilfe",
+      "description": "Nutze diese Muster, damit Arbeitsblätter klar und leicht bearbeitbar bleiben.",
+      "sections": {
+        "structure": {
+          "title": "Mit Struktur beginnen",
+          "body": "Starte mit einem klaren Lernziel und ergänze dann den kurzen Kontext, den Lernende vor der ersten Aufgabe brauchen. Halte pro Seite nur eine Idee fest, damit der Arbeitsbogen im Editor und in der Vorschau lesbar bleibt."
+        },
+        "headings": {
+          "title": "Überschriften für Navigation nutzen",
+          "body": "Füge Überschriften ein, sobald sich das Thema ändert. Der Menü-Drawer liest diese Überschriften aus und baut daraus eine Sprungliste, deshalb sind klare Abschnittsnamen wichtiger als dekorative Titel."
+        },
+        "media": {
+          "title": "Medien aus der Cloud verknüpfen",
+          "body": "Nutze den Block-Picker oder die Ersetzen-Buttons, um bestehende Cloud-Dateien zu verknüpfen. Speichere nur den Storage-Pfad im Lektionsblock und lass die Oberfläche die Vorschau erst beim Rendern auflösen."
+        },
+        "pages": {
+          "title": "Lange Arbeitsblätter in Seiten teilen",
+          "body": "Nutze Seitenumbrüche, sobald eine Seite zu dicht wird. Jede Seite sollte sich wie ein druckbares Blatt mit einem klaren Schwerpunkt und einer eindeutigen Folgeaufgabe anfühlen."
+        }
+      }
+    },
+    "toolbar": {
+      "writeContent": "Inhalt schreiben",
+      "blocksTrigger": "Blöcke",
+      "blocksTitle": "Block einfügen",
+      "blocksDescription": "Wähle den nächsten Inhaltsblock für diese Seite.",
+      "link": "Link",
+      "linkTitle": "Link-Unterstützung",
+      "linkDescription": "Markiere Text im Editor, um einen Link inline hinzuzufügen, oder nutze Embed aus der Blockliste, wenn eine URL als Medium gerendert werden soll.",
+      "edit": "Bearbeiten",
+      "layoutFocused": "Fokussiertes Layout",
+      "layoutComfortable": "Komfortables Layout",
+      "mobileOn": "Mobil an",
+      "mobileOff": "Mobil",
+      "save": "Speichern",
+      "saving": "Speichern...",
+      "groups": {
+        "block": "Blöcke",
+        "media": "Medien"
+      },
+      "searchLabel": "Lektionen suchen",
+      "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen...",
+      "blocks": {
+        "paragraph": {
+          "label": "Absatz",
+          "description": "Füge einen normalen Textblock ein."
+        },
+        "headingOne": {
+          "label": "Überschrift 1",
+          "description": "Erstelle einen neuen Hauptabschnitt."
+        },
+        "headingTwo": {
+          "label": "Überschrift 2",
+          "description": "Unterteile einen Abschnitt in Unterpunkte."
+        },
+        "headingThree": {
+          "label": "Überschrift 3",
+          "description": "Füge eine kleinere Überschrift in einem Unterabschnitt ein."
+        },
+        "bulletedList": {
+          "label": "Aufzählung",
+          "description": "Erfasse ungeordnete Punkte oder Hinweise."
+        },
+        "numberedList": {
+          "label": "Nummerierte Liste",
+          "description": "Zeige geordnete Schritte oder Abläufe."
+        },
+        "blockquote": {
+          "label": "Zitat",
+          "description": "Hebe ein Zitat oder einen Hinweis hervor."
+        },
+        "image": {
+          "label": "Bild",
+          "description": "Verknüpfe ein Bild aus dem Cloud-Speicher."
+        },
+        "video": {
+          "label": "Video",
+          "description": "Verknüpfe ein Video aus dem Cloud-Speicher."
+        },
+        "file": {
+          "label": "Datei / PDF",
+          "description": "Verknüpfe eine Datei oder eine PDF-Vorschau."
+        },
+        "pageBreak": {
+          "label": "Seitenumbruch",
+          "description": "Teile das Arbeitsblatt in eine neue Seite."
+        },
+        "table": {
+          "label": "Tabelle",
+          "description": "Füge eine strukturierte Tabelle ein."
+        },
+        "code": {
+          "label": "Code",
+          "description": "Zeige Code oder technische Ausschnitte an."
+        },
+        "steps": {
+          "label": "Schritte",
+          "description": "Zeige eine Folge von Schritten mit Struktur."
+        },
+        "divider": {
+          "label": "Trenner",
+          "description": "Trenne Inhalte visuell."
+        },
+        "tabs": {
+          "label": "Tabs",
+          "description": "Gruppiere Inhalte hinter Registerkarten."
+        },
+        "embed": {
+          "label": "Embed",
+          "description": "Bette eine unterstützte externe URL ein."
+        },
+        "accordion": {
+          "label": "Akkordeon",
+          "description": "Verstecke ergänzende Inhalte hinter aufklappbaren Elementen."
+        }
+      }
+    },
+    "inlineToolbar": {
+      "headings": "Titel",
+      "headingOneShort": "H1",
+      "headingTwoShort": "H2",
+      "headingThreeShort": "H3",
+      "bulletedList": "Liste",
+      "numberedList": "Nummern",
+      "blockquote": "Zitat",
+      "link": "Link",
+      "linkPlaceholder": "Link einfügen",
+      "applyLink": "Einfügen",
+      "removeLink": "Entfernen"
+    },
+    "fileTag": {
+      "title": "Cloud-Datei verknüpfen",
+      "description": "Wähle eine vorhandene Datei aus dem Cloud-Speicher für diesen Lektionsblock.",
+      "attach": "Verknüpfen",
+      "replace": "Ersetzen",
+      "previewAlt": "Vorschau für Lektionsmedien",
+      "emptyImage": "Verknüpfe ein Bild, um hier eine visuelle Vorschau anzuzeigen.",
+      "emptyVideo": "Verknüpfe ein Video, um es hier inline anzuzeigen.",
+      "emptyFile": "Verknüpfe eine Datei oder ein PDF, um sie hier anzuzeigen.",
+      "emptyResults": "Noch keine passenden Cloud-Dateien verfügbar.",
+      "genericFile": "Datei",
+      "untitledFile": "Unbenannte Datei",
+      "open": "Öffnen",
+      "filters": {
+        "all": "Alle",
+        "file": "Dateien",
+        "image": "Bilder",
+        "pdf": "PDFs",
+        "video": "Videos"
+      }
+    }
   },
   "create": {
     "titlePlaceholder": "Neue Lektion hinzufügen",
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
   },
-  "toolbar": {
-    "searchPlaceholder": "nach Titel oder Beschreibung suchen..."
-  },
   "card": {
     "subheading": "Lektion",
-    "updatedRecently": "K\u00fcrzlich aktualisiert",
+    "updatedRecently": "Kürzlich aktualisiert",
     "updatedRelative": "Aktualisiert {{relative}}"
   },
   "layout": {
     "loading": "Wird geladen...",
     "tabs": {
       "overview": "Editor",
+      "editor": "Editor",
       "preview": "Vorschau",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "analytics": "Analytik"
     }
   },
   "unsavedChanges": {

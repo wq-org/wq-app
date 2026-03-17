@@ -28,6 +28,7 @@
   },
   "page": {
     "notFound": "Kurs nicht gefunden",
+    "courseLabel": "Kurs:",
     "topicLabel": "Thema:",
     "addTopicPlaceholder": "Neues Thema hinzuf\u00fcgen",
     "addTopicDescriptionPlaceholder": "Beschreibung zum Thema hinzuf\u00fcgen",

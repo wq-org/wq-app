@@ -14,6 +14,7 @@ import { TopicsToolbar } from '@/features/topic'
 import { TopicCardList } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
+
 const Course = () => {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()

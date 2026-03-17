@@ -12,7 +12,7 @@ import { LessonCardList, LessonForm } from '@/features/lesson'
 import { TopicLayout } from '@/features/topic'
 import { TopicPreviewTab } from '@/features/topic'
 import { TopicSettings } from '@/features/topic'
-import { LessonToolBar } from '@/features/lesson'
+import { LessonSearchBar } from '@/features/lesson'
 import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
@@ -170,7 +170,7 @@ const Topic = () => {
             {t('page.lessonsTitle')}
           </Text>
 
-          <LessonToolBar
+          <LessonSearchBar
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
           />

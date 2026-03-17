@@ -1,10 +1,9 @@
 import { createContext, useContext } from 'react'
-import type { Lesson, CreateLessonData } from '@/features/lesson'
+import type { CreateLessonData, Lesson, LessonPage, UpdateLessonData } from '@/features/lesson'
 
-// Re-export types for backward compatibility
-export type { Lesson, CreateLessonData } from '@/features/lesson'
+export type { CreateLessonData, Lesson } from '@/features/lesson'
 
-export interface LessonContextValue {
+export type LessonContextValue = {
   lessons: Lesson[]
   lesson: Lesson | null
   loading: boolean
@@ -13,10 +12,8 @@ export interface LessonContextValue {
   setLesson: (lesson: Lesson | null) => void
   fetchLessonById: (lessonId: string) => Promise<Lesson>
   createLesson: (data: CreateLessonData) => Promise<Lesson>
-  updateLesson: (
-    updates: Partial<{ title: string; content: string; description: string }>,
-    lessonId?: string,
-  ) => Promise<void>
+  updateLesson: (updates: UpdateLessonData, lessonId?: string) => Promise<Lesson>
+  updateLessonPages: (pages: LessonPage[], lessonId?: string) => Promise<Lesson>
   deleteLesson: (lessonId: string) => Promise<void>
 }
 
@@ -29,7 +26,8 @@ export const LessonContext = createContext<LessonContextValue>({
   setLesson: () => {},
   fetchLessonById: async () => ({}) as Lesson,
   createLesson: async () => ({}) as Lesson,
-  updateLesson: async () => {},
+  updateLesson: async () => ({}) as Lesson,
+  updateLessonPages: async () => ({}) as Lesson,
   deleteLesson: async () => {},
 })
 

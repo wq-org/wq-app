@@ -1,15 +1,14 @@
-import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import { ClearableInput } from '@/components/shared'
+import { cn } from '@/lib/utils'
 
-export interface LessonToolBarProps {
+export type LessonSearchBarProps = {
   searchValue: string
   onSearchChange: (value: string) => void
-  sortValue?: string
   className?: string
 }
 
-export function LessonToolBar({ searchValue, onSearchChange, className }: LessonToolBarProps) {
+export function LessonSearchBar({ searchValue, onSearchChange, className }: LessonSearchBarProps) {
   const { t } = useTranslation('features.lesson')
 
   return (

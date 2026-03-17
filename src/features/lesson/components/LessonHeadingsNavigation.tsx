@@ -1,100 +1,134 @@
-import { useState } from 'react'
-import { X } from 'lucide-react'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import type { LessonHeading } from '@/features/course'
+import { useEffect, useState } from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
+import type { LessonHeading } from '../utils/lessonHeadings'
 
-export interface LessonHeadingsNavigationProps {
-  headings: LessonHeading[]
-  label: string
+export type LessonHeadingsNavigationProps = {
+  headings: readonly LessonHeading[]
+  loading?: boolean
+  emptyLabel: string
   onHeadingSelect: (heading: LessonHeading) => void
-  className?: string
+}
+
+function getHeadingDomTarget(heading: LessonHeading): Element | null {
+  return (
+    (heading.elementId ? document.getElementById(heading.elementId) : null) ??
+    document.querySelector(`[data-block-id="${heading.blockId}"]`) ??
+    document.getElementById(heading.blockId)
+  )
 }
 
 export function LessonHeadingsNavigation({
   headings,
-  label,
+  loading = false,
+  emptyLabel,
   onHeadingSelect,
-  className,
 }: LessonHeadingsNavigationProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null)
+  const firstHeadingKey = headings[0] ? (headings[0].elementId ?? headings[0].blockId) : null
 
-  if (headings.length === 0) {
-    return null
+  useEffect(() => {
+    if (typeof window === 'undefined' || headings.length === 0) {
+      setActiveHeadingId(null)
+      return
+    }
+
+    const observedElements = headings
+      .map((heading) => ({
+        key: heading.elementId ?? heading.blockId,
+        element: getHeadingDomTarget(heading),
+      }))
+      .filter((entry): entry is { key: string; element: Element } => entry.element != null)
+
+    if (observedElements.length === 0) {
+      setActiveHeadingId(null)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => left.boundingClientRect.top - right.boundingClientRect.top)[0]
+
+        if (!visibleEntry) return
+
+        const match = observedElements.find((entry) => entry.element === visibleEntry.target)
+        if (match) {
+          setActiveHeadingId(match.key)
+        }
+      },
+      {
+        rootMargin: '-20% 0px -55% 0px',
+        threshold: [0.1, 0.4, 0.75],
+      },
+    )
+
+    observedElements.forEach((entry) => observer.observe(entry.element))
+
+    return () => observer.disconnect()
+  }, [headings])
+
+  if (loading) {
+    return (
+      <div className="space-y-2 py-3">
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              className="h-10 w-full rounded-2xl"
+            />
+          ))}
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className={cn('pointer-events-auto', className)}>
-      <div className="sticky top-24">
-        <Sheet
-          open={isOpen}
-          onOpenChange={setIsOpen}
-          modal={false}
+    <div className="space-y-3 py-3">
+      {headings.length === 0 ? (
+        <Text
+          as="p"
+          variant="small"
+          className="text-muted-foreground"
         >
-          <SheetTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full justify-center rounded-xl bg-background/70 backdrop-blur-md"
-              aria-label="Open table of contents"
-            >
-              <span>View Content</span>
-            </Button>
-          </SheetTrigger>
+          {emptyLabel}
+        </Text>
+      ) : (
+        <nav className="flex flex-col gap-1">
+          {headings.map((heading) => {
+            const key = heading.elementId ?? heading.blockId
+            const isActive =
+              activeHeadingId === key || (activeHeadingId == null && firstHeadingKey === key)
 
-          <SheetContent
-            side="right"
-            showCloseButton={false}
-            overlayClassName="pointer-events-none bg-black/30 backdrop-blur-md"
-            className="w-88 border-l border-border/60 bg-background/72 p-0 shadow-2xl backdrop-blur-xl sm:max-w-88"
-          >
-            <SheetHeader className="border-b border-border/60 px-4 py-3">
-              <div className="flex items-center justify-between gap-2">
-                <SheetTitle className="text-sm font-semibold text-muted-foreground">
-                  {label}
-                </SheetTitle>
-                <Button
-                  type="button"
-                  size="icon-sm"
-                  variant="outline"
-                  onClick={() => setIsOpen(false)}
-                  aria-label="Close table of contents"
+            return (
+              <button
+                key={`${heading.pageId}-${key}`}
+                type="button"
+                onClick={() => onHeadingSelect(heading)}
+                className={cn(
+                  'w-full rounded-2xl px-3 py-2.5 text-left transition-colors hover:bg-muted',
+                  isActive && 'bg-blue-500/10 text-blue-500',
+                  heading.level === 2 && 'pl-5',
+                  heading.level === 3 && 'pl-7',
+                )}
+              >
+                <Text
+                  as="span"
+                  variant="body"
+                  className={cn(
+                    'line-clamp-2 break-words font-medium text-foreground',
+                    isActive && 'text-blue-500',
+                  )}
                 >
-                  <X className="size-4" />
-                </Button>
-              </div>
-            </SheetHeader>
-
-            <div className="px-4 pb-4">
-              <ScrollArea className="h-[calc(100vh-7.25rem)]">
-                <nav className="flex flex-col gap-1 pt-3">
-                  {headings.map((heading) => (
-                    <button
-                      key={heading.blockId}
-                      type="button"
-                      onClick={() => onHeadingSelect(heading)}
-                      className={cn(
-                        'text-left text-sm text-foreground hover:text-blue-500',
-                        heading.level === 1 && 'font-semibold',
-                        heading.level === 2 && 'pl-2 font-medium',
-                        heading.level === 3 && 'pl-4',
-                        heading.level === 4 && 'pl-6 text-muted-foreground',
-                      )}
-                    >
-                      <span className="line-clamp-2 block wrap-break-word leading-snug">
-                        {heading.text}
-                      </span>
-                    </button>
-                  ))}
-                </nav>
-              </ScrollArea>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+                  {heading.text}
+                </Text>
+              </button>
+            )
+          })}
+        </nav>
+      )}
     </div>
   )
 }

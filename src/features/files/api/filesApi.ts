@@ -1,5 +1,41 @@
 import { supabase } from '@/lib/supabase'
 import { STORAGE_BUCKETS } from '@/lib/constants'
+import type { UserRole } from '@/features/auth'
+import type { CloudFileItem, CloudFileKind } from '../types/files.types'
+
+function inferCloudFileKind(name: string, mimeType?: string | null): CloudFileKind {
+  const normalizedName = name.toLowerCase()
+  const normalizedMimeType = mimeType?.toLowerCase() ?? ''
+
+  if (
+    normalizedMimeType.startsWith('image/') ||
+    /\.(png|jpe?g|gif|webp|svg)$/.test(normalizedName)
+  ) {
+    return 'image'
+  }
+
+  if (normalizedMimeType.startsWith('video/') || /\.(mp4|mov|avi|webm|m4v)$/.test(normalizedName)) {
+    return 'video'
+  }
+
+  if (normalizedMimeType === 'application/pdf' || normalizedName.endsWith('.pdf')) {
+    return 'pdf'
+  }
+
+  return 'file'
+}
+
+function resolveStorageRole(role: UserRole): string {
+  switch (role) {
+    case 'super_admin':
+      return 'superadmin'
+    case 'institution_admin':
+      return 'institutionAdmin'
+    default:
+      return role
+  }
+}
+
 /**
  * Gets a signed URL for a file in storage (for private files)
  *
@@ -79,7 +115,6 @@ export async function getFileBlobUrl(path: string): Promise<string | null> {
       return null
     }
 
-    // Create blob URL from the downloaded file
     const blobUrl = URL.createObjectURL(data)
     return blobUrl
   } catch (error) {
@@ -159,7 +194,6 @@ export async function renameFile(
     const directory = pathParts.slice(0, -1).join('/')
     const newPath = `${directory}/${newFilename}`
 
-    // Download the file
     const { data: fileData, error: downloadError } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .download(oldPath)
@@ -172,7 +206,6 @@ export async function renameFile(
       }
     }
 
-    // Upload with new name
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .upload(newPath, fileData, {
@@ -188,15 +221,12 @@ export async function renameFile(
       }
     }
 
-    // Delete old file
     const { error: deleteError } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .remove([oldPath])
 
     if (deleteError) {
       console.error('Supabase delete error during rename:', deleteError)
-      // Note: New file was created but old one wasn't deleted
-      // This is not ideal but we'll return success since the rename "worked"
       console.warn('Warning: New file created but old file could not be deleted')
     }
 
@@ -216,4 +246,46 @@ export async function renameFile(
       error: error instanceof Error ? error.message : 'An unexpected error occurred',
     }
   }
+}
+
+export async function listCloudFiles(
+  institutionId: string,
+  role: UserRole,
+  userId: string,
+): Promise<CloudFileItem[]> {
+  if (!institutionId || !userId) {
+    return []
+  }
+
+  const storagePath = `${institutionId}/${resolveStorageRole(role)}/${userId}`
+  const { data, error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).list(storagePath, {
+    limit: 100,
+    sortBy: { column: 'name', order: 'asc' },
+  })
+
+  if (error) {
+    console.error('Error listing cloud files:', error)
+    throw error
+  }
+
+  return (data || [])
+    .filter((item) => typeof item.name === 'string' && item.name.trim() !== '')
+    .map((item) => {
+      const metadata =
+        typeof item.metadata === 'object' && item.metadata != null
+          ? (item.metadata as Record<string, unknown>)
+          : {}
+      const mimeType = typeof metadata.mimetype === 'string' ? metadata.mimetype : null
+      const size = typeof metadata.size === 'number' ? metadata.size : null
+
+      return {
+        name: item.name,
+        path: `${storagePath}/${item.name}`,
+        mimeType,
+        size,
+        kind: inferCloudFileKind(item.name, mimeType),
+        createdAt: typeof item.created_at === 'string' ? item.created_at : null,
+        updatedAt: typeof item.updated_at === 'string' ? item.updated_at : null,
+      }
+    })
 }

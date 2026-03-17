@@ -17,6 +17,18 @@ export interface FileItem {
   storagePath?: string // Full storage path for API operations (e.g., "teachers/{user_id}/filename.ext")
 }
 
+export type CloudFileKind = 'file' | 'image' | 'pdf' | 'video'
+
+export type CloudFileItem = {
+  createdAt: string | null
+  kind: CloudFileKind
+  mimeType: string | null
+  name: string
+  path: string
+  size: number | null
+  updatedAt: string | null
+}
+
 export interface FileTypeConfig {
   color: string
   bgColor: string
