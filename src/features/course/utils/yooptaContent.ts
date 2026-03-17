@@ -1,9 +1,13 @@
 import { buildBlockData, type YooptaBlockData } from '@yoopta/editor'
 
+function hasSlateChildren(value: unknown): value is { children: unknown[] } {
+  return typeof value === 'object' && value != null && 'children' in value
+}
+
 function setBlockText(block: YooptaBlockData, text: string): YooptaBlockData {
   const [firstElement, ...restElements] = Array.isArray(block.value) ? block.value : []
 
-  if (!firstElement || !Array.isArray(firstElement.children)) {
+  if (!firstElement || !hasSlateChildren(firstElement) || !Array.isArray(firstElement.children)) {
     return block
   }
 

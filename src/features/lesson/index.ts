@@ -51,7 +51,7 @@ export {
 export type { LessonToolbarBlockType } from './config/yooptaBlocks'
 export { useLessonFileUrl } from './hooks/useLessonFileUrl'
 export { useLessons } from './hooks/useLessons'
-export { Lesson as LessonPage } from './pages/lesson'
+export { Lesson as LessonRoute } from './pages/lesson'
 export { LessonRedirect } from './pages/LessonRedirect'
 export { LessonView } from './pages/LessonView'
 export { formatLessonMetaTimestamp } from './utils/formatLessonMetaTimestamp'
