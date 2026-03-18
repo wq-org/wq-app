@@ -16,7 +16,15 @@ class TextBlock(BaseModel):
     text: str
 
 
-ExtractedBlock = Union[HeadingBlock, TextBlock]
+class ImageBlock(BaseModel):
+    """Placeholder for an image detected on the page. Not importable via auto-import."""
+
+    type: Literal["image"] = "image"
+    text: str = "(Image)"
+    thumbnail_data_url: str | None = None
+
+
+ExtractedBlock = Union[HeadingBlock, TextBlock, ImageBlock]
 
 
 class ExtractRequest(BaseModel):

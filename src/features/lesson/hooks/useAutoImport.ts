@@ -68,10 +68,13 @@ export function useAutoImport({ lessonId, onInjectBlocks, onClose }: UseAutoImpo
       setPageCount(result.page_count)
       setExtractedBlocks(result.blocks)
 
-      const allIds = new Set(
-        result.blocks.map((b) => (typeof b.id === 'string' ? b.id : '')).filter(Boolean),
+      const selectableIds = new Set(
+        result.blocks
+          .filter((b) => typeof b.type === 'string' && b.type !== 'Image')
+          .map((b) => (typeof b.id === 'string' ? b.id : ''))
+          .filter(Boolean),
       )
-      setSelectedBlockIds(allIds)
+      setSelectedBlockIds(selectableIds)
     } catch (error) {
       console.error('PDF extraction failed:', error)
       setExtractedBlocks([])
@@ -112,7 +115,10 @@ export function useAutoImport({ lessonId, onInjectBlocks, onClose }: UseAutoImpo
 
   const saveAndGoNext = useCallback(() => {
     const selected = extractedBlocks.filter(
-      (b) => typeof b.id === 'string' && selectedBlockIds.has(b.id),
+      (b) =>
+        typeof b.id === 'string' &&
+        selectedBlockIds.has(b.id) &&
+        (typeof b.type !== 'string' || b.type !== 'Image'),
     )
 
     if (selected.length > 0) {

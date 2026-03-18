@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from schemas import ExtractedBlock, HeadingBlock, TextBlock
+from schemas import ExtractedBlock, HeadingBlock, ImageBlock, TextBlock
 
 HEADING_LEVEL_TO_YOOPTA_TYPE = {
     1: "HeadingOne",
@@ -60,5 +60,11 @@ def to_yoopta_blocks(blocks: list[ExtractedBlock]) -> list[dict]:
 
         elif isinstance(block, TextBlock):
             result.append(_make_yoopta_block("Paragraph", "paragraph", block.text, index))
+
+        elif isinstance(block, ImageBlock):
+            d = _make_yoopta_block("Image", "paragraph", block.text, index)
+            if block.thumbnail_data_url is not None:
+                d["thumbnailDataUrl"] = block.thumbnail_data_url
+            result.append(d)
 
     return result

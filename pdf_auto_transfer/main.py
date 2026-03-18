@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import certifi
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,7 +26,7 @@ async def health() -> dict:
 
 @app.post("/extract", response_model=ExtractResponse)
 async def extract(req: ExtractRequest) -> ExtractResponse:
-    async with httpx.AsyncClient(timeout=15.0) as client:
+    async with httpx.AsyncClient(timeout=15.0, verify=certifi.where()) as client:
         resp = await client.get(req.storage_url)
 
     if resp.status_code != 200:

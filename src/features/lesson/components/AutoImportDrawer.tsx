@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, ChevronRight, File, FolderSync } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { OrbitLoader } from '@/components/ui/OrbitLoader'
+import { Spinner } from '@/components/ui/spinner'
 import { DotPagination } from '@/components/ui/DotPagination'
 import {
   Sheet,
@@ -201,7 +201,7 @@ export function AutoImportDrawer({
                 </div>
               ) : (
                 <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-muted/30 p-4">
-                  <OrbitLoader size={36} />
+                  <Spinner size="md" />
                   <Text
                     as="p"
                     variant="small"
@@ -279,7 +279,7 @@ export function AutoImportDrawer({
 
                   {isExtracting ? (
                     <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8">
-                      <OrbitLoader size={40} />
+                      <Spinner size="md" />
                       <Text
                         as="p"
                         variant="small"
@@ -305,12 +305,15 @@ export function AutoImportDrawer({
                         extractedBlocks.map((block) => {
                           const blockId = typeof block.id === 'string' ? block.id : ''
                           if (!blockId) return null
+                          const blockType = typeof block.type === 'string' ? block.type : ''
+                          const selectable = blockType !== 'Image'
                           return (
                             <ExtractedBlockItem
                               key={blockId}
                               block={block}
                               isSelected={selectedBlockIds.has(blockId)}
                               onToggle={() => toggleBlock(blockId)}
+                              selectable={selectable}
                             />
                           )
                         })
@@ -366,7 +369,7 @@ function FileList({ files, isLoading, onSelect, emptyLabel, openLabel }: FileLis
   if (isLoading) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 py-12">
-        <OrbitLoader size={36} />
+        <Spinner size="md" />
       </div>
     )
   }
