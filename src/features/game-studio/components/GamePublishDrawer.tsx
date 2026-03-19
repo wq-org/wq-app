@@ -19,7 +19,7 @@ import {
 import { PublishGameCheckList } from './PublishGameCheckList'
 import { useTranslation } from 'react-i18next'
 
-export function PublishDrawer({
+export function GamePublishDrawer({
   open,
   onOpenChange,
   nodes = [],

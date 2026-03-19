@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
 
-export function SettingsDrawer({
+export function GameSettingsDrawer({
   open,
   onOpenChange,
   title: initialTitle = '',

@@ -477,7 +477,7 @@ const App = () => {
                           commandBarContext="game-studio"
                           className="flex flex-col h-screen"
                         >
-                          <div className="flex-1 w-full">
+                          <div className="flex-1 container">
                             <GameEditorCanvasWithProjectId />
                           </div>
                         </AppShell>

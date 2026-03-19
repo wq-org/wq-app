@@ -336,7 +336,7 @@ export function CommandPalette({
 
   const handleItemClick = (item: CommandBarItem) => {
     // Dispatch custom event for pan/select actions
-    if (item.actionId === 'pan' || item.actionId === 'select') {
+    if (item.actionId === 'pan' || item.actionId === 'select' || item.actionId === 'home') {
       window.dispatchEvent(
         new CustomEvent('command-action', {
           detail: { actionId: item.actionId },

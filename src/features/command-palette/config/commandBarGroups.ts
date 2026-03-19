@@ -149,6 +149,12 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
   ],
   'game-studio': [
     {
+      id: 'home',
+      labelKey: 'actions.dashboard',
+      icon: Home,
+      actionId: 'home',
+    },
+    {
       id: 'pan',
       labelKey: 'navigation.pan',
       icon: Hand,
@@ -159,6 +165,12 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       labelKey: 'navigation.select',
       icon: MousePointer2,
       actionId: 'select',
+    },
+    {
+      id: 'upload',
+      labelKey: 'actions.upload',
+      icon: Upload,
+      actionId: 'upload',
     },
   ],
 }
