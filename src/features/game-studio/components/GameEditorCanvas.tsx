@@ -16,7 +16,7 @@ import type {
   EdgeChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Settings, Play, DoorOpen, EllipsisVertical, Save, Upload } from 'lucide-react'
+import { Settings2, Play, DoorOpen, EllipsisVertical, Save, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { GameStartNode } from './GameStartNode'
@@ -1240,7 +1240,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               className="rounded-full"
               onClick={() => setIsSettingsDrawerOpen(true)}
             >
-              <Settings className="h-5 w-5" />
+              <Settings2 className="h-5 w-5" />
             </Button>
           </div>
 

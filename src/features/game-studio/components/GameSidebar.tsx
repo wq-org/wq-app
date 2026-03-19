@@ -72,7 +72,7 @@ export function GameSidebar() {
 
   return (
     <div className="absolute left-4 top-4 z-10">
-      <div className="flex w-full flex-col rounded-2xl border border-border bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900/95">
+      <div className="flex w-full flex-col rounded-4xl border border-border bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900/95">
         {/* Search Bar */}
         <div className="border-b border-border p-4 dark:border-white/10">
           <div className="relative">
