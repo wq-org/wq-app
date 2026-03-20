@@ -38,7 +38,7 @@
     "addPage": "Seite hinzufügen",
     "notFound": "Lektion nicht gefunden",
     "actions": {
-      "autoImport": "Auto Import",
+      "smartImport": "Smart Import",
       "help": "Hilfe",
       "tableOfContents": "Menü anzeigen"
     },
@@ -49,8 +49,8 @@
     },
     "drawers": {
       "closeLabel": "Drawer schließen",
-      "autoImport": {
-        "title": "Auto Import",
+      "smartImport": {
+        "title": "Smart Import",
         "description": "Importiere Kontext für diese Lektion aus einer PDF-Seite.",
         "placeholderTitle": "PDF-Import kommt bald",
         "placeholderDescription": "Dieser Drawer ist für den späteren Import-Workflow vorbereitet, aber Datei- und Seitenauswahl sind noch nicht verbunden.",

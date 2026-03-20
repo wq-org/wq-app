@@ -269,12 +269,12 @@ const Lesson = () => {
         onHeadingSelect={scrollToLessonHeading}
       />
       <AutoImportDrawer
-        triggerLabel={t('page.actions.autoImport')}
-        title={t('page.drawers.autoImport.title')}
-        description={t('page.drawers.autoImport.description')}
-        placeholderTitle={t('page.drawers.autoImport.placeholderTitle')}
-        placeholderDescription={t('page.drawers.autoImport.placeholderDescription')}
-        footerNote={t('page.drawers.autoImport.footerNote')}
+        triggerLabel={t('page.actions.smartImport')}
+        title={t('page.drawers.smartImport.title')}
+        description={t('page.drawers.smartImport.description')}
+        placeholderTitle={t('page.drawers.smartImport.placeholderTitle')}
+        placeholderDescription={t('page.drawers.smartImport.placeholderDescription')}
+        footerNote={t('page.drawers.smartImport.footerNote')}
         closeLabel={t('page.drawers.closeLabel')}
       />
       <LessonHelpDrawer

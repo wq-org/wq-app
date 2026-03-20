@@ -38,7 +38,7 @@
     "addPage": "Add page",
     "notFound": "Lesson not found",
     "actions": {
-      "autoImport": "Auto Import",
+      "smartImport": "Smart Import",
       "help": "Help",
       "tableOfContents": "Show Menu"
     },
@@ -49,8 +49,8 @@
     },
     "drawers": {
       "closeLabel": "Close drawer",
-      "autoImport": {
-        "title": "Auto Import",
+      "smartImport": {
+        "title": "Smart Import",
         "description": "Import lesson context from a PDF page.",
         "placeholderTitle": "PDF import is coming soon",
         "placeholderDescription": "This drawer is ready for the future import workflow, but file and page selection are not connected yet.",
