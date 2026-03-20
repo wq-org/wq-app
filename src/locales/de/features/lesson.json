@@ -67,7 +67,11 @@
     },
     "help": {
       "title": "Lektionshilfe",
-      "description": "Nutze diese Muster, damit Arbeitsblätter klar und leicht bearbeitbar bleiben.",
+      "description": "Einfache Anleitung fuer den Lektionseditor.",
+      "editorBasics": {
+        "title": "So nutzt du den Editor",
+        "body": "Tippe \"/\", um Slash-Commands zu oeffnen und Bloecke wie Ueberschrift, Liste, Bild, Video, Datei oder Seitenumbruch einzufuegen. Schreibe direkt in den Bloecken und verschiebe sie per Drag-and-Drop. Nutze Ueberschriften fuer klare Struktur und bessere Navigation. Teile lange Inhalte mit Seitenumbruechen auf. Verknuepfe Cloud-Dateien fuer Medien und halte Text pro Block kurz fuer bessere Lesbarkeit."
+      },
       "sections": {
         "structure": {
           "title": "Mit Struktur beginnen",

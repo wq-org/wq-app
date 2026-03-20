@@ -67,7 +67,11 @@
     },
     "help": {
       "title": "Lesson Help",
-      "description": "Use these patterns to keep worksheets clear and easy to edit.",
+      "description": "Basic guide for using the lesson editor.",
+      "editorBasics": {
+        "title": "How to use the editor",
+        "body": "Type \"/\" to open slash commands and insert blocks like heading, list, image, video, file, or page break. Write directly in each block, then drag blocks to reorder. Use headings to keep content structured and easy to navigate. Use page breaks to split long content into clear pages. Attach cloud files for media and keep text short per block for readability."
+      },
       "sections": {
         "structure": {
           "title": "Start with structure",
