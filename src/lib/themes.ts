@@ -28,6 +28,22 @@ const THEME_COLOR_BY_ID = {
   darkblue: { label: 'Dark Blue', oklch: 'var(--oklch-darkblue)' },
 } as const satisfies Record<ThemeId, { label: string; oklch: string }>
 
+export const COLORS = {
+  black: { label: 'Black', value: 'var(--oklch-black)' },
+  violet: { label: 'Violet', value: 'var(--oklch-violet)' },
+  indigo: { label: 'Indigo', value: 'var(--oklch-indigo)' },
+  blue: { label: 'Blue', value: 'var(--oklch-blue)' },
+  cyan: { label: 'Cyan', value: 'var(--oklch-cyan)' },
+  teal: { label: 'Teal', value: 'var(--oklch-teal)' },
+  green: { label: 'Green', value: 'var(--oklch-green)' },
+  lime: { label: 'Lime', value: 'var(--oklch-lime)' },
+  orange: { label: 'Orange', value: 'var(--oklch-orange)' },
+  pink: { label: 'Pink', value: 'var(--oklch-pink)' },
+  darkblue: { label: 'Dark Blue', value: 'var(--oklch-darkblue)' },
+} as const satisfies Record<ThemeId | 'black', { label: string; value: string }>
+
+export const COLOR_IDS = ['black', ...THEME_IDS] as const
+
 const ACCENT_IDS = [
   'violet',
   'indigo',
@@ -41,6 +57,7 @@ const ACCENT_IDS = [
 ] as const
 
 export type AccentId = (typeof ACCENT_IDS)[number]
+export type ColorId = ThemeId | 'black'
 
 export const ACCENT_COLORS = [
   { id: 'violet', ...THEME_COLOR_BY_ID.violet },

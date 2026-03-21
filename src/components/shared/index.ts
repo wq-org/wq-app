@@ -1,8 +1,17 @@
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
+export { DocumentEditor, DocumentEditor as Editor } from './editors'
+export type { DocumentEditorProps, DocumentEditorProps as EditorProps } from './editors'
+export {
+  getSelectedLinkAttributes,
+  getSelectedLinkUrl,
+  isValidUrl,
+  lexicalConfig as editorLexicalConfig,
+  validateUrl,
+} from './editors'
 export { FaqList } from './FaqList'
 export type { FaqItem, FaqListProps } from './FaqList'
-export { ContainerSlider } from './container'
+export { ContainerSlider } from './containers'
 export { FollowersDrawer, SelectAvatarDrawer } from './drawers'
 export type { FollowersDrawerProps, SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
 export { GridIconBackground } from './GridIconBackground'
