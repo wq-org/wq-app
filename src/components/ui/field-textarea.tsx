@@ -1,8 +1,22 @@
 // components/ui/field-textarea.tsx
-import { useId } from 'react'
-import { Label } from '@/components/ui/label'
+import { useId, useState, type ChangeEvent, type CSSProperties } from 'react'
+
 import { CharacterCounter } from '@/components/ui/character-counter'
+import { Label } from '@/components/ui/label'
+import { Separator } from './separator'
 import { cn } from '@/lib/utils'
+
+const TEXTAREA_BODY =
+  'placeholder:text-muted-foreground disabled:opacity-50 min-h-16 w-full resize-none whitespace-pre-wrap break-words py-2 text-base leading-normal outline-none'
+
+export type FieldTextareaLengthDetail = {
+  length: number
+  maxLength: number
+}
+
+export type FieldTextareaOverLimitDetail = FieldTextareaLengthDetail & {
+  excess: number
+}
 
 type FieldTextareaProps = {
   value: string
@@ -11,10 +25,25 @@ type FieldTextareaProps = {
   placeholder?: string
   id?: string
   rows?: number
+  /** When omitted, there is no character limit (unbounded input). */
   maxLength?: number
+  /**
+   * When `maxLength` is set, defaults to `true`. When unbounded, defaults to `false`.
+   * Pass explicitly to override.
+   */
   showCounter?: boolean
+  hideSeparator?: boolean
   className?: string
-  onExceedLength?: (isExceeded: boolean, current: number, max: number) => void
+  /**
+   * Fires once when the value grows to exactly `maxLength` (previous length was below the limit).
+   * Only used when `maxLength` is set.
+   */
+  onReachMaxLength?: (detail: FieldTextareaLengthDetail) => void
+  /**
+   * Fires on every change while `value.length` is greater than `maxLength`.
+   * Only used when `maxLength` is set; allows parents to flag validation or block submit.
+   */
+  onOverMaxLength?: (detail: FieldTextareaOverLimitDetail) => void
 }
 
 export const FieldTextarea = ({
@@ -24,47 +53,119 @@ export const FieldTextarea = ({
   placeholder = label,
   id,
   rows = 4,
-  maxLength = 500,
-  showCounter = true,
+  maxLength: maxLengthProp,
+  showCounter: showCounterProp,
+  hideSeparator = false,
   className,
-  onExceedLength,
+  onReachMaxLength,
+  onOverMaxLength,
 }: FieldTextareaProps) => {
   const generatedId = useId()
   const resolvedId = id ?? generatedId
-  const remaining = maxLength - value.length
+  const [scrollTop, setScrollTop] = useState(0)
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const hasLimit = maxLengthProp !== undefined && maxLengthProp > 0
+  const maxLength = hasLimit ? maxLengthProp! : 0
+
+  const showCounter = showCounterProp !== undefined ? showCounterProp : hasLimit
+
+  const remaining = hasLimit ? maxLength - value.length : 0
+
+  const useHighlightOverlay = hasLimit && value.length > 0
+
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const next = event.target.value
-    onExceedLength?.(next.length > maxLength, next.length, maxLength)
+    const prevLen = value.length
+
+    if (hasLimit) {
+      if (prevLen < maxLength && next.length === maxLength) {
+        onReachMaxLength?.({ length: next.length, maxLength })
+      }
+      if (next.length > maxLength) {
+        onOverMaxLength?.({
+          length: next.length,
+          maxLength,
+          excess: next.length - maxLength,
+        })
+      }
+    }
+
     onValueChange(next)
   }
 
+  const handleScroll = (event: React.UIEvent<HTMLTextAreaElement>) => {
+    setScrollTop(event.currentTarget.scrollTop)
+  }
+
+  const textareaShared = cn(
+    TEXTAREA_BODY,
+    'bg-transparent',
+    useHighlightOverlay && 'text-transparent caret-foreground [text-shadow:none]',
+  )
+
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full pb-2', className)}>
       <Label
         htmlFor={resolvedId}
         className="sr-only"
       >
         {label}
       </Label>
-      <textarea
-        id={resolvedId}
-        data-slot="textarea"
-        className="placeholder:text-muted-foreground disabled:opacity-50 w-full my-4 outline-none resize-none py-2 min-h-16"
-        placeholder={placeholder}
-        rows={rows}
-        value={value}
-        onChange={handleChange}
-      />
-      {showCounter && (
-        <div className="flex justify-end mr-4">
-          <CharacterCounter
-            count={remaining}
-            max={maxLength}
-            size={20}
+
+      <div className="relative my-4 w-full">
+        {useHighlightOverlay ? (
+          <div
+            className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+            aria-hidden
+          >
+            <div
+              className={cn(TEXTAREA_BODY, 'text-foreground')}
+              style={{ transform: `translateY(-${scrollTop}px)` }}
+            >
+              <span className="text-foreground">{value.slice(0, maxLength)}</span>
+              {value.length > maxLength ? (
+                <span className="rounded-sm bg-destructive/45 text-destructive-foreground">
+                  {value.slice(maxLength)}
+                </span>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        <textarea
+          id={resolvedId}
+          data-slot="textarea"
+          className={cn(textareaShared, 'relative z-10')}
+          style={
+            useHighlightOverlay
+              ? ({ WebkitTextFillColor: 'transparent' } satisfies CSSProperties)
+              : undefined
+          }
+          placeholder={placeholder}
+          rows={rows}
+          value={value}
+          onChange={handleChange}
+          onScroll={useHighlightOverlay ? handleScroll : undefined}
+        />
+      </div>
+
+      <div className="flex flex-col justify-end gap-2">
+        {!hideSeparator ? (
+          <Separator
+            orientation="horizontal"
+            decorative
           />
-        </div>
-      )}
+        ) : null}
+        {showCounter && hasLimit ? (
+          <div className="mr-4 flex justify-end">
+            <CharacterCounter
+              count={remaining}
+              max={maxLength}
+              size={20}
+            />
+          </div>
+        ) : null}
+      </div>
     </div>
   )
 }
