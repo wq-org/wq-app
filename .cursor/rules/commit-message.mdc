@@ -26,6 +26,8 @@ alwaysApply: false
 
 ## Cursor usage ([Project rules](https://cursor.com/docs/rules))
 
+This file is the **only** commit-message rule for this repo (YAML frontmatter + full body).
+
 - **Apply manually**: Mention **`@commit-message`** when you want this workflow and template (e.g. “draft my commit using `@commit-message`”).
 - **Apply intelligently**: Cursor may include this rule when the **description** matches (commits, `git`, staged changes, changelog). `alwaysApply` is **false** so it is not injected into every chat.
 - **Globs**: None — this rule is not file-pattern gated; use `@commit-message` or intelligent apply.

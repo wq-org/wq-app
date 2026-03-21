@@ -1,0 +1,87 @@
+---
+description: >-
+  Named exports only, index.ts barrels, and top-level import paths for WQ Health src/.
+  Use when creating or moving components, features, hooks, or API modules.
+alwaysApply: false
+globs:
+  - "src/**/*.{ts,tsx}"
+---
+
+# Named exports & barrels
+
+## When this applies
+
+Any time you **create, move, or refactor** code under `src/` that can be imported from **another** folder or from the router/shell.
+
+## When adding or editing a module
+
+- Use **named exports only**. Do **not** use `export default` in app source (components, hooks, utils, pages).
+- If a library forces a default at the boundary (e.g. `React.lazy`), **wrap at the call site** — not in the source file.
+
+```ts
+// ✅ preferred
+export function ProfileCard() {}
+
+// ❌ avoid in this repo
+export default function ProfileCard() {}
+```
+
+## When a folder is imported from outside
+
+- If anything **outside** the folder imports from it, the folder **must** have an **`index.ts`** — that file is the **only** public surface.
+- **Consumers** import from the **top-level barrel** (`@/components/shared`, `@/features/auth`), not from deep paths.
+
+```ts
+// ✅
+import { SidebarPrimaryNav } from '@/components/shared'
+
+// ❌ bypasses the agreed public API
+import { SidebarPrimaryNav } from '@/components/shared/sidebar/SidebarPrimaryNav'
+```
+
+**Exception:** files **inside** the same feature or folder may use **relative** imports to siblings.
+
+## When wiring `index.ts` (barrel hierarchy)
+
+- Each level exposes **one** step: parent barrels re-export from **child** `index.ts`, not from every leaf file.
+- Avoid `export *` wildcards on large trees; **name exports explicitly** so the public API stays obvious (see existing `shared` / feature barrels for the pattern).
+
+```ts
+// Parent barrel re-exports the child folder’s public API
+export { SidebarPrimaryNav, SidebarAccountMenu } from './sidebar'
+```
+
+## What belongs in a feature `index.ts`
+
+- **Include:** symbols other features or the app shell need — shared components, cross-cutting types, API functions, **route pages** the router imports.
+- **Exclude:** internals only used inside the feature (private subcomponents, one-off helpers, hooks used in a single screen unless others need them).
+
+## What belongs in `components/shared/index.ts`
+
+- **Include:** composable UI used by **multiple** features.
+- **Exclude:** feature-specific logic, feature API modules, feature-only hooks, and **pages**.
+
+## When you move a file
+
+1. Move the file.  
+2. If it landed in a new subfolder imported from outside → add/update that folder’s **`index.ts`**.  
+3. Update the **parent** barrel (usually one export path change).  
+4. **Do not** change consumer import paths if they already use the top-level barrel.
+
+## When you add a new feature
+
+Create internals first (`api/`, `components/`, `hooks/`, `types/`, `pages/`), then add **`index.ts`** that exports only the **public** surface — same discipline as existing features (e.g. `@/features/admin`).
+
+## Quick reference
+
+| Question | Answer |
+| -------- | ------ |
+| Default export? | **Never** in app `src/`. |
+| Import shared UI from? | `@/components/shared` (top barrel). |
+| Import another feature from? | `@/features/<name>` only. |
+| Subfolder `index.ts`? | **Yes**, if anything outside the folder imports it. |
+| What changes when I move an internal file? | **Barrel(s)** only, if consumers use top-level imports. |
+
+## Canonical examples in the repo
+
+Prefer matching **existing** `src/components/shared` and `src/features/*/index.ts` shapes over inventing new barrel styles.
