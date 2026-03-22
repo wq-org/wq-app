@@ -9,9 +9,14 @@
 -- Replaces all baseline + Feb policies that used user_institutions or
 -- profiles.role-only checks. Preserves super_admin bypass from 20260209000002.
 --
--- Enrollment rule (MVP): students can enroll in published courses from the
--- same institution. teacher_followers is kept for social features but no
--- longer gates enrollment.
+-- Enrollment / delivery (Variant A): course content for students is delivered via
+-- classroom_course_links + classroom_members (Phase B). No student self-service
+-- on course_enrollments. Students see published courses only when student_can_access_course
+-- (narrow courses_published_read for profiles.role = student).
+-- teacher_followers is social only; does not gate LMS access.
+--
+-- Games: optional games.course_id (one game → one course); legacy games.topic_id
+-- removed after backfill; trigger games_enforce_course_institution_match enforces tenant alignment.
 --
 -- courses.institution_id NULL handling: new INSERT requires NOT NULL via
 -- application code; existing NULL rows are visible to their owning teacher
@@ -41,10 +46,76 @@ SET institution_id = (
   WHERE m.user_id = g.teacher_id
     AND m.status = 'active'
     AND m.deleted_at IS NULL
+    AND m.left_institution_at IS NULL
   ORDER BY m.created_at ASC
   LIMIT 1
 )
 WHERE g.institution_id IS NULL;
+
+-- =============================================================================
+-- 1a2. Games → optional course link (one game, one course); drop legacy topic_id
+--       Tenant safety: trigger enforces games.institution_id matches courses.institution_id.
+-- =============================================================================
+ALTER TABLE public.games
+  ADD COLUMN IF NOT EXISTS course_id uuid;
+
+COMMENT ON COLUMN public.games.course_id IS
+  'Optional course placement; NULL = standalone. When set, institution_id must match courses.institution_id (enforced by trigger).';
+
+-- Carry topic-based linkage forward as course placement before dropping topic_id.
+UPDATE public.games g
+SET course_id = t.course_id
+FROM public.topics t
+WHERE g.topic_id IS NOT NULL
+  AND t.id = g.topic_id;
+
+-- Align institution_id with the linked course (fixes cross-tenant mismatch before FK/trigger).
+UPDATE public.games g
+SET institution_id = c.institution_id
+FROM public.courses c
+WHERE g.course_id = c.id
+  AND (g.institution_id IS DISTINCT FROM c.institution_id);
+
+DROP INDEX IF EXISTS idx_games_topic;
+
+ALTER TABLE public.games DROP COLUMN IF EXISTS topic_id;
+
+CREATE INDEX IF NOT EXISTS idx_games_course
+  ON public.games (course_id) WHERE course_id IS NOT NULL;
+
+ALTER TABLE public.games
+  DROP CONSTRAINT IF EXISTS games_course_id_fkey;
+
+ALTER TABLE public.games
+  ADD CONSTRAINT games_course_id_fkey
+  FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE SET NULL;
+
+CREATE OR REPLACE FUNCTION public.games_enforce_course_institution_match()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
+BEGIN
+  IF NEW.course_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.courses c
+      WHERE c.id = NEW.course_id
+        AND c.institution_id IS NOT DISTINCT FROM NEW.institution_id
+    ) THEN
+      RAISE EXCEPTION 'games.institution_id must match courses.institution_id when course_id is set';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+COMMENT ON FUNCTION public.games_enforce_course_institution_match() IS
+  'Ensures games cannot reference a course from another institution (NULL matches NULL).';
+
+DROP TRIGGER IF EXISTS games_course_institution_trg ON public.games;
+CREATE TRIGGER games_course_institution_trg
+  BEFORE INSERT OR UPDATE OF course_id, institution_id ON public.games
+  FOR EACH ROW EXECUTE FUNCTION public.games_enforce_course_institution_match();
 
 -- =============================================================================
 -- 1b. FORCE RLS on baseline tables that only had ENABLE
@@ -129,7 +200,9 @@ CREATE POLICY tf_student_insert ON public.teacher_followers
       WHERE ms.user_id = (select app.auth_uid())
         AND mt.user_id = teacher_followers.teacher_id
         AND ms.status = 'active' AND ms.deleted_at IS NULL
+        AND ms.left_institution_at IS NULL
         AND mt.status = 'active' AND mt.deleted_at IS NULL
+        AND mt.left_institution_at IS NULL
     )
   );
 
@@ -205,10 +278,12 @@ AS $$
     ON m_target.user_id = p.user_id
     AND m_target.status = 'active'
     AND m_target.deleted_at IS NULL
+    AND m_target.left_institution_at IS NULL
   INNER JOIN public.institution_memberships AS m_me
     ON m_me.institution_id = m_target.institution_id
     AND m_me.status = 'active'
     AND m_me.deleted_at IS NULL
+    AND m_me.left_institution_at IS NULL
   WHERE m_me.user_id = auth.uid()
     AND p.role IN ('student', 'teacher', 'institution_admin', 'super_admin')
   ORDER BY p.display_name NULLS LAST, p.username NULLS LAST, p.email NULLS LAST;
@@ -259,6 +334,7 @@ BEGIN
   LEFT JOIN auth.users au ON au.id = p.user_id
   LEFT JOIN public.institution_memberships m
     ON m.user_id = p.user_id AND m.status = 'active' AND m.deleted_at IS NULL
+    AND m.left_institution_at IS NULL
   GROUP BY p.user_id, p.display_name, p.email, p.username, p.role, p.avatar_url, au.banned_until
   ORDER BY COALESCE(p.display_name, p.username, p.email, p.user_id::text) ASC;
 END;
@@ -277,6 +353,7 @@ CREATE POLICY courses_manage ON public.courses FOR ALL TO authenticated USING (
 );
 
 DROP POLICY IF EXISTS "Authenticated users can view published courses" ON public.courses;
+-- Broad catalog here; Phase B replaces this policy after student_can_access_course exists.
 CREATE POLICY courses_published_read ON public.courses FOR SELECT TO authenticated USING (
   (select app.is_super_admin()) is true
   OR (
@@ -298,26 +375,16 @@ CREATE POLICY ce_own_read ON public.course_enrollments FOR SELECT TO authenticat
 );
 
 DROP POLICY IF EXISTS "Students can join followed teacher published courses" ON public.course_enrollments;
-CREATE POLICY ce_student_insert ON public.course_enrollments FOR INSERT TO authenticated WITH CHECK (
-  (select app.is_super_admin()) is true
-  OR (
-    student_id = (select app.auth_uid())
-    AND EXISTS (
-      SELECT 1
-      FROM public.courses c
-      WHERE c.id = course_enrollments.course_id
-        AND c.is_published = true
-        AND c.institution_id IS NOT NULL
-        AND c.institution_id IN (select app.member_institution_ids())
-    )
-  )
-);
+DROP POLICY IF EXISTS ce_student_insert ON public.course_enrollments;
 
 DROP POLICY IF EXISTS "Students can leave own enrollments" ON public.course_enrollments;
-CREATE POLICY ce_student_delete ON public.course_enrollments FOR DELETE TO authenticated USING (
-  (select app.is_super_admin()) is true
-  OR student_id = (select app.auth_uid())
-);
+DROP POLICY IF EXISTS ce_student_delete ON public.course_enrollments;
+
+-- Optional legacy/analytics rows; only super_admin mutates from client (service role bypasses RLS).
+CREATE POLICY ce_super_admin ON public.course_enrollments
+  FOR ALL TO authenticated
+  USING  ((select app.is_super_admin()) is true)
+  WITH CHECK ((select app.is_super_admin()) is true);
 
 DROP POLICY IF EXISTS "Teachers can see enrollments for their courses" ON public.course_enrollments;
 CREATE POLICY ce_teacher_read ON public.course_enrollments FOR SELECT TO authenticated USING (

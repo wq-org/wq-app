@@ -74,10 +74,24 @@ CREATE POLICY gr_teacher_manage ON public.game_runs
     OR game_id IN (SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid()))
   );
 
--- Members can read runs in their institution (for lobby join / leaderboards).
+-- Members read runs: institution-wide for solo/versus; classroom runs only if assigned to that classroom.
 CREATE POLICY gr_member_read ON public.game_runs
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (
+    (
+      classroom_id IS NULL
+      AND institution_id IN (select app.member_institution_ids())
+    )
+    OR (
+      classroom_id IS NOT NULL
+      AND EXISTS (
+        SELECT 1 FROM public.classroom_members cm
+        WHERE cm.classroom_id = game_runs.classroom_id
+          AND cm.user_id = (select app.auth_uid())
+          AND cm.withdrawn_at IS NULL
+      )
+    )
+  );
 
 DROP TRIGGER IF EXISTS game_runs_updated_at ON public.game_runs;
 CREATE TRIGGER game_runs_updated_at
@@ -136,7 +150,24 @@ CREATE POLICY gs_run_access ON public.game_sessions
 
 CREATE POLICY gs_member_read ON public.game_sessions
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (
+    game_run_id IN (
+      SELECT gr.id FROM public.game_runs gr
+      WHERE (
+        gr.classroom_id IS NULL
+        AND gr.institution_id IN (select app.member_institution_ids())
+      )
+      OR (
+        gr.classroom_id IS NOT NULL
+        AND EXISTS (
+          SELECT 1 FROM public.classroom_members cm
+          WHERE cm.classroom_id = gr.classroom_id
+            AND cm.user_id = (select app.auth_uid())
+            AND cm.withdrawn_at IS NULL
+        )
+      )
+    )
+  );
 
 -- =============================================================================
 -- 4. GAME_SESSION_PARTICIPANTS — per-player results in a session
@@ -195,7 +226,26 @@ CREATE POLICY gsp_teacher_read ON public.game_session_participants
     )
   );
 
--- Members can read participant scores in their institution (leaderboards).
+-- Leaderboards: same visibility as parent game_run (solo/versus vs classroom-scoped).
 CREATE POLICY gsp_member_read ON public.game_session_participants
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (
+    game_session_id IN (
+      SELECT gs.id
+      FROM public.game_sessions gs
+      JOIN public.game_runs gr ON gr.id = gs.game_run_id
+      WHERE (
+        gr.classroom_id IS NULL
+        AND gr.institution_id IN (select app.member_institution_ids())
+      )
+      OR (
+        gr.classroom_id IS NOT NULL
+        AND EXISTS (
+          SELECT 1 FROM public.classroom_members cm
+          WHERE cm.classroom_id = gr.classroom_id
+            AND cm.user_id = (select app.auth_uid())
+            AND cm.withdrawn_at IS NULL
+        )
+      )
+    )
+  );

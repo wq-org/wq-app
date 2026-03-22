@@ -70,11 +70,23 @@ CREATE POLICY pl_teacher_manage ON public.point_ledger
       SELECT cr.id FROM public.classrooms cr
       WHERE cr.primary_teacher_id = (select app.auth_uid())
     )
+    OR classroom_id IN (
+      SELECT cm.classroom_id FROM public.classroom_members cm
+      WHERE cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
+    )
   )
   WITH CHECK (
     classroom_id IN (
       SELECT cr.id FROM public.classrooms cr
       WHERE cr.primary_teacher_id = (select app.auth_uid())
+    )
+    OR classroom_id IN (
+      SELECT cm.classroom_id FROM public.classroom_members cm
+      WHERE cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
     )
   );
 
@@ -85,7 +97,10 @@ CREATE POLICY pl_institution_admin ON public.point_ledger
 
 CREATE POLICY pl_member_read ON public.point_ledger
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (
+    classroom_id IS NOT NULL
+    AND classroom_id IN (select app.my_active_classroom_ids())
+  );
 
 -- =============================================================================
 -- 3. CLASSROOM_REWARD_SETTINGS — per-classroom reward configuration
@@ -132,17 +147,29 @@ CREATE POLICY crs_teacher_manage ON public.classroom_reward_settings
       SELECT cr.id FROM public.classrooms cr
       WHERE cr.primary_teacher_id = (select app.auth_uid())
     )
+    OR classroom_id IN (
+      SELECT cm.classroom_id FROM public.classroom_members cm
+      WHERE cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
+    )
   )
   WITH CHECK (
     classroom_id IN (
       SELECT cr.id FROM public.classrooms cr
       WHERE cr.primary_teacher_id = (select app.auth_uid())
     )
+    OR classroom_id IN (
+      SELECT cm.classroom_id FROM public.classroom_members cm
+      WHERE cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
+    )
   );
 
 CREATE POLICY crs_member_read ON public.classroom_reward_settings
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (classroom_id IN (select app.my_active_classroom_ids()));
 
 DROP TRIGGER IF EXISTS crs_updated_at ON public.classroom_reward_settings;
 CREATE TRIGGER crs_updated_at

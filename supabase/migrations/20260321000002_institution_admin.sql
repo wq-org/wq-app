@@ -40,14 +40,16 @@ COMMENT ON COLUMN public.profiles.active_institution_id IS
 --    user_institutions is kept for backward compat; new code should use this.
 -- =============================================================================
 CREATE TABLE public.institution_memberships (
-  id              uuid              PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         uuid              NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
-  institution_id  uuid              NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
-  membership_role membership_role   NOT NULL DEFAULT 'student',
-  status          membership_status NOT NULL DEFAULT 'active',
-  created_at      timestamptz       NOT NULL DEFAULT now(),
-  updated_at      timestamptz       NOT NULL DEFAULT now(),
-  deleted_at      timestamptz
+  id                  uuid              PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id             uuid              NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
+  institution_id      uuid              NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
+  membership_role     membership_role   NOT NULL DEFAULT 'student',
+  status              membership_status NOT NULL DEFAULT 'active',
+  created_at          timestamptz       NOT NULL DEFAULT now(),
+  updated_at          timestamptz       NOT NULL DEFAULT now(),
+  deleted_at          timestamptz,
+  left_institution_at timestamptz,
+  leave_reason        text
 );
 
 COMMENT ON TABLE  public.institution_memberships                   IS 'Authoritative user-to-tenant mapping with role and lifecycle status.';
@@ -55,6 +57,8 @@ COMMENT ON COLUMN public.institution_memberships.institution_id    IS 'Tenant bo
 COMMENT ON COLUMN public.institution_memberships.membership_role   IS 'Tenant-scoped role (institution_admin | teacher | student).';
 COMMENT ON COLUMN public.institution_memberships.status            IS 'Lifecycle: invited → active → suspended. Default active; set invited for email invite flows.';
 COMMENT ON COLUMN public.institution_memberships.deleted_at        IS 'Soft-delete; allows re-invitation.';
+COMMENT ON COLUMN public.institution_memberships.left_institution_at IS 'When set, user no longer has tenant access (graduation, transfer, expulsion). Excluded from app.member_institution_ids().';
+COMMENT ON COLUMN public.institution_memberships.leave_reason      IS 'Optional: year_end, graduated, transfer, expelled, manual, etc.';
 
 -- Active-unique: one active membership per (user, institution).
 CREATE UNIQUE INDEX idx_memberships_active_unique
@@ -64,7 +68,7 @@ CREATE UNIQUE INDEX idx_memberships_active_unique
 -- RLS-hot path: "which institutions does this user admin / belong to?"
 CREATE INDEX idx_memberships_user_role
   ON public.institution_memberships (user_id, membership_role)
-  WHERE status = 'active' AND deleted_at IS NULL;
+  WHERE status = 'active' AND deleted_at IS NULL AND left_institution_at IS NULL;
 
 CREATE INDEX idx_memberships_institution
   ON public.institution_memberships (institution_id)
@@ -112,6 +116,7 @@ AS $$
     and m.membership_role = 'institution_admin'
     and m.status = 'active'
     and m.deleted_at is null
+    and m.left_institution_at is null
 $$;
 
 CREATE OR REPLACE FUNCTION app.member_institution_ids()
@@ -124,6 +129,7 @@ AS $$
   where m.user_id = auth.uid()
     and m.status = 'active'
     and m.deleted_at is null
+    and m.left_institution_at is null
 $$;
 
 COMMENT ON FUNCTION app.admin_institution_ids() IS
@@ -144,6 +150,7 @@ AS $$
       and m.membership_role = 'institution_admin'
       and m.status = 'active'
       and m.deleted_at is null
+      and m.left_institution_at is null
   )
 $$;
 
@@ -158,6 +165,7 @@ AS $$
       and m.user_id = auth.uid()
       and m.status = 'active'
       and m.deleted_at is null
+      and m.left_institution_at is null
   )
 $$;
 
@@ -536,6 +544,141 @@ DROP TRIGGER IF EXISTS classrooms_updated_at ON public.classrooms;
 CREATE TRIGGER classrooms_updated_at
   BEFORE UPDATE ON public.classrooms
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- =============================================================================
+-- 11b. CLASSROOM_MEMBERS — student/co-teacher assignment + year rollover (doc 05)
+-- =============================================================================
+DO $$ BEGIN
+  CREATE TYPE classroom_member_role AS ENUM ('student', 'co_teacher');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE TABLE public.classroom_members (
+  id              uuid                   PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id  uuid                   NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
+  classroom_id    uuid                   NOT NULL,
+  user_id         uuid                   NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
+  membership_role classroom_member_role  NOT NULL DEFAULT 'student',
+  enrolled_at     timestamptz            NOT NULL DEFAULT now(),
+  withdrawn_at    timestamptz,
+  leave_reason    text,
+  created_at      timestamptz            NOT NULL DEFAULT now(),
+  updated_at      timestamptz            NOT NULL DEFAULT now(),
+  CONSTRAINT classroom_members_inst_unique UNIQUE (id, institution_id),
+  CONSTRAINT classroom_members_classroom_fk FOREIGN KEY (classroom_id, institution_id)
+    REFERENCES public.classrooms (id, institution_id) ON DELETE CASCADE
+);
+
+COMMENT ON TABLE  public.classroom_members                IS 'Assigns students (and co-teachers) to classrooms; withdrawn_at ends assignment without deleting history (year rollover).';
+COMMENT ON COLUMN public.classroom_members.institution_id IS 'Tenant boundary; must match classroom.';
+COMMENT ON COLUMN public.classroom_members.withdrawn_at   IS 'NULL = active in classroom; set at year-end or transfer to close assignment.';
+COMMENT ON COLUMN public.classroom_members.leave_reason   IS 'Optional: year_end, transfer, graduated, course_change, manual.';
+
+CREATE UNIQUE INDEX idx_classroom_members_active_unique
+  ON public.classroom_members (classroom_id, user_id)
+  WHERE withdrawn_at IS NULL;
+
+CREATE INDEX idx_classroom_members_user_active
+  ON public.classroom_members (user_id)
+  WHERE withdrawn_at IS NULL;
+
+CREATE INDEX idx_classroom_members_classroom
+  ON public.classroom_members (classroom_id)
+  WHERE withdrawn_at IS NULL;
+
+CREATE INDEX idx_classroom_members_institution
+  ON public.classroom_members (institution_id);
+
+ALTER TABLE public.classroom_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.classroom_members FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY classroom_members_super_admin ON public.classroom_members
+  FOR ALL TO authenticated
+  USING  ((select app.is_super_admin()) is true)
+  WITH CHECK ((select app.is_super_admin()) is true);
+
+CREATE POLICY classroom_members_institution_admin ON public.classroom_members
+  FOR ALL TO authenticated
+  USING (institution_id in (select app.admin_institution_ids()))
+  WITH CHECK (institution_id in (select app.admin_institution_ids()));
+
+CREATE POLICY classroom_members_primary_teacher_manage ON public.classroom_members
+  FOR ALL TO authenticated
+  USING (
+    classroom_id IN (
+      SELECT cr.id FROM public.classrooms cr
+      WHERE cr.primary_teacher_id = (select app.auth_uid())
+    )
+  )
+  WITH CHECK (
+    classroom_id IN (
+      SELECT cr.id FROM public.classrooms cr
+      WHERE cr.primary_teacher_id = (select app.auth_uid())
+    )
+    AND institution_id IN (
+      SELECT cr2.institution_id FROM public.classrooms cr2
+      WHERE cr2.id = classroom_id
+    )
+  );
+
+CREATE POLICY classroom_members_own_read ON public.classroom_members
+  FOR SELECT TO authenticated
+  USING (user_id = (select app.auth_uid()));
+
+CREATE POLICY classroom_members_teacher_roster_read ON public.classroom_members
+  FOR SELECT TO authenticated
+  USING (
+    classroom_id IN (
+      SELECT cr.id FROM public.classrooms cr
+      WHERE cr.primary_teacher_id = (select app.auth_uid())
+    )
+    OR EXISTS (
+      SELECT 1 FROM public.classroom_members cm_lead
+      WHERE cm_lead.classroom_id = classroom_members.classroom_id
+        AND cm_lead.user_id = (select app.auth_uid())
+        AND cm_lead.withdrawn_at IS NULL
+        AND cm_lead.membership_role = 'co_teacher'::public.classroom_member_role
+    )
+  );
+
+DROP TRIGGER IF EXISTS classroom_members_updated_at ON public.classroom_members;
+CREATE TRIGGER classroom_members_updated_at
+  BEFORE UPDATE ON public.classroom_members
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- Tighten classroom visibility now that classroom_members exists.
+DROP POLICY IF EXISTS classrooms_member_read ON public.classrooms;
+CREATE POLICY classrooms_scoped_read ON public.classrooms
+  FOR SELECT TO authenticated
+  USING (
+    institution_id in (select app.member_institution_ids())
+    AND (
+      primary_teacher_id = (select app.auth_uid())
+      OR EXISTS (
+        SELECT 1 FROM public.classroom_members cm
+        WHERE cm.classroom_id = classrooms.id
+          AND cm.user_id = (select app.auth_uid())
+          AND cm.withdrawn_at IS NULL
+      )
+    )
+  );
+
+-- =============================================================================
+-- 11c. APP HELPERS — classroom scoping (student_can_access_* in Phase B after ccl exists)
+-- =============================================================================
+CREATE OR REPLACE FUNCTION app.my_active_classroom_ids()
+RETURNS SETOF uuid
+LANGUAGE sql STABLE
+SET search_path = ''
+AS $$
+  select cm.classroom_id
+  from public.classroom_members cm
+  where cm.user_id = auth.uid()
+    and cm.withdrawn_at is null
+$$;
+
+COMMENT ON FUNCTION app.my_active_classroom_ids() IS
+  'Classroom IDs where the caller has an active (non-withdrawn) classroom_members row.';
 
 -- =============================================================================
 -- 12. INSTITUTION SETTINGS — one row per institution

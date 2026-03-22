@@ -73,13 +73,14 @@ CREATE POLICY tasks_teacher_manage ON public.tasks
   USING  (teacher_id = (select app.auth_uid()))
   WITH CHECK (teacher_id = (select app.auth_uid()));
 
--- Students can read published tasks in their institution.
+-- Students read published tasks only for classrooms they belong to.
 CREATE POLICY tasks_student_read ON public.tasks
   FOR SELECT TO authenticated
   USING (
     status != 'draft'
     AND deleted_at IS NULL
     AND institution_id IN (select app.member_institution_ids())
+    AND classroom_id IN (select app.my_active_classroom_ids())
   );
 
 DROP TRIGGER IF EXISTS tasks_updated_at ON public.tasks;
@@ -161,10 +162,16 @@ CREATE POLICY tg_teacher_manage ON public.task_groups
     task_id IN (SELECT id FROM public.tasks WHERE teacher_id = (select app.auth_uid()))
   );
 
--- Members in the institution can read groups for tasks they can see.
+-- Students read task groups only for tasks in their classrooms.
 CREATE POLICY tg_member_read ON public.task_groups
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (
+    task_id IN (
+      SELECT t.id FROM public.tasks t
+      WHERE t.deleted_at IS NULL
+        AND t.classroom_id IN (select app.my_active_classroom_ids())
+    )
+  );
 
 DROP TRIGGER IF EXISTS task_groups_updated_at ON public.task_groups;
 CREATE TRIGGER task_groups_updated_at

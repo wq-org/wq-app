@@ -50,7 +50,7 @@ CREATE POLICY ccl_institution_admin ON public.classroom_course_links
   USING  (institution_id IN (select app.admin_institution_ids()))
   WITH CHECK (institution_id IN (select app.admin_institution_ids()));
 
--- Teachers can manage links for classrooms they own or courses they authored.
+-- Teachers can manage links for classrooms they own, co-teach, or courses they authored.
 CREATE POLICY ccl_teacher_manage ON public.classroom_course_links
   FOR ALL TO authenticated
   USING (
@@ -58,6 +58,13 @@ CREATE POLICY ccl_teacher_manage ON public.classroom_course_links
       SELECT 1 FROM public.classrooms cr
       WHERE cr.id = classroom_course_links.classroom_id
         AND cr.primary_teacher_id = (select app.auth_uid())
+    )
+    OR EXISTS (
+      SELECT 1 FROM public.classroom_members cm
+      WHERE cm.classroom_id = classroom_course_links.classroom_id
+        AND cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
     )
     OR EXISTS (
       SELECT 1 FROM public.courses c
@@ -72,21 +79,101 @@ CREATE POLICY ccl_teacher_manage ON public.classroom_course_links
         AND cr.primary_teacher_id = (select app.auth_uid())
     )
     OR EXISTS (
+      SELECT 1 FROM public.classroom_members cm
+      WHERE cm.classroom_id = classroom_course_links.classroom_id
+        AND cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
+    )
+    OR EXISTS (
       SELECT 1 FROM public.courses c
       WHERE c.id = classroom_course_links.course_id
         AND c.teacher_id = (select app.auth_uid())
     )
   );
 
--- Members can read links in their institutions (for course discovery).
+-- Students (and co-teachers) discover links only for classrooms they belong to.
 CREATE POLICY ccl_member_read ON public.classroom_course_links
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.member_institution_ids()));
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.classroom_members cm
+      WHERE cm.classroom_id = classroom_course_links.classroom_id
+        AND cm.user_id = (select app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+    )
+  );
 
 DROP TRIGGER IF EXISTS ccl_updated_at ON public.classroom_course_links;
 CREATE TRIGGER ccl_updated_at
   BEFORE UPDATE ON public.classroom_course_links
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- =============================================================================
+-- 1b. Student access helpers — classroom delivery only (Variant A)
+-- =============================================================================
+CREATE OR REPLACE FUNCTION app.student_can_access_course(p_course_id uuid)
+RETURNS boolean
+LANGUAGE sql STABLE
+SET search_path = ''
+AS $$
+  select exists (
+    select 1
+    from public.classroom_course_links ccl
+    inner join public.classroom_members cm
+      on cm.classroom_id = ccl.classroom_id
+     and cm.user_id = auth.uid()
+     and cm.withdrawn_at is null
+    where ccl.course_id = p_course_id
+      and ccl.deleted_at is null
+      and ccl.published_at is not null
+      and ccl.institution_id in (select app.member_institution_ids())
+  )
+$$;
+
+COMMENT ON FUNCTION app.student_can_access_course(uuid) IS
+  'True if caller may access this course via published classroom_course_link in an assigned classroom (Variant A; no enrollment required).';
+
+-- =============================================================================
+-- 1c. Course catalog for students — only classroom-delivered courses
+--     (depends on student_can_access_course; replaces Phase A courses_published_read)
+-- =============================================================================
+DROP POLICY IF EXISTS courses_published_read ON public.courses;
+CREATE POLICY courses_published_read ON public.courses FOR SELECT TO authenticated USING (
+  (select app.is_super_admin()) is true
+  OR (
+    is_published = true
+    AND (
+      institution_id IS NULL
+      OR institution_id IN (select app.member_institution_ids())
+    )
+    AND (
+      NOT EXISTS (
+        SELECT 1 FROM public.profiles p
+        WHERE p.user_id = (select app.auth_uid())
+          AND p.role = 'student'
+      )
+      OR (select app.student_can_access_course(id))
+    )
+  )
+);
+
+CREATE OR REPLACE FUNCTION app.student_can_access_lesson(p_lesson_id uuid)
+RETURNS boolean
+LANGUAGE sql STABLE
+SET search_path = ''
+AS $$
+  select exists (
+    select 1
+    from public.lessons l
+    inner join public.topics t on t.id = l.topic_id
+    where l.id = p_lesson_id
+      and app.student_can_access_course(t.course_id)
+  )
+$$;
+
+COMMENT ON FUNCTION app.student_can_access_lesson(uuid) IS
+  'True if caller may access this lesson via enrollment or classroom delivery.';
 
 -- =============================================================================
 -- 2. LESSON_PROGRESS — student progress per lesson (doc 07 MVP)
@@ -121,11 +208,19 @@ CREATE POLICY lp_super_admin ON public.lesson_progress
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
--- Students manage their own progress.
+-- Students manage their own progress for lessons they may access (enrollment or classroom delivery).
 CREATE POLICY lp_own ON public.lesson_progress
   FOR ALL TO authenticated
-  USING  (user_id = (select app.auth_uid()))
-  WITH CHECK (user_id = (select app.auth_uid()));
+  USING  (
+    user_id = (select app.auth_uid())
+    AND institution_id IN (select app.member_institution_ids())
+    AND (select app.student_can_access_lesson(lesson_id))
+  )
+  WITH CHECK (
+    user_id = (select app.auth_uid())
+    AND institution_id IN (select app.member_institution_ids())
+    AND (select app.student_can_access_lesson(lesson_id))
+  );
 
 -- Teachers can view progress for lessons in their courses.
 CREATE POLICY lp_teacher_read ON public.lesson_progress
@@ -220,10 +315,21 @@ CREATE POLICY le_super_admin ON public.learning_events
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
--- Students insert their own events only.
+-- Students insert their own events only for accessible lessons; course_id must match lesson.
 CREATE POLICY le_student_insert ON public.learning_events
   FOR INSERT TO authenticated
-  WITH CHECK (user_id = (select app.auth_uid()));
+  WITH CHECK (
+    user_id = (select app.auth_uid())
+    AND institution_id IN (select app.member_institution_ids())
+    AND (select app.student_can_access_lesson(lesson_id))
+    AND course_id = (
+      SELECT c.id
+      FROM public.lessons l
+      JOIN public.topics t ON t.id = l.topic_id
+      JOIN public.courses c ON c.id = t.course_id
+      WHERE l.id = learning_events.lesson_id
+    )
+  );
 
 -- Students read their own events (for personal analytics / resume).
 CREATE POLICY le_student_own_read ON public.learning_events
@@ -243,3 +349,22 @@ CREATE POLICY le_teacher_read ON public.learning_events
 CREATE POLICY le_institution_admin_read ON public.learning_events
   FOR SELECT TO authenticated
   USING (institution_id IN (select app.admin_institution_ids()));
+
+-- =============================================================================
+-- 5. Topics/lessons student SELECT — add classroom delivery (Phase A policies)
+-- =============================================================================
+DROP POLICY IF EXISTS topics_enrolled_read ON public.topics;
+CREATE POLICY topics_enrolled_read ON public.topics
+  FOR SELECT TO authenticated
+  USING (
+    (select app.is_super_admin()) is true
+    OR (select app.student_can_access_course(course_id))
+  );
+
+DROP POLICY IF EXISTS lessons_enrolled_read ON public.lessons;
+CREATE POLICY lessons_enrolled_read ON public.lessons
+  FOR SELECT TO authenticated
+  USING (
+    (select app.is_super_admin()) is true
+    OR (select app.student_can_access_lesson(id))
+  );
