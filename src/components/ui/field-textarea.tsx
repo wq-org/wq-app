@@ -124,7 +124,7 @@ export const FieldTextarea = ({
             >
               <span className="text-foreground">{value.slice(0, maxLength)}</span>
               {value.length > maxLength ? (
-                <span className="rounded-sm bg-destructive/45 text-destructive-foreground">
+                <span className="rounded-sm bg-destructive text-destructive-foreground">
                   {value.slice(maxLength)}
                 </span>
               ) : null}

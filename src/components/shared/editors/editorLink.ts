@@ -12,7 +12,7 @@ export const lexicalConfig = {
   nodes: [LinkNode, AutoLinkNode],
 } as const
 
-export function validateUrl(url: string): string | null {
+export const validateUrl = (url: string): string | null => {
   const normalizedUrl = url.trim()
   if (!normalizedUrl) return null
 
@@ -28,11 +28,11 @@ export function validateUrl(url: string): string | null {
   return null
 }
 
-export function isValidUrl(url: string): boolean {
+export const isValidUrl = (url: string): boolean => {
   return validateUrl(url) !== null
 }
 
-export function getSelectedLinkUrl(editor: LexicalEditor): string {
+export const getSelectedLinkUrl = (editor: LexicalEditor): string => {
   let selectedLinkUrl = ''
 
   editor.getEditorState().read(() => {
@@ -55,7 +55,7 @@ export type SelectedLinkAttributes = {
   url: string
 }
 
-export function getSelectedLinkAttributes(editor: LexicalEditor): SelectedLinkAttributes {
+export const getSelectedLinkAttributes = (editor: LexicalEditor): SelectedLinkAttributes => {
   let selectedLinkAttributes = {
     title: '',
     url: '',
@@ -79,7 +79,7 @@ export function getSelectedLinkAttributes(editor: LexicalEditor): SelectedLinkAt
   return selectedLinkAttributes
 }
 
-export function applyLinkToSelection(editor: LexicalEditor, url: string, title: string) {
+export const applyLinkToSelection = (editor: LexicalEditor, url: string, title: string) => {
   const resolvedTitle = title.trim()
   let shouldInsertInlineLink = false
 

@@ -10,7 +10,7 @@ function getColorValue(colorId: ColorId): string {
   return `oklch(${COLORS[colorId].value})`
 }
 
-export function applyEditorColor(editor: LexicalEditor, colorId: ColorId | null) {
+export const applyEditorColor = (editor: LexicalEditor, colorId: ColorId | null) => {
   editor.update(() => {
     const selection = $getSelection()
     if (!$isRangeSelection(selection)) return

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Search, Check } from 'lucide-react'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { FieldInput } from '@/components/ui/field-input'
 import { EmptyInstitutionView } from './EmptyInstitutionView'
 import { Spinner } from '@/components/ui/spinner'
 import { fetchInstitutions } from '../api/onboardingApi'
@@ -45,6 +44,10 @@ export function StepInstitution({ onNext, onBack, initialData }: StepInstitution
   }
 
   const handleContinue = () => {
+    if (selectedIds.length === 0) {
+      return
+    }
+
     const selected = institutions.filter((inst) => selectedIds.includes(inst.id))
     onNext(selected)
   }
@@ -86,7 +89,7 @@ export function StepInstitution({ onNext, onBack, initialData }: StepInstitution
         <div className="flex justify-between gap-4 py-11">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             onClick={onBack}
           >
             Back
@@ -125,26 +128,20 @@ export function StepInstitution({ onNext, onBack, initialData }: StepInstitution
 
       {/* Search Input */}
       <div className="flex flex-col gap-2">
-        <Label
-          htmlFor="search"
-          className="font-light"
-        >
-          Search Institutions
-        </Label>
-        <InputGroup>
-          <InputGroupInput
-            id="search"
-            placeholder="Search by name, description, or location..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-          <InputGroupAddon align="inline-end">
+        <FieldInput
+          id="search"
+          label="Search Institutions"
+          placeholder="Search by institution name"
+          value={searchTerm}
+          onValueChange={setSearchTerm}
+          inputClassName="text-base"
+        />
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>
             {filteredInstitutions.length} result{filteredInstitutions.length !== 1 ? 's' : ''}
-          </InputGroupAddon>
-        </InputGroup>
+          </span>
+          <Search className="size-4" />
+        </div>
       </div>
 
       {/* Institutions List */}
@@ -220,14 +217,14 @@ export function StepInstitution({ onNext, onBack, initialData }: StepInstitution
       <div className="flex justify-between gap-4 py-11">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           onClick={onBack}
         >
           Back
         </Button>
         <Button
           type="button"
-          variant="default"
+          variant="darkblue"
           onClick={handleContinue}
           disabled={selectedIds.length === 0}
         >

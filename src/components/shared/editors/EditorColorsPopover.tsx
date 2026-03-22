@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 import { COLORS, COLOR_IDS, type ColorId } from '@/lib/themes'
+import { useTranslation } from 'react-i18next'
 import { applyEditorColor, type EditorColorSelection } from './editorColors'
 
 type ColorTileProps = {
@@ -16,11 +17,9 @@ type ColorTileProps = {
   onClick: () => void
 }
 
-function getColorTileClassName() {
-  return cn('editor-colorTile', 'editor-colorTileText')
-}
+const getColorTileClassName = () => cn('editor-colorTile', 'editor-colorTileText')
 
-function ColorTile({ colorId, onClick }: ColorTileProps) {
+const ColorTile = ({ colorId, onClick }: ColorTileProps) => {
   const { label, value } = COLORS[colorId]
   const Icon: LucideIcon = Type
   const tileStyle = {
@@ -53,6 +52,8 @@ type ColorSectionProps = {
   onApplyColor: (colorId: ColorId | null) => void
   onClear: () => void
   title: string
+  resetLabel: string
+  selectedLabel: string
 }
 
 type RecentSwatchesSectionProps = {
@@ -61,11 +62,11 @@ type RecentSwatchesSectionProps = {
   title: string
 }
 
-function RecentSwatchesSection({
+const RecentSwatchesSection = ({
   recentSelections,
   onApplyColor,
   title,
-}: RecentSwatchesSectionProps) {
+}: RecentSwatchesSectionProps) => {
   if (!recentSelections.length) return null
 
   return (
@@ -91,7 +92,14 @@ function RecentSwatchesSection({
   )
 }
 
-function ColorSection({ activeColorId, onApplyColor, onClear, title }: ColorSectionProps) {
+const ColorSection = ({
+  activeColorId,
+  onApplyColor,
+  onClear,
+  title,
+  resetLabel,
+  selectedLabel,
+}: ColorSectionProps) => {
   return (
     <section className="editor-colorSection">
       <div className="flex items-center justify-between gap-3">
@@ -111,7 +119,7 @@ function ColorSection({ activeColorId, onApplyColor, onClear, title }: ColorSect
           onMouseDown={(event) => event.preventDefault()}
           onClick={onClear}
         >
-          Reset
+          {resetLabel}
         </Button>
       </div>
 
@@ -131,15 +139,16 @@ function ColorSection({ activeColorId, onApplyColor, onClear, title }: ColorSect
           variant="small"
           className="text-muted-foreground"
         >
-          Selected: {COLORS[activeColorId].label}
+          {selectedLabel}: {COLORS[activeColorId].label}
         </Text>
       ) : null}
     </section>
   )
 }
 
-export function EditorColorsPopover() {
+export const EditorColorsPopover = () => {
   const [editor] = useLexicalComposerContext()
+  const { t } = useTranslation('shared.editorColors')
   const [isOpen, setIsOpen] = useState(false)
   const [recentSelections, setRecentSelections] = useState<EditorColorSelection[]>([])
   const [textColorId, setTextColorId] = useState<ColorId | null>('black')
@@ -195,16 +204,16 @@ export function EditorColorsPopover() {
               onMouseDown={(event) => event.preventDefault()}
             >
               <Palette className="size-4" />
-              <span className="sr-only">Colors</span>
+              <span className="sr-only">{t('triggerLabel')}</span>
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
-        <TooltipContent side="bottom">Colors</TooltipContent>
+        <TooltipContent side="bottom">{t('triggerLabel')}</TooltipContent>
       </Tooltip>
 
       <PopoverContent
         align="start"
-        className="editor-toolbarPopover editor-colorPopover"
+        className="editor-toolbarPopover editor-colorPopover rounded-4xl"
       >
         <Card className="border-0 bg-transparent shadow-none">
           <CardHeader className="px-0 pt-0">
@@ -214,7 +223,7 @@ export function EditorColorsPopover() {
                 variant="small"
                 className="font-semibold"
               >
-                Colors
+                {t('popoverTitle')}
               </Text>
             </CardTitle>
             <CardDescription>
@@ -223,7 +232,7 @@ export function EditorColorsPopover() {
                 variant="small"
                 className="text-muted-foreground"
               >
-                Apply text color to the selection.
+                {t('popoverDescription')}
               </Text>
             </CardDescription>
           </CardHeader>
@@ -233,7 +242,7 @@ export function EditorColorsPopover() {
               <RecentSwatchesSection
                 recentSelections={recentSelections.slice(0, 3)}
                 onApplyColor={handleApplyColor}
-                title="Recently used"
+                title={t('recentlyUsed')}
               />
 
               {recentSelections.length ? <Separator /> : null}
@@ -242,7 +251,9 @@ export function EditorColorsPopover() {
                 activeColorId={textColorId}
                 onApplyColor={handleApplyColor}
                 onClear={handleClearColor}
-                title="Text color"
+                title={t('textColor')}
+                resetLabel={t('reset')}
+                selectedLabel={t('selected')}
               />
             </div>
           </CardContent>

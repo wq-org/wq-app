@@ -60,14 +60,32 @@ export function CharacterCounter({
         role="status"
         aria-live="polite"
         aria-label={`${Math.abs(count)} characters over limit`}
-        className="inline-flex shrink-0 items-center justify-center text-destructive"
+        className="relative inline-flex shrink-0 items-center justify-center"
         style={{
           width: size,
           height: size,
         }}
       >
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          className="absolute inset-0 overflow-visible"
+          aria-hidden="true"
+        >
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="hsl(var(--destructive))"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+          />
+        </svg>
+
         <span
-          className="font-medium tabular-nums"
+          className="relative z-10 font-medium tabular-nums text-destructive"
           style={{
             fontSize: `${fontSize}px`,
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif",

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
-  $createParagraphNode,
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
@@ -9,23 +8,14 @@ import {
   SELECTION_CHANGE_COMMAND,
 } from 'lexical'
 import { TOGGLE_LINK_COMMAND } from '@lexical/link'
-import { $setBlocksType } from '@lexical/selection'
 import { mergeRegister } from '@lexical/utils'
-import {
-  $isListNode,
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-  REMOVE_LIST_COMMAND,
-} from '@lexical/list'
-import { $createHeadingNode, $createQuoteNode, $isHeadingNode } from '@lexical/rich-text'
+import { $isListNode } from '@lexical/list'
+import { $isHeadingNode } from '@lexical/rich-text'
 import {
   Bold,
   ChevronDown,
   ExternalLink,
   Heading1,
-  Heading2,
-  Heading3,
-  type LucideIcon,
   Italic,
   List,
   ListOrdered,
@@ -42,7 +32,6 @@ import { FieldInput } from '@/components/ui/field-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
 import { EditorColorsPopover } from './EditorColorsPopover'
 import {
   applyLinkToSelection,
@@ -50,59 +39,18 @@ import {
   getSelectedLinkUrl,
   validateUrl,
 } from './editorLink'
+import {
+  HEADING_OPTIONS,
+  applyHeading,
+  applyParagraph,
+  applyQuote,
+  getToolbarButtonClassName,
+  toggleList,
+  type EditorBlockType,
+} from './editorToolbarActions'
+import { ToolbarIconButton } from './editorToolbarShared'
 
-type EditorBlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'ol' | 'quote' | 'ul'
-
-type HeadingOption = {
-  icon: LucideIcon
-  label: 'Heading 1' | 'Heading 2' | 'Heading 3'
-  value: 'h1' | 'h2' | 'h3'
-}
-
-type ToolbarIconButtonProps = {
-  icon: LucideIcon
-  isActive?: boolean
-  label: string
-  onClick: () => void
-}
-
-const HEADING_OPTIONS: readonly HeadingOption[] = [
-  { icon: Heading1, label: 'Heading 1', value: 'h1' },
-  { icon: Heading2, label: 'Heading 2', value: 'h2' },
-  { icon: Heading3, label: 'Heading 3', value: 'h3' },
-]
-
-function getToolbarButtonClassName(isActive = false) {
-  return cn('editor-toolbarButton', isActive && 'editor-toolbarButtonActive')
-}
-
-function ToolbarIconButton({
-  icon: Icon,
-  isActive = false,
-  label,
-  onClick,
-}: ToolbarIconButtonProps) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          className={getToolbarButtonClassName(isActive)}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={onClick}
-        >
-          <Icon className="size-4" />
-          <span className="sr-only">{label}</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
-    </Tooltip>
-  )
-}
-
-export function EditorToolbarPlugin() {
+export const EditorToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext()
   const [blockType, setBlockType] = useState<EditorBlockType>('paragraph')
   const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false)
@@ -150,7 +98,7 @@ export function EditorToolbarPlugin() {
 
       if ($isHeadingNode(topLevelElement)) {
         const tag = topLevelElement.getTag()
-        setBlockType(tag === 'h1' ? 'h1' : tag === 'h2' ? 'h2' : tag === 'h3' ? 'h3' : 'paragraph')
+        setBlockType(tag === 'h1' ? 'h1' : tag === 'h2' ? 'h2' : 'paragraph')
         return
       }
 
@@ -173,45 +121,6 @@ export function EditorToolbarPlugin() {
       ),
     )
   }, [editor, updateToolbar])
-
-  const handleParagraph = () => {
-    editor.update(() => {
-      const selection = $getSelection()
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createParagraphNode())
-      }
-    })
-  }
-
-  const handleHeading = (tag: 'h1' | 'h2' | 'h3') => {
-    editor.update(() => {
-      const selection = $getSelection()
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createHeadingNode(tag))
-      }
-    })
-  }
-
-  const handleQuote = () => {
-    editor.update(() => {
-      const selection = $getSelection()
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createQuoteNode())
-      }
-    })
-  }
-
-  const handleList = (nextType: 'ol' | 'ul') => {
-    if (blockType === nextType) {
-      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
-      return
-    }
-
-    editor.dispatchCommand(
-      nextType === 'ul' ? INSERT_UNORDERED_LIST_COMMAND : INSERT_ORDERED_LIST_COMMAND,
-      undefined,
-    )
-  }
 
   const handleLinkMenuOpenChange = (nextOpen: boolean) => {
     setIsLinkMenuOpen(nextOpen)
@@ -242,7 +151,7 @@ export function EditorToolbarPlugin() {
           icon={Pilcrow}
           isActive={blockType === 'paragraph'}
           label="Paragraph"
-          onClick={handleParagraph}
+          onClick={() => applyParagraph(editor)}
         />
 
         <Popover
@@ -279,7 +188,7 @@ export function EditorToolbarPlugin() {
                   isActive={blockType === value}
                   label={label}
                   onClick={() => {
-                    handleHeading(value)
+                    applyHeading(editor, value)
                     setIsHeadingMenuOpen(false)
                   }}
                 />
@@ -292,7 +201,7 @@ export function EditorToolbarPlugin() {
           icon={Quote}
           isActive={blockType === 'quote'}
           label="Quote"
-          onClick={handleQuote}
+          onClick={() => applyQuote(editor)}
         />
       </div>
 
@@ -444,13 +353,13 @@ export function EditorToolbarPlugin() {
           icon={List}
           isActive={blockType === 'ul'}
           label="Bulleted list"
-          onClick={() => handleList('ul')}
+          onClick={() => toggleList(editor, blockType, 'ul')}
         />
         <ToolbarIconButton
           icon={ListOrdered}
           isActive={blockType === 'ol'}
           label="Numbered list"
-          onClick={() => handleList('ol')}
+          onClick={() => toggleList(editor, blockType, 'ol')}
         />
       </div>
     </div>

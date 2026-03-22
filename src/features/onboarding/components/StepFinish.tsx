@@ -1,5 +1,4 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
@@ -13,6 +12,7 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
+import { BlurredImage } from '@/components/ui/blurred-image'
 
 export function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
   const { session, pendingRole, profile, setPendingRole, refreshProfile } = useUser()
@@ -123,17 +123,16 @@ export function StepFinish({ onBack, onFinish, accountData, institutions }: Step
         </div>
 
         {/* Summary Card */}
-        <Card className="shadow-lg">
+        <Card className="rounded-4xl shadow-lg">
           <CardHeader>
             <div className="flex items-center gap-4">
-              <Avatar className="w-20 h-20">
-                <AvatarImage
+              <div className="size-20 overflow-hidden rounded-3xl">
+                <BlurredImage
                   src={signedAvatarUrl || accountData.avatar.src}
                   alt={accountData.avatar.name}
-                  className="object-cover"
+                  className="h-full w-full object-cover"
                 />
-                <AvatarFallback>{accountData.avatar.name.charAt(0)}</AvatarFallback>
-              </Avatar>
+              </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-2xl">{accountData.displayName}</CardTitle>
@@ -259,14 +258,14 @@ export function StepFinish({ onBack, onFinish, accountData, institutions }: Step
         <div className="flex justify-between gap-4 py-11">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             onClick={onBack}
           >
             Back
           </Button>
           <Button
             type="button"
-            variant="default"
+            variant="darkblue"
             onClick={handleFinish}
             className="gap-2"
             disabled={isSubmitting}

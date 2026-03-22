@@ -12,6 +12,7 @@ import settingsDE from './de/settings.json'
 import layoutDashboardLayoutDE from './de/layout/dashboardLayout.json'
 
 // DE imports - Shared
+import sharedEditorColorsDE from './de/shared/editorColors.json'
 import sharedLanguageSwitcherDE from './de/shared/languageSwitcher.json'
 
 // DE imports - Features (alphabetically ordered to match directory structure)
@@ -43,6 +44,7 @@ import settingsEN from './en/settings.json'
 import layoutDashboardLayoutEN from './en/layout/dashboardLayout.json'
 
 // EN imports - Shared
+import sharedEditorColorsEN from './en/shared/editorColors.json'
 import sharedLanguageSwitcherEN from './en/shared/languageSwitcher.json'
 
 // EN imports - Features (alphabetically ordered to match directory structure)
@@ -116,6 +118,7 @@ i18n.use(initReactI18next).init({
       // Layout namespaces
       'layout.dashboardLayout': layoutDashboardLayoutEN,
       // Shared namespaces
+      'shared.editorColors': sharedEditorColorsEN,
       'shared.languageSwitcher': sharedLanguageSwitcherEN,
     },
     de: {
@@ -145,6 +148,7 @@ i18n.use(initReactI18next).init({
       // Layout namespaces
       'layout.dashboardLayout': layoutDashboardLayoutDE,
       // Shared namespaces
+      'shared.editorColors': sharedEditorColorsDE,
       'shared.languageSwitcher': sharedLanguageSwitcherDE,
     },
   },
@@ -177,6 +181,7 @@ i18n.use(initReactI18next).init({
     // Layout namespaces
     'layout.dashboardLayout',
     // Shared namespaces
+    'shared.editorColors',
     'shared.languageSwitcher',
   ],
   defaultNS: 'common',
