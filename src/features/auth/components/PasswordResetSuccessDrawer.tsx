@@ -61,6 +61,7 @@ export function PasswordResetSuccessDrawer({
           <Button
             onClick={handleClose}
             className="w-full"
+            variant="darkblue"
             size="lg"
           >
             Go to Login
