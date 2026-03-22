@@ -1,8 +1,14 @@
 -- =============================================================================
--- INSTITUTION ADMIN — Tenant plane
--- Memberships, academic hierarchy, staff scopes, classrooms, settings,
--- compliance stubs, and tenant-scoped RLS.
--- Requires: 20260209000002_super_admin (app helpers), 20260321000001_super_admin (audit + platform tables)
+-- INSTITUTION ADMIN — Tenant plane (docs 02_Institution, 01/14 consumers)
+--
+-- Doc map:
+--   02_Institution.md → institution_memberships, faculties → class_groups, staff_scopes,
+--                      classrooms, institution_settings, quotas_usage, invoice records,
+--                      data_subject_requests, multitenant institutions RLS.
+--   01 / 14 → read policies on institution_subscriptions, institution_entitlement_overrides,
+--              billing_providers (this file); platform DDL in 20260321000001.
+--
+-- Requires: 20260209000002_super_admin (app helpers), 20260321000001_super_admin
 -- =============================================================================
 
 -- =============================================================================
@@ -656,12 +662,32 @@ BEGIN
   INSERT INTO public.institution_quotas_usage (institution_id)
   VALUES (v_institution_id);
 
+  -- Default trial subscription when plan_catalog row code=trial exists (doc 14; seed in file 1).
+  INSERT INTO public.institution_subscriptions (
+    institution_id,
+    plan_id,
+    billing_status,
+    trial_ends_at,
+    effective_from
+  )
+  SELECT
+    v_institution_id,
+    pc.id,
+    'trialing'::billing_status,
+    now() + interval '90 days',
+    now()
+  FROM public.plan_catalog pc
+  WHERE pc.code = 'trial'
+    AND pc.deleted_at IS NULL
+    AND pc.is_active = true
+  LIMIT 1;
+
   RETURN v_institution_id;
 END;
 $$;
 
 COMMENT ON FUNCTION public.create_institution_with_initial_admin(text, uuid) IS
-  'Super admin only: creates institution, active institution_admin membership, legacy user_institutions row, settings + quota stubs.';
+  'Super admin only: creates institution, institution_admin membership, legacy user_institutions row, settings, quotas, and trial subscription if plan trial exists.';
 
 REVOKE ALL ON FUNCTION public.create_institution_with_initial_admin(text, uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.create_institution_with_initial_admin(text, uuid) TO authenticated;
@@ -749,15 +775,22 @@ CREATE TRIGGER dsr_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 -- =============================================================================
--- 16. ADDITIONAL RLS — grant institution-admin / member reads on File 1 tables
+-- 16. ADDITIONAL RLS — institution-admin / member reads on platform tables (file 1)
 -- =============================================================================
 
--- Institution admins can read their institution's subscription.
+DROP POLICY IF EXISTS inst_subs_institution_admin ON public.institution_subscriptions;
 CREATE POLICY inst_subs_institution_admin ON public.institution_subscriptions
   FOR SELECT TO authenticated
   USING (institution_id in (select app.admin_institution_ids()));
 
--- All members can read their institution's feature overrides (flag resolution).
-CREATE POLICY inst_feat_overrides_member_read ON public.institution_feature_overrides
+-- Members read entitlement overrides for effective feature resolution (doc 14 §7).
+DROP POLICY IF EXISTS inst_entitlement_overrides_member_read ON public.institution_entitlement_overrides;
+CREATE POLICY inst_entitlement_overrides_member_read ON public.institution_entitlement_overrides
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
+
+-- Institution admins see PSP linkage for their tenant (doc 14 §8.6).
+DROP POLICY IF EXISTS billing_providers_institution_admin_select ON public.billing_providers;
+CREATE POLICY billing_providers_institution_admin_select ON public.billing_providers
+  FOR SELECT TO authenticated
+  USING (institution_id in (select app.admin_institution_ids()));
