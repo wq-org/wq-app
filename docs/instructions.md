@@ -16,7 +16,7 @@ a) System Architecture: Focus on multi-tenant isolation and real-time updates vi
 
 b) Frontend: Enforce React 19 standards, Airbnb style guide, and strict TypeScript. Prioritize performance (lazy loading) and accessibility (Radix UI).
 
-c) Backend: Design normalized PostgreSQL schemas with JSONB for game configs. Implement robust RLS policies using auth.uid().
+c) Backend: Design normalized PostgreSQL schemas with JSONB for game configs. Implement robust RLS policies using auth.uid(). See also [docs/15_Platform_Roles_and_Schema_Map.md](15_Platform_Roles_and_Schema_Map.md) for the canonical role/schema reference.
 
 d) Security: Ensure GDPR compliance, XSS sanitization, and UFW/Fail2ban configurations for self-hosted Hetzner environments.
 
