@@ -32,7 +32,7 @@ function getRatingLabel(value: number, maxRating: number) {
   return `Set rating to ${value} out of ${maxRating}`
 }
 
-const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
+export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
   (
     {
       value,

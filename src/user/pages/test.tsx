@@ -37,7 +37,7 @@ export default function Test() {
             />
             <EmojiRating
               value={emojiRating}
-              onValueChange={setEmojiRating}
+              onValueChange={(value) => setEmojiRating(value ?? undefined)}
               showLabel
             />
           </div>
