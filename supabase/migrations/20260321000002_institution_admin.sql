@@ -751,11 +751,21 @@ CREATE TRIGGER quotas_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 -- =============================================================================
--- 13b. Bootstrap — super_admin creates tenant + first active institution_admin
+-- 13b. Bootstrap — super_admin creates tenant + first institution_admin
+--
+-- Invite flow (app layer, GoTrue):
+--   1) Create auth user + profile (e.g. auth.admin.inviteUserByEmail) — email lives in auth.users / profiles.
+--   2) Super admin calls invite_institution_admin_membership(institution_id, user_id) OR bootstrap here with
+--      p_initial_admin_status = 'invited'.
+--   3) Invited users have no tenant access until status = active (app.member_institution_ids excludes non-active).
+--   4) After the user completes invite / sets password, UI calls activate_institution_admin_invite(institution_id).
 -- =============================================================================
+DROP FUNCTION IF EXISTS public.create_institution_with_initial_admin(text, uuid);
+
 CREATE OR REPLACE FUNCTION public.create_institution_with_initial_admin(
   p_name text,
-  p_initial_admin_user_id uuid DEFAULT NULL
+  p_initial_admin_user_id uuid DEFAULT NULL,
+  p_initial_admin_status public.membership_status DEFAULT 'active'::public.membership_status
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -778,6 +788,10 @@ BEGIN
     RAISE EXCEPTION 'p_name is required';
   END IF;
 
+  IF p_initial_admin_status NOT IN ('active'::public.membership_status, 'invited'::public.membership_status) THEN
+    RAISE EXCEPTION 'p_initial_admin_status must be active or invited';
+  END IF;
+
   v_admin_id := coalesce(p_initial_admin_user_id, auth.uid());
 
   IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE user_id = v_admin_id) THEN
@@ -792,12 +806,15 @@ BEGIN
     user_id, institution_id, membership_role, status
   )
   VALUES (
-    v_admin_id, v_institution_id, 'institution_admin'::membership_role, 'active'::membership_status
+    v_admin_id, v_institution_id, 'institution_admin'::membership_role, p_initial_admin_status
   );
 
-  INSERT INTO public.user_institutions (user_id, institution_id)
-  VALUES (v_admin_id, v_institution_id)
-  ON CONFLICT (user_id, institution_id) DO NOTHING;
+  -- Legacy user_institutions row only once membership is active (invited users are not tenant members yet).
+  IF p_initial_admin_status = 'active'::public.membership_status THEN
+    INSERT INTO public.user_institutions (user_id, institution_id)
+    VALUES (v_admin_id, v_institution_id)
+    ON CONFLICT (user_id, institution_id) DO NOTHING;
+  END IF;
 
   INSERT INTO public.institution_settings (institution_id)
   VALUES (v_institution_id);
@@ -829,11 +846,133 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.create_institution_with_initial_admin(text, uuid) IS
-  'Super admin only: creates institution, institution_admin membership, legacy user_institutions row, settings, quotas, and trial subscription if plan trial exists.';
+COMMENT ON FUNCTION public.create_institution_with_initial_admin(text, uuid, public.membership_status) IS
+  'Super admin only: creates institution, institution_admin membership (active or invited), legacy user_institutions only when active, settings, quotas, and trial subscription if plan trial exists.';
 
-REVOKE ALL ON FUNCTION public.create_institution_with_initial_admin(text, uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.create_institution_with_initial_admin(text, uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.create_institution_with_initial_admin(text, uuid, public.membership_status) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.create_institution_with_initial_admin(text, uuid, public.membership_status) TO authenticated;
+
+-- =============================================================================
+-- 13c. Invite institution admin membership (super_admin only)
+--      Pair with GoTrue inviteUserByEmail; no extra invite table required.
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.invite_institution_admin_membership(
+  p_institution_id uuid,
+  p_user_id uuid
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth, pg_temp
+AS $$
+DECLARE
+  v_id uuid;
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  IF NOT (SELECT app.is_super_admin()) THEN
+    RAISE EXCEPTION 'Forbidden: only super_admin may invite institution admins';
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.institutions i WHERE i.id = p_institution_id AND i.deleted_at IS NULL) THEN
+    RAISE EXCEPTION 'institution not found';
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE user_id = p_user_id) THEN
+    RAISE EXCEPTION 'profile not found for user; create auth user + profile first (e.g. GoTrue invite)';
+  END IF;
+
+  SELECT m.id INTO v_id
+  FROM public.institution_memberships m
+  WHERE m.user_id = p_user_id
+    AND m.institution_id = p_institution_id
+    AND m.deleted_at IS NULL;
+
+  IF v_id IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1
+      FROM public.institution_memberships m
+      WHERE m.id = v_id
+        AND m.status = 'active'::public.membership_status
+    ) THEN
+      RAISE EXCEPTION 'user already has an active membership for this institution';
+    END IF;
+
+    UPDATE public.institution_memberships
+    SET
+      membership_role = 'institution_admin'::public.membership_role,
+      status = 'invited'::public.membership_status,
+      updated_at = now()
+    WHERE id = v_id;
+
+    RETURN v_id;
+  END IF;
+
+  INSERT INTO public.institution_memberships (
+    user_id, institution_id, membership_role, status
+  )
+  VALUES (
+    p_user_id,
+    p_institution_id,
+    'institution_admin'::public.membership_role,
+    'invited'::public.membership_status
+  )
+  RETURNING id INTO v_id;
+
+  RETURN v_id;
+END;
+$$;
+
+COMMENT ON FUNCTION public.invite_institution_admin_membership(uuid, uuid) IS
+  'Super admin only: upserts institution_admin membership with status invited. Email/auth handled by GoTrue; profiles row must exist.';
+
+REVOKE ALL ON FUNCTION public.invite_institution_admin_membership(uuid, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.invite_institution_admin_membership(uuid, uuid) TO authenticated;
+
+-- =============================================================================
+-- 13d. Invited institution admin accepts — sets membership active (+ legacy user_institutions)
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.activate_institution_admin_invite(p_institution_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth, pg_temp
+AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+BEGIN
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  UPDATE public.institution_memberships m
+  SET
+    status = 'active'::public.membership_status,
+    updated_at = now()
+  WHERE m.user_id = v_uid
+    AND m.institution_id = p_institution_id
+    AND m.membership_role = 'institution_admin'::public.membership_role
+    AND m.status = 'invited'::public.membership_status
+    AND m.deleted_at IS NULL
+    AND m.left_institution_at IS NULL;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'no invited institution_admin membership for this user and institution';
+  END IF;
+
+  INSERT INTO public.user_institutions (user_id, institution_id)
+  VALUES (v_uid, p_institution_id)
+  ON CONFLICT (user_id, institution_id) DO NOTHING;
+END;
+$$;
+
+COMMENT ON FUNCTION public.activate_institution_admin_invite(uuid) IS
+  'Caller must be the invited user: flips institution_admin from invited to active and ensures legacy user_institutions row. Call from UI after GoTrue invite acceptance / password set.';
+
+REVOKE ALL ON FUNCTION public.activate_institution_admin_invite(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.activate_institution_admin_invite(uuid) TO authenticated;
 
 -- =============================================================================
 -- 14. INSTITUTION INVOICE RECORDS — billing visibility
