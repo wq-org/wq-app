@@ -27,14 +27,14 @@ type SlashAction = {
 
 class SlashMenuOption extends MenuOption {
   description: string
-  icon: LucideIcon
+  iconComponent: LucideIcon
   onSelect: (editor: LexicalEditor) => void
   title: string
 
   constructor(action: SlashAction) {
     super(action.key)
     this.description = action.description
-    this.icon = action.icon
+    this.iconComponent = action.icon
     this.onSelect = action.onSelect
     this.title = action.title
   }
@@ -107,7 +107,7 @@ const SlashMenuItem = ({
   onMouseEnter,
   option,
 }: SlashMenuItemProps) => {
-  const Icon = option.icon
+  const Icon = option.iconComponent
 
   return (
     <li
