@@ -324,3 +324,164 @@ If you enable `pgaudit`, ensure logs are routed and retained according to your d
 Hetzner DPA/TOMs context: Hetzner's DPA describes processing obligations and requires technical and organizational measures aligned to GDPR Art. 32 (including confidentiality/integrity/availability/resilience), and the TOM appendix clarifies that for cloud/dedicated servers you are responsible for managing and securing the server—so do not outsource DB hardening to assumptions.
 
 For web tracking and stored identifiers (analytics), align to German data protection authority guidance (e.g., entity["organization","LfDI Baden-Württemberg","state data protection authority"]) and TDDDG requirements on storing/reading information on end devices.
+
+# SQL Migration, and Database Change Guidelines (Multi-tenant, RLS, GDPR, Hetzner, Supabase)
+
+---
+
+For migrations, the “reason to change” is usually different for:
+tables/types/columns
+helper functions/RPCs
+RLS/policies
+backfills/seed data
+triggers/constraints
+
+1. Atomic Migrations
+
+- Each migration must have a single, specific domain responsibility.
+- Do not combine unrelated changes in one migration.
+- Acceptable separations:
+  - Tables/Types: schema structure (e.g., CREATE TABLE)
+  - Functions/RPC: business logic (e.g., CREATE FUNCTION)
+  - RLS/Policies: authorization rules
+  - Triggers/Constraints: data integrity
+  - Data Backfills/Seed: data updates or inserts
+
+2. Migration Structure
+
+- Each migration must implement the following order (omit unused sections):
+
+  -- 1. Types (if needed) — include `COMMENT ON TYPE` immediately after each type when used
+  -- 2. Tables — include `COMMENT ON TABLE/COLUMN` immediately after each `CREATE TABLE` / relevant `ALTER TABLE`
+  -- 3. Indexes
+  -- 4. Constraints
+  -- 5. Functions/RPC — include `COMMENT ON FUNCTION` immediately after each function definition
+  -- 6. Triggers
+  -- 7. RLS (ENABLE, FORCE, POLICIES)
+  -- 8. Comments/Documentation — optional stub only when using the split `*_01`…`*_08` file layout (keeps filename ordering); object comments live in sections 1–5 as above
+
+- One migration file corresponds to one domain change.
+- Do NOT split one domain change across files (e.g., classroom_tables.sql + classroom_rls.sql is forbidden).
+
+3. Idempotency
+
+- Use constructs that make migrations safe for re-execution:
+  - CREATE TABLE IF NOT EXISTS ...
+  - CREATE INDEX IF NOT EXISTS ...
+  - DROP POLICY IF EXISTS ...
+- Exception: Data migrations/backfills must be explicit, versioned, and intentionally run.
+
+4. Multi-tenant Safety (RLS-First)
+
+- Every tenant-specific table must contain: institution_id UUID NOT NULL
+- Always include:
+  ALTER TABLE ... ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE ... FORCE ROW LEVEL SECURITY;
+
+- Policy naming convention: {table}_{action}_{role}
+  - Example: classrooms_select_member, classrooms_update_teacher
+
+- Never rely on application logic for tenant isolation.
+  - Do not use: WHERE institution_id = <user tenant id>
+  - Use RLS policies for all access control.
+
+5. Naming Conventions
+
+- Tables: plural snake_case
+- Columns: snake_case
+- Primary key: id
+- Foreign keys: {entity}\_id
+- Join tables: {entity*a}*{entity_b}
+
+6. Column Standards
+
+- Every table must have:
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+- Optionally recommended:
+  created_by UUID,
+  updated_by UUID
+
+7. JSONB Usage
+
+- Allowed only for game configs, content editors, or unstructured metadata.
+- Never store relational or structured data in JSONB columns.
+
+8. Anti-patterns to Avoid
+
+- Implicit joins (always use explicit joins).
+- SELECT \* (always specify column list).
+- Business logic in triggers unless strongly justified.
+- Cross-tenant joins without proper tenant filtering.
+
+9. Functions & RPCs
+
+- Default should be: SECURITY INVOKER
+- SECURITY DEFINER only for strictly necessary use-cases (onboarding, admin, cross-table writes) and must include:
+  SET search_path = public, extensions;
+
+- Function naming: verb_entity_action (e.g., create_institution_with_admin, assign_course_to_classroom, submit_game_session)
+
+10. Data Migrations (Backfills)
+
+- Schema changes and data changes must never share a file.
+- Backfills must be deterministic, auditable, and, where possible, reversible.
+  - Example:
+    UPDATE tasks SET difficulty = 'medium' WHERE difficulty IS NULL;
+
+11. Constraints & Integrity
+
+- Prefer database-level constraints over application checks.
+  - Example: ALTER TABLE classroom_members ADD CONSTRAINT unique_member UNIQUE (classroom_id, user_id);
+
+- Foreign key references must specify delete strategy (CASCADE, RESTRICT, SET NULL) intentionally.
+
+12. Auditability (GDPR/BSI)
+
+- Critical tables (users, memberships, results, clinical data) require auditing.
+- Audit tables should follow the pattern:
+  audit_log (
+  id,
+  table_name,
+  record_id,
+  action,
+  changed_by,
+  changed_at,
+  diff JSONB
+  )
+- Never log sensitive fields directly (health data, passwords, tokens).
+
+13. Performance & Observability
+
+- Create indexes for all foreign keys and RLS filter columns.
+  - Example: CREATE INDEX ON classroom_members (user_id); CREATE INDEX ON classroom_members (institution_id);
+- Avoid N+1 queries, always use limits and specify columns.
+- Enable query monitoring (pg_stat_statements), log slow queries, retain audit logs for at least 90 days.
+
+14. Documentation
+
+- Every table must include a comment specifying its purpose.
+  - Example: COMMENT ON TABLE classrooms IS 'Represents a teaching container within a tenant';
+- Every critical column (especially institution_id) must have a descriptive comment.
+  - Example: COMMENT ON COLUMN classrooms.institution_id IS 'Tenant isolation key';
+- Each domain requires an accompanying markdown documentation file (e.g., /docs/database/classroom.md).
+
+15. Strictly Forbidden Patterns
+
+- Splitting migrations by type (e.g., all tables in one file, all RLS in another)
+- Omission of RLS on tenant tables
+- Using service_role in frontend contexts
+- Trusting client-provided tenant_id values
+- Business logic kept solely in frontend code
+- Large unstructured migrations
+
+16. Summary
+
+- Migrations must be linear, atomic, and domain-focused.
+- RLS is mandatory for all multi-tenant tables.
+- SQL must be explicit, clear, and thoroughly documented.
+- The database is the enforcement point for security and isolation.
+- All changes must be auditable and, where possible, reversible.
+
+---
