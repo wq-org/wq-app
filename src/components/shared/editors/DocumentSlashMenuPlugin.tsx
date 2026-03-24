@@ -153,7 +153,7 @@ const SlashMenu = ({
 }) => {
   return (
     <div
-      ref={anchorElementRef}
+      ref={anchorElementRef as RefObject<HTMLDivElement>}
       className={SLASH_MENU_CLASS_NAME}
       role="listbox"
     >
@@ -227,7 +227,7 @@ export const DocumentSlashMenuPlugin = () => {
           options={options}
           selectOptionAndCleanUp={selectOptionAndCleanUp}
           selectedIndex={selectedIndex}
-          setHighlightedIndex={setHighlightedIndex}
+          setHighlightedIndex={setHighlightedIndex as (index: number | null) => void}
           matchingString={matchingString}
         />
       )}
