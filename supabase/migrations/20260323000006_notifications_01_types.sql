@@ -4,4 +4,4 @@
 -- Requires: 20260321000002_institution_admin (all parts)
 -- =============================================================================
 
--- No new types in this migration.
+-- Notification categories are constrained with CHECK on text columns (…_02_tables.sql).

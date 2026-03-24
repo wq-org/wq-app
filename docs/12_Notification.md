@@ -2,6 +2,20 @@
 
 Keeps students on track and teachers informed without overwhelming either. Delivered in-app first — email as opt-in backup. No WhatsApp, no third-party messengers (DSGVO Art. 32).
 
+# Database: notification `category`
+
+Columns `notifications.category` and `notification_preferences.category` are **`text NOT NULL`** with the same **`CHECK (category IN (...))`** (migration `20260323000006_notifications_02_tables.sql`):
+
+| Value      | Use                                                                |
+| ---------- | ------------------------------------------------------------------ |
+| `learning` | Courses, lessons, progress, live session prompts                   |
+| `task`     | Assignments, deadlines, feedback, collaborative task note activity |
+| `reward`   | Points, levels, jokers, streaks, personal bests                    |
+| `social`   | Chat, DMs, lobby/announcements, follows                            |
+| `system`   | Platform or institution-wide broadcasts                            |
+
+Finer detail (e.g. which lesson, which task) lives in `notifications.data` (JSONB) and the human-readable `title` / `body`, not in extra category literals. New categories require a migration that updates both `CHECK` constraints.
+
 # Delivery channels
 
 - In-app notification centre (bell icon, unread badge count)

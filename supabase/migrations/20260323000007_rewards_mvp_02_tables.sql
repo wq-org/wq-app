@@ -10,7 +10,20 @@ CREATE TABLE public.point_ledger (
   classroom_id    uuid          NOT NULL REFERENCES public.classrooms(id) ON DELETE CASCADE,
   user_id         uuid          NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
   points          integer       NOT NULL,
-  source          point_source  NOT NULL,
+  source          text          NOT NULL
+    CHECK (
+      source IN (
+        'game_correct',
+        'game_speed_bonus',
+        'game_streak',
+        'game_versus_win',
+        'task_on_time',
+        'lesson_complete',
+        'daily_streak',
+        'personal_best',
+        'manual_adjustment'
+      )
+    ),
   ref_id          uuid,
   ref_type        text,
   description     text,
@@ -21,7 +34,7 @@ COMMENT ON TABLE  public.point_ledger                IS 'Append-only point log p
 COMMENT ON COLUMN public.point_ledger.institution_id IS 'Tenant boundary.';
 COMMENT ON COLUMN public.point_ledger.classroom_id   IS 'Points accumulate per classroom per school year.';
 COMMENT ON COLUMN public.point_ledger.points         IS 'Positive = earned; negative = spent (joker redemption).';
-COMMENT ON COLUMN public.point_ledger.source         IS 'What earned/spent the points.';
+COMMENT ON COLUMN public.point_ledger.source         IS 'Why points changed; allowed literals enforced by CHECK (see migration).';
 COMMENT ON COLUMN public.point_ledger.ref_id         IS 'FK to source entity (game_session_participant, task, lesson, etc).';
 COMMENT ON COLUMN public.point_ledger.ref_type       IS 'Entity type for ref_id: game_session, task, lesson, joker, etc.';
 

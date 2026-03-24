@@ -1,168 +1,37 @@
----
-description: >-
-  Draft or review git commit messages for WQ Health (Motion Aware Learning).
-  Use when committing, summarizing staged changes, or writing changelog-style
-  subjects/bodies. Always include DB/RLS/migration and Security lines when SQL,
-  auth, storage, or tenant isolation changed; align with docs/instructions.md
-  and docs/db_guide_line_en.md.
-alwaysApply: false
----
-
-# WQ — Motion Aware Learning / wq-Health — commit messages
-
-## Goal
-
-- **Purpose**: Standardize how the Agent (or you) turns the **current working tree** into a commit message that is easy to review and matches this repo’s stack and compliance expectations.
-- **Outcome**: A **paste-ready** conventional commit (subject + body) with **Why**, **Changes**, **Verified**, **DB**, **Security**, and optional **Performance** / **Compliance** lines, aligned with project docs.
-
-**Stack context**: multi-tenant wound-care serious game — React 19, Vite, TypeScript, Supabase, PostgreSQL (Hetzner-class hosting).
-
-**Canonical deep docs** (attach or read when nuance matters):
-
-- @docs/instructions.md — architecture, security, GDPR-aware guidance
-- @docs/db_guide_line_en.md — RLS, tenant isolation, migrations, audit, data lifecycle
-
----
-
-## Cursor usage ([Project rules](https://cursor.com/docs/rules))
-
-This file is the **only** commit-message rule for this repo (YAML frontmatter + full body).
-
-- **Apply manually**: Mention **`@commit-message`** when you want this workflow and template (e.g. “draft my commit using `@commit-message`”).
-- **Apply intelligently**: Cursor may include this rule when the **description** matches (commits, `git`, staged changes, changelog). `alwaysApply` is **false** so it is not injected into every chat.
-- **Globs**: None — this rule is not file-pattern gated; use `@commit-message` or intelligent apply.
-
----
-
-## Workflow
-
-When helping produce a commit message from **current changes**:
-
-1. **Scope the change** — Use `git status` / `git diff` (staged and unstaged). One logical change per commit; say if the user should split into multiple commits.
-2. **Classify** — Choose `type` and `scope` from the tables below.
-3. **Enumerate** — List touched paths; for SQL, name `supabase/migrations/<file>.sql` and notable objects (policies, functions, triggers, enums).
-4. **Verify** — Describe what was run or clicked and the expected outcome; use “not run” honestly if applicable.
-5. **DB / Security** — Fill **DB** and **Security** using @docs/db_guide_line_en.md: versioned migrations, RLS + `FORCE ROW LEVEL SECURITY`, tenant key (`institution_id`), `COMMENT ON`, `audit.events` / `SECURITY DEFINER` when touched; call out tenant isolation, JWT/`auth.uid()`, storage buckets, GDPR-relevant data per @docs/instructions.md.
-6. **Deliver** — Output the final message using the **Format** template below, ready for `git commit` (multi-line body as needed).
-
----
-
-## Format
-
-```
 <type>(<scope>): <imperative summary, ≤72 chars>
 
-Why: <one sentence — problem or intent>
+Problem:
+- <What was broken, unclear, or missing BEFORE this change?>
+- <What user/system pain did this create?>
+
+Decision:
+- <What did you decide to change and why this approach?>
+- <Why this solution over alternatives?>
 
 Changes:
-- <path>: <what changed>
-- supabase/migrations/<file>.sql: <if DB touched — tables, policies, functions>
+- <path>: <WHAT changed (technical)>
+- <path>: <WHAT changed (technical)>
+- supabase/migrations/<file>.sql: <schema / RLS / function changes>
 
-Verified: <what you ran or clicked; expected outcome>
+Impact:
+- <What is now better for user OR system?>
+- <What becomes simpler, safer, faster, or more scalable?>
+- <What is now impossible / prevented?>
 
-DB: <migration(s); policies/functions/helpers; COMMENT ON / audit triggers; or "none">
-Security: <tenant isolation / RLS / auth / storage / GDPR-relevant data; or "none">
-```
+Behavior Change:
+- BEFORE: <old behavior>
+- AFTER: <new behavior>
 
-Optional (use when it matters per @docs/instructions.md):
+Trade-offs:
+- <What did this make worse, more complex, or constrained?>
+- <What did you consciously NOT do?>
 
-```
-Performance: <bundle, query, or RLS policy perf note; or omit>
-Compliance: <PII, health data, retention, export/erasure; or omit>
-```
+Verified:
+- <Exact test steps>
+- <Expected outcome>
 
----
+DB:
+- <migration(s); policies; functions; audit; or "none">
 
-## Types
-
-| Type       | Use when |
-| ---------- | -------- |
-| `feat`     | New feature, API, or user-visible behavior |
-| `fix`      | Bug fix |
-| `refactor` | Restructure without intended behavior change |
-| `perf`     | Performance (frontend or DB) |
-| `test`     | Tests only |
-| `chore`    | Dependencies, tooling, config |
-| `docs`     | Documentation or comments only |
-| `revert`   | Reverts a prior commit |
-
----
-
-## Scopes (suggested)
-
-`auth` · `profile` · `institution` · `multitenant` · `course` · `lesson` · `topic` · `game-studio` · `game-play` · `realtime` · `storage` · `db` · `rls` · `audit` · `command-palette` · `routing` · `shared` · `devops`
-
-Pick the narrowest scope that fits; use `db` or `rls` when the change is mostly schema/policies.
-
----
-
-## Rules
-
-1. **Imperative summary**: *Add*, *Fix*, *Enforce* — not "Added" or "Adds".
-2. **One logical change per commit**; split unrelated edits.
-3. **Database** (from @docs/db_guide_line_en.md):
-   - Name **migration file(s)** under `supabase/migrations/`.
-   - Mention **new or changed RLS** (`ENABLE` / `FORCE ROW LEVEL SECURITY`, policy names, `USING` / `WITH CHECK` if non-obvious).
-   - Tenant-scoped work: note **tenant key** (`institution_id` in this codebase; guideline calls it `tenant_id` conceptually).
-   - Schema changes: note **`COMMENT ON`** when you add or change documented tables/columns.
-   - High-risk flows: note **`audit.events`**, triggers, or **`SECURITY DEFINER`** RPCs when touched.
-4. **Security / compliance**: Call out effects on **tenant isolation**, **JWT / `auth.uid()`**, **Storage buckets**, or **GDPR-relevant** data (profiles, health-related media, exports, erasure) when applicable.
-5. **Storage**: Name **bucket id** and policy intent if bucket or RLS on `storage.objects` changes.
-6. **Migrations are canonical**: Schema must be reproducible from version-controlled SQL (@docs/db_guide_line_en.md).
-
----
-
-## Example — application / UI
-
-```
-feat(game-studio): add publish confirmation before immutable version
-
-Why: Teachers were publishing flow graphs without an explicit confirmation step.
-
-Changes:
-- src/features/game-studio/components/PublishDialog.tsx: confirm + summary
-- src/features/game-studio/hooks/usePublishGame.ts: gate on confirm flag
-
-Verified: draft → confirm → published version row created; draft unchanged ✓
-
-DB: none
-Security: none
-```
-
----
-
-## Example — database / RLS
-
-```
-feat(db): tighten institutions select to membership-scoped RLS
-
-Why: Global institution read broke tenant isolation for the multi-tenant model.
-
-Changes:
-- supabase/migrations/20260321000002_institution_admin.sql: replace permissive select policies
-
-Verified: supabase db reset ✓; member sees only own institutions; super_admin sees all ✓
-
-DB: 20260321000002_institution_admin.sql — policies institutions_member_select, institutions_super_admin; FORCE RLS already on institutions
-Security: RLS default-deny for unauthenticated; tenant boundary institution_id via app.member_institution_ids(); super_admin bypass explicit
-Compliance: none (no new PII surface)
-```
-
----
-
-## Example — audit / privileged RPC
-
-```
-feat(audit): log institution feature flag overrides to audit.events
-
-Why: Platform governance requires an immutable trail for per-tenant feature changes.
-
-Changes:
-- supabase/migrations/20260321000001_super_admin.sql: trigger → audit.log_event
-
-Verified: toggle override → row in audit.events with payload ✓
-
-DB: 20260321000001_super_admin.sql — function audit.log_feature_override_change; audit.events inserts via SECURITY DEFINER audit.log_event
-Security: No direct client INSERT on audit.events; events append-only pattern per db guideline
-Compliance: Supports accountability / breach review for config changes
-```
+Security:
+- <tenant isolation / RLS / auth / storage impact OR "none">

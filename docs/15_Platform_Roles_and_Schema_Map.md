@@ -449,12 +449,14 @@ From `20260323000006_notifications.sql` (Phase F).
 
 ```
 notifications (institution_id, user_id, category, title, body, data jsonb)
+├── category — text with CHECK (learning | task | reward | social | system)
 ├── is_read / read_at — mark-read state
 ├── Inserted by service role / edge functions (no INSERT policy for authenticated)
 ├── Users read own (notif_own) and mark read (notif_own_update)
 └── Institution admins can read for monitoring (notif_institution_admin_read)
 
 notification_preferences (user_id, institution_id, category)
+├── category — same CHECK as notifications
 ├── enabled — toggle per category
 ├── email_digest — daily | weekly | never
 ├── quiet_start / quiet_end — quiet hours (time type)
@@ -471,7 +473,7 @@ point_ledger (institution_id, classroom_id, user_id)
 │   Append-only. Points accumulate per classroom per school year.
 │   Positive = earned, negative = spent (joker redemption).
 │
-├── source enum:
+├── source — text NOT NULL with CHECK (same literals as former enum):
 │   ├── game_correct, game_speed_bonus, game_streak, game_versus_win
 │   ├── task_on_time, lesson_complete
 │   ├── daily_streak, personal_best
