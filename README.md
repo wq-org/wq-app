@@ -3,6 +3,8 @@
 WQ-Health is a multi-tenant wound-care education platform with a Serious Game “Game Studio” (XYFlow) and course/lesson management.  
 Stack: **React (Vite) + TypeScript + Tailwind/Radix/ShadCN + Supabase (Postgres, Auth, Storage, RLS)**.
 
+Documentation index: [docs/README.md](docs/README.md)
+
 ---
 
 ## Prerequisites
@@ -19,9 +21,9 @@ Stack: **React (Vite) + TypeScript + Tailwind/Radix/ShadCN + Supabase (Postgres,
 ```bash
 supabase start
 ```
+
 ## To stop everything:
 
 ```bash
 supabase stop
 ```
-

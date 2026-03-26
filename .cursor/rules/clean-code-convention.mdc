@@ -18,7 +18,7 @@ Defaults for **where code lives**, **how components read**, and **naming habits*
 
 - **Mechanical style** (imports, hooks rules, a11y where linted): enforce via **`eslint.config.js`** and Prettier — do not copy a full style guide here.
 - **Named exports, `index.ts`, cross-feature import paths**: follow **`@.cursor/rules/named-export-conventions.mdc`** only; that content is intentionally not duplicated below.
-- **Security, tenancy, data**: **`docs/instructions.md`** and **`docs/db_guide_line_en.md`**.
+- **Security, tenancy, data**: **[code-decision-guide.mdc](code-decision-guide.mdc)** and **[docs/architecture/db_guide_line_en.md](../../docs/architecture/db_guide_line_en.md)**.
 
 ## When working in `src/**/*.tsx` (components)
 
@@ -79,4 +79,3 @@ Do not deep-import into another feature’s internals. Use each feature’s **pu
 ## When still unsure
 
 Bias toward: **explicit**, **typed**, **local-first**, **easy to rename/move**, and **boring** over clever abstractions.
-

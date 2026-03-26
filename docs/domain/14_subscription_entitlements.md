@@ -583,12 +583,12 @@ Recommended behavior:
 | Classroom     |          Yes |          Yes |
 | Reward System | No / Limited |          Yes |
 | Course        |          Yes |          Yes |
-| Game Studio   | No / Limited |          Yes |
+| Game Studio   | Yes/ Limited |          Yes |
 | Task          |          Yes |          Yes |
-| Calendar      | No / Limited |          Yes |
+| Calendar      | Yes/ Limited |          Yes |
 | Cloud         |  Small quota | Larger quota |
 | Note          |          Yes |          Yes |
-| Chat          | No / Limited |          Yes |
+| Chat          | Yes/ Limited |          Yes |
 | Notification  |          Yes |          Yes |
 
 ---

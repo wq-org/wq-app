@@ -1,7 +1,6 @@
 # Infrastructure
 
 <aside>
-💡
 
 To meet **DSGVO (GDPR in Germany) standards** for running a Supabase/Postgres database on your own Hetzner server, you need a combination of **CLI, SQL admin tools, and operational practices**. The tools themselves help you configure, audit, and maintain compliance, but **compliance itself depends on your policies, monitoring, and admin discipline**.
 
@@ -163,7 +162,6 @@ If you want, I can also list the exact public endpoints these services sit behin
 ## Must-Have Tools for DSGVO Compliance
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 1. **psql (Postgres CLI)**
 
@@ -172,7 +170,6 @@ If you want, I can also list the exact public endpoints these services sit behin
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 2. **pgAdmin (GUI/Browser Based)**
 
@@ -181,7 +178,6 @@ If you want, I can also list the exact public endpoints these services sit behin
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 3. **DBeaver or TablePlus**
 
@@ -190,7 +186,6 @@ If you want, I can also list the exact public endpoints these services sit behin
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 4. **pg_dump / pg_restore**
 
@@ -199,7 +194,6 @@ If you want, I can also list the exact public endpoints these services sit behin
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 5. **Audit/User Access Logging Extensions**
 
@@ -208,7 +202,6 @@ If you want, I can also list the exact public endpoints these services sit behin
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 6. **SSL/TLS Certbot or Let’s Encrypt tools**
 
@@ -218,7 +211,6 @@ https://certbot.eff.org/?utm_source=perplexity
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 7. **Editor for Postgres Configuration (`vim`, `nano`, etc.)**
 
@@ -226,7 +218,6 @@ https://certbot.eff.org/?utm_source=perplexity
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 8. **Docker Compose / Docker CLI**
 
@@ -234,7 +225,6 @@ https://certbot.eff.org/?utm_source=perplexity
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 9. **Infrastructure/Server Firewall & Monitoring**
 
@@ -245,7 +235,6 @@ https://certbot.eff.org/?utm_source=perplexity
 ---
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ## DSGVO-Specific Administration Practices
 
@@ -261,9 +250,6 @@ https://certbot.eff.org/?utm_source=perplexity
 
 ---
 
-<aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
-
 ## Recommended Setup Flow
 
 1. **Install**: Postgres + Docker + pgAdmin (or DBeaver/TablePlus), `pgaudit` if possible.
@@ -273,12 +259,7 @@ https://certbot.eff.org/?utm_source=perplexity
 5. **Automate regular encrypted backups** with `pg_dump`.
 6. **Document your responsibilities/processes** for data requests, breaches, etc.
 
-</aside>
-
 ---
-
-<aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ## TL;DR
 
@@ -306,28 +287,18 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 ---
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ## 1. **Basic Docker & Compose**
 
 - Understand pulling, running, and managing containers.
 - Use Docker Compose to define and manage multi-service setups (Postgres, pgAdmin, backup, monitoring, etc.).
 - Configure and persist data with Docker volumes.
-</aside>
-
-<aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 2. **SQL/Database Administration**
 
 - Know basic SQL (DDL, DML, RLS policies, user/role/permission management, migrations).
 - Familiarity with Postgres extensions (`uuid-ossp`, `pgcrypto`, `pgaudit`, etc.).
 - Understanding of connection pooling (e.g. PgBouncer or Pgpool-II).
-
-</aside>
-
-<aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 3. **pgAdmin Usage**
 
@@ -337,7 +308,6 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 4. **Security**
 
@@ -347,7 +317,6 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### 5. **Backup & Restore**
 
@@ -361,7 +330,6 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 ## **Tools and Concepts for Scaling PostgreSQL**
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### **A. Scaling the Database**
 
@@ -374,7 +342,6 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 ### **B. Using Modern Data Tools for Event-Heavy Work**
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 - **Kafka:** Widely used as an event streaming platform. Not a database substitute, but a perfect addition for event-driven architecture (CDC, analytics, microservices).
   - You can pipe Postgres changes to Kafka using Debezium, Wal2json, or Supabase Realtime for change data capture (CDC).
@@ -384,7 +351,6 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 </aside>
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ### **C. Monitoring and Scaling**
 
@@ -397,7 +363,6 @@ With these tools and routines, you can be technically prepared for a DSGVO-compl
 ---
 
 <aside>
-<img src="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" alt="notion://custom_emoji/45750dd6-fd24-4e2a-8f93-c51af245bc48/2794b70c-a399-8073-8b5a-007abdb21694" width="40px" />
 
 ## **Typical Docker Compose Stack Example**
 

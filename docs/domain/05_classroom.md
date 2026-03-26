@@ -91,4 +91,4 @@ All delivery in this module is classroom-scoped.
 - Teacher manages classroom delivery and learning operations.
 - Student participates within assigned classroom scope.
 
-Class Room must stay tenant-scoped and aligned with `02_Institution.md`.
+Class Room must stay tenant-scoped and aligned with `02_institution.md`.

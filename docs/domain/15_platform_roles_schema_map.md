@@ -441,7 +441,7 @@ conversations (institution_id, type, created_by, classroom_id?)
     └── deleted_at — soft-delete (user can delete own messages)
 ```
 
-**Safeguarding note:** The chat permission matrix from `docs/11_Chat.md` (e.g. teacher cannot initiate 1:1 with student unless student initiated first) is enforced at the **application layer**, not by RLS. RLS only gates access to conversations you are a member of within your institution.
+**Safeguarding note:** The chat permission matrix from `docs/domain/11_chat.md` (e.g. teacher cannot initiate 1:1 with student unless student initiated first) is enforced at the **application layer**, not by RLS. RLS only gates access to conversations you are a member of within your institution.
 
 ### Notifications
 
@@ -512,18 +512,18 @@ Phase A (`20260323000001`) retargeted storage policies from `user_institutions` 
 
 ## Cross-reference: docs vs implemented tables
 
-| Doc              | Implemented in Postgres                                                                                                                 | Deferred (product doc only)                                         |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| 01_Super_Admin   | audit.events, plan_catalog, feature_definitions, plan_entitlements, subscriptions, entitlement overrides, billing_providers, admin RPCs | —                                                                   |
-| 02_Institution   | institution_memberships, org hierarchy, settings, quotas, invoices, DSR, bootstrap                                                      | —                                                                   |
-| 03_Teacher       | RLS on shared LMS tables via membership; teacher_followers                                                                              | Detailed teacher dashboard analytics views                          |
-| 04_Student       | RLS classroom-delivered courses (`student_can_access_*`), `lesson_progress`, `learning_events`, game participation                      | Student dashboard aggregation views                                 |
-| 05_Class Room    | `classroom_members` (roster), `classrooms`, `classroom_course_links`                                                                    | —                                                                   |
-| 06_Note          | notes (single-row JSONB MVP, personal + collaborative)                                                                                  | Normalized note_blocks, block-level versioning, offline queue       |
-| 07_Course        | lesson_progress, learning_events, content_schema_version                                                                                | Presentation mode state, inline knowledge checks                    |
-| 08_Game Studio   | `games` (+ `course_id`, `institution_id`), game_runs, game_sessions, game_session_participants                                          | Realtime sync protocol (app layer); lesson-level placement deferred |
-| 09_Task          | tasks, task_groups, task_group_members, task_submissions                                                                                | PDF export, advanced rubric grading                                 |
-| 10_Reward System | point_ledger, classroom_reward_settings                                                                                                 | Full joker_redemptions table with approval workflow, badges table   |
-| 11_Chat          | conversations, conversation_members, messages                                                                                           | Moderation queue table, safeguarding RPC (app layer for now)        |
-| 12_Notification  | notifications, notification_preferences                                                                                                 | Email digest job, push notification integration                     |
-| 14_Subscription  | Covered in 01 migrations                                                                                                                | Stripe/PSP webhook handler (edge function)                          |
+| Doc                          | Implemented in Postgres                                                                                                                 | Deferred (product doc only)                                         |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 01_super_admin               | audit.events, plan_catalog, feature_definitions, plan_entitlements, subscriptions, entitlement overrides, billing_providers, admin RPCs | —                                                                   |
+| 02_institution               | institution_memberships, org hierarchy, settings, quotas, invoices, DSR, bootstrap                                                      | —                                                                   |
+| 03_teacher                   | RLS on shared LMS tables via membership; teacher_followers                                                                              | Detailed teacher dashboard analytics views                          |
+| 04_student                   | RLS classroom-delivered courses (`student_can_access_*`), `lesson_progress`, `learning_events`, game participation                      | Student dashboard aggregation views                                 |
+| 05_classroom                 | `classroom_members` (roster), `classrooms`, `classroom_course_links`                                                                    | —                                                                   |
+| 06_note                      | notes (single-row JSONB MVP, personal + collaborative)                                                                                  | Normalized note_blocks, block-level versioning, offline queue       |
+| 07_course                    | lesson_progress, learning_events, content_schema_version                                                                                | Presentation mode state, inline knowledge checks                    |
+| 08_game_studio               | `games` (+ `course_id`, `institution_id`), game_runs, game_sessions, game_session_participants                                          | Realtime sync protocol (app layer); lesson-level placement deferred |
+| 09_task                      | tasks, task_groups, task_group_members, task_submissions                                                                                | PDF export, advanced rubric grading                                 |
+| 10_reward_system             | point_ledger, classroom_reward_settings                                                                                                 | Full joker_redemptions table with approval workflow, badges table   |
+| 11_chat                      | conversations, conversation_members, messages                                                                                           | Moderation queue table, safeguarding RPC (app layer for now)        |
+| 12_notification              | notifications, notification_preferences                                                                                                 | Email digest job, push notification integration                     |
+| 14_subscription_entitlements | Covered in 01 migrations                                                                                                                | Stripe/PSP webhook handler (edge function)                          |

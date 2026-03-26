@@ -96,11 +96,3 @@ If any rule conflicts, safeguarding precedence wins.
 3. Safeguarding default for teacher-student 1:1 initiation
 4. Reporting + basic moderation queue
 5. Classroom group chat flows
-
----
-
-## Out of scope for MVP
-
-- cross-institution federation
-- end-to-end encrypted key management UX
-- advanced AI moderation automation

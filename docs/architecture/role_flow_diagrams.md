@@ -2,7 +2,7 @@
 
 ASCII flows for **super_admin**, **institution_admin**, **teacher**, and **student**, grounded in the current Supabase migration chain (`20260209*`, `20260321*`, `20260323*`). Policy names refer to Postgres RLS; behavior not listed here is default-deny for `authenticated` unless a policy applies. Diagrams assume the **full** migration chain has been applied (see doc 15 migration table).
 
-**See also:** [15_Platform_Roles_and_Schema_Map.md](15_Platform_Roles_and_Schema_Map.md) (tables, helpers, domain trees).
+**See also:** [15_platform_roles_schema_map.md](../domain/15_platform_roles_schema_map.md) (tables, helpers, domain trees).
 
 ---
 
@@ -300,7 +300,7 @@ Task status flow (audit trigger on tasks):
 ```
 Chat
   conversations → conversation_members → messages
-  RLS: institution-scoped; participant read/send; safeguarding matrix in docs/11 mostly app-layer
+  RLS: institution-scoped; participant read/send; safeguarding matrix in docs/domain/11_chat.md mostly app-layer
 
 Notifications
   notifications (service role inserts) — user read/update own; institution_admin read monitor

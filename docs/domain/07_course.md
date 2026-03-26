@@ -40,7 +40,7 @@ Slide sizing logic:
   - 1 image = 20 word-equivalents
   - 1 video = 40 word-equivalents
 - effective content load formula:
-  - effective_words = text_words + (images _ 20) + (videos _ 40)
+  - effective*words = text_words + (images * 20) + (videos \_ 40)
 - split rule:
   - if effective_words > 120, split into the next slide segment
 
@@ -109,14 +109,3 @@ Supported lesson slide layouts:
 - avoid oversized single-slide content blocks
 - use split and pacing rules to reduce cognitive overload
 - prioritize readability and comprehension over dense formatting
-
----
-
-## Build priority
-
-1. Course/topic/lesson model and publishing flow
-2. Student progress tracking per topic and lesson
-3. Teacher analytics for completion and drop-off
-4. Presentation-mode lesson delivery
-5. Lesson-to-game linking and impact tracking
-6. Slide-linked notes integration

@@ -71,9 +71,3 @@ Finer detail (e.g. which lesson, which task) lives in `notifications.data` (JSON
 - Set quiet hours — no notifications between set times (important for school context)
 - Choose email digest frequency — daily / weekly / never
 - Teacher can set classroom-wide notification preferences as defaults
-
-![IMG_3152.jpeg](Notification/IMG_3152.jpeg)
-
-![image.png](Notification/image.png)
-
-![image.png](Notification/image%201.png)

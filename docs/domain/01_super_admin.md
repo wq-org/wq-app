@@ -10,18 +10,18 @@ Institution Admin and Teacher own delivery. Student owns participation.
 
 This file is the top-level control plane for all module docs:
 
-- `02_Institution.md`
-- `03_Teacher.md`
-- `04_Student.md`
-- `05_Class_Room.md`
-- `06_Note.md`
-- `07_Course.md`
-- `08_Game_Studio.md`
-- `09_Task.md`
-- `10_Reward_System.md`
-- `11_Chat.md`
-- `12_Notification.md`
-- `13_Hetzner_Infra.md`
+- `02_institution.md`
+- `03_teacher.md`
+- `04_student.md`
+- `05_classroom.md`
+- `06_note.md`
+- `07_course.md`
+- `08_game_studio.md`
+- `09_task.md`
+- `10_reward_system.md`
+- `11_chat.md`
+- `12_notification.md`
+- `13_hetzner_infra.md`
 
 ---
 
@@ -67,14 +67,14 @@ flowchart TD
 1. Institution (`02`) is the tenant boundary for everything else.
 2. Class Room (`05`) is the operational container linking Course (`07`), Game Studio (`08`), Task (`09`), Reward (`10`), Chat (`11`), and Notification (`12`).
 3. Notes (`06`) can be personal or collaborative, but always inherit institution and role access rules.
-4. Infrastructure (`12`) must enforce RLS, backups, encryption, logging, and recovery for all modules.
+4. Infrastructure (`13`) must enforce RLS, backups, encryption, logging, and recovery for all modules.
 
 ---
 
 ## Hierarchy ownership
 
-Detailed academic hierarchy design is institution logic and is defined in `02_Institution.md`.
-`01_Super_Admin.md` stays at governance and cross-module policy level.
+Detailed academic hierarchy design is institution logic and is defined in `02_institution.md`.
+`01_super_admin.md` stays at governance and cross-module policy level.
 
 ### Visual: academic structure hierarchy
 
@@ -115,7 +115,7 @@ State model for institution health:
 ### 2) Commercial controls
 
 - Manage plan definitions (EDU Basic, EDU Plus, etc.).
-- Set seat and storage policy templates consumed by `02_Institution.md`.
+- Set seat and storage policy templates consumed by `02_institution.md`.
 - Configure renewal, grace windows, and read-only fallback on expiry.
 
 ### 3) Global feature management
