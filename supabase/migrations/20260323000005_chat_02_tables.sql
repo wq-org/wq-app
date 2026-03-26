@@ -41,7 +41,7 @@ CREATE TABLE public.messages (
   conversation_id uuid        NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
   institution_id  uuid        NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
   sender_id       uuid        NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
-  content         text,
+  content         jsonb       DEFAULT '{}'::jsonb,
   attachments     jsonb,
   reply_to_id     uuid        REFERENCES public.messages(id) ON DELETE SET NULL,
   edited_at       timestamptz,
@@ -51,5 +51,6 @@ CREATE TABLE public.messages (
 
 COMMENT ON TABLE  public.messages                IS 'Chat message within a conversation (doc 11).';
 COMMENT ON COLUMN public.messages.institution_id IS 'Tenant boundary.';
+COMMENT ON COLUMN public.messages.content        IS 'Lexical rich-text message body stored as JSONB.';
 COMMENT ON COLUMN public.messages.attachments    IS 'Array of {type, url, name}: images, files, deep links.';
 COMMENT ON COLUMN public.messages.reply_to_id    IS 'For reply-to-message threading.';

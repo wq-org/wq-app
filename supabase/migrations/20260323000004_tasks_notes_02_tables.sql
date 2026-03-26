@@ -13,7 +13,7 @@ CREATE TABLE public.tasks (
   classroom_id    uuid        NOT NULL REFERENCES public.classrooms(id) ON DELETE CASCADE,
   teacher_id      uuid        NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
   title           text        NOT NULL,
-  instructions    jsonb,
+  content         jsonb       DEFAULT '{}'::jsonb,
   status          task_status NOT NULL DEFAULT 'draft',
   due_at          timestamptz,
   published_at    timestamptz,
@@ -27,6 +27,7 @@ COMMENT ON TABLE  public.tasks                IS 'Teacher-created assignment lin
 COMMENT ON COLUMN public.tasks.institution_id IS 'Tenant boundary.';
 COMMENT ON COLUMN public.tasks.classroom_id   IS 'Classroom this task is assigned to.';
 COMMENT ON COLUMN public.tasks.attachments    IS 'Array of {type, ref_id}: lesson, note, file references.';
+COMMENT ON COLUMN public.tasks.content        IS 'Lexical / Yoopta rich-text document stored as JSONB (assignment instructions).';
 COMMENT ON COLUMN public.tasks.due_at         IS 'Deadline for submission.';
 
 -- -----------------------------------------------------------------------------
@@ -91,7 +92,7 @@ CREATE TABLE public.notes (
   task_group_id           uuid        REFERENCES public.task_groups(id) ON DELETE SET NULL,
   scope                   note_scope  NOT NULL DEFAULT 'personal',
   title                   text,
-  content                 jsonb       NOT NULL DEFAULT '{}'::jsonb,
+  content                 jsonb       DEFAULT '{}'::jsonb,
   content_schema_version  integer     NOT NULL DEFAULT 1,
   is_pinned               boolean     NOT NULL DEFAULT false,
   lesson_id               uuid        REFERENCES public.lessons(id) ON DELETE SET NULL,
@@ -105,7 +106,7 @@ COMMENT ON COLUMN public.notes.institution_id           IS 'Tenant boundary.';
 COMMENT ON COLUMN public.notes.owner_user_id            IS 'Creator / owner of the note.';
 COMMENT ON COLUMN public.notes.task_group_id            IS 'If set, note is the shared workspace for this task group.';
 COMMENT ON COLUMN public.notes.scope                    IS 'personal = single-user; collaborative = realtime multi-user.';
-COMMENT ON COLUMN public.notes.content                  IS 'Yoopta block tree stored as JSONB.';
+COMMENT ON COLUMN public.notes.content                  IS 'Lexical / Yoopta rich-text document stored as JSONB; NULL or {} allowed.';
 COMMENT ON COLUMN public.notes.content_schema_version   IS 'Schema version for the content JSONB structure.';
 COMMENT ON COLUMN public.notes.lesson_id                IS 'Optional link to a lesson/slide context.';
 
