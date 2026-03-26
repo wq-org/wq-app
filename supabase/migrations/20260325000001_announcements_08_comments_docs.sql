@@ -1,0 +1,9 @@
+-- =============================================================================
+-- ANNOUNCEMENTS — Comments (merged)
+-- Split layout (8-section) for a new domain migration
+-- Requires: 20260321000002_institution_admin (all parts), 20260323000002 (all parts)
+-- =============================================================================
+--
+-- COMMENT ON statements are colocated with table definitions in
+-- `20260325000001_announcements_02_tables.sql`.
+--

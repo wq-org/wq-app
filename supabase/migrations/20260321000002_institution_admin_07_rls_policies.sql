@@ -10,17 +10,23 @@
 ALTER TABLE public.institution_memberships ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.institution_memberships FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY memberships_super_admin ON public.institution_memberships
+DROP POLICY IF EXISTS memberships_super_admin ON public.institution_memberships;
+DROP POLICY IF EXISTS institution_memberships_all_super_admin ON public.institution_memberships;
+CREATE POLICY institution_memberships_all_super_admin ON public.institution_memberships
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY memberships_institution_admin ON public.institution_memberships
+DROP POLICY IF EXISTS memberships_institution_admin ON public.institution_memberships;
+DROP POLICY IF EXISTS institution_memberships_all_institution_admin ON public.institution_memberships;
+CREATE POLICY institution_memberships_all_institution_admin ON public.institution_memberships
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY memberships_own_read ON public.institution_memberships
+DROP POLICY IF EXISTS memberships_own_read ON public.institution_memberships;
+DROP POLICY IF EXISTS institution_memberships_select_own ON public.institution_memberships;
+CREATE POLICY institution_memberships_select_own ON public.institution_memberships
   FOR SELECT TO authenticated
   USING (user_id = (select app.auth_uid()));
 
@@ -33,19 +39,25 @@ DROP POLICY IF EXISTS "Everyone can view institutions" ON public.institutions;
 DROP POLICY IF EXISTS "Admins can manage institutions" ON public.institutions;
 DROP POLICY IF EXISTS "Admins and SuperAdmin can manage institutions" ON public.institutions;
 
-CREATE POLICY institutions_super_admin ON public.institutions
+DROP POLICY IF EXISTS institutions_super_admin ON public.institutions;
+DROP POLICY IF EXISTS institutions_all_super_admin ON public.institutions;
+CREATE POLICY institutions_all_super_admin ON public.institutions
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY institutions_member_select ON public.institutions
+DROP POLICY IF EXISTS institutions_member_select ON public.institutions;
+DROP POLICY IF EXISTS institutions_select_member ON public.institutions;
+CREATE POLICY institutions_select_member ON public.institutions
   FOR SELECT TO authenticated
   USING (
     deleted_at is null
     AND id in (select app.member_institution_ids())
   );
 
-CREATE POLICY institutions_admin_update ON public.institutions
+DROP POLICY IF EXISTS institutions_admin_update ON public.institutions;
+DROP POLICY IF EXISTS institutions_update_institution_admin ON public.institutions;
+CREATE POLICY institutions_update_institution_admin ON public.institutions
   FOR UPDATE TO authenticated
   USING (
     deleted_at is null
@@ -62,17 +74,23 @@ CREATE POLICY institutions_admin_update ON public.institutions
 ALTER TABLE public.faculties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faculties FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY faculties_super_admin ON public.faculties
+DROP POLICY IF EXISTS faculties_super_admin ON public.faculties;
+DROP POLICY IF EXISTS faculties_all_super_admin ON public.faculties;
+CREATE POLICY faculties_all_super_admin ON public.faculties
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY faculties_institution_admin ON public.faculties
+DROP POLICY IF EXISTS faculties_institution_admin ON public.faculties;
+DROP POLICY IF EXISTS faculties_all_institution_admin ON public.faculties;
+CREATE POLICY faculties_all_institution_admin ON public.faculties
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY faculties_member_read ON public.faculties
+DROP POLICY IF EXISTS faculties_member_read ON public.faculties;
+DROP POLICY IF EXISTS faculties_select_member ON public.faculties;
+CREATE POLICY faculties_select_member ON public.faculties
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
 
@@ -82,17 +100,23 @@ CREATE POLICY faculties_member_read ON public.faculties
 ALTER TABLE public.programmes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.programmes FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY programmes_super_admin ON public.programmes
+DROP POLICY IF EXISTS programmes_super_admin ON public.programmes;
+DROP POLICY IF EXISTS programmes_all_super_admin ON public.programmes;
+CREATE POLICY programmes_all_super_admin ON public.programmes
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY programmes_institution_admin ON public.programmes
+DROP POLICY IF EXISTS programmes_institution_admin ON public.programmes;
+DROP POLICY IF EXISTS programmes_all_institution_admin ON public.programmes;
+CREATE POLICY programmes_all_institution_admin ON public.programmes
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY programmes_member_read ON public.programmes
+DROP POLICY IF EXISTS programmes_member_read ON public.programmes;
+DROP POLICY IF EXISTS programmes_select_member ON public.programmes;
+CREATE POLICY programmes_select_member ON public.programmes
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
 
@@ -102,17 +126,23 @@ CREATE POLICY programmes_member_read ON public.programmes
 ALTER TABLE public.cohorts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.cohorts FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY cohorts_super_admin ON public.cohorts
+DROP POLICY IF EXISTS cohorts_super_admin ON public.cohorts;
+DROP POLICY IF EXISTS cohorts_all_super_admin ON public.cohorts;
+CREATE POLICY cohorts_all_super_admin ON public.cohorts
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY cohorts_institution_admin ON public.cohorts
+DROP POLICY IF EXISTS cohorts_institution_admin ON public.cohorts;
+DROP POLICY IF EXISTS cohorts_all_institution_admin ON public.cohorts;
+CREATE POLICY cohorts_all_institution_admin ON public.cohorts
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY cohorts_member_read ON public.cohorts
+DROP POLICY IF EXISTS cohorts_member_read ON public.cohorts;
+DROP POLICY IF EXISTS cohorts_select_member ON public.cohorts;
+CREATE POLICY cohorts_select_member ON public.cohorts
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
 
@@ -122,17 +152,23 @@ CREATE POLICY cohorts_member_read ON public.cohorts
 ALTER TABLE public.class_groups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.class_groups FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY class_groups_super_admin ON public.class_groups
+DROP POLICY IF EXISTS class_groups_super_admin ON public.class_groups;
+DROP POLICY IF EXISTS class_groups_all_super_admin ON public.class_groups;
+CREATE POLICY class_groups_all_super_admin ON public.class_groups
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY class_groups_institution_admin ON public.class_groups
+DROP POLICY IF EXISTS class_groups_institution_admin ON public.class_groups;
+DROP POLICY IF EXISTS class_groups_all_institution_admin ON public.class_groups;
+CREATE POLICY class_groups_all_institution_admin ON public.class_groups
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY class_groups_member_read ON public.class_groups
+DROP POLICY IF EXISTS class_groups_member_read ON public.class_groups;
+DROP POLICY IF EXISTS class_groups_select_member ON public.class_groups;
+CREATE POLICY class_groups_select_member ON public.class_groups
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
 
@@ -142,17 +178,23 @@ CREATE POLICY class_groups_member_read ON public.class_groups
 ALTER TABLE public.institution_staff_scopes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.institution_staff_scopes FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY staff_scopes_super_admin ON public.institution_staff_scopes
+DROP POLICY IF EXISTS staff_scopes_super_admin ON public.institution_staff_scopes;
+DROP POLICY IF EXISTS institution_staff_scopes_all_super_admin ON public.institution_staff_scopes;
+CREATE POLICY institution_staff_scopes_all_super_admin ON public.institution_staff_scopes
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY staff_scopes_institution_admin ON public.institution_staff_scopes
+DROP POLICY IF EXISTS staff_scopes_institution_admin ON public.institution_staff_scopes;
+DROP POLICY IF EXISTS institution_staff_scopes_all_institution_admin ON public.institution_staff_scopes;
+CREATE POLICY institution_staff_scopes_all_institution_admin ON public.institution_staff_scopes
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY staff_scopes_own_read ON public.institution_staff_scopes
+DROP POLICY IF EXISTS staff_scopes_own_read ON public.institution_staff_scopes;
+DROP POLICY IF EXISTS institution_staff_scopes_select_own ON public.institution_staff_scopes;
+CREATE POLICY institution_staff_scopes_select_own ON public.institution_staff_scopes
   FOR SELECT TO authenticated
   USING (user_id = (select app.auth_uid()));
 
@@ -162,19 +204,19 @@ CREATE POLICY staff_scopes_own_read ON public.institution_staff_scopes
 ALTER TABLE public.classrooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.classrooms FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY classrooms_super_admin ON public.classrooms
+DROP POLICY IF EXISTS classrooms_super_admin ON public.classrooms;
+DROP POLICY IF EXISTS classrooms_all_super_admin ON public.classrooms;
+CREATE POLICY classrooms_all_super_admin ON public.classrooms
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY classrooms_institution_admin ON public.classrooms
+DROP POLICY IF EXISTS classrooms_institution_admin ON public.classrooms;
+DROP POLICY IF EXISTS classrooms_all_institution_admin ON public.classrooms;
+CREATE POLICY classrooms_all_institution_admin ON public.classrooms
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
-
-CREATE POLICY classrooms_member_read ON public.classrooms
-  FOR SELECT TO authenticated
-  USING (institution_id in (select app.member_institution_ids()));
 
 -- =============================================================================
 -- 11b. CLASSROOM_MEMBERS — RLS
@@ -182,17 +224,23 @@ CREATE POLICY classrooms_member_read ON public.classrooms
 ALTER TABLE public.classroom_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.classroom_members FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY classroom_members_super_admin ON public.classroom_members
+DROP POLICY IF EXISTS classroom_members_super_admin ON public.classroom_members;
+DROP POLICY IF EXISTS classroom_members_all_super_admin ON public.classroom_members;
+CREATE POLICY classroom_members_all_super_admin ON public.classroom_members
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY classroom_members_institution_admin ON public.classroom_members
+DROP POLICY IF EXISTS classroom_members_institution_admin ON public.classroom_members;
+DROP POLICY IF EXISTS classroom_members_all_institution_admin ON public.classroom_members;
+CREATE POLICY classroom_members_all_institution_admin ON public.classroom_members
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY classroom_members_primary_teacher_manage ON public.classroom_members
+DROP POLICY IF EXISTS classroom_members_primary_teacher_manage ON public.classroom_members;
+DROP POLICY IF EXISTS classroom_members_all_primary_teacher ON public.classroom_members;
+CREATE POLICY classroom_members_all_primary_teacher ON public.classroom_members
   FOR ALL TO authenticated
   USING (
     classroom_id IN (
@@ -211,11 +259,15 @@ CREATE POLICY classroom_members_primary_teacher_manage ON public.classroom_membe
     )
   );
 
-CREATE POLICY classroom_members_own_read ON public.classroom_members
+DROP POLICY IF EXISTS classroom_members_own_read ON public.classroom_members;
+DROP POLICY IF EXISTS classroom_members_select_own ON public.classroom_members;
+CREATE POLICY classroom_members_select_own ON public.classroom_members
   FOR SELECT TO authenticated
   USING (user_id = (select app.auth_uid()));
 
-CREATE POLICY classroom_members_teacher_roster_read ON public.classroom_members
+DROP POLICY IF EXISTS classroom_members_teacher_roster_read ON public.classroom_members;
+DROP POLICY IF EXISTS classroom_members_select_teacher_roster ON public.classroom_members;
+CREATE POLICY classroom_members_select_teacher_roster ON public.classroom_members
   FOR SELECT TO authenticated
   USING (
     classroom_id IN (
@@ -233,7 +285,9 @@ CREATE POLICY classroom_members_teacher_roster_read ON public.classroom_members
 
 -- Tighten classroom visibility now that classroom_members exists.
 DROP POLICY IF EXISTS classrooms_member_read ON public.classrooms;
-CREATE POLICY classrooms_scoped_read ON public.classrooms
+DROP POLICY IF EXISTS classrooms_scoped_read ON public.classrooms;
+DROP POLICY IF EXISTS classrooms_select_member ON public.classrooms;
+CREATE POLICY classrooms_select_member ON public.classrooms
   FOR SELECT TO authenticated
   USING (
     institution_id in (select app.member_institution_ids())
@@ -254,17 +308,23 @@ CREATE POLICY classrooms_scoped_read ON public.classrooms
 ALTER TABLE public.institution_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.institution_settings FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY inst_settings_super_admin ON public.institution_settings
+DROP POLICY IF EXISTS inst_settings_super_admin ON public.institution_settings;
+DROP POLICY IF EXISTS institution_settings_all_super_admin ON public.institution_settings;
+CREATE POLICY institution_settings_all_super_admin ON public.institution_settings
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY inst_settings_institution_admin ON public.institution_settings
+DROP POLICY IF EXISTS inst_settings_institution_admin ON public.institution_settings;
+DROP POLICY IF EXISTS institution_settings_all_institution_admin ON public.institution_settings;
+CREATE POLICY institution_settings_all_institution_admin ON public.institution_settings
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
-CREATE POLICY inst_settings_member_read ON public.institution_settings
+DROP POLICY IF EXISTS inst_settings_member_read ON public.institution_settings;
+DROP POLICY IF EXISTS institution_settings_select_member ON public.institution_settings;
+CREATE POLICY institution_settings_select_member ON public.institution_settings
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
 
@@ -274,12 +334,16 @@ CREATE POLICY inst_settings_member_read ON public.institution_settings
 ALTER TABLE public.institution_quotas_usage ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.institution_quotas_usage FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY quotas_super_admin ON public.institution_quotas_usage
+DROP POLICY IF EXISTS quotas_super_admin ON public.institution_quotas_usage;
+DROP POLICY IF EXISTS institution_quotas_usage_all_super_admin ON public.institution_quotas_usage;
+CREATE POLICY institution_quotas_usage_all_super_admin ON public.institution_quotas_usage
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY quotas_institution_admin ON public.institution_quotas_usage
+DROP POLICY IF EXISTS quotas_institution_admin ON public.institution_quotas_usage;
+DROP POLICY IF EXISTS institution_quotas_usage_select_institution_admin ON public.institution_quotas_usage;
+CREATE POLICY institution_quotas_usage_select_institution_admin ON public.institution_quotas_usage
   FOR SELECT TO authenticated
   USING (institution_id in (select app.admin_institution_ids()));
 
@@ -289,12 +353,16 @@ CREATE POLICY quotas_institution_admin ON public.institution_quotas_usage
 ALTER TABLE public.institution_invites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.institution_invites FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY institution_invites_super_admin ON public.institution_invites
+DROP POLICY IF EXISTS institution_invites_super_admin ON public.institution_invites;
+DROP POLICY IF EXISTS institution_invites_all_super_admin ON public.institution_invites;
+CREATE POLICY institution_invites_all_super_admin ON public.institution_invites
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY institution_invites_institution_admin_select ON public.institution_invites
+DROP POLICY IF EXISTS institution_invites_institution_admin_select ON public.institution_invites;
+DROP POLICY IF EXISTS institution_invites_select_institution_admin ON public.institution_invites;
+CREATE POLICY institution_invites_select_institution_admin ON public.institution_invites
   FOR SELECT TO authenticated
   USING (institution_id in (select app.admin_institution_ids()));
 
@@ -306,12 +374,16 @@ GRANT SELECT ON public.institution_invites TO authenticated;
 ALTER TABLE public.institution_invoice_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.institution_invoice_records FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY invoice_records_super_admin ON public.institution_invoice_records
+DROP POLICY IF EXISTS invoice_records_super_admin ON public.institution_invoice_records;
+DROP POLICY IF EXISTS institution_invoice_records_all_super_admin ON public.institution_invoice_records;
+CREATE POLICY institution_invoice_records_all_super_admin ON public.institution_invoice_records
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY invoice_records_institution_admin ON public.institution_invoice_records
+DROP POLICY IF EXISTS invoice_records_institution_admin ON public.institution_invoice_records;
+DROP POLICY IF EXISTS institution_invoice_records_select_institution_admin ON public.institution_invoice_records;
+CREATE POLICY institution_invoice_records_select_institution_admin ON public.institution_invoice_records
   FOR SELECT TO authenticated
   USING (institution_id in (select app.admin_institution_ids()));
 
@@ -321,12 +393,16 @@ CREATE POLICY invoice_records_institution_admin ON public.institution_invoice_re
 ALTER TABLE public.data_subject_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.data_subject_requests FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY dsr_super_admin ON public.data_subject_requests
+DROP POLICY IF EXISTS dsr_super_admin ON public.data_subject_requests;
+DROP POLICY IF EXISTS data_subject_requests_all_super_admin ON public.data_subject_requests;
+CREATE POLICY data_subject_requests_all_super_admin ON public.data_subject_requests
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY dsr_institution_admin ON public.data_subject_requests
+DROP POLICY IF EXISTS dsr_institution_admin ON public.data_subject_requests;
+DROP POLICY IF EXISTS data_subject_requests_all_institution_admin ON public.data_subject_requests;
+CREATE POLICY data_subject_requests_all_institution_admin ON public.data_subject_requests
   FOR ALL TO authenticated
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
@@ -336,18 +412,21 @@ CREATE POLICY dsr_institution_admin ON public.data_subject_requests
 -- =============================================================================
 
 DROP POLICY IF EXISTS inst_subs_institution_admin ON public.institution_subscriptions;
-CREATE POLICY inst_subs_institution_admin ON public.institution_subscriptions
+DROP POLICY IF EXISTS institution_subscriptions_select_institution_admin ON public.institution_subscriptions;
+CREATE POLICY institution_subscriptions_select_institution_admin ON public.institution_subscriptions
   FOR SELECT TO authenticated
   USING (institution_id in (select app.admin_institution_ids()));
 
 -- Members read entitlement overrides for effective feature resolution (doc 14 §7).
 DROP POLICY IF EXISTS inst_entitlement_overrides_member_read ON public.institution_entitlement_overrides;
-CREATE POLICY inst_entitlement_overrides_member_read ON public.institution_entitlement_overrides
+DROP POLICY IF EXISTS institution_entitlement_overrides_select_member ON public.institution_entitlement_overrides;
+CREATE POLICY institution_entitlement_overrides_select_member ON public.institution_entitlement_overrides
   FOR SELECT TO authenticated
   USING (institution_id in (select app.member_institution_ids()));
 
 -- Institution admins see PSP linkage for their tenant (doc 14 §8.6).
 DROP POLICY IF EXISTS billing_providers_institution_admin_select ON public.billing_providers;
-CREATE POLICY billing_providers_institution_admin_select ON public.billing_providers
+DROP POLICY IF EXISTS billing_providers_select_institution_admin ON public.billing_providers;
+CREATE POLICY billing_providers_select_institution_admin ON public.billing_providers
   FOR SELECT TO authenticated
   USING (institution_id in (select app.admin_institution_ids()));

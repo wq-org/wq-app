@@ -5,32 +5,38 @@
 -- =============================================================================
 
 DROP TRIGGER IF EXISTS plan_catalog_updated_at ON public.plan_catalog;
-CREATE TRIGGER plan_catalog_updated_at
+DROP TRIGGER IF EXISTS trg_plan_catalog_set_updated_at ON public.plan_catalog;
+CREATE TRIGGER trg_plan_catalog_set_updated_at
   BEFORE UPDATE ON public.plan_catalog
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 DROP TRIGGER IF EXISTS feature_defs_updated_at ON public.feature_definitions;
-CREATE TRIGGER feature_defs_updated_at
+DROP TRIGGER IF EXISTS trg_feature_definitions_set_updated_at ON public.feature_definitions;
+CREATE TRIGGER trg_feature_definitions_set_updated_at
   BEFORE UPDATE ON public.feature_definitions
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 DROP TRIGGER IF EXISTS plan_entitlements_updated_at ON public.plan_entitlements;
-CREATE TRIGGER plan_entitlements_updated_at
+DROP TRIGGER IF EXISTS trg_plan_entitlements_set_updated_at ON public.plan_entitlements;
+CREATE TRIGGER trg_plan_entitlements_set_updated_at
   BEFORE UPDATE ON public.plan_entitlements
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 DROP TRIGGER IF EXISTS inst_subs_updated_at ON public.institution_subscriptions;
-CREATE TRIGGER inst_subs_updated_at
+DROP TRIGGER IF EXISTS trg_institution_subscriptions_set_updated_at ON public.institution_subscriptions;
+CREATE TRIGGER trg_institution_subscriptions_set_updated_at
   BEFORE UPDATE ON public.institution_subscriptions
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 DROP TRIGGER IF EXISTS inst_entitlement_overrides_updated_at ON public.institution_entitlement_overrides;
-CREATE TRIGGER inst_entitlement_overrides_updated_at
+DROP TRIGGER IF EXISTS trg_institution_entitlement_overrides_set_updated_at ON public.institution_entitlement_overrides;
+CREATE TRIGGER trg_institution_entitlement_overrides_set_updated_at
   BEFORE UPDATE ON public.institution_entitlement_overrides
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 DROP TRIGGER IF EXISTS billing_providers_updated_at ON public.billing_providers;
-CREATE TRIGGER billing_providers_updated_at
+DROP TRIGGER IF EXISTS trg_billing_providers_set_updated_at ON public.billing_providers;
+CREATE TRIGGER trg_billing_providers_set_updated_at
   BEFORE UPDATE ON public.billing_providers
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
@@ -63,7 +69,8 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS trg_audit_plan_catalog ON public.plan_catalog;
-CREATE TRIGGER trg_audit_plan_catalog
+DROP TRIGGER IF EXISTS trg_plan_catalog_audit_row ON public.plan_catalog;
+CREATE TRIGGER trg_plan_catalog_audit_row
   AFTER INSERT OR UPDATE OR DELETE ON public.plan_catalog
   FOR EACH ROW EXECUTE FUNCTION audit.log_plan_catalog_audit();
 
@@ -92,7 +99,8 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS trg_audit_plan_entitlements ON public.plan_entitlements;
-CREATE TRIGGER trg_audit_plan_entitlements
+DROP TRIGGER IF EXISTS trg_plan_entitlements_audit_row ON public.plan_entitlements;
+CREATE TRIGGER trg_plan_entitlements_audit_row
   AFTER INSERT OR UPDATE OR DELETE ON public.plan_entitlements
   FOR EACH ROW EXECUTE FUNCTION audit.log_plan_entitlements_audit();
 
@@ -123,7 +131,8 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS trg_audit_institution_subscriptions ON public.institution_subscriptions;
-CREATE TRIGGER trg_audit_institution_subscriptions
+DROP TRIGGER IF EXISTS trg_institution_subscriptions_audit_row ON public.institution_subscriptions;
+CREATE TRIGGER trg_institution_subscriptions_audit_row
   AFTER INSERT OR UPDATE OR DELETE ON public.institution_subscriptions
   FOR EACH ROW EXECUTE FUNCTION audit.log_institution_subscriptions_audit();
 
@@ -154,7 +163,8 @@ $$;
 DROP FUNCTION IF EXISTS audit.log_feature_override_change();
 
 DROP TRIGGER IF EXISTS trg_audit_billing_providers ON public.billing_providers;
-CREATE TRIGGER trg_audit_billing_providers
+DROP TRIGGER IF EXISTS trg_billing_providers_audit_row ON public.billing_providers;
+CREATE TRIGGER trg_billing_providers_audit_row
   AFTER INSERT OR UPDATE OR DELETE ON public.billing_providers
   FOR EACH ROW EXECUTE FUNCTION audit.log_billing_providers_audit();
 
@@ -190,6 +200,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS trg_audit_entitlement_override ON public.institution_entitlement_overrides;
-CREATE TRIGGER trg_audit_entitlement_override
+DROP TRIGGER IF EXISTS trg_institution_entitlement_overrides_audit_row ON public.institution_entitlement_overrides;
+CREATE TRIGGER trg_institution_entitlement_overrides_audit_row
   AFTER INSERT OR UPDATE OR DELETE ON public.institution_entitlement_overrides
   FOR EACH ROW EXECUTE FUNCTION audit.log_entitlement_override_audit();

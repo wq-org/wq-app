@@ -5,19 +5,19 @@
 -- =============================================================================
 
 -- conversations
-CREATE INDEX idx_conversations_institution ON public.conversations (institution_id);
+CREATE INDEX idx_conversations_institution_id ON public.conversations (institution_id);
 CREATE INDEX idx_conversations_created_by  ON public.conversations (created_by);
-CREATE INDEX idx_conversations_classroom   ON public.conversations (classroom_id) WHERE classroom_id IS NOT NULL;
+CREATE INDEX idx_conversations_classroom_id   ON public.conversations (classroom_id) WHERE classroom_id IS NOT NULL;
 
 -- conversation_members
-CREATE UNIQUE INDEX idx_cm_conv_user
+CREATE UNIQUE INDEX idx_conversation_members_conversation_id_user_id
   ON public.conversation_members (conversation_id, user_id)
   WHERE left_at IS NULL;
 
-CREATE INDEX idx_cm_user        ON public.conversation_members (user_id) WHERE left_at IS NULL;
-CREATE INDEX idx_cm_institution ON public.conversation_members (institution_id);
+CREATE INDEX idx_conversation_members_user_id        ON public.conversation_members (user_id) WHERE left_at IS NULL;
+CREATE INDEX idx_conversation_members_institution_id ON public.conversation_members (institution_id);
 
 -- messages
-CREATE INDEX idx_messages_conversation ON public.messages (conversation_id, created_at DESC);
-CREATE INDEX idx_messages_sender       ON public.messages (sender_id);
-CREATE INDEX idx_messages_institution  ON public.messages (institution_id);
+CREATE INDEX idx_messages_conversation_id_created_at ON public.messages (conversation_id, created_at DESC);
+CREATE INDEX idx_messages_sender_id       ON public.messages (sender_id);
+CREATE INDEX idx_messages_institution_id  ON public.messages (institution_id);

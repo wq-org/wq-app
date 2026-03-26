@@ -111,5 +111,5 @@ COMMENT ON COLUMN public.notes.lesson_id                IS 'Optional link to a l
 
 -- Wire task_groups.note_id FK now that notes table exists.
 ALTER TABLE public.task_groups
-  ADD CONSTRAINT task_groups_note_fk
+  ADD CONSTRAINT fk_task_groups_notes
   FOREIGN KEY (note_id) REFERENCES public.notes(id) ON DELETE SET NULL;

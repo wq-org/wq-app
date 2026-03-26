@@ -5,6 +5,7 @@
 -- =============================================================================
 
 DROP TRIGGER IF EXISTS games_course_institution_trg ON public.games;
-CREATE TRIGGER games_course_institution_trg
+DROP TRIGGER IF EXISTS trg_games_enforce_course_institution ON public.games;
+CREATE TRIGGER trg_games_enforce_course_institution
   BEFORE INSERT OR UPDATE OF course_id, institution_id ON public.games
-  FOR EACH ROW EXECUTE FUNCTION public.games_enforce_course_institution_match();
+  FOR EACH ROW EXECUTE FUNCTION public.enforce_games_course_institution_match();

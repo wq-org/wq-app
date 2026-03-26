@@ -10,18 +10,24 @@
 ALTER TABLE public.classroom_course_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.classroom_course_links FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY ccl_super_admin ON public.classroom_course_links
+DROP POLICY IF EXISTS ccl_super_admin ON public.classroom_course_links;
+DROP POLICY IF EXISTS classroom_course_links_all_super_admin ON public.classroom_course_links;
+CREATE POLICY classroom_course_links_all_super_admin ON public.classroom_course_links
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY ccl_institution_admin ON public.classroom_course_links
+DROP POLICY IF EXISTS ccl_institution_admin ON public.classroom_course_links;
+DROP POLICY IF EXISTS classroom_course_links_all_institution_admin ON public.classroom_course_links;
+CREATE POLICY classroom_course_links_all_institution_admin ON public.classroom_course_links
   FOR ALL TO authenticated
   USING  (institution_id IN (select app.admin_institution_ids()))
   WITH CHECK (institution_id IN (select app.admin_institution_ids()));
 
 -- Teachers can manage links for classrooms they own, co-teach, or courses they authored.
-CREATE POLICY ccl_teacher_manage ON public.classroom_course_links
+DROP POLICY IF EXISTS ccl_teacher_manage ON public.classroom_course_links;
+DROP POLICY IF EXISTS classroom_course_links_all_teacher ON public.classroom_course_links;
+CREATE POLICY classroom_course_links_all_teacher ON public.classroom_course_links
   FOR ALL TO authenticated
   USING (
     EXISTS (
@@ -63,7 +69,9 @@ CREATE POLICY ccl_teacher_manage ON public.classroom_course_links
   );
 
 -- Students (and co-teachers) discover links only for classrooms they belong to.
-CREATE POLICY ccl_member_read ON public.classroom_course_links
+DROP POLICY IF EXISTS ccl_member_read ON public.classroom_course_links;
+DROP POLICY IF EXISTS classroom_course_links_select_member ON public.classroom_course_links;
+CREATE POLICY classroom_course_links_select_member ON public.classroom_course_links
   FOR SELECT TO authenticated
   USING (
     EXISTS (
@@ -78,7 +86,9 @@ CREATE POLICY ccl_member_read ON public.classroom_course_links
 -- courses — replace Phase A policy with classroom-delivery-aware version
 -- =============================================================================
 DROP POLICY IF EXISTS courses_published_read ON public.courses;
-CREATE POLICY courses_published_read ON public.courses FOR SELECT TO authenticated USING (
+DROP POLICY IF EXISTS courses_select_authenticated_published ON public.courses;
+DROP POLICY IF EXISTS courses_select_member ON public.courses;
+CREATE POLICY courses_select_member ON public.courses FOR SELECT TO authenticated USING (
   (select app.is_super_admin()) is true
   OR (
     is_published = true
@@ -99,13 +109,17 @@ CREATE POLICY courses_published_read ON public.courses FOR SELECT TO authenticat
 ALTER TABLE public.lesson_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.lesson_progress FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY lp_super_admin ON public.lesson_progress
+DROP POLICY IF EXISTS lp_super_admin ON public.lesson_progress;
+DROP POLICY IF EXISTS lesson_progress_all_super_admin ON public.lesson_progress;
+CREATE POLICY lesson_progress_all_super_admin ON public.lesson_progress
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
 -- Students manage their own progress for lessons they may access (enrollment or classroom delivery).
-CREATE POLICY lp_own ON public.lesson_progress
+DROP POLICY IF EXISTS lp_own ON public.lesson_progress;
+DROP POLICY IF EXISTS lesson_progress_all_own_student ON public.lesson_progress;
+CREATE POLICY lesson_progress_all_own_student ON public.lesson_progress
   FOR ALL TO authenticated
   USING  (
     user_id = (select app.auth_uid())
@@ -119,7 +133,9 @@ CREATE POLICY lp_own ON public.lesson_progress
   );
 
 -- Teachers can view progress for lessons in their courses.
-CREATE POLICY lp_teacher_read ON public.lesson_progress
+DROP POLICY IF EXISTS lp_teacher_read ON public.lesson_progress;
+DROP POLICY IF EXISTS lesson_progress_select_teacher ON public.lesson_progress;
+CREATE POLICY lesson_progress_select_teacher ON public.lesson_progress
   FOR SELECT TO authenticated
   USING (
     lesson_id IN (
@@ -131,7 +147,9 @@ CREATE POLICY lp_teacher_read ON public.lesson_progress
   );
 
 -- Institution admins can read progress in their institutions.
-CREATE POLICY lp_institution_admin_read ON public.lesson_progress
+DROP POLICY IF EXISTS lp_institution_admin_read ON public.lesson_progress;
+DROP POLICY IF EXISTS lesson_progress_select_institution_admin ON public.lesson_progress;
+CREATE POLICY lesson_progress_select_institution_admin ON public.lesson_progress
   FOR SELECT TO authenticated
   USING (institution_id IN (select app.admin_institution_ids()));
 
@@ -141,13 +159,17 @@ CREATE POLICY lp_institution_admin_read ON public.lesson_progress
 ALTER TABLE public.learning_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.learning_events FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY le_super_admin ON public.learning_events
+DROP POLICY IF EXISTS le_super_admin ON public.learning_events;
+DROP POLICY IF EXISTS learning_events_all_super_admin ON public.learning_events;
+CREATE POLICY learning_events_all_super_admin ON public.learning_events
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
 -- Students insert their own events only for accessible lessons; course_id must match lesson.
-CREATE POLICY le_student_insert ON public.learning_events
+DROP POLICY IF EXISTS le_student_insert ON public.learning_events;
+DROP POLICY IF EXISTS learning_events_insert_student ON public.learning_events;
+CREATE POLICY learning_events_insert_student ON public.learning_events
   FOR INSERT TO authenticated
   WITH CHECK (
     user_id = (select app.auth_uid())
@@ -163,12 +185,16 @@ CREATE POLICY le_student_insert ON public.learning_events
   );
 
 -- Students read their own events (for personal analytics / resume).
-CREATE POLICY le_student_own_read ON public.learning_events
+DROP POLICY IF EXISTS le_student_own_read ON public.learning_events;
+DROP POLICY IF EXISTS learning_events_select_student_own ON public.learning_events;
+CREATE POLICY learning_events_select_student_own ON public.learning_events
   FOR SELECT TO authenticated
   USING (user_id = (select app.auth_uid()));
 
 -- Teachers read events for lessons in their courses.
-CREATE POLICY le_teacher_read ON public.learning_events
+DROP POLICY IF EXISTS le_teacher_read ON public.learning_events;
+DROP POLICY IF EXISTS learning_events_select_teacher ON public.learning_events;
+CREATE POLICY learning_events_select_teacher ON public.learning_events
   FOR SELECT TO authenticated
   USING (
     course_id IN (
@@ -177,7 +203,9 @@ CREATE POLICY le_teacher_read ON public.learning_events
   );
 
 -- Institution admins read all events in their institutions.
-CREATE POLICY le_institution_admin_read ON public.learning_events
+DROP POLICY IF EXISTS le_institution_admin_read ON public.learning_events;
+DROP POLICY IF EXISTS learning_events_select_institution_admin ON public.learning_events;
+CREATE POLICY learning_events_select_institution_admin ON public.learning_events
   FOR SELECT TO authenticated
   USING (institution_id IN (select app.admin_institution_ids()));
 
@@ -185,7 +213,9 @@ CREATE POLICY le_institution_admin_read ON public.learning_events
 -- topics / lessons — add classroom delivery (Phase A policies)
 -- =============================================================================
 DROP POLICY IF EXISTS topics_enrolled_read ON public.topics;
-CREATE POLICY topics_enrolled_read ON public.topics
+DROP POLICY IF EXISTS topics_select_enrolled_student ON public.topics;
+DROP POLICY IF EXISTS topics_select_member ON public.topics;
+CREATE POLICY topics_select_member ON public.topics
   FOR SELECT TO authenticated
   USING (
     (select app.is_super_admin()) is true
@@ -193,7 +223,9 @@ CREATE POLICY topics_enrolled_read ON public.topics
   );
 
 DROP POLICY IF EXISTS lessons_enrolled_read ON public.lessons;
-CREATE POLICY lessons_enrolled_read ON public.lessons
+DROP POLICY IF EXISTS lessons_select_enrolled_student ON public.lessons;
+DROP POLICY IF EXISTS lessons_select_member ON public.lessons;
+CREATE POLICY lessons_select_member ON public.lessons
   FOR SELECT TO authenticated
   USING (
     (select app.is_super_admin()) is true

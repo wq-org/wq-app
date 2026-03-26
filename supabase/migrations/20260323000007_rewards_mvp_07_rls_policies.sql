@@ -8,16 +8,22 @@
 ALTER TABLE public.point_ledger ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.point_ledger FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY pl_super_admin ON public.point_ledger
+DROP POLICY IF EXISTS pl_super_admin ON public.point_ledger;
+DROP POLICY IF EXISTS point_ledger_all_super_admin ON public.point_ledger;
+CREATE POLICY point_ledger_all_super_admin ON public.point_ledger
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY pl_own_read ON public.point_ledger
+DROP POLICY IF EXISTS pl_own_read ON public.point_ledger;
+DROP POLICY IF EXISTS point_ledger_select_own ON public.point_ledger;
+CREATE POLICY point_ledger_select_own ON public.point_ledger
   FOR SELECT TO authenticated
   USING (user_id = (select app.auth_uid()));
 
-CREATE POLICY pl_teacher_manage ON public.point_ledger
+DROP POLICY IF EXISTS pl_teacher_manage ON public.point_ledger;
+DROP POLICY IF EXISTS point_ledger_all_teacher ON public.point_ledger;
+CREATE POLICY point_ledger_all_teacher ON public.point_ledger
   FOR ALL TO authenticated
   USING (
     classroom_id IN (
@@ -44,12 +50,16 @@ CREATE POLICY pl_teacher_manage ON public.point_ledger
     )
   );
 
-CREATE POLICY pl_institution_admin ON public.point_ledger
+DROP POLICY IF EXISTS pl_institution_admin ON public.point_ledger;
+DROP POLICY IF EXISTS point_ledger_all_institution_admin ON public.point_ledger;
+CREATE POLICY point_ledger_all_institution_admin ON public.point_ledger
   FOR ALL TO authenticated
   USING  (institution_id IN (select app.admin_institution_ids()))
   WITH CHECK (institution_id IN (select app.admin_institution_ids()));
 
-CREATE POLICY pl_member_read ON public.point_ledger
+DROP POLICY IF EXISTS pl_member_read ON public.point_ledger;
+DROP POLICY IF EXISTS point_ledger_select_member ON public.point_ledger;
+CREATE POLICY point_ledger_select_member ON public.point_ledger
   FOR SELECT TO authenticated
   USING (
     classroom_id IS NOT NULL
@@ -60,17 +70,23 @@ CREATE POLICY pl_member_read ON public.point_ledger
 ALTER TABLE public.classroom_reward_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.classroom_reward_settings FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY crs_super_admin ON public.classroom_reward_settings
+DROP POLICY IF EXISTS crs_super_admin ON public.classroom_reward_settings;
+DROP POLICY IF EXISTS classroom_reward_settings_all_super_admin ON public.classroom_reward_settings;
+CREATE POLICY classroom_reward_settings_all_super_admin ON public.classroom_reward_settings
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY crs_institution_admin ON public.classroom_reward_settings
+DROP POLICY IF EXISTS crs_institution_admin ON public.classroom_reward_settings;
+DROP POLICY IF EXISTS classroom_reward_settings_all_institution_admin ON public.classroom_reward_settings;
+CREATE POLICY classroom_reward_settings_all_institution_admin ON public.classroom_reward_settings
   FOR ALL TO authenticated
   USING  (institution_id IN (select app.admin_institution_ids()))
   WITH CHECK (institution_id IN (select app.admin_institution_ids()));
 
-CREATE POLICY crs_teacher_manage ON public.classroom_reward_settings
+DROP POLICY IF EXISTS crs_teacher_manage ON public.classroom_reward_settings;
+DROP POLICY IF EXISTS classroom_reward_settings_all_teacher ON public.classroom_reward_settings;
+CREATE POLICY classroom_reward_settings_all_teacher ON public.classroom_reward_settings
   FOR ALL TO authenticated
   USING (
     classroom_id IN (
@@ -97,6 +113,8 @@ CREATE POLICY crs_teacher_manage ON public.classroom_reward_settings
     )
   );
 
-CREATE POLICY crs_member_read ON public.classroom_reward_settings
+DROP POLICY IF EXISTS crs_member_read ON public.classroom_reward_settings;
+DROP POLICY IF EXISTS classroom_reward_settings_select_member ON public.classroom_reward_settings;
+CREATE POLICY classroom_reward_settings_select_member ON public.classroom_reward_settings
   FOR SELECT TO authenticated
   USING (classroom_id IN (select app.my_active_classroom_ids()));

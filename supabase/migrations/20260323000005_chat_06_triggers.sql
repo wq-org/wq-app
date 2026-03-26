@@ -5,6 +5,7 @@
 -- =============================================================================
 
 DROP TRIGGER IF EXISTS conversations_updated_at ON public.conversations;
-CREATE TRIGGER conversations_updated_at
+DROP TRIGGER IF EXISTS trg_conversations_set_updated_at ON public.conversations;
+CREATE TRIGGER trg_conversations_set_updated_at
   BEFORE UPDATE ON public.conversations
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();

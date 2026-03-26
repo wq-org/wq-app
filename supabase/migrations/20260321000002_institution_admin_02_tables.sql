@@ -52,7 +52,7 @@ CREATE TABLE public.faculties (
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now(),
   deleted_at      timestamptz,
-  CONSTRAINT faculties_inst_unique UNIQUE (id, institution_id)
+  CONSTRAINT uq_faculties_id_institution_id UNIQUE (id, institution_id)
 );
 
 COMMENT ON TABLE  public.faculties                IS 'Top-level academic division within an institution.';
@@ -73,8 +73,8 @@ CREATE TABLE public.programmes (
   created_at       timestamptz NOT NULL DEFAULT now(),
   updated_at       timestamptz NOT NULL DEFAULT now(),
   deleted_at       timestamptz,
-  CONSTRAINT programmes_inst_unique   UNIQUE (id, institution_id),
-  CONSTRAINT programmes_faculty_fk   FOREIGN KEY (faculty_id, institution_id)
+  CONSTRAINT uq_programmes_id_institution_id   UNIQUE (id, institution_id),
+  CONSTRAINT fk_programmes_faculties   FOREIGN KEY (faculty_id, institution_id)
     REFERENCES public.faculties (id, institution_id) ON DELETE CASCADE
 );
 
@@ -97,8 +97,8 @@ CREATE TABLE public.cohorts (
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now(),
   deleted_at      timestamptz,
-  CONSTRAINT cohorts_inst_unique      UNIQUE (id, institution_id),
-  CONSTRAINT cohorts_programme_fk     FOREIGN KEY (programme_id, institution_id)
+  CONSTRAINT uq_cohorts_id_institution_id      UNIQUE (id, institution_id),
+  CONSTRAINT fk_cohorts_programmes     FOREIGN KEY (programme_id, institution_id)
     REFERENCES public.programmes (id, institution_id) ON DELETE CASCADE
 );
 
@@ -119,8 +119,8 @@ CREATE TABLE public.class_groups (
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now(),
   deleted_at      timestamptz,
-  CONSTRAINT class_groups_inst_unique UNIQUE (id, institution_id),
-  CONSTRAINT class_groups_cohort_fk   FOREIGN KEY (cohort_id, institution_id)
+  CONSTRAINT uq_class_groups_id_institution_id UNIQUE (id, institution_id),
+  CONSTRAINT fk_class_groups_cohorts   FOREIGN KEY (cohort_id, institution_id)
     REFERENCES public.cohorts (id, institution_id) ON DELETE CASCADE
 );
 
@@ -138,9 +138,9 @@ CREATE TABLE public.institution_staff_scopes (
   programme_id    uuid,
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT staff_scope_faculty_inst_fk   FOREIGN KEY (faculty_id, institution_id)
+  CONSTRAINT fk_institution_staff_scopes_faculties   FOREIGN KEY (faculty_id, institution_id)
     REFERENCES public.faculties (id, institution_id) ON DELETE CASCADE,
-  CONSTRAINT staff_scope_programme_inst_fk FOREIGN KEY (programme_id, institution_id)
+  CONSTRAINT fk_institution_staff_scopes_programmes FOREIGN KEY (programme_id, institution_id)
     REFERENCES public.programmes (id, institution_id) ON DELETE CASCADE
 );
 
@@ -161,7 +161,7 @@ CREATE TABLE public.classrooms (
   deactivated_at      timestamptz,
   created_at          timestamptz NOT NULL DEFAULT now(),
   updated_at          timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT classrooms_class_group_fk FOREIGN KEY (class_group_id, institution_id)
+  CONSTRAINT fk_classrooms_class_groups FOREIGN KEY (class_group_id, institution_id)
     REFERENCES public.class_groups (id, institution_id) ON DELETE CASCADE
 );
 
@@ -183,8 +183,8 @@ CREATE TABLE public.classroom_members (
   leave_reason    text,
   created_at      timestamptz            NOT NULL DEFAULT now(),
   updated_at      timestamptz            NOT NULL DEFAULT now(),
-  CONSTRAINT classroom_members_inst_unique UNIQUE (id, institution_id),
-  CONSTRAINT classroom_members_classroom_fk FOREIGN KEY (classroom_id, institution_id)
+  CONSTRAINT uq_classroom_members_id_institution_id UNIQUE (id, institution_id),
+  CONSTRAINT fk_classroom_members_classrooms FOREIGN KEY (classroom_id, institution_id)
     REFERENCES public.classrooms (id, institution_id) ON DELETE CASCADE
 );
 
@@ -232,13 +232,14 @@ CREATE TABLE public.institution_invites (
   institution_id     uuid                     NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
   email              text                     NOT NULL,
   membership_role    public.membership_role   NOT NULL,
-  token              uuid                     NOT NULL DEFAULT gen_random_uuid() UNIQUE,
+  token              uuid                     NOT NULL DEFAULT gen_random_uuid(),
   expires_at         timestamptz              NOT NULL,
   invited_by         uuid                     REFERENCES public.profiles(user_id) ON DELETE SET NULL,
   accepted_at        timestamptz,
   accepted_user_id   uuid                     REFERENCES public.profiles(user_id) ON DELETE SET NULL,
   created_at         timestamptz              NOT NULL DEFAULT now(),
-  CONSTRAINT institution_invites_role_chk CHECK (
+  CONSTRAINT uq_institution_invites_token UNIQUE (token),
+  CONSTRAINT chk_institution_invites_membership_role CHECK (
     membership_role IN ('teacher'::public.membership_role, 'student'::public.membership_role)
   )
 );

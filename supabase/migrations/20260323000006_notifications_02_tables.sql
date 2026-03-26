@@ -13,7 +13,7 @@ CREATE TABLE public.notifications (
     CHECK (category IN ('learning', 'task', 'reward', 'social', 'system')),
   title           text        NOT NULL,
   body            text,
-  data            jsonb,
+  link_payload    jsonb,
   is_read         boolean     NOT NULL DEFAULT false,
   read_at         timestamptz,
   created_at      timestamptz NOT NULL DEFAULT now()
@@ -22,7 +22,7 @@ CREATE TABLE public.notifications (
 COMMENT ON TABLE  public.notifications                IS 'In-app notification items (doc 12).';
 COMMENT ON COLUMN public.notifications.institution_id IS 'Tenant boundary.';
 COMMENT ON COLUMN public.notifications.category       IS 'Channel bucket: learning | task | reward | social | system (CHECK).';
-COMMENT ON COLUMN public.notifications.data           IS 'Structured payload for deep linking: {type, ref_id, action_url}.';
+COMMENT ON COLUMN public.notifications.link_payload   IS 'Structured payload for deep linking: {type, ref_id, action_url}.';
 
 -- 2. NOTIFICATION_PREFERENCES — per-user settings
 CREATE TABLE public.notification_preferences (

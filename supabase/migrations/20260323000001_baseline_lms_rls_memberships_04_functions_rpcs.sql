@@ -5,9 +5,10 @@
 -- =============================================================================
 
 -- =============================================================================
--- Trigger function: games_enforce_course_institution_match
+-- Trigger function: enforce_games_course_institution_match
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.games_enforce_course_institution_match()
+DROP FUNCTION IF EXISTS public.games_enforce_course_institution_match();
+CREATE OR REPLACE FUNCTION public.enforce_games_course_institution_match()
 RETURNS trigger
 LANGUAGE plpgsql
 SET search_path = ''
@@ -26,7 +27,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.games_enforce_course_institution_match() IS
+COMMENT ON FUNCTION public.enforce_games_course_institution_match() IS
   'Ensures games cannot reference a course from another institution (NULL matches NULL).';
 
 -- =============================================================================

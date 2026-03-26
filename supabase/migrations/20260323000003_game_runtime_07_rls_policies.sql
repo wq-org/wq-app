@@ -9,17 +9,23 @@
 ALTER TABLE public.game_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.game_runs FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY gr_super_admin ON public.game_runs
+DROP POLICY IF EXISTS gr_super_admin ON public.game_runs;
+DROP POLICY IF EXISTS game_runs_all_super_admin ON public.game_runs;
+CREATE POLICY game_runs_all_super_admin ON public.game_runs
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY gr_institution_admin_read ON public.game_runs
+DROP POLICY IF EXISTS gr_institution_admin_read ON public.game_runs;
+DROP POLICY IF EXISTS game_runs_select_institution_admin ON public.game_runs;
+CREATE POLICY game_runs_select_institution_admin ON public.game_runs
   FOR SELECT TO authenticated
   USING (institution_id IN (select app.admin_institution_ids()));
 
 -- Teachers can manage runs they started or for their games.
-CREATE POLICY gr_teacher_manage ON public.game_runs
+DROP POLICY IF EXISTS gr_teacher_manage ON public.game_runs;
+DROP POLICY IF EXISTS game_runs_all_teacher ON public.game_runs;
+CREATE POLICY game_runs_all_teacher ON public.game_runs
   FOR ALL TO authenticated
   USING (
     started_by = (select app.auth_uid())
@@ -31,7 +37,9 @@ CREATE POLICY gr_teacher_manage ON public.game_runs
   );
 
 -- Members read runs: institution-wide for solo/versus; classroom runs only if assigned to that classroom.
-CREATE POLICY gr_member_read ON public.game_runs
+DROP POLICY IF EXISTS gr_member_read ON public.game_runs;
+DROP POLICY IF EXISTS game_runs_select_member ON public.game_runs;
+CREATE POLICY game_runs_select_member ON public.game_runs
   FOR SELECT TO authenticated
   USING (
     (
@@ -54,17 +62,23 @@ CREATE POLICY gr_member_read ON public.game_runs
 ALTER TABLE public.game_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.game_sessions FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY gs_super_admin ON public.game_sessions
+DROP POLICY IF EXISTS gs_super_admin ON public.game_sessions;
+DROP POLICY IF EXISTS game_sessions_all_super_admin ON public.game_sessions;
+CREATE POLICY game_sessions_all_super_admin ON public.game_sessions
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY gs_institution_admin_read ON public.game_sessions
+DROP POLICY IF EXISTS gs_institution_admin_read ON public.game_sessions;
+DROP POLICY IF EXISTS game_sessions_select_institution_admin ON public.game_sessions;
+CREATE POLICY game_sessions_select_institution_admin ON public.game_sessions
   FOR SELECT TO authenticated
   USING (institution_id IN (select app.admin_institution_ids()));
 
 -- Participants and teachers can manage sessions for runs they have access to.
-CREATE POLICY gs_run_access ON public.game_sessions
+DROP POLICY IF EXISTS gs_run_access ON public.game_sessions;
+DROP POLICY IF EXISTS game_sessions_all_run_access ON public.game_sessions;
+CREATE POLICY game_sessions_all_run_access ON public.game_sessions
   FOR ALL TO authenticated
   USING (
     game_run_id IN (
@@ -81,7 +95,9 @@ CREATE POLICY gs_run_access ON public.game_sessions
     )
   );
 
-CREATE POLICY gs_member_read ON public.game_sessions
+DROP POLICY IF EXISTS gs_member_read ON public.game_sessions;
+DROP POLICY IF EXISTS game_sessions_select_member ON public.game_sessions;
+CREATE POLICY game_sessions_select_member ON public.game_sessions
   FOR SELECT TO authenticated
   USING (
     game_run_id IN (
@@ -107,23 +123,31 @@ CREATE POLICY gs_member_read ON public.game_sessions
 ALTER TABLE public.game_session_participants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.game_session_participants FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY gsp_super_admin ON public.game_session_participants
+DROP POLICY IF EXISTS gsp_super_admin ON public.game_session_participants;
+DROP POLICY IF EXISTS game_session_participants_all_super_admin ON public.game_session_participants;
+CREATE POLICY game_session_participants_all_super_admin ON public.game_session_participants
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-CREATE POLICY gsp_institution_admin_read ON public.game_session_participants
+DROP POLICY IF EXISTS gsp_institution_admin_read ON public.game_session_participants;
+DROP POLICY IF EXISTS game_session_participants_select_institution_admin ON public.game_session_participants;
+CREATE POLICY game_session_participants_select_institution_admin ON public.game_session_participants
   FOR SELECT TO authenticated
   USING (institution_id IN (select app.admin_institution_ids()));
 
 -- Players manage their own participation.
-CREATE POLICY gsp_own ON public.game_session_participants
+DROP POLICY IF EXISTS gsp_own ON public.game_session_participants;
+DROP POLICY IF EXISTS game_session_participants_all_own ON public.game_session_participants;
+CREATE POLICY game_session_participants_all_own ON public.game_session_participants
   FOR ALL TO authenticated
   USING  (user_id = (select app.auth_uid()))
   WITH CHECK (user_id = (select app.auth_uid()));
 
 -- Teachers can read results for games they own.
-CREATE POLICY gsp_teacher_read ON public.game_session_participants
+DROP POLICY IF EXISTS gsp_teacher_read ON public.game_session_participants;
+DROP POLICY IF EXISTS game_session_participants_select_teacher ON public.game_session_participants;
+CREATE POLICY game_session_participants_select_teacher ON public.game_session_participants
   FOR SELECT TO authenticated
   USING (
     game_session_id IN (
@@ -134,7 +158,9 @@ CREATE POLICY gsp_teacher_read ON public.game_session_participants
   );
 
 -- Leaderboards: same visibility as parent game_run (solo/versus vs classroom-scoped).
-CREATE POLICY gsp_member_read ON public.game_session_participants
+DROP POLICY IF EXISTS gsp_member_read ON public.game_session_participants;
+DROP POLICY IF EXISTS game_session_participants_select_member ON public.game_session_participants;
+CREATE POLICY game_session_participants_select_member ON public.game_session_participants
   FOR SELECT TO authenticated
   USING (
     game_session_id IN (

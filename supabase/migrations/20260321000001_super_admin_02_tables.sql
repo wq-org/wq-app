@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS public.plan_catalog (
   created_at                timestamptz NOT NULL DEFAULT now(),
   updated_at                timestamptz NOT NULL DEFAULT now(),
   deleted_at                timestamptz,
-  CONSTRAINT plan_catalog_code_unique UNIQUE (code)
+  CONSTRAINT uq_plan_catalog_code UNIQUE (code)
 );
 
 ALTER TABLE public.plan_catalog
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS public.feature_definitions (
   default_enabled boolean     NOT NULL DEFAULT false,
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT feature_definitions_key_unique UNIQUE (key)
+  CONSTRAINT uq_feature_definitions_key UNIQUE (key)
 );
 
 ALTER TABLE public.feature_definitions
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS public.plan_entitlements (
   text_value     text,
   created_at     timestamptz NOT NULL DEFAULT now(),
   updated_at     timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT plan_entitlements_plan_feature_unique UNIQUE (plan_id, feature_id)
+  CONSTRAINT uq_plan_entitlements_plan_id_feature_id UNIQUE (plan_id, feature_id)
 );
 
 COMMENT ON TABLE public.plan_entitlements IS 'Default entitlement values per commercial plan; effective resolution: plan → institution override (see doc 14 §7).';
@@ -169,7 +169,7 @@ CREATE TABLE public.institution_entitlement_overrides (
   created_by     uuid        REFERENCES public.profiles(user_id) ON DELETE SET NULL,
   created_at     timestamptz NOT NULL DEFAULT now(),
   updated_at     timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT inst_entitlement_override_unique UNIQUE (institution_id, feature_id)
+  CONSTRAINT uq_institution_entitlement_overrides_institution_id_feature_id UNIQUE (institution_id, feature_id)
 );
 
 COMMENT ON TABLE public.institution_entitlement_overrides IS 'Per-institution override of plan_entitlements / boolean defaults; MVP one row per (institution, feature).';
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS public.billing_providers (
   external_price_id        text,
   created_at               timestamptz NOT NULL DEFAULT now(),
   updated_at               timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT billing_providers_inst_provider_unique UNIQUE (institution_id, provider)
+  CONSTRAINT uq_billing_providers_institution_id_provider UNIQUE (institution_id, provider)
 );
 
 COMMENT ON TABLE public.billing_providers IS 'Stripe or other PSP external IDs per institution.';

@@ -21,10 +21,12 @@ ALTER TABLE public.games
 ALTER TABLE public.games DROP COLUMN IF EXISTS topic_id;
 
 ALTER TABLE public.games
+  DROP CONSTRAINT IF EXISTS fk_games_courses;
+ALTER TABLE public.games
   DROP CONSTRAINT IF EXISTS games_course_id_fkey;
 
 ALTER TABLE public.games
-  ADD CONSTRAINT games_course_id_fkey
+  ADD CONSTRAINT fk_games_courses
   FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE SET NULL;
 
 COMMENT ON COLUMN public.games.institution_id IS 'Owning institution. Nullable for legacy rows; new inserts should always set this.';
