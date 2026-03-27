@@ -41,7 +41,7 @@ import { TopicProvider } from './contexts/topic'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
 import { GameEditorCanvas } from '@/features/game-studio'
-import { ProfileViewPage } from '@/features/profiles'
+import { ProfileViewPage } from '@/features/profile'
 import {
   AdminAnalytics,
   AdminBilling,
@@ -62,7 +62,7 @@ import {
   InstitutionAdminCoursesPage,
   InstitutionAdminAnalyticsPage,
   InstitutionAdminSettingsPage,
-} from '@/features/institutionAdmin'
+} from '@/features/institution-admin'
 
 const GameEditorCanvasWithProjectId = () => {
   const { id } = useParams<{ id: string }>()

@@ -14,7 +14,7 @@ import { GameCardList, type GameCardProps } from '@/features/game-studio'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { getFollowedTeacherIds } from '@/features/profiles'
+import { getFollowedTeacherIds } from '@/features/profile'
 import { useUser } from '@/contexts/user'
 
 interface ProfileStudentViewProps {

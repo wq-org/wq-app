@@ -20,7 +20,7 @@ import { EmptyGamesView } from '@/features/student'
 import { GameCardList } from '@/features/game-studio'
 import type { GameCardProps } from '@/features/game-studio'
 import { Text } from '@/components/ui/text'
-import { getFollowedTeacherCount } from '@/features/profiles'
+import { getFollowedTeacherCount } from '@/features/profile'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 

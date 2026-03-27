@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { CommandPalette } from '@/features/command-palette'
 import { useUser } from '@/contexts/user'
-import { ProfileInstitutionView } from '@/features/profiles'
+import { ProfileInstitutionView } from '@/features/profile'
 import { useTranslation } from 'react-i18next'
 
 export function InstitutionViewPage() {
