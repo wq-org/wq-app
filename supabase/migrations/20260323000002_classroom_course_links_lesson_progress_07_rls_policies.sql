@@ -10,14 +10,12 @@
 ALTER TABLE public.classroom_course_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.classroom_course_links FORCE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS ccl_super_admin ON public.classroom_course_links;
 DROP POLICY IF EXISTS classroom_course_links_all_super_admin ON public.classroom_course_links;
 CREATE POLICY classroom_course_links_all_super_admin ON public.classroom_course_links
   FOR ALL TO authenticated
   USING  ((select app.is_super_admin()) is true)
   WITH CHECK ((select app.is_super_admin()) is true);
 
-DROP POLICY IF EXISTS ccl_institution_admin ON public.classroom_course_links;
 DROP POLICY IF EXISTS classroom_course_links_all_institution_admin ON public.classroom_course_links;
 CREATE POLICY classroom_course_links_all_institution_admin ON public.classroom_course_links
   FOR ALL TO authenticated
@@ -25,7 +23,6 @@ CREATE POLICY classroom_course_links_all_institution_admin ON public.classroom_c
   WITH CHECK (institution_id IN (select app.admin_institution_ids()));
 
 -- Teachers can manage links for classrooms they own, co-teach, or courses they authored.
-DROP POLICY IF EXISTS ccl_teacher_manage ON public.classroom_course_links;
 DROP POLICY IF EXISTS classroom_course_links_all_teacher ON public.classroom_course_links;
 CREATE POLICY classroom_course_links_all_teacher ON public.classroom_course_links
   FOR ALL TO authenticated
@@ -69,7 +66,6 @@ CREATE POLICY classroom_course_links_all_teacher ON public.classroom_course_link
   );
 
 -- Students (and co-teachers) discover links only for classrooms they belong to.
-DROP POLICY IF EXISTS ccl_member_read ON public.classroom_course_links;
 DROP POLICY IF EXISTS classroom_course_links_select_member ON public.classroom_course_links;
 CREATE POLICY classroom_course_links_select_member ON public.classroom_course_links
   FOR SELECT TO authenticated

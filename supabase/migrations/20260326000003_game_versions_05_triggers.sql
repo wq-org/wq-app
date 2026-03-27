@@ -17,9 +17,8 @@ CREATE TRIGGER trg_game_versions_guard_row
   FOR EACH ROW EXECUTE FUNCTION public.guard_game_versions_lifecycle();
 
 -- games -> versions sync
-DROP TRIGGER IF EXISTS aaa_games_sync_game_versions ON public.games;
 DROP TRIGGER IF EXISTS trg_games_sync_game_versions ON public.games;
-CREATE TRIGGER aaa_games_sync_game_versions
+CREATE TRIGGER trg_games_sync_game_versions
   BEFORE INSERT OR UPDATE ON public.games
   FOR EACH ROW EXECUTE FUNCTION public.sync_games_game_versions();
 

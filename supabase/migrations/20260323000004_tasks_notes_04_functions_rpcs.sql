@@ -13,16 +13,17 @@ SET search_path = ''
 AS $$
 BEGIN
   IF TG_OP = 'UPDATE' AND OLD.status IS DISTINCT FROM NEW.status THEN
-    INSERT INTO audit.events (actor_id, action, entity_type, entity_id, institution_id, payload)
-    VALUES (
-      auth.uid(),
-      'task_state_change',
-      'task',
-      NEW.id,
-      NEW.institution_id,
-      jsonb_build_object(
+    PERFORM audit.log_event(
+      p_event_type := 'task.status_changed',
+      p_subject_type := 'tasks',
+      p_subject_id := NEW.id,
+      p_institution_id := NEW.institution_id,
+      p_payload := jsonb_build_object(
         'old_status', OLD.status::text,
         'new_status', NEW.status::text
+      ),
+      p_metadata := jsonb_build_object(
+        'task_id', NEW.id
       )
     );
   END IF;

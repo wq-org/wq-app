@@ -4,7 +4,6 @@
 -- Requires: 20260321000002_institution_admin (all parts)
 -- =============================================================================
 
-DROP TRIGGER IF EXISTS ccl_updated_at ON public.classroom_course_links;
 DROP TRIGGER IF EXISTS trg_classroom_course_links_set_updated_at ON public.classroom_course_links;
 CREATE TRIGGER trg_classroom_course_links_set_updated_at
   BEFORE UPDATE ON public.classroom_course_links

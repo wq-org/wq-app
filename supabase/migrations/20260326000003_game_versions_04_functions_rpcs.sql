@@ -7,7 +7,7 @@
 -- -----------------------------------------------------------------------------
 -- helpers
 -- -----------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION public.game_versions_next_version_no(p_game_id uuid)
+CREATE OR REPLACE FUNCTION public.get_next_game_version_no(p_game_id uuid)
 RETURNS integer
 LANGUAGE sql
 STABLE
@@ -18,7 +18,7 @@ AS $$
   WHERE game_id = p_game_id
 $$;
 
-CREATE OR REPLACE FUNCTION public.game_versions_current_draft_id(p_game_id uuid)
+CREATE OR REPLACE FUNCTION public.get_current_game_draft_version_id(p_game_id uuid)
 RETURNS uuid
 LANGUAGE sql
 STABLE
@@ -31,7 +31,7 @@ AS $$
   LIMIT 1
 $$;
 
-CREATE OR REPLACE FUNCTION public.game_versions_current_published_id(p_game_id uuid)
+CREATE OR REPLACE FUNCTION public.get_current_game_published_version_id(p_game_id uuid)
 RETURNS uuid
 LANGUAGE sql
 STABLE
@@ -42,7 +42,7 @@ AS $$
   WHERE g.id = p_game_id
 $$;
 
-CREATE OR REPLACE FUNCTION public.game_versions_create_draft(
+CREATE OR REPLACE FUNCTION public.create_game_version_draft(
   p_game_id uuid,
   p_institution_id uuid,
   p_content jsonb,
@@ -74,7 +74,7 @@ BEGIN
   VALUES (
     p_institution_id,
     p_game_id,
-    public.game_versions_next_version_no(p_game_id),
+    public.get_next_game_version_no(p_game_id),
     'draft',
     p_content,
     p_content_schema_version,
@@ -90,7 +90,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.game_versions_create_draft(uuid, uuid, jsonb, uuid, text, integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.create_game_version_draft(uuid, uuid, jsonb, uuid, text, integer) FROM PUBLIC;
 
 -- -----------------------------------------------------------------------------
 -- game container sync — keep games as the mutable working copy, versions as history
@@ -210,7 +210,7 @@ BEGIN
     LIMIT 1;
 
     IF draft_version_row.id IS NULL THEN
-      draft_version_row := public.game_versions_create_draft(
+      draft_version_row := public.create_game_version_draft(
         OLD.id,
         COALESCE(NEW.institution_id, OLD.institution_id),
         NEW.game_content,
@@ -293,7 +293,7 @@ BEGIN
     LIMIT 1;
 
     IF draft_version_row.id IS NULL THEN
-      draft_version_row := public.game_versions_create_draft(
+      draft_version_row := public.create_game_version_draft(
         OLD.id,
         COALESCE(NEW.institution_id, OLD.institution_id),
         NEW.game_content,

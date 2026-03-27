@@ -9,3 +9,8 @@ DROP TRIGGER IF EXISTS trg_game_runs_set_updated_at ON public.game_runs;
 CREATE TRIGGER trg_game_runs_set_updated_at
   BEFORE UPDATE ON public.game_runs
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS trg_game_runs_audit_row ON public.game_runs;
+CREATE TRIGGER trg_game_runs_audit_row
+  AFTER INSERT OR UPDATE OR DELETE ON public.game_runs
+  FOR EACH ROW EXECUTE FUNCTION audit.log_game_runs_audit();

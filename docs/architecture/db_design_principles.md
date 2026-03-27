@@ -360,6 +360,13 @@ triggers/constraints
   -- 7. RLS (ENABLE, FORCE, POLICIES)
   -- 8. Comments/Documentation — optional stub only when using the split `*_01`…`*_08` file layout (keeps filename ordering); object comments live in sections 1–5 as above
 
+**Rule: split \"comments/docs\" files must be stubs only**  
+If you use the split `*_01`…`*_08` layout, the final comments/docs file must not introduce schema changes and must not be the home for object comments.
+
+- Put `COMMENT ON TABLE/COLUMN` immediately after the table/column is created/altered.
+- Put `COMMENT ON FUNCTION` immediately after the function definition.
+- Keep the comments/docs file only as an ordering placeholder when needed.
+
 - One migration file corresponds to one domain change.
 - Do NOT split one domain change across files (e.g., classroom_tables.sql + classroom_rls.sql is forbidden).
 

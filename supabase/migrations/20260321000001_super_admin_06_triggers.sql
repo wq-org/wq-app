@@ -204,3 +204,238 @@ DROP TRIGGER IF EXISTS trg_institution_entitlement_overrides_audit_row ON public
 CREATE TRIGGER trg_institution_entitlement_overrides_audit_row
   AFTER INSERT OR UPDATE OR DELETE ON public.institution_entitlement_overrides
   FOR EACH ROW EXECUTE FUNCTION audit.log_entitlement_override_audit();
+
+-- =============================================================================
+-- AUDIT TRIGGER FUNCTIONS — attendance + game runtime
+-- Note: trigger functions are defined here, but triggers are created in the
+-- domain migrations that create the tables (attendance, game_runtime).
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION audit.log_classroom_attendance_sessions_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'attendance_session.created'
+      WHEN 'DELETE' THEN 'attendance_session.deleted'
+      ELSE 'attendance_session.updated'
+    END,
+    p_subject_type := 'classroom_attendance_sessions',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'classroom_id', COALESCE(NEW.classroom_id, OLD.classroom_id),
+      'course_id', COALESCE(NEW.course_id, OLD.course_id),
+      'session_date', COALESCE(NEW.session_date, OLD.session_date),
+      'starts_at', COALESCE(NEW.starts_at, OLD.starts_at),
+      'ends_at', CASE WHEN TG_OP = 'DELETE' THEN OLD.ends_at ELSE NEW.ends_at END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_classroom_attendance_sessions_audit() IS
+  'Audit trigger for attendance session lifecycle changes.';
+
+CREATE OR REPLACE FUNCTION audit.log_classroom_attendance_records_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'attendance_record.created'
+      WHEN 'DELETE' THEN 'attendance_record.deleted'
+      ELSE 'attendance_record.updated'
+    END,
+    p_subject_type := 'classroom_attendance_records',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'attendance_session_id', COALESCE(NEW.attendance_session_id, OLD.attendance_session_id),
+      'student_id', COALESCE(NEW.student_id, OLD.student_id),
+      'status', CASE WHEN TG_OP = 'DELETE' THEN OLD.status::text ELSE NEW.status::text END,
+      'source', CASE WHEN TG_OP = 'DELETE' THEN OLD.source::text ELSE NEW.source::text END,
+      'check_in_time', CASE WHEN TG_OP = 'DELETE' THEN OLD.check_in_time ELSE NEW.check_in_time END,
+      'check_out_time', CASE WHEN TG_OP = 'DELETE' THEN OLD.check_out_time ELSE NEW.check_out_time END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_classroom_attendance_records_audit() IS
+  'Audit trigger for attendance record changes (teacher marking and self check-in).';
+
+CREATE OR REPLACE FUNCTION audit.log_game_runs_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'game_run.created'
+      WHEN 'DELETE' THEN 'game_run.deleted'
+      ELSE 'game_run.updated'
+    END,
+    p_subject_type := 'game_runs',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'game_id', COALESCE(NEW.game_id, OLD.game_id),
+      'classroom_id', CASE WHEN TG_OP = 'DELETE' THEN OLD.classroom_id ELSE NEW.classroom_id END,
+      'mode', CASE WHEN TG_OP = 'DELETE' THEN OLD.mode::text ELSE NEW.mode::text END,
+      'status', CASE WHEN TG_OP = 'DELETE' THEN OLD.status::text ELSE NEW.status::text END,
+      'started_by', COALESCE(NEW.started_by, OLD.started_by),
+      'started_at', CASE WHEN TG_OP = 'DELETE' THEN OLD.started_at ELSE NEW.started_at END,
+      'ended_at', CASE WHEN TG_OP = 'DELETE' THEN OLD.ended_at ELSE NEW.ended_at END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_game_runs_audit() IS
+  'Audit trigger for game run lifecycle changes (solo, versus, classroom).';
+
+-- =============================================================================
+-- AUDIT TRIGGER FUNCTIONS — notifications + rewards
+-- Note: trigger functions are defined here, but triggers are created in the
+-- domain migrations that create the tables.
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION audit.log_notifications_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'notification.created'
+      WHEN 'DELETE' THEN 'notification.deleted'
+      ELSE 'notification.updated'
+    END,
+    p_subject_type := 'notifications',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'user_id', COALESCE(NEW.user_id, OLD.user_id),
+      'category', CASE WHEN TG_OP = 'DELETE' THEN OLD.category ELSE NEW.category END,
+      'title', CASE WHEN TG_OP = 'DELETE' THEN OLD.title ELSE NEW.title END,
+      'is_read', CASE WHEN TG_OP = 'DELETE' THEN OLD.is_read ELSE NEW.is_read END,
+      'read_at', CASE WHEN TG_OP = 'DELETE' THEN OLD.read_at ELSE NEW.read_at END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_notifications_audit() IS
+  'Audit trigger for notifications lifecycle and read-state changes.';
+
+CREATE OR REPLACE FUNCTION audit.log_notification_preferences_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'notification_preference.created'
+      WHEN 'DELETE' THEN 'notification_preference.deleted'
+      ELSE 'notification_preference.updated'
+    END,
+    p_subject_type := 'notification_preferences',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'user_id', COALESCE(NEW.user_id, OLD.user_id),
+      'category', CASE WHEN TG_OP = 'DELETE' THEN OLD.category ELSE NEW.category END,
+      'enabled', CASE WHEN TG_OP = 'DELETE' THEN OLD.enabled ELSE NEW.enabled END,
+      'email_digest', CASE WHEN TG_OP = 'DELETE' THEN OLD.email_digest ELSE NEW.email_digest END,
+      'quiet_start', CASE WHEN TG_OP = 'DELETE' THEN OLD.quiet_start ELSE NEW.quiet_start END,
+      'quiet_end', CASE WHEN TG_OP = 'DELETE' THEN OLD.quiet_end ELSE NEW.quiet_end END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_notification_preferences_audit() IS
+  'Audit trigger for notification preference changes per user/category.';
+
+CREATE OR REPLACE FUNCTION audit.log_point_ledger_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'point_ledger.created'
+      WHEN 'DELETE' THEN 'point_ledger.deleted'
+      ELSE 'point_ledger.updated'
+    END,
+    p_subject_type := 'point_ledger',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'classroom_id', COALESCE(NEW.classroom_id, OLD.classroom_id),
+      'user_id', COALESCE(NEW.user_id, OLD.user_id),
+      'source', CASE WHEN TG_OP = 'DELETE' THEN OLD.source ELSE NEW.source END,
+      'points', CASE WHEN TG_OP = 'DELETE' THEN OLD.points ELSE NEW.points END,
+      'previous_points', CASE WHEN TG_OP = 'UPDATE' THEN OLD.points ELSE NULL END,
+      'ref_id', COALESCE(NEW.ref_id, OLD.ref_id),
+      'ref_type', CASE WHEN TG_OP = 'DELETE' THEN OLD.ref_type ELSE NEW.ref_type END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_point_ledger_audit() IS
+  'Audit trigger for point ledger entries, including manual/admin adjustments.';
+
+CREATE OR REPLACE FUNCTION audit.log_classroom_reward_settings_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := CASE TG_OP
+      WHEN 'INSERT' THEN 'classroom_reward_settings.created'
+      WHEN 'DELETE' THEN 'classroom_reward_settings.deleted'
+      ELSE 'classroom_reward_settings.updated'
+    END,
+    p_subject_type := 'classroom_reward_settings',
+    p_subject_id := COALESCE(NEW.id, OLD.id),
+    p_institution_id := COALESCE(NEW.institution_id, OLD.institution_id),
+    p_payload := jsonb_build_object(
+      'classroom_id', COALESCE(NEW.classroom_id, OLD.classroom_id),
+      'leaderboard_opt_in', CASE WHEN TG_OP = 'DELETE' THEN OLD.leaderboard_opt_in ELSE NEW.leaderboard_opt_in END,
+      'previous_leaderboard_opt_in', CASE WHEN TG_OP = 'UPDATE' THEN OLD.leaderboard_opt_in ELSE NULL END,
+      'joker_config', CASE WHEN TG_OP = 'DELETE' THEN OLD.joker_config ELSE NEW.joker_config END,
+      'level_thresholds', CASE WHEN TG_OP = 'DELETE' THEN OLD.level_thresholds ELSE NEW.level_thresholds END
+    )
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+COMMENT ON FUNCTION audit.log_classroom_reward_settings_audit() IS
+  'Audit trigger for classroom reward settings changes.';
