@@ -1,12 +1,13 @@
 """
-collect_index_files.py
+generate_repo_index.py
 
 Scans the repository for every `index.ts` file, collects its content
-and relative path, then writes a single Markdown file for review.
+and relative path, then writes a single Markdown file at the repo root.
 
 Usage:
-    python collect_index_files.py                  # repo root = script's own directory
-    python collect_index_files.py /path/to/repo    # explicit repo root
+    python scripts/generate_repo_index.py              # repo root = parent of scripts/
+    python3 scripts/generate_repo_index.py             # same (from repo root)
+    python scripts/generate_repo_index.py /path/to/repo   # explicit repo root
 """
 from __future__ import annotations
 
@@ -32,10 +33,17 @@ IGNORE_DIRS: frozenset[str] = frozenset(
         "out",
         ".cache",
         "tmp",
-        ".claude"
-        ".cursor"
+        ".claude",
+        ".cursor",
     }
 )
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def default_repo_root() -> Path:
+    """This file lives in `scripts/`; the git repo root is one directory above."""
+    return SCRIPT_DIR.parent
 
 
 # ---------------------------------------------------------------------------
@@ -93,12 +101,10 @@ def build_markdown(repo_root: Path, files: list[Path]) -> str:
 # Entry point
 # ---------------------------------------------------------------------------
 def main() -> None:
-    # Prefer an explicit CLI argument; fall back to the script's own directory
-    # so the script can live at the repo root and always resolve correctly.
     if len(sys.argv) > 1:
         repo_root = Path(sys.argv[1]).resolve()
     else:
-        repo_root = Path(__file__).resolve().parent
+        repo_root = default_repo_root()
 
     if not repo_root.is_dir():
         print(f"ERROR: '{repo_root}' is not a valid directory.", file=sys.stderr)
