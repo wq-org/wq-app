@@ -10,27 +10,27 @@ VALUES (
   'Trial',
   'Default trial for new institutions created via create_institution_with_initial_admin.',
   'none',
-  true,
+  TRUE,
   0
 )
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO public.feature_definitions (key, name, category, value_type, default_enabled) VALUES
-  ('institution', 'Institution', 'core', 'boolean', true),
-  ('student', 'Student', 'core', 'boolean', true),
-  ('teacher', 'Teacher', 'core', 'boolean', true),
-  ('classroom', 'Classroom', 'core', 'boolean', true),
-  ('reward_system', 'Reward System', 'engagement', 'boolean', false),
-  ('course', 'Course', 'learning', 'boolean', true),
-  ('game_studio', 'Game Studio', 'learning', 'boolean', false),
-  ('task', 'Task', 'learning', 'boolean', true),
-  ('calendar', 'Calendar', 'scheduling', 'boolean', false),
-  ('cloud_storage', 'Cloud storage', 'infrastructure', 'boolean', true),
-  ('note', 'Note', 'collaboration', 'boolean', true),
-  ('chat', 'Chat', 'collaboration', 'boolean', false),
-  ('notification', 'Notification', 'collaboration', 'boolean', true),
-  ('max_teachers', 'Max teachers', 'limits', 'integer', false),
-  ('max_students', 'Max students', 'limits', 'integer', false),
-  ('max_classrooms', 'Max classrooms', 'limits', 'integer', false),
-  ('storage_quota_mb', 'Storage quota (MB)', 'limits', 'integer', false)
+  ('institution', 'Institution', 'core', 'boolean', TRUE),
+  ('student', 'Student', 'core', 'boolean', TRUE),
+  ('teacher', 'Teacher', 'core', 'boolean', TRUE),
+  ('classroom', 'Classroom', 'core', 'boolean', TRUE),
+  ('reward_system', 'Reward System', 'engagement', 'boolean', FALSE),
+  ('course', 'Course', 'learning', 'boolean', TRUE),
+  ('game_studio', 'Game Studio', 'learning', 'boolean', FALSE),
+  ('task', 'Task', 'learning', 'boolean', TRUE),
+  ('calendar', 'Calendar', 'scheduling', 'boolean', FALSE),
+  ('cloud_storage', 'Cloud storage', 'infrastructure', 'boolean', TRUE),
+  ('note', 'Note', 'collaboration', 'boolean', TRUE),
+  ('chat', 'Chat', 'collaboration', 'boolean', FALSE),
+  ('notification', 'Notification', 'collaboration', 'boolean', TRUE),
+  ('max_teachers', 'Max teachers', 'limits', 'integer', FALSE),
+  ('max_students', 'Max students', 'limits', 'integer', FALSE),
+  ('max_classrooms', 'Max classrooms', 'limits', 'integer', FALSE),
+  ('storage_quota_mb', 'Storage quota (MB)', 'limits', 'integer', FALSE)
 ON CONFLICT (key) DO NOTHING;

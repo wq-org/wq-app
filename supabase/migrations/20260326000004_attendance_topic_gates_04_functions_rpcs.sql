@@ -120,7 +120,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.create_classroom_attendance_session(uuid, uuid, text, date, timestamptz, timestamptz) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.create_classroom_attendance_session(uuid, uuid, text, date, timestamptz, timestamptz) FROM public;
 GRANT EXECUTE ON FUNCTION public.create_classroom_attendance_session(uuid, uuid, text, date, timestamptz, timestamptz) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.close_classroom_attendance_session(
@@ -158,7 +158,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.close_classroom_attendance_session(uuid, timestamptz) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.close_classroom_attendance_session(uuid, timestamptz) FROM public;
 GRANT EXECUTE ON FUNCTION public.close_classroom_attendance_session(uuid, timestamptz) TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -250,7 +250,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.teacher_mark_attendance_record(uuid, uuid, public.attendance_status, public.attendance_source, timestamptz, timestamptz, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.teacher_mark_attendance_record(uuid, uuid, public.attendance_status, public.attendance_source, timestamptz, timestamptz, text) FROM public;
 GRANT EXECUTE ON FUNCTION public.teacher_mark_attendance_record(uuid, uuid, public.attendance_status, public.attendance_source, timestamptz, timestamptz, text) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.student_self_check_in_attendance(
@@ -334,7 +334,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.student_self_check_in_attendance(uuid, timestamptz) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.student_self_check_in_attendance(uuid, timestamptz) FROM public;
 GRANT EXECUTE ON FUNCTION public.student_self_check_in_attendance(uuid, timestamptz) TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -409,7 +409,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.get_teacher_attendance_summary(uuid, uuid, date, date) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.get_teacher_attendance_summary(uuid, uuid, date, date) FROM public;
 GRANT EXECUTE ON FUNCTION public.get_teacher_attendance_summary(uuid, uuid, date, date) TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -476,7 +476,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.teacher_lock_topic_for_course(uuid, uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.teacher_lock_topic_for_course(uuid, uuid) FROM public;
 GRANT EXECUTE ON FUNCTION public.teacher_lock_topic_for_course(uuid, uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.teacher_unlock_topic_for_course(
@@ -531,7 +531,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.teacher_unlock_topic_for_course(uuid, uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.teacher_unlock_topic_for_course(uuid, uuid) FROM public;
 GRANT EXECUTE ON FUNCTION public.teacher_unlock_topic_for_course(uuid, uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.teacher_schedule_topic_unlock(
@@ -591,7 +591,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.teacher_schedule_topic_unlock(uuid, uuid, timestamptz) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.teacher_schedule_topic_unlock(uuid, uuid, timestamptz) FROM public;
 GRANT EXECUTE ON FUNCTION public.teacher_schedule_topic_unlock(uuid, uuid, timestamptz) TO authenticated;
 
 -- -----------------------------------------------------------------------------

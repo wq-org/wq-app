@@ -7,20 +7,20 @@
 -- classroom_attendance_sessions
 -- =============================================================================
 CREATE TABLE public.classroom_attendance_sessions (
-  id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  institution_id  uuid        NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
-  classroom_id    uuid        NOT NULL,
-  course_id       uuid        NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
-  title           text,
-  session_date    date        NOT NULL,
-  starts_at       timestamptz NOT NULL,
-  ends_at         timestamptz,
-  created_by      uuid        NOT NULL REFERENCES public.profiles(user_id) ON DELETE RESTRICT,
-  created_at      timestamptz NOT NULL DEFAULT now(),
-  updated_at      timestamptz NOT NULL DEFAULT now(),
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  classroom_id uuid NOT NULL,
+  course_id uuid NOT NULL REFERENCES public.courses (id) ON DELETE CASCADE,
+  title text,
+  session_date date NOT NULL,
+  starts_at timestamptz NOT NULL,
+  ends_at timestamptz,
+  created_by uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE RESTRICT,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_classroom_attendance_sessions_classroom
     FOREIGN KEY (classroom_id, institution_id)
-    REFERENCES public.classrooms(id, institution_id)
+    REFERENCES public.classrooms (id, institution_id)
     ON DELETE CASCADE
 );
 
@@ -43,19 +43,19 @@ COMMENT ON COLUMN public.classroom_attendance_sessions.ends_at IS
 -- classroom_attendance_records
 -- =============================================================================
 CREATE TABLE public.classroom_attendance_records (
-  id                  uuid               PRIMARY KEY DEFAULT gen_random_uuid(),
-  institution_id      uuid               NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
-  attendance_session_id uuid             NOT NULL REFERENCES public.classroom_attendance_sessions(id) ON DELETE CASCADE,
-  student_id          uuid               NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
-  status              public.attendance_status NOT NULL,
-  source              public.attendance_source NOT NULL DEFAULT 'manual',
-  check_in_time       timestamptz,
-  check_out_time      timestamptz,
-  note                text,
-  created_by          uuid               NOT NULL REFERENCES public.profiles(user_id) ON DELETE RESTRICT,
-  updated_by          uuid               NOT NULL REFERENCES public.profiles(user_id) ON DELETE RESTRICT,
-  created_at          timestamptz        NOT NULL DEFAULT now(),
-  updated_at          timestamptz        NOT NULL DEFAULT now(),
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  attendance_session_id uuid NOT NULL REFERENCES public.classroom_attendance_sessions (id) ON DELETE CASCADE,
+  student_id uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE CASCADE,
+  status public.attendance_status NOT NULL,
+  source public.attendance_source NOT NULL DEFAULT 'manual',
+  check_in_time timestamptz,
+  check_out_time timestamptz,
+  note text,
+  created_by uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE RESTRICT,
+  updated_by uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE RESTRICT,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT uq_classroom_attendance_records_session_student
     UNIQUE (attendance_session_id, student_id),
   CONSTRAINT chk_classroom_attendance_records_time_order
@@ -81,17 +81,17 @@ COMMENT ON COLUMN public.classroom_attendance_records.check_out_time IS
 -- topic_availability_rules
 -- =============================================================================
 CREATE TABLE public.topic_availability_rules (
-  id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  institution_id  uuid        NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
-  course_id       uuid        NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
-  topic_id        uuid        NOT NULL REFERENCES public.topics(id) ON DELETE CASCADE,
-  is_locked       boolean     NOT NULL DEFAULT false,
-  unlock_at       timestamptz,
-  unlocked_by     uuid        REFERENCES public.profiles(user_id) ON DELETE SET NULL,
-  unlocked_at     timestamptz,
-  created_by      uuid        NOT NULL REFERENCES public.profiles(user_id) ON DELETE RESTRICT,
-  created_at      timestamptz NOT NULL DEFAULT now(),
-  updated_at      timestamptz NOT NULL DEFAULT now(),
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  course_id uuid NOT NULL REFERENCES public.courses (id) ON DELETE CASCADE,
+  topic_id uuid NOT NULL REFERENCES public.topics (id) ON DELETE CASCADE,
+  is_locked boolean NOT NULL DEFAULT FALSE,
+  unlock_at timestamptz,
+  unlocked_by uuid REFERENCES public.profiles (user_id) ON DELETE SET NULL,
+  unlocked_at timestamptz,
+  created_by uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE RESTRICT,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT uq_topic_availability_rules_course_topic UNIQUE (course_id, topic_id)
 );
 

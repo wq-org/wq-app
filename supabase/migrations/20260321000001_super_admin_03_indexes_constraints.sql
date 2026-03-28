@@ -5,8 +5,8 @@
 -- =============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_events_institution_id_occurred_at ON audit.events (institution_id, occurred_at DESC);
-CREATE INDEX IF NOT EXISTS idx_events_actor_user_id_occurred_at       ON audit.events (actor_user_id, occurred_at DESC);
-CREATE INDEX IF NOT EXISTS idx_events_event_type_occurred_at        ON audit.events (event_type, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_events_actor_user_id_occurred_at ON audit.events (actor_user_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_events_event_type_occurred_at ON audit.events (event_type, occurred_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_institutions_health_state
   ON public.institutions (health_state)

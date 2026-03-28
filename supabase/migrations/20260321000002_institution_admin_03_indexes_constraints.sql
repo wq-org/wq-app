@@ -77,9 +77,9 @@ CREATE INDEX idx_institution_staff_scopes_institution_id
 -- =============================================================================
 -- classrooms indexes
 -- =============================================================================
-CREATE INDEX idx_classrooms_institution_id    ON public.classrooms (institution_id);
-CREATE INDEX idx_classrooms_class_group_id    ON public.classrooms (class_group_id);
-CREATE INDEX idx_classrooms_primary_teacher_id        ON public.classrooms (primary_teacher_id);
+CREATE INDEX idx_classrooms_institution_id ON public.classrooms (institution_id);
+CREATE INDEX idx_classrooms_class_group_id ON public.classrooms (class_group_id);
+CREATE INDEX idx_classrooms_primary_teacher_id ON public.classrooms (primary_teacher_id);
 
 -- =============================================================================
 -- classroom_members indexes

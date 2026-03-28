@@ -9,18 +9,18 @@
 -- game_versions — immutable authored snapshots
 -- =============================================================================
 CREATE TABLE public.game_versions (
-  id                     uuid                      PRIMARY KEY DEFAULT gen_random_uuid(),
-  institution_id         uuid                      NOT NULL REFERENCES public.institutions(id) ON DELETE CASCADE,
-  game_id                uuid                      NOT NULL REFERENCES public.games(id) ON DELETE CASCADE,
-  version_no             integer                   NOT NULL,
-  status                 text                      NOT NULL CHECK (status IN ('draft', 'published', 'archived')),
-  content                jsonb                     NOT NULL,
-  content_schema_version integer                   NOT NULL DEFAULT 1,
-  change_note            text,
-  published_at           timestamptz,
-  created_by             uuid                      NOT NULL REFERENCES public.profiles(user_id) ON DELETE RESTRICT,
-  created_at             timestamptz               NOT NULL DEFAULT now(),
-  updated_at             timestamptz               NOT NULL DEFAULT now()
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  game_id uuid NOT NULL REFERENCES public.games (id) ON DELETE CASCADE,
+  version_no integer NOT NULL,
+  status text NOT NULL CHECK (status IN ('draft', 'published', 'archived')),
+  content jsonb NOT NULL,
+  content_schema_version integer NOT NULL DEFAULT 1,
+  change_note text,
+  published_at timestamptz,
+  created_by uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE RESTRICT,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
 );
 
 COMMENT ON TABLE public.game_versions IS

@@ -57,7 +57,7 @@ $$;
 COMMENT ON FUNCTION app.user_can_select_game_version(uuid) IS
   'True if caller may read this game version row (aligned with game_versions SELECT policies).';
 
-REVOKE ALL ON FUNCTION app.user_can_select_game_version(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.user_can_select_game_version(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION app.user_can_select_game_version(uuid) TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -166,7 +166,7 @@ $$;
 COMMENT ON FUNCTION app.user_can_select_cloud_file(uuid) IS
   'True if caller may read metadata (and typically Storage bytes) for this file.';
 
-REVOKE ALL ON FUNCTION app.user_can_select_cloud_file(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.user_can_select_cloud_file(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION app.user_can_select_cloud_file(uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION app.user_can_manage_cloud_file(p_cloud_file_id uuid)
@@ -218,7 +218,7 @@ $$;
 COMMENT ON FUNCTION app.user_can_manage_cloud_file(uuid) IS
   'True if caller may update metadata, share, or soft-delete the file.';
 
-REVOKE ALL ON FUNCTION app.user_can_manage_cloud_file(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.user_can_manage_cloud_file(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION app.user_can_manage_cloud_file(uuid) TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -313,7 +313,7 @@ $$;
 COMMENT ON FUNCTION app.user_can_select_cloud_folder(uuid) IS
   'True if caller may list or traverse this folder.';
 
-REVOKE ALL ON FUNCTION app.user_can_select_cloud_folder(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.user_can_select_cloud_folder(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION app.user_can_select_cloud_folder(uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION app.user_can_manage_cloud_folder(p_cloud_folder_id uuid)
@@ -397,7 +397,7 @@ $$;
 COMMENT ON FUNCTION app.user_can_manage_cloud_folder(uuid) IS
   'True if caller may rename, reparent, or delete the folder.';
 
-REVOKE ALL ON FUNCTION app.user_can_manage_cloud_folder(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.user_can_manage_cloud_folder(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION app.user_can_manage_cloud_folder(uuid) TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -450,7 +450,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.apply_cloud_file_storage_quota_delta() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.apply_cloud_file_storage_quota_delta() FROM public;
 
 COMMENT ON FUNCTION public.apply_cloud_file_storage_quota_delta() IS
   'Maintains institution_quotas_usage.storage_used_bytes from cloud_files size/status changes.';
@@ -622,7 +622,7 @@ REVOKE ALL ON FUNCTION public.register_cloud_file_record(
   uuid,
   uuid,
   uuid
-) FROM PUBLIC;
+) FROM public;
 GRANT EXECUTE ON FUNCTION public.register_cloud_file_record(
   uuid,
   public.cloud_file_scope,

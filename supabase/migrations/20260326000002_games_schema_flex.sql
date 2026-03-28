@@ -84,4 +84,3 @@ COMMENT ON COLUMN public.game_session_participants.session_payload IS
 -- cleanup: drop enum type if no longer referenced
 -- -----------------------------------------------------------------------------
 DROP TYPE IF EXISTS public.game_type;
-

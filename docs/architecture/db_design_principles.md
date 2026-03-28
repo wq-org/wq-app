@@ -51,6 +51,11 @@ All schema changes must be applied via SQL migrations committed to version contr
 - Supabase migrations are SQL statements to create/update/delete schemas and are the canonical way to track database changes over time.
 - Local development should capture schema changes into migration files (so what you test is what you deploy).
 
+#### SQL tooling (migrations)
+
+- **`npm run lint:sql`** runs **`scripts/check_sql_naming.py`** only: naming from [db_naming_convention.md](db_naming_convention.md) (triggers, indexes, functions, policies, `fk_` / `uq_` / `chk_` constraints, banned abbreviations). It does **not** validate RLS semantics, tenant columns, or GDPR-related design; those stay in review and runtime checks.
+- **Optional formatting:** [SQLFluff](https://docs.sqlfluff.com/en/stable/) (`pip install -r requirements-dev.txt`, then `npm run format:sql` or `python3 -m sqlfluff fix supabase/migrations --dialect postgres`). [.sqlfluff](.sqlfluff) tunes rules for Supabase/PL/pgSQL; review diffs before committing.
+
 ### Content payloads for "Game Studio" and rich text
 
 You will store two kinds of "structured content" that change often:

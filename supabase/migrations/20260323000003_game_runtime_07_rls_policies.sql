@@ -13,14 +13,14 @@ DROP POLICY IF EXISTS gr_super_admin ON public.game_runs;
 DROP POLICY IF EXISTS game_runs_all_super_admin ON public.game_runs;
 CREATE POLICY game_runs_all_super_admin ON public.game_runs
   FOR ALL TO authenticated
-  USING  ((select app.is_super_admin()) is true)
-  WITH CHECK ((select app.is_super_admin()) is true);
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS gr_institution_admin_read ON public.game_runs;
 DROP POLICY IF EXISTS game_runs_select_institution_admin ON public.game_runs;
 CREATE POLICY game_runs_select_institution_admin ON public.game_runs
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.admin_institution_ids()));
+  USING (institution_id IN (SELECT app.admin_institution_ids()));
 
 -- Teachers can manage runs they started or for their games.
 DROP POLICY IF EXISTS gr_teacher_manage ON public.game_runs;
@@ -28,12 +28,14 @@ DROP POLICY IF EXISTS game_runs_all_teacher ON public.game_runs;
 CREATE POLICY game_runs_all_teacher ON public.game_runs
   FOR ALL TO authenticated
   USING (
-    started_by = (select app.auth_uid())
-    OR game_id IN (SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid()))
+    started_by = (SELECT app.auth_uid())
+    OR game_id IN (SELECT id FROM public.games
+WHERE teacher_id = (SELECT app.auth_uid()))
   )
   WITH CHECK (
-    started_by = (select app.auth_uid())
-    OR game_id IN (SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid()))
+    started_by = (SELECT app.auth_uid())
+    OR game_id IN (SELECT id FROM public.games
+WHERE teacher_id = (SELECT app.auth_uid()))
   );
 
 -- Members read runs: institution-wide for solo/versus; classroom runs only if assigned to that classroom.
@@ -44,14 +46,14 @@ CREATE POLICY game_runs_select_member ON public.game_runs
   USING (
     (
       classroom_id IS NULL
-      AND institution_id IN (select app.member_institution_ids())
+      AND institution_id IN (SELECT app.member_institution_ids())
     )
     OR (
       classroom_id IS NOT NULL
       AND EXISTS (
         SELECT 1 FROM public.classroom_members cm
         WHERE cm.classroom_id = game_runs.classroom_id
-          AND cm.user_id = (select app.auth_uid())
+          AND cm.user_id = (SELECT app.auth_uid())
           AND cm.withdrawn_at IS NULL
       )
     )
@@ -66,14 +68,14 @@ DROP POLICY IF EXISTS gs_super_admin ON public.game_sessions;
 DROP POLICY IF EXISTS game_sessions_all_super_admin ON public.game_sessions;
 CREATE POLICY game_sessions_all_super_admin ON public.game_sessions
   FOR ALL TO authenticated
-  USING  ((select app.is_super_admin()) is true)
-  WITH CHECK ((select app.is_super_admin()) is true);
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS gs_institution_admin_read ON public.game_sessions;
 DROP POLICY IF EXISTS game_sessions_select_institution_admin ON public.game_sessions;
 CREATE POLICY game_sessions_select_institution_admin ON public.game_sessions
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.admin_institution_ids()));
+  USING (institution_id IN (SELECT app.admin_institution_ids()));
 
 -- Participants and teachers can manage sessions for runs they have access to.
 DROP POLICY IF EXISTS gs_run_access ON public.game_sessions;
@@ -83,15 +85,17 @@ CREATE POLICY game_sessions_all_run_access ON public.game_sessions
   USING (
     game_run_id IN (
       SELECT id FROM public.game_runs gr
-      WHERE gr.started_by = (select app.auth_uid())
-        OR gr.game_id IN (SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid()))
+      WHERE gr.started_by = (SELECT app.auth_uid())
+        OR gr.game_id IN (SELECT id FROM public.games
+WHERE teacher_id = (SELECT app.auth_uid()))
     )
   )
   WITH CHECK (
     game_run_id IN (
       SELECT id FROM public.game_runs gr
-      WHERE gr.started_by = (select app.auth_uid())
-        OR gr.game_id IN (SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid()))
+      WHERE gr.started_by = (SELECT app.auth_uid())
+        OR gr.game_id IN (SELECT id FROM public.games
+WHERE teacher_id = (SELECT app.auth_uid()))
     )
   );
 
@@ -104,14 +108,14 @@ CREATE POLICY game_sessions_select_member ON public.game_sessions
       SELECT gr.id FROM public.game_runs gr
       WHERE (
         gr.classroom_id IS NULL
-        AND gr.institution_id IN (select app.member_institution_ids())
+        AND gr.institution_id IN (SELECT app.member_institution_ids())
       )
       OR (
         gr.classroom_id IS NOT NULL
         AND EXISTS (
           SELECT 1 FROM public.classroom_members cm
           WHERE cm.classroom_id = gr.classroom_id
-            AND cm.user_id = (select app.auth_uid())
+            AND cm.user_id = (SELECT app.auth_uid())
             AND cm.withdrawn_at IS NULL
         )
       )
@@ -127,22 +131,22 @@ DROP POLICY IF EXISTS gsp_super_admin ON public.game_session_participants;
 DROP POLICY IF EXISTS game_session_participants_all_super_admin ON public.game_session_participants;
 CREATE POLICY game_session_participants_all_super_admin ON public.game_session_participants
   FOR ALL TO authenticated
-  USING  ((select app.is_super_admin()) is true)
-  WITH CHECK ((select app.is_super_admin()) is true);
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS gsp_institution_admin_read ON public.game_session_participants;
 DROP POLICY IF EXISTS game_session_participants_select_institution_admin ON public.game_session_participants;
 CREATE POLICY game_session_participants_select_institution_admin ON public.game_session_participants
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.admin_institution_ids()));
+  USING (institution_id IN (SELECT app.admin_institution_ids()));
 
 -- Players manage their own participation.
 DROP POLICY IF EXISTS gsp_own ON public.game_session_participants;
 DROP POLICY IF EXISTS game_session_participants_all_own ON public.game_session_participants;
 CREATE POLICY game_session_participants_all_own ON public.game_session_participants
   FOR ALL TO authenticated
-  USING  (user_id = (select app.auth_uid()))
-  WITH CHECK (user_id = (select app.auth_uid()));
+  USING (user_id = (SELECT app.auth_uid()))
+  WITH CHECK (user_id = (SELECT app.auth_uid()));
 
 -- Teachers can read results for games they own.
 DROP POLICY IF EXISTS gsp_teacher_read ON public.game_session_participants;
@@ -152,8 +156,9 @@ CREATE POLICY game_session_participants_select_teacher ON public.game_session_pa
   USING (
     game_session_id IN (
       SELECT gs.id FROM public.game_sessions gs
-      JOIN public.game_runs gr ON gs.game_run_id = gr.id
-      WHERE gr.game_id IN (SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid()))
+      INNER JOIN public.game_runs gr ON gs.game_run_id = gr.id
+      WHERE gr.game_id IN (SELECT id FROM public.games
+WHERE teacher_id = (SELECT app.auth_uid()))
     )
   );
 
@@ -166,17 +171,17 @@ CREATE POLICY game_session_participants_select_member ON public.game_session_par
     game_session_id IN (
       SELECT gs.id
       FROM public.game_sessions gs
-      JOIN public.game_runs gr ON gr.id = gs.game_run_id
+      INNER JOIN public.game_runs gr ON gs.game_run_id = gr.id
       WHERE (
         gr.classroom_id IS NULL
-        AND gr.institution_id IN (select app.member_institution_ids())
+        AND gr.institution_id IN (SELECT app.member_institution_ids())
       )
       OR (
         gr.classroom_id IS NOT NULL
         AND EXISTS (
           SELECT 1 FROM public.classroom_members cm
           WHERE cm.classroom_id = gr.classroom_id
-            AND cm.user_id = (select app.auth_uid())
+            AND cm.user_id = (SELECT app.auth_uid())
             AND cm.withdrawn_at IS NULL
         )
       )

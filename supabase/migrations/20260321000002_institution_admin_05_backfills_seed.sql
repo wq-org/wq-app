@@ -12,13 +12,13 @@ SELECT
   ui.institution_id,
   CASE
     WHEN p.role = 'institution_admin' THEN 'institution_admin'::membership_role
-    WHEN p.role = 'teacher'           THEN 'teacher'::membership_role
+    WHEN p.role = 'teacher' THEN 'teacher'::membership_role
     ELSE 'student'::membership_role
   END,
   'active'::membership_status,
-  COALESCE(ui.joined_at, now())
+  COALESCE(ui.joined_at, NOW())
 FROM public.user_institutions ui
-JOIN public.profiles p ON p.user_id = ui.user_id
+INNER JOIN public.profiles p ON ui.user_id = p.user_id
 WHERE NOT EXISTS (
   SELECT 1 FROM public.institution_memberships m
   WHERE m.user_id = ui.user_id

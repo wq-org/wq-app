@@ -9,6 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "lint:fix": "eslint . --fix",
+    "lint:sql": "python3 scripts/check_sql_naming.py",
+    "format:sql": "python3 -m sqlfluff fix supabase/migrations --dialect postgres",
     "format": "prettier . --write",
     "prepare": "husky",
     "type-check": "tsc --noEmit"
@@ -20,6 +22,9 @@
     ],
     "*.{json,md,css}": [
       "prettier --write"
+    ],
+    "supabase/migrations/**/*.sql": [
+      "python3 scripts/check_sql_naming.py"
     ]
   },
   "dependencies": {

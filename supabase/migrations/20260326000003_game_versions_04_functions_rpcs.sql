@@ -90,7 +90,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.create_game_version_draft(uuid, uuid, jsonb, uuid, text, integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.create_game_version_draft(uuid, uuid, jsonb, uuid, text, integer) FROM public;
 
 -- -----------------------------------------------------------------------------
 -- game container sync — keep games as the mutable working copy, versions as history
@@ -357,7 +357,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.sync_games_game_versions() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.sync_games_game_versions() FROM public;
 
 -- -----------------------------------------------------------------------------
 -- games pointer guard — current_published_version_id must point at a published
@@ -398,7 +398,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.guard_games_published_pointer() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.guard_games_published_pointer() FROM public;
 
 -- -----------------------------------------------------------------------------
 -- game_versions lifecycle guard — draft editable, published/archived immutable
@@ -472,7 +472,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.guard_game_versions_lifecycle() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.guard_game_versions_lifecycle() FROM public;
 
 -- -----------------------------------------------------------------------------
 -- game_runs version pinning
@@ -543,4 +543,4 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.bind_game_run_version() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.bind_game_run_version() FROM public;

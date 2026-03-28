@@ -48,7 +48,6 @@ SELECT
   CASE
     WHEN g.published_version IS NOT NULL OR g.published_at IS NOT NULL THEN g.published_at
     WHEN g.status::text IN ('published', 'archived') THEN g.published_at -- one-time legacy bootstrap
-    ELSE NULL
   END,
   g.teacher_id,
   g.created_at,
@@ -64,7 +63,6 @@ SET
       OR g.published_at IS NOT NULL
       OR g.status::text IN ('published', 'archived') -- one-time legacy bootstrap
     THEN gv.id
-    ELSE NULL
   END,
   version = gv.version_no,
   published_version = CASE
@@ -72,18 +70,12 @@ SET
       OR g.published_at IS NOT NULL
       OR g.status::text IN ('published', 'archived') -- one-time legacy bootstrap
     THEN gv.version_no
-    ELSE NULL
   END,
-  is_draft = CASE
-    WHEN g.published_version IS NOT NULL
+  is_draft = NOT COALESCE(g.published_version IS NOT NULL
       OR g.published_at IS NOT NULL
-      OR g.status::text IN ('published', 'archived')
-    THEN false
-    ELSE true
-  END,
+      OR g.status::text IN ('published', 'archived'), FALSE),
   archived_at = CASE
     WHEN g.status::text = 'archived' THEN COALESCE(g.archived_at, g.published_at, g.created_at)
-    ELSE NULL
   END
 FROM public.game_versions gv
 WHERE gv.game_id = g.id

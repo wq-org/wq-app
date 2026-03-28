@@ -64,7 +64,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_classroom_attendance_schedule() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_classroom_attendance_schedule() FROM public;
 
 CREATE OR REPLACE FUNCTION public.validate_classroom_attendance_schedule_exception()
 RETURNS trigger
@@ -107,7 +107,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_classroom_attendance_schedule_exception() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_classroom_attendance_schedule_exception() FROM public;
 
 CREATE OR REPLACE FUNCTION public.validate_classroom_attendance_session()
 RETURNS trigger
@@ -213,7 +213,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_classroom_attendance_session() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_classroom_attendance_session() FROM public;
 
 CREATE OR REPLACE FUNCTION public.sync_classroom_attendance_schedule_sessions()
 RETURNS trigger
@@ -298,7 +298,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.sync_classroom_attendance_schedule_sessions() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.sync_classroom_attendance_schedule_sessions() FROM public;
 
 -- -----------------------------------------------------------------------------
 -- updated_at triggers

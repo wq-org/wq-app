@@ -40,13 +40,13 @@ COMMENT ON FUNCTION app.caller_can_manage_attendance_schedule(uuid, uuid) IS
 CREATE OR REPLACE FUNCTION public.create_classroom_attendance_schedule(
   p_classroom_id uuid,
   p_course_id uuid,
-  p_days_of_week smallint[],
+  p_days_of_week smallint [],
   p_start_time time,
   p_end_time time,
   p_timezone text,
   p_active_from date DEFAULT (now()::date),
   p_active_until date DEFAULT NULL,
-  p_is_active boolean DEFAULT true
+  p_is_active boolean DEFAULT TRUE
 )
 RETURNS public.classroom_attendance_schedules
 LANGUAGE plpgsql
@@ -113,21 +113,21 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.create_classroom_attendance_schedule(uuid, uuid, smallint[], time, time, text, date, date, boolean) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.create_classroom_attendance_schedule(uuid, uuid, smallint[], time, time, text, date, date, boolean) TO authenticated;
+REVOKE ALL ON FUNCTION public.create_classroom_attendance_schedule(uuid, uuid, smallint [], time, time, text, date, date, boolean) FROM public;
+GRANT EXECUTE ON FUNCTION public.create_classroom_attendance_schedule(uuid, uuid, smallint [], time, time, text, date, date, boolean) TO authenticated;
 
-COMMENT ON FUNCTION public.create_classroom_attendance_schedule(uuid, uuid, smallint[], time, time, text, date, date, boolean) IS
+COMMENT ON FUNCTION public.create_classroom_attendance_schedule(uuid, uuid, smallint [], time, time, text, date, date, boolean) IS
   'Creates a teacher-managed recurring attendance schedule for a classroom course.';
 
 CREATE OR REPLACE FUNCTION public.update_classroom_attendance_schedule(
   p_schedule_id uuid,
-  p_days_of_week smallint[] DEFAULT NULL,
+  p_days_of_week smallint [] DEFAULT NULL,
   p_start_time time DEFAULT NULL,
   p_end_time time DEFAULT NULL,
   p_timezone text DEFAULT NULL,
   p_active_from date DEFAULT NULL,
   p_active_until date DEFAULT NULL,
-  p_clear_active_until boolean DEFAULT false,
+  p_clear_active_until boolean DEFAULT FALSE,
   p_is_active boolean DEFAULT NULL
 )
 RETURNS public.classroom_attendance_schedules
@@ -172,10 +172,10 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.update_classroom_attendance_schedule(uuid, smallint[], time, time, text, date, date, boolean, boolean) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.update_classroom_attendance_schedule(uuid, smallint[], time, time, text, date, date, boolean, boolean) TO authenticated;
+REVOKE ALL ON FUNCTION public.update_classroom_attendance_schedule(uuid, smallint [], time, time, text, date, date, boolean, boolean) FROM public;
+GRANT EXECUTE ON FUNCTION public.update_classroom_attendance_schedule(uuid, smallint [], time, time, text, date, date, boolean, boolean) TO authenticated;
 
-COMMENT ON FUNCTION public.update_classroom_attendance_schedule(uuid, smallint[], time, time, text, date, date, boolean, boolean) IS
+COMMENT ON FUNCTION public.update_classroom_attendance_schedule(uuid, smallint [], time, time, text, date, date, boolean, boolean) IS
   'Updates a recurring attendance schedule.';
 
 CREATE OR REPLACE FUNCTION public.archive_classroom_attendance_schedule(
@@ -227,7 +227,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.archive_classroom_attendance_schedule(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.archive_classroom_attendance_schedule(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION public.archive_classroom_attendance_schedule(uuid) TO authenticated;
 
 COMMENT ON FUNCTION public.archive_classroom_attendance_schedule(uuid) IS
@@ -302,7 +302,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.upsert_classroom_attendance_schedule_exception(uuid, date, text, time, time, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.upsert_classroom_attendance_schedule_exception(uuid, date, text, time, time, text) FROM public;
 GRANT EXECUTE ON FUNCTION public.upsert_classroom_attendance_schedule_exception(uuid, date, text, time, time, text) TO authenticated;
 
 COMMENT ON FUNCTION public.upsert_classroom_attendance_schedule_exception(uuid, date, text, time, time, text) IS
@@ -349,7 +349,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.delete_classroom_attendance_schedule_exception(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.delete_classroom_attendance_schedule_exception(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION public.delete_classroom_attendance_schedule_exception(uuid) TO authenticated;
 
 COMMENT ON FUNCTION public.delete_classroom_attendance_schedule_exception(uuid) IS
@@ -512,7 +512,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.reconcile_classroom_attendance_sessions(uuid, date, date) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.reconcile_classroom_attendance_sessions(uuid, date, date) FROM public;
 
 COMMENT ON FUNCTION public.reconcile_classroom_attendance_sessions(uuid, date, date) IS
   'Internal helper that reconciles generated attendance sessions for a schedule and date range.';
@@ -547,7 +547,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.materialize_classroom_attendance_sessions(uuid, date, date) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.materialize_classroom_attendance_sessions(uuid, date, date) FROM public;
 GRANT EXECUTE ON FUNCTION public.materialize_classroom_attendance_sessions(uuid, date, date) TO authenticated;
 
 COMMENT ON FUNCTION public.materialize_classroom_attendance_sessions(uuid, date, date) IS

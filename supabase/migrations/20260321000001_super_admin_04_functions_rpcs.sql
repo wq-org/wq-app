@@ -5,12 +5,12 @@
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION audit.log_event(
-  p_event_type     text,
-  p_subject_type   text  DEFAULT NULL,
-  p_subject_id     uuid  DEFAULT NULL,
-  p_institution_id uuid  DEFAULT NULL,
-  p_payload        jsonb DEFAULT NULL,
-  p_metadata       jsonb DEFAULT NULL
+  p_event_type text,
+  p_subject_type text DEFAULT NULL,
+  p_subject_id uuid DEFAULT NULL,
+  p_institution_id uuid DEFAULT NULL,
+  p_payload jsonb DEFAULT NULL,
+  p_metadata jsonb DEFAULT NULL
 )
 RETURNS uuid
 LANGUAGE sql

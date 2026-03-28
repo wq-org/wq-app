@@ -13,7 +13,7 @@ CREATE INDEX IF NOT EXISTS idx_classroom_attendance_schedules_is_active
   ON public.classroom_attendance_schedules (is_active, active_from, active_until);
 
 CREATE INDEX IF NOT EXISTS idx_classroom_attendance_schedules_days_of_week
-  ON public.classroom_attendance_schedules USING GIN (days_of_week);
+  ON public.classroom_attendance_schedules USING gin (days_of_week);
 
 CREATE INDEX IF NOT EXISTS idx_classroom_attendance_schedule_exceptions_institution_id
   ON public.classroom_attendance_schedule_exceptions (institution_id);
@@ -24,4 +24,3 @@ CREATE INDEX IF NOT EXISTS idx_classroom_attendance_schedule_exceptions_schedule
 CREATE INDEX IF NOT EXISTS idx_classroom_attendance_sessions_schedule_id
   ON public.classroom_attendance_sessions (schedule_id)
   WHERE schedule_id IS NOT NULL;
-

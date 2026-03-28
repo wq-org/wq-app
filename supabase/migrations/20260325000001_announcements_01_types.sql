@@ -5,4 +5,3 @@
 -- =============================================================================
 
 -- No new types in this migration (use text + CHECK constraints on tables).
-

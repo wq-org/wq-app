@@ -12,13 +12,13 @@ ALTER TABLE public.classroom_attendance_sessions FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS classroom_attendance_sessions_all_super_admin ON public.classroom_attendance_sessions;
 CREATE POLICY classroom_attendance_sessions_all_super_admin ON public.classroom_attendance_sessions
   FOR ALL TO authenticated
-  USING  ((SELECT app.is_super_admin()) IS TRUE)
+  USING ((SELECT app.is_super_admin()) IS TRUE)
   WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS classroom_attendance_sessions_all_institution_admin ON public.classroom_attendance_sessions;
 CREATE POLICY classroom_attendance_sessions_all_institution_admin ON public.classroom_attendance_sessions
   FOR ALL TO authenticated
-  USING  (institution_id IN (SELECT app.admin_institution_ids()))
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
   WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
 
 DROP POLICY IF EXISTS classroom_attendance_sessions_all_teacher ON public.classroom_attendance_sessions;
@@ -55,13 +55,13 @@ ALTER TABLE public.classroom_attendance_records FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS classroom_attendance_records_all_super_admin ON public.classroom_attendance_records;
 CREATE POLICY classroom_attendance_records_all_super_admin ON public.classroom_attendance_records
   FOR ALL TO authenticated
-  USING  ((SELECT app.is_super_admin()) IS TRUE)
+  USING ((SELECT app.is_super_admin()) IS TRUE)
   WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS classroom_attendance_records_all_institution_admin ON public.classroom_attendance_records;
 CREATE POLICY classroom_attendance_records_all_institution_admin ON public.classroom_attendance_records
   FOR ALL TO authenticated
-  USING  (institution_id IN (SELECT app.admin_institution_ids()))
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
   WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
 
 DROP POLICY IF EXISTS classroom_attendance_records_all_teacher ON public.classroom_attendance_records;
@@ -124,13 +124,13 @@ ALTER TABLE public.topic_availability_rules FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS topic_availability_rules_all_super_admin ON public.topic_availability_rules;
 CREATE POLICY topic_availability_rules_all_super_admin ON public.topic_availability_rules
   FOR ALL TO authenticated
-  USING  ((SELECT app.is_super_admin()) IS TRUE)
+  USING ((SELECT app.is_super_admin()) IS TRUE)
   WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS topic_availability_rules_all_institution_admin ON public.topic_availability_rules;
 CREATE POLICY topic_availability_rules_all_institution_admin ON public.topic_availability_rules
   FOR ALL TO authenticated
-  USING  (institution_id IN (SELECT app.admin_institution_ids()))
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
   WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
 
 DROP POLICY IF EXISTS topic_availability_rules_all_teacher ON public.topic_availability_rules;

@@ -44,7 +44,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.normalize_cloud_file_from_folder() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.normalize_cloud_file_from_folder() FROM public;
 
 CREATE OR REPLACE FUNCTION public.validate_cloud_folder_tree()
 RETURNS trigger
@@ -93,7 +93,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_cloud_folder_tree() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_cloud_folder_tree() FROM public;
 
 CREATE OR REPLACE FUNCTION public.validate_cloud_files_institution_coherence()
 RETURNS trigger
@@ -169,7 +169,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_cloud_files_institution_coherence() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_cloud_files_institution_coherence() FROM public;
 
 CREATE OR REPLACE FUNCTION public.validate_cloud_folders_institution_coherence()
 RETURNS trigger
@@ -245,7 +245,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_cloud_folders_institution_coherence() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_cloud_folders_institution_coherence() FROM public;
 
 CREATE OR REPLACE FUNCTION public.sync_cloud_file_links_institution_from_file()
 RETURNS trigger
@@ -273,7 +273,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.sync_cloud_file_links_institution_from_file() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.sync_cloud_file_links_institution_from_file() FROM public;
 
 -- -----------------------------------------------------------------------------
 -- updated_at

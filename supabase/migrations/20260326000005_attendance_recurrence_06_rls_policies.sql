@@ -12,13 +12,13 @@ ALTER TABLE public.classroom_attendance_schedules FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS classroom_attendance_schedules_all_super_admin ON public.classroom_attendance_schedules;
 CREATE POLICY classroom_attendance_schedules_all_super_admin ON public.classroom_attendance_schedules
   FOR ALL TO authenticated
-  USING  ((SELECT app.is_super_admin()) IS TRUE)
+  USING ((SELECT app.is_super_admin()) IS TRUE)
   WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS classroom_attendance_schedules_all_institution_admin ON public.classroom_attendance_schedules;
 CREATE POLICY classroom_attendance_schedules_all_institution_admin ON public.classroom_attendance_schedules
   FOR ALL TO authenticated
-  USING  (institution_id IN (SELECT app.admin_institution_ids()))
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
   WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
 
 DROP POLICY IF EXISTS classroom_attendance_schedules_all_teacher ON public.classroom_attendance_schedules;
@@ -40,13 +40,13 @@ ALTER TABLE public.classroom_attendance_schedule_exceptions FORCE ROW LEVEL SECU
 DROP POLICY IF EXISTS classroom_attendance_schedule_exceptions_all_super_admin ON public.classroom_attendance_schedule_exceptions;
 CREATE POLICY classroom_attendance_schedule_exceptions_all_super_admin ON public.classroom_attendance_schedule_exceptions
   FOR ALL TO authenticated
-  USING  ((SELECT app.is_super_admin()) IS TRUE)
+  USING ((SELECT app.is_super_admin()) IS TRUE)
   WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 DROP POLICY IF EXISTS classroom_attendance_schedule_exceptions_all_institution_admin ON public.classroom_attendance_schedule_exceptions;
 CREATE POLICY classroom_attendance_schedule_exceptions_all_institution_admin ON public.classroom_attendance_schedule_exceptions
   FOR ALL TO authenticated
-  USING  (institution_id IN (SELECT app.admin_institution_ids()))
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
   WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
 
 DROP POLICY IF EXISTS classroom_attendance_schedule_exceptions_all_teacher ON public.classroom_attendance_schedule_exceptions;
@@ -68,4 +68,3 @@ CREATE POLICY classroom_attendance_schedule_exceptions_all_teacher ON public.cla
         AND app.caller_can_manage_attendance_schedule(schedule_row.classroom_id, schedule_row.course_id)
     )
   );
-

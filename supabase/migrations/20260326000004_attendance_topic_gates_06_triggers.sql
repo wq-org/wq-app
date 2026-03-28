@@ -46,7 +46,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_classroom_attendance_session() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_classroom_attendance_session() FROM public;
 
 CREATE OR REPLACE FUNCTION public.validate_classroom_attendance_record()
 RETURNS trigger
@@ -94,7 +94,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.validate_classroom_attendance_record() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.validate_classroom_attendance_record() FROM public;
 
 CREATE OR REPLACE FUNCTION public.normalize_topic_availability_rule()
 RETURNS trigger
@@ -153,7 +153,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.normalize_topic_availability_rule() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.normalize_topic_availability_rule() FROM public;
 
 -- -----------------------------------------------------------------------------
 -- updated_at triggers

@@ -110,7 +110,7 @@ AS $$
   ORDER BY p.display_name NULLS LAST, p.username NULLS LAST, p.email NULLS LAST;
 $$;
 
-REVOKE ALL ON FUNCTION public.list_searchable_profiles_in_my_institutions() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.list_searchable_profiles_in_my_institutions() FROM public;
 GRANT EXECUTE ON FUNCTION public.list_searchable_profiles_in_my_institutions() TO authenticated;
 
 -- =============================================================================
@@ -161,5 +161,5 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.list_admin_users() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.list_admin_users() FROM public;
 GRANT EXECUTE ON FUNCTION public.list_admin_users() TO authenticated;

@@ -5,4 +5,3 @@
 
 -- No mandatory backfill is needed.
 -- Existing attendance sessions remain manual one-offs unless a teacher creates a schedule.
-

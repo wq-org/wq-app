@@ -10,8 +10,8 @@ ALTER TABLE public.game_versions FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS game_versions_all_super_admin ON public.game_versions;
 CREATE POLICY game_versions_all_super_admin ON public.game_versions
   FOR ALL TO authenticated
-  USING  ((select app.is_super_admin()) is true)
-  WITH CHECK ((select app.is_super_admin()) is true);
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 -- Teachers manage the versions of their own games.
 DROP POLICY IF EXISTS game_versions_select_teacher ON public.game_versions;
@@ -22,7 +22,7 @@ CREATE POLICY game_versions_select_teacher ON public.game_versions
       SELECT 1
       FROM public.games g
       WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (select app.auth_uid())
+        AND g.teacher_id = (SELECT app.auth_uid())
     )
   );
 
@@ -31,12 +31,12 @@ CREATE POLICY game_versions_insert_teacher ON public.game_versions
   FOR INSERT TO authenticated
   WITH CHECK (
     status = 'draft'
-    AND created_by = (select app.auth_uid())
+    AND created_by = (SELECT app.auth_uid())
     AND EXISTS (
       SELECT 1
       FROM public.games g
       WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (select app.auth_uid())
+        AND g.teacher_id = (SELECT app.auth_uid())
     )
   );
 
@@ -49,7 +49,7 @@ CREATE POLICY game_versions_update_teacher ON public.game_versions
       SELECT 1
       FROM public.games g
       WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (select app.auth_uid())
+        AND g.teacher_id = (SELECT app.auth_uid())
     )
   )
   WITH CHECK (
@@ -58,7 +58,7 @@ CREATE POLICY game_versions_update_teacher ON public.game_versions
       SELECT 1
       FROM public.games g
       WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (select app.auth_uid())
+        AND g.teacher_id = (SELECT app.auth_uid())
     )
   );
 
@@ -66,7 +66,7 @@ CREATE POLICY game_versions_update_teacher ON public.game_versions
 DROP POLICY IF EXISTS game_versions_select_institution_admin ON public.game_versions;
 CREATE POLICY game_versions_select_institution_admin ON public.game_versions
   FOR SELECT TO authenticated
-  USING (institution_id IN (select app.admin_institution_ids()));
+  USING (institution_id IN (SELECT app.admin_institution_ids()));
 
 -- Active institution members can read published versions from their institutions.
 DROP POLICY IF EXISTS game_versions_select_member_published ON public.game_versions;
@@ -74,7 +74,7 @@ CREATE POLICY game_versions_select_member_published ON public.game_versions
   FOR SELECT TO authenticated
   USING (
     status = 'published'
-    AND institution_id IN (select app.member_institution_ids())
+    AND institution_id IN (SELECT app.member_institution_ids())
   );
 
 -- Historical runs should still resolve the exact version they used.
@@ -89,7 +89,7 @@ CREATE POLICY game_versions_select_run_access ON public.game_versions
         AND (
           (
             gr.classroom_id IS NULL
-            AND gr.institution_id IN (select app.member_institution_ids())
+            AND gr.institution_id IN (SELECT app.member_institution_ids())
           )
           OR (
             gr.classroom_id IS NOT NULL
@@ -97,13 +97,14 @@ CREATE POLICY game_versions_select_run_access ON public.game_versions
               SELECT 1
               FROM public.classroom_members cm
               WHERE cm.classroom_id = gr.classroom_id
-                AND cm.user_id = (select app.auth_uid())
+                AND cm.user_id = (SELECT app.auth_uid())
                 AND cm.withdrawn_at IS NULL
             )
           )
-          OR gr.started_by = (select app.auth_uid())
+          OR gr.started_by = (SELECT app.auth_uid())
           OR gr.game_id IN (
-            SELECT id FROM public.games WHERE teacher_id = (select app.auth_uid())
+            SELECT id FROM public.games
+WHERE teacher_id = (SELECT app.auth_uid())
           )
         )
     )
@@ -114,7 +115,7 @@ DROP POLICY IF EXISTS games_select_authenticated_published ON public.games;
 CREATE POLICY games_select_authenticated_published ON public.games
   FOR SELECT TO authenticated
   USING (
-    (select app.is_super_admin()) is true
+    (SELECT app.is_super_admin()) IS TRUE
     OR (
       current_published_version_id IS NOT NULL
       AND EXISTS (
@@ -126,8 +127,7 @@ CREATE POLICY games_select_authenticated_published ON public.games
       )
       AND (
         institution_id IS NULL
-        OR institution_id IN (select app.member_institution_ids())
+        OR institution_id IN (SELECT app.member_institution_ids())
       )
     )
   );
-

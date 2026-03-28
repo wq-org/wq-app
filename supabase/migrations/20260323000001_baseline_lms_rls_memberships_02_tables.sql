@@ -9,7 +9,7 @@
 -- =============================================================================
 ALTER TABLE public.games
   ADD COLUMN IF NOT EXISTS institution_id uuid
-    REFERENCES public.institutions(id) ON DELETE SET NULL;
+    REFERENCES public.institutions (id) ON DELETE SET NULL;
 
 -- =============================================================================
 -- 1a2. Games → optional course link (one game, one course); drop legacy topic_id
@@ -27,7 +27,7 @@ ALTER TABLE public.games
 
 ALTER TABLE public.games
   ADD CONSTRAINT fk_games_courses
-  FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE SET NULL;
+  FOREIGN KEY (course_id) REFERENCES public.courses (id) ON DELETE SET NULL;
 
 COMMENT ON COLUMN public.games.institution_id IS 'Owning institution. Nullable for legacy rows; new inserts should always set this.';
 
