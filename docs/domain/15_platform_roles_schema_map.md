@@ -19,6 +19,9 @@ What is implemented in Postgres today, grounded in the migration chain. Use this
 | 9     | `20260323000005_chat.sql`                                   | conversations, conversation_members, messages                                                                                                                                                                                                                                                                                                |
 | 10    | `20260323000006_notifications.sql`                          | notifications, notification_preferences                                                                                                                                                                                                                                                                                                      |
 | 11    | `20260323000007_rewards_mvp.sql`                            | point_ledger, classroom_reward_settings                                                                                                                                                                                                                                                                                                      |
+| …     | `20260326000001` … `20260326000005` (split suites)          | lexical content, announcements, game_versions, attendance + topic gates, attendance recurrence                                                                                                                                                                                                                                               |
+| 12    | `20260328000001_cloud_assets_*.sql`                         | `cloud_folders`, `cloud_files`, `cloud_file_links`, `cloud_file_shares`; ACL helpers; `register_cloud_file_record`; quota trigger on `institution_quotas_usage.storage_used_bytes`                                                                                                                                                           |
+| 13    | `20260328000002_storage_cloud_objects_rls_01_policies.sql`  | `storage.objects` policies for `…/files/…` paths joined to `cloud_files`                                                                                                                                                                                                                                                                     |
 
 **Apply the full chain** on fresh databases: behavior in this doc is the **final** state after all files above (e.g. student `courses` visibility and `topics_enrolled_read` assume `20260323000002` has run).
 
@@ -44,16 +47,20 @@ Authorization is driven by `institution_id` + **active** `institution_membership
 
 RLS helpers:
 
-| Helper                                | Returns      | Used for                                                                                      |
-| ------------------------------------- | ------------ | --------------------------------------------------------------------------------------------- |
-| `app.member_institution_ids()`        | `SETOF uuid` | Active institution membership (`status`, `deleted_at`, `left_institution_at`)                 |
-| `app.admin_institution_ids()`         | `SETOF uuid` | Active institution_admin membership                                                           |
-| `app.is_institution_admin(uuid)`      | `boolean`    | Scalar admin check                                                                            |
-| `app.is_institution_member(uuid)`     | `boolean`    | Scalar member check                                                                           |
-| `app.current_institution_id()`        | `uuid`       | `profiles.active_institution_id`                                                              |
-| `app.my_active_classroom_ids()`       | `SETOF uuid` | Classrooms where caller has active `classroom_members`                                        |
-| `app.student_can_access_course(uuid)` | `boolean`    | Published `classroom_course_link` in an assigned classroom (**Variant A**; no enrollment row) |
-| `app.student_can_access_lesson(uuid)` | `boolean`    | Lesson’s course passes `student_can_access_course`                                            |
+| Helper                                                                              | Returns      | Used for                                                                                          |
+| ----------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------- |
+| `app.member_institution_ids()`                                                      | `SETOF uuid` | Active institution membership (`status`, `deleted_at`, `left_institution_at`)                     |
+| `app.admin_institution_ids()`                                                       | `SETOF uuid` | Active institution_admin membership                                                               |
+| `app.is_institution_admin(uuid)`                                                    | `boolean`    | Scalar admin check                                                                                |
+| `app.is_institution_member(uuid)`                                                   | `boolean`    | Scalar member check                                                                               |
+| `app.current_institution_id()`                                                      | `uuid`       | `profiles.active_institution_id`                                                                  |
+| `app.my_active_classroom_ids()`                                                     | `SETOF uuid` | Classrooms where caller has active `classroom_members`                                            |
+| `app.student_can_access_course(uuid)`                                               | `boolean`    | Published `classroom_course_link` in an assigned classroom (**Variant A**; no enrollment row)     |
+| `app.student_can_access_lesson(uuid)`                                               | `boolean`    | Lesson’s course passes `student_can_access_course`                                                |
+| `app.user_can_select_cloud_file(uuid)`                                              | `boolean`    | Scoped read for `cloud_files` / Storage `…/files/…` keys (SECURITY DEFINER; avoids RLS recursion) |
+| `app.user_can_manage_cloud_file(uuid)`                                              | `boolean`    | Owner, institution admin, or `edit` share on the file                                             |
+| `app.user_can_select_cloud_folder(uuid)` / `app.user_can_manage_cloud_folder(uuid)` | `boolean`    | Folder traversal and rename/delete (parallel scope rules)                                         |
+| `app.user_can_select_game_version(uuid)`                                            | `boolean`    | Read access to a `game_versions` row (aligned with version RLS)                                   |
 
 Many policies combine institution membership, classroom assignment, and ownership (`teacher_id`, `primary_teacher_id`).
 
@@ -497,33 +504,39 @@ classroom_reward_settings (institution_id, classroom_id)
 
 ## Storage
 
-Bucket `cloud` uses path convention `{institution_id}/{role}/{user_id}/filename`.
+Bucket `cloud` supports **two path layouts** after `20260328000002_storage_cloud_objects_rls_01_policies.sql`:
 
-Phase A (`20260323000001`) retargeted storage policies from `user_institutions` to `app.member_institution_ids()`:
+1. **Canonical metadata-backed objects:** `{institution_id}/files/{cloud_file_id}` — INSERT/SELECT/ALL require a matching `public.cloud_files` row (owner for writes; `app.user_can_select_cloud_file` / `app.user_can_manage_cloud_file` for scoped access).
+2. **Legacy layout:** `{institution_id}/{role}/{user_id}/filename` — unchanged Phase A behavior (INSERT/ALL own segment; **SELECT** still any member of the institution for that folder[1]).
 
-| Policy                                 | Operation | Rule                                                                         |
-| -------------------------------------- | --------- | ---------------------------------------------------------------------------- |
-| Users upload to own institution folder | INSERT    | Folder[1] in member_institution_ids, folder[2] is role, folder[3] = auth.uid |
-| Users read files from own institution  | SELECT    | Folder[1] in member_institution_ids                                          |
-| Users manage own files                 | ALL       | Folder[1] in member_institution_ids + folder[3] = auth.uid                   |
-| authenticated_read_avatars_bucket      | SELECT    | bucket_id = 'avatars' (public read for auth users)                           |
+Earlier Phase A (`20260323000001`) retargeted membership to `app.member_institution_ids()`. Policy names on `storage.objects` are snake*case (`storage_objects*\*`).
+
+| Policy                                                  | Operation | Rule (effective after cloud storage migration)                                                                            |
+| ------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- |
+| storage_objects_insert_authenticated_institution_folder | INSERT    | `files/` segment: `cloud_files` row exists, same `name`, `owner_user_id = auth.uid`; **or** legacy role path + own uid    |
+| storage_objects_select_authenticated_institution        | SELECT    | `files/` segment: `app.user_can_select_cloud_file`; **or** legacy path with segment[2] ≠ `files` (broad institution read) |
+| storage_objects_all_authenticated_own_object            | ALL       | `files/` segment: owner + `user_can_manage_cloud_file`; **or** legacy own-folder manage                                   |
+| authenticated_read_avatars_bucket (baseline)            | SELECT    | `bucket_id = 'avatars'`                                                                                                   |
+
+See [16_cloud_storage.md](16_cloud_storage.md) for tables, scopes, and quota counters.
 
 ---
 
 ## Cross-reference: docs vs implemented tables
 
-| Doc                          | Implemented in Postgres                                                                                                                 | Deferred (product doc only)                                         |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| 01_super_admin               | audit.events, plan_catalog, feature_definitions, plan_entitlements, subscriptions, entitlement overrides, billing_providers, admin RPCs | —                                                                   |
-| 02_institution               | institution_memberships, org hierarchy, settings, quotas, invoices, DSR, bootstrap                                                      | —                                                                   |
-| 03_teacher                   | RLS on shared LMS tables via membership; teacher_followers                                                                              | Detailed teacher dashboard analytics views                          |
-| 04_student                   | RLS classroom-delivered courses (`student_can_access_*`), `lesson_progress`, `learning_events`, game participation                      | Student dashboard aggregation views                                 |
-| 05_classroom                 | `classroom_members` (roster), `classrooms`, `classroom_course_links`                                                                    | —                                                                   |
-| 06_note                      | notes (single-row JSONB MVP, personal + collaborative)                                                                                  | Normalized note_blocks, block-level versioning, offline queue       |
-| 07_course                    | lesson_progress, learning_events, content_schema_version                                                                                | Presentation mode state, inline knowledge checks                    |
-| 08_game_studio               | `games` (+ `course_id`, `institution_id`), game_runs, game_sessions, game_session_participants                                          | Realtime sync protocol (app layer); lesson-level placement deferred |
-| 09_task                      | tasks, task_groups, task_group_members, task_submissions                                                                                | PDF export, advanced rubric grading                                 |
-| 10_reward_system             | point_ledger, classroom_reward_settings                                                                                                 | Full joker_redemptions table with approval workflow, badges table   |
-| 11_chat                      | conversations, conversation_members, messages                                                                                           | Moderation queue table, safeguarding RPC (app layer for now)        |
-| 12_notification              | notifications, notification_preferences                                                                                                 | Email digest job, push notification integration                     |
-| 14_subscription_entitlements | Covered in 01 migrations                                                                                                                | Stripe/PSP webhook handler (edge function)                          |
+| Doc                          | Implemented in Postgres                                                                                                                 | Deferred (product doc only)                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 01_super_admin               | audit.events, plan_catalog, feature_definitions, plan_entitlements, subscriptions, entitlement overrides, billing_providers, admin RPCs | —                                                                                       |
+| 02_institution               | institution_memberships, org hierarchy, settings, quotas, invoices, DSR, bootstrap                                                      | —                                                                                       |
+| 03_teacher                   | RLS on shared LMS tables via membership; teacher_followers                                                                              | Detailed teacher dashboard analytics views                                              |
+| 04_student                   | RLS classroom-delivered courses (`student_can_access_*`), `lesson_progress`, `learning_events`, game participation                      | Student dashboard aggregation views                                                     |
+| 05_classroom                 | `classroom_members` (roster), `classrooms`, `classroom_course_links`                                                                    | —                                                                                       |
+| 06_note                      | notes (single-row JSONB MVP, personal + collaborative)                                                                                  | Normalized note_blocks, block-level versioning, offline queue                           |
+| 07_course                    | lesson_progress, learning_events, content_schema_version                                                                                | Presentation mode state, inline knowledge checks                                        |
+| 08_game_studio               | `games` (+ `course_id`, `institution_id`), game_runs, game_sessions, game_session_participants                                          | Realtime sync protocol (app layer); lesson-level placement deferred                     |
+| 09_task                      | tasks, task_groups, task_group_members, task_submissions                                                                                | PDF export, advanced rubric grading                                                     |
+| 10_reward_system             | point_ledger, classroom_reward_settings                                                                                                 | Full joker_redemptions table with approval workflow, badges table                       |
+| 11_chat                      | conversations, conversation_members, messages                                                                                           | Moderation queue table, safeguarding RPC (app layer for now)                            |
+| 12_notification              | notifications, notification_preferences                                                                                                 | Email digest job, push notification integration                                         |
+| 14_subscription_entitlements | Covered in 01 migrations                                                                                                                | Stripe/PSP webhook handler (edge function)                                              |
+| 16_cloud_storage             | `cloud_*` tables, Storage RLS bridge, `register_cloud_file_record`, quota delta trigger                                                 | Signed URL edge policies, virus scan pipeline, backfill legacy objects to `cloud_files` |
