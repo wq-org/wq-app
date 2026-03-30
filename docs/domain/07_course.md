@@ -14,6 +14,31 @@ Course must provide a structured learning path with measurable outcomes:
 
 ---
 
+## Course delivery model (versions, deliveries, progress)
+
+Operational LMS delivery is modeled in three layers:
+
+1. **Authoring (mutable)** — `courses`, `topics`, `lessons` hold the live editor state. Teachers iterate here while drafting.
+2. **Immutable snapshots** — `course_versions` plus `course_version_topics` / `course_version_lessons` store a published copy of structure and lesson payloads (`content`, `pages`, `content_schema_version`). A version row is the tenant boundary for published content.
+3. **Classroom rollout** — `course_deliveries` binds `classroom_id` + `course_id` + `course_version_id`, with status (`draft`, `scheduled`, `active`, …), `published_at`, and optional soft delete (`deleted_at`).
+
+**Legacy bridge:** `classroom_course_links` remains in the schema for historical rows; new entitlements and analytics should rely on `course_deliveries`. Backfill sets `course_deliveries.legacy_classroom_course_link_id` where a link existed.
+
+**Student progress:** `lesson_progress` and `learning_events` include `course_delivery_id` (not null). Uniqueness is `(user_id, lesson_id, course_delivery_id)` so the same canonical `lesson_id` can be tracked separately per classroom delivery.
+
+**RLS helpers:**
+
+- `app.student_can_access_course(course_id)` — published `course_deliveries` for an assigned classroom (`classroom_members`) in the caller’s institutions.
+- `app.student_can_access_course_delivery(course_delivery_id)` — same check for a specific delivery row.
+- `app.student_can_access_lesson(lesson_id)` — delivery access plus proof that the lesson appears in that delivery’s `course_version` snapshot (`source_lesson_id`).
+- `app.lesson_in_course_delivery_version(lesson_id, course_delivery_id)` — snapshot membership only (used by policies).
+
+**Migrations:** `supabase/migrations/20260329000001_course_delivery_01_types.sql` through `20260329000008_course_delivery_08_attendance_functions.sql`.
+
+See also: [role_flow_diagrams.md](../architecture/role_flow_diagrams.md), [db_design_principles.md](../architecture/db_design_principles.md).
+
+---
+
 ## Functional areas
 
 ### 1) Course authoring

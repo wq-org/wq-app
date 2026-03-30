@@ -1,6 +1,6 @@
 # Role flow diagrams (RLS-aligned)
 
-ASCII flows for **super_admin**, **institution_admin**, **teacher**, and **student**, grounded in the current Supabase migration chain (`20260209*`, `20260321*`, `20260323*`). Policy names refer to Postgres RLS; behavior not listed here is default-deny for `authenticated` unless a policy applies. Diagrams assume the **full** migration chain has been applied (see doc 15 migration table).
+ASCII flows for **super_admin**, **institution_admin**, **teacher**, and **student**, grounded in the current Supabase migration chain (`20260209*`, `20260321*`, `20260323*`, `20260325*` announcements, `20260326*` attendance / topic gates / game versions, `20260328*` cloud assets + storage RLS, `20260329*` course versions + `course_deliveries`). Policy names refer to Postgres RLS; behavior not listed here is default-deny for `authenticated` unless a policy applies. Diagrams assume the **full** migration chain has been applied (see migration table at the end).
 
 **See also:** [15_platform_roles_schema_map.md](../domain/15_platform_roles_schema_map.md) (tables, helpers, domain trees).
 
@@ -8,15 +8,21 @@ ASCII flows for **super_admin**, **institution_admin**, **teacher**, and **stude
 
 ## Shared helpers (quick reference)
 
-| Helper                                | Role                                                                                           |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `app.is_super_admin()`                | Platform bypass on `*_super_admin` policies                                                    |
-| `app.member_institution_ids()`        | Active `institution_memberships` (`left_institution_at IS NULL`, etc.)                         |
-| `app.admin_institution_ids()`         | Active institution_admin memberships                                                           |
-| `app.auth_uid()`                      | Current user id                                                                                |
-| `app.my_active_classroom_ids()`       | Classrooms with active `classroom_members` (`withdrawn_at IS NULL`)                            |
-| `app.student_can_access_course(uuid)` | Published `classroom_course_links` in an assigned classroom (**Variant A**; no enrollment row) |
-| `app.student_can_access_lesson(uuid)` | Lesson’s course passes `student_can_access_course`                                             |
+| Helper                                                                            | Role                                                                                                                              |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `app.is_super_admin()`                                                            | Platform bypass on `*_super_admin` policies                                                                                       |
+| `app.member_institution_ids()`                                                    | Active `institution_memberships` (`left_institution_at IS NULL`, etc.)                                                            |
+| `app.admin_institution_ids()`                                                     | Active institution_admin memberships                                                                                              |
+| `app.auth_uid()`                                                                  | Current user id                                                                                                                   |
+| `app.my_active_classroom_ids()`                                                   | Classrooms with active `classroom_members` (`withdrawn_at IS NULL`)                                                               |
+| `app.student_can_access_course(uuid)`                                             | Published `course_deliveries` (`published_at` + `active`/`scheduled`) in an assigned classroom (**Variant A**; no enrollment row) |
+| `app.student_can_access_course_delivery(uuid)`                                    | Same as above, scoped to one `course_deliveries.id` row                                                                           |
+| `app.lesson_in_course_delivery_version(uuid, uuid)`                               | Canonical `lessons.id` exists in the delivery’s `course_version` snapshot (`source_lesson_id`)                                    |
+| `app.student_can_access_lesson(uuid)`                                             | Published delivery access + lesson snapshot membership (`source_lesson_id`)                                                       |
+| `app.caller_can_manage_attendance_schedule(uuid, uuid)`                           | Teacher-style manage for recurring schedule rows (`classroom_id`, `course_id`)                                                    |
+| `app.student_can_access_topic(uuid)`                                              | Student topic visibility (locks / topic_availability_rules + course access)                                                       |
+| `app.user_can_select_cloud_folder(uuid)` / `app.user_can_select_cloud_file(uuid)` | Cloud asset SELECT scope (folders/files/links)                                                                                    |
+| `app.user_can_manage_cloud_folder(uuid)` / `app.user_can_manage_cloud_file(uuid)` | Primary teacher / co-teacher / admin-style manage for cloud rows                                                                  |
 
 ---
 
@@ -47,7 +53,11 @@ Super admin logs in
 └── EVERY TENANT / LMS / DOMAIN TABLE (except audit.events + public.profiles)
       └── *_super_admin → usually FOR ALL (full bypass)
             e.g. institutions, faculties…classrooms, classroom_members, courses, games,
-                 game_runs, tasks, notes, conversations, notifications, point_ledger, …
+                 game_runs, tasks, notes, conversations, notifications, point_ledger,
+                 classroom_announcements, course_announcements,
+                 classroom_attendance_schedules / _exceptions / _sessions / _records,
+                 topic_availability_rules, game_versions,
+                 cloud_folders, cloud_files, cloud_file_links, cloud_file_shares, …
       └── public.profiles — no *_super_admin policy (baseline user policies only)
 ```
 
@@ -93,13 +103,22 @@ Institution admin logs in (active membership, left_institution_at IS NULL)
 │   ├── tasks, task_groups, task_group_members, task_submissions — FOR ALL (tasks_institution_admin, …)
 │   ├── notes — SELECT (notes_institution_admin_read)
 │   ├── game_runs, game_sessions, game_session_participants — SELECT (gr/gs/gsp_institution_admin_read)
+│   ├── game_versions — SELECT (game_versions_select_institution_admin)
 │   ├── conversations — SELECT (conv_institution_admin); messages — SELECT (msg_institution_admin_read)
 │   ├── notifications, notification_preferences — SELECT (notif_*, np_* institution admin read)
 │   ├── point_ledger — FOR ALL (pl_institution_admin)
-│   └── classroom_reward_settings — FOR ALL (crs_institution_admin)
+│   ├── classroom_reward_settings — FOR ALL (crs_institution_admin)
+│   ├── classroom_announcements — SELECT (classroom_announcements_select_institution_admin)
+│   ├── course_announcements — SELECT (course_announcements_select_institution_admin)
+│   ├── attendance — FOR ALL schedules/exceptions/sessions/records (*_all_institution_admin on each table)
+│   └── topic_availability_rules — FOR ALL (topic_availability_rules_all_institution_admin)
 │
-└── STORAGE (Phase A)
-      └── cloud bucket — policies use member_institution_ids() (same as other members)
+├── CLOUD ASSETS (DB + bucket)
+│   ├── cloud_folders, cloud_files, cloud_file_links, cloud_file_shares — FOR ALL (*_all_institution_admin)
+│   └── storage.objects (cloud prefix) — institution path policies (20260328000002_storage_cloud_objects_rls)
+│
+└── STORAGE (legacy / avatars)
+      └── cloud bucket — member_institution_ids() + path rules (same family as Phase A baseline)
 ```
 
 **Note:** Institution admins **see all classrooms** in their tenant via `classrooms_institution_admin`. Students and teachers use **`classrooms_scoped_read`** (assigned / primary / co-teacher only).
@@ -124,7 +143,9 @@ Teacher logs in (active institution membership)
 │   ├── classrooms — SELECT (classrooms_scoped_read): primary_teacher OR active classroom_members (incl. co_teacher)
 │   ├── classroom_members — FOR ALL for own classrooms (classroom_members_primary_teacher_manage)
 │   │     └── SELECT roster (classroom_members_teacher_roster_read) + co-teacher sees peers in same class
-│   ├── classroom_course_links — FOR ALL (ccl_teacher_manage): primary OR co_teacher OR course author
+│   ├── classroom_course_links — FOR ALL (ccl_teacher_manage): primary OR co_teacher OR course author (legacy bridge)
+│   ├── course_versions / course_version_topics / course_version_lessons — teacher + admin + student delivery reads (20260329*)
+│   ├── course_deliveries — FOR ALL teacher paths + SELECT classroom members (20260329*)
 │   └── classroom_reward_settings — FOR ALL for primary or co_teacher class (crs_teacher_manage)
 │
 ├── ENTITLEMENTS / FEATURE CATALOG (any institution member)
@@ -147,12 +168,25 @@ Teacher logs in (active institution membership)
 │   ├── game_sessions — FOR ALL on accessible runs (gs_run_access)
 │   └── point_ledger — FOR ALL for primary or co_teacher classrooms (pl_teacher_manage)
 │
+├── ANNOUNCEMENTS (20260325000001)
+│   ├── classroom_announcements — FOR ALL primary/co_teacher class (classroom_announcements_all_teacher)
+│   └── course_announcements — FOR ALL own courses (course_announcements_all_teacher)
+│
+├── ATTENDANCE — schedules & live sessions (20260326000005 / 20260326000004)
+│   ├── classroom_attendance_schedules (+ exceptions) — FOR ALL via caller_can_manage_attendance_schedule (…_all_teacher)
+│   ├── classroom_attendance_sessions — FOR ALL classroom/course manager (…_all_teacher)
+│   └── classroom_attendance_records — FOR ALL via parent session (…_all_teacher)
+│
+├── GAME VERSIONING (20260326000003)
+│   └── game_versions — SELECT/INSERT/UPDATE own game’s draft versions (game_versions_*_teacher); published row reads via member policies
+│
 ├── CHAT / NOTIFICATIONS / STORAGE
 │   ├── conversations — INSERT (conv_member_insert); participant read via conversation_members
 │   ├── messages — INSERT (msg_member_insert); UPDATE own (msg_own_update)
 │   ├── teacher_followers — SELECT self as teacher (tf_own_read)
 │   ├── notifications — own read/update (notif_own, notif_own_update)
-│   └── cloud bucket — institution path policies (Phase A)
+│   ├── cloud_folders / cloud_files / links / shares — manage via user_can_manage_* when primary/co_teacher scope applies
+│   └── storage.objects — cloud path policies (20260328000002)
 │
 └── Teacher creates a classroom-scoped task (flow)
       │
@@ -173,8 +207,8 @@ Teacher logs in (active institution membership)
 
 **Important scope split (Variant A)**
 
-- **`courses` SELECT:** for `profiles.role = student`, only courses that pass `student_can_access_course(id)` (published + linked to an assigned classroom via `classroom_course_links.published_at`). Teachers and institution admins still use the broader published-in-tenant branch of `courses_published_read`.
-- **Topics / lessons SELECT:** only if the course passes `student_can_access_course` / the lesson `student_can_access_lesson` (`topics_enrolled_read` / `lessons_enrolled_read`).
+- **`courses` SELECT:** for `profiles.role = student`, only courses that pass `student_can_access_course(id)` (published + `course_deliveries` with `published_at` and `active`/`scheduled` in an assigned classroom). Teachers and institution admins still use the broader published-in-tenant branch of `courses_published_read`.
+- **Topics / lessons SELECT:** only if the course passes `student_can_access_course` / the lesson `student_can_access_lesson` (Variant A policies: `topics_select_member` / `lessons_select_member`).
 - **Classrooms SELECT:** only **assigned** (or you appear as member/co-teacher) — `classrooms_scoped_read`, **not** all classrooms in the school.
 
 ```
@@ -192,26 +226,38 @@ Student logs in (active institution_memberships; left_institution_at IS NULL)
 │   ├── Courses — SELECT published courses **delivered to the student’s classes**
 │   │     (courses_published_read: student branch uses student_can_access_course(id))
 │   │
-│   ├── classroom_course_links — SELECT only for classrooms in app.my_active_classroom_ids()
-│   │     (ccl_member_read)
+│   ├── classroom_course_links — SELECT only for classrooms in app.my_active_classroom_ids() (ccl_member_read; legacy)
+│   ├── course_deliveries — SELECT for classroom members (course_deliveries_select_classroom_member)
 │   │
 │   ├── institution_entitlement_overrides — SELECT (inst_entitlement_overrides_member_read)
 │   ├── feature_definitions — SELECT (feature_defs_authenticated_read)
 │   │
-│   └── Games — SELECT published where institution_id ∈ member_institution_ids OR NULL legacy
-│         (games_published_read; games.institution_id set in Phase A)
+│   └── Games — SELECT via `games_select_authenticated_published` (published version pointer) or legacy branch where applicable
+│         (see game_versions + baseline LMS policies)
 │
 ├── CLASSROOM DELIVERY (content access)
 │   │
-│   └── Teacher/admin sets published_at on classroom_course_link; student in classroom_members
+│   └── Operational delivery: `course_deliveries` (published + active/scheduled); legacy `classroom_course_links` backfilled
 │         → student_can_access_course / student_can_access_lesson (no course_enrollments row required)
 │
 ├── AFTER ACCESS TO COURSE
-│   ├── topics — SELECT (topics_enrolled_read + student_can_access_course)
-│   ├── lessons — SELECT (lessons_enrolled_read + student_can_access_lesson)
-│   ├── lesson_progress — UPSERT own rows (lp_own + student_can_access_lesson)
-│   └── learning_events — INSERT own (le_student_insert); SELECT own (le_student_own_read)
+│   ├── topics — SELECT (topics_select_member): super_admin OR student_can_access_course(course_id) OR student_can_access_topic(id) — topic locks / availability enforced here
+│   ├── lessons — SELECT (lessons_select_member + student_can_access_lesson)
+│   ├── lesson_progress — UPSERT own rows (lesson_progress_all_own_student + `course_delivery_id` + snapshot helpers)
+│   └── learning_events — INSERT own (learning_events_insert_student + `course_delivery_id`); SELECT own (learning_events_select_student_own)
 │         └── App must send events; DB does not auto-log “open lesson”
+│
+├── ANNOUNCEMENTS
+│   ├── classroom_announcements — SELECT published for my_active_classroom_ids (classroom_announcements_select_member)
+│   └── course_announcements — SELECT published when student_can_access_course(course_id) (course_announcements_select_member)
+│
+├── ATTENDANCE
+│   ├── classroom_attendance_sessions — SELECT if active classroom_members (classroom_attendance_sessions_select_member)
+│   ├── classroom_attendance_records — SELECT own rows (classroom_attendance_records_select_own)
+│   └── INSERT/UPDATE self check-in rows — classroom_attendance_records_insert_self_check_in / _update_self_check_in (source = self_check_in)
+│
+├── TOPIC AVAILABILITY (read)
+│   └── topic_availability_rules — SELECT when student_can_access_course (topic_availability_rules_select_member)
 │
 ├── PLAY GAMES
 │   ├── game_runs — SELECT (gr_member_read):
@@ -219,6 +265,8 @@ Student logs in (active institution_memberships; left_institution_at IS NULL)
 │   │     classroom_id SET → only if active classroom_members for that classroom
 │   ├── game_sessions — SELECT (gs_member_read) — same logic via parent run
 │   ├── game_session_participants — FOR ALL own row (gsp_own); SELECT leaderboard (gsp_member_read) — scoped like run
+│   ├── game_versions — SELECT published in institution (game_versions_select_member_published) + run-linked (game_versions_select_run_access)
+│   ├── games SELECT — published pointer: games_select_authenticated_published (current_published_version_id → published game_version)
 │   └── Solo/versus/classroom modes — see shared tree below
 │
 ├── TASKS & NOTES
@@ -235,7 +283,8 @@ Student logs in (active institution_memberships; left_institution_at IS NULL)
 │   ├── point_ledger — pl_own_read; classmates via pl_member_read (same classroom via my_active_classroom_ids)
 │   └── classroom_reward_settings — crs_member_read (assigned classrooms)
 │
-├── STORAGE — cloud bucket paths under institution (Phase A policies)
+├── STORAGE — cloud bucket paths + DB cloud tables
+│   └── cloud_folders / cloud_files / links — SELECT via user_can_select_* when scope allows (member)
 │
 └── teacher_followers (optional, social only)
       ├── INSERT follow (tf_student_insert) — same institution via institution_memberships for both users
@@ -313,9 +362,85 @@ Rewards
 
 ---
 
+## Shared: announcements (20260325)
+
+```
+classroom_announcements (per classroom)
+  super_admin → FOR ALL
+  institution_admin → SELECT all rows in tenant
+  primary_teacher / co_teacher → FOR ALL (WITH CHECK created_by = auth.uid())
+  member → SELECT published + deleted_at IS NULL + my_active_classroom_ids()
+
+course_announcements (per course)
+  super_admin → FOR ALL
+  institution_admin → SELECT
+  course teacher (courses.teacher_id) → FOR ALL (WITH CHECK created_by = auth.uid())
+  member → SELECT published; students gated by student_can_access_course(course_id)
+```
+
+---
+
+## Shared: attendance & topic gates (20260326)
+
+```
+Recurring schedules (20260326000005)
+  classroom_attendance_schedules, classroom_attendance_schedule_exceptions
+    super_admin / institution_admin / teacher (caller_can_manage_attendance_schedule) → FOR ALL
+
+Live sessions & marks (20260326000004)
+  classroom_attendance_sessions
+    teacher (caller_can_manage_classroom OR caller_can_manage_course) → FOR ALL
+    member → SELECT if active classroom_members for that classroom
+  classroom_attendance_records
+    teacher → FOR ALL via parent session
+    student → SELECT own; INSERT/UPDATE self_check_in only (source = self_check_in)
+
+topic_availability_rules
+  super_admin / institution_admin → FOR ALL
+  teacher (caller_can_manage_course) → FOR ALL
+  member → SELECT if course manager OR (member + student_can_access_course)
+
+topics (policy replaced)
+  topics_select_member: super_admin OR caller_can_manage_course OR student_can_access_topic(id)
+  → ties lesson/topic visibility to locks + rules (see app.student_can_access_topic)
+```
+
+---
+
+## Shared: game versions & published pointer (20260326)
+
+```
+game_versions
+  Teacher — draft-only INSERT/UPDATE on own games; SELECT own rows
+  Institution admin — SELECT all versions in tenant
+  Member — SELECT status = published + institution membership
+  Anyone with run access — SELECT version attached to a game_run you can see (game_versions_select_run_access)
+
+games
+  games_select_authenticated_published — requires current_published_version_id → published game_versions row
+  (replaces “any published game row” with versioned publish; see also games_schema_flex migration)
+```
+
+---
+
+## Shared: cloud assets & storage (20260328)
+
+```
+cloud_folders, cloud_files, cloud_file_links, cloud_file_shares (public + RLS)
+  super_admin / institution_admin → FOR ALL
+  SELECT scope — user_can_select_cloud_folder / user_can_select_cloud_file / link helpers
+  INSERT — owner_user_id = auth.uid() + member_institution_ids()
+  UPDATE/DELETE — user_can_manage_* (primary teacher / co_teacher / manager paths in functions)
+
+storage.objects (cloud bucket)
+  storage_cloud_objects_rls — path + institution checks; aligns with DB file rows where applicable
+```
+
+---
+
 ## Product notes (not enforced by all RLS)
 
-1. **Course catalog for students:** RLS aligns catalog with delivery — students only **see** courses linked to their classrooms (`courses_published_read` student branch). “My courses” in the app should match the same source (`classroom_course_links` + `classroom_members`).
+1. **Course catalog for students:** RLS aligns catalog with delivery — students only **see** courses linked to their classrooms (`courses_published_read` student branch). “My courses” in the app should match the same source (`course_deliveries` + `classroom_members`; `classroom_course_links` is legacy/backfill).
 2. **Self-enroll:** Disabled for students (`ce_student_insert` / `ce_student_delete` removed in Phase A migration chain). Partial-class cohorts need another mechanism (extra class/group or reintroducing enrollments).
 3. **Unpublish / draft courses:** Topic/lesson access for students follows `student_can_access_course` / `student_can_access_lesson` (Variant A). Decide product rules when `courses.is_published = false` but a classroom link still exists, or when the link is unpublished — policies may need tightening beyond current migrations.
 4. **Telemetry:** No DB triggers on SELECT; `learning_events` rows require **client inserts**.
@@ -324,15 +449,24 @@ Rewards
 
 ## Migration files referenced
 
-| Area                                          | Files                                                                  |
-| --------------------------------------------- | ---------------------------------------------------------------------- |
-| Baseline LMS                                  | `20260209000001_baseline_schema.sql`, `20260209000002_super_admin.sql` |
-| Platform billing                              | `20260321000001_super_admin.sql`                                       |
-| Tenant org, memberships, classrooms           | `20260321000002_institution_admin.sql`                                 |
-| LMS RLS, games `institution_id` / `course_id` | `20260323000001_baseline_lms_rls_memberships.sql`                      |
-| Classroom links, progress, learning_events    | `20260323000002_classroom_course_links_lesson_progress.sql`            |
-| Game runtime                                  | `20260323000003_game_runtime.sql`                                      |
-| Tasks / notes                                 | `20260323000004_tasks_notes.sql`                                       |
-| Chat                                          | `20260323000005_chat.sql`                                              |
-| Notifications                                 | `20260323000006_notifications.sql`                                     |
-| Rewards                                       | `20260323000007_rewards_mvp.sql`                                       |
+| Area                                                                 | Files (split `_01`…`_08` in repo)                                                                            |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Baseline LMS                                                         | `20260209000001_baseline_schema.sql`, `20260209000002_super_admin.sql`                                       |
+| Platform billing                                                     | `20260321000001_super_admin_*`                                                                               |
+| Tenant org, memberships, classrooms                                  | `20260321000002_institution_admin_*`                                                                         |
+| LMS RLS, games `institution_id` / `course_id`                        | `20260323000001_baseline_lms_rls_memberships_*`                                                              |
+| Classroom links, progress, learning_events                           | `20260323000002_classroom_course_links_lesson_progress_*`                                                    |
+| Course versions + deliveries + delivery-scoped progress/events       | `20260329000001_course_delivery_01_types.sql` … `20260329000008_course_delivery_08_attendance_functions.sql` |
+| Game runtime                                                         | `20260323000003_game_runtime_*`                                                                              |
+| Tasks / notes                                                        | `20260323000004_tasks_notes_*`                                                                               |
+| Chat                                                                 | `20260323000005_chat_*`                                                                                      |
+| Notifications                                                        | `20260323000006_notifications_*`                                                                             |
+| Rewards                                                              | `20260323000007_rewards_mvp_*`                                                                               |
+| Announcements                                                        | `20260325000001_announcements_*`                                                                             |
+| `games` JSON flexibility (optional)                                  | `20260326000002_games_schema_flex.sql`                                                                       |
+| Lexical / content columns (tables)                                   | `20260326000001_lexical_content_*`                                                                           |
+| Attendance topic gates + `topic_availability_rules`, `topics` policy | `20260326000004_attendance_topic_gates_*`                                                                    |
+| Attendance recurrence (schedules, exceptions, materialization)       | `20260326000005_attendance_recurrence_*`                                                                     |
+| Game versions + `games.current_published_version_id`                 | `20260326000003_game_versions_*`                                                                             |
+| Cloud assets (folders, files, links, shares)                         | `20260328000001_cloud_assets_*`                                                                              |
+| Storage `storage.objects` RLS for cloud                              | `20260328000002_storage_cloud_objects_rls_01_policies.sql`                                                   |

@@ -29,7 +29,7 @@ isProject: false
 
 - Existing config: [.sqlfluff](.sqlfluff) — `dialect = postgres`, `max_line_length = 100`, `exclude_rules = LT05`, capitalisation (keywords upper, identifiers/functions lower, literals/types upper), 2-space indent, `indented_joins = True`.
 - Existing ignore: [.sqlfluffignore](.sqlfluffignore) — `.supabase/`, `node_modules/`, `dist/` (does **not** ignore migrations; good).
-- Existing script: [scripts/check_sql_naming.py](scripts/check_sql_naming.py) — regex checks for `CREATE TRIGGER` (`trg_*`), indexes (`idx_*`), functions (bans `fn_`/`do_`/`tmp_`), policies (min 3 `_` segments), and bad abbreviations (`ca_`, `ccl_`, …).
+- Existing script: [scripts/check_sql_naming.py](scripts/check_sql_naming.py) — regex checks for `CREATE TRIGGER` (`trg_`*), indexes (`idx_*`), functions (bans `fn_`/`do_`/`tmp_`), policies (min 3 `_` segments), and bad abbreviations (`ca_`, `ccl_`, …).
 - **Naming doc path:** use [docs/architecture/db_naming_convention.md](docs/architecture/db_naming_convention.md) (there is no `docs/db_naming_convention.md` unless you add a stub link).
 - **No Python dev deps** in repo today; [package.json](package.json) has no `sqlfluff` script. SQLFluff is normally installed via **pip** ([Getting started](https://docs.sqlfluff.com/en/stable/gettingstarted.html)).
 
@@ -50,7 +50,7 @@ Map **db_design_principles** and **naming** to SQLFluff where rules exist; avoid
 | Consistent layout / readability           | Keep indentation; adjust `max_line_length` if 100 fights migration banners (or keep and exclude LT05-related layout rules as needed).                                                          |
 | Keywords vs identifiers (readable SQL)    | Keep current capitalisation blocks; verify `timestamptz` / `uuid` vs `TIMESTAMPTZ` — may need rule tweaks if CP rules fight Postgres idioms.                                                   |
 | Explicit joins (anti implicit comma join) | Enable / keep structure rules that flag comma joins if not already (verify rule IDs for your SQLFluff version in [rules reference](https://docs.sqlfluff.com/en/stable/reference/rules.html)). |
-| `SELECT *` discouraged                    | Enable **ST06** / star rules if available for dialect (optional: can be noisy in seed snippets—scope lint to `migrations/` only).                                                              |
+| `SELECT `* discouraged                    | Enable **ST06** / star rules if available for dialect (optional: can be noisy in seed snippets—scope lint to `migrations/` only).                                                              |
 
 
 Concrete edits:
@@ -71,7 +71,7 @@ Align with [docs/architecture/db_naming_convention.md](docs/architecture/db_nami
 
 | Convention                    | Proposed check                                                                                                                                                                                                                                                                      |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fk_{from_table}_{to_table}`  | Regex `CONSTRAINT\s+(fk_[a-z0-9_]+)\s+FOREIGN KEY` — warn if name does not start with `fk_` (optional: allow known legacy exceptions list).                                                                                                                                         |
+| `fk_{from_table}_{to_table}`  | Regex `CONSTRAINT\s+(fk_[a-z0-9_]+)\s+FOREIGN KEY` — warn if name does not start with `fk`_ (optional: allow known legacy exceptions list).                                                                                                                                         |
 | `uq_{table}_{column}`         | Same for `UNIQUE` / `CONSTRAINT uq_`.                                                                                                                                                                                                                                               |
 | `chk_{table}_{rule}`          | Same for `CHECK` / `CONSTRAINT chk_`.                                                                                                                                                                                                                                               |
 | RLS `{table}_{action}_{role}` | Extend `POLICY_RE` to strip quotes; optional allowlist for `*_all_super_admin` / `*_all_institution_admin` as valid `action` = `all`.                                                                                                                                               |

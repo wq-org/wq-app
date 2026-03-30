@@ -65,6 +65,8 @@ You will store two kinds of "structured content" that change often:
 
 "Versioned JSONB + immutable publish" is a project guideline; it aligns with auditability and reduces accidental cross-tenant leakage because you can treat published content as read-only and cacheable.
 
+**LMS course delivery** follows the same idea: published course structure is copied into `course_versions` and snapshot tables (`course_version_topics`, `course_version_lessons`); classroom rollout uses `course_deliveries`, and student progress/events are scoped by `course_delivery_id`. See [course_delivery.md](course_delivery.md).
+
 ## Multi-tenancy and authorization with RLS
 
 ### RLS foundations you must design for
