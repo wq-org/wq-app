@@ -16,12 +16,12 @@ What is implemented in Postgres today, grounded in the migration chain. Use this
 | 6     | `20260323000002_classroom_course_links_lesson_progress.sql`                                         | `app.student_can_access_course()` / `app.student_can_access_lesson()`, classroom_course_links, lesson_progress, learning_events, topics/lessons student read aligned with classroom delivery, `lessons.content_schema_version`                                                                                                               |
 | 7     | `20260323000003_game_runtime.sql`                                                                   | game_runs, game_sessions, game_session_participants                                                                                                                                                                                                                                                                                          |
 | 8     | `20260323000004_tasks_notes.sql`                                                                    | tasks, task_groups, task_group_members, task_submissions, notes, task audit trigger                                                                                                                                                                                                                                                          |
-| 9     | `20260323000006_notifications.sql`                                                                  | notifications, notification_preferences                                                                                                                                                                                                                                                                                                      |
-| 10    | `20260323000007_rewards_mvp.sql`                                                                    | point_ledger, classroom_reward_settings                                                                                                                                                                                                                                                                                                      |
+| 9     | `20260323000007_rewards_mvp.sql`                                                                    | point_ledger, classroom_reward_settings                                                                                                                                                                                                                                                                                                      |
 | …     | `20260325000001` … `20260326000005` (split suites)                                                  | announcements, lexical content, game_versions, attendance + topic gates, attendance recurrence                                                                                                                                                                                                                                               |
 | …     | `20260329000001_course_delivery_*` … `008`                                                          | course_versions, snapshots, course_deliveries, lesson_progress/learning_events `course_delivery_id`, delivery helpers + RLS, attendance alignment                                                                                                                                                                                            |
 | …     | `20260329000009_chat_*` … `015`                                                                     | conversations, conversation_members, messages, conversation_contexts, delivery-aware RLS                                                                                                                                                                                                                                                     |
 | …     | `20260329000016_cloud_assets_*` … `022`; `20260329000023_storage_cloud_objects_rls_01_policies.sql` | `cloud_folders`, `cloud_files`, `cloud_file_links`, `cloud_file_shares`; ACL helpers; `storage.objects` policies for `…/files/…` paths joined to `cloud_files`                                                                                                                                                                               |
+| …     | `20260329000024_notifications_*` … `030`                                                            | `notification_events`, `notification_deliveries`, `notification_preferences`; `create_notification_event_with_deliveries`, scoped prefs, dedupe                                                                                                                                                                                              |
 
 **Apply the full chain** on fresh databases: behavior in this doc is the **final** state after all files above (e.g. student `courses` visibility and `topics_enrolled_read` assume `20260323000002` has run).
 
@@ -98,7 +98,7 @@ super_admin
     ├── game_runs, game_sessions, game_session_participants — full CRUD
     ├── tasks, task_groups, notes — full CRUD
     ├── conversations, messages — full CRUD
-    ├── notifications — full CRUD
+    ├── notification_events, notification_deliveries, notification_preferences — full CRUD
     └── point_ledger, classroom_reward_settings — full CRUD
 ```
 
@@ -146,8 +146,9 @@ institution_admin
 │   ├── game_session_participants — read (gsp_institution_admin_read)
 │   ├── conversations — read (conv_institution_admin)
 │   ├── messages — read (msg_institution_admin_read)
-│   ├── notifications — read (notif_institution_admin_read)
-│   ├── notification_preferences — read (np_institution_admin_read)
+│   ├── notification_events — read (notification_events_select_institution_admin)
+│   ├── notification_deliveries — read (notification_deliveries_select_institution_admin)
+│   ├── notification_preferences — read (notification_preferences_select_institution_admin)
 │   ├── point_ledger — full CRUD (pl_institution_admin)
 │   └── classroom_reward_settings — full CRUD (crs_institution_admin)
 │
@@ -199,7 +200,7 @@ teacher
 │   ├── teacher_followers — read own followers (tf_own_read)
 │   ├── conversations — create in own institution (conv_member_insert)
 │   ├── messages — send/edit own (msg_member_insert, msg_own_update)
-│   └── notifications — read/update own (notif_own, notif_own_update)
+│   └── notification_deliveries — read/update own (notification_deliveries_select_own, notification_deliveries_update_own); notification_events — read via recipient policy
 │
 └── Storage
     └── cloud bucket — upload/read/manage own files in institution path
@@ -251,8 +252,9 @@ student
 │   └── messages — edit/soft-delete own (msg_own_update)
 │
 ├── Notifications and preferences
-│   ├── notifications — read own (notif_own), mark read (notif_own_update)
-│   └── notification_preferences — manage own (np_own)
+│   ├── notification_deliveries — read/update own (inbox + mark read)
+│   ├── notification_events — read when a delivery exists for caller
+│   └── notification_preferences — manage own (notification_preferences_all_own)
 │
 ├── Rewards
 │   ├── point_ledger — read own (pl_own_read)
@@ -452,22 +454,27 @@ conversations (institution_id, type, created_by, classroom_id?)
 
 ### Notifications
 
-From `20260323000006_notifications.sql` (Phase F).
+From `20260329000024_notifications_*` … `030` (Phase F; runs after course delivery, chat, cloud).
 
 ```
-notifications (institution_id, user_id, category, title, body, data jsonb)
+notification_events (institution_id, event_type, category, title, body, link_payload, dedupe_key, …context FKs…)
 ├── category — text with CHECK (learning | task | reward | social | system)
-├── is_read / read_at — mark-read state
-├── Inserted by service role / edge functions (no INSERT policy for authenticated)
-├── Users read own (notif_own) and mark read (notif_own_update)
-└── Institution admins can read for monitoring (notif_institution_admin_read)
+├── Optional scope: classroom_id, course_delivery_id, task_id, game_session_id, conversation_id
+├── Canonical fact; dedupe via partial unique (institution_id, dedupe_key) when set
+├── Inserts via public.create_notification_event_with_deliveries (SECURITY DEFINER); no direct INSERT for authenticated
+└── Recipients read event rows only if they have a delivery (notification_events_select_recipient)
 
-notification_preferences (user_id, institution_id, category)
-├── category — same CHECK as notifications
-├── enabled — toggle per category
-├── email_digest — daily | weekly | never
-├── quiet_start / quiet_end — quiet hours (time type)
-└── Users manage own (np_own); scoped per institution + category
+notification_deliveries (notification_event_id, user_id, channel, read_at, dismissed_at, …)
+├── channel — notification_delivery_channel (in_app | email | push)
+├── Read/dismiss state per user × channel
+├── Users SELECT/UPDATE own rows; institution_admin SELECT for monitoring
+└── Institution admins join to events in tenant
+
+notification_preferences (user_id, institution_id, category, optional classroom_id / course_delivery_id)
+├── Base row: both scope columns NULL (one per user+institution+category)
+├── Overrides: classroom-only or course_delivery row (partial unique indexes)
+├── enabled, email_digest, quiet_start / quiet_end, mute_until
+└── Users manage own; institution_admin SELECT
 ```
 
 ### Rewards
@@ -537,6 +544,6 @@ See [16_cloud_storage.md](16_cloud_storage.md) for tables, scopes, and quota cou
 | 09_task                      | tasks, task_groups, task_group_members, task_submissions                                                                                | PDF export, advanced rubric grading                                                     |
 | 10_reward_system             | point_ledger, classroom_reward_settings                                                                                                 | Full joker_redemptions table with approval workflow, badges table                       |
 | 11_chat                      | conversations, conversation_members, messages                                                                                           | Moderation queue table, safeguarding RPC (app layer for now)                            |
-| 12_notification              | notifications, notification_preferences                                                                                                 | Email digest job, push notification integration                                         |
+| 12_notification              | notification_events, notification_deliveries, notification_preferences                                                                  | Email digest job, push channel deliveries, preference precedence helper                 |
 | 14_subscription_entitlements | Covered in 01 migrations                                                                                                                | Stripe/PSP webhook handler (edge function)                                              |
 | 16_cloud_storage             | `cloud_*` tables, Storage RLS bridge, `register_cloud_file_record`, quota delta trigger                                                 | Signed URL edge policies, virus scan pipeline, backfill legacy objects to `cloud_files` |

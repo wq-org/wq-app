@@ -53,7 +53,7 @@ Super admin logs in
 └── EVERY TENANT / LMS / DOMAIN TABLE (except audit.events + public.profiles)
       └── *_super_admin → usually FOR ALL (full bypass)
             e.g. institutions, faculties…classrooms, classroom_members, courses, games,
-                 game_runs, tasks, notes, conversations, notifications, point_ledger,
+                 game_runs, tasks, notes, conversations, notification_deliveries, point_ledger,
                  classroom_announcements, course_announcements,
                  classroom_attendance_schedules / _exceptions / _sessions / _records,
                  topic_availability_rules, game_versions,
@@ -105,7 +105,7 @@ Institution admin logs in (active membership, left_institution_at IS NULL)
 │   ├── game_runs, game_sessions, game_session_participants — SELECT (gr/gs/gsp_institution_admin_read)
 │   ├── game_versions — SELECT (game_versions_select_institution_admin)
 │   ├── conversations — SELECT (conv_institution_admin); messages — SELECT (msg_institution_admin_read)
-│   ├── notifications, notification_preferences — SELECT (notif_*, np_* institution admin read)
+│   ├── notification_events, notification_deliveries, notification_preferences — SELECT (institution admin monitor paths)
 │   ├── point_ledger — FOR ALL (pl_institution_admin)
 │   ├── classroom_reward_settings — FOR ALL (crs_institution_admin)
 │   ├── classroom_announcements — SELECT (classroom_announcements_select_institution_admin)
@@ -184,7 +184,7 @@ Teacher logs in (active institution membership)
 │   ├── conversations / conversation_contexts — INSERT (conversations_insert_member, conversation_contexts_insert_conversation_creator); participant SELECT + caller_eligible_for_conversation_context
 │   ├── messages — INSERT (messages_insert_member); UPDATE own (messages_update_own)
 │   ├── teacher_followers — SELECT self as teacher (tf_own_read)
-│   ├── notifications — own read/update (notif_own, notif_own_update)
+│   ├── notification_deliveries — own read/update (notification_deliveries_select_own, notification_deliveries_update_own)
 │   ├── cloud_folders / cloud_files / links / shares — manage via user_can_manage_* when primary/co_teacher scope applies
 │   └── storage.objects — cloud path policies (20260329000023)
 │
@@ -279,7 +279,7 @@ Student logs in (active institution_memberships; left_institution_at IS NULL)
 │
 ├── CHAT / NOTIFICATIONS / REWARDS
 │   ├── conversations / conversation_contexts / messages — participant + caller_eligible_for_conversation_context (conversations_select_participant, messages_*)
-│   ├── notifications — notif_own, notif_own_update
+│   ├── notification_deliveries / notification_events — inbox read + mark read (recipient policies)
 │   ├── point_ledger — pl_own_read; classmates via pl_member_read (same classroom via my_active_classroom_ids)
 │   └── classroom_reward_settings — crs_member_read (assigned classrooms)
 │
@@ -353,9 +353,9 @@ Chat (20260329)
   Helpers: app.user_in_active_conversation, app.caller_eligible_for_conversation_context
   RLS: participant read/send + contextual eligibility; institution_admin / super_admin paths; safeguarding matrix in docs/domain/11_chat.md mostly app-layer
 
-Notifications
-  notifications (service role inserts) — user read/update own; institution_admin read monitor
-  notification_preferences — user manages own
+Notifications (20260329000024–030)
+  notification_events + notification_deliveries — fan-out via create_notification_event_with_deliveries; user read/update own deliveries; institution_admin read monitor
+  notification_preferences — scoped base + overrides; user manages own
 
 Rewards
   point_ledger — append-only; teacher/institution_admin manage per policies; student read own + class leaderboard scope
@@ -462,7 +462,7 @@ storage.objects (cloud bucket)
 | Game runtime                                                         | `20260323000003_game_runtime_*`                                                                              |
 | Tasks / notes                                                        | `20260323000004_tasks_notes_*`                                                                               |
 | Chat                                                                 | `20260329000009_chat_*` … `20260329000015_chat_*` (types, tables, indexes, helpers, backfill, triggers, RLS) |
-| Notifications                                                        | `20260323000006_notifications_*`                                                                             |
+| Notifications                                                        | `20260329000024_notifications_*` … `030`                                                                     |
 | Rewards                                                              | `20260323000007_rewards_mvp_*`                                                                               |
 | Announcements                                                        | `20260325000001_announcements_*`                                                                             |
 | `games` JSON flexibility (optional)                                  | `20260326000002_games_schema_flex.sql`                                                                       |

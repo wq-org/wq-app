@@ -2,9 +2,14 @@
 
 Keeps students on track and teachers informed without overwhelming either. Delivered in-app first — email as opt-in backup. No WhatsApp, no third-party messengers (DSGVO Art. 32).
 
-# Database: notification `category`
+# Database model (migrations `20260329000024_notifications_*` … `030`)
 
-Columns `notifications.category` and `notification_preferences.category` are **`text NOT NULL`** with the same **`CHECK (category IN (...))`** (migration `20260323000006_notifications_02_tables.sql`):
+Three tables: **canonical event** → **per-user deliveries** → **preferences** (with optional scope).
+
+## `notification_events`
+
+- **`event_type`** (`text NOT NULL`) — fine-grained code (e.g. `task_due_soon`); product-defined.
+- **`category`** (`text NOT NULL`) — same five buckets everywhere, with **`CHECK (category IN (...))`**:
 
 | Value      | Use                                                                |
 | ---------- | ------------------------------------------------------------------ |
@@ -14,7 +19,27 @@ Columns `notifications.category` and `notification_preferences.category` are **`
 | `social`   | Chat, DMs, lobby/announcements, follows                            |
 | `system`   | Platform or institution-wide broadcasts                            |
 
-Finer detail (e.g. which lesson, which task) lives in `notifications.data` (JSONB) and the human-readable `title` / `body`, not in extra category literals. New categories require a migration that updates both `CHECK` constraints.
+- **Structured scope (nullable FKs):** `classroom_id`, `course_delivery_id`, `task_id`, `game_session_id`, `conversation_id` — use for muting, analytics, and deep links; do not rely on JSON alone.
+- **`link_payload`** (`jsonb`) — UI routing only (route, tab, anchor), not the sole source of context.
+- **`dedupe_key`** (`text`, optional) — partial unique with `institution_id` to suppress duplicate emissions.
+
+## `notification_deliveries`
+
+- One row per **recipient × `notification_delivery_channel`** (`in_app`, `email`, `push`).
+- **`read_at`**, **`dismissed_at`**, **`failed_at`**, **`delivered_at`** — channel-specific lifecycle.
+- Inbox queries join **deliveries** → **events**; RLS grants users **SELECT/UPDATE** on their own delivery rows and **SELECT** on parent events when a delivery exists.
+
+## `notification_preferences`
+
+- **Base row:** `(user_id, institution_id, category)` with **`classroom_id` and `course_delivery_id` both NULL** — institution-wide default for that category.
+- **Overrides:** optional **`classroom_id`** or **`course_delivery_id`** (partial unique indexes per shape); **`mute_until`** for temporary mutes.
+- Same **`enabled`**, **`email_digest`**, **`quiet_start` / `quiet_end`** as before.
+
+## Emission
+
+- Call **`public.create_notification_event_with_deliveries(...)`** (authenticated, **SECURITY DEFINER**) to insert one event and fan out **`in_app`** deliveries. Caller must pass **`app.notification_user_can_emit_for_institution`** (member, institution admin, or super admin). Tighten recipient validation in product later if needed.
+
+New **category** literals require a migration updating **`CHECK`** on **`notification_events.category`** and **`notification_preferences.category`**.
 
 # Delivery channels
 
