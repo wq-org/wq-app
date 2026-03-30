@@ -1,6 +1,6 @@
 -- =============================================================================
 -- CLOUD ASSETS — indexes & constraints
--- Requires: 20260328000001_cloud_assets_02_tables
+-- Requires: 20260329000017_cloud_assets_02_tables
 -- =============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_cloud_folders_institution_id

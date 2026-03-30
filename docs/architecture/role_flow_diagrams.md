@@ -115,7 +115,7 @@ Institution admin logs in (active membership, left_institution_at IS NULL)
 │
 ├── CLOUD ASSETS (DB + bucket)
 │   ├── cloud_folders, cloud_files, cloud_file_links, cloud_file_shares — FOR ALL (*_all_institution_admin)
-│   └── storage.objects (cloud prefix) — institution path policies (20260328000002_storage_cloud_objects_rls)
+│   └── storage.objects (cloud prefix) — institution path policies (20260329000023_storage_cloud_objects_rls)
 │
 └── STORAGE (legacy / avatars)
       └── cloud bucket — member_institution_ids() + path rules (same family as Phase A baseline)
@@ -181,12 +181,12 @@ Teacher logs in (active institution membership)
 │   └── game_versions — SELECT/INSERT/UPDATE own game’s draft versions (game_versions_*_teacher); published row reads via member policies
 │
 ├── CHAT / NOTIFICATIONS / STORAGE
-│   ├── conversations — INSERT (conv_member_insert); participant read via conversation_members
-│   ├── messages — INSERT (msg_member_insert); UPDATE own (msg_own_update)
+│   ├── conversations / conversation_contexts — INSERT (conversations_insert_member, conversation_contexts_insert_conversation_creator); participant SELECT + caller_eligible_for_conversation_context
+│   ├── messages — INSERT (messages_insert_member); UPDATE own (messages_update_own)
 │   ├── teacher_followers — SELECT self as teacher (tf_own_read)
 │   ├── notifications — own read/update (notif_own, notif_own_update)
 │   ├── cloud_folders / cloud_files / links / shares — manage via user_can_manage_* when primary/co_teacher scope applies
-│   └── storage.objects — cloud path policies (20260328000002)
+│   └── storage.objects — cloud path policies (20260329000023)
 │
 └── Teacher creates a classroom-scoped task (flow)
       │
@@ -278,7 +278,7 @@ Student logs in (active institution_memberships; left_institution_at IS NULL)
 │   └── …
 │
 ├── CHAT / NOTIFICATIONS / REWARDS
-│   ├── conversations / messages — participant policies (conv_participant_read, msg_*)
+│   ├── conversations / conversation_contexts / messages — participant + caller_eligible_for_conversation_context (conversations_select_participant, messages_*)
 │   ├── notifications — notif_own, notif_own_update
 │   ├── point_ledger — pl_own_read; classmates via pl_member_read (same classroom via my_active_classroom_ids)
 │   └── classroom_reward_settings — crs_member_read (assigned classrooms)
@@ -347,9 +347,11 @@ Task status flow (audit trigger on tasks):
 ## Shared: chat, notifications, rewards (Phases E–G)
 
 ```
-Chat
-  conversations → conversation_members → messages
-  RLS: institution-scoped; participant read/send; safeguarding matrix in docs/domain/11_chat.md mostly app-layer
+Chat (20260329)
+  conversations → optional conversation_contexts (classroom / course_delivery / task / game_session)
+  conversation_members → messages
+  Helpers: app.user_in_active_conversation, app.caller_eligible_for_conversation_context
+  RLS: participant read/send + contextual eligibility; institution_admin / super_admin paths; safeguarding matrix in docs/domain/11_chat.md mostly app-layer
 
 Notifications
   notifications (service role inserts) — user read/update own; institution_admin read monitor
@@ -459,7 +461,7 @@ storage.objects (cloud bucket)
 | Course versions + deliveries + delivery-scoped progress/events       | `20260329000001_course_delivery_01_types.sql` … `20260329000008_course_delivery_08_attendance_functions.sql` |
 | Game runtime                                                         | `20260323000003_game_runtime_*`                                                                              |
 | Tasks / notes                                                        | `20260323000004_tasks_notes_*`                                                                               |
-| Chat                                                                 | `20260323000005_chat_*`                                                                                      |
+| Chat                                                                 | `20260329000009_chat_*` … `20260329000015_chat_*` (types, tables, indexes, helpers, backfill, triggers, RLS) |
 | Notifications                                                        | `20260323000006_notifications_*`                                                                             |
 | Rewards                                                              | `20260323000007_rewards_mvp_*`                                                                               |
 | Announcements                                                        | `20260325000001_announcements_*`                                                                             |
@@ -468,5 +470,5 @@ storage.objects (cloud bucket)
 | Attendance topic gates + `topic_availability_rules`, `topics` policy | `20260326000004_attendance_topic_gates_*`                                                                    |
 | Attendance recurrence (schedules, exceptions, materialization)       | `20260326000005_attendance_recurrence_*`                                                                     |
 | Game versions + `games.current_published_version_id`                 | `20260326000003_game_versions_*`                                                                             |
-| Cloud assets (folders, files, links, shares)                         | `20260328000001_cloud_assets_*`                                                                              |
-| Storage `storage.objects` RLS for cloud                              | `20260328000002_storage_cloud_objects_rls_01_policies.sql`                                                   |
+| Cloud assets (folders, files, links, shares)                         | `20260329000016_cloud_assets_*` … `022`                                                                      |
+| Storage `storage.objects` RLS for cloud                              | `20260329000023_storage_cloud_objects_rls_01_policies.sql`                                                   |

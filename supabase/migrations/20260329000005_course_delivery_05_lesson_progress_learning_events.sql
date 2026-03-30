@@ -141,11 +141,21 @@ CREATE INDEX idx_learning_events_user_id_course_delivery_id_created_at
   ON public.learning_events (user_id, course_delivery_id, created_at DESC);
 
 -- -----------------------------------------------------------------------------
--- 6) updated_at triggers for course_versions + course_deliveries
+-- 6) updated_at triggers for course_versions, snapshot tables, course_deliveries
 -- -----------------------------------------------------------------------------
 DROP TRIGGER IF EXISTS trg_course_versions_set_updated_at ON public.course_versions;
 CREATE TRIGGER trg_course_versions_set_updated_at
   BEFORE UPDATE ON public.course_versions
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS trg_course_version_topics_set_updated_at ON public.course_version_topics;
+CREATE TRIGGER trg_course_version_topics_set_updated_at
+  BEFORE UPDATE ON public.course_version_topics
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS trg_course_version_lessons_set_updated_at ON public.course_version_lessons;
+CREATE TRIGGER trg_course_version_lessons_set_updated_at
+  BEFORE UPDATE ON public.course_version_lessons
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 DROP TRIGGER IF EXISTS trg_course_deliveries_set_updated_at ON public.course_deliveries;

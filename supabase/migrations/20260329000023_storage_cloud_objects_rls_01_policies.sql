@@ -1,6 +1,6 @@
 -- =============================================================================
 -- STORAGE — cloud bucket RLS aligned with cloud_files metadata
--- Requires: 20260328000001_cloud_assets (all parts)
+-- Requires: 20260329000016_cloud_assets through 20260329000022_cloud_assets_07_rls_policies
 -- Replaces: narrow segment of policies from 20260323000001_baseline_lms_rls_memberships_07
 --
 -- Path layout:

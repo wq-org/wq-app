@@ -3,7 +3,7 @@
 -- Requires: 20260321000002_institution_admin (all parts),
 --           20260323000002_classroom_course_links_lesson_progress (all parts),
 --           20260323000004_tasks_notes (all parts),
---           20260323000005_chat (all parts),
+--           20260329000009_chat (all parts),
 --           20260326000003_game_versions (all parts)
 -- =============================================================================
 

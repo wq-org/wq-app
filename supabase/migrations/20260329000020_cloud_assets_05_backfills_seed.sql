@@ -1,6 +1,6 @@
 -- =============================================================================
 -- CLOUD ASSETS — backfills & seed
--- Requires: 20260328000001_cloud_assets_04_functions_rpcs
+-- Requires: 20260329000019_cloud_assets_04_functions_rpcs
 -- =============================================================================
 
 -- No mandatory backfill. Legacy Storage objects under {institution}/{role}/{user_id}/…

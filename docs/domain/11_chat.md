@@ -13,6 +13,14 @@ Chat is the institution-scoped communication layer for learning operations:
 
 ---
 
+## Database model (migrations)
+
+Threads are typed (`conversation_type`), members carry `membership_role` and removal metadata (`removed_at` / `removed_by`), and optional **`conversation_contexts`** binds one conversation to at most one of: **classroom**, **course delivery**, **task**, or **game session** (aligned with delivery-first LMS). RLS uses **`app.caller_eligible_for_conversation_context`** and **`app.user_in_active_conversation`**.
+
+**Migrations:** `supabase/migrations/20260329000009_chat_*` … `20260329000015_chat_*` (after `20260329000001_course_delivery_*` … `008`; before `20260329000016_cloud_assets_*`). See [role_flow_diagrams.md](../architecture/role_flow_diagrams.md).
+
+---
+
 ## Functional areas
 
 ### 1) Conversation model
