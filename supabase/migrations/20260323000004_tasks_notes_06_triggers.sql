@@ -11,11 +11,25 @@ CREATE TRIGGER trg_tasks_set_updated_at
   BEFORE UPDATE ON public.tasks
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
-DROP TRIGGER IF EXISTS tasks_audit_state ON public.tasks;
-DROP TRIGGER IF EXISTS trg_tasks_audit_task_state ON public.tasks;
-CREATE TRIGGER trg_tasks_audit_task_state
-  AFTER UPDATE ON public.tasks
-  FOR EACH ROW EXECUTE FUNCTION audit.log_task_state_change();
+-- task_templates
+DROP TRIGGER IF EXISTS task_templates_updated_at ON public.task_templates;
+DROP TRIGGER IF EXISTS trg_task_templates_set_updated_at ON public.task_templates;
+CREATE TRIGGER trg_task_templates_set_updated_at
+  BEFORE UPDATE ON public.task_templates
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- task_deliveries
+DROP TRIGGER IF EXISTS task_deliveries_updated_at ON public.task_deliveries;
+DROP TRIGGER IF EXISTS trg_task_deliveries_set_updated_at ON public.task_deliveries;
+CREATE TRIGGER trg_task_deliveries_set_updated_at
+  BEFORE UPDATE ON public.task_deliveries
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS task_deliveries_audit_state ON public.task_deliveries;
+DROP TRIGGER IF EXISTS trg_task_deliveries_audit_task_state ON public.task_deliveries;
+CREATE TRIGGER trg_task_deliveries_audit_task_state
+  AFTER UPDATE ON public.task_deliveries
+  FOR EACH ROW EXECUTE FUNCTION audit.log_task_delivery_state_change();
 
 -- task_groups
 DROP TRIGGER IF EXISTS task_groups_updated_at ON public.task_groups;

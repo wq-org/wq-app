@@ -29,7 +29,7 @@ CREATE OR REPLACE FUNCTION public.create_notification_event_with_deliveries(
   p_link_payload jsonb DEFAULT NULL,
   p_classroom_id uuid DEFAULT NULL,
   p_course_delivery_id uuid DEFAULT NULL,
-  p_task_id uuid DEFAULT NULL,
+  p_task_delivery_id uuid DEFAULT NULL,
   p_game_session_id uuid DEFAULT NULL,
   p_conversation_id uuid DEFAULT NULL
 )
@@ -71,7 +71,7 @@ BEGIN
     link_payload,
     classroom_id,
     course_delivery_id,
-    task_id,
+    task_delivery_id,
     game_session_id,
     conversation_id
   )
@@ -86,7 +86,7 @@ BEGIN
     p_link_payload,
     p_classroom_id,
     p_course_delivery_id,
-    p_task_id,
+    p_task_delivery_id,
     p_game_session_id,
     p_conversation_id
   )

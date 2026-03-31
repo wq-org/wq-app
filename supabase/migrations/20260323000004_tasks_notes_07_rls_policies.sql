@@ -44,6 +44,97 @@ CREATE POLICY tasks_select_student ON public.tasks
   );
 
 -- =============================================================================
+-- task_templates
+-- =============================================================================
+ALTER TABLE public.task_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.task_templates FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS task_templates_all_super_admin ON public.task_templates;
+CREATE POLICY task_templates_all_super_admin ON public.task_templates
+  FOR ALL TO authenticated
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
+
+DROP POLICY IF EXISTS task_templates_all_institution_admin ON public.task_templates;
+CREATE POLICY task_templates_all_institution_admin ON public.task_templates
+  FOR ALL TO authenticated
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
+  WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS task_templates_all_teacher ON public.task_templates;
+CREATE POLICY task_templates_all_teacher ON public.task_templates
+  FOR ALL TO authenticated
+  USING (teacher_id = (SELECT app.auth_uid()))
+  WITH CHECK (teacher_id = (SELECT app.auth_uid()));
+
+-- =============================================================================
+-- task_template_versions
+-- =============================================================================
+ALTER TABLE public.task_template_versions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.task_template_versions FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS task_template_versions_all_super_admin ON public.task_template_versions;
+CREATE POLICY task_template_versions_all_super_admin ON public.task_template_versions
+  FOR ALL TO authenticated
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
+
+DROP POLICY IF EXISTS task_template_versions_all_institution_admin ON public.task_template_versions;
+CREATE POLICY task_template_versions_all_institution_admin ON public.task_template_versions
+  FOR ALL TO authenticated
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
+  WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS task_template_versions_all_teacher ON public.task_template_versions;
+CREATE POLICY task_template_versions_all_teacher ON public.task_template_versions
+  FOR ALL TO authenticated
+  USING (
+    task_template_id IN (
+      SELECT tt.id FROM public.task_templates tt
+      WHERE tt.teacher_id = (SELECT app.auth_uid())
+    )
+  )
+  WITH CHECK (
+    task_template_id IN (
+      SELECT tt.id FROM public.task_templates tt
+      WHERE tt.teacher_id = (SELECT app.auth_uid())
+    )
+  );
+
+-- =============================================================================
+-- task_deliveries
+-- =============================================================================
+ALTER TABLE public.task_deliveries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.task_deliveries FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS task_deliveries_all_super_admin ON public.task_deliveries;
+CREATE POLICY task_deliveries_all_super_admin ON public.task_deliveries
+  FOR ALL TO authenticated
+  USING ((SELECT app.is_super_admin()) IS TRUE)
+  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
+
+DROP POLICY IF EXISTS task_deliveries_all_institution_admin ON public.task_deliveries;
+CREATE POLICY task_deliveries_all_institution_admin ON public.task_deliveries
+  FOR ALL TO authenticated
+  USING (institution_id IN (SELECT app.admin_institution_ids()))
+  WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS task_deliveries_all_teacher ON public.task_deliveries;
+CREATE POLICY task_deliveries_all_teacher ON public.task_deliveries
+  FOR ALL TO authenticated
+  USING (teacher_id = (SELECT app.auth_uid()))
+  WITH CHECK (teacher_id = (SELECT app.auth_uid()));
+
+DROP POLICY IF EXISTS task_deliveries_select_student ON public.task_deliveries;
+CREATE POLICY task_deliveries_select_student ON public.task_deliveries
+  FOR SELECT TO authenticated
+  USING (
+    status != 'draft'
+    AND deleted_at IS NULL
+    AND classroom_id IN (SELECT app.my_active_classroom_ids())
+  );
+
+-- =============================================================================
 -- task_groups
 -- =============================================================================
 ALTER TABLE public.task_groups ENABLE ROW LEVEL SECURITY;
@@ -69,12 +160,16 @@ DROP POLICY IF EXISTS task_groups_all_teacher ON public.task_groups;
 CREATE POLICY task_groups_all_teacher ON public.task_groups
   FOR ALL TO authenticated
   USING (
-    task_id IN (SELECT id FROM public.tasks
-WHERE teacher_id = (SELECT app.auth_uid()))
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.teacher_id = (SELECT app.auth_uid())
+    )
   )
   WITH CHECK (
-    task_id IN (SELECT id FROM public.tasks
-WHERE teacher_id = (SELECT app.auth_uid()))
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.teacher_id = (SELECT app.auth_uid())
+    )
   );
 
 -- Students read task groups only for tasks in their classrooms.
@@ -83,10 +178,11 @@ DROP POLICY IF EXISTS task_groups_select_member ON public.task_groups;
 CREATE POLICY task_groups_select_member ON public.task_groups
   FOR SELECT TO authenticated
   USING (
-    task_id IN (
-      SELECT t.id FROM public.tasks t
-      WHERE t.deleted_at IS NULL
-        AND t.classroom_id IN (SELECT app.my_active_classroom_ids())
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.deleted_at IS NULL
+        AND td.status != 'draft'
+        AND td.classroom_id IN (SELECT app.my_active_classroom_ids())
     )
   );
 
@@ -116,17 +212,15 @@ DROP POLICY IF EXISTS task_group_members_all_teacher ON public.task_group_member
 CREATE POLICY task_group_members_all_teacher ON public.task_group_members
   FOR ALL TO authenticated
   USING (
-    task_group_id IN (
-      SELECT tg.id FROM public.task_groups tg
-      INNER JOIN public.tasks t ON tg.task_id = t.id
-      WHERE t.teacher_id = (SELECT app.auth_uid())
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.teacher_id = (SELECT app.auth_uid())
     )
   )
   WITH CHECK (
-    task_group_id IN (
-      SELECT tg.id FROM public.task_groups tg
-      INNER JOIN public.tasks t ON tg.task_id = t.id
-      WHERE t.teacher_id = (SELECT app.auth_uid())
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.teacher_id = (SELECT app.auth_uid())
     )
   );
 
@@ -163,17 +257,15 @@ DROP POLICY IF EXISTS task_submissions_all_teacher ON public.task_submissions;
 CREATE POLICY task_submissions_all_teacher ON public.task_submissions
   FOR ALL TO authenticated
   USING (
-    task_group_id IN (
-      SELECT tg.id FROM public.task_groups tg
-      INNER JOIN public.tasks t ON tg.task_id = t.id
-      WHERE t.teacher_id = (SELECT app.auth_uid())
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.teacher_id = (SELECT app.auth_uid())
     )
   )
   WITH CHECK (
-    task_group_id IN (
-      SELECT tg.id FROM public.task_groups tg
-      INNER JOIN public.tasks t ON tg.task_id = t.id
-      WHERE t.teacher_id = (SELECT app.auth_uid())
+    task_delivery_id IN (
+      SELECT td.id FROM public.task_deliveries td
+      WHERE td.teacher_id = (SELECT app.auth_uid())
     )
   );
 
@@ -254,7 +346,7 @@ CREATE POLICY notes_select_teacher ON public.notes
     scope = 'collaborative'
     AND task_group_id IN (
       SELECT tg.id FROM public.task_groups tg
-      INNER JOIN public.tasks t ON tg.task_id = t.id
-      WHERE t.teacher_id = (SELECT app.auth_uid())
+      INNER JOIN public.task_deliveries td ON tg.task_delivery_id = td.id
+      WHERE td.teacher_id = (SELECT app.auth_uid())
     )
   );

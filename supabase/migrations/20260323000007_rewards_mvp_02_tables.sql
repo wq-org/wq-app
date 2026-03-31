@@ -24,10 +24,20 @@ CREATE TABLE public.point_ledger (
         'manual_adjustment'
       )
     ),
+  task_delivery_id uuid REFERENCES public.task_deliveries (id) ON DELETE SET NULL,
+  course_delivery_id uuid REFERENCES public.course_deliveries (id) ON DELETE SET NULL,
+  game_delivery_id uuid,
   ref_id uuid,
   ref_type text,
   description text,
-  created_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT chk_point_ledger_reference_shape CHECK (
+    (
+      (task_delivery_id IS NOT NULL)::integer
+      + (course_delivery_id IS NOT NULL)::integer
+      + (game_delivery_id IS NOT NULL)::integer
+    ) <= 1
+  )
 );
 
 COMMENT ON TABLE public.point_ledger IS 'Append-only point log per student per classroom (doc 10).';
@@ -37,6 +47,9 @@ COMMENT ON COLUMN public.point_ledger.points IS 'Positive = earned; negative = s
 COMMENT ON COLUMN public.point_ledger.source IS 'Why points changed; allowed literals enforced by CHECK (see migration).';
 COMMENT ON COLUMN public.point_ledger.ref_id IS 'FK to source entity (game_session_participant, task, lesson, etc).';
 COMMENT ON COLUMN public.point_ledger.ref_type IS 'Entity type for ref_id: game_session, task, lesson, joker, etc.';
+COMMENT ON COLUMN public.point_ledger.task_delivery_id IS 'Typed task offering reference for reward attribution.';
+COMMENT ON COLUMN public.point_ledger.course_delivery_id IS 'Typed course offering reference for reward attribution.';
+COMMENT ON COLUMN public.point_ledger.game_delivery_id IS 'Reserved typed game delivery reference for future game offering model.';
 
 CREATE TABLE public.classroom_reward_settings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -133,10 +133,10 @@ BEGIN
   END IF;
 
   IF NEW.task_id IS NOT NULL THEN
-    SELECT t.institution_id
+    SELECT td.institution_id
     INTO t_inst
-    FROM public.tasks t
-    WHERE t.id = NEW.task_id;
+    FROM public.task_deliveries td
+    WHERE td.id = NEW.task_id;
 
     IF t_inst IS DISTINCT FROM NEW.institution_id THEN
       RAISE EXCEPTION 'cloud file task institution mismatch';
@@ -209,10 +209,10 @@ BEGIN
   END IF;
 
   IF NEW.task_id IS NOT NULL THEN
-    SELECT t.institution_id
+    SELECT td.institution_id
     INTO t_inst
-    FROM public.tasks t
-    WHERE t.id = NEW.task_id;
+    FROM public.task_deliveries td
+    WHERE td.id = NEW.task_id;
 
     IF t_inst IS DISTINCT FROM NEW.institution_id THEN
       RAISE EXCEPTION 'cloud folder task institution mismatch';

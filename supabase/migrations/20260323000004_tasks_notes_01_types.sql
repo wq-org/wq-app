@@ -13,6 +13,20 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
+  CREATE TYPE task_template_version_status AS ENUM (
+    'draft', 'published', 'archived'
+  );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE task_delivery_status AS ENUM (
+    'draft', 'scheduled', 'active', 'closed', 'archived', 'canceled'
+  );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
   CREATE TYPE note_scope AS ENUM ('personal', 'collaborative');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;

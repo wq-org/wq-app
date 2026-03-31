@@ -13,6 +13,24 @@ Task is the structured assignment layer that connects `Course`, `Class Room`, an
 
 ---
 
+## Task delivery model (template, version, delivery)
+
+Operational task delivery is modeled in three layers:
+
+1. **Template identity (mutable shell)** — `task_templates` stores reusable task identity owned by a teacher.
+2. **Template snapshot (immutable)** — `task_template_versions` freezes instructions, rubric, grading settings, and attachments.
+3. **Offering instance (delivery)** — `task_deliveries` binds one template version to one classroom, with optional `course_delivery_id` for course-linked execution.
+
+Scoped execution tables anchor to `task_delivery_id`:
+
+- `task_groups`
+- `task_group_members`
+- `task_submissions`
+
+Legacy table `tasks` remains a compatibility bridge; new workflows should create and read through `task_deliveries`.
+
+---
+
 ## Functional areas
 
 ### 1) Task authoring (teacher)

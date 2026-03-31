@@ -26,7 +26,7 @@ CREATE TABLE public.notification_events (
   link_payload jsonb,
   classroom_id uuid,
   course_delivery_id uuid,
-  task_id uuid,
+  task_delivery_id uuid,
   game_session_id uuid,
   conversation_id uuid,
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -36,7 +36,7 @@ CREATE TABLE public.notification_events (
   CONSTRAINT fk_notification_events_profiles_actor FOREIGN KEY (actor_user_id) REFERENCES public.profiles (user_id) ON DELETE SET NULL,
   CONSTRAINT fk_notification_events_classrooms FOREIGN KEY (classroom_id) REFERENCES public.classrooms (id) ON DELETE SET NULL,
   CONSTRAINT fk_notification_events_course_deliveries FOREIGN KEY (course_delivery_id) REFERENCES public.course_deliveries (id) ON DELETE SET NULL,
-  CONSTRAINT fk_notification_events_tasks FOREIGN KEY (task_id) REFERENCES public.tasks (id) ON DELETE SET NULL,
+  CONSTRAINT fk_notification_events_task_deliveries FOREIGN KEY (task_delivery_id) REFERENCES public.task_deliveries (id) ON DELETE SET NULL,
   CONSTRAINT fk_notification_events_game_sessions FOREIGN KEY (game_session_id) REFERENCES public.game_sessions (id) ON DELETE SET NULL,
   CONSTRAINT fk_notification_events_conversations FOREIGN KEY (conversation_id) REFERENCES public.conversations (id) ON DELETE SET NULL
 );
@@ -55,7 +55,7 @@ COMMENT ON COLUMN public.notification_events.dedupe_key IS 'Optional stable key 
 COMMENT ON COLUMN public.notification_events.link_payload IS 'UI routing only (route, tab, anchor); not the sole source of context.';
 COMMENT ON COLUMN public.notification_events.classroom_id IS 'Optional classroom scope for muting, analytics, and deep links.';
 COMMENT ON COLUMN public.notification_events.course_delivery_id IS 'Optional course delivery scope.';
-COMMENT ON COLUMN public.notification_events.task_id IS 'Optional task scope.';
+COMMENT ON COLUMN public.notification_events.task_delivery_id IS 'Optional task delivery scope.';
 COMMENT ON COLUMN public.notification_events.game_session_id IS 'Optional game session scope.';
 COMMENT ON COLUMN public.notification_events.conversation_id IS 'Optional chat thread scope.';
 COMMENT ON COLUMN public.notification_events.created_at IS 'Event creation time.';

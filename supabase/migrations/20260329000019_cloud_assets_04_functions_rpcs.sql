@@ -135,17 +135,17 @@ BEGIN
     WHEN 'task'::public.cloud_file_scope THEN
       RETURN EXISTS (
         SELECT 1
-        FROM public.tasks t
-        WHERE t.id = cf.task_id
-          AND t.teacher_id = uid
+        FROM public.task_deliveries td
+        WHERE td.id = cf.task_id
+          AND td.teacher_id = uid
       )
       OR EXISTS (
         SELECT 1
-        FROM public.tasks t
-        WHERE t.id = cf.task_id
-          AND t.status <> 'draft'::public.task_status
-          AND t.deleted_at IS NULL
-          AND t.classroom_id IN (SELECT app.my_active_classroom_ids())
+        FROM public.task_deliveries td
+        WHERE td.id = cf.task_id
+          AND td.status <> 'draft'::public.task_delivery_status
+          AND td.deleted_at IS NULL
+          AND td.classroom_id IN (SELECT app.my_active_classroom_ids())
       );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN (SELECT app.user_can_select_game_version(cf.game_version_id));
@@ -282,17 +282,17 @@ BEGIN
     WHEN 'task'::public.cloud_file_scope THEN
       RETURN EXISTS (
         SELECT 1
-        FROM public.tasks t
-        WHERE t.id = fd.task_id
-          AND t.teacher_id = uid
+        FROM public.task_deliveries td
+        WHERE td.id = fd.task_id
+          AND td.teacher_id = uid
       )
       OR EXISTS (
         SELECT 1
-        FROM public.tasks t
-        WHERE t.id = fd.task_id
-          AND t.status <> 'draft'::public.task_status
-          AND t.deleted_at IS NULL
-          AND t.classroom_id IN (SELECT app.my_active_classroom_ids())
+        FROM public.task_deliveries td
+        WHERE td.id = fd.task_id
+          AND td.status <> 'draft'::public.task_delivery_status
+          AND td.deleted_at IS NULL
+          AND td.classroom_id IN (SELECT app.my_active_classroom_ids())
       );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN (SELECT app.user_can_select_game_version(fd.game_version_id));
@@ -369,9 +369,9 @@ BEGIN
     WHEN 'task'::public.cloud_file_scope THEN
       RETURN EXISTS (
         SELECT 1
-        FROM public.tasks t
-        WHERE t.id = fd.task_id
-          AND t.teacher_id = uid
+        FROM public.task_deliveries td
+        WHERE td.id = fd.task_id
+          AND td.teacher_id = uid
       );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN EXISTS (

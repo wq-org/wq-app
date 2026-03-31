@@ -15,14 +15,14 @@ What is implemented in Postgres today, grounded in the migration chain. Use this
 | 5     | `20260323000001_baseline_lms_rls_memberships.sql`                                                   | Retarget LMS + storage RLS from `user_institutions` to `institution_memberships`; add `games.institution_id` + backfill; optional `games.course_id` (drops legacy `topic_id`, FK + trigger for same-institution as course); FORCE RLS on baseline tables                                                                                     |
 | 6     | `20260323000002_classroom_course_links_lesson_progress.sql`                                         | `app.student_can_access_course()` / `app.student_can_access_lesson()`, classroom_course_links, lesson_progress, learning_events, topics/lessons student read aligned with classroom delivery, `lessons.content_schema_version`                                                                                                               |
 | 7     | `20260323000003_game_runtime.sql`                                                                   | game_runs, game_sessions, game_session_participants                                                                                                                                                                                                                                                                                          |
-| 8     | `20260323000004_tasks_notes.sql`                                                                    | tasks, task_groups, task_group_members, task_submissions, notes, task audit trigger                                                                                                                                                                                                                                                          |
+| 8     | `20260323000004_tasks_notes.sql`                                                                    | task_templates, task_template_versions, task_deliveries, task_groups, task_group_members, task_submissions, notes, task delivery audit trigger                                                                                                                                                                                               |
 | 9     | `20260323000007_rewards_mvp.sql`                                                                    | point_ledger, classroom_reward_settings                                                                                                                                                                                                                                                                                                      |
 | …     | `20260325000001` … `20260326000005` (split suites)                                                  | announcements, lexical content, game_versions, attendance + topic gates, attendance recurrence                                                                                                                                                                                                                                               |
 | …     | `20260329000001_course_delivery_*` … `008`                                                          | course_versions, snapshots, course_deliveries, lesson_progress/learning_events `course_delivery_id`, delivery helpers + RLS, attendance alignment                                                                                                                                                                                            |
 | …     | `20260329000009_chat_*` … `015`                                                                     | conversations, conversation_members, messages, conversation_contexts, delivery-aware RLS                                                                                                                                                                                                                                                     |
 | …     | `20260329000016_cloud_assets_*` … `022`; `20260329000023_storage_cloud_objects_rls_01_policies.sql` | `cloud_folders`, `cloud_files`, `cloud_file_links`, `cloud_file_shares`; ACL helpers; `storage.objects` policies for `…/files/…` paths joined to `cloud_files`                                                                                                                                                                               |
 | …     | `20260329000024_notifications_*` … `030`                                                            | `notification_events`, `notification_deliveries`, `notification_preferences`; `create_notification_event_with_deliveries`, scoped prefs, dedupe                                                                                                                                                                                              |
-| …     | integrated into `20260321000002_*`, `20260323000001_*`, `20260323000002_*`, `20260329000006/07`     | offering layer (`programme_offerings`, `cohort_offerings`, `class_group_offerings`), `classrooms.class_group_offering_id`, legacy drift views, `app.staff_scope_delivery_summary`, and write-freeze posture for legacy enrollment/link paths                                                                                                 |
+| …     | integrated into `20260321000002_*`, `20260323000001_*`, `20260323000002_*`, `20260329000006/07`     | offering layer (`programme_offerings`, `cohort_offerings`, `class_group_offerings`), `classrooms.class_group_offering_id`, legacy drift views, `app.summarize_staff_scope_delivery`, and write-freeze posture for legacy enrollment/link paths                                                                                               |
 
 **Apply the full chain** on fresh databases: behavior in this doc is the **final** state after all files above (e.g. student `courses` visibility and `topics_enrolled_read` assume `20260323000002` has run).
 
@@ -97,7 +97,7 @@ super_admin
 └── All domain tables — full bypass (via *_super_admin on each table)
     ├── courses, topics, lessons, games — full CRUD
     ├── game_runs, game_sessions, game_session_participants — full CRUD
-    ├── tasks, task_groups, notes — full CRUD
+    ├── task_templates, task_template_versions, task_deliveries, task_groups, notes — full CRUD
     ├── conversations, messages — full CRUD
     ├── notification_events, notification_deliveries, notification_preferences — full CRUD
     └── point_ledger, classroom_reward_settings — full CRUD
@@ -138,7 +138,7 @@ institution_admin
 │   └── games — read (games_institution_admin_read)
 │
 ├── Domain oversight (read or full CRUD)
-│   ├── tasks — full CRUD (tasks_institution_admin)
+│   ├── task_templates, task_template_versions, task_deliveries — full CRUD
 │   ├── task_groups, task_group_members — full CRUD
 │   ├── task_submissions — full CRUD
 │   ├── notes — read (notes_institution_admin_read)
@@ -159,7 +159,7 @@ institution_admin
 
 ### Teacher
 
-Creates and delivers learning content. Owns courses, games, tasks. Policy pattern: `teacher_id = (select app.auth_uid())` for owned resources, membership for read.
+Creates and delivers learning content. Owns courses, games, and task deliveries. Policy pattern: `teacher_id = (select app.auth_uid())` for owned resources, membership for read.
 
 ```
 teacher
@@ -186,11 +186,11 @@ teacher
 │   └── game_session_participants — read for own games (gsp_teacher_read)
 │
 ├── Task management
-│   ├── tasks — full CRUD where teacher_id = self (tasks_teacher_manage)
-│   ├── task_groups — manage for own tasks (tg_teacher_manage)
-│   ├── task_group_members — manage for own tasks (tgm_teacher_manage)
-│   ├── task_submissions — manage for own tasks (ts_teacher_manage)
-│   └── notes (collaborative) — read group notes for own tasks (notes_teacher_read)
+│   ├── task_templates / task_template_versions / task_deliveries — full CRUD where teacher_id = self
+│   ├── task_groups — manage for own task deliveries (tg_teacher_manage)
+│   ├── task_group_members — manage for own task deliveries (tgm_teacher_manage)
+│   ├── task_submissions — manage for own task deliveries (ts_teacher_manage)
+│   └── notes (collaborative) — read group notes for own task deliveries (notes_teacher_read)
 │
 ├── Game sessions
 │   ├── game_runs — manage runs started by self or for own games (gr_teacher_manage)
@@ -236,8 +236,8 @@ student
 │   └── game_session_participants — class leaderboard scoped like run (gsp_member_read)
 │
 ├── Tasks and collaborative notes
-│   ├── tasks — read published tasks in assigned classrooms only (tasks_student_read)
-│   ├── task_groups — read for tasks in assigned classrooms (tg_member_read)
+│   ├── task_deliveries — read non-draft deliveries in assigned classrooms
+│   ├── task_groups — read for task deliveries in assigned classrooms (tg_member_read)
 │   ├── task_group_members — read own membership (tgm_own_read)
 │   ├── task_submissions — read/submit for own group (ts_group_member)
 │   ├── notes (personal) — full CRUD own notes (notes_own)
@@ -384,25 +384,28 @@ game_run lifecycle: lobby → active → completed | cancelled
 
 ### Tasks and notes
 
-From `20260323000004_tasks_notes.sql` (Phase D).
+From `20260323000004_tasks_notes.sql` (Phase D; delivery rewrite).
 
 ```
-tasks (institution_id, classroom_id, teacher_id, status, due_at)
+task_templates (institution_id, teacher_id, title)
 │
-│   Task status lifecycle:
-│   draft → published → not_started → in_progress → submitted → reviewed
-│                                                  → overdue
-│                                        reviewed → returned (revision cycle)
-│   All state transitions audited via audit.log_task_state_change → audit.events
+├── task_template_versions (task_template_id, version_number, status, instructions, rubric, grading_settings, attachments)
+│   └── Immutable published snapshot for delivery usage
 │
-├── task_groups (task_id, name, note_id)
+└── task_deliveries (task_template_id, task_template_version_id, classroom_id, course_delivery_id?, teacher_id, status, due_at)
+    │
+    │   Delivery status lifecycle:
+    │   draft → scheduled → active → closed | archived | canceled
+    │   All state transitions audited via audit.log_task_delivery_state_change → audit.events
+    │
+    ├── task_groups (task_delivery_id, name, note_id)
 │   ├── Teacher creates groups (manual or random assignment)
 │   ├── Each group gets a shared collaborative note
 │   │
-│   ├── task_group_members (task_group_id, user_id)
+│   ├── task_group_members (task_group_id, task_delivery_id, user_id)
 │   │   └── Students assigned to the group
 │   │
-│   └── task_submissions (task_group_id, submitted_by, status, feedback)
+│   └── task_submissions (task_group_id, task_delivery_id, submitted_by, status, feedback)
 │       ├── submitted — group marks completion
 │       ├── reviewed — teacher left feedback
 │       └── returned — teacher requests revision
@@ -497,7 +500,8 @@ point_ledger (institution_id, classroom_id, user_id)
 │   ├── daily_streak, personal_best
 │   └── manual_adjustment (teacher override)
 │
-├── ref_id / ref_type — polymorphic FK to source entity
+├── task_delivery_id / course_delivery_id / game_delivery_id — typed delivery references
+├── ref_id / ref_type — legacy polymorphic metadata (compatibility)
 │
 └── RLS: students read own (pl_own_read) + institution leaderboard (pl_member_read)
          teachers manage for own classrooms (pl_teacher_manage)
@@ -545,8 +549,8 @@ See [16_cloud_storage.md](16_cloud_storage.md) for tables, scopes, and quota cou
 | 06_note                      | notes (single-row JSONB MVP, personal + collaborative)                                                                                  | Normalized note_blocks, block-level versioning, offline queue                           |
 | 07_course                    | lesson_progress, learning_events, content_schema_version                                                                                | Presentation mode state, inline knowledge checks                                        |
 | 08_game_studio               | `games` (+ `course_id`, `institution_id`), game_runs, game_sessions, game_session_participants                                          | Realtime sync protocol (app layer); lesson-level placement deferred                     |
-| 09_task                      | tasks, task_groups, task_group_members, task_submissions                                                                                | PDF export, advanced rubric grading                                                     |
-| 10_reward_system             | point_ledger, classroom_reward_settings                                                                                                 | Full joker_redemptions table with approval workflow, badges table                       |
+| 09_task                      | task_templates, task_template_versions, task_deliveries, task_groups, task_group_members, task_submissions                              | PDF export, advanced rubric grading                                                     |
+| 10_reward_system             | point_ledger, classroom_reward_settings, typed delivery refs (`task_delivery_id`, `course_delivery_id`, `game_delivery_id`)             | Full joker_redemptions table with approval workflow, badges table                       |
 | 11_chat                      | conversations, conversation_members, messages                                                                                           | Moderation queue table, safeguarding RPC (app layer for now)                            |
 | 12_notification              | notification_events, notification_deliveries, notification_preferences                                                                  | Email digest job, push channel deliveries, preference precedence helper                 |
 | 14_subscription_entitlements | Covered in 01 migrations                                                                                                                | Stripe/PSP webhook handler (edge function)                                              |

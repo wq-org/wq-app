@@ -398,6 +398,9 @@ BEGIN
       'source', CASE WHEN TG_OP = 'DELETE' THEN OLD.source ELSE NEW.source END,
       'points', CASE WHEN TG_OP = 'DELETE' THEN OLD.points ELSE NEW.points END,
       'previous_points', CASE WHEN TG_OP = 'UPDATE' THEN OLD.points ELSE NULL END,
+      'task_delivery_id', COALESCE(NEW.task_delivery_id, OLD.task_delivery_id),
+      'course_delivery_id', COALESCE(NEW.course_delivery_id, OLD.course_delivery_id),
+      'game_delivery_id', COALESCE(NEW.game_delivery_id, OLD.game_delivery_id),
       'ref_id', COALESCE(NEW.ref_id, OLD.ref_id),
       'ref_type', CASE WHEN TG_OP = 'DELETE' THEN OLD.ref_type ELSE NEW.ref_type END
     )

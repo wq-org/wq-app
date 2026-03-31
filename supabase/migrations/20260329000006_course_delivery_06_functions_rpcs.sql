@@ -192,7 +192,7 @@ COMMENT ON VIEW public.classroom_link_delivery_drift IS
 -- -----------------------------------------------------------------------------
 -- Staff authorization scope vs actual delivery assignment
 -- -----------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION app.staff_scope_delivery_summary(
+CREATE OR REPLACE FUNCTION app.summarize_staff_scope_delivery(
   p_institution_id uuid DEFAULT NULL
 )
 RETURNS TABLE (
@@ -248,5 +248,5 @@ AS $$
   GROUP BY s.user_id, s.institution_id
 $$;
 
-COMMENT ON FUNCTION app.staff_scope_delivery_summary(uuid) IS
+COMMENT ON FUNCTION app.summarize_staff_scope_delivery(uuid) IS
   'Reporting helper joining structural authorization scopes (institution_staff_scopes) with operational delivery assignment (classroom_members + course_deliveries).';

@@ -28,6 +28,7 @@ CREATE INDEX idx_conversation_contexts_classroom_id ON public.conversation_conte
   WHERE classroom_id IS NOT NULL;
 CREATE INDEX idx_conversation_contexts_course_delivery_id ON public.conversation_contexts (course_delivery_id)
   WHERE course_delivery_id IS NOT NULL;
-CREATE INDEX idx_conversation_contexts_task_id ON public.conversation_contexts (task_id) WHERE task_id IS NOT NULL;
+CREATE INDEX idx_conversation_contexts_task_delivery_id ON public.conversation_contexts (task_delivery_id)
+  WHERE task_delivery_id IS NOT NULL;
 CREATE INDEX idx_conversation_contexts_game_session_id ON public.conversation_contexts (game_session_id)
   WHERE game_session_id IS NOT NULL;

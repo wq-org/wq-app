@@ -33,7 +33,7 @@ AS $$
           WHEN
             cc.classroom_id IS NULL
             AND cc.course_delivery_id IS NULL
-            AND cc.task_id IS NULL
+            AND cc.task_delivery_id IS NULL
             AND cc.game_session_id IS NULL
           THEN TRUE
           WHEN cc.classroom_id IS NOT NULL THEN EXISTS (
@@ -71,17 +71,17 @@ AS $$
             )
             OR cc.institution_id IN (SELECT app.admin_institution_ids())
           )
-          WHEN cc.task_id IS NOT NULL THEN EXISTS (
+          WHEN cc.task_delivery_id IS NOT NULL THEN EXISTS (
             SELECT 1
-            FROM public.tasks t
-            WHERE t.id = cc.task_id
+            FROM public.task_deliveries td
+            WHERE td.id = cc.task_delivery_id
               AND (
-                t.institution_id IN (SELECT app.admin_institution_ids())
-                OR t.teacher_id = (SELECT app.auth_uid())
+                td.institution_id IN (SELECT app.admin_institution_ids())
+                OR td.teacher_id = (SELECT app.auth_uid())
                 OR EXISTS (
                   SELECT 1
                   FROM public.classroom_members cm
-                  WHERE cm.classroom_id = t.classroom_id
+                  WHERE cm.classroom_id = td.classroom_id
                     AND cm.user_id = (SELECT app.auth_uid())
                     AND cm.withdrawn_at IS NULL
                 )

@@ -84,7 +84,9 @@ Project enforcement rule:
 
 ### The tenant model to standardize on
 
-Use **one shared database** + **one shared set of tables** + a `tenant_id` column on every tenant-scoped row.
+Use **one shared database** + **one shared set of tables** + a tenant key column on every tenant-scoped row.
+
+Project terminology note: this codebase uses `institution_id` as the tenant key (equivalent to generic `tenant_id` in this guideline). Treat these names as semantically identical in migration and RLS design.
 
 This model is operationally simpler with Supabase/PostgREST and is explicitly compatible with RLS-based authorization (the DB becomes the "tenant firewall").
 

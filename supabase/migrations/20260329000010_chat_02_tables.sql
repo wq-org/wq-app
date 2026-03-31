@@ -88,7 +88,7 @@ CREATE TABLE public.conversation_contexts (
   context_type public.conversation_context_type NOT NULL DEFAULT 'none',
   classroom_id uuid,
   course_delivery_id uuid,
-  task_id uuid,
+  task_delivery_id uuid,
   game_session_id uuid,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
@@ -96,14 +96,14 @@ CREATE TABLE public.conversation_contexts (
   CONSTRAINT fk_conversation_contexts_institutions FOREIGN KEY (institution_id) REFERENCES public.institutions (id) ON DELETE CASCADE,
   CONSTRAINT fk_conversation_contexts_classrooms FOREIGN KEY (classroom_id) REFERENCES public.classrooms (id) ON DELETE SET NULL,
   CONSTRAINT fk_conversation_contexts_course_deliveries FOREIGN KEY (course_delivery_id) REFERENCES public.course_deliveries (id) ON DELETE SET NULL,
-  CONSTRAINT fk_conversation_contexts_tasks FOREIGN KEY (task_id) REFERENCES public.tasks (id) ON DELETE SET NULL,
+  CONSTRAINT fk_conversation_contexts_task_deliveries FOREIGN KEY (task_delivery_id) REFERENCES public.task_deliveries (id) ON DELETE SET NULL,
   CONSTRAINT fk_conversation_contexts_game_sessions FOREIGN KEY (game_session_id) REFERENCES public.game_sessions (id) ON DELETE SET NULL,
   CONSTRAINT uq_conversation_contexts_conversation_id UNIQUE (conversation_id),
   CONSTRAINT chk_conversation_contexts_single_binding CHECK (
     (
       (classroom_id IS NOT NULL)::integer
       + (course_delivery_id IS NOT NULL)::integer
-      + (task_id IS NOT NULL)::integer
+      + (task_delivery_id IS NOT NULL)::integer
       + (game_session_id IS NOT NULL)::integer
     ) <= 1
   )
@@ -117,7 +117,7 @@ COMMENT ON COLUMN public.conversation_contexts.institution_id IS 'Tenant boundar
 COMMENT ON COLUMN public.conversation_contexts.context_type IS 'Discriminator aligned with which optional FK is set.';
 COMMENT ON COLUMN public.conversation_contexts.classroom_id IS 'Classroom-scoped channel context.';
 COMMENT ON COLUMN public.conversation_contexts.course_delivery_id IS 'Course rollout instance for delivery-scoped chat.';
-COMMENT ON COLUMN public.conversation_contexts.task_id IS 'Task-scoped collaboration (tasks table; no task_deliveries yet).';
+COMMENT ON COLUMN public.conversation_contexts.task_delivery_id IS 'Task delivery scoped collaboration.';
 COMMENT ON COLUMN public.conversation_contexts.game_session_id IS 'Game session / round context.';
 COMMENT ON COLUMN public.conversation_contexts.created_at IS 'Row creation time.';
 COMMENT ON COLUMN public.conversation_contexts.updated_at IS 'Last update time.';
