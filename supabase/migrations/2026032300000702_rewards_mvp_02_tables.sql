@@ -25,7 +25,9 @@ CREATE TABLE public.point_ledger (
       )
     ),
   task_delivery_id uuid REFERENCES public.task_deliveries (id) ON DELETE SET NULL,
-  course_delivery_id uuid REFERENCES public.course_deliveries (id) ON DELETE SET NULL,
+  -- FK added in 20260329000003_course_delivery_03_indexes_constraints.sql after
+  -- course_deliveries exists in reset order.
+  course_delivery_id uuid,
   game_delivery_id uuid,
   ref_id uuid,
   ref_type text,

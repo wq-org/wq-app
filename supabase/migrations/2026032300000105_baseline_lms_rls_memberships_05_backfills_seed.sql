@@ -19,11 +19,25 @@ SET institution_id = (
 WHERE g.institution_id IS NULL;
 
 -- Carry topic-based linkage forward as course placement before dropping topic_id.
-UPDATE public.games g
-SET course_id = t.course_id
-FROM public.topics t
-WHERE g.topic_id IS NOT NULL
-  AND t.id = g.topic_id;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'games'
+      AND column_name = 'topic_id'
+  ) THEN
+    EXECUTE $sql$
+      UPDATE public.games g
+      SET course_id = t.course_id
+      FROM public.topics t
+      WHERE g.topic_id IS NOT NULL
+        AND t.id = g.topic_id
+    $sql$;
+  END IF;
+END;
+$$;
 
 -- Align institution_id with the linked course (fixes cross-tenant mismatch before FK/trigger).
 UPDATE public.games g

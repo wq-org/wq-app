@@ -10,7 +10,7 @@ INSERT INTO public.conversation_contexts (
   context_type,
   classroom_id,
   course_delivery_id,
-  task_id,
+  task_delivery_id,
   game_session_id,
   created_at,
   updated_at

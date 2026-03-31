@@ -238,6 +238,7 @@ CREATE TABLE public.classrooms (
   deactivated_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT uq_classrooms_id_institution_id UNIQUE (id, institution_id),
   CONSTRAINT fk_classrooms_class_groups FOREIGN KEY (class_group_id, institution_id)
     REFERENCES public.class_groups (id, institution_id) ON DELETE CASCADE
 );

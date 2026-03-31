@@ -119,7 +119,7 @@ SELECT
   c.institution_id,
   ce.course_id,
   NULL::uuid AS classroom_id,
-  ce.created_at AS evidence_at
+  ce.enrolled_at AS evidence_at
 FROM public.course_enrollments ce
 INNER JOIN public.courses c ON ce.course_id = c.id
 WHERE NOT EXISTS (

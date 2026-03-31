@@ -56,7 +56,9 @@ CREATE TABLE public.task_deliveries (
   task_template_id uuid NOT NULL REFERENCES public.task_templates (id) ON DELETE CASCADE,
   task_template_version_id uuid NOT NULL REFERENCES public.task_template_versions (id) ON DELETE RESTRICT,
   classroom_id uuid NOT NULL REFERENCES public.classrooms (id) ON DELETE CASCADE,
-  course_delivery_id uuid REFERENCES public.course_deliveries (id) ON DELETE SET NULL,
+  -- FK added in 20260329000003_course_delivery_03_indexes_constraints.sql after
+  -- course_deliveries exists in reset order.
+  course_delivery_id uuid,
   teacher_id uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE CASCADE,
   status public.task_delivery_status NOT NULL DEFAULT 'draft',
   due_at timestamptz,
