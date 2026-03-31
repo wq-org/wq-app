@@ -24,6 +24,8 @@ Operational LMS delivery is modeled in three layers:
 
 **Legacy bridge:** `classroom_course_links` remains in the schema for historical rows; new entitlements and analytics should rely on `course_deliveries`. Backfill sets `course_deliveries.legacy_classroom_course_link_id` where a link existed.
 
+Legacy writes are frozen for authenticated teacher/admin paths: operational publishing and entitlement should use `course_deliveries` only.
+
 **Student progress:** `lesson_progress` and `learning_events` include `course_delivery_id` (not null). Uniqueness is `(user_id, lesson_id, course_delivery_id)` so the same canonical `lesson_id` can be tracked separately per classroom delivery.
 
 **RLS helpers:**

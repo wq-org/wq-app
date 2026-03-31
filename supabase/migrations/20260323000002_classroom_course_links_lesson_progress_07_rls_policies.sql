@@ -78,6 +78,38 @@ CREATE POLICY classroom_course_links_select_member ON public.classroom_course_li
     )
   );
 
+-- Legacy write-freeze: keep classroom_course_links readable, but route new writes to course_deliveries.
+DROP POLICY IF EXISTS classroom_course_links_all_institution_admin ON public.classroom_course_links;
+DROP POLICY IF EXISTS classroom_course_links_all_teacher ON public.classroom_course_links;
+
+DROP POLICY IF EXISTS classroom_course_links_select_institution_admin ON public.classroom_course_links;
+CREATE POLICY classroom_course_links_select_institution_admin ON public.classroom_course_links
+  FOR SELECT TO authenticated
+  USING (institution_id IN (SELECT app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS classroom_course_links_select_teacher ON public.classroom_course_links;
+CREATE POLICY classroom_course_links_select_teacher ON public.classroom_course_links
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.classrooms cr
+      WHERE cr.id = classroom_course_links.classroom_id
+        AND cr.primary_teacher_id = (SELECT app.auth_uid())
+    )
+    OR EXISTS (
+      SELECT 1 FROM public.classroom_members cm
+      WHERE cm.classroom_id = classroom_course_links.classroom_id
+        AND cm.user_id = (SELECT app.auth_uid())
+        AND cm.withdrawn_at IS NULL
+        AND cm.membership_role = 'co_teacher'::public.classroom_member_role
+    )
+    OR EXISTS (
+      SELECT 1 FROM public.courses c
+      WHERE c.id = classroom_course_links.course_id
+        AND c.teacher_id = (SELECT app.auth_uid())
+    )
+  );
+
 -- =============================================================================
 -- courses — replace Phase A policy with classroom-delivery-aware version
 -- =============================================================================

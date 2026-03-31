@@ -128,6 +128,76 @@ COMMENT ON TABLE public.class_groups IS 'Operational student group within a coho
 COMMENT ON COLUMN public.class_groups.institution_id IS 'Tenant boundary; must match parent cohort.';
 
 -- =============================================================================
+-- 9b. OFFERING LAYER — time-bound instances for stable hierarchy entities
+-- =============================================================================
+CREATE TABLE public.programme_offerings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  programme_id uuid NOT NULL,
+  academic_year integer NOT NULL,
+  term_code text,
+  status text NOT NULL DEFAULT 'active'
+    CHECK (status IN ('draft', 'active', 'archived')),
+  starts_at timestamptz,
+  ends_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  deleted_at timestamptz,
+  CONSTRAINT fk_programme_offerings_programmes FOREIGN KEY (programme_id, institution_id)
+    REFERENCES public.programmes (id, institution_id) ON DELETE CASCADE,
+  CONSTRAINT chk_programme_offerings_time_window
+    CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at >= starts_at)
+);
+
+COMMENT ON TABLE public.programme_offerings IS
+  'Time-bound programme instance (academic year/term) anchored to stable programmes.';
+COMMENT ON COLUMN public.programme_offerings.institution_id IS 'Tenant boundary.';
+COMMENT ON COLUMN public.programme_offerings.academic_year IS 'Academic year of this programme offering.';
+COMMENT ON COLUMN public.programme_offerings.term_code IS 'Optional term code, e.g. 2026S1, 2026T2.';
+
+CREATE TABLE public.cohort_offerings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  programme_offering_id uuid NOT NULL REFERENCES public.programme_offerings (id) ON DELETE CASCADE,
+  cohort_id uuid NOT NULL,
+  status text NOT NULL DEFAULT 'active'
+    CHECK (status IN ('draft', 'active', 'archived')),
+  starts_at timestamptz,
+  ends_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  deleted_at timestamptz,
+  CONSTRAINT fk_cohort_offerings_cohorts FOREIGN KEY (cohort_id, institution_id)
+    REFERENCES public.cohorts (id, institution_id) ON DELETE CASCADE,
+  CONSTRAINT chk_cohort_offerings_time_window
+    CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at >= starts_at)
+);
+
+COMMENT ON TABLE public.cohort_offerings IS
+  'Time-bound cohort instance under a programme_offering.';
+
+CREATE TABLE public.class_group_offerings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  cohort_offering_id uuid NOT NULL REFERENCES public.cohort_offerings (id) ON DELETE CASCADE,
+  class_group_id uuid NOT NULL,
+  status text NOT NULL DEFAULT 'active'
+    CHECK (status IN ('draft', 'active', 'archived')),
+  starts_at timestamptz,
+  ends_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  deleted_at timestamptz,
+  CONSTRAINT fk_class_group_offerings_class_groups FOREIGN KEY (class_group_id, institution_id)
+    REFERENCES public.class_groups (id, institution_id) ON DELETE CASCADE,
+  CONSTRAINT chk_class_group_offerings_time_window
+    CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at >= starts_at)
+);
+
+COMMENT ON TABLE public.class_group_offerings IS
+  'Time-bound class-group instance used by operational classrooms and reporting.';
+
+-- =============================================================================
 -- 10. INSTITUTION STAFF SCOPES — teacher assignment to faculty / programme
 -- =============================================================================
 CREATE TABLE public.institution_staff_scopes (
@@ -154,6 +224,7 @@ CREATE TABLE public.classrooms (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
   class_group_id uuid NOT NULL,
+  class_group_offering_id uuid REFERENCES public.class_group_offerings (id) ON DELETE SET NULL,
   primary_teacher_id uuid REFERENCES public.profiles (user_id) ON DELETE SET NULL,
   title text NOT NULL,
   status text NOT NULL DEFAULT 'active'
@@ -167,7 +238,10 @@ CREATE TABLE public.classrooms (
 
 COMMENT ON TABLE public.classrooms IS 'Operational classroom; governance managed here, pedagogy in doc 05.';
 COMMENT ON COLUMN public.classrooms.institution_id IS 'Tenant boundary; must match parent class_group.';
-COMMENT ON COLUMN public.classrooms.primary_teacher_id IS 'Ownership; can be reassigned by institution admin.';
+COMMENT ON COLUMN public.classrooms.class_group_offering_id IS
+  'Optional time-bound class_group_offering binding for year/term lineage; NULL for legacy rows.';
+COMMENT ON COLUMN public.classrooms.primary_teacher_id IS
+  'Ownership; can be reassigned by institution admin. Application must also insert this user into classroom_members with an active row (withdrawn_at NULL) so membership-scoped helpers such as app.my_active_classroom_ids() include the lead teacher; management helpers may still use this column directly.';
 
 -- =============================================================================
 -- 11b. CLASSROOM_MEMBERS — student/co-teacher assignment + year rollover (doc 05)
@@ -188,7 +262,8 @@ CREATE TABLE public.classroom_members (
     REFERENCES public.classrooms (id, institution_id) ON DELETE CASCADE
 );
 
-COMMENT ON TABLE public.classroom_members IS 'Assigns students (and co-teachers) to classrooms; withdrawn_at ends assignment without deleting history (year rollover).';
+COMMENT ON TABLE public.classroom_members IS
+  'Assigns students and co-teachers to classrooms; withdrawn_at ends assignment without deleting history (year rollover). Primary teacher should also have a membership row so RLS and app.my_active_classroom_ids() stay aligned with classrooms.primary_teacher_id.';
 COMMENT ON COLUMN public.classroom_members.institution_id IS 'Tenant boundary; must match classroom.';
 COMMENT ON COLUMN public.classroom_members.withdrawn_at IS 'NULL = active in classroom; set at year-end or transfer to close assignment.';
 COMMENT ON COLUMN public.classroom_members.leave_reason IS 'Optional: year_end, transfer, graduated, course_change, manual.';

@@ -51,6 +51,11 @@ Design principle: insight first, drill-down second.
 
 Purpose: define the real-world school structure once, reuse everywhere.
 
+Canonical access rule for institution LMS delivery:
+
+- student entitlement is derived from `classroom_members + course_deliveries`
+- `course_enrollments` and `classroom_course_links` are compatibility/history surfaces only
+
 Canonical visual to show users how structure works:
 
 ```text

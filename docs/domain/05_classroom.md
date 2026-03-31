@@ -75,6 +75,7 @@ All delivery in this module is classroom-scoped.
 - institution admins see cross-classroom oversight
 - archive by term/year while preserving history
 - support classroom reassignment when teacher ownership changes
+- bind classrooms to `class_group_offerings` for explicit year/term offering lineage
 
 ### 9) Differentiation inside a classroom
 

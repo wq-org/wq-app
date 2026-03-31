@@ -18,7 +18,8 @@ CREATE TABLE public.classroom_course_links (
   deleted_at timestamptz
 );
 
-COMMENT ON TABLE public.classroom_course_links IS 'Links a course to a classroom for scoped delivery (doc 05/07).';
+COMMENT ON TABLE public.classroom_course_links IS
+  'Legacy bridge that links a course to a classroom. Canonical entitlement is classroom_members + course_deliveries; keep for historical compatibility and transition reporting.';
 COMMENT ON COLUMN public.classroom_course_links.institution_id IS 'Tenant boundary; must match both classroom and course.';
 COMMENT ON COLUMN public.classroom_course_links.published_at IS 'When the link was made visible to students; NULL = draft.';
 

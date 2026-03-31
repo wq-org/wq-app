@@ -1,3 +1,5 @@
+-- Canonical student course-access path: classroom_members + course_deliveries.
+-- Legacy course_enrollments/classroom_course_links remain compatibility surfaces only.
 -- =============================================================================
 -- COURSE DELIVERY — RLS for version + delivery tables; tighten progress/events
 -- Requires: 20260329000006_course_delivery_06_functions_rpcs.sql
@@ -352,3 +354,6 @@ CREATE POLICY learning_events_insert_student ON public.learning_events
       WHERE l.id = learning_events.lesson_id
     )
   );
+
+GRANT SELECT ON public.course_enrollment_delivery_drift TO authenticated;
+GRANT SELECT ON public.classroom_link_delivery_drift TO authenticated;

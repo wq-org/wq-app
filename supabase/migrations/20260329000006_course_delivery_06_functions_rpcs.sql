@@ -108,3 +108,145 @@ $$;
 
 COMMENT ON FUNCTION app.student_can_access_lesson(uuid) IS
   'True if caller may access this lesson via a published course_delivery whose version snapshot includes the lesson.';
+
+-- -----------------------------------------------------------------------------
+-- Drift detector views (read-only)
+-- -----------------------------------------------------------------------------
+CREATE OR REPLACE VIEW public.course_enrollment_delivery_drift AS
+SELECT
+  'enrollment_without_delivery_membership'::text AS drift_type,
+  ce.student_id AS user_id,
+  c.institution_id,
+  ce.course_id,
+  NULL::uuid AS classroom_id,
+  ce.created_at AS evidence_at
+FROM public.course_enrollments ce
+INNER JOIN public.courses c ON ce.course_id = c.id
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM public.course_deliveries cd
+  INNER JOIN public.classroom_members cm ON cd.classroom_id = cm.classroom_id
+  WHERE cd.course_id = ce.course_id
+    AND cd.institution_id = c.institution_id
+    AND cd.deleted_at IS NULL
+    AND cd.published_at IS NOT NULL
+    AND cm.user_id = ce.student_id
+    AND cm.withdrawn_at IS NULL
+)
+UNION ALL
+SELECT
+  'delivery_membership_without_enrollment'::text AS drift_type,
+  cm.user_id,
+  cd.institution_id,
+  cd.course_id,
+  cd.classroom_id,
+  COALESCE(cd.published_at, cd.created_at) AS evidence_at
+FROM public.course_deliveries cd
+INNER JOIN public.classroom_members cm ON cd.classroom_id = cm.classroom_id
+WHERE cd.deleted_at IS NULL
+  AND cd.published_at IS NOT NULL
+  AND cm.withdrawn_at IS NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.course_enrollments ce
+    WHERE ce.course_id = cd.course_id
+      AND ce.student_id = cm.user_id
+  );
+
+COMMENT ON VIEW public.course_enrollment_delivery_drift IS
+  'Read-only drift detector between legacy course_enrollments and canonical classroom_members + course_deliveries.';
+
+CREATE OR REPLACE VIEW public.classroom_link_delivery_drift AS
+SELECT
+  'link_without_delivery'::text AS drift_type,
+  ccl.institution_id,
+  ccl.classroom_id,
+  ccl.course_id,
+  ccl.id AS classroom_course_link_id,
+  NULL::uuid AS course_delivery_id,
+  COALESCE(ccl.published_at, ccl.created_at) AS evidence_at
+FROM public.classroom_course_links ccl
+WHERE ccl.deleted_at IS NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.course_deliveries cd
+    WHERE cd.legacy_classroom_course_link_id = ccl.id
+      AND cd.deleted_at IS NULL
+  )
+UNION ALL
+SELECT
+  'delivery_without_link'::text AS drift_type,
+  cd.institution_id,
+  cd.classroom_id,
+  cd.course_id,
+  NULL::uuid AS classroom_course_link_id,
+  cd.id AS course_delivery_id,
+  COALESCE(cd.published_at, cd.created_at) AS evidence_at
+FROM public.course_deliveries cd
+WHERE cd.deleted_at IS NULL
+  AND cd.legacy_classroom_course_link_id IS NULL;
+
+COMMENT ON VIEW public.classroom_link_delivery_drift IS
+  'Read-only drift detector between legacy classroom_course_links and canonical course_deliveries.';
+
+-- -----------------------------------------------------------------------------
+-- Staff authorization scope vs actual delivery assignment
+-- -----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION app.staff_scope_delivery_summary(
+  p_institution_id uuid DEFAULT NULL
+)
+RETURNS TABLE (
+  user_id uuid,
+  institution_id uuid,
+  scoped_faculties integer,
+  scoped_programmes integer,
+  active_classrooms integer,
+  active_course_deliveries integer
+)
+LANGUAGE sql
+STABLE
+SET search_path = ''
+AS $$
+  WITH allowed_institutions AS (
+    SELECT app.admin_institution_ids() AS institution_ids
+  ),
+  scope_rows AS (
+    SELECT iss.user_id, iss.institution_id, iss.faculty_id, iss.programme_id
+    FROM public.institution_staff_scopes iss
+    WHERE (
+      (SELECT app.is_super_admin()) IS TRUE
+      OR iss.institution_id = ANY ((SELECT institution_ids FROM allowed_institutions))
+    )
+      AND (p_institution_id IS NULL OR iss.institution_id = p_institution_id)
+  )
+  SELECT
+    s.user_id,
+    s.institution_id,
+    COUNT(DISTINCT s.faculty_id)::integer AS scoped_faculties,
+    COUNT(DISTINCT s.programme_id)::integer AS scoped_programmes,
+    COUNT(
+      DISTINCT CASE
+        WHEN cm.withdrawn_at IS NULL THEN cm.classroom_id
+        ELSE NULL
+      END
+    )::integer AS active_classrooms,
+    COUNT(
+      DISTINCT CASE
+        WHEN cm.withdrawn_at IS NULL
+          AND cd.deleted_at IS NULL
+          AND cd.published_at IS NOT NULL THEN cd.id
+        ELSE NULL
+      END
+    )::integer AS active_course_deliveries
+  FROM scope_rows s
+  LEFT JOIN public.classroom_members cm
+    ON cm.user_id = s.user_id
+    AND cm.institution_id = s.institution_id
+  LEFT JOIN public.course_deliveries cd
+    ON cd.classroom_id = cm.classroom_id
+    AND cd.institution_id = s.institution_id
+  GROUP BY s.user_id, s.institution_id
+$$;
+
+COMMENT ON FUNCTION app.staff_scope_delivery_summary(uuid) IS
+  'Reporting helper joining structural authorization scopes (institution_staff_scopes) with operational delivery assignment (classroom_members + course_deliveries).';

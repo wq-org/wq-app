@@ -238,6 +238,69 @@ CREATE POLICY classroom_members_all_institution_admin ON public.classroom_member
   USING (institution_id in (select app.admin_institution_ids()))
   WITH CHECK (institution_id in (select app.admin_institution_ids()));
 
+-- =============================================================================
+-- 11aa. OFFERING LAYER — RLS
+-- =============================================================================
+ALTER TABLE public.programme_offerings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.programme_offerings FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS programme_offerings_all_super_admin ON public.programme_offerings;
+CREATE POLICY programme_offerings_all_super_admin ON public.programme_offerings
+  FOR ALL TO authenticated
+  USING ((select app.is_super_admin()) is true)
+  WITH CHECK ((select app.is_super_admin()) is true);
+
+DROP POLICY IF EXISTS programme_offerings_all_institution_admin ON public.programme_offerings;
+CREATE POLICY programme_offerings_all_institution_admin ON public.programme_offerings
+  FOR ALL TO authenticated
+  USING (institution_id in (select app.admin_institution_ids()))
+  WITH CHECK (institution_id in (select app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS programme_offerings_select_member ON public.programme_offerings;
+CREATE POLICY programme_offerings_select_member ON public.programme_offerings
+  FOR SELECT TO authenticated
+  USING (institution_id in (select app.member_institution_ids()));
+
+ALTER TABLE public.cohort_offerings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.cohort_offerings FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS cohort_offerings_all_super_admin ON public.cohort_offerings;
+CREATE POLICY cohort_offerings_all_super_admin ON public.cohort_offerings
+  FOR ALL TO authenticated
+  USING ((select app.is_super_admin()) is true)
+  WITH CHECK ((select app.is_super_admin()) is true);
+
+DROP POLICY IF EXISTS cohort_offerings_all_institution_admin ON public.cohort_offerings;
+CREATE POLICY cohort_offerings_all_institution_admin ON public.cohort_offerings
+  FOR ALL TO authenticated
+  USING (institution_id in (select app.admin_institution_ids()))
+  WITH CHECK (institution_id in (select app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS cohort_offerings_select_member ON public.cohort_offerings;
+CREATE POLICY cohort_offerings_select_member ON public.cohort_offerings
+  FOR SELECT TO authenticated
+  USING (institution_id in (select app.member_institution_ids()));
+
+ALTER TABLE public.class_group_offerings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.class_group_offerings FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS class_group_offerings_all_super_admin ON public.class_group_offerings;
+CREATE POLICY class_group_offerings_all_super_admin ON public.class_group_offerings
+  FOR ALL TO authenticated
+  USING ((select app.is_super_admin()) is true)
+  WITH CHECK ((select app.is_super_admin()) is true);
+
+DROP POLICY IF EXISTS class_group_offerings_all_institution_admin ON public.class_group_offerings;
+CREATE POLICY class_group_offerings_all_institution_admin ON public.class_group_offerings
+  FOR ALL TO authenticated
+  USING (institution_id in (select app.admin_institution_ids()))
+  WITH CHECK (institution_id in (select app.admin_institution_ids()));
+
+DROP POLICY IF EXISTS class_group_offerings_select_member ON public.class_group_offerings;
+CREATE POLICY class_group_offerings_select_member ON public.class_group_offerings
+  FOR SELECT TO authenticated
+  USING (institution_id in (select app.member_institution_ids()));
+
 DROP POLICY IF EXISTS classroom_members_primary_teacher_manage ON public.classroom_members;
 DROP POLICY IF EXISTS classroom_members_all_primary_teacher ON public.classroom_members;
 CREATE POLICY classroom_members_all_primary_teacher ON public.classroom_members

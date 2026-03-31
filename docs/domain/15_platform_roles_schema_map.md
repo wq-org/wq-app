@@ -22,10 +22,11 @@ What is implemented in Postgres today, grounded in the migration chain. Use this
 | …     | `20260329000009_chat_*` … `015`                                                                     | conversations, conversation_members, messages, conversation_contexts, delivery-aware RLS                                                                                                                                                                                                                                                     |
 | …     | `20260329000016_cloud_assets_*` … `022`; `20260329000023_storage_cloud_objects_rls_01_policies.sql` | `cloud_folders`, `cloud_files`, `cloud_file_links`, `cloud_file_shares`; ACL helpers; `storage.objects` policies for `…/files/…` paths joined to `cloud_files`                                                                                                                                                                               |
 | …     | `20260329000024_notifications_*` … `030`                                                            | `notification_events`, `notification_deliveries`, `notification_preferences`; `create_notification_event_with_deliveries`, scoped prefs, dedupe                                                                                                                                                                                              |
+| …     | integrated into `20260321000002_*`, `20260323000001_*`, `20260323000002_*`, `20260329000006/07`     | offering layer (`programme_offerings`, `cohort_offerings`, `class_group_offerings`), `classrooms.class_group_offering_id`, legacy drift views, `app.staff_scope_delivery_summary`, and write-freeze posture for legacy enrollment/link paths                                                                                                 |
 
 **Apply the full chain** on fresh databases: behavior in this doc is the **final** state after all files above (e.g. student `courses` visibility and `topics_enrolled_read` assume `20260323000002` has run).
 
-Authorization is driven by `institution_id` + **active** `institution_memberships` (`left_institution_at IS NULL`), plus **classroom assignment** via `classroom_members` for classroom-scoped delivery (links, tasks, classroom game runs, rewards leaderboard). Legacy **`user_institutions`** (baseline) is **not** used by `app.member_institution_ids()` or Phase A/B RLS; keep only if you still have code paths writing it.
+Authorization is driven by `institution_id` + **active** `institution_memberships` (`left_institution_at IS NULL`), plus **classroom assignment** via `classroom_members` for classroom-scoped delivery. Canonical student access is `classroom_members + course_deliveries`; legacy `classroom_course_links` and `course_enrollments` are compatibility/read surfaces. Legacy **`user_institutions`** (baseline) is **not** used by `app.member_institution_ids()` or Phase A/B RLS; keep only if you still have code paths writing it.
 
 ---
 
@@ -286,11 +287,14 @@ institutions
 │
 └── faculties
     └── programmes (duration_years, progression_type)
+        ├── programme_offerings (academic_year, term_code, status)
+        │   └── cohort_offerings (status)
+        │       └── class_group_offerings (status)
+        │           └── classrooms (primary_teacher_id, status active|inactive, deactivated_at, class_group_offering_id)
+        │               ├── classroom_members (user_id, membership_role student|co_teacher, enrolled_at, withdrawn_at, leave_reason)
+        │               └── institution_staff_scopes (teacher → faculty/programme authorization)
         └── cohorts (academic_year)
-            └── class_groups
-                └── classrooms (primary_teacher_id, status active|inactive, deactivated_at)
-                    ├── classroom_members (user_id, membership_role student|co_teacher, enrolled_at, withdrawn_at, leave_reason)
-                    └── institution_staff_scopes (teacher → faculty/programme)
+            └── class_groups (stable identity layer)
 ```
 
 **Academic / lifecycle (app workflow, not automated jobs):**
@@ -311,7 +315,7 @@ courses (institution_id, teacher_id, is_published, theme_id)
 │   └── lessons (topic_id, content jsonb, pages jsonb, content_schema_version)
 │
 ├── course_enrollments (course_id, student_id)
-│   └── Optional legacy/analytics; **not** the student access path in Variant A (no `ce_student_insert` / `ce_student_delete`)
+│   └── Compatibility/legacy analytics only; canonical student access is classroom_members + course_deliveries (no `ce_student_insert` / `ce_student_delete`)
 │
 ├── games (teacher_id, institution_id, course_id nullable → this course)
 │   └── One game → at most one course; NULL `course_id` = standalone until linked

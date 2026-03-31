@@ -109,7 +109,7 @@ AS $$
 $$;
 
 COMMENT ON FUNCTION app.my_active_classroom_ids() IS
-  'Classroom IDs where the caller has an active (non-withdrawn) classroom_members row.';
+  'Classroom IDs where the caller has an active (non-withdrawn) classroom_members row. Does not list classrooms where the user is only classrooms.primary_teacher_id — the app must insert the primary teacher into classroom_members for consistent membership scoping.';
 
 -- =============================================================================
 -- 13b. Bootstrap — super_admin creates tenant + first institution_admin

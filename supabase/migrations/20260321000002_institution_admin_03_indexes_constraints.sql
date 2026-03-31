@@ -67,6 +67,30 @@ CREATE INDEX idx_class_groups_institution_id_cohort_id
   WHERE deleted_at IS NULL;
 
 -- =============================================================================
+-- offering layer indexes
+-- =============================================================================
+CREATE UNIQUE INDEX idx_programme_offerings_programme_year_term_active
+  ON public.programme_offerings (programme_id, academic_year, COALESCE(term_code, ''))
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX idx_programme_offerings_institution_id
+  ON public.programme_offerings (institution_id);
+
+CREATE UNIQUE INDEX idx_cohort_offerings_programme_offering_cohort_active
+  ON public.cohort_offerings (programme_offering_id, cohort_id)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX idx_cohort_offerings_institution_id
+  ON public.cohort_offerings (institution_id);
+
+CREATE UNIQUE INDEX idx_class_group_offerings_cohort_offering_group_active
+  ON public.class_group_offerings (cohort_offering_id, class_group_id)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX idx_class_group_offerings_institution_id
+  ON public.class_group_offerings (institution_id);
+
+-- =============================================================================
 -- institution_staff_scopes indexes
 -- =============================================================================
 CREATE INDEX idx_institution_staff_scopes_user_id_institution_id
@@ -79,6 +103,9 @@ CREATE INDEX idx_institution_staff_scopes_institution_id
 -- =============================================================================
 CREATE INDEX idx_classrooms_institution_id ON public.classrooms (institution_id);
 CREATE INDEX idx_classrooms_class_group_id ON public.classrooms (class_group_id);
+CREATE INDEX idx_classrooms_class_group_offering_id
+  ON public.classrooms (class_group_offering_id)
+  WHERE class_group_offering_id IS NOT NULL;
 CREATE INDEX idx_classrooms_primary_teacher_id ON public.classrooms (primary_teacher_id);
 
 -- =============================================================================
@@ -103,7 +130,7 @@ CREATE INDEX idx_classroom_members_institution_id
 -- institution_invites indexes
 -- =============================================================================
 CREATE UNIQUE INDEX idx_institution_invites_institution_id_email_pending
-  ON public.institution_invites (institution_id, lower(email))
+  ON public.institution_invites (institution_id, LOWER(email))
   WHERE accepted_at IS NULL;
 
 CREATE INDEX idx_institution_invites_institution_id_pending

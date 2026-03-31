@@ -178,6 +178,8 @@ CREATE POLICY course_enrollments_select_institution_admin ON public.course_enrol
   )
 );
 
+REVOKE INSERT, UPDATE, DELETE ON TABLE public.course_enrollments FROM authenticated;
+
 -- =============================================================================
 -- 9. TOPICS — preserve super_admin bypass, add institution admin read
 -- =============================================================================
