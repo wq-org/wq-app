@@ -145,7 +145,7 @@ BEGIN
         WHERE td.id = cf.task_id
           AND td.status <> 'draft'::public.task_delivery_status
           AND td.deleted_at IS NULL
-          AND td.classroom_id IN (SELECT app.my_active_classroom_ids())
+          AND td.classroom_id IN (SELECT app.list_active_classroom_ids())
       );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN (SELECT app.user_can_select_game_version(cf.game_version_id));
@@ -292,7 +292,7 @@ BEGIN
         WHERE td.id = fd.task_id
           AND td.status <> 'draft'::public.task_delivery_status
           AND td.deleted_at IS NULL
-          AND td.classroom_id IN (SELECT app.my_active_classroom_ids())
+          AND td.classroom_id IN (SELECT app.list_active_classroom_ids())
       );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN (SELECT app.user_can_select_game_version(fd.game_version_id));

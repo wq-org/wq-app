@@ -64,7 +64,7 @@ CREATE POLICY classroom_announcements_select_member ON public.classroom_announce
   USING (
     deleted_at IS NULL
     AND published_at IS NOT NULL
-    AND classroom_id IN (SELECT app.my_active_classroom_ids())
+    AND classroom_id IN (SELECT app.list_active_classroom_ids())
     AND institution_id IN (SELECT app.member_institution_ids())
   );
 

@@ -40,7 +40,7 @@ CREATE POLICY tasks_select_student ON public.tasks
     status != 'draft'
     AND deleted_at IS NULL
     AND institution_id IN (SELECT app.member_institution_ids())
-    AND classroom_id IN (SELECT app.my_active_classroom_ids())
+    AND classroom_id IN (SELECT app.list_active_classroom_ids())
   );
 
 -- =============================================================================
@@ -131,7 +131,7 @@ CREATE POLICY task_deliveries_select_student ON public.task_deliveries
   USING (
     status != 'draft'
     AND deleted_at IS NULL
-    AND classroom_id IN (SELECT app.my_active_classroom_ids())
+    AND classroom_id IN (SELECT app.list_active_classroom_ids())
   );
 
 -- =============================================================================
@@ -182,7 +182,7 @@ CREATE POLICY task_groups_select_member ON public.task_groups
       SELECT td.id FROM public.task_deliveries td
       WHERE td.deleted_at IS NULL
         AND td.status != 'draft'
-        AND td.classroom_id IN (SELECT app.my_active_classroom_ids())
+        AND td.classroom_id IN (SELECT app.list_active_classroom_ids())
     )
   );
 

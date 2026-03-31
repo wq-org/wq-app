@@ -6,7 +6,7 @@
 
 -- =============================================================================
 -- 2. profiles.active_institution_id — "active tenant" context
---    Used by app.current_institution_id(); RLS always verifies membership.
+--    Used by app.get_current_institution_id(); RLS always verifies membership.
 -- =============================================================================
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS active_institution_id uuid
@@ -247,7 +247,7 @@ COMMENT ON COLUMN public.classrooms.institution_id IS 'Tenant boundary; must mat
 COMMENT ON COLUMN public.classrooms.class_group_offering_id IS
   'Optional time-bound class_group_offering binding for year/term lineage; NULL for legacy rows.';
 COMMENT ON COLUMN public.classrooms.primary_teacher_id IS
-  'Ownership; can be reassigned by institution admin. Application must also insert this user into classroom_members with an active row (withdrawn_at NULL) so membership-scoped helpers such as app.my_active_classroom_ids() include the lead teacher; management helpers may still use this column directly.';
+  'Ownership; can be reassigned by institution admin. Application must also insert this user into classroom_members with an active row (withdrawn_at NULL) so membership-scoped helpers such as app.list_active_classroom_ids() include the lead teacher; management helpers may still use this column directly.';
 
 -- =============================================================================
 -- 11b. CLASSROOM_MEMBERS — student/co-teacher assignment + year rollover (doc 05)
@@ -269,7 +269,7 @@ CREATE TABLE public.classroom_members (
 );
 
 COMMENT ON TABLE public.classroom_members IS
-  'Assigns students and co-teachers to classrooms; withdrawn_at ends assignment without deleting history (year rollover). Primary teacher should also have a membership row so RLS and app.my_active_classroom_ids() stay aligned with classrooms.primary_teacher_id.';
+  'Assigns students and co-teachers to classrooms; withdrawn_at ends assignment without deleting history (year rollover). Primary teacher should also have a membership row so RLS and app.list_active_classroom_ids() stay aligned with classrooms.primary_teacher_id.';
 COMMENT ON COLUMN public.classroom_members.institution_id IS 'Tenant boundary; must match classroom.';
 COMMENT ON COLUMN public.classroom_members.withdrawn_at IS 'NULL = active in classroom; set at year-end or transfer to close assignment.';
 COMMENT ON COLUMN public.classroom_members.leave_reason IS 'Optional: year_end, transfer, graduated, course_change, manual.';

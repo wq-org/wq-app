@@ -81,7 +81,7 @@ $$;
 COMMENT ON FUNCTION app.is_institution_member(uuid) IS
   'True when caller has any active membership in the given institution.';
 
-CREATE OR REPLACE FUNCTION app.current_institution_id()
+CREATE OR REPLACE FUNCTION app.get_current_institution_id()
 RETURNS uuid
 LANGUAGE sql STABLE
 SET search_path = ''
@@ -91,13 +91,13 @@ AS $$
   where user_id = auth.uid()
 $$;
 
-COMMENT ON FUNCTION app.current_institution_id() IS
+COMMENT ON FUNCTION app.get_current_institution_id() IS
   'Returns the caller''s active_institution_id from profiles.';
 
 -- =============================================================================
 -- 11c. APP HELPERS — classroom scoping (student_can_access_* in Phase B after ccl exists)
 -- =============================================================================
-CREATE OR REPLACE FUNCTION app.my_active_classroom_ids()
+CREATE OR REPLACE FUNCTION app.list_active_classroom_ids()
 RETURNS SETOF uuid
 LANGUAGE sql STABLE
 SET search_path = ''
@@ -108,7 +108,7 @@ AS $$
     and cm.withdrawn_at is null
 $$;
 
-COMMENT ON FUNCTION app.my_active_classroom_ids() IS
+COMMENT ON FUNCTION app.list_active_classroom_ids() IS
   'Classroom IDs where the caller has an active (non-withdrawn) classroom_members row. Does not list classrooms where the user is only classrooms.primary_teacher_id — the app must insert the primary teacher into classroom_members for consistent membership scoping.';
 
 -- =============================================================================

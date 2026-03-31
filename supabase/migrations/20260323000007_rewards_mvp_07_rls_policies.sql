@@ -63,7 +63,7 @@ CREATE POLICY point_ledger_select_member ON public.point_ledger
   FOR SELECT TO authenticated
   USING (
     classroom_id IS NOT NULL
-    AND classroom_id IN (SELECT app.my_active_classroom_ids())
+    AND classroom_id IN (SELECT app.list_active_classroom_ids())
   );
 
 -- classroom_reward_settings
@@ -117,4 +117,4 @@ DROP POLICY IF EXISTS crs_member_read ON public.classroom_reward_settings;
 DROP POLICY IF EXISTS classroom_reward_settings_select_member ON public.classroom_reward_settings;
 CREATE POLICY classroom_reward_settings_select_member ON public.classroom_reward_settings
   FOR SELECT TO authenticated
-  USING (classroom_id IN (SELECT app.my_active_classroom_ids()));
+  USING (classroom_id IN (SELECT app.list_active_classroom_ids()));
