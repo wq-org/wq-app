@@ -671,3 +671,165 @@ It should become the reference for both:
 
 - database schema design
 - product packaging and pricing
+
+---
+
+## Concrete feature tree (what is implemented in migrations)
+
+> The "suggested" model in sections 8–16 is now implemented. The actual table names differ slightly from the suggestions. Use this section as the authoritative reference.
+
+### Plan management (super_admin only)
+
+**Create plan**
+
+- Table: `plan_catalog` (not `plans`)
+- Fields: code (unique text key), name, seat_cap_default, storage_bytes_cap_default, price_amount, currency, billing_interval, is_active
+- RLS: `plan_catalog_super_admin` — full CRUD for super_admin only
+
+**Deactivate plan**
+
+- Update: `plan_catalog.is_active = false`
+- Effect: plan hidden from new subscriptions; existing subscriptions unaffected
+
+---
+
+### Feature catalog management (super_admin writes; all authenticated read)
+
+**Define feature**
+
+- Table: `feature_definitions` (not `features`)
+- Fields: key (unique text), name, description, default_enabled, category, value_type (boolean | integer | bigint | text)
+- RLS: `feature_defs_super_admin` for CRUD; `feature_defs_authenticated_read` for SELECT by any logged-in user
+
+**Set plan default for feature**
+
+- Table: `plan_entitlements`
+- Input: plan_id, feature_id, boolean_value | integer_value | bigint_value | text_value (one typed column per row)
+- One row per (plan_id, feature_id) pair
+
+---
+
+### Institution subscription management (super_admin full CRUD; institution_admin read)
+
+**Assign plan to institution**
+
+- Table: `institution_subscriptions`
+- Fields: institution_id, plan_id, effective_from, effective_to, billing_status (active | suspended | trialing | past_due | canceled), seats_cap, storage_bytes_cap, renewal_at, grace_ends_at, trial_ends_at, cancel_at_period_end
+- RLS: `inst_subs_super_admin` (full CRUD); `inst_subs_institution_admin` (read)
+
+**Change billing status**
+
+- Update: `institution_subscriptions.billing_status`
+- Statuses implemented: active, suspended, trialing, past_due, canceled
+- Note: `grace` and `expired` from section 9 are not separate enum values — grace period is tracked via `grace_ends_at` timestamp; expired = past `effective_to` with no renewal
+
+**Link external billing provider**
+
+- Table: `billing_providers`
+- Fields: institution_id, provider (text, e.g. stripe), external_customer_id, external_subscription_id, external_price_id
+- Unique: (institution_id, provider)
+- RLS: `billing_providers_super_admin` (full CRUD); `billing_providers_institution_admin_select` (read)
+
+---
+
+### Institution-specific overrides (super_admin full CRUD; members read)
+
+**Create entitlement override for institution**
+
+- Table: `institution_entitlement_overrides`
+- Input: institution_id, feature_id, typed value (boolean_value | integer_value | bigint_value | text_value), reason, starts_at (optional), ends_at (optional), created_by
+- Unique: (institution_id, feature_id)
+- RLS: `inst_entitlement_overrides_super_admin` (full CRUD); `inst_entitlement_overrides_member_read` (SELECT for any active institution member — including teachers, not just admins)
+
+**Effective entitlement resolution order (implemented in app layer)**
+
+1. `institution_entitlement_overrides` (if row exists and active by dates)
+2. `plan_entitlements` for the institution's current `plan_id`
+3. `feature_definitions.default_enabled`
+
+---
+
+### Quota enforcement (automatic via triggers)
+
+**Track seat usage**
+
+- Table: `institution_quotas_usage` (seats_used, storage_used_bytes, updated_at)
+- Updated by: application layer when enrolling/withdrawing institution_memberships
+
+**Track storage usage**
+
+- Trigger: AFTER INSERT on `cloud_files` WHERE status = active → increments `institution_quotas_usage.storage_used_bytes`
+- Archived / deleted files do not count toward cap
+
+**Check quota before upload**
+
+- RPC: `register_cloud_file_record(...)` checks `storage_used_bytes + new_file_size_bytes ≤ institution_subscriptions.storage_bytes_cap`
+
+---
+
+### Billing history (institution_admin read)
+
+**View invoices**
+
+- Table: `institution_invoice_records`
+- Fields: external_id, amount_cents, currency, issued_at, due_at, paid_at, status (pending | paid | overdue | cancelled | refunded)
+- RLS: institution_admin can read own institution's invoices; super_admin full access
+
+---
+
+## Schema visualization
+
+```text
+[Commercial model — platform level]
+│
+├── plan_catalog (code, name, price_amount, currency, billing_interval, is_active)
+│   └── plan_entitlements (plan_id × feature_id → boolean|integer|bigint|text value)
+│
+└── feature_definitions (key, name, value_type, default_enabled, category)
+    └── [any authenticated user can SELECT; only super_admin can write]
+
+[Per institution — entitlement resolution]
+│
+└── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap)
+    │   billing_status: trialing | active | past_due | suspended | canceled
+    │   grace_ends_at → grace window tracking
+    │   trial_ends_at → trial window
+    │
+    ├── institution_entitlement_overrides (feature_id → typed value override)
+    │   ├── reason, starts_at, ends_at
+    │   └── [readable by all active institution members — not admin-gated]
+    │
+    ├── billing_providers (provider, external_customer_id, external_subscription_id)
+    │
+    ├── institution_quotas_usage (seats_used, storage_used_bytes)
+    │   └── [auto-incremented by triggers; checked in register_cloud_file_record]
+    │
+    └── institution_invoice_records (amount_cents, status: pending|paid|overdue|cancelled|refunded)
+
+[Effective entitlement resolution — app layer]
+institution_entitlement_overrides → plan_entitlements → feature_definitions.default_enabled
+```
+
+### CRUD surface by role
+
+| Operation                                     | Super Admin | Institution Admin | Teacher / Student |
+| --------------------------------------------- | ----------- | ----------------- | ----------------- |
+| plan_catalog — full CRUD                      | yes         | —                 | —                 |
+| feature_definitions — full CRUD               | yes         | —                 | —                 |
+| feature_definitions — read                    | yes         | yes               | yes               |
+| plan_entitlements — full CRUD                 | yes         | —                 | —                 |
+| institution_subscriptions — full CRUD         | yes         | read-only         | —                 |
+| institution_entitlement_overrides — full CRUD | yes         | read-only         | read-only         |
+| billing_providers — full CRUD                 | yes         | read-only         | —                 |
+| institution_quotas_usage — read               | yes         | yes               | —                 |
+| institution_invoice_records — read            | yes         | yes               | —                 |
+
+### Billing state → access behavior (app layer enforcement)
+
+| Status    | Write access        | Premium features   | Data preserved         | Billing UI visible |
+| --------- | ------------------- | ------------------ | ---------------------- | ------------------ |
+| trialing  | full                | yes (trial policy) | yes                    | yes                |
+| active    | full                | yes                | yes                    | yes                |
+| past_due  | full                | yes (grace window) | yes                    | warning banner     |
+| suspended | read-only / blocked | no                 | yes                    | yes                |
+| canceled  | blocked             | no                 | yes (retention policy) | reactivate CTA     |

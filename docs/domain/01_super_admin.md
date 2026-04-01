@@ -200,3 +200,153 @@ The docs are considered structurally aligned when:
 2. Terminology is unified: "Class Room" (file), "classroom" (product UI).
 3. No module implies cross-tenant access.
 4. Security and compliance responsibilities map cleanly from Super Admin to Institution Admin.
+
+---
+
+## Concrete feature tree
+
+### Institution lifecycle
+
+**Create institution**
+
+- Input: name, address, email_domain_policy, data_region, initial admin user_id
+- Calls: `create_institution_with_initial_admin(name, initial_admin_user_id)`
+- Creates: `institutions` row → `institution_settings` (defaults) → `institution_quotas_usage` (zeroed) → trial `institution_subscriptions` row → `institution_memberships` row (status = active, role = institution_admin)
+- Result: institution is live and admin can log in
+
+**Suspend institution**
+
+- Sets `institutions.suspended_at` + `suspension_reason`
+- Effect: institution members lose access (RLS checks `suspended_at IS NULL`)
+
+**Reactivate institution**
+
+- Clears `institutions.suspended_at` + `suspension_reason`
+
+**Soft-delete institution**
+
+- Sets `institutions.deleted_at`
+- Hard purge is a manual DBA operation following the data retention policy
+
+---
+
+### Commercial controls
+
+**Create / edit plan**
+
+- Table: `plan_catalog`
+- Fields: code (unique), name, seat_cap_default, storage_bytes_cap_default, price_amount, currency, billing_interval, is_active
+- Effect: available in plan selector UI; inactive plans hidden from new subscriptions
+
+**Assign plan to institution**
+
+- Table: `institution_subscriptions`
+- Fields: institution_id, plan_id, effective_from, effective_to, billing_status (active / suspended / trialing / past_due / canceled), seats_cap, storage_bytes_cap, renewal_at, grace_ends_at
+- Effect: drives `institution_quotas_usage` enforcement and feature entitlements
+
+**Override plan feature for institution**
+
+- Table: `institution_entitlement_overrides`
+- Fields: institution_id, feature_id, typed value (boolean / integer / bigint / text), reason, starts_at, ends_at
+- Effect: overrides plan_entitlements for that institution; visible to institution_admin (read-only)
+
+**Manage billing provider linkage**
+
+- Table: `billing_providers`
+- Fields: institution_id, provider (stripe etc.), external_customer_id, external_subscription_id, external_price_id
+
+---
+
+### Feature management
+
+**Define feature**
+
+- Table: `feature_definitions`
+- Fields: key (unique), name, description, default_enabled, category, value_type (boolean / integer / bigint / text)
+- All authenticated users can read; only super_admin can write
+
+**Set plan default for feature**
+
+- Table: `plan_entitlements`
+- Fields: plan_id, feature_id, typed value columns
+- One row per plan/feature pair
+
+---
+
+### User management (RPCs)
+
+**List all users**
+
+- `list_admin_users()` → returns all profiles with institution counts, role, active status
+
+**Delete user permanently**
+
+- `admin_delete_user(user_id, reason)` → removes from `profiles` and `auth.users`
+- Irreversible; must confirm before calling
+
+**Ban / unban user**
+
+- `admin_set_user_active_status(user_id, is_active)` → sets `auth.users.banned_until`
+- Ban: sets far-future timestamp; Unban: clears it
+
+---
+
+### Security and compliance
+
+**Read audit log**
+
+- Table: `audit.events` (super_admin SELECT only)
+- Written exclusively via `audit.log_event()` (SECURITY DEFINER) — no direct INSERT from clients
+- Fields: occurred_at, actor_user_id, event_type, subject_type, subject_id, institution_id, payload, metadata
+
+**GDPR / data subject request oversight**
+
+- Read `data_subject_requests` across all institutions
+- Approve/reject requests created by institution admins
+
+---
+
+## Schema visualization
+
+```text
+[Platform level — no institution boundary]
+│
+├── plan_catalog (code, name, seat_cap_default, storage_bytes_cap_default, price, billing_interval)
+│   └── plan_entitlements (plan_id × feature_id → typed value)
+│
+├── feature_definitions (key, name, value_type: boolean|integer|bigint|text, default_enabled)
+│
+├── audit.events (occurred_at, actor_user_id, event_type, institution_id, payload)
+│   └── [append-only; written via audit.log_event() SECURITY DEFINER only]
+│
+└── [Per institution]
+    ├── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap, renewal_at)
+    ├── institution_entitlement_overrides (feature_id, typed value, reason, starts_at, ends_at)
+    └── billing_providers (provider, external_customer_id, external_subscription_id)
+
+[User management — global]
+├── profiles (user_id, role, is_super_admin, active_institution_id)
+└── auth.users (managed via admin RPCs — ban/delete)
+
+RPCs:
+├── create_institution_with_initial_admin(name, admin_user_id)  → new tenant bootstrap
+├── list_admin_users()  → all users platform-wide
+├── admin_delete_user(user_id, reason)  → permanent removal
+└── admin_set_user_active_status(user_id, is_active)  → ban / unban
+```
+
+### CRUD surface by role
+
+| Operation                                     | Super Admin           | Institution Admin | Teacher   | Student   |
+| --------------------------------------------- | --------------------- | ----------------- | --------- | --------- |
+| plan_catalog — full CRUD                      | yes                   | —                 | —         | —         |
+| feature_definitions — full CRUD               | yes                   | —                 | —         | —         |
+| feature_definitions — read                    | yes                   | yes               | yes       | yes       |
+| institution_subscriptions — full CRUD         | yes                   | read-only         | —         | —         |
+| institution_entitlement_overrides — full CRUD | yes                   | read-only         | read-only | read-only |
+| billing_providers — full CRUD                 | yes                   | read-only         | —         | —         |
+| audit.events — read                           | yes                   | —                 | —         | —         |
+| audit.log_event() — insert                    | SECURITY DEFINER only | —                 | —         | —         |
+| create_institution_with_initial_admin         | yes                   | —                 | —         | —         |
+| admin_delete_user                             | yes                   | —                 | —         | —         |
+| admin_set_user_active_status                  | yes                   | —                 | —         | —         |

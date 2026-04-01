@@ -171,3 +171,140 @@ Node 5 wrong → 0 points, streak resets to 1, multiplier back to ×1.0.
 - node-level struggle hotspots
 - versus/class session ranking outcomes
 - score progression per student over time
+
+---
+
+## Concrete feature tree
+
+### Game authoring
+
+**Create game**
+
+- Table: `games`
+- Input: institution_id, teacher_id (self), game_type, game_config (jsonb — nodes, routing, metadata), course_id (optional)
+- Trigger: if course_id set, `games.institution_id` must match `courses.institution_id`
+- Status: draft (unpublished until a version is published)
+
+**Edit game content**
+
+- Update: `games.game_config` (mutable on draft)
+- Publish a new version to freeze a snapshot; source game can keep changing
+
+**Link game to course**
+
+- Update: `games.course_id`
+- One game → at most one course; NULL = standalone library game
+
+**Archive game**
+
+- Update: `games.archived_at = now()`
+
+---
+
+### Game versioning
+
+**Create draft version**
+
+- Table: `game_versions`
+- Input: game_id, version_no (unique per game), content (jsonb — full node/routing snapshot), change_note
+- status = draft (editable)
+
+**Publish version**
+
+- Update: `game_versions.status = published`
+- Update: `games.current_published_version_id = this version`
+- Published rows are immutable
+
+**Archive old version**
+
+- Update: `game_versions.status = archived`
+
+---
+
+### Classroom delivery
+
+**Deliver game to classroom**
+
+- Table: `game_deliveries`
+- Input: game_id, game_version_id, classroom_id, course_delivery_id (optional), lesson_id (optional), status = draft → published
+- Effect: students in the classroom can access this game version
+
+**Archive / cancel delivery**
+
+- Update: `game_deliveries.status = archived | canceled`
+
+---
+
+### Game sessions
+
+**Solo play**
+
+- Table: `game_runs` (mode = solo)
+- Input: game_id, institution_id, game_version_id, game_delivery_id (optional)
+- Creates: 1 `game_session` → 1 `game_session_participants` row (started_by = student)
+- On complete: upserts `game_run_stats_scoped` (best_score, attempt_count, is_personal_best)
+- Rewards: `point_ledger` rows: game_correct (+100 per node), game_speed_bonus (+50/+25 by time), game_streak (×1.5/×2.0)
+
+**Versus play**
+
+- Table: `game_runs` (mode = versus)
+- Input: game_id, invite_code (short code for lobby join)
+- Creates: 1 `game_session` → 2 `game_session_participants`
+- Winner earns: `point_ledger` (source = game_versus_win, +25 rivalry points)
+
+**Teacher class session**
+
+- Table: `game_runs` (mode = classroom)
+- Input: classroom_id, game_id, game_version_id, started_by = teacher
+- Lifecycle: lobby → started → completed | cancelled
+- Creates: 1 `game_session` → N `game_session_participants` (enrolled students)
+- Live leaderboard derived from `game_session_participants.score`
+
+---
+
+### Analytics read
+
+**Per-game stats (teacher)**
+
+- Table: `game_run_stats_scoped` — best_score, attempt_count, last_run_at, is_personal_best per user/game/delivery
+- Table: `game_session_participants.scores_detail` (jsonb array: `[{node_id, correct, time_ms, base, bonus, multiplier, total}]`)
+
+---
+
+### Schema visualization
+
+```text
+games (teacher_id, institution_id, course_id nullable, status: draft|published|archived)
+│
+├── game_versions (version_no, status: draft|published|archived, content jsonb)
+│   └── [immutable after status = published]
+│
+├── game_deliveries (classroom_id, game_version_id, course_delivery_id?, lesson_id?, status)
+│
+└── game_runs (mode: solo|versus|classroom, status: lobby|started|completed|cancelled)
+    │
+    ├── mode = solo
+    │   └── game_session → 1 game_session_participants (student, score, scores_detail jsonb)
+    │
+    ├── mode = versus
+    │   └── game_session → 2 game_session_participants (invite_code for lobby join)
+    │
+    └── mode = classroom
+        └── game_session → N game_session_participants (all classroom students)
+
+game_run_stats_scoped (user_id, game_id, game_version_id, game_delivery_id?, best_score, attempt_count, is_personal_best)
+```
+
+### CRUD surface by role
+
+| Operation                       | Teacher (own)   | Student           | Institution Admin | Super Admin |
+| ------------------------------- | --------------- | ----------------- | ----------------- | ----------- |
+| Create / edit game              | yes             | —                 | —                 | yes         |
+| Create game version             | yes             | —                 | —                 | yes         |
+| Publish version                 | yes             | —                 | —                 | yes         |
+| Create game delivery            | yes             | —                 | yes (full CRUD)   | yes         |
+| Start solo run                  | yes (test)      | yes               | —                 | yes         |
+| Start class session             | yes             | —                 | —                 | yes         |
+| Write game_session_participants | —               | yes (own)         | —                 | yes         |
+| Read game_session_participants  | yes (own games) | own + leaderboard | yes (read)        | yes         |
+| Read game_run_stats_scoped      | yes (own games) | own only          | yes (read)        | yes         |

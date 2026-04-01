@@ -92,3 +92,91 @@ Available blocks:
 - list, search, pin, duplicate, and soft-delete notes
 - link notes to lesson slides and task contexts where applicable
 - preserve edit history signals for collaboration review
+
+---
+
+## Concrete feature tree
+
+### Personal notes
+
+**Create personal note**
+
+- Table: `notes`
+- Input: institution_id, owner_user_id (self), scope = personal, title, content (jsonb Yoopta blocks), content_schema_version
+- Optional: lesson_id (links note to a lesson slide context)
+- RLS: `notes_own` — only the owner can read/write
+
+**Update note content**
+
+- Update: `notes.content` (jsonb), `notes.updated_at`
+- Autosave: 500ms debounce; structural operations (block add/delete) are immediate
+
+**Pin / unpin note**
+
+- Update: `notes.is_pinned = true | false`
+
+**Duplicate note**
+
+- Insert: new `notes` row with same content, owner_user_id, scope = personal, new title
+
+**Soft-delete note**
+
+- Update: `notes.deleted_at = now()`
+- Note is excluded from list queries (RLS + app layer filter); not physically removed
+
+**Link note to lesson slide**
+
+- Update: `notes.lesson_id` (FK to lessons)
+- Also creates `learning_events` row: event_type = note_created_from_slide with slide_index + note_id in metadata
+
+---
+
+### Collaborative notes (task-scoped)
+
+**Access group note**
+
+- Table: `notes` (scope = collaborative, task_group_id set)
+- RLS: `notes_collaborative_access` — all members of the `task_group` can read/write
+- Created automatically when teacher creates a `task_group` (one note per group)
+
+**Co-edit group note in real-time**
+
+- Mechanism: Supabase Realtime subscription on `notes.content` + block-level JSONB updates
+- Conflict resolution: Last Write Wins (LWW) per block id
+- Offline: changes queued locally and flushed on reconnect
+
+**Teacher monitors group note**
+
+- RLS: `notes_teacher_read` — teacher who owns the task delivery can read collaborative notes for all their task groups
+
+---
+
+### Schema visualization
+
+```text
+notes
+├── scope = personal
+│   ├── owner_user_id = student or teacher
+│   ├── lesson_id (optional — slide-context link)
+│   ├── is_pinned
+│   ├── title, content (jsonb Yoopta blocks)
+│   ├── content_schema_version
+│   └── deleted_at (soft delete)
+│
+└── scope = collaborative
+    ├── owner_user_id = teacher who created task
+    ├── task_group_id → task_groups.id
+    ├── title, content (jsonb Yoopta blocks)
+    └── all task_group_members can read/write (notes_collaborative_access)
+```
+
+### CRUD surface by role
+
+| Operation                | Student (own)   | Student (collaborative) | Teacher               | Institution Admin |
+| ------------------------ | --------------- | ----------------------- | --------------------- | ----------------- |
+| Create personal note     | yes             | —                       | yes                   | —                 |
+| Read own notes           | yes             | —                       | yes                   | —                 |
+| Edit own notes           | yes             | —                       | yes                   | —                 |
+| Soft-delete own notes    | yes             | —                       | yes                   | —                 |
+| Read collaborative note  | if group member | yes                     | yes (all task groups) | read-only         |
+| Write collaborative note | if group member | yes                     | yes                   | —                 |

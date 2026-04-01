@@ -136,3 +136,131 @@ Supported lesson slide layouts:
 - avoid oversized single-slide content blocks
 - use split and pacing rules to reduce cognitive overload
 - prioritize readability and comprehension over dense formatting
+
+---
+
+## Concrete feature tree
+
+### Course authoring (mutable layer)
+
+**Create course**
+
+- Table: `courses`
+- Input: institution_id, teacher_id, title, description, theme_id, is_published = false
+
+**Create topic**
+
+- Table: `topics`
+- Input: course_id, title, description, order_index
+
+**Create lesson**
+
+- Table: `lessons`
+- Input: topic_id, title, content (jsonb), pages (jsonb array — each page has id, order, content blocks), order_index, content_schema_version
+
+**Reorder topics / lessons**
+
+- Update: `order_index` on affected rows
+
+**Edit lesson content**
+
+- Update: `lessons.content`, `lessons.pages`; bump `content_schema_version` on breaking changes
+
+**Soft-delete course / topic / lesson**
+
+- Update: `deleted_at = now()` (courses have this via base table; topics/lessons similarly)
+
+---
+
+### Course versioning (snapshot layer)
+
+**Publish course version**
+
+- Table: `course_versions`
+- Input: course_id, version_no (unique per course), status = draft → published, change_note
+- Creates snapshot rows:
+  - `course_version_topics` (source_topic_id, title, description, order_index)
+  - `course_version_lessons` (source_lesson_id, title, content, pages, order_index, content_schema_version)
+- Published versions are immutable — source course can be edited and re-published as v2, v3…
+
+**Archive old version**
+
+- Update: `course_versions.status = archived`
+
+---
+
+### Classroom delivery
+
+**Create course delivery**
+
+- Table: `course_deliveries`
+- Input: institution_id, classroom_id, course_id, course_version_id, status (draft | scheduled | active), starts_at, ends_at
+- Effect: students in that classroom gain access to all version_lessons via `student_can_access_course_delivery()`
+
+**Activate / archive / cancel delivery**
+
+- Update: `course_deliveries.status`
+
+---
+
+### Student learning flow
+
+**Access course in classroom**
+
+- Helper: `app.student_can_access_course_delivery(delivery_id)` — confirms student has active `classroom_members` row for delivery's classroom
+
+**Open lesson**
+
+- Table: `lessons` via `lessons_enrolled_read`
+- Helper: `app.student_can_access_lesson(lesson_id)` — lesson must appear in a published delivery version
+- Inserts: `learning_events` (event_type = lesson_opened)
+
+**Navigate slides**
+
+- Inserts: `learning_events` (slide_viewed, slide_time_spent with duration_ms, slide_navigation with direction = forward | backward | jump)
+
+**Complete lesson**
+
+- Upsert: `lesson_progress` (user_id, lesson_id, completed_at = now(), last_position)
+- Inserts: `learning_events` (lesson_completed)
+
+**Resume lesson**
+
+- Read: `lesson_progress.last_position` (jsonb, e.g. `{"page_index": 2}`)
+
+---
+
+### Schema visualization
+
+```text
+courses (teacher_id, institution_id, is_published)
+│
+├── topics (order_index)
+│   └── lessons (pages jsonb[], content_schema_version)
+│
+├── course_versions (version_no, status: draft|published|archived)
+│   ├── course_version_topics (snapshot of topics at publish time)
+│   │   └── course_version_lessons (snapshot of lessons at publish time)
+│   └── [immutable after status = published]
+│
+└── course_deliveries (classroom_id, course_version_id, status: draft|scheduled|active|archived|canceled)
+    │
+    ├── classroom_members (students who can access this delivery)
+    ├── lesson_progress (user_id, lesson_id, last_position, completed_at)
+    └── learning_events (user_id, lesson_id, event_type, slide_index, duration_ms)
+```
+
+### CRUD surface by role
+
+| Operation               | Teacher (own)     | Student            | Institution Admin | Super Admin |
+| ----------------------- | ----------------- | ------------------ | ----------------- | ----------- |
+| Create / edit course    | yes               | —                  | —                 | yes         |
+| Create topics / lessons | yes               | —                  | —                 | yes         |
+| Publish version         | yes               | —                  | —                 | yes         |
+| Create delivery         | yes               | —                  | yes (full CRUD)   | yes         |
+| Read published course   | yes               | if delivery active | yes (read)        | yes         |
+| Read topics / lessons   | yes               | if delivery active | yes (read)        | yes         |
+| Write lesson_progress   | —                 | yes (own)          | —                 | yes         |
+| Read lesson_progress    | yes (own courses) | own only           | yes (read)        | yes         |
+| Insert learning_events  | —                 | yes                | —                 | yes         |
+| Read learning_events    | yes (own courses) | own only           | yes (read)        | yes         |

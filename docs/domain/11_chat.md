@@ -104,3 +104,117 @@ If any rule conflicts, safeguarding precedence wins.
 3. Safeguarding default for teacher-student 1:1 initiation
 4. Reporting + basic moderation queue
 5. Classroom group chat flows
+
+---
+
+## Concrete feature tree
+
+### Conversations
+
+**Start 1:1 direct conversation**
+
+- Table: `conversations` (type = direct)
+- Insert: institution_id, type = direct, created_by (self)
+- Insert 2 rows: `conversation_members` (self + other party, joined_at = now())
+- Safeguarding: teacher cannot initiate 1:1 with a student — enforced at app layer, not RLS
+
+**Create group conversation**
+
+- Table: `conversations` (type = group)
+- Input: institution_id, type = group, title, classroom_id (optional)
+- Insert N `conversation_members` rows
+
+**Create classroom channel**
+
+- Table: `conversations` (type = classroom_channel)
+- Linked to a classroom via `conversation_contexts` (context_type = classroom, classroom_id)
+
+**Create course / task / game context channel**
+
+- Table: `conversations` + `conversation_contexts`
+- context_type: course_delivery_channel | task_delivery_channel | game_session_channel
+- FKs: course_delivery_id | task_delivery_id | game_session_id (at most one set)
+
+**Leave conversation**
+
+- Update: `conversation_members.left_at = now()`
+
+**Mute conversation**
+
+- Update: `conversation_members.is_muted = true`
+
+---
+
+### Messaging
+
+**Send message**
+
+- Table: `messages`
+- Input: conversation_id, sender_id (self), content (jsonb Lexical), attachments (jsonb array of {type, url, name}), reply_to_id (optional thread)
+- RLS: `msg_member_insert` — sender must be active member (left_at IS NULL)
+
+**Edit own message**
+
+- Update: `messages.content`, `messages.edited_at = now()`
+- RLS: `msg_own_update`
+
+**Soft-delete own message**
+
+- Update: `messages.deleted_at = now()`
+
+**Reply to message**
+
+- Insert: `messages.reply_to_id = parent message id` (self-FK)
+
+**Mark conversation as read**
+
+- Update: `conversation_members.last_read_at = now()` (used for unread badge calculation)
+
+---
+
+### Moderation (institution admin / moderator)
+
+**Mark conversation as moderated**
+
+- Update: `conversations.is_moderated = true`
+
+**Remove member from conversation**
+
+- Update: `conversation_members.removed_at = now()`, `removed_by = admin_id`
+
+**Archive conversation**
+
+- Update: `conversations.archived_at = now()`
+
+---
+
+### Schema visualization
+
+```text
+conversations (institution_id, type, created_by)
+│   type: direct | group | classroom_channel | course_delivery_channel | task_delivery_channel | game_session_channel
+│
+├── conversation_members (user_id, membership_role: owner|moderator|participant)
+│   ├── joined_at, left_at, removed_at, removed_by
+│   ├── last_read_at  ← unread badge source
+│   └── is_muted
+│
+├── messages (sender_id, content jsonb Lexical, attachments jsonb[], reply_to_id?)
+│   ├── edited_at (set on edit)
+│   └── deleted_at (soft delete)
+│
+└── conversation_contexts (context_type, classroom_id?, course_delivery_id?, task_delivery_id?, game_session_id?)
+    └── at most one FK set per row
+```
+
+### CRUD surface by role
+
+| Operation                     | Teacher                      | Student | Institution Admin | Super Admin |
+| ----------------------------- | ---------------------------- | ------- | ----------------- | ----------- |
+| Create direct conversation    | yes (not with student first) | yes     | yes               | yes         |
+| Create group conversation     | yes                          | yes     | yes               | yes         |
+| Send message (in joined conv) | yes                          | yes     | yes               | yes         |
+| Edit / delete own message     | yes                          | yes     | yes               | yes         |
+| Read conversation (own)       | yes                          | yes     | yes               | yes         |
+| Read all conversations        | —                            | —       | yes (read)        | yes         |
+| Remove member / archive       | —                            | —       | yes               | yes         |
