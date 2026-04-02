@@ -3,49 +3,23 @@
 Role: `super_admin`  
 Scope: global platform governance across all institutions and modules.
 
-## Mission
+## Mission and context
 
-Super Admin owns platform structure, compliance, commercial controls, and tenant safety.  
-Institution Admin and Teacher own delivery. Student owns participation.
+Super Admin is the only role with a platform-wide view. Every other role — Institution Admin, Teacher, Student — operates inside a single tenant and never crosses institution boundaries. Super Admin sits above all of them: creating and governing tenants, controlling what features and plans each institution gets, enforcing compliance, and acting as the last line of defence for data integrity and security.
 
-This file is the top-level control plane for all module docs:
+Super Admin does not deliver learning. It makes delivery possible and safe at scale.
 
-- `02_institution.md`
-- `03_teacher.md`
-- `04_student.md`
-- `05_classroom.md`
-- `06_note.md`
-- `07_course.md`
-- `08_game_studio.md`
-- `09_task.md`
-- `10_reward_system.md`
-- `11_chat.md`
-- `12_notification.md`
-- `13_hetzner_infra.md`
+**Scope:** global — all institutions, all modules, no tenant restriction
+**Accountability:** plan catalog, billing state, feature flags, user lifecycle, audit trail, GDPR oversight, incident response
 
----
+**Role boundary:**
 
-## Platform ownership map (source of truth)
-
-1. Super Admin
-
-- Creates/suspends institutions, controls global feature flags, enforces GDPR and security baseline.
-- Owns plan catalog, seat model, billing guardrails, and incident response.
-
-2. Institution Admin
-
-- Manages faculty/programme/cohort/class-group tree, teachers, students, licenses inside one tenant.
-- Never accesses data from other institutions.
-
-3. Teacher
-
-- Creates courses, games, tasks, and reviews progress inside assigned institution scope.
-
-4. Student
-
-- Consumes content, submits tasks, plays games, collaborates, and tracks personal progress.
-
-### Visual: role and governance hierarchy
+| Role              | Scope                       | Owns                                            |
+| ----------------- | --------------------------- | ----------------------------------------------- |
+| Super Admin       | Platform — all institutions | Governance, plans, compliance, tenant lifecycle |
+| Institution Admin | One institution             | Hierarchy, teachers, students, licenses         |
+| Teacher           | Assigned classrooms         | Courses, games, tasks, classroom delivery       |
+| Student           | Assigned classrooms         | Learning, participation, personal progress      |
 
 ```mermaid
 flowchart TD
@@ -59,15 +33,6 @@ flowchart TD
   GOV --> SEC[Security and Compliance]
   GOV --> OPS[Reliability and Incident Response]
 ```
-
----
-
-## Cross-module dependencies (must stay consistent)
-
-1. Institution (`02`) is the tenant boundary for everything else.
-2. Class Room (`05`) is the operational container linking Course (`07`), Game Studio (`08`), Task (`09`), Reward (`10`), Chat (`11`), and Notification (`12`).
-3. Notes (`06`) can be personal or collaborative, but always inherit institution and role access rules.
-4. Infrastructure (`13`) must enforce RLS, backups, encryption, logging, and recovery for all modules.
 
 ---
 
