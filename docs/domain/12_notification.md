@@ -2,6 +2,8 @@
 
 Keeps students on track and teachers informed without overwhelming either. Delivered in-app first — email as opt-in backup. No WhatsApp, no third-party messengers (DSGVO Art. 32).
 
+> **Super admin gap:** Super admins have full CRUD on the notification tables (via bypass policy) but receive **no notifications**. `notification_events` requires an `institution_id` — super admin is platform-level and has no institution scope. No `event_type` exists for operational alerts (quota exceeded, billing failure, institution suspension needed, security incident). Super admins must monitor `audit.events` and institution health manually. A platform-level alerting channel (separate from the institution-scoped notification system) is not yet designed.
+
 # Database model (migrations `20260329000024_notifications_*` … `030`)
 
 Three tables: **canonical event** → **per-user deliveries** → **preferences** (with optional scope).

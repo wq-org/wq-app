@@ -93,7 +93,7 @@ Expected capabilities:
 
 This is the highest-priority area because every classroom and enrollment depends on it.
 
-### Visual: structural hierarchy
+### Visual: academic structure hierarchy
 
 ```mermaid
 flowchart TD
@@ -103,8 +103,8 @@ flowchart TD
   P --> C[Cohort]
   C --> CG[Class Group]
   CG --> CR[Classroom]
-  CR --> CONTENT[Courses, Games, Tasks]
-  CR --> USERS[Teacher and Students]
+  CR --> MOD[Course, Game Studio, Task, Reward, Chat, Notification]
+  CR --> USERS[Teachers and Students]
 ```
 
 ### 3) Class Room oversight

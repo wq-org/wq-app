@@ -39,7 +39,7 @@ This file is the top-level control plane for all module docs:
 
 3. Teacher
 
-- Creates classrooms, courses, games, tasks, and reviews progress inside assigned institution scope.
+- Creates courses, games, tasks, and reviews progress inside assigned institution scope.
 
 4. Student
 
@@ -71,74 +71,219 @@ flowchart TD
 
 ---
 
-## Hierarchy ownership
+## Feature tree
 
-Detailed academic hierarchy design is institution logic and is defined in `02_institution.md`.
-`01_super_admin.md` stays at governance and cross-module policy level.
+### Institution lifecycle
 
-### Visual: academic structure hierarchy
+**Create institution**
 
-```mermaid
-flowchart TD
-  I[Institution]
-  I --> F[Faculty]
-  F --> P[Programme]
-  P --> C[Cohort]
-  C --> CG[Class Group]
-  CG --> CR[Classroom]
-  CR --> MOD[Course, Game Studio, Task, Reward, Chat, Notification]
+- Input: name, address, email_domain_policy, data_region, initial admin user_id
+- Calls: `create_institution_with_initial_admin(name, initial_admin_user_id)`
+- Creates: `institutions` row → `institution_settings` (locale, timezone, retention_policy_code) → `institution_quotas_usage` (zeroed) → trial `institution_subscriptions` row → `institution_memberships` row (status = active, role = institution_admin)
+- Result: institution is live; admin can log in immediately
+
+**Update institution**
+
+- Update: `institutions` fields (name, data_region, email_domain_policy, default_retention_policy_code)
+- Update: `institution_settings` (locale, timezone, retention_policy_code, notification_defaults)
+
+**Suspend institution**
+
+- Sets `institutions.suspended_at` + `suspension_reason`
+- Effect: institution members lose access (RLS checks `suspended_at IS NULL`)
+- Use when: billing failure past grace window, compliance violation, abuse
+
+**Reactivate institution**
+
+- Clears `institutions.suspended_at` + `suspension_reason`
+
+**Soft-delete institution**
+
+- Sets `institutions.deleted_at`
+- Hard purge is a manual DBA operation following `retention_policy_code`
+
+**View institution health**
+
+- Derived from multiple tables — no single health table; signals pulled at query time:
+
+| Signal category    | Source tables                                                                     | Health indicators                                                               |
+| ------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Access health      | `institution_memberships`, `institution_quotas_usage`                             | seats_used vs seats_cap, activated vs invited members, last login activity      |
+| Learning health    | `lesson_progress`, `learning_events`, `task_submissions`, `game_run_stats_scoped` | course/game usage rate, task completion, overdue submissions, inactive students |
+| Operational health | `institution_quotas_usage`, `institution_subscriptions`, `cloud_files`            | storage % used, renewal_at proximity, grace_ends_at, billing_status             |
+| Compliance health  | `data_subject_requests`, `audit.events`                                           | pending DSRs, export/delete workflow readiness, audit trail completeness        |
+
+- Health state model: **Blue** (healthy baseline) → **Orange** (approaching limits or engagement drop) → **Red** (critical, immediate action required)
+- Cross-tenant isolation enforced: each query is scoped to one institution_id; no joins across tenants
+
+---
+
+### Commercial controls
+
+**Create / edit plan**
+
+- Table: `plan_catalog`
+- Fields: code (unique), name, seat_cap_default, storage_bytes_cap_default, price_amount, currency, billing_interval, is_active
+- Inactive plans hidden from new subscriptions; existing subscriptions unaffected
+
+**Assign plan to institution**
+
+- Table: `institution_subscriptions`
+- Fields: plan_id, effective_from, effective_to, billing_status (active / suspended / trialing / past_due / canceled), seats_cap, storage_bytes_cap, renewal_at, grace_ends_at, trial_ends_at, cancel_at_period_end
+- Grace window: `grace_ends_at` — institution keeps access after billing failure until this timestamp, then access is cut (billing_status → suspended)
+- Read-only fallback on expiry: enforced at app layer when billing_status = suspended or effective_to has passed
+
+**Override plan feature for institution**
+
+- Table: `institution_entitlement_overrides`
+- Fields: institution_id, feature_id, typed value (boolean / integer / bigint / text), reason, starts_at, ends_at
+- Use for: custom enterprise contracts, temporary premium access, promotional periods
+- Every override is written with `created_by` — auditable
+- Readable by institution_admin (read-only); only super_admin can write
+
+**Link billing provider**
+
+- Table: `billing_providers`
+- Fields: institution_id, provider (e.g. stripe), external_customer_id, external_subscription_id, external_price_id
+
+---
+
+### Feature management
+
+**Define feature**
+
+- Table: `feature_definitions`
+- Fields: key (unique), name, description, default_enabled, category, value_type (boolean / integer / bigint / text)
+- All authenticated users can read; only super_admin can write
+- Covers major modules: Game Studio, Versus mode, Chat, advanced analytics, cloud storage, reward system
+
+**Set plan default for feature**
+
+- Table: `plan_entitlements`
+- Fields: plan_id, feature_id, typed value columns
+- One row per (plan_id, feature_id) pair
+- Every change is audited via `audit.log_event()` — immutable record of who changed what and when
+
+**Override feature for specific institution**
+
+- Via `institution_entitlement_overrides` (see Commercial controls above)
+- Secure default: plan default applies unless an override row exists and is active by date range
+
+---
+
+### User management (RPCs)
+
+**List all users**
+
+- `list_admin_users()` → all profiles platform-wide with institution counts, role, active status
+
+**Delete user permanently**
+
+- `admin_delete_user(user_id, reason)` → removes from `profiles` and `auth.users`
+- Irreversible; logs to `audit.events` before deletion
+
+**Ban / unban user**
+
+- `admin_set_user_active_status(user_id, is_active)` → sets `auth.users.banned_until`
+- Ban: far-future timestamp; Unban: clears it
+
+---
+
+### Security and compliance
+
+**Read audit log**
+
+- Table: `audit.events` (super_admin SELECT only — no other role can read)
+- Written exclusively via `audit.log_event()` (SECURITY DEFINER) — no direct INSERT from clients
+- Fields: occurred_at, actor_user_id, event_type, subject_type, subject_id, institution_id, payload, metadata
+- Covers: feature-flag changes, task delivery state transitions, plan changes, entitlement overrides, user deletion
+
+**GDPR / data subject request oversight**
+
+- Table: `data_subject_requests` across all institutions
+- Request types: access | erasure | portability | rectification
+- Status lifecycle: pending → processing → completed | rejected
+- Super admin approves/rejects; institution admin executes the export or deletion workflow
+- 72-hour breach notification obligation tracked via `audit.events` + incident playbook (external)
+
+**Reliability monitoring (manual — no dedicated table)**
+
+- Monitor via: `institution_quotas_usage` (storage pressure), `institution_subscriptions` (expiry risk), `audit.events` (failed workflows, elevated actions)
+- Backup and restore drills: external to Postgres schema (Supabase platform + Hetzner — see `13_hetzner_infra.md`)
+
+---
+
+## Schema visualization
+
+```text
+[Platform level — no institution boundary]
+│
+├── plan_catalog (code, name, seat_cap_default, storage_bytes_cap_default, price_amount, currency, billing_interval, is_active)
+│   └── plan_entitlements (plan_id × feature_id → boolean_value | integer_value | bigint_value | text_value)
+│
+├── feature_definitions (key, name, value_type: boolean|integer|bigint|text, default_enabled, category)
+│   └── [all authenticated users SELECT; only super_admin INSERT/UPDATE/DELETE]
+│
+├── audit.events (occurred_at, actor_user_id, event_type, subject_type, subject_id, institution_id, payload, metadata)
+│   └── [append-only; SELECT super_admin only; INSERT via audit.log_event() SECURITY DEFINER]
+│
+└── profiles (user_id, role, is_super_admin, active_institution_id)
+    └── auth.users  ← managed via admin RPCs only (ban/delete — no direct table access)
+
+[Per institution — super_admin has full CRUD on all rows across all tenants]
+│
+└── institutions (name, data_region, email_domain_policy, health_state, suspended_at, suspension_reason, deleted_at)
+    │
+    ├── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap,
+    │       effective_from, effective_to, renewal_at, grace_ends_at, trial_ends_at, cancel_at_period_end)
+    │
+    ├── institution_entitlement_overrides (feature_id, typed value, reason, starts_at, ends_at, created_by)
+    │   └── [overrides plan_entitlements for this institution; readable by all institution members]
+    │
+    ├── billing_providers (provider, external_customer_id, external_subscription_id, external_price_id)
+    │
+    ├── institution_settings (default_locale, timezone, retention_policy_code, notification_defaults jsonb)
+    │
+    ├── institution_quotas_usage (seats_used, storage_used_bytes)  ← auto-updated by triggers
+    │
+    ├── institution_invoice_records (amount_cents, currency, issued_at, due_at, paid_at, status)
+    │
+    └── data_subject_requests (subject_user_id, request_type, status, completed_at)
+        request_type: access | erasure | portability | rectification
+        status: pending → processing → completed | rejected
+
+[Institution health — derived at query time, no dedicated table]
+│
+├── Access health   → institution_memberships (seats_used, activated vs invited, left_institution_at)
+├── Learning health → lesson_progress, learning_events, task_submissions, game_run_stats_scoped
+├── Operational     → institution_quotas_usage (storage %), institution_subscriptions (renewal_at, billing_status)
+└── Compliance      → data_subject_requests (pending count), audit.events (trail completeness)
+    health state: Blue (healthy) → Orange (warning) → Red (critical)
+
+[RPCs — super_admin only]
+├── create_institution_with_initial_admin(name, admin_user_id)   → bootstrap new tenant
+├── list_admin_users()                                           → all profiles platform-wide
+├── admin_delete_user(user_id, reason)                          → permanent removal from profiles + auth.users
+└── admin_set_user_active_status(user_id, is_active)            → ban (far-future banned_until) / unban
 ```
 
----
+### CRUD surface by role
 
-## Super Admin functional areas
+| Operation                                     | Super Admin           | Institution Admin | Teacher   | Student   |
+| --------------------------------------------- | --------------------- | ----------------- | --------- | --------- |
+| plan_catalog — full CRUD                      | yes                   | —                 | —         | —         |
+| feature_definitions — full CRUD               | yes                   | —                 | —         | —         |
+| feature_definitions — read                    | yes                   | yes               | yes       | yes       |
+| institution_subscriptions — full CRUD         | yes                   | read-only         | —         | —         |
+| institution_entitlement_overrides — full CRUD | yes                   | read-only         | read-only | read-only |
+| billing_providers — full CRUD                 | yes                   | read-only         | —         | —         |
+| audit.events — read                           | yes                   | —                 | —         | —         |
+| audit.log_event() — insert                    | SECURITY DEFINER only | —                 | —         | —         |
+| create_institution_with_initial_admin         | yes                   | —                 | —         | —         |
+| admin_delete_user                             | yes                   | —                 | —         | —         |
+| admin_set_user_active_status                  | yes                   | —                 | —         | —         |
 
-### 1) Tenant governance
-
-- Create, update, suspend, and reactivate institutions.
-- Enforce domain policy, region policy, and retention defaults.
-- View institution health and growth trends without cross-tenant data leakage.
-
-Institution health should be tracked with these platform-level signals:
-
-- Access health: seat usage, account activation, login activity
-- Learning health: course/game usage, task completion, overdue work, inactivity
-- Operational health: storage pressure, license expiry risk, failed workflows
-- Compliance health: export/delete workflow readiness, audit trail completeness
-
-State model for institution health:
-
-- Blue: healthy baseline, no immediate risk
-- Orange: warning state, approaching limits or engagement drop
-- Red: critical state, immediate action required
-
-### 2) Commercial controls
-
-- Manage plan definitions (EDU Basic, EDU Plus, etc.).
-- Set seat and storage policy templates consumed by `02_institution.md`.
-- Configure renewal, grace windows, and read-only fallback on expiry.
-
-### 3) Global feature management
-
-- Control rollout of major modules (Game Studio, Versus, Chat, advanced analytics).
-- Support per-institution overrides while keeping secure defaults.
-- Keep an immutable audit log for every feature-flag change.
-
-### 4) Security and compliance
-
-- Enforce GDPR Art. 32 TOM baseline platform-wide.
-- Validate RLS isolation and privileged-access controls.
-- Approve data export, deletion, and retention workflows for institution admins.
-
-### 5) Reliability and operations
-
-- Track uptime/SLO, queue health, webhook failures, and storage pressure.
-- Ensure encrypted backups + tested restore drills.
-- Maintain incident playbooks and 72-hour breach notification process.
-
----
-
-## Guardrails that every module must respect
+## Rules that every module must respect
 
 1. Tenant-first access
 
@@ -169,184 +314,19 @@ State model for institution health:
 
 ---
 
-## Module contract checklist (for docs review)
+### What is missing
 
-Use this checklist whenever updating `02` to `13`:
+Super admin has **no notification inbox**. The notification system (`notification_events`, `notification_deliveries`) is institution-scoped — every event requires an `institution_id`. No platform-level event types are defined for super admin operational signals.
 
-1. Role scope is explicit (who can read/write/delete).
-2. Tenant scope is explicit (what `institution_id` gates).
-3. Classroom interaction is explicit (how module binds to class context).
-4. Compliance note is explicit (retention/export/deletion/logging).
+**What super admin currently must monitor manually:**
 
----
+- `audit.events` — security and state-change events
+- `institution_subscriptions` — billing status, grace windows, renewal risk
+- `institution_quotas_usage` — seat and storage pressure per institution
+- `data_subject_requests` — pending GDPR requests
 
-## MVP rollout order (platform level)
+**Not yet built (open design decision):**
 
-1. Institution hierarchy and seat/storage enforcement (`02`).
-2. Classroom lifecycle and assignment model (`05`).
-3. Course + Game Studio publish flow to classroom (`07`, `08`).
-4. Task collaboration and review loop (`09`).
-5. Reward + notification loops (`10`, `12`).
-6. Chat guardrails and moderation (`11`).
-7. Harden infra and compliance evidence (`13`).
-
----
-
-## Definition of done for structure consistency
-
-The docs are considered structurally aligned when:
-
-1. All module docs reference classroom scope and tenant scope consistently.
-2. Terminology is unified: "Class Room" (file), "classroom" (product UI).
-3. No module implies cross-tenant access.
-4. Security and compliance responsibilities map cleanly from Super Admin to Institution Admin.
-
----
-
-## Concrete feature tree
-
-### Institution lifecycle
-
-**Create institution**
-
-- Input: name, address, email_domain_policy, data_region, initial admin user_id
-- Calls: `create_institution_with_initial_admin(name, initial_admin_user_id)`
-- Creates: `institutions` row → `institution_settings` (defaults) → `institution_quotas_usage` (zeroed) → trial `institution_subscriptions` row → `institution_memberships` row (status = active, role = institution_admin)
-- Result: institution is live and admin can log in
-
-**Suspend institution**
-
-- Sets `institutions.suspended_at` + `suspension_reason`
-- Effect: institution members lose access (RLS checks `suspended_at IS NULL`)
-
-**Reactivate institution**
-
-- Clears `institutions.suspended_at` + `suspension_reason`
-
-**Soft-delete institution**
-
-- Sets `institutions.deleted_at`
-- Hard purge is a manual DBA operation following the data retention policy
-
----
-
-### Commercial controls
-
-**Create / edit plan**
-
-- Table: `plan_catalog`
-- Fields: code (unique), name, seat_cap_default, storage_bytes_cap_default, price_amount, currency, billing_interval, is_active
-- Effect: available in plan selector UI; inactive plans hidden from new subscriptions
-
-**Assign plan to institution**
-
-- Table: `institution_subscriptions`
-- Fields: institution_id, plan_id, effective_from, effective_to, billing_status (active / suspended / trialing / past_due / canceled), seats_cap, storage_bytes_cap, renewal_at, grace_ends_at
-- Effect: drives `institution_quotas_usage` enforcement and feature entitlements
-
-**Override plan feature for institution**
-
-- Table: `institution_entitlement_overrides`
-- Fields: institution_id, feature_id, typed value (boolean / integer / bigint / text), reason, starts_at, ends_at
-- Effect: overrides plan_entitlements for that institution; visible to institution_admin (read-only)
-
-**Manage billing provider linkage**
-
-- Table: `billing_providers`
-- Fields: institution_id, provider (stripe etc.), external_customer_id, external_subscription_id, external_price_id
-
----
-
-### Feature management
-
-**Define feature**
-
-- Table: `feature_definitions`
-- Fields: key (unique), name, description, default_enabled, category, value_type (boolean / integer / bigint / text)
-- All authenticated users can read; only super_admin can write
-
-**Set plan default for feature**
-
-- Table: `plan_entitlements`
-- Fields: plan_id, feature_id, typed value columns
-- One row per plan/feature pair
-
----
-
-### User management (RPCs)
-
-**List all users**
-
-- `list_admin_users()` → returns all profiles with institution counts, role, active status
-
-**Delete user permanently**
-
-- `admin_delete_user(user_id, reason)` → removes from `profiles` and `auth.users`
-- Irreversible; must confirm before calling
-
-**Ban / unban user**
-
-- `admin_set_user_active_status(user_id, is_active)` → sets `auth.users.banned_until`
-- Ban: sets far-future timestamp; Unban: clears it
-
----
-
-### Security and compliance
-
-**Read audit log**
-
-- Table: `audit.events` (super_admin SELECT only)
-- Written exclusively via `audit.log_event()` (SECURITY DEFINER) — no direct INSERT from clients
-- Fields: occurred_at, actor_user_id, event_type, subject_type, subject_id, institution_id, payload, metadata
-
-**GDPR / data subject request oversight**
-
-- Read `data_subject_requests` across all institutions
-- Approve/reject requests created by institution admins
-
----
-
-## Schema visualization
-
-```text
-[Platform level — no institution boundary]
-│
-├── plan_catalog (code, name, seat_cap_default, storage_bytes_cap_default, price, billing_interval)
-│   └── plan_entitlements (plan_id × feature_id → typed value)
-│
-├── feature_definitions (key, name, value_type: boolean|integer|bigint|text, default_enabled)
-│
-├── audit.events (occurred_at, actor_user_id, event_type, institution_id, payload)
-│   └── [append-only; written via audit.log_event() SECURITY DEFINER only]
-│
-└── [Per institution]
-    ├── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap, renewal_at)
-    ├── institution_entitlement_overrides (feature_id, typed value, reason, starts_at, ends_at)
-    └── billing_providers (provider, external_customer_id, external_subscription_id)
-
-[User management — global]
-├── profiles (user_id, role, is_super_admin, active_institution_id)
-└── auth.users (managed via admin RPCs — ban/delete)
-
-RPCs:
-├── create_institution_with_initial_admin(name, admin_user_id)  → new tenant bootstrap
-├── list_admin_users()  → all users platform-wide
-├── admin_delete_user(user_id, reason)  → permanent removal
-└── admin_set_user_active_status(user_id, is_active)  → ban / unban
-```
-
-### CRUD surface by role
-
-| Operation                                     | Super Admin           | Institution Admin | Teacher   | Student   |
-| --------------------------------------------- | --------------------- | ----------------- | --------- | --------- |
-| plan_catalog — full CRUD                      | yes                   | —                 | —         | —         |
-| feature_definitions — full CRUD               | yes                   | —                 | —         | —         |
-| feature_definitions — read                    | yes                   | yes               | yes       | yes       |
-| institution_subscriptions — full CRUD         | yes                   | read-only         | —         | —         |
-| institution_entitlement_overrides — full CRUD | yes                   | read-only         | read-only | read-only |
-| billing_providers — full CRUD                 | yes                   | read-only         | —         | —         |
-| audit.events — read                           | yes                   | —                 | —         | —         |
-| audit.log_event() — insert                    | SECURITY DEFINER only | —                 | —         | —         |
-| create_institution_with_initial_admin         | yes                   | —                 | —         | —         |
-| admin_delete_user                             | yes                   | —                 | —         | —         |
-| admin_set_user_active_status                  | yes                   | —                 | —         | —         |
+- Platform-level alert channel for super admin (quota threshold exceeded, billing failure, institution health critical, security incident)
+- Cannot use `notification_events` for this — it is tenant-scoped and enforces a non-null `institution_id`
+- Would require a separate platform alerting mechanism or a super-admin-specific event store
