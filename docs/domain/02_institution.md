@@ -1,21 +1,24 @@
 # Institution
 
-## Functional feature map
+Role: `institution_admin`
+Scope: one institution — all teachers, students, classrooms, content, and compliance within that tenant.
 
-This document defines what Institution Admin must implement for school operations:
+## Mission and context
 
-1. Dashboard and institution health signals
-2. Hierarchy management (faculty, programme, cohort, class group)
-3. Class Room oversight
-4. Teacher management
-5. Student management
-6. Course and game governance
-7. Analytics and intervention signals
-8. License and storage control
-9. Billing operations
-10. Settings and compliance
+Institution Admin is the operational owner of a school. They define the academic structure, manage who belongs to it, oversee what happens inside classrooms, and are accountable for compliance within their tenant. They never see data from other institutions.
 
-### Visual: institution admin control scope
+Institution Admin does not create learning content. They make it possible by building the hierarchy that classrooms, teachers, and students attach to — and by keeping the roster, capacity, and compliance state clean.
+
+**Scope:** single institution — no cross-tenant visibility
+**Accountability:** hierarchy, teacher and student lifecycle, classroom oversight, license capacity, GDPR operations, institution settings
+
+**Role boundary within the institution:**
+
+| Role              | What they own                            | What they cannot do                           |
+| ----------------- | ---------------------------------------- | --------------------------------------------- |
+| Institution Admin | Structure, roster, compliance, oversight | Create courses, games, tasks; deliver content |
+| Teacher           | Classroom delivery, content authoring    | Manage hierarchy, invite members              |
+| Student           | Learning, participation                  | Manage anything structural                    |
 
 ```mermaid
 flowchart TD
@@ -25,75 +28,16 @@ flowchart TD
   IA --> SM[Student Management]
   IA --> CRO[Classroom Oversight]
   IA --> LSC[License and Storage Control]
-  IA --> AN[Analytics]
   IA --> CMP[Compliance and Settings]
 ```
 
 ---
 
-## Functional areas
+## Feature tree
 
-### 1) Dashboard
+### Hierarchy management
 
-Purpose: fast health signal for the institution.
-
-Must show:
-
-- seat pressure
-- storage pressure
-- active/inactive users
-- overdue classroom work signals
-- expiry and renewal signals
-
-Design principle: insight first, drill-down second.
-
-### 2) Hierarchy management
-
-Purpose: define the real-world school structure once, reuse everywhere.
-
-Canonical access rule for institution LMS delivery:
-
-- student entitlement is derived from `classroom_members + course_deliveries`
-- `course_enrollments` and `classroom_course_links` are compatibility/history surfaces only
-
-Canonical visual to show users how structure works:
-
-```text
-Schule für Farbe und Gestaltung
-└── Ausbildung (faculty)
-    ├── Maler & Lackierer (programme, 3yr, year_group)
-    │   ├── Jahrgang 2022 (cohort, archived)
-    │   ├── Jahrgang 2023 (cohort, active)
-    │   │   ├── ML-3A (class group, 28 students)
-    │   │   └── ML-3B (class group, 26 students)
-    │   └── Jahrgang 2024 (cohort, active)
-    │       └── ML-1A (class group, 30 students)
-    └── GVM (programme, 3yr, year_group)
-        └── ...
-└── Berufskolleg (faculty)
-    ├── TBK I (programme, 1yr, stage)
-    │   └── TBK1-A (class group, 22 students)
-    └── TBK II (programme, 1yr, stage)
-        └── TBK2-A (class group, 20 students)
-```
-
-Managed entities:
-
-- faculty
-- programme
-- cohort / year group
-- class group
-
-Expected capabilities:
-
-- create, edit, archive lifecycle
-- clear assignment boundaries
-- cohort progression handling
-- class-group movement for students
-
-This is the highest-priority area because every classroom and enrollment depends on it.
-
-### Visual: academic structure hierarchy
+The academic structure is defined once and reused everywhere. Every classroom, course delivery, and student enrollment traces back to a node in this tree.
 
 ```mermaid
 flowchart TD
@@ -107,137 +51,11 @@ flowchart TD
   CR --> USERS[Teachers and Students]
 ```
 
-### 3) Class Room oversight
-
-Purpose: observe and govern classrooms created by teachers.
-
-Must support:
-
-- filter by teacher, faculty, programme, class group
-- view activity and assignment signals
-- reassign classroom ownership when staffing changes
-- deactivate classroom while preserving history
-
-Institution Admin visibility is broad; editing classroom pedagogy remains teacher-led.
-
-### 4) Teacher management
-
-Purpose: ensure teaching capacity and correct access scope.
-
-Must support:
-
-- teacher invite and activation
-- faculty/programme assignment
-- role deactivation without data loss
-- safe ownership transfer of classrooms/content
-
-### 5) Student management
-
-Purpose: maintain accurate learner roster quality.
-
-Must support:
-
-- manual add
-- bulk import workflow
-- class-group reassignment
-- account deactivation and reactivation
-- personal-data export and deletion requests
-
-### 6) Courses and games oversight
-
-Purpose: governance and safety, not day-to-day editing.
-
-Must support:
-
-- visibility into published and draft content
-- emergency unpublish actions
-- institution-level highlighting or curation controls
-- storage impact visibility by content area
-
-### 7) Analytics
-
-Purpose: institution decisions, not raw data browsing.
-
-Focus signals:
-
-- engagement health
-- completion health
-- teacher activity and output consistency
-- risk clusters (drop-off, inactivity, overdue work)
-
-Output should guide interventions (which class, which teacher support, which student cohort).
-
-### 8) License and storage control
-
-Purpose: keep operations within purchased capacity.
-
-Rules:
-
-- seats are finite and role-scoped
-- storage is institution-pooled
-- hard-stop on institution storage exhaustion
-- warning-first behavior on user-level soft thresholds
-
-Must include clear warning states and escalation path before hard blocks are reached.
-
-### 9) Billing operations
-
-Purpose: local financial transparency and renewal workflow.
-
-Must support:
-
-- current plan visibility
-- invoice history
-- payment status clarity
-- upgrade and downgrade request flows
-
-Institution Admin triggers flows; payment processing remains externalized.
-
-### 10) Settings and compliance
-
-Purpose: legal and operational control plane for the institution.
-
-Must support:
-
-- profile and locale configuration
-- retention policy selection
-- data export and deletion workflows
-- notification policy defaults
-- institution-level feature toggles from allowed global catalog
-
----
-
-## Tenant security and compliance rules
-
-1. All operations remain scoped to one institution.
-2. Institution Admin cannot access other tenant data.
-3. Auditability is required for role, policy, and visibility changes.
-4. GDPR operations must be executable and traceable.
-5. Classroom and learner history must survive deactivation events unless legally deleted.
-
----
-
-## Build priority
-
-1. Hierarchy management
-2. Teacher lifecycle and assignment
-3. Student import and reassignment
-4. Classroom oversight
-5. Seat and storage enforcement
-6. Institution dashboard insights
-7. Compliance workflows (export/delete/retention)
-
----
-
-## Concrete feature tree
-
-### Hierarchy management
-
 **Create faculty**
 
 - Table: `faculties`
 - Input: institution_id, name, description, sort_order
-- RLS: institution_admin full CRUD; members read-only
+- All institution members can read; institution_admin full CRUD
 
 **Create programme**
 
@@ -253,51 +71,56 @@ Must support:
 
 - Table: `class_groups`
 - Input: institution_id, cohort_id, name, description, sort_order
-- Note: class_group is the stable identity; a new offering is created each academic year
+- Class group is the stable identity across years; a new offering is created each academic year
 
 **Create offering (programme / cohort / class_group)**
 
 - Tables: `programme_offerings`, `cohort_offerings`, `class_group_offerings`
 - Input: parent_id, status (draft | active | archived), starts_at, ends_at
-- Used for: year-bound delivery; classrooms reference `class_group_offering_id`
+- Classrooms reference `class_group_offering_id` to bind to a specific academic year
 
-**Archive / soft-delete any hierarchy node**
+**Archive / soft-delete hierarchy node**
 
-- Sets `deleted_at` on the row; children are not cascade-deleted but become orphaned from active tree
-- Year rollover: create new cohort/class_group offerings; set old classrooms to status = inactive
+- Sets `deleted_at` on the row; children are not cascade-deleted
+- Year rollover: create new offerings for the new year; set old classrooms to `status = inactive`
 
 ---
 
 ### Teacher management
 
-**Invite teacher by user_id**
+**Invite teacher (existing user)**
 
 - RPC: `invite_institution_member(institution_id, user_id, role = 'teacher')`
 - Creates: `institution_memberships` row (status = invited)
-- Teacher must call `activate_institution_invite()` to flip to active
+- Teacher activates via: `activate_institution_invite()`
 
-**Invite teacher by email (no auth account yet)**
+**Invite teacher by email (no account yet)**
 
 - RPC: `create_institution_invite_by_email(institution_id, email, role = 'teacher', expires_in)`
 - Creates: `institution_invites` row with secret token
-- Teacher redeems via `redeem_institution_invite(token)` after signing up
+- Teacher redeems via: `redeem_institution_invite(token)` after sign-up
 
-**Assign teacher to faculty / programme scope**
+**Assign teacher to faculty / programme**
 
 - Table: `institution_staff_scopes`
 - Input: user_id, institution_id, faculty_id, programme_id
-- Effect: teacher can see classrooms within that scope
+- Effect: teacher's classroom visibility is scoped to that faculty/programme
 
-**Suspend / remove teacher**
+**Suspend teacher**
 
-- Update `institution_memberships.status = suspended` or set `left_institution_at` + `leave_reason`
-- Effect: teacher drops out of `app.member_institution_ids()` and loses all RLS access
+- Update: `institution_memberships.status = suspended`
+- Effect: teacher loses all RLS access immediately; classroom content preserved
+
+**Remove teacher from institution**
+
+- Update: `institution_memberships.left_institution_at` + `leave_reason`
+- Effect: teacher drops out of `app.member_institution_ids()`; classrooms should be reassigned first
 
 ---
 
 ### Student management
 
-**Invite student by user_id or email**
+**Invite student (existing user or by email)**
 
 - Same RPCs as teacher with `role = 'student'`
 - Creates: `institution_memberships` (status = invited)
@@ -305,18 +128,18 @@ Must support:
 **Assign student to classroom**
 
 - Table: `classroom_members`
-- Input: institution_id, classroom_id, user_id, membership_role = student
-- Effect: student gains access to all courses / games / tasks published to that classroom
+- Input: institution_id, classroom_id, user_id, membership_role = student, enrolled_at
+- Effect: student immediately gains access to all published course_deliveries, game_deliveries, task_deliveries for that classroom
 
-**Withdraw student from classroom (year rollover / course change)**
+**Withdraw student from classroom**
 
-- Set `classroom_members.withdrawn_at` + `leave_reason`
-- Student loses classroom-scoped RLS access; insert new `classroom_members` row in new classroom
+- Update: `classroom_members.withdrawn_at` + `leave_reason`
+- Effect: student loses classroom-scoped RLS access; insert new row in new classroom for reassignment
 
 **Remove student from institution**
 
-- Set `institution_memberships.left_institution_at` + `leave_reason`
-- Student drops out of all `app.member_institution_ids()` checks
+- Update: `institution_memberships.left_institution_at` + `leave_reason`
+- Effect: student drops out of all institution-scoped access
 
 ---
 
@@ -326,18 +149,17 @@ Must support:
 
 - Table: `classrooms`
 - Input: institution_id, class_group_id, class_group_offering_id, primary_teacher_id, title
-- Status defaults to active
+- Status defaults to active; visible only to institution_admin, primary teacher, co-teachers, enrolled students
 
 **Deactivate classroom**
 
-- Sets `classrooms.status = inactive` + `deactivated_at`
-- Used at year-end; classroom data is preserved for analytics
+- Update: `classrooms.status = inactive`, `deactivated_at = now()`
+- Used at year-end; all data (progress, submissions, game runs) is preserved for analytics and compliance
 
-**Add co-teacher**
+**Reassign classroom ownership**
 
-- Table: `classroom_members`
-- Input: classroom_id, user_id, membership_role = co_teacher
-- Effect: co-teacher gets roster read, can manage course links, reward settings
+- Update: `classrooms.primary_teacher_id`
+- Use when a teacher leaves or changes assignment; co-teacher row should be updated accordingly
 
 ---
 
@@ -346,17 +168,18 @@ Must support:
 **View live usage**
 
 - Table: `institution_quotas_usage`
-- Fields: seats_used, storage_used_bytes (updated by AFTER trigger on cloud_files)
+- Fields: seats_used (updated by app layer on membership changes), storage_used_bytes (updated by AFTER trigger on `cloud_files`)
 
-**View subscription caps**
+**View subscription caps and billing state**
 
 - Table: `institution_subscriptions`
-- Fields: seats_cap, storage_bytes_cap, billing_status, renewal_at, grace_ends_at
+- Fields: seats_cap, storage_bytes_cap, billing_status (active / trialing / past_due / suspended / canceled), renewal_at, grace_ends_at
 
-**View invoices**
+**View invoice history**
 
 - Table: `institution_invoice_records`
 - Fields: amount_cents, currency, issued_at, due_at, paid_at, status (pending / paid / overdue / cancelled / refunded)
+- Read-only for institution_admin; super_admin manages
 
 ---
 
@@ -372,10 +195,13 @@ Must support:
 - Table: `data_subject_requests`
 - Input: subject_user_id, request_type (access | erasure | portability | rectification)
 - Status lifecycle: pending → processing → completed | rejected
+- Institution admin executes the export or deletion; super_admin has oversight
 
 **Read audit trail**
 
-- Via `audit.events` (read forwarded to super_admin; institution_admin sees own institution events)
+- Table: `audit.events`
+- Institution_admin can read events scoped to their institution_id
+- Super_admin has SELECT across all institutions
 
 ---
 
@@ -383,56 +209,76 @@ Must support:
 
 ```text
 Schule für Farbe und Gestaltung  [institutions row]
-├── institution_memberships (users × role × status)
-├── institution_settings (locale, timezone, retention_policy, notification_defaults)
-├── institution_quotas_usage (seats_used, storage_used_bytes)
-├── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap)
-├── institution_entitlement_overrides (feature_id → typed value override)
-├── institution_invoice_records (billing history)
-├── data_subject_requests (GDPR tracker)
+│
+├── institution_memberships (user_id, membership_role, status, left_institution_at)
+├── institution_settings (locale, timezone, retention_policy_code, notification_defaults)
+├── institution_quotas_usage (seats_used, storage_used_bytes)  ← trigger-maintained
+├── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap, renewal_at, grace_ends_at)
+├── institution_entitlement_overrides (feature_id → typed value, reason, starts_at, ends_at)
+├── institution_invoice_records (amount_cents, status, issued_at, paid_at)
+├── institution_invites (email, role, token, expires_at, accepted_at)
+├── institution_staff_scopes (teacher_id → faculty_id, programme_id)
+└── data_subject_requests (subject_user_id, request_type, status)
 │
 └── Ausbildung  [faculties row]
-    ├── Maler & Lackierer  [programmes row — 3yr, year_group]
-    │   ├── programme_offerings (academic_year, status: draft|active|archived)
-    │   ├── Jahrgang 2022  [cohorts row — archived]
+    ├── Maler & Lackierer  [programmes — 3yr, year_group]
+    │   ├── programme_offerings (status: active)
+    │   ├── Jahrgang 2022  [cohorts — archived]
     │   │   ├── cohort_offerings (status: archived)
-    │   │   └── ML-3A 2022  [class_groups row]
+    │   │   └── ML-3A 2022  [class_groups]
     │   │       ├── class_group_offerings (status: archived)
-    │   │       └── Farbgestaltung 2022  [classrooms row — status: inactive]
-    │   │           └── classroom_members (withdrawn students)
-    │   ├── Jahrgang 2023  [cohorts row — active]
+    │   │       └── Farbgestaltung 2022  [classrooms — status: inactive]
+    │   │           └── classroom_members (withdrawn_at set)
+    │   ├── Jahrgang 2023  [cohorts — active]
     │   │   ├── cohort_offerings (status: active)
-    │   │   ├── ML-3A  [class_groups row — 28 students]
+    │   │   ├── ML-3A  [class_groups — 28 students]
     │   │   │   ├── class_group_offerings (status: active)
-    │   │   │   └── Farbmischung  [classrooms row — status: active]
-    │   │   │       ├── primary_teacher_id → teacher profile
+    │   │   │   └── Farbmischung  [classrooms — status: active]
+    │   │   │       ├── primary_teacher_id → Frau Müller
     │   │   │       ├── classroom_members (28 students, enrolled_at, withdrawn_at?)
-    │   │   │       ├── course_deliveries (linked course versions)
+    │   │   │       ├── course_deliveries (linked course versions, status: active)
     │   │   │       ├── game_deliveries (published game versions)
-    │   │   │       └── task_deliveries (active tasks with due dates)
-    │   │   └── ML-3B  [class_groups row — 26 students]
-    │   │       └── Farbgestaltung  [classrooms row — status: active]
-    │   └── Jahrgang 2024  [cohorts row — active]
-    │       └── ML-1A  [class_groups row — 30 students]
-    │           └── Grundlagen Farbe  [classrooms row — status: active]
-    └── GVM  [programmes row — 3yr, year_group]
+    │   │   │       └── task_deliveries (active tasks, due_at)
+    │   │   └── ML-3B  [class_groups — 26 students]
+    │   │       └── Farbgestaltung  [classrooms — status: active]
+    │   └── Jahrgang 2024  [cohorts — active]
+    │       └── ML-1A  [class_groups — 30 students]
+    │           └── Grundlagen Farbe  [classrooms — status: active]
+    └── GVM  [programmes — 3yr, year_group]
         └── ...
 
-institution_staff_scopes (teacher_id → faculty_id, programme_id)
-institution_invites (email, role, token, expires_at, accepted_at)
+└── Berufskolleg  [faculties row]
+    ├── TBK I  [programmes — 1yr, stage]
+    │   └── TBK1-A  [class_groups — 22 students]
+    └── TBK II  [programmes — 1yr, stage]
+        └── TBK2-A  [class_groups — 20 students]
 ```
 
 ### CRUD surface by role
 
-| Operation                                                  | Institution Admin | Teacher    | Student    | Super Admin       |
-| ---------------------------------------------------------- | ----------------- | ---------- | ---------- | ----------------- |
-| Create / edit faculties, programmes, cohorts, class_groups | yes               | —          | —          | yes               |
-| Create / manage classrooms                                 | yes               | —          | —          | yes               |
-| Enroll / withdraw classroom members                        | yes               | —          | —          | yes               |
-| Invite teachers / students                                 | yes               | —          | —          | yes               |
-| Manage institution_settings                                | yes               | —          | —          | yes               |
-| Read institution_quotas_usage                              | yes (read)        | —          | —          | yes               |
-| Read institution_subscriptions                             | yes (read)        | —          | —          | yes (full CRUD)   |
-| Manage data_subject_requests (GDPR)                        | yes               | —          | —          | yes               |
-| Read audit.events                                          | —                 | —          | —          | yes (SELECT only) |
-| Read org hierarchy                                         | yes               | yes (read) | yes (read) | yes               |
+| Operation                                                  | Institution Admin    | Teacher    | Student    | Super Admin      |
+| ---------------------------------------------------------- | -------------------- | ---------- | ---------- | ---------------- |
+| Create / edit faculties, programmes, cohorts, class_groups | yes                  | —          | —          | yes              |
+| Create offerings (year binding)                            | yes                  | —          | —          | yes              |
+| Create / deactivate / reassign classrooms                  | yes                  | —          | —          | yes              |
+| Invite / suspend / remove teachers                         | yes                  | —          | —          | yes              |
+| Invite / withdraw / remove students                        | yes                  | —          | —          | yes              |
+| Assign teacher to faculty / programme scope                | yes                  | —          | —          | yes              |
+| Read org hierarchy                                         | yes                  | yes (read) | yes (read) | yes              |
+| Manage institution_settings                                | yes                  | —          | —          | yes              |
+| Read institution_quotas_usage                              | yes (read)           | —          | —          | yes              |
+| Read institution_subscriptions                             | yes (read)           | —          | —          | yes (full CRUD)  |
+| Read institution_invoice_records                           | yes (read)           | —          | —          | yes              |
+| Manage data_subject_requests (GDPR)                        | yes                  | —          | —          | yes              |
+| Read audit.events                                          | own institution only | —          | —          | all institutions |
+
+---
+
+## Constraints
+
+1. **Tenant isolation** — institution_admin cannot read or write any data outside their institution_id. No cross-tenant joins are permitted in any product API.
+2. **Classroom history survives deactivation** — setting `classrooms.status = inactive` or `classroom_members.withdrawn_at` never deletes progress, submissions, game runs, or attendance records. Hard purge is only executed as part of a completed GDPR erasure request.
+3. **Membership drives all access** — `institution_memberships` (active, left_institution_at IS NULL) is the authoritative gate. `classroom_members` (withdrawn_at IS NULL) is the secondary gate for classroom-scoped delivery. Legacy `user_institutions` and `course_enrollments` are compatibility surfaces only.
+4. **Canonical student entitlement** — student access to lessons, games, and tasks is derived from `classroom_members + course_deliveries / game_deliveries / task_deliveries`. `classroom_course_links` and `course_enrollments` are read-only history.
+5. **Storage cap is hard** — `register_cloud_file_record` checks `storage_used_bytes + new_size ≤ storage_bytes_cap` before creating the file record. Institution admin cannot bypass this; only super_admin can raise the cap via `institution_subscriptions`.
+6. **GDPR operations must be traceable** — every `data_subject_requests` state transition must be logged; export and deletion workflows must be scriptable and produce an audit record in `audit.events`.

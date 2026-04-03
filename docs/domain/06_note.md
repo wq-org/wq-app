@@ -1,101 +1,32 @@
 # Note
 
-## Functional feature map
+Role: content layer — personal and collaborative writing surface.
+Scope: institution-scoped; personal notes are owner-only; collaborative notes are task-group-scoped.
 
-Notes must support personal learning and collaborative task editing with reliable sync:
+## Mission and context
 
-1. Yoopta block-based editor
-2. Block-level storage model
-3. Realtime collaboration where needed
-4. Conflict handling with LWW
-5. Debounced autosave
-6. Offline queue and reconnect sync
-7. Performance baseline with PgBouncer and viewport rendering
-8. Notes lifecycle management
+Notes are where students capture and develop ideas. Personal notes are private — linked optionally to lesson slides for in-context learning. Collaborative notes are provisioned automatically per task group and serve as the shared workspace for group assignments. The same block-based editor (Yoopta) powers both; only the access model and sync behaviour differ.
 
----
+**Scope:** personal notes — owner only; collaborative notes — task group members + teacher read
+**Accountability:** block-level content authoring, real-time group co-editing, lesson-slide context linking
 
-## Functional areas
+```mermaid
+flowchart TD
+  N[Notes]
+  N --> PN[Personal Notes]
+  N --> CN[Collaborative Notes]
 
-### 1) Editor experience
+  PN --> OWN[Owner only — student or teacher]
+  PN --> SLIDE[Optional lesson_id link]
 
-- support core text blocks, media blocks, and structured blocks
-- slash insert, drag-and-drop reordering, format toolbar, undo/redo
-- convert block types without losing content context
-- keep interactions fast on classroom devices
-
-Available blocks:
-
-- text / paragraph
-- heading (H1, H2, H3)
-- bulleted list
-- numbered list
-- toggle / accordion
-- table
-- code
-- divider
-- page break
-- tabs
-- steps
-- emoji
-- color-highlighted text
-- image
-- video
-- file attachment
-- PDF viewer
-- embed
-- link preview card
-- pie chart
-- bar graph
-- image node graph
-
-### 2) Block storage model
-
-- store each block as an independent record
-- use flat normalized frontend state keyed by block id
-- persist only changed blocks, not whole document blobs
-- use soft-delete behavior for safe undo and recovery
-
-### 3) Realtime collaboration scope
-
-- enable realtime for collaborative contexts (for example task/group notes)
-- keep personal notes single-user by default
-- broadcast block-level changes to connected participants
-
-### 4) Conflict handling (LWW)
-
-- use Last Write Wins at block level
-- maintain a block version counter for optimistic concurrency checks
-- on version conflict, refetch and display latest block state
-- avoid CRDT complexity for MVP
-
-### 5) Autosave with debounce
-
-- apply optimistic local update immediately
-- debounce text saves (500ms baseline)
-- write structural operations immediately (create/delete/reorder)
-
-### 6) Offline queue
-
-- queue write operations while offline
-- flush queued writes automatically when connectivity returns
-- preserve user edits through unstable classroom network conditions
-
-### 7) Performance and infra
-
-- use viewport-based rendering for long notes
-- use PgBouncer as required connection pooling layer for Postgres/Supabase traffic
-- validate that backend connections route through pooled path in production
-
-### 8) Notes lifecycle
-
-- list, search, pin, duplicate, and soft-delete notes
-- link notes to lesson slides and task contexts where applicable
-- preserve edit history signals for collaboration review
+  CN --> TG[Task group members]
+  CN --> TGT[Teacher monitoring read]
+  CN --> RT[Realtime LWW sync]
+```
 
 ---
 
-## Concrete feature tree
+## Feature tree
 
 ### Personal notes
 
@@ -109,7 +40,7 @@ Available blocks:
 **Update note content**
 
 - Update: `notes.content` (jsonb), `notes.updated_at`
-- Autosave: 500ms debounce; structural operations (block add/delete) are immediate
+- Autosave: 500ms debounce for text; structural block operations (add/delete) are immediate
 
 **Pin / unpin note**
 
@@ -122,12 +53,12 @@ Available blocks:
 **Soft-delete note**
 
 - Update: `notes.deleted_at = now()`
-- Note is excluded from list queries (RLS + app layer filter); not physically removed
+- Excluded from list queries; not physically removed
 
 **Link note to lesson slide**
 
 - Update: `notes.lesson_id` (FK to lessons)
-- Also creates `learning_events` row: event_type = note_created_from_slide with slide_index + note_id in metadata
+- Also creates `learning_events` row: event_type = note_created_from_slide, metadata includes slide_index + note_id
 
 ---
 
@@ -143,31 +74,51 @@ Available blocks:
 
 - Mechanism: Supabase Realtime subscription on `notes.content` + block-level JSONB updates
 - Conflict resolution: Last Write Wins (LWW) per block id
-- Offline: changes queued locally and flushed on reconnect
+- Offline: changes queued locally, flushed on reconnect
 
 **Teacher monitors group note**
 
-- RLS: `notes_teacher_read` — teacher who owns the task delivery can read collaborative notes for all their task groups
+- RLS: `notes_teacher_read` — teacher who owns the task delivery can read collaborative notes for all task groups in that delivery
 
 ---
 
-### Schema visualization
+## Schema visualization
 
 ```text
-notes
+notes  (institution_id: Schule für Farbe und Gestaltung)
+│
 ├── scope = personal
-│   ├── owner_user_id = student or teacher
-│   ├── lesson_id (optional — slide-context link)
-│   ├── is_pinned
-│   ├── title, content (jsonb Yoopta blocks)
-│   ├── content_schema_version
-│   └── deleted_at (soft delete)
+│   ├── "Notizen zu Primärfarben"
+│   │   owner_user_id: Anna Schmidt
+│   │   lesson_id → Primärfarben  (slide-context link)
+│   │   is_pinned: true
+│   │   content: jsonb Yoopta blocks  [heading + 3 paragraph blocks]
+│   │   content_schema_version: 2
+│   │   deleted_at: null
+│   │
+│   ├── "Farbmischung Ideen"
+│   │   owner_user_id: Anna Schmidt
+│   │   lesson_id: null
+│   │   is_pinned: false
+│   │   deleted_at: null
+│   │
+│   └── "Unterrichtsvorbereitung KW14"
+│       owner_user_id: Frau Müller  (teachers have personal notes too)
+│       is_pinned: true
+│       deleted_at: null
 │
 └── scope = collaborative
-    ├── owner_user_id = teacher who created task
-    ├── task_group_id → task_groups.id
-    ├── title, content (jsonb Yoopta blocks)
-    └── all task_group_members can read/write (notes_collaborative_access)
+    ├── "Gruppe A — Farbpalette erstellen"
+    │   owner_user_id: Frau Müller  (created with task group)
+    │   task_group_id → Gruppe A  (Anna Schmidt + Tom Weber)
+    │   content: jsonb Yoopta blocks  [last edit: Anna, 2026-04-08 14:32]
+    │   [notes_collaborative_access: all task_group_members read/write]
+    │   [notes_teacher_read: Frau Müller reads for monitoring]
+    │
+    └── "Gruppe B — Farbpalette erstellen"
+        owner_user_id: Frau Müller
+        task_group_id → Gruppe B  (Lena Fischer + Jonas Meier)
+        content: jsonb Yoopta blocks  [status: reviewed]
 ```
 
 ### CRUD surface by role
@@ -180,3 +131,14 @@ notes
 | Soft-delete own notes    | yes             | —                       | yes                   | —                 |
 | Read collaborative note  | if group member | yes                     | yes (all task groups) | read-only         |
 | Write collaborative note | if group member | yes                     | yes                   | —                 |
+
+---
+
+## Constraints
+
+1. **Scope is immutable after creation** — `notes.scope` is set on insert and never changed. A personal note cannot be converted to collaborative or vice versa.
+2. **One collaborative note per task group** — `task_groups` auto-provisions exactly one `notes` row per group on creation. Teachers cannot manually insert a second collaborative note for the same group.
+3. **Collaborative access is group-scoped** — `notes_collaborative_access` requires a `task_group_members` row for the caller. A student cannot read another group's note within the same task delivery.
+4. **Soft delete, not hard purge** — `deleted_at` preserves the row for audit and GDPR export; physical removal only via completed GDPR erasure.
+5. **LWW conflict resolution only** — collaborative editing uses Last Write Wins per block id. No CRDT or merge strategy. Concurrent edits to the same block id may overwrite each other.
+6. **lesson_id link is optional** — personal notes may exist without any lesson context. When lesson_id is set, the associated learning_events row is created by the app layer, not a DB trigger.

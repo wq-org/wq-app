@@ -1,90 +1,35 @@
-# Cloud storage and file metadata
+# Cloud Storage
 
-Postgres holds **meaning and access**; Supabase Storage holds **bytes**. This domain ties them together with tenant-scoped metadata, scoped folders/files, polymorphic links to product entities, and optional direct shares.
+Role: file metadata and access control — Postgres holds meaning and access; Supabase Storage holds bytes.
+Scope: institution-scoped; every file and folder carries institution_id and a scope that governs read access.
 
----
+## Mission and context
 
-## Migrations
+Cloud storage ties uploaded files to the product's entity model. Teachers and students upload files to Supabase Storage; a corresponding `cloud_files` row is registered via a SECURITY DEFINER RPC that enforces quota and assigns a canonical storage key. Folders are optional organizational containers. Files can be linked to product entities (lessons, tasks, notes, messages, game versions) and shared directly with other users. Access is governed by scope — personal, institution, classroom, course, lesson, task, game, or chat — each resolved by RLS helper functions.
 
-| Prefix                                                     | Contents                                                                                                                                                                                     |
-| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `20260329000016_cloud_assets_01_types.sql`                 | Enums: `cloud_file_scope`, `cloud_file_status`, `cloud_file_link_entity_type`, `cloud_file_link_purpose`, `cloud_file_share_permission`                                                      |
-| `…_02_tables.sql` (`17`)                                   | `cloud_folders`, `cloud_files`, `cloud_file_links`, `cloud_file_shares`                                                                                                                      |
-| `…_03_indexes_constraints.sql` (`18`)                      | Indexes for RLS and lookups                                                                                                                                                                  |
-| `…_04_functions_rpcs.sql` (`19`)                           | `app.user_can_select_game_version`, `app.user_can_select_cloud_file`, `app.user_can_manage_cloud_file`, folder helpers, `apply_cloud_file_storage_quota_delta`, `register_cloud_file_record` |
-| `…_05_backfills_seed.sql` (`20`)                           | Stub (no automatic backfill of legacy Storage keys)                                                                                                                                          |
-| `…_06_triggers.sql` (`21`)                                 | `updated_at`, normalize file from folder, folder tree + institution coherence, link `institution_id` sync, quota **AFTER** trigger                                                           |
-| `…_07_rls_policies.sql` (`22`)                             | `ENABLE` + `FORCE` RLS; policies `{table}_{action}_{role}`                                                                                                                                   |
-| `20260329000023_storage_cloud_objects_rls_01_policies.sql` | `storage.objects` policies: `/files/` paths require `cloud_files` + ACL helpers; legacy `{role}/{user_id}/` paths unchanged                                                                  |
+**Scope:** institution-scoped; storage paths are `{institution_id}/files/{file_id}`
+**Accountability:** quota enforcement (hard cap via register_cloud_file_record), scope-based read access, file lifecycle
 
----
+```mermaid
+flowchart TD
+  U[User — teacher or student]
+  U --> UPL[Upload to Supabase Storage bucket]
+  U --> RPC[register_cloud_file_record SECURITY DEFINER]
+  RPC --> QC[Quota check vs institution_subscriptions.storage_bytes_cap]
+  QC --> CF[cloud_files row created]
+  CF --> TRG[Trigger increments institution_quotas_usage.storage_used_bytes]
 
-## Tables (mental model)
+  CF --> FL[cloud_file_links attach to entity]
+  CF --> SH[cloud_file_shares grant to user]
 
-- **`cloud_folders`** — Nested folders (`parent_folder_id`), each with a **scope** and optional anchor FKs (`classroom_id`, `course_id`, `lesson_id`, `task_id`, `conversation_id`, `game_version_id`). CHECK constraints enforce scope ↔ anchors.
-- **`cloud_files`** — One row per Storage object: `bucket` (default `cloud`), **`storage_object_name`** (full object key), `scope` + same anchor columns (copied from folder when `folder_id` is set). **`UNIQUE (bucket, storage_object_name)`**.
-- **`cloud_file_links`** — Attach a file to a product row: `link_entity_type` (`lesson`, `task`, `note`, `message`, `game_version`, `classroom`, `course`, `conversation`) + `entity_id` + `link_purpose`.
-- **`cloud_file_shares`** — Grant another user `read` or `edit` on a file (`shared_with_user_id`, `shared_by_user_id`).
-
----
-
-## Scopes (`cloud_file_scope`)
-
-| Scope         | Who can read (via `app.user_can_select_cloud_file`)                                                       |
-| ------------- | --------------------------------------------------------------------------------------------------------- |
-| `personal`    | Owner; institution admin; super admin; share recipient                                                    |
-| `institution` | Any active member of the institution; admins                                                              |
-| `classroom`   | Active `classroom_members` for `classroom_id`                                                             |
-| `course`      | Course teacher (`caller_can_manage_course`) or `student_can_access_course`                                |
-| `lesson`      | `student_can_access_lesson`                                                                               |
-| `task`        | Task teacher, or students who may read the published task in their classrooms (`my_active_classroom_ids`) |
-| `game`        | `user_can_select_game_version` (aligned with `game_versions` RLS)                                         |
-| `chat`        | Active `conversation_members` (`left_at IS NULL`) for `conversation_id`                                   |
-
-**Deleted files** (`status = deleted`): readable only by owner or institution admin (plus super admin).
+  SCOPE[Scope gates read access]
+  CF --> SCOPE
+  SCOPE --> ACC[app.user_can_select_cloud_file]
+```
 
 ---
 
-## RPC: `register_cloud_file_record`
-
-Creates a `cloud_files` row with a **server-chosen** canonical key:
-
-`{institution_id}/files/{file_id}`
-
-The client should upload to Storage using that `storage_object_name` after the RPC returns. Optional **quota** check: latest `institution_subscriptions` row (active/trialing/past_due) `COALESCE(storage_bytes_cap, plan_catalog.storage_bytes_cap_default)` vs `institution_quotas_usage.storage_used_bytes` + `size_bytes`.
-
----
-
-## Quota counter strategy
-
-**Implemented:** trigger **`trg_cloud_files_quota_usage`** on `cloud_files` **AFTER INSERT OR UPDATE OF size_bytes, status OR DELETE** calls **`public.apply_cloud_file_storage_quota_delta()`** (SECURITY DEFINER). It adjusts **`institution_quotas_usage.storage_used_bytes`**:
-
-- Counts only rows with **`status = active`** toward usage.
-- On status change away from `active`, subtracts old `size_bytes`; on transition to `active`, adds `size_bytes`.
-- On `size_bytes` change while active, applies the delta.
-
-**Operational notes:**
-
-- Keep **`size_bytes`** on the row aligned with the real object size after upload (client or edge function `UPDATE`).
-- For **orphaned** Storage objects without a row, quota is unaffected until you reconcile.
-- A **background worker** can periodically recompute `SUM(size_bytes)` for `active` files per institution and compare to the counter if you need a safety net (not in SQL by default).
-
----
-
-## Storage paths
-
-- **New:** `{institution_uuid}/files/{cloud_file_uuid}` — enforced by `storage.objects` policies together with `cloud_files`.
-- **Legacy:** `{institution_uuid}/{teacher\|student\|…}/{user_uuid}/…` — still supported; migrate to `/files/` over time and optionally backfill `cloud_files` in a **data migration**.
-
----
-
-## GDPR / clinical media
-
-Treat uploads that may contain identifiable health imagery as **high-risk**: retention, minimization, and audit requirements in [db_design_principles.md](../architecture/db_design_principles.md) apply.
-
----
-
-## Concrete feature tree
+## Feature tree
 
 ### Folder management
 
@@ -93,19 +38,15 @@ Treat uploads that may contain identifiable health imagery as **high-risk**: ret
 - Table: `cloud_folders`
 - Input: institution_id, owner_user_id (self), name, parent_folder_id (nested), scope (personal | institution | classroom | course | lesson | task | game | chat)
 - Anchor FKs depend on scope: classroom_id, course_id, lesson_id, task_id (= task_delivery_id), conversation_id, game_version_id
-- Non-anchor FKs must be NULL (enforced by check constraint)
+- Non-anchor FKs must be NULL (CHECK constraint enforced)
 
-**Rename folder**
+**Rename / move folder**
 
-- Update: `cloud_folders.name`
-
-**Move folder**
-
-- Update: `cloud_folders.parent_folder_id`
+- Update: `cloud_folders.name` | `cloud_folders.parent_folder_id`
 
 **Delete folder**
 
-- Update: `cloud_folders.updated_at` (soft-delete not in schema — physical delete via app)
+- Physical delete via app (no soft-delete column on folders)
 
 ---
 
@@ -114,21 +55,21 @@ Treat uploads that may contain identifiable health imagery as **high-risk**: ret
 **Upload file to Supabase Storage**
 
 - Bucket: `cloud` (default)
-- Path pattern: `{institution_id}/files/{file_id}` (new canonical format)
+- Path: `{institution_id}/files/{file_id}` (canonical new format)
 - Legacy path: `{institution_id}/{role}/{user_uuid}/filename` (still supported via Storage RLS)
 
 **Register file metadata**
 
 - RPC: `register_cloud_file_record(...)` (SECURITY DEFINER)
-- Input: institution_id, owner_user_id, folder_id, storage_object_name (unique per bucket), scope + anchor FKs, mime_type, size_bytes, original_name
-- Checks: quota against `institution_subscriptions.storage_bytes_cap` vs `institution_quotas_usage.storage_used_bytes`
+- Input: institution_id, owner_user_id, folder_id (optional), storage_object_name (unique per bucket), scope + anchor FKs, mime_type, size_bytes, original_name
+- Checks: `institution_quotas_usage.storage_used_bytes + size_bytes ≤ institution_subscriptions.storage_bytes_cap`
 - Creates: `cloud_files` row (status = active)
-- Trigger (AFTER INSERT on cloud_files where status = active): increments `institution_quotas_usage.storage_used_bytes`
+- Trigger (AFTER INSERT, status = active): increments `institution_quotas_usage.storage_used_bytes`
 
 **Archive file**
 
 - Update: `cloud_files.status = archived`
-- Effect: quota trigger only counts `status = active` files; archived files do not count toward cap
+- Effect: archived files do not count toward storage quota (trigger subtracts on status change away from active)
 
 **Delete file**
 
@@ -139,7 +80,7 @@ Treat uploads that may contain identifiable health imagery as **high-risk**: ret
 
 ### File linking (attach to product entities)
 
-**Link file to lesson / task / message / game / note / classroom / course / conversation**
+**Link file to entity**
 
 - Table: `cloud_file_links`
 - Input: cloud_file_id, link_entity_type (lesson | task | message | note | game | classroom | course | conversation), entity_id, link_purpose (attachment | reference | etc.)
@@ -151,7 +92,7 @@ Treat uploads that may contain identifiable health imagery as **high-risk**: ret
 
 ---
 
-### File sharing (direct grants)
+### File sharing (direct user grants)
 
 **Share file with user**
 
@@ -167,30 +108,62 @@ Treat uploads that may contain identifiable health imagery as **high-risk**: ret
 
 ### Access helpers (RLS functions)
 
-- `app.user_can_select_cloud_file(file_id)` — scoped read: owner, institution member in same scope, or has a read/edit share (SECURITY DEFINER)
-- `app.user_can_manage_cloud_file(file_id)` — owner, institution admin, or edit share
+- `app.user_can_select_cloud_file(file_id)` — owner, institution member within matching scope, or has a read/edit share (SECURITY DEFINER)
+- `app.user_can_manage_cloud_file(file_id)` — owner, institution admin, or has edit share
 - `app.user_can_select_cloud_folder(folder_id)` / `app.user_can_manage_cloud_folder(folder_id)` — same logic for folders
+
+**Scope → read access rules**
+
+| Scope       | Who can read                                                             |
+| ----------- | ------------------------------------------------------------------------ |
+| personal    | Owner; institution admin; super admin; share recipient                   |
+| institution | Any active institution member                                            |
+| classroom   | Active classroom_members for classroom_id                                |
+| course      | Course teacher or student_can_access_course                              |
+| lesson      | student_can_access_lesson                                                |
+| task        | Task teacher or student with active classroom in my_active_classroom_ids |
+| game        | user_can_select_game_version                                             |
+| chat        | Active conversation_members (left_at IS NULL) for conversation_id        |
 
 ---
 
-### Schema visualization
+## Schema visualization
 
 ```text
-cloud_folders (institution_id, owner_user_id, scope, parent_folder_id?)
-├── scope: personal | institution | classroom | course | lesson | task | game | chat
-└── anchor FKs: classroom_id? course_id? lesson_id? task_id? conversation_id? game_version_id?
-
-cloud_files (institution_id, owner_user_id, folder_id?, scope, status: active|archived|deleted)
-├── storage_object_name (unique per bucket) ← maps to Supabase Storage byte path
-├── mime_type, size_bytes, original_name
-├── anchor FKs (same as cloud_folders)
-└── [AFTER INSERT trigger increments institution_quotas_usage.storage_used_bytes if status = active]
-
-cloud_file_links (cloud_file_id, link_entity_type, entity_id, link_purpose)
-└── unique(cloud_file_id, entity_type, entity_id, purpose)
-
-cloud_file_shares (cloud_file_id, shared_with_user_id, shared_by_user_id, permission: read|edit)
-└── unique(cloud_file_id, shared_with_user_id)
+Schule für Farbe und Gestaltung  [institution_id scopes all rows]
+│   institution_quotas_usage: storage_used_bytes: 1_420_800  /  storage_bytes_cap: 10_737_418_240
+│
+├── cloud_folders
+│   ├── "Unterrichtsmaterial"  [scope: institution, owner: Frau Müller]
+│   │   ├── "Farbenlehre Folien"  [scope: course, course_id → Grundlagen Farbe]
+│   │   └── "Referenzbilder"      [scope: classroom, classroom_id → Farbmischung]
+│   │
+│   └── "Meine Notiz-Anhänge"   [scope: personal, owner: Anna Schmidt]
+│
+├── cloud_files
+│   ├── "farbkreis_vorlage.pdf"
+│   │   owner: Frau Müller    scope: lesson   lesson_id → Der Farbkreis
+│   │   storage_object_name: {institution_id}/files/{file_uuid}
+│   │   mime_type: application/pdf   size_bytes: 204_800   status: active
+│   │   [trigger incremented storage_used_bytes +204_800 on INSERT]
+│   │   └── cloud_file_links
+│   │       link_entity_type: lesson   entity_id → Der Farbkreis   purpose: attachment
+│   │
+│   ├── "gruppeA_skizze.jpg"
+│   │   owner: Anna Schmidt   scope: task   task_id → Farbpalette erstellen
+│   │   storage_object_name: {institution_id}/files/{file_uuid}
+│   │   mime_type: image/jpeg   size_bytes: 512_000   status: active
+│   │   └── cloud_file_links
+│   │       link_entity_type: note   entity_id → Gruppe A collaborative note   purpose: attachment
+│   │
+│   └── "alte_aufgabe.pdf"
+│       owner: Frau Müller   scope: personal   status: archived
+│       [trigger decremented storage_used_bytes on status → archived]
+│
+└── cloud_file_shares
+    └── "farbkreis_vorlage.pdf" shared with Tom Weber
+        shared_by: Frau Müller   permission: read
+        [app.user_can_select_cloud_file → true for Tom via share row]
 ```
 
 ### CRUD surface by role
@@ -204,3 +177,14 @@ cloud_file_shares (cloud_file_id, shared_with_user_id, shared_by_user_id, permis
 | Create folder          | yes   | —                     | yes                      | yes         |
 | Link file to entity    | yes   | —                     | yes                      | yes         |
 | Share file with user   | yes   | —                     | yes                      | yes         |
+
+---
+
+## Constraints
+
+1. **Quota is hard** — `register_cloud_file_record` checks `storage_used_bytes + new_size ≤ storage_bytes_cap` before creating the file row. No file can be registered if the institution is over quota. Only super admin can raise the cap via `institution_subscriptions`.
+2. **Canonical storage path** — New files use `{institution_id}/files/{file_id}`. Legacy paths (`{institution_id}/{role}/{user_id}/...`) are still supported via Storage RLS but should be migrated over time.
+3. **Scope ↔ anchor coherence** — CHECK constraints on `cloud_folders` and `cloud_files` enforce that only the anchor FK matching the scope is non-null. A classroom-scoped file must have classroom_id set and all other anchor FKs null.
+4. **Status = active is the quota gate** — `institution_quotas_usage.storage_used_bytes` counts only `status = active` files. Archiving or deleting a file removes it from the quota counter via AFTER trigger.
+5. **Removing a link does not delete the file** — Deleting a `cloud_file_links` row detaches the file from the entity. The `cloud_files` row and Storage object remain until explicitly archived or deleted.
+6. **GDPR / health imagery** — Uploads containing identifiable health imagery are high-risk. Retention, minimization, and audit requirements apply. Physical removal from Storage is a separate step after `status = deleted` and must be part of GDPR erasure workflows.

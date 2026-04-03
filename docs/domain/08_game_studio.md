@@ -1,180 +1,38 @@
 # Game Studio
 
-## Functional feature map
+Role: game authoring and session delivery — teacher creates, student plays.
+Scope: institution-scoped; game versions are published snapshots; sessions are classroom or institution-scoped.
 
-Game Studio must support fast creation, classroom delivery, and measurable outcomes:
+## Mission and context
 
-1. Node-based game authoring
-2. Routing and progression logic
-3. Reusable game library and publish flow
-4. Course and lesson linkage
-5. Smart node suggestion flow
-6. Versus and class-session gameplay
-7. Scoring and analytics signals
+Game Studio lets teachers build node-based knowledge games and deliver them to classrooms. A game is authored as a mutable draft — a node graph with routing and scoring config — then published as a version snapshot for delivery. Students play solo, challenge each other in versus mode, or join a teacher-launched class session. Scoring is a single consistent model: base points per node, speed bonus, streak multiplier, and a versus rivalry bonus. All session data flows into analytics readable by the teacher.
 
----
+**Scope:** teacher's own games (authoring); institution members (published play); classroom (class sessions)
+**Accountability:** game design, version publishing, delivery, session lifecycle, per-student score analytics
 
-## Functional areas
+```mermaid
+flowchart TD
+  T[Teacher]
+  T --> GA[Game Authoring]
+  GA --> G[games mutable draft]
+  GA --> GV[game_versions published snapshot]
 
-### 1) Authoring principles
+  GV --> GD[game_deliveries classroom]
+  GD --> SOLO[Solo play]
+  GD --> VS[Versus play]
+  GD --> CS[Class session]
 
-- keep games short (target 3 to 7 nodes)
-- design one concept per game
-- make games replayable by design
-- prioritize many small games over one long game
+  SOLO --> GSP[game_session_participants]
+  VS --> GSP
+  CS --> GSP
 
-### 2) Node graph logic
-
-- linear chain flow
-- conditional branching by score/correctness
-- explicit end node with result summary
-- optional multiple entry paths by difficulty
-
-### 3) Smart creation support
-
-- allow teacher to start from PDF/lesson material
-- suggest node types from extracted content
-- prefill node content for teacher review
-- teacher approves, edits, or rejects before publish
-
-### 4) Course linkage
-
-- attach game to lesson or slide context
-- display game inline as lesson reinforcement
-- keep game available in global game library
-- track lesson-to-game completion impact
-
-### 5) Session modes
-
-- solo mode
-- versus mode (1v1)
-- teacher-launched classroom session
+  GSP --> STAT[game_run_stats_scoped]
+  GSP --> PL[point_ledger]
+```
 
 ---
 
-## Games — Versus Mode & Scoring System
-
-**Versus Mode — how it works**
-
-Starting a match
-
-- Student selects a published game and chooses “Play vs someone”
-- Generates a short invite code or shareable link (institution-scoped only)
-- Invited student joins via code — lobby screen shows both players as “ready”
-- Teacher can also launch a versus session for the whole class from the lesson view — everyone gets the same game at the same time
-
-**During the match**
-
-- Both players see the same node at the same time — fully synchronised via Supabase Realtime
-- Each player answers independently on their own screen
-- After both answer (or timer expires) a brief result flash shows:
-  - What each player chose
-  - Who was correct
-  - Points earned this round
-  - Then both advance to the next node together
-  - Neither player can see the other’s answer before submitting — prevents copying
-
-**Real-time sidebar / overlay**
-
-- Live score ticker showing both players’ running totals
-- Indicator when the opponent has answered (without revealing their choice)
-- Reaction strip — students can send a quick emoji reaction after each round (🔥 😅 👀)
-
-**Result screen**
-
-- Winner / draw announcement
-- Full breakdown: per-node score, time taken, correct/incorrect side by side
-- Option to rematch or challenge someone else
-
-**Multiplayer class mode (teacher-launched)**
-
-- Teacher starts a game session from lesson view — all enrolled students get a push notification
-- Students join the live session within a lobby countdown (30s)
-- Everyone plays the same node simultaneously
-- After each node a live leaderboard flashes on screen for 3 seconds then next node loads
-- Final class leaderboard saved to analytics — teacher sees per-student performance from that session
-
-**Scoring system — efficient and consistent**
-
-One scoring model used everywhere: solo, versus, and class mode.
-
-**Base points per node**
-
-- Correct answer → base points defined by teacher per node (default 100)
-- Wrong answer → 0 (no negative scoring by default — keeps it motivating)
-- Teacher can optionally enable partial scoring on ParagraphSelectNode and MarkSentenceNode
-
-**Speed bonus**
-
-- Answering in the first 25% of the time limit → +50% bonus points
-- Answering in 25–50% → +25% bonus
-- After 50% → base points only
-- No time limit set → no speed bonus, base points only
-
-**Timer range per node**
-
-- `ImagePinNode` — 20 to 60 seconds. Default 30 seconds.
-- `PollNode` — 10 to 30 seconds. Default 15 seconds.
-- `TrueFalseNode` — 10 to 20 seconds. Default 15 seconds.
-- `MultipleChoiceNode` — 15 to 45 seconds. Default 30 seconds.
-- `ParagraphSelectNode` — 30 to 90 seconds. Default 45 seconds.
-- `MarkSentenceNode` — 30 to 90 seconds. Default 45 seconds.
-- `OpenQuestionNode` — no timer.
-
-**Streak multiplier**
-
-- 3 correct in a row → ×1.5 multiplier active
-- 5 correct in a row → ×2.0 multiplier active
-- Wrong answer resets multiplier to ×1.0
-
-**Scoring example — full walkthrough**
-
-Game has 5 nodes. Teacher set 100 base points per node. Timer is 30 seconds each.
-
-Student answers node 1 correctly at second 6 — first 25% of 30 seconds → 100 + 50% bonus = **150 points**. Streak: 1.
-
-Node 2 correct at second 9 — first 25% → 100 + 50% = **150 points**. Streak: 2.
-
-Node 3 correct at second 20 — after 50% → 100 base only, but streak hits 3 → ×1.5 multiplier activates → 100 × 1.5 = **150 points**.
-
-Node 4 correct at second 8 — first 25% → 100 + 50% = 150, multiplier still ×1.5 → 150 × 1.5 = **225 points**. Streak: 4.
-
-Node 5 wrong → 0 points, streak resets to 1, multiplier back to ×1.0.
-
-**Final score: 150 + 150 + 150 + 225 + 0 = 675 points**
-
-**Versus bonus**
-
-- Win the round (correct + faster than opponent) → +25 rivalry points on top of base
-- Both correct → both get base, speed bonus decides the round winner
-- Both wrong → both get 0, no penalty
-
-**Final game score**
-
-- Sum of all node scores including bonuses and multipliers
-- Stored as a single integer per attempt — simple to compare, sort, and display
-- Personal best tracked per game per student
-- Institution leaderboard ranks by personal best, not average
-
-**Why this is efficient**
-
-- One formula everywhere — no special cases per game type
-- Teacher only sets one value per node (base points) — everything else is automatic
-- Score is always a positive integer — easy to display, sort, and aggregate into analytics without edge cases
-
----
-
-## Analytics outputs
-
-- completion rate by classroom and lesson linkage
-- replay frequency and improvement trend
-- node-level struggle hotspots
-- versus/class session ranking outcomes
-- score progression per student over time
-
----
-
-## Concrete feature tree
+## Feature tree
 
 ### Game authoring
 
@@ -182,18 +40,15 @@ Node 5 wrong → 0 points, streak resets to 1, multiplier back to ×1.0.
 
 - Table: `games`
 - Input: institution_id, teacher_id (self), game_type, game_config (jsonb — nodes, routing, metadata), course_id (optional)
-- Trigger: if course_id set, `games.institution_id` must match `courses.institution_id`
-- Status: draft (unpublished until a version is published)
+- Trigger: if course_id is set, `games.institution_id` must match `courses.institution_id`
 
 **Edit game content**
 
-- Update: `games.game_config` (mutable on draft)
-- Publish a new version to freeze a snapshot; source game can keep changing
+- Update: `games.game_config` (mutable; publish a new version to freeze a snapshot)
 
 **Link game to course**
 
-- Update: `games.course_id`
-- One game → at most one course; NULL = standalone library game
+- Update: `games.course_id` — at most one course; NULL = standalone library game
 
 **Archive game**
 
@@ -212,7 +67,7 @@ Node 5 wrong → 0 points, streak resets to 1, multiplier back to ×1.0.
 **Publish version**
 
 - Update: `game_versions.status = published`
-- Update: `games.current_published_version_id = this version`
+- Update: `games.current_published_version_id` → this version
 - Published rows are immutable
 
 **Archive old version**
@@ -241,58 +96,77 @@ Node 5 wrong → 0 points, streak resets to 1, multiplier back to ×1.0.
 
 - Table: `game_runs` (mode = solo)
 - Input: game_id, institution_id, game_version_id, game_delivery_id (optional)
-- Creates: 1 `game_session` → 1 `game_session_participants` row (started_by = student)
+- Creates: 1 `game_session` → 1 `game_session_participants` (started_by = student)
 - On complete: upserts `game_run_stats_scoped` (best_score, attempt_count, is_personal_best)
-- Rewards: `point_ledger` rows: game_correct (+100 per node), game_speed_bonus (+50/+25 by time), game_streak (×1.5/×2.0)
+- Inserts `point_ledger` rows: source = game_correct (+100/node), game_speed_bonus (+50/+25), game_streak (×1.5/×2.0)
 
 **Versus play**
 
 - Table: `game_runs` (mode = versus)
-- Input: game_id, invite_code (short code for lobby join)
+- Input: game_id, invite_code (short lobby code)
 - Creates: 1 `game_session` → 2 `game_session_participants`
 - Winner earns: `point_ledger` (source = game_versus_win, +25 rivalry points)
+- Sync: both players see same node simultaneously via Supabase Realtime
 
 **Teacher class session**
 
 - Table: `game_runs` (mode = classroom)
 - Input: classroom_id, game_id, game_version_id, started_by = teacher
 - Lifecycle: lobby → started → completed | cancelled
-- Creates: 1 `game_session` → N `game_session_participants` (enrolled students)
-- Live leaderboard derived from `game_session_participants.score`
+- Creates: 1 `game_session` → N `game_session_participants` (all enrolled students auto-included)
+- Live leaderboard derived from `game_session_participants.score` via Supabase Realtime
 
 ---
 
-### Analytics read
+### Analytics (teacher read)
 
-**Per-game stats (teacher)**
+**Per-game stats**
 
-- Table: `game_run_stats_scoped` — best_score, attempt_count, last_run_at, is_personal_best per user/game/delivery
-- Table: `game_session_participants.scores_detail` (jsonb array: `[{node_id, correct, time_ms, base, bonus, multiplier, total}]`)
+- Table: `game_run_stats_scoped` — best_score, attempt_count, last_run_at, is_personal_best per (user, game, delivery)
+- Table: `game_session_participants.scores_detail` — jsonb array per node: `{node_id, correct, time_ms, base, bonus, multiplier, total}`
 
 ---
 
-### Schema visualization
+## Schema visualization
 
 ```text
-games (teacher_id, institution_id, course_id nullable, status: draft|published|archived)
+Farbkreis Quiz  [games row — Frau Müller, Schule für Farbe und Gestaltung]
+│   course_id → Grundlagen Farbe
+│   archived_at: null
 │
-├── game_versions (version_no, status: draft|published|archived, content jsonb)
-│   └── [immutable after status = published]
+├── game_versions
+│   ├── v2  [status: archived, change_note: "added speed bonus nodes"]
+│   └── v3  [status: published — immutable] ← current_published_version_id
+│       content: jsonb  [5 nodes: 3× MultipleChoice, 1× TrueFalse, 1× ImagePin]
 │
-├── game_deliveries (classroom_id, game_version_id, course_delivery_id?, lesson_id?, status)
+├── game_deliveries
+│   └── Farbmischung classroom + v3
+│       [status: published, lesson_id → Der Farbkreis, course_delivery_id → Grundlagen Farbe v2]
 │
-└── game_runs (mode: solo|versus|classroom, status: lobby|started|completed|cancelled)
+└── game_runs
+    ├── mode = classroom  [status: completed, 2026-03-28 08:10, started_by: Frau Müller]
+    │   └── game_session → 27 game_session_participants
+    │       ├── Anna Schmidt   score:675  is_personal_best:true
+    │       ├── Tom Weber      score:420  is_personal_best:false
+    │       └── Lena Fischer   score:580  is_personal_best:true
+    │       [live leaderboard via Supabase Realtime during session]
     │
-    ├── mode = solo
-    │   └── game_session → 1 game_session_participants (student, score, scores_detail jsonb)
+    ├── mode = solo  [Anna Schmidt, 2026-03-20]
+    │   └── game_session → 1 game_session_participants
+    │       score:675  scores_detail:[{node_id, correct:true, time_ms:6200, base:100, bonus:50, …}]
+    │       → game_run_stats_scoped upsert: best_score:675, attempt_count:3, is_personal_best:true
     │
-    ├── mode = versus
-    │   └── game_session → 2 game_session_participants (invite_code for lobby join)
-    │
-    └── mode = classroom
-        └── game_session → N game_session_participants (all classroom students)
+    └── mode = versus  [Anna vs Tom, 2026-03-25, invite_code: "FQ-9X2"]
+        └── game_session → 2 game_session_participants
+            ├── Anna Schmidt  score:540  [winner — +25 rivalry points to point_ledger]
+            └── Tom Weber     score:390
 
-game_run_stats_scoped (user_id, game_id, game_version_id, game_delivery_id?, best_score, attempt_count, is_personal_best)
+Mischfarben Challenge  [games row — standalone, no course_id]
+└── game_versions: v1  [status: published]
+    └── game_deliveries: Farbmischung classroom  [status: published]
+
+point_ledger inserts after session  (app layer)
+  source: game_correct | game_speed_bonus | game_streak | game_versus_win
 ```
 
 ### CRUD surface by role
@@ -308,3 +182,14 @@ game_run_stats_scoped (user_id, game_id, game_version_id, game_delivery_id?, bes
 | Write game_session_participants | —               | yes (own)         | —                 | yes         |
 | Read game_session_participants  | yes (own games) | own + leaderboard | yes (read)        | yes         |
 | Read game_run_stats_scoped      | yes (own games) | own only          | yes (read)        | yes         |
+
+---
+
+## Constraints
+
+1. **Publish is one-way** — `game_versions.status = published` is irreversible. Draft is the only editable state; to change content, create a new version.
+2. **Session mode is fixed at creation** — `game_runs.mode` (solo | versus | classroom) is set when the run is created and cannot be changed.
+3. **Class session auto-includes roster** — When a teacher launches a classroom run, all active `classroom_members` are added as participants. Students cannot join a class run they are not enrolled in.
+4. **Versus is institution-scoped** — The invite_code is valid only within the same institution. No cross-institution versus sessions.
+5. **game_run_stats_scoped is upsert-only** — Stats are maintained via upsert (best_score, is_personal_best). Historical attempt detail lives in `game_session_participants`; the stats row is a derived summary, not a full log.
+6. **game → course link is optional and single** — A game can be linked to at most one course (via `games.course_id`). Institution coherence is enforced by trigger: game and course must share the same `institution_id`.

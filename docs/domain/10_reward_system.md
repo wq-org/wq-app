@@ -1,65 +1,39 @@
 # Reward System
 
-Points earned through games, tasks, and daily engagement convert into real classroom privileges — chosen by the teacher, redeemed by the student. Not a global leaderboard that only rewards the fastest three. Every student has a realistic path to earning something.
+Role: motivation layer — points earned through learning activity convert into classroom privileges.
+Scope: classroom-scoped; each classroom has independent settings, point balance, and leaderboard.
 
-# **How points are earned**
+## Mission and context
 
-- Correct answer in a game → base points + speed bonus
-- Streak multiplier → 3 or 5 correct in a row
-- Versus mode win → rivalry bonus points
-- Task submitted on time → participation points
-- Lesson fully completed (all slides viewed) → completion points
-- Daily login streak → streak bonus (Duolingo-style)
-- Personal best beaten on a replayed game → improvement bonus
+The reward system turns learning activity into visible progress. Points accumulate per classroom from games, tasks, and lesson completions. Teachers configure which jokers (privileges) students can redeem and at what cost. Students spend points to unlock real classroom benefits — skipping homework, choosing a seat, using notes during a quiz. Levels are derived from point totals; no separate level table exists. The leaderboard is opt-in per classroom and shows personal bests, not raw rank, to keep the pressure off students who are still catching up.
 
-# **Point tiers — levels and ranks**
+**Scope:** single classroom; no cross-classroom point totals or leaderboards
+**Accountability:** point ledger append-only integrity, joker approval flow, teacher-controlled reward config
 
-- Points accumulate across the school year per classroom
-- Five levels: Einsteiger → Lernprofi → Wissensträger → Experte → Meister
-- Level badge shown on student profile and in classroom overview
-- Level progress bar visible to student at all times
-- Teacher sees class level distribution in analytics
+```mermaid
+flowchart TD
+  ACT[Learning Activity]
+  ACT --> GAME[Game correct / speed / streak / versus]
+  ACT --> TASK[Task on-time submission]
+  ACT --> LESSON[Lesson completion]
+  ACT --> STREAK[Daily streak]
 
-# **Joker system — the real rewards**
+  GAME --> PL[point_ledger insert — app layer]
+  TASK --> PL
+  LESSON --> PL
+  STREAK --> PL
 
-Teacher activates which jokers are available per classroom. Students spend points to redeem them. Teacher approves every redemption — nothing happens automatically in class.
+  PL --> LEVEL[Level = SUM vs thresholds]
+  PL --> LB[Leaderboard if opt-in]
 
-# **Individual jokers**
-
-- Hausaufgaben-Joker — skip one homework assignment
-- Fehler-Joker — one wrong answer in a test does not count
-- Open-Notes-Joker — allowed to use personal notes during one quiz or test
-- Platzwahl-Joker — choose your own seat for one lesson
-- 5-Minuten-Joker — leave class 5 minutes early once
-
-# **How the teacher controls it**
-
-- Enable or disable each joker type per classroom — full control, nothing forced
-- Set the point cost per joker (teacher defines value in their classroom context)
-- Set a redemption limit per student per month (e.g. max 1 Hausaufgaben-Joker per month)
-- Approve or decline a redemption request with one tap
-- Student gets in-app notification when request is approved
-- Redemption history visible to teacher — who used what and when
-
-# **Badges**
-
-- Earned for milestones, not just top scores — every student can earn badges
-- Examples: First game completed, 7-day streak, Task submitted early, Personal best beaten, First versus win, Helped a group (most blocks written in a collaborative task)
-- Badges displayed on student profile
-- Teacher can create a custom classroom badge e.g. “Wundexperte Klasse 2B”
-
-# What is explicitly avoided
-
-- No jokers that skip meaningful learning content
-- No direct grade manipulation via points
-- No rewards that only the top 3 students can reach
-- No jokers that disadvantage quiet or slower students
-- No skipping of entire subject periods (Sportunterricht etc.)
-- Leaderboard is opt-in per classroom and shows personal best, not raw rank — reduces pressure on students who are still catching up
+  S[Student] --> JOKER[Request joker redemption]
+  JOKER --> T[Teacher approves]
+  T --> PL2[Negative point_ledger row inserted]
+```
 
 ---
 
-## Concrete feature tree
+## Feature tree
 
 ### Point earning (automatic via app layer)
 
@@ -72,12 +46,12 @@ Teacher activates which jokers are available per classroom. Students spend point
 **Game: speed bonus**
 
 - Insert: source = game_speed_bonus
-- Points: +50 if in first 25% of time window; +25 if 25–50%
+- Points: +50 if answered in first 25% of time window; +25 if 25–50%
 
 **Game: streak multiplier**
 
 - Insert: source = game_streak
-- Multiplier applied: ×1.5 at 3 consecutive correct; ×2.0 at 5
+- Multiplier applied: ×1.5 at 3 consecutive correct; ×2.0 at 5; wrong answer resets to ×1.0
 
 **Game: versus win**
 
@@ -85,13 +59,11 @@ Teacher activates which jokers are available per classroom. Students spend point
 
 **Task: on-time submission**
 
-- Insert: source = task_on_time
-- Ref: task_delivery_id
+- Insert: source = task_on_time; ref: task_delivery_id
 
 **Lesson: full completion**
 
-- Insert: source = lesson_complete
-- Ref: course_delivery_id + lesson_progress
+- Insert: source = lesson_complete; ref: course_delivery_id + lesson_progress
 
 **Daily streak**
 
@@ -111,20 +83,21 @@ Teacher activates which jokers are available per classroom. Students spend point
 
 - Table: `point_ledger`
 - Input: user_id, classroom_id, points (positive = award, negative = deduct), source = manual_adjustment, description
-- RLS: primary teacher or co-teacher of that classroom
+- RLS: primary teacher or co-teacher of that classroom only
 
 ---
 
-### Joker redemption (student → teacher approval)
+### Joker redemption (student request → teacher approval)
 
 **Student requests joker**
 
-- Application layer: student selects joker type (Hausaufgaben-Joker, Fehler-Joker, Open-Notes-Joker, Platzwahl-Joker, 5-Minuten-Joker)
-- Checks: `classroom_reward_settings.joker_config` for cost + monthly_limit
+- App layer: student selects joker type (Hausaufgaben-Joker, Fehler-Joker, Open-Notes-Joker, Platzwahl-Joker, 5-Minuten-Joker)
+- Checks: `classroom_reward_settings.joker_config` for cost + monthly_limit per joker type
 
 **Teacher approves**
 
 - Insert: `point_ledger` row (negative points, source = joker code, description = joker type)
+- Student receives notification: joker_approved
 
 ---
 
@@ -139,46 +112,78 @@ Teacher activates which jokers are available per classroom. Students spend point
   - Wissensträger: 1500 pts
   - Experte: 3500 pts
   - Meister: 7000 pts
+- No separate level table; level is computed at read time
 
 ---
 
-### Classroom settings (teacher manages)
+### Classroom reward settings (teacher configures)
 
 **Configure reward settings**
 
 - Table: `classroom_reward_settings`
-- Fields: leaderboard_opt_in (bool), joker_config (jsonb), level_thresholds (jsonb)
+- Fields: leaderboard_opt_in (bool), joker_config (jsonb array: code, name, cost, monthly_limit, enabled per joker), level_thresholds (jsonb array: level, name, min_points)
 - RLS: primary teacher or co-teacher; institution_admin full CRUD
 
 ---
 
-### Schema visualization
+## Schema visualization
 
 ```text
-classroom_reward_settings (classroom_id, institution_id)
-├── leaderboard_opt_in: bool
-├── joker_config: jsonb[]
-│   └── [{code, name, cost (pts), monthly_limit, enabled}]
-└── level_thresholds: jsonb[]
-    └── [{level, name, min_points}]
-        Einsteiger:0 | Lernprofi:500 | Wissensträger:1500 | Experte:3500 | Meister:7000
+Farbmischung  [classroom — Schule für Farbe und Gestaltung]
+│
+├── classroom_reward_settings
+│   ├── leaderboard_opt_in: true
+│   ├── joker_config
+│   │   ├── {code: hausaufgaben, name: "Hausaufgaben-Joker", cost: 200, monthly_limit: 1, enabled: true}
+│   │   ├── {code: fehler,       name: "Fehler-Joker",       cost: 300, monthly_limit: 1, enabled: true}
+│   │   └── {code: open_notes,  name: "Open-Notes-Joker",   cost: 400, monthly_limit: 1, enabled: false}
+│   └── level_thresholds
+│       Einsteiger:0 | Lernprofi:500 | Wissensträger:1500 | Experte:3500 | Meister:7000
+│
+└── point_ledger  (append-only)
+    │
+    ├── Anna Schmidt  [SUM: 1350 pts  →  Wissensträger  (next: 1500)]
+    │   ├── game_correct      +100  Farbkreis Quiz, node 1         2026-03-20
+    │   ├── game_speed_bonus   +50  answered in first 25%          2026-03-20
+    │   ├── game_streak        +75  x1.5 at 3 consecutive correct  2026-03-20
+    │   ├── game_versus_win    +25  vs Tom Weber                   2026-03-25
+    │   ├── lesson_complete   +100  Primärfarben                   2026-03-15
+    │   ├── lesson_complete   +100  Sekundärfarben                 2026-03-28
+    │   ├── task_on_time       +50  Farbpalette erstellen           2026-04-08
+    │   └── manual_adjustment +850  "Tolle Mitarbeit"  — Frau Müller
+    │
+    ├── Tom Weber  [SUM: 620 pts  →  Lernprofi]
+    │   ├── game_correct      +100  2026-03-20
+    │   ├── lesson_complete   +100  Primärfarben  2026-03-22
+    │   └── task_on_time       +50  Farbpalette   2026-04-08
+    │
+    └── Lena Fischer  [SUM: 1520 pts  →  Wissensträger — joker pending]
+        ├── … point rows …
+        └── joker request: hausaufgaben  cost:200  awaiting Frau Müller approval
+            on approval → INSERT point_ledger  points=-200  source=joker_hausaufgaben
 
-point_ledger (institution_id, classroom_id, user_id)
-├── points: int (positive = earned, negative = spent)
-├── source: enum
-│   ├── game_correct | game_speed_bonus | game_streak | game_versus_win
-│   ├── task_on_time | lesson_complete | daily_streak | personal_best
-│   └── manual_adjustment | joker_*
-├── ref_id + ref_type (FK to source entity)
-└── task_delivery_id | course_delivery_id | game_delivery_id (at most one set)
+Level = SUM(point_ledger.points) WHERE classroom_id = Farbmischung AND user_id = student
+        compared against classroom_reward_settings.level_thresholds at read time
+        [no level table — always derived]
 ```
 
 ### CRUD surface by role
 
-| Operation                   | Teacher             | Student                         | Institution Admin | Super Admin |
-| --------------------------- | ------------------- | ------------------------------- | ----------------- | ----------- |
-| Read own point_ledger       | yes (classroom)     | yes (own)                       | yes (all)         | yes         |
-| Read classmates' points     | —                   | yes (same classroom, if opt-in) | yes               | yes         |
-| Insert point (auto via app) | yes (manual)        | —                               | —                 | yes         |
-| Configure reward settings   | yes (own classroom) | —                               | yes               | yes         |
-| Approve joker               | yes                 | —                               | —                 | yes         |
+| Operation                         | Teacher                 | Student                         | Institution Admin | Super Admin |
+| --------------------------------- | ----------------------- | ------------------------------- | ----------------- | ----------- |
+| Read own point_ledger             | yes (classroom)         | yes (own)                       | yes (all)         | yes         |
+| Read classmates' points           | —                       | yes (same classroom, if opt-in) | yes               | yes         |
+| Insert point (auto via app layer) | yes (manual_adjustment) | —                               | —                 | yes         |
+| Configure reward settings         | yes (own classroom)     | —                               | yes               | yes         |
+| Approve joker                     | yes                     | —                               | —                 | yes         |
+
+---
+
+## Constraints
+
+1. **Point ledger is append-only** — No UPDATE or DELETE on `point_ledger` rows. Corrections are made by inserting a new compensating row (positive or negative). Historical records are permanent.
+2. **Students cannot insert points** — All `point_ledger` inserts are made by the app layer after game completion, lesson completion, task submission, or teacher approval. Students have no direct write access.
+3. **Leaderboard is classroom-local and opt-in** — `classroom_reward_settings.leaderboard_opt_in = true` is required for students to read classmates' point rows. If false, students see only their own balance. Leaderboard never crosses classroom boundaries.
+4. **Level is derived, not stored** — There is no `levels` table. Level is always computed at query time as `SUM(points)` compared to `level_thresholds`. This means the thresholds can be changed by the teacher without migrating level data.
+5. **Joker redemption requires teacher approval** — Negative point rows for jokers are only inserted after teacher approval. The student cannot deduct their own points.
+6. **Co-teacher scope applies** — A co-teacher can insert `manual_adjustment` rows and configure `classroom_reward_settings` only for the specific classroom where they have a `classroom_members` row with `membership_role = co_teacher`.

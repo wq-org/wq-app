@@ -1,113 +1,41 @@
 # Chat
 
-## Functional feature map
+Role: institution-scoped messaging — direct, group, and context-linked conversations.
+Scope: single institution; no cross-institution communication.
 
-Chat is the institution-scoped communication layer for learning operations:
+## Mission and context
 
-1. Direct messaging inside one institution
-2. Classroom-linked communication context
-3. Group chat where allowed by plan/policy
-4. Message content sharing (course/game/task links, files, images)
-5. Safety, moderation, and safeguarding controls
-6. Auditability and policy enforcement
+Chat is the real-time communication layer within an institution. Conversations can be direct (1:1), group, or context-linked to a classroom, course delivery, task, or game session. All messages are institution-scoped and RLS-gated by active membership. Safeguarding rules apply at the app layer — teachers cannot initiate 1:1 conversations with students; students must reach out first. Institution admins can moderate, remove members, and archive conversations.
 
----
+**Scope:** single institution; member-only access; no external contacts or cross-institution discovery
+**Accountability:** message delivery, safeguarding defaults, moderation, audit-trail on policy changes
 
-## Database model (migrations)
+| Who               | What they can do                                                                   |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| Student           | Start conversations with teachers or other students; send/edit/delete own messages |
+| Teacher           | Start conversations with teachers or admins; join student-initiated 1:1s           |
+| Institution Admin | Full read; remove members; archive; moderation queue                               |
+| Super Admin       | Full CRUD bypass; no institution-scoped notification for chat events               |
 
-Threads are typed (`conversation_type`), members carry `membership_role` and removal metadata (`removed_at` / `removed_by`), and optional **`conversation_contexts`** binds one conversation to at most one of: **classroom**, **course delivery**, **task**, or **game session** (aligned with delivery-first LMS). RLS uses **`app.caller_eligible_for_conversation_context`** and **`app.user_in_active_conversation`**.
+```mermaid
+flowchart TD
+  CONV[conversations]
+  CONV --> DM[type = direct]
+  CONV --> GRP[type = group]
+  CONV --> CLS[type = classroom_channel]
+  CONV --> CTX[context-linked: course|task|game]
 
-**Migrations:** `supabase/migrations/20260329000009_chat_*` … `20260329000015_chat_*` (after `20260329000001_course_delivery_*` … `008`; before `20260329000016_cloud_assets_*`). See [role_flow_diagrams.md](../architecture/role_flow_diagrams.md).
+  CONV --> CM[conversation_members]
+  CONV --> MSG[messages]
+  CONV --> CTX2[conversation_contexts]
 
----
-
-## Functional areas
-
-### 1) Conversation model
-
-- start new 1:1 conversation by searching institution members within allowed role rules
-- show conversation list sorted by latest activity
-- show unread badge counts and last activity
-- support online/offline presence and last-seen metadata
-
-### 2) Messaging capabilities
-
-- send text messages
-- send images and approved file attachments
-- share deep links to course, lesson, game, and task objects
-- support emoji reactions and reply-to-message behavior
-- allow users to delete their own messages (policy-governed retention handling)
-- delivered/read receipts are visible where policy allows
-
-### 3) Group chat
-
-- create institution-scoped group chats where enabled
-- support classroom group creation by teachers
-- configurable member limits and membership controls
-- leave-group flow for participants
+  MSG --> REPLY[reply_to_id self-FK]
+  MSG --> ATT[attachments jsonb]
+```
 
 ---
 
-## Permission matrix (source of truth)
-
-- Student -> Student: allowed (same institution only)
-- Student -> Teacher: allowed
-- Student -> Institution Admin: not allowed by default
-- Teacher -> Student: conditionally allowed (see safeguarding precedence)
-- Teacher -> Teacher: allowed
-- Teacher -> Institution Admin: allowed
-- Institution Admin -> Teacher: allowed
-- Institution Admin -> Student: policy-controlled (default off unless compliance policy enables)
-
-All chat access is tenant-scoped; no cross-institution communication.
-
----
-
-## Safeguarding precedence (must override generic permissions)
-
-1. Institution policy + legal controls are highest priority.
-2. Safeguarding defaults apply before convenience features.
-3. Default safeguarding rule:
-   - Teacher cannot initiate private 1:1 chat with a student unless:
-     - student initiated first, or
-     - institution policy explicitly enables teacher-initiated 1:1.
-4. Classroom group channels are preferred for instructional communication.
-5. All safeguarding overrides must be auditable (who changed policy, when, why).
-
-If any rule conflicts, safeguarding precedence wins.
-
----
-
-## Safety and moderation
-
-- report-message flow routes to institution moderation queue
-- block/mute controls reduce harassment risk at user level
-- policy-based visibility for flagged content
-- moderation actions are logged with actor and timestamp
-- no external contacts, no public discovery outside institution scope
-
----
-
-## Compliance and audit guardrails
-
-- all chat records are institution-scoped and access-controlled
-- retention policy and deletion/export behavior align with institution compliance settings
-- sensitive actions (policy changes, moderation actions, forced access) are audit logged
-- moderation and safeguarding events are reviewable by authorized roles only
-
----
-
-## Build priority (MVP)
-
-1. Institution-scoped 1:1 chat with permission checks
-2. Core message types (text, image, file, object links)
-3. Safeguarding default for teacher-student 1:1 initiation
-4. Reporting + basic moderation queue
-5. Classroom group chat flows
-
----
-
-## Concrete feature tree
+## Feature tree
 
 ### Conversations
 
@@ -115,8 +43,8 @@ If any rule conflicts, safeguarding precedence wins.
 
 - Table: `conversations` (type = direct)
 - Insert: institution_id, type = direct, created_by (self)
-- Insert 2 rows: `conversation_members` (self + other party, joined_at = now())
-- Safeguarding: teacher cannot initiate 1:1 with a student — enforced at app layer, not RLS
+- Insert 2 `conversation_members` rows (self + other party, joined_at = now())
+- Safeguarding: teacher cannot initiate 1:1 with a student — enforced at app layer; student must initiate first
 
 **Create group conversation**
 
@@ -129,11 +57,11 @@ If any rule conflicts, safeguarding precedence wins.
 - Table: `conversations` (type = classroom_channel)
 - Linked to a classroom via `conversation_contexts` (context_type = classroom, classroom_id)
 
-**Create course / task / game context channel**
+**Create context channel (course / task / game)**
 
 - Table: `conversations` + `conversation_contexts`
 - context_type: course_delivery_channel | task_delivery_channel | game_session_channel
-- FKs: course_delivery_id | task_delivery_id | game_session_id (at most one set)
+- FKs: course_delivery_id | task_delivery_id | game_session_id (at most one set per row)
 
 **Leave conversation**
 
@@ -164,7 +92,7 @@ If any rule conflicts, safeguarding precedence wins.
 
 **Reply to message**
 
-- Insert: `messages.reply_to_id = parent message id` (self-FK)
+- Insert: `messages.reply_to_id = parent_message_id` (self-FK on messages)
 
 **Mark conversation as read**
 
@@ -172,7 +100,7 @@ If any rule conflicts, safeguarding precedence wins.
 
 ---
 
-### Moderation (institution admin / moderator)
+### Moderation (institution admin)
 
 **Mark conversation as moderated**
 
@@ -188,23 +116,45 @@ If any rule conflicts, safeguarding precedence wins.
 
 ---
 
-### Schema visualization
+## Schema visualization
 
 ```text
-conversations (institution_id, type, created_by)
-│   type: direct | group | classroom_channel | course_delivery_channel | task_delivery_channel | game_session_channel
+Schule für Farbe und Gestaltung  [institution_id scopes all rows]
 │
-├── conversation_members (user_id, membership_role: owner|moderator|participant)
-│   ├── joined_at, left_at, removed_at, removed_by
-│   ├── last_read_at  ← unread badge source
-│   └── is_muted
+├── direct  [Anna Schmidt ↔ Frau Müller]
+│   ├── created_by: Anna Schmidt  (student initiated — safeguarding rule)
+│   ├── conversation_members
+│   │   ├── Anna Schmidt  [role: participant, joined_at: 2026-03-10, last_read_at: 2026-04-01]
+│   │   └── Frau Müller   [role: participant, joined_at: 2026-03-10, last_read_at: 2026-04-02]
+│   └── messages
+│       ├── Anna:    "Frage zu Aufgabe 3…"  2026-04-01 14:05
+│       └── Frau M.: "Hallo Anna, …"        2026-04-02 08:30  [edited_at: null]
 │
-├── messages (sender_id, content jsonb Lexical, attachments jsonb[], reply_to_id?)
-│   ├── edited_at (set on edit)
-│   └── deleted_at (soft delete)
+├── group  [Gruppe A Projektraum]
+│   ├── created_by: Frau Müller
+│   ├── conversation_members
+│   │   ├── Frau Müller   [role: owner,       joined_at: 2026-03-25]
+│   │   ├── Anna Schmidt  [role: participant,  joined_at: 2026-03-25]
+│   │   └── Tom Weber     [role: participant,  joined_at: 2026-03-25]
+│   └── messages
+│       ├── Tom:  "Ich habe die Palette fertig"   2026-04-07 18:00
+│       ├── Anna: "Super! Ich ergänze noch …"     2026-04-07 18:15  [reply_to_id → Tom's msg]
+│       └── Anna: [deleted_at: 2026-04-07 18:16 — soft deleted, row preserved]
 │
-└── conversation_contexts (context_type, classroom_id?, course_delivery_id?, task_delivery_id?, game_session_id?)
-    └── at most one FK set per row
+├── classroom_channel  [Farbmischung — Ankündigungen]
+│   ├── conversation_contexts → context_type: classroom, classroom_id: Farbmischung
+│   ├── conversation_members  (all 28 active classroom_members)
+│   └── messages
+│       └── Frau Müller: "Morgen bringen wir Farbpaletten mit!"  2026-04-08 07:50
+│
+└── task_delivery_channel  [Farbpalette erstellen]
+    ├── conversation_contexts → context_type: task_delivery_channel
+    │   task_delivery_id: Farbpalette erstellen
+    └── conversation_members  (Frau Müller + Gruppe A + Gruppe B members)
+
+RLS helpers:
+  app.user_in_active_conversation(conversation_id) — left_at IS NULL
+  app.caller_eligible_for_conversation_context(...)
 ```
 
 ### CRUD surface by role
@@ -218,3 +168,14 @@ conversations (institution_id, type, created_by)
 | Read conversation (own)       | yes                          | yes     | yes               | yes         |
 | Read all conversations        | —                            | —       | yes (read)        | yes         |
 | Remove member / archive       | —                            | —       | yes               | yes         |
+
+---
+
+## Constraints
+
+1. **Institution-scoped only** — `conversations.institution_id` is set on creation and never changes. Members of different institutions cannot share a conversation. No cross-tenant messaging.
+2. **Safeguarding: teacher cannot initiate student 1:1** — Enforced at app layer: a teacher cannot create a direct conversation with a student unless the student initiated first or institution policy explicitly enables teacher-initiated 1:1. This is not enforced by RLS — product must maintain this rule.
+3. **Active membership gates sending** — `msg_member_insert` RLS requires `left_at IS NULL`. A member who has left cannot send messages to the conversation.
+4. **Context is at most one** — `conversation_contexts` allows at most one of: classroom_id, course_delivery_id, task_delivery_id, game_session_id. At most one FK is set per row.
+5. **Soft delete, not hard purge** — `messages.deleted_at` marks the message as deleted; the row is preserved for compliance, audit, and GDPR export. Physical removal follows the institution's retention policy.
+6. **Moderation actions are auditable** — `removed_at`, `removed_by`, `archived_at`, and `is_moderated` fields record who took which moderation action and when. Sensitive policy changes must be logged to `audit.events`.

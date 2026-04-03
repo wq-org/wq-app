@@ -1,140 +1,38 @@
 # Task
 
-## Functional feature map
+Role: structured assignment layer — teacher authors, delivers, and reviews; students collaborate and submit.
+Scope: institution-scoped; delivery is classroom-scoped; group work is task-group-scoped.
 
-Task is the structured assignment layer that connects `Course`, `Class Room`, and `Note`:
+## Mission and context
 
-1. Teacher creates tasks from existing learning material
-2. Teacher assigns tasks to whole class or groups
-3. Students complete work in shared collaborative notes
-4. Submission and review lifecycle is tracked as states
-5. Contribution analytics expose engagement and free-rider risk
-6. Outputs are exportable for reporting and evidence
+Tasks connect learning material to collaborative group work. A teacher creates a reusable template, publishes a version snapshot with instructions and rubric, then delivers it to a classroom. Each group gets their own collaborative note as a shared workspace. Students co-edit and submit; the teacher reviews, gives feedback, and optionally returns for revision. Every state transition is audit-logged.
 
----
+**Scope:** teacher's own templates (authoring); assigned classroom (delivery); task group (student collaboration)
+**Accountability:** template versioning, delivery state machine, group management, submission review, audit trail
 
-## Task delivery model (template, version, delivery)
+```mermaid
+flowchart TD
+  T[Teacher]
+  T --> TT[task_templates]
+  TT --> TTV[task_template_versions snapshot]
+  TTV --> TD[task_deliveries classroom]
 
-Operational task delivery is modeled in three layers:
+  TD --> TG[task_groups]
+  TG --> TGM[task_group_members students]
+  TG --> NOTE[notes collaborative one per group]
 
-1. **Template identity (mutable shell)** — `task_templates` stores reusable task identity owned by a teacher.
-2. **Template snapshot (immutable)** — `task_template_versions` freezes instructions, rubric, grading settings, and attachments.
-3. **Offering instance (delivery)** — `task_deliveries` binds one template version to one classroom, with optional `course_delivery_id` for course-linked execution.
+  S[Student]
+  TGM --> S
+  S --> NOTE
+  S --> SUB[task_submissions]
 
-Scoped execution tables anchor to `task_delivery_id`:
-
-- `task_groups`
-- `task_group_members`
-- `task_submissions`
-
-Legacy table `tasks` remains a compatibility bridge; new workflows should create and read through `task_deliveries`.
-
----
-
-## Functional areas
-
-### 1) Task authoring (teacher)
-
-- create task with title, objective, instructions, and due date/time
-- attach one or multiple sources:
-  - course lesson
-  - existing note
-  - PDF/document from cloud
-- set visibility:
-  - full class
-  - selected classroom groups
-- publish immediately or keep as draft
-- schedule task when it should be published
-
-### 2) Group assignment model
-
-- manual grouping or random grouping
-- random grouping supports target sizes (solo, 2, 3, 4. etc)
-- teacher can manually adjust generated groups
-- group names are auto-generated but editable
-- on publish, one shared collaborative note is provisioned per group
-
-### 3) Collaborative workspace
-
-- each group works in one shared note
-- real-time co-editing and presence indicators
-- block-level authorship and edit timeline
-- teacher can monitor all groups in read-only live mode
-- teacher can leave block-level feedback/comments
-
-### 4) Student task flow
-
-- discover task in classroom/course feed with deadline indicator
-- open shared group workspace
-- co-write and add supporting media/files
-- submit as group before deadline
-- review teacher feedback after evaluation
-
-### 5) Teacher review flow
-
-- monitor progress before deadline
-- open submitted group work
-- leave qualitative feedback
-- mark review completion
-- optionally re-open for revision
+  T --> REV[Review submissions]
+  SUB --> REV
+```
 
 ---
 
-## Task state model
-
-- `Draft` — task is created but not visible to students
-- `Published` — task is visible and actionable
-- `Not started` — assigned group has not opened workspace
-- `In progress` — at least one edit exists
-- `Submitted` — group marks completion
-- `Overdue` — deadline passed without submission
-- `Reviewed` — teacher reviewed and left feedback
-- `Returned` (optional) — teacher requests revision cycle
-
-State transitions must be auditable with timestamp and actor.
-
----
-
-## Analytics and monitoring
-
-### 1) Completion analytics
-
-- total assigned groups vs submitted groups
-- on-time vs late submissions
-- overdue groups requiring intervention
-
-### 2) Collaboration analytics
-
-- per-group activity timeline (last edit, active duration)
-- per-student authored block count
-- non-contributing students auto-flagged
-- edit distribution across time windows
-
-### 3) Quality and workload signals
-
-- teacher review throughput (pending vs reviewed)
-- average time from publish to first edit
-- average time from publish to submission
-- resubmission count where return flow is enabled
-
-### 4) Export and audit
-
-- export group submissions as PDF
-- include metadata: group, submission time, reviewer, review state
-
----
-
-## Implementation guardrails
-
-- one canonical task model used across Course and Class Room views
-- one canonical state machine (no ad-hoc per-screen states)
-- collaboration uses same editor primitives as `Note`
-- analytics must be derived from event log + document metadata, not hardcoded counters
-- permissions enforce tenant/class boundaries at all times
-
----
-
-## Concrete feature tree
+## Feature tree
 
 ### Task template authoring
 
@@ -147,7 +45,7 @@ State transitions must be auditable with timestamp and actor.
 
 - Table: `task_template_versions`
 - Input: task_template_id, version_number (unique per template), title, instructions (jsonb), rubric (jsonb), grading_settings (jsonb), attachments (jsonb)
-- status = draft → published → archived
+- Status: draft → published → archived
 - Published rows are immutable; create a new version to update
 
 ---
@@ -157,9 +55,9 @@ State transitions must be auditable with timestamp and actor.
 **Deliver task to classroom**
 
 - Table: `task_deliveries`
-- Input: task_template_id, task_template_version_id, classroom_id, course_delivery_id (optional link to course), teacher_id (self), due_at, starts_at
+- Input: task_template_id, task_template_version_id, classroom_id, course_delivery_id (optional), teacher_id (self), due_at, starts_at
 - Status lifecycle: **draft → scheduled → active → closed | archived | canceled**
-- Every state transition is logged to `audit.events` via trigger `audit_task_delivery_state_change`
+- Every state transition logged to `audit.events` via trigger `audit_task_delivery_state_change`
 
 **Archive / cancel delivery**
 
@@ -173,13 +71,13 @@ State transitions must be auditable with timestamp and actor.
 
 - Table: `task_groups`
 - Input: task_delivery_id, name
-- Each group auto-creates a shared collaborative `notes` row (scope = collaborative, task_group_id = this group)
+- Auto-creates: one shared collaborative `notes` row per group (scope = collaborative, task_group_id = this group)
 
 **Assign students to groups**
 
 - Table: `task_group_members`
 - Input: task_group_id, task_delivery_id, user_id
-- Manual or random assignment; unique per (task_delivery, user)
+- Unique: (task_delivery_id, user_id) — a student belongs to one group per delivery
 
 ---
 
@@ -187,7 +85,7 @@ State transitions must be auditable with timestamp and actor.
 
 **View assigned task**
 
-- Table: `task_deliveries` (student read: status ≠ draft, classroom in `my_active_classroom_ids()`)
+- Table: `task_deliveries` (status ≠ draft, classroom_id in `app.my_active_classroom_ids()`)
 
 **View group and collaborative note**
 
@@ -197,13 +95,13 @@ State transitions must be auditable with timestamp and actor.
 **Co-edit group note**
 
 - Update: `notes.content` (jsonb Yoopta blocks)
-- Real-time via Supabase Realtime; LWW conflict resolution per block
+- Real-time via Supabase Realtime; LWW conflict resolution per block id
 
 **Submit task**
 
 - Table: `task_submissions`
 - Insert: task_group_id, task_delivery_id, submitted_by (self), status = submitted, submitted_at = now()
-- Triggers: notification_event for teacher (task submitted)
+- Triggers: notification event for teacher (event_type = task_submitted)
 
 **View teacher feedback**
 
@@ -228,27 +126,47 @@ State transitions must be auditable with timestamp and actor.
 
 ---
 
-### Schema visualization
+## Schema visualization
 
 ```text
-task_templates (institution_id, teacher_id)
+Farbpalette erstellen  [task_templates row — Frau Müller, Schule für Farbe und Gestaltung]
 │
-└── task_template_versions (version_number, status: draft|published|archived)
-    │   instructions jsonb, rubric jsonb, grading_settings jsonb, attachments jsonb
-    │   [immutable after published]
-    │
-    └── task_deliveries (classroom_id, course_delivery_id?, due_at)
-        │   status: draft → scheduled → active → closed|archived|canceled
-        │   [every transition → audit.events]
+└── task_template_versions
+    └── v1  [status: published — immutable]
+        │   instructions: "Erstelle eine Farbpalette mit 12 Farbtönen …" (jsonb)
+        │   rubric: {criteria: ["Farbauswahl", "Beschriftung", "Kreativität"]} (jsonb)
+        │   grading_settings: {max_score: 10} (jsonb)
         │
-        └── task_groups (name, note_id → collaborative notes row)
-            │
-            ├── task_group_members (user_id — students in this group)
-            │
-            └── task_submissions (submitted_by, status: submitted|reviewed|returned, feedback)
+        └── task_deliveries
+            └── Farbmischung classroom + v1  [status: active, due_at: 2026-04-10]
+                │   course_delivery_id → Grundlagen Farbe v2
+                │   [every status change → audit.events]
+                │
+                ├── Gruppe A
+                │   ├── task_group_members
+                │   │   ├── Anna Schmidt   [unique per task_delivery]
+                │   │   └── Tom Weber
+                │   ├── notes  (scope: collaborative — auto-provisioned on group creation)
+                │   │   └── content: jsonb  [last edit: Anna 2026-04-08 14:32, LWW per block]
+                │   └── task_submissions
+                │       submitted_by: Anna Schmidt   submitted_at: 2026-04-08 14:45
+                │       status: submitted            feedback: null  (awaiting review)
+                │
+                └── Gruppe B
+                    ├── task_group_members
+                    │   ├── Lena Fischer
+                    │   └── Jonas Meier
+                    ├── notes  (scope: collaborative — auto-provisioned)
+                    └── task_submissions
+                        submitted_by: Lena Fischer   submitted_at: 2026-04-07 16:20
+                        status: reviewed             reviewed_by: Frau Müller
+                        reviewed_at: 2026-04-09 10:00
+                        feedback: "Gut strukturiert! Beschriftung könnte präziser sein."
 
-notes (scope = collaborative, task_group_id, content jsonb)
-    └── all task_group_members read/write; teacher reads for monitoring
+audit.events  (task_deliveries state transitions)
+  ├── draft → scheduled  actor: Frau Müller  2026-03-20 11:00
+  ├── scheduled → active actor: Frau Müller  2026-03-25 08:00
+  └── … future: active → closed  (after due_at)
 ```
 
 ### CRUD surface by role
@@ -262,6 +180,17 @@ notes (scope = collaborative, task_group_id, content jsonb)
 | Assign group members     | yes              | —                           | yes (full CRUD)   | yes         |
 | Read task delivery       | yes              | yes (active, own classroom) | yes               | yes         |
 | Submit task              | —                | yes (own group)             | —                 | yes         |
-| Review submission        | yes (own tasks)  | read-only                   | yes (full CRUD)   | yes         |
+| Review submission        | yes (own tasks)  | read-only (feedback)        | yes (full CRUD)   | yes         |
 | Read collaborative note  | yes (monitoring) | yes (own group)             | yes (read)        | yes         |
 | Write collaborative note | yes              | yes (own group)             | —                 | yes         |
+
+---
+
+## Constraints
+
+1. **Publish is one-way** — `task_template_versions.status = published` is irreversible. A new version must be created to change instructions, rubric, or attachments.
+2. **State machine is enforced** — `task_deliveries` transitions only proceed in the defined order: draft → scheduled → active → closed | archived | canceled. Skipping or reversing states is not permitted; every transition is logged to `audit.events`.
+3. **One group per student per delivery** — `task_group_members` has a unique constraint on `(task_delivery_id, user_id)`. A student cannot be in two groups for the same delivery.
+4. **One collaborative note per group** — `task_groups` auto-provisions exactly one collaborative `notes` row. This note is linked via `task_groups.note_id`; teachers cannot manually create a second note for the same group.
+5. **Group work is group-scoped** — `notes_collaborative_access` requires a `task_group_members` row. A student cannot read or write another group's note within the same task delivery.
+6. **Audit trail is mandatory** — `audit_task_delivery_state_change` trigger fires on every status update to `task_deliveries`. State changes cannot be made without producing an audit record.
