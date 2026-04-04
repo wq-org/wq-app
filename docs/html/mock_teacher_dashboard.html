@@ -70,18 +70,18 @@
   </head>
   <body class="bg-muted/30 font-sans text-foreground antialiased">
     <div class="mx-auto my-4 flex max-h-[min(100vh-2rem,900px)] min-h-[620px] max-w-[1400px] overflow-hidden rounded-xl border border-border shadow-sm">
-      <aside id="t-sidebar" class="flex h-auto w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground" aria-label="Teacher navigation">
+      <aside id="t-sidebar" class="flex h-full min-h-0 w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground" aria-label="Teacher navigation">
         <div class="flex flex-col gap-1 border-b border-sidebar-border p-3">
           <div class="truncate text-sm font-medium">Katharina Hoffmann</div>
-          <div class="text-xs text-muted-foreground">Teacher · <code class="rounded bg-muted px-1 text-[10px]">teacher</code></div>
+          <div class="text-xs text-muted-foreground">Teacher · <code class="rounded bg-muted px-1 text-[10px]">teacher</code> · one institution</div>
         </div>
         <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2 text-sm" role="navigation">
           <button type="button" data-nav data-page="overview" data-active="true" aria-current="page" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Overview</button>
-          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Teaching</p>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Classroom delivery</p>
           <button type="button" data-nav data-page="classrooms" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">My classrooms</button>
           <button type="button" data-nav data-page="attendance" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Attendance</button>
           <button type="button" data-nav data-page="rewards" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Rewards</button>
-          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Studio</p>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Content authoring</p>
           <button type="button" data-nav data-page="courses" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Course studio</button>
           <button type="button" data-nav data-page="games" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Game studio</button>
           <button type="button" data-nav data-page="tasks" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Task studio</button>
@@ -96,7 +96,7 @@
         <section id="pg-overview" class="space-y-5" aria-labelledby="th-o">
           <header>
             <h1 id="th-o" class="text-base font-semibold tracking-tight">Good morning, Katharina</h1>
-            <p class="text-sm text-muted-foreground">Tuesday, 18 March 2026 · classroom_members · assigned classrooms</p>
+            <p class="text-sm text-muted-foreground">Tuesday, 18 March 2026 · <code class="rounded bg-muted px-1 text-xs">institution_memberships</code> active · <code class="rounded bg-muted px-1 text-xs">classrooms</code> via <code class="rounded bg-muted px-1 text-xs">classrooms_scoped_read</code> (primary or co_teacher)</p>
           </header>
           <div class="grid gap-3 sm:grid-cols-3">
             <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-[10px] font-medium uppercase text-muted-foreground">My classrooms</p><p class="font-variant-numeric tabular-nums text-2xl font-semibold">2</p><p class="text-xs text-muted-foreground">PG 3A · WM 2A</p></div>
@@ -107,14 +107,14 @@
             <div>
               <h2 class="mb-2 text-sm font-medium">My classrooms</h2>
               <button type="button" data-go-page="classrooms" class="mb-2 w-full rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                <p class="font-medium">PG 3A — Generalistische Pflege</p>
-                <p class="text-xs text-muted-foreground">24 students · lead teacher</p>
-                <p class="mt-2 text-xs text-muted-foreground">course_deliveries <span class="font-medium text-foreground">3</span> · game_deliveries <span class="font-medium text-foreground">2</span> · task_deliveries <span class="font-medium text-foreground">4</span></p>
+                <p class="font-medium">Farbmischung · ML-3A (Generalistische Pflege)</p>
+                <p class="text-xs text-muted-foreground">24 students · <code class="rounded bg-muted px-1 text-[10px]">primary_teacher_id</code> · roster <code class="rounded bg-muted px-1 text-[10px]">classroom_members</code></p>
+                <p class="mt-2 text-xs text-muted-foreground"><code class="text-[10px]">course_deliveries</code> <span class="font-medium text-foreground">3</span> · <code class="text-[10px]">game_deliveries</code> <span class="font-medium text-foreground">2</span> · <code class="text-[10px]">task_deliveries</code> <span class="font-medium text-foreground">4</span></p>
               </button>
               <button type="button" data-go-page="classrooms" class="w-full rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <p class="font-medium">WM 2A — Wundmanagement</p>
-                <p class="text-xs text-muted-foreground">18 students · lead teacher</p>
-                <p class="mt-2 text-xs text-muted-foreground">course_deliveries <span class="font-medium text-foreground">2</span> · game_deliveries <span class="font-medium text-foreground">1</span> · task_deliveries <span class="font-medium text-foreground">3</span></p>
+                <p class="text-xs text-muted-foreground">18 students · lead + Herr Bauer <code class="rounded bg-muted px-1 text-[10px]">co_teacher</code> in <code class="rounded bg-muted px-1 text-[10px]">classroom_members</code></p>
+                <p class="mt-2 text-xs text-muted-foreground"><code class="text-[10px]">course_deliveries</code> <span class="font-medium text-foreground">2</span> · <code class="text-[10px]">game_deliveries</code> <span class="font-medium text-foreground">1</span> · <code class="text-[10px]">task_deliveries</code> <span class="font-medium text-foreground">3</span></p>
               </button>
             </div>
             <div>
@@ -140,29 +140,60 @@
         </section>
 
         <section id="pg-classrooms" class="hidden space-y-4" hidden aria-labelledby="th-c">
-          <header><h1 id="th-c" class="text-base font-semibold">My classrooms</h1><p class="text-sm text-muted-foreground">classroom_members · course_deliveries · game_deliveries · task_deliveries</p></header>
+          <header>
+            <h1 id="th-c" class="text-base font-semibold">My classrooms</h1>
+            <p class="text-sm text-muted-foreground">
+              <code class="rounded bg-muted px-1 text-xs">classrooms</code> via <code class="rounded bg-muted px-1 text-xs">classrooms_scoped_read</code> ·
+              <code class="rounded bg-muted px-1 text-xs">classroom_members</code> roster (<code class="text-xs">withdrawn_at IS NULL</code>) ·
+              <code class="rounded bg-muted px-1 text-xs">class_group_id</code> / <code class="rounded bg-muted px-1 text-xs">class_group_offering_id</code> · teachers cannot create or deactivate classrooms (03_teacher)
+            </p>
+          </header>
           <div class="space-y-3">
             <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
               <div class="flex flex-wrap items-start justify-between gap-2">
-                <div><p class="font-medium">PG 3A — Generalistische Pflege</p><p class="text-xs text-muted-foreground">24 students · active</p></div>
+                <div>
+                  <p class="font-medium">Farbmischung · ML-3A</p>
+                  <p class="text-xs text-muted-foreground">24 students · status active · <code class="rounded bg-muted px-1 text-[10px]">primary_teacher_id</code> = you</p>
+                </div>
                 <span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">active</span>
               </div>
-              <p class="mt-3 text-xs text-muted-foreground">Deliveries: course <span class="font-variant-numeric tabular-nums font-medium text-foreground">3</span> · game <span class="font-variant-numeric tabular-nums font-medium text-foreground">2</span> · task <span class="font-variant-numeric tabular-nums font-medium text-foreground">4</span> · lesson_progress avg <span class="tabular-nums">86%</span></p>
-              <div class="mt-3 flex flex-wrap gap-2"><button type="button" class="text-xs font-medium text-primary">Roster</button><button type="button" class="text-xs font-medium text-primary">Attendance</button><button type="button" class="text-xs font-medium text-primary">Deliveries</button><button type="button" class="text-xs font-medium text-primary">Rewards</button></div>
+              <p class="mt-3 text-xs text-muted-foreground">
+                Active / scheduled <code class="rounded bg-muted px-1">course_deliveries</code> ·
+                <code class="rounded bg-muted px-1">game_deliveries</code> ·
+                <code class="rounded bg-muted px-1">task_deliveries</code> ·
+                <code class="rounded bg-muted px-1">lesson_progress</code> avg <span class="tabular-nums font-medium text-foreground">86%</span>
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2"><button type="button" class="text-xs font-medium text-primary">Roster</button><button type="button" data-go-page="attendance" class="text-xs font-medium text-primary">Attendance</button><button type="button" class="text-xs font-medium text-primary">Deliveries</button><button type="button" data-go-page="rewards" class="text-xs font-medium text-primary">Rewards</button></div>
             </div>
             <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
               <div class="flex flex-wrap items-start justify-between gap-2">
-                <div><p class="font-medium">WM 2A — Wundmanagement</p><p class="text-xs text-muted-foreground">18 students · active</p></div>
+                <div>
+                  <p class="font-medium">WM 2A — Wundmanagement</p>
+                  <p class="text-xs text-muted-foreground">18 students · Herr Bauer <code class="rounded bg-muted px-1 text-[10px]">co_teacher</code> in <code class="rounded bg-muted px-1 text-[10px]">classroom_members</code></p>
+                </div>
                 <span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">active</span>
               </div>
-              <p class="mt-3 text-xs text-muted-foreground">Deliveries: course <span class="tabular-nums font-medium text-foreground">2</span> · game <span class="tabular-nums font-medium text-foreground">1</span> · task <span class="tabular-nums font-medium text-foreground">3</span></p>
-              <div class="mt-3 flex flex-wrap gap-2"><button type="button" class="text-xs font-medium text-primary">Roster</button><button type="button" class="text-xs font-medium text-primary">Attendance</button><button type="button" class="text-xs font-medium text-primary">Deliveries</button><button type="button" class="text-xs font-medium text-primary">Rewards</button></div>
+              <p class="mt-3 text-xs text-muted-foreground">
+                Deliveries: course <span class="tabular-nums font-medium text-foreground">2</span> · game <span class="tabular-nums font-medium text-foreground">1</span> · task <span class="tabular-nums font-medium text-foreground">3</span>
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2"><button type="button" class="text-xs font-medium text-primary">Roster</button><button type="button" data-go-page="attendance" class="text-xs font-medium text-primary">Attendance</button><button type="button" class="text-xs font-medium text-primary">Deliveries</button><button type="button" data-go-page="rewards" class="text-xs font-medium text-primary">Rewards</button></div>
             </div>
           </div>
         </section>
 
         <section id="pg-games" class="hidden space-y-4" hidden aria-labelledby="th-g">
-          <header class="flex flex-wrap items-end justify-between gap-2"><div><h1 id="th-g" class="text-base font-semibold">Game studio</h1><p class="text-sm text-muted-foreground">games · game_versions · game_deliveries</p></div><button type="button" class="inline-flex h-9 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">New game</button></header>
+          <header class="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h1 id="th-g" class="text-base font-semibold">Game studio</h1>
+              <p class="text-sm text-muted-foreground">
+                <code class="rounded bg-muted px-1 text-xs">games</code> (<code class="text-xs">teacher_id</code>) ·
+                <code class="rounded bg-muted px-1 text-xs">game_versions</code> draft → published ·
+                <code class="rounded bg-muted px-1 text-xs">game_deliveries</code> ·
+                <code class="rounded bg-muted px-1 text-xs">game_runs</code> mode=classroom → <code class="text-xs">game_session</code> + <code class="text-xs">game_session_participants</code>
+              </p>
+            </div>
+            <button type="button" class="inline-flex h-9 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">New game</button>
+          </header>
           <div class="overflow-x-auto rounded-xl border border-border">
             <table class="w-full text-sm">
               <thead class="border-b border-border"><tr><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Game</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Type</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Version</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Deliveries</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Status</th></tr></thead>
@@ -175,7 +206,14 @@
         </section>
 
         <section id="pg-analytics" class="hidden space-y-4" hidden aria-labelledby="th-a">
-          <header><h1 id="th-a" class="text-base font-semibold">Analytics</h1><p class="text-sm text-muted-foreground">lesson_progress · learning_events · game_run_stats (scoped)</p></header>
+          <header>
+            <h1 id="th-a" class="text-base font-semibold">Analytics</h1>
+            <p class="text-sm text-muted-foreground">
+              Read-only · <code class="rounded bg-muted px-1 text-xs">lesson_progress</code> (<code class="text-xs">lp_teacher_read</code>) ·
+              <code class="rounded bg-muted px-1 text-xs">learning_events</code> (<code class="text-xs">le_teacher_read</code>) ·
+              <code class="rounded bg-muted px-1 text-xs">game_session_participants</code> (<code class="text-xs">gsp_teacher_read</code>) — own content / classrooms
+            </p>
+          </header>
           <div class="grid gap-3 sm:grid-cols-3">
             <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs font-medium uppercase text-muted-foreground">Avg lesson completion</p><p class="mt-1 font-variant-numeric tabular-nums text-2xl font-semibold">79%</p></div>
             <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs font-medium uppercase text-muted-foreground">Game sessions (week)</p><p class="mt-1 font-variant-numeric tabular-nums text-2xl font-semibold">47</p></div>
@@ -183,12 +221,134 @@
           </div>
         </section>
 
-        <section id="pg-attendance" class="hidden space-y-4" hidden aria-labelledby="th-at"><header><h1 id="th-at" class="text-base font-semibold">Attendance</h1><p class="text-sm text-muted-foreground">Sessions per classroom · classroom_members roster</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Manual open/close sessions; mark present/absent; recurring schedules + exceptions.</div></section>
-        <section id="pg-rewards" class="hidden space-y-4" hidden aria-labelledby="th-r"><header><h1 id="th-r" class="text-base font-semibold">Rewards</h1><p class="text-sm text-muted-foreground">point_ledger · joker grants/requests · classroom leaderboard</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Approve joker requests; manual point awards with source and classroom scope.</div></section>
-        <section id="pg-courses" class="hidden space-y-4" hidden aria-labelledby="th-co"><header><h1 id="th-co" class="text-base font-semibold">Course studio</h1><p class="text-sm text-muted-foreground">courses · topics · lessons · course_versions → course_deliveries</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Publish immutable course_versions; deliver to classroom with status draft | scheduled | active.</div></section>
-        <section id="pg-tasks" class="hidden space-y-4" hidden aria-labelledby="th-t"><header><h1 id="th-t" class="text-base font-semibold">Task studio</h1><p class="text-sm text-muted-foreground">task_templates · task_template_versions · task_deliveries · task_groups · task_submissions</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Template → version → delivery per classroom; group assignment; review submissions.</div></section>
-        <section id="pg-chat" class="hidden space-y-4" hidden aria-labelledby="th-ch"><header><h1 id="th-ch" class="text-base font-semibold">Chat</h1><p class="text-sm text-muted-foreground">Classroom-scoped threads · institution-bound</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Teacher/student messaging per classroom context; safeguarding policies apply.</div></section>
-        <section id="pg-notif" class="hidden space-y-4" hidden aria-labelledby="th-n"><header><h1 id="th-n" class="text-base font-semibold">Notifications</h1><p class="text-sm text-muted-foreground">notification_deliveries · scoped to your deliveries</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Joker requests, new task_submissions, delivery publishes — filtered to teacher context.</div></section>
+        <section id="pg-attendance" class="hidden space-y-4" hidden aria-labelledby="th-at">
+          <header>
+            <h1 id="th-at" class="text-base font-semibold">Attendance</h1>
+            <p class="text-sm text-muted-foreground">
+              <code class="rounded bg-muted px-1 text-xs">classroom_attendance_sessions</code> ·
+              <code class="rounded bg-muted px-1 text-xs">classroom_attendance_records</code> ·
+              Gate <code class="rounded bg-muted px-1 text-xs">app.caller_can_manage_classroom</code> (primary / co_teacher)
+            </p>
+          </header>
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Manual sessions (RPC)</h2>
+              <ul class="list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                <li><code class="rounded bg-muted px-1 text-xs">create_classroom_attendance_session</code> — course linked via <code class="text-xs">classroom_course_links</code>; <code class="text-xs">schedule_id</code> null for one-off</li>
+                <li><code class="rounded bg-muted px-1 text-xs">close_classroom_attendance_session</code> — sets <code class="text-xs">ends_at</code></li>
+                <li><code class="rounded bg-muted px-1 text-xs">teacher_mark_attendance_record</code> — status <code class="text-xs">present | late | absent</code>, source <code class="text-xs">manual | self_check_in | auto</code></li>
+                <li><code class="rounded bg-muted px-1 text-xs">get_teacher_attendance_summary</code> — counts per student / date range</li>
+              </ul>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Recurring schedule</h2>
+              <ul class="list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                <li><code class="rounded bg-muted px-1 text-xs">classroom_attendance_schedules</code> — <code class="text-xs">days_of_week</code> [1–7], IANA <code class="text-xs">timezone</code></li>
+                <li><code class="rounded bg-muted px-1 text-xs">create_classroom_attendance_schedule</code> · <code class="text-xs">update_…</code> · <code class="text-xs">archive_…</code></li>
+                <li><code class="rounded bg-muted px-1 text-xs">classroom_attendance_schedule_exceptions</code> — <code class="text-xs">skip</code> (no session) or <code class="text-xs">override</code> times</li>
+                <li><code class="rounded bg-muted px-1 text-xs">materialize_classroom_attendance_sessions</code> — generates <code class="text-xs">classroom_attendance_sessions</code></li>
+              </ul>
+            </div>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+            <table class="w-full text-sm">
+              <thead class="border-b border-border">
+                <tr>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">session_date</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">title / course</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">schedule_id</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Sample records</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border">
+                  <td class="p-2 font-variant-numeric tabular-nums">2026-03-31 Mo</td>
+                  <td class="p-2">Farbenlehre – Stunde 12 · Grundlagen Farbe</td>
+                  <td class="p-2 font-mono text-xs">set</td>
+                  <td class="p-2 text-xs text-muted-foreground">Anna present · self_check_in 08:02; Tom late · manual 08:18</td>
+                </tr>
+                <tr class="border-b border-border">
+                  <td class="p-2 font-variant-numeric tabular-nums">2026-04-02 Mi</td>
+                  <td class="p-2">— · Grundlagen Farbe</td>
+                  <td class="p-2 font-mono text-xs">set</td>
+                  <td class="p-2 text-xs text-[oklch(var(--oklch-orange))]">Open — no records yet</td>
+                </tr>
+                <tr class="border-b border-border">
+                  <td class="p-2 text-muted-foreground">2026-04-18 Fr</td>
+                  <td class="p-2 text-muted-foreground" colspan="3">Skipped via exception_type <code class="rounded bg-muted px-1">skip</code> — no session row</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section id="pg-rewards" class="hidden space-y-4" hidden aria-labelledby="th-r">
+          <header>
+            <h1 id="th-r" class="text-base font-semibold">Rewards</h1>
+            <p class="text-sm text-muted-foreground">
+              <code class="rounded bg-muted px-1 text-xs">classroom_reward_settings</code> — <code class="text-xs">leaderboard_opt_in</code>,
+              <code class="text-xs">joker_config</code> (jsonb), <code class="text-xs">level_thresholds</code> ·
+              <code class="rounded bg-muted px-1 text-xs">point_ledger</code> append-only; manual <code class="text-xs">source = manual_adjustment</code>; joker redemption → negative ledger row
+            </p>
+          </header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">
+            Co-teachers may help manage reward settings for the classroom (03_teacher). Approve joker requests from notifications; cannot edit historical ledger rows.
+          </div>
+        </section>
+        <section id="pg-courses" class="hidden space-y-4" hidden aria-labelledby="th-co">
+          <header>
+            <h1 id="th-co" class="text-base font-semibold">Course studio</h1>
+            <p class="text-sm text-muted-foreground">
+              <code class="rounded bg-muted px-1 text-xs">courses</code> · <code class="rounded bg-muted px-1 text-xs">topics</code> · <code class="rounded bg-muted px-1 text-xs">lessons</code> (content jsonb, pages slides) ·
+              <code class="rounded bg-muted px-1 text-xs">course_versions</code> immutable snapshot → <code class="rounded bg-muted px-1 text-xs">course_deliveries</code>
+              <code class="text-xs">draft | scheduled | active | archived | canceled</code> · student access via <code class="text-xs">student_can_access_course_delivery()</code>
+            </p>
+          </header>
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">
+              Publish creates immutable version; keep editing source course independently. Deliver with <code class="rounded bg-muted px-1 text-xs">starts_at</code> / <code class="text-xs">ends_at</code>.
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Topic availability gates</h2>
+              <p class="mb-2 text-sm text-muted-foreground"><code class="rounded bg-muted px-1 text-xs">topic_availability_rules</code> — Gate <code class="text-xs">app.caller_can_manage_course</code></p>
+              <ul class="list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                <li><code class="rounded bg-muted px-1 text-xs">teacher_lock_topic_for_course</code> — <code class="text-xs">is_locked = true</code></li>
+                <li><code class="rounded bg-muted px-1 text-xs">teacher_unlock_topic_for_course</code> — manual unlock</li>
+                <li><code class="rounded bg-muted px-1 text-xs">teacher_schedule_topic_unlock</code> — <code class="text-xs">unlock_at</code>; checked by <code class="text-xs">app.student_can_access_topic</code></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section id="pg-tasks" class="hidden space-y-4" hidden aria-labelledby="th-t">
+          <header>
+            <h1 id="th-t" class="text-base font-semibold">Task studio</h1>
+            <p class="text-sm text-muted-foreground">
+              <code class="rounded bg-muted px-1 text-xs">task_templates</code> · <code class="rounded bg-muted px-1 text-xs">task_template_versions</code> (instructions/rubric jsonb) ·
+              <code class="rounded bg-muted px-1 text-xs">task_deliveries</code> state machine → each transition <code class="text-xs">audit.log_event()</code> ·
+              <code class="rounded bg-muted px-1 text-xs">task_groups</code> + <code class="text-xs">task_group_members</code> · collaborative <code class="rounded bg-muted px-1 text-xs">notes</code> per group ·
+              <code class="rounded bg-muted px-1 text-xs">task_submissions</code> review → <code class="text-xs">reviewed | returned</code>
+            </p>
+          </header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">
+            Teachers cannot skip or reorder <code class="rounded bg-muted px-1 text-xs">task_deliveries</code> states. Review submissions with feedback, <code class="text-xs">reviewed_at</code>, <code class="text-xs">reviewed_by</code>.
+          </div>
+        </section>
+        <section id="pg-chat" class="hidden space-y-4" hidden aria-labelledby="th-ch">
+          <header>
+            <h1 id="th-ch" class="text-base font-semibold">Chat</h1>
+            <p class="text-sm text-muted-foreground">Classroom-scoped threads · institution-bound · outside 03_teacher schema tree; same tenant as <code class="rounded bg-muted px-1 text-xs">classroom_members</code></p>
+          </header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Teacher/student messaging per classroom context; safeguarding policies apply.</div>
+        </section>
+        <section id="pg-notif" class="hidden space-y-4" hidden aria-labelledby="th-n">
+          <header>
+            <h1 id="th-n" class="text-base font-semibold">Notifications</h1>
+            <p class="text-sm text-muted-foreground">
+              <code class="rounded bg-muted px-1 text-xs">notification_events</code> via RPC only ·
+              <code class="rounded bg-muted px-1 text-xs">notification_deliveries</code> — own rows (03_teacher CRUD: teacher reads own deliveries)
+            </p>
+          </header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Joker request (reward flow), new <code class="rounded bg-muted px-1 text-xs">task_submissions</code>, delivery publishes — app-layer fan-out to deliveries.</div>
+        </section>
       </main>
     </div>
 
@@ -224,7 +384,7 @@
         }
         document.getElementById('t-sidebar').addEventListener('click', function (e) {
           var btn = e.target.closest('button[data-nav][data-page]')
-          if (!btn) return
+          if (!btn || !e.currentTarget.contains(btn)) return
           goPage(btn.getAttribute('data-page'), btn)
         })
         document.querySelector('main').addEventListener('click', function (e) {

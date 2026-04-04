@@ -176,6 +176,7 @@
           <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Billing</p>
           <button type="button" data-nav data-page="license" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">License &amp; usage</button>
           <button type="button" data-nav data-page="entitlements" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Entitlements</button>
+          <button type="button" data-nav data-page="cloud-storage" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Cloud storage</button>
           <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Compliance</p>
           <button type="button" data-nav data-page="settings" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Settings</button>
           <button type="button" data-nav data-page="audit" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Audit log</button>
@@ -314,6 +315,7 @@
               <p class="font-variant-numeric tabular-nums text-2xl font-semibold">43 GB</p>
               <p class="text-xs text-[oklch(var(--oklch-orange))]"><span class="tabular-nums">86%</span> of cap · institution_quotas_usage</p>
               <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"><div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div></div>
+              <p class="mt-2 text-xs"><button type="button" data-go-page="cloud-storage" class="font-medium text-primary underline-offset-4 hover:underline">Cloud files &amp; folders →</button></p>
             </div>
           </div>
           <div class="grid gap-4 lg:grid-cols-2">
@@ -405,6 +407,94 @@
           <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Feature matrix vs plan defaults; overrides shown with created_by super_admin only.</div>
         </section>
 
+        <!-- Cloud storage — docs/domain/16_cloud_storage.md -->
+        <section id="pg-cloud-storage" class="hidden space-y-4" hidden aria-labelledby="h-cloud">
+          <header>
+            <h1 id="h-cloud" class="text-base font-semibold">Cloud storage</h1>
+            <p class="text-sm text-muted-foreground">
+              Institution-scoped · Postgres metadata + Supabase Storage bytes ·
+              <code class="rounded bg-muted px-1 text-xs">register_cloud_file_record</code> enforces
+              <code class="text-xs">storage_used_bytes + size ≤ storage_bytes_cap</code> · trigger
+              <code class="rounded bg-muted px-1 text-xs">trg_cloud_files_quota_usage</code> on <code class="text-xs">cloud_files</code>
+            </p>
+          </header>
+          <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <div class="mb-3 flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <h2 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Quota</h2>
+                <p class="mt-1 text-sm font-medium">43 GB / 50 GB · <code class="rounded bg-muted px-1 text-xs">institution_quotas_usage</code> / <code class="text-xs">institution_subscriptions.storage_bytes_cap</code></p>
+              </div>
+              <p class="text-xs text-muted-foreground">Only <code class="rounded bg-muted px-1">active</code> files count toward quota</p>
+            </div>
+            <div class="h-2 overflow-hidden rounded-full bg-muted">
+              <div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div>
+            </div>
+          </div>
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Folders (mock)</h2>
+              <p class="mb-2 font-mono text-xs text-muted-foreground">cloud_folders · scope + anchor FKs (CHECK)</p>
+              <ul class="space-y-1 border-l-2 border-border pl-3 text-sm">
+                <li><span class="font-medium">Unterrichtsmaterial</span> <span class="text-xs text-muted-foreground">· institution</span></li>
+                <li class="ml-3 border-l border-border pl-3">
+                  <span class="font-medium">PG 3A Material</span> <span class="text-xs text-muted-foreground">· classroom</span>
+                </li>
+                <li class="ml-3 border-l border-border pl-3">
+                  <span class="font-medium">Pflegekurs Folien</span> <span class="text-xs text-muted-foreground">· course</span>
+                </li>
+              </ul>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Links &amp; shares</h2>
+              <ul class="list-inside list-disc space-y-1 text-xs text-muted-foreground">
+                <li><code class="rounded bg-muted px-1">cloud_file_links</code> — attach to lesson, task, note, message, game, …</li>
+                <li><code class="rounded bg-muted px-1">cloud_file_shares</code> — read | edit to another user</li>
+                <li>Removing a link does not delete the file (16_cloud_storage)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+            <table class="w-full text-sm">
+              <thead class="border-b border-border">
+                <tr>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">original_name</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">scope</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">storage_object_name</th>
+                  <th class="h-10 px-2 text-right text-xs font-medium text-muted-foreground">size_bytes</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2">wundschema_vorlage.pdf</td>
+                  <td class="p-2">lesson</td>
+                  <td class="p-2 font-mono text-[10px] text-muted-foreground">…/files/uuid…</td>
+                  <td class="p-2 text-right font-variant-numeric tabular-nums">204 800</td>
+                  <td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">active</span></td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2">gruppeA_foto.jpg</td>
+                  <td class="p-2">task</td>
+                  <td class="p-2 font-mono text-[10px] text-muted-foreground">…/files/uuid…</td>
+                  <td class="p-2 text-right font-variant-numeric tabular-nums">512 000</td>
+                  <td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">active</span></td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2">alte_checkliste.pdf</td>
+                  <td class="p-2">personal</td>
+                  <td class="p-2 font-mono text-[10px] text-muted-foreground">legacy path ok</td>
+                  <td class="p-2 text-right font-variant-numeric tabular-nums">98 000</td>
+                  <td class="p-2"><span class="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">archived</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-muted-foreground">
+            Institution admin: full read/manage per institution; uploads go through RPC + bucket <code class="rounded bg-muted px-1">cloud</code>. See
+            <code class="rounded bg-muted px-1">docs/domain/16_cloud_storage.md</code> for CRUD matrix.
+          </p>
+        </section>
+
         <section id="pg-settings" class="hidden space-y-4" hidden aria-labelledby="h-set">
           <header><h1 id="h-set" class="text-base font-semibold">Settings &amp; compliance</h1><p class="text-sm text-muted-foreground">institution_settings · data_subject_requests</p></header>
           <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Locale, timezone, retention_policy_code, notification_defaults (jsonb). GDPR queue for institution-scoped DSRs.</div>
@@ -419,7 +509,7 @@
 
     <script>
       ;(function () {
-        var PAGES = ['overview', 'org', 'classrooms', 'teachers', 'students', 'invites', 'license', 'entitlements', 'settings', 'audit']
+        var PAGES = ['overview', 'org', 'classrooms', 'teachers', 'students', 'invites', 'license', 'entitlements', 'cloud-storage', 'settings', 'audit']
         var NAV_SEL = '#ia-sidebar button[data-nav][data-page]'
         function showPage(page) {
           PAGES.forEach(function (p) {
