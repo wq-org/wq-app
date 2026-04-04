@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WQ Health — Super Admin (design mock)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      :root {
+        --radius: 0.625rem;
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.145 0 0);
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.145 0 0);
+        --popover: oklch(1 0 0);
+        --popover-foreground: oklch(0.145 0 0);
+        --primary: oklch(0.205 0 0);
+        --primary-foreground: oklch(0.985 0 0);
+        --secondary: oklch(0.97 0 0);
+        --secondary-foreground: oklch(0.205 0 0);
+        --muted: oklch(0.97 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --accent: oklch(0.97 0 0);
+        --accent-foreground: oklch(0.205 0 0);
+        --destructive: oklch(0.577 0.245 27.325);
+        --border: oklch(0.922 0 0);
+        --input: oklch(0.922 0 0);
+        --ring: oklch(0.708 0 0);
+        --sidebar: oklch(0.985 0 0);
+        --sidebar-foreground: oklch(0.145 0 0);
+        --sidebar-primary: oklch(0.205 0 0);
+        --sidebar-primary-foreground: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.97 0 0);
+        --sidebar-accent-foreground: oklch(0.205 0 0);
+        --sidebar-border: oklch(0.922 0 0);
+        --sidebar-ring: oklch(0.708 0 0);
+        --oklch-blue: 0.78 0.14 245;
+        --oklch-orange: 0.82 0.17 55;
+        --oklch-green: 0.8 0.16 150;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+    </style>
+    <style type="text/tailwindcss">
+      @import "tailwindcss";
+      @theme {
+        --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-sidebar: var(--sidebar);
+        --color-sidebar-foreground: var(--sidebar-foreground);
+        --color-sidebar-primary: var(--sidebar-primary);
+        --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+        --color-sidebar-accent: var(--sidebar-accent);
+        --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+        --color-sidebar-border: var(--sidebar-border);
+        --color-sidebar-ring: var(--sidebar-ring);
+      }
+    </style>
+  </head>
+  <body class="bg-muted/30 font-sans text-foreground antialiased">
+    <div class="mx-auto my-4 flex max-h-[min(100vh-2rem,900px)] min-h-[620px] max-w-[1400px] overflow-hidden rounded-xl border border-border shadow-sm">
+      <!-- Sidebar (patterns from sidebar.tsx) -->
+      <aside
+        id="sa-sidebar"
+        class="flex h-full min-h-0 w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
+        aria-label="Super admin navigation"
+      >
+        <!-- Workspace switcher (pattern from SidebarWorkspaceSwitcher.tsx — static HTML only) -->
+        <div class="relative border-b border-sidebar-border p-2" data-workspace-switcher>
+          <button
+            type="button"
+            id="sa-ws-trigger"
+            class="flex w-full items-center gap-2 rounded-lg p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 aria-expanded:bg-sidebar-accent aria-expanded:text-sidebar-accent-foreground"
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-controls="sa-ws-menu"
+          >
+            <div
+              class="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground"
+              id="sa-ws-logo"
+              aria-hidden="true"
+            >
+              WQ
+            </div>
+            <div class="grid min-w-0 flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold" id="sa-ws-name">WQ Health Platform</span>
+              <span class="truncate text-xs text-muted-foreground" id="sa-ws-plan">Super Admin · Production</span>
+            </div>
+            <svg class="ml-auto size-4 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m7 15 5 5 5-5" />
+              <path d="m7 9 5-5 5 5" />
+            </svg>
+          </button>
+          <div
+            id="sa-ws-menu"
+            role="menu"
+            class="absolute top-0 left-full z-50 ml-1 hidden min-w-56 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md"
+            aria-hidden="true"
+          >
+            <p class="px-2 py-1.5 text-xs text-muted-foreground">Workspaces</p>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-pick="0"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border text-[10px] font-medium" aria-hidden="true">WQ</div>
+              <span class="min-w-0 flex-1 truncate">WQ Health Platform</span>
+              <span class="ml-auto text-xs tracking-widest text-muted-foreground">⌘1</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-pick="1"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border text-[10px] font-medium" aria-hidden="true">EU</div>
+              <span class="min-w-0 flex-1 truncate">EU Staging</span>
+              <span class="ml-auto text-xs tracking-widest text-muted-foreground">⌘2</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-pick="2"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border text-[10px] font-medium" aria-hidden="true">SB</div>
+              <span class="min-w-0 flex-1 truncate">Training sandbox</span>
+              <span class="ml-auto text-xs tracking-widest text-muted-foreground">⌘3</span>
+            </button>
+            <div class="my-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-add
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-md border border-border bg-background" aria-hidden="true">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14" />
+                  <path d="M12 5v14" />
+                </svg>
+              </div>
+              <span class="font-medium">Add workspace</span>
+            </button>
+          </div>
+          <div class="mt-1 flex items-center gap-1.5 px-2 pb-0.5 text-xs text-muted-foreground">
+            <span class="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden="true"></span>
+            Super Admin
+          </div>
+        </div>
+        <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2" role="navigation">
+          <button
+            type="button"
+            data-nav
+            data-page="overview"
+            data-active="true"
+            aria-current="page"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Overview
+          </button>
+          <p class="px-2 pt-3 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Institutions</p>
+          <button
+            type="button"
+            data-nav
+            data-page="institutions"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            All institutions
+          </button>
+          <button
+            type="button"
+            data-nav
+            data-page="create-institution"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Create institution
+          </button>
+          <p class="px-2 pt-3 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Platform</p>
+          <button
+            type="button"
+            data-nav
+            data-page="plans"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Plan catalog
+          </button>
+          <button
+            type="button"
+            data-nav
+            data-page="features"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Feature definitions
+          </button>
+          <p class="px-2 pt-3 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">People</p>
+          <button
+            type="button"
+            data-nav
+            data-page="users"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Global user directory
+          </button>
+          <p class="px-2 pt-3 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Compliance</p>
+          <button
+            type="button"
+            data-nav
+            data-page="audit"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Audit log
+          </button>
+          <button
+            type="button"
+            data-nav
+            data-page="gdpr"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            <span class="min-w-0 flex-1 truncate text-left">GDPR requests</span>
+            <span
+              class="inline-flex shrink-0 items-center justify-center rounded-full border border-transparent bg-destructive px-2 py-0.5 text-[10px] font-medium text-white"
+              >3</span
+            >
+          </button>
+          <p class="px-2 pt-3 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Operations</p>
+          <button
+            type="button"
+            data-nav
+            data-page="ops"
+            data-active="false"
+            aria-current="false"
+            class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+          >
+            Reliability signals
+          </button>
+        </nav>
+        <!-- Account menu (pattern from SidebarAccountMenu.tsx — static HTML only) -->
+        <div class="relative mt-auto border-t border-sidebar-border p-2" data-account-menu>
+          <button
+            type="button"
+            id="sa-ac-trigger"
+            class="flex w-full items-center gap-2 rounded-lg p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 aria-expanded:bg-sidebar-accent aria-expanded:text-sidebar-accent-foreground"
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-controls="sa-ac-menu"
+          >
+            <div
+              class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-xs font-semibold text-muted-foreground"
+              aria-hidden="true"
+            >
+              JL
+            </div>
+            <div class="grid min-w-0 flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold">Jordan Lee</span>
+              <span class="truncate text-xs text-muted-foreground">jordan.lee@wq.health</span>
+            </div>
+            <svg class="ml-auto size-4 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m7 15 5 5 5-5" />
+              <path d="m7 9 5-5 5 5" />
+            </svg>
+          </button>
+          <div
+            id="sa-ac-menu"
+            role="menu"
+            class="absolute bottom-0 left-full z-50 ml-1 hidden min-w-56 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md"
+            aria-hidden="true"
+          >
+            <div class="px-1 py-1">
+              <div class="flex items-center gap-2 rounded-md px-1 py-1.5 text-left text-sm font-normal">
+                <div class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-xs font-semibold text-muted-foreground" aria-hidden="true">JL</div>
+                <div class="grid min-w-0 flex-1 text-left text-sm leading-tight">
+                  <span class="truncate font-semibold text-foreground">Jordan Lee</span>
+                  <span class="truncate text-xs text-muted-foreground">jordan.lee@wq.health</span>
+                </div>
+              </div>
+            </div>
+            <div class="mx-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4M19 17v4M3 5h4M17 19h4" />
+              </svg>
+              Upgrade to Pro
+            </button>
+            <div class="mx-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.77 4 4 0 0 1 0 6.76 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              Account
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+              Billing
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+              </svg>
+              Notifications
+            </button>
+            <div class="mx-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              data-ac-logout
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+              Log out
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main (SidebarInset pattern) -->
+      <main class="relative flex min-h-0 flex-1 flex-col overflow-auto bg-background p-6">
+        <!-- Overview -->
+        <section id="pg-overview" class="space-y-5" aria-labelledby="overview-heading">
+          <header>
+            <h1 id="overview-heading" class="text-base font-semibold tracking-tight">Platform overview</h1>
+            <p class="text-sm text-muted-foreground">WQ Health · All tenants · Live snapshot</p>
+          </header>
+
+          <div class="flex flex-col gap-2" role="region" aria-label="Alerts">
+            <div
+              class="relative grid w-full grid-cols-[0_1fr] items-start gap-x-3 gap-y-0.5 rounded-lg border border-destructive/40 bg-card px-4 py-3 text-sm text-destructive"
+              role="alert"
+            >
+              <span class="col-start-2 font-medium">Billing / grace</span>
+              <p class="text-destructive/90 col-start-2 text-sm leading-relaxed">
+                Pflegeakademie Süd is in billing grace period — subscription expired 2 days ago.
+              </p>
+              <button
+                type="button"
+                data-go-inst="pas"
+                class="col-start-2 text-left text-xs font-medium text-destructive underline-offset-4 hover:underline"
+              >
+                Review institution →
+              </button>
+            </div>
+            <div
+              class="relative grid w-full grid-cols-[0_1fr] items-start gap-x-3 gap-y-0.5 rounded-lg border border-[oklch(var(--oklch-orange)_/_0.35)] bg-card px-4 py-3 text-sm"
+              role="alert"
+            >
+              <span class="col-start-2 font-medium text-[oklch(var(--oklch-orange))]">Data subject requests</span>
+              <p class="text-muted-foreground col-start-2 text-sm leading-relaxed">
+                3 GDPR data subject requests pending across 2 tenants. SLA: 30 days — oldest is 18 days old.
+              </p>
+              <button
+                type="button"
+                data-go-page="gdpr"
+                class="col-start-2 text-left text-xs font-medium text-primary underline-offset-4 hover:underline"
+              >
+                Open GDPR queue →
+              </button>
+            </div>
+            <div class="relative w-full rounded-lg border border-border bg-card px-4 py-3 text-sm" role="status">
+              <p class="text-sm text-card-foreground">Klinikum Nord storage at 94% of quota. Consider upsell or quota increase.</p>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-xl border border-border bg-card px-4 py-3 text-card-foreground shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Total institutions</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold tracking-tight">14</p>
+              <p class="text-xs text-muted-foreground">11 active · 2 suspended · 1 deleted</p>
+            </div>
+            <div class="rounded-xl border border-border bg-card px-4 py-3 text-card-foreground shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Total users</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold tracking-tight">4 820</p>
+              <p class="text-xs text-[oklch(var(--oklch-green))]">↑ 312 this month</p>
+            </div>
+            <div class="rounded-xl border border-border bg-card px-4 py-3 text-card-foreground shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">MRR</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold tracking-tight">€ 9 240</p>
+              <p class="text-xs text-[oklch(var(--oklch-orange))]">1 in grace</p>
+            </div>
+            <div class="rounded-xl border border-border bg-card px-4 py-3 text-card-foreground shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Open GDPR requests</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold tracking-tight text-destructive">3</p>
+              <p class="text-xs text-destructive">oldest: 18 days</p>
+            </div>
+          </div>
+
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div class="mb-3 flex items-center justify-between gap-2">
+                <h2 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Tenant health</h2>
+                <button
+                  type="button"
+                  data-go-page="institutions"
+                  class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  All institutions →
+                </button>
+              </div>
+              <div class="relative w-full overflow-x-auto">
+                <table class="w-full caption-bottom text-sm">
+                  <thead class="[&_tr]:border-b">
+                    <tr class="border-b border-border">
+                      <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Institution</th>
+                      <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Health</th>
+                      <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Plan</th>
+                      <th class="h-10 px-2 text-right align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Users</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50" data-go-inst="kn">
+                      <td class="p-2 align-middle whitespace-nowrap">Klinikum Nord</td>
+                      <td class="p-2 align-middle whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1.5 rounded-full border border-[oklch(var(--oklch-blue)/0.2)] bg-[oklch(var(--oklch-blue)/0.1)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-blue))]"
+                          title="institution_health_state: healthy"
+                          ><span class="size-1.5 rounded-full bg-[oklch(var(--oklch-blue))]" aria-hidden="true"></span>healthy</span
+                        >
+                      </td>
+                      <td class="p-2 align-middle whitespace-nowrap">EDU Plus</td>
+                      <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">1 240</td>
+                    </tr>
+                    <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50" data-go-inst="psn">
+                      <td class="p-2 align-middle whitespace-nowrap">Pflegeschule Nord</td>
+                      <td class="p-2 align-middle whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1.5 rounded-full border border-[oklch(var(--oklch-blue)/0.2)] bg-[oklch(var(--oklch-blue)/0.1)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-blue))]"
+                          title="institution_health_state: healthy"
+                          ><span class="size-1.5 rounded-full bg-[oklch(var(--oklch-blue))]" aria-hidden="true"></span>healthy</span
+                        >
+                      </td>
+                      <td class="p-2 align-middle whitespace-nowrap">EDU Plus</td>
+                      <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">330</td>
+                    </tr>
+                    <tr class="border-b border-border transition-colors hover:bg-muted/50">
+                      <td class="p-2 align-middle whitespace-nowrap">Med. Akademie BW</td>
+                      <td class="p-2 align-middle whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1.5 rounded-full border border-[oklch(var(--oklch-blue)/0.2)] bg-[oklch(var(--oklch-blue)/0.1)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-blue))]"
+                          title="institution_health_state: healthy"
+                          ><span class="size-1.5 rounded-full bg-[oklch(var(--oklch-blue))]" aria-hidden="true"></span>healthy</span
+                        >
+                      </td>
+                      <td class="p-2 align-middle whitespace-nowrap">Faculty Pro</td>
+                      <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">890</td>
+                    </tr>
+                    <tr class="border-b border-border transition-colors hover:bg-muted/50">
+                      <td class="p-2 align-middle whitespace-nowrap">Pflegeschule Ost</td>
+                      <td class="p-2 align-middle whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1.5 rounded-full border border-[oklch(var(--oklch-orange)/0.25)] bg-[oklch(var(--oklch-orange)/0.12)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-orange))]"
+                          title="institution_health_state: warning"
+                          ><span class="size-1.5 rounded-full bg-[oklch(var(--oklch-orange))]" aria-hidden="true"></span>warning</span
+                        >
+                      </td>
+                      <td class="p-2 align-middle whitespace-nowrap">EDU Basic</td>
+                      <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">210</td>
+                    </tr>
+                    <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50" data-go-inst="pas">
+                      <td class="p-2 align-middle whitespace-nowrap">Pflegeakademie Süd</td>
+                      <td class="p-2 align-middle whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1.5 rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
+                          title="institution_health_state: critical"
+                          ><span class="size-1.5 rounded-full bg-destructive" aria-hidden="true"></span>critical</span
+                        >
+                      </td>
+                      <td class="p-2 align-middle whitespace-nowrap">EDU Basic</td>
+                      <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">180</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="mt-2 text-[11px] text-muted-foreground">Health tiers match <code class="rounded bg-muted px-1">institution_health_state</code> (healthy · warning · critical); colors follow domain Blue / Amber / Red narrative.</p>
+            </div>
+
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div class="mb-3 flex items-center justify-between gap-2">
+                <h2 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Recent elevated actions</h2>
+                <button
+                  type="button"
+                  data-go-page="audit"
+                  class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  Full audit log →
+                </button>
+              </div>
+              <ul class="divide-y divide-border text-sm">
+                <li class="flex gap-2 py-2">
+                  <span class="mt-1.5 size-2 shrink-0 rounded-full bg-destructive" aria-hidden="true"></span>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium">Institution suspended — Pflegeakademie Süd</p>
+                    <p class="text-xs text-muted-foreground">super_admin · system action</p>
+                  </div>
+                  <span class="shrink-0 font-variant-numeric tabular-nums text-xs text-muted-foreground">2d ago</span>
+                </li>
+                <li class="flex gap-2 py-2">
+                  <span class="mt-1.5 size-2 shrink-0 rounded-full bg-[oklch(var(--oklch-orange))]" aria-hidden="true"></span>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium">User banned — t.bauer@extern.de</p>
+                    <p class="text-xs text-muted-foreground">Klinikum Nord</p>
+                  </div>
+                  <span class="shrink-0 font-variant-numeric tabular-nums text-xs text-muted-foreground">3d ago</span>
+                </li>
+                <li class="flex gap-2 py-2">
+                  <span class="mt-1.5 size-2 shrink-0 rounded-full bg-[oklch(var(--oklch-orange))]" aria-hidden="true"></span>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium">GDPR erasure request approved</p>
+                    <p class="text-xs text-muted-foreground">Pflegeschule Nord · subject_id in audit payload</p>
+                  </div>
+                  <span class="shrink-0 font-variant-numeric tabular-nums text-xs text-muted-foreground">5d ago</span>
+                </li>
+                <li class="flex gap-2 py-2">
+                  <span class="mt-1.5 size-2 shrink-0 rounded-full bg-[oklch(var(--oklch-green))]" aria-hidden="true"></span>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium">Institution created — Altenpflege Rhein</p>
+                    <p class="text-xs text-muted-foreground">super_admin</p>
+                  </div>
+                  <span class="shrink-0 font-variant-numeric tabular-nums text-xs text-muted-foreground">6d ago</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Institutions list -->
+        <section id="pg-institutions" class="hidden space-y-4" aria-labelledby="inst-heading" hidden>
+          <header class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 id="inst-heading" class="text-base font-semibold tracking-tight">All institutions</h1>
+              <p class="text-sm text-muted-foreground">14 tenants · 11 active · 2 suspended · 1 soft-deleted</p>
+            </div>
+            <button
+              type="button"
+              data-go-page="create-institution"
+              class="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              Create institution
+            </button>
+          </header>
+          <div class="relative w-full overflow-x-auto rounded-xl border border-border">
+            <table class="w-full caption-bottom text-sm">
+              <thead class="[&_tr]:border-b">
+                <tr class="border-b border-border">
+                  <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Name</th>
+                  <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Health</th>
+                  <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Plan</th>
+                  <th class="h-10 px-2 text-right align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Users</th>
+                  <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Storage</th>
+                  <th class="h-10 px-2 text-left align-middle text-xs font-medium whitespace-nowrap text-muted-foreground">Status</th>
+                  <th class="h-10 px-2 text-right align-middle text-xs font-medium whitespace-nowrap text-muted-foreground"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50" data-open-inst="kn">
+                  <td class="p-2 align-middle font-medium whitespace-nowrap">Klinikum Nord</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex items-center gap-1 rounded-full border border-[oklch(var(--oklch-blue)/0.2)] bg-[oklch(var(--oklch-blue)/0.1)] px-2 py-0.5 text-xs text-[oklch(var(--oklch-blue))]">healthy</span>
+                  </td>
+                  <td class="p-2 align-middle whitespace-nowrap">EDU Plus</td>
+                  <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">1 240</td>
+                  <td class="p-2 align-middle font-variant-numeric tabular-nums whitespace-nowrap">38 / 100 GB</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex rounded-full border border-[oklch(var(--oklch-green)/0.2)] bg-[oklch(var(--oklch-green)/0.12)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-green))]">Active</span>
+                  </td>
+                  <td class="p-2 align-middle text-right whitespace-nowrap">
+                    <button type="button" data-open-inst="kn" class="inline-flex h-8 items-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-xs hover:bg-accent">Open</button>
+                  </td>
+                </tr>
+                <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50" data-open-inst="psn">
+                  <td class="p-2 align-middle font-medium whitespace-nowrap">Pflegeschule Nord</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex items-center gap-1 rounded-full border border-[oklch(var(--oklch-blue)/0.2)] bg-[oklch(var(--oklch-blue)/0.1)] px-2 py-0.5 text-xs text-[oklch(var(--oklch-blue))]">healthy</span>
+                  </td>
+                  <td class="p-2 align-middle whitespace-nowrap">EDU Plus</td>
+                  <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">330</td>
+                  <td class="p-2 align-middle font-variant-numeric tabular-nums whitespace-nowrap">43 / 50 GB</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex rounded-full border border-[oklch(var(--oklch-green)/0.2)] bg-[oklch(var(--oklch-green)/0.12)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-green))]">Active</span>
+                  </td>
+                  <td class="p-2 align-middle text-right whitespace-nowrap">
+                    <button type="button" data-open-inst="psn" class="inline-flex h-8 items-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-xs hover:bg-accent">Open</button>
+                  </td>
+                </tr>
+                <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50" data-open-inst="pas">
+                  <td class="p-2 align-middle font-medium whitespace-nowrap">Pflegeakademie Süd</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex items-center gap-1 rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">critical</span>
+                  </td>
+                  <td class="p-2 align-middle whitespace-nowrap">EDU Basic</td>
+                  <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">180</td>
+                  <td class="p-2 align-middle font-variant-numeric tabular-nums whitespace-nowrap">12 / 20 GB</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex rounded-full border border-[oklch(var(--oklch-orange)/0.25)] bg-[oklch(var(--oklch-orange)/0.12)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-orange))]">Grace (billing)</span>
+                  </td>
+                  <td class="p-2 align-middle text-right whitespace-nowrap">
+                    <button type="button" data-open-inst="pas" class="inline-flex h-8 items-center rounded-md bg-destructive px-3 text-xs font-medium text-white hover:bg-destructive/90">Review</button>
+                  </td>
+                </tr>
+                <tr class="border-b border-border transition-colors hover:bg-muted/50">
+                  <td class="p-2 align-middle font-medium whitespace-nowrap">Altenpflege Rhein</td>
+                  <td class="p-2 align-middle text-muted-foreground whitespace-nowrap">—</td>
+                  <td class="p-2 align-middle whitespace-nowrap">EDU Basic</td>
+                  <td class="p-2 align-middle text-right font-variant-numeric tabular-nums whitespace-nowrap">12</td>
+                  <td class="p-2 align-middle font-variant-numeric tabular-nums whitespace-nowrap">1 / 20 GB</td>
+                  <td class="p-2 align-middle whitespace-nowrap">
+                    <span class="inline-flex rounded-full border border-[oklch(var(--oklch-blue)/0.2)] bg-[oklch(var(--oklch-blue)/0.1)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-blue))]">New</span>
+                  </td>
+                  <td class="p-2 align-middle text-right whitespace-nowrap">
+                    <button type="button" class="inline-flex h-8 items-center rounded-md border border-input bg-background px-3 text-xs font-medium opacity-60" disabled>Open</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Institution detail -->
+        <section id="pg-institution-detail" class="hidden space-y-4" aria-labelledby="detail-heading" hidden>
+          <button
+            type="button"
+            id="inst-back"
+            class="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            ← All institutions
+          </button>
+          <header class="flex flex-wrap items-start gap-3 border-b border-border pb-4">
+            <div
+              id="id-avatar"
+              class="flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-xs font-semibold"
+              aria-hidden="true"
+            >
+              KN
+            </div>
+            <div class="min-w-0 flex-1">
+              <h1 id="detail-heading" class="text-base font-semibold tracking-tight">Klinikum Nord</h1>
+              <p id="id-meta" class="text-sm text-muted-foreground">EDU Plus · 1 240 users · Active</p>
+            </div>
+            <div id="id-actions" class="flex flex-wrap gap-2"></div>
+          </header>
+
+          <div id="inst-tabs" class="flex flex-wrap gap-1 rounded-lg border border-border bg-muted/50 p-1" role="tablist" aria-label="Institution sections">
+            <button
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-inst-tab
+              data-tab="profile"
+              class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:border data-[active=true]:border-border data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+              data-active="true"
+            >
+              Profile
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-inst-tab
+              data-tab="subscription"
+              data-active="false"
+              class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:border data-[active=true]:border-border data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+            >
+              Subscription
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-inst-tab
+              data-tab="quotas"
+              data-active="false"
+              class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:border data-[active=true]:border-border data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+            >
+              Quotas
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-inst-tab
+              data-tab="entitlements"
+              data-active="false"
+              class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:border data-[active=true]:border-border data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+            >
+              Entitlements
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-inst-tab
+              data-tab="health"
+              data-active="false"
+              class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:border data-[active=true]:border-border data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+            >
+              Health
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-inst-tab
+              data-tab="invoices"
+              data-active="false"
+              class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:border data-[active=true]:border-border data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+            >
+              Invoices
+            </button>
+          </div>
+
+          <div id="idt-profile" class="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <h2 class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Profile &amp; metadata</h2>
+            <dl class="divide-y divide-border text-sm">
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">Name</dt>
+                <dd id="dt-name" class="font-medium">Klinikum Nord</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">data_region</dt>
+                <dd class="font-medium">DE / Europe</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">email_domain_policy</dt>
+                <dd class="max-w-[60%] truncate font-medium" title="@klinikum-nord.de">@klinikum-nord.de only</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">default_retention_policy_code</dt>
+                <dd class="font-medium">learning_events_90d</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">suspended_at / deleted_at</dt>
+                <dd class="font-medium">— / —</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div id="idt-subscription" class="hidden rounded-xl border border-border bg-card p-4 shadow-sm" hidden>
+            <div class="mb-3 flex items-center justify-between">
+              <h2 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">institution_subscriptions</h2>
+              <button type="button" class="text-xs font-medium text-primary underline-offset-4 hover:underline">Edit</button>
+            </div>
+            <dl class="divide-y divide-border text-sm">
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">plan</dt>
+                <dd class="font-medium">EDU Plus</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">billing_interval</dt>
+                <dd class="font-medium">annual</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">billing_status</dt>
+                <dd class="font-medium">
+                  <span class="inline-flex rounded-full bg-[oklch(var(--oklch-green)/0.12)] px-2 py-0.5 text-xs font-medium text-[oklch(var(--oklch-green))]">active</span>
+                </dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">renewal_at / grace_ends_at</dt>
+                <dd class="font-variant-numeric tabular-nums font-medium">2027-01-01 · —</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-2">
+                <dt class="text-muted-foreground">billing_providers</dt>
+                <dd class="truncate font-medium">mollie · external ref</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div id="idt-quotas" class="hidden space-y-3 rounded-xl border border-border bg-card p-4 shadow-sm" hidden>
+            <h2 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">institution_quotas_usage</h2>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-28 shrink-0 text-muted-foreground">Teacher seats</span>
+                <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div class="h-full w-[72%] rounded-full bg-[oklch(var(--oklch-green))]"></div>
+                </div>
+                <span class="w-16 text-right font-variant-numeric tabular-nums text-muted-foreground">18 / 25</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-28 shrink-0 text-muted-foreground">Storage</span>
+                <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div>
+                </div>
+                <span class="w-16 text-right font-variant-numeric tabular-nums text-muted-foreground">86%</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="idt-entitlements" class="hidden rounded-xl border border-border bg-card p-4 shadow-sm" hidden>
+            <h2 class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">institution_entitlement_overrides</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-border">
+                    <th class="h-9 px-2 text-left text-xs font-medium text-muted-foreground">feature key</th>
+                    <th class="h-9 px-2 text-left text-xs font-medium text-muted-foreground">Override</th>
+                    <th class="h-9 px-2 text-left text-xs font-medium text-muted-foreground">created_by</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-border">
+                    <td class="p-2 font-mono text-xs">pdf_import</td>
+                    <td class="p-2">enabled</td>
+                    <td class="p-2">super_admin</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="idt-health" class="hidden grid gap-3 sm:grid-cols-2" hidden>
+            <div class="rounded-xl border border-border bg-card p-3 shadow-sm">
+              <p class="text-[10px] font-medium uppercase text-muted-foreground">Operational</p>
+              <p class="text-sm font-medium text-[oklch(var(--oklch-orange))]">Warning</p>
+              <p class="text-xs text-muted-foreground">Storage pressure (derived)</p>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-3 shadow-sm">
+              <p class="text-[10px] font-medium uppercase text-muted-foreground">Compliance</p>
+              <p class="text-sm font-medium text-[oklch(var(--oklch-green))]">Good</p>
+              <p class="text-xs text-muted-foreground">0 open data_subject_requests</p>
+            </div>
+          </div>
+
+          <div id="idt-invoices" class="hidden rounded-xl border border-border bg-card p-4 shadow-sm" hidden>
+            <h2 class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">institution_invoice_records</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-border">
+                    <th class="h-9 px-2 text-left text-xs font-medium text-muted-foreground">issued_at</th>
+                    <th class="h-9 px-2 text-right text-xs font-medium text-muted-foreground">amount_cents</th>
+                    <th class="h-9 px-2 text-left text-xs font-medium text-muted-foreground">status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-border">
+                    <td class="p-2 font-variant-numeric tabular-nums">2025-01-01</td>
+                    <td class="p-2 text-right font-variant-numeric tabular-nums">840 000 · EUR</td>
+                    <td class="p-2">paid</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Create institution -->
+        <section id="pg-create-institution" class="hidden max-w-3xl space-y-4" aria-labelledby="create-heading" hidden>
+          <header>
+            <h1 id="create-heading" class="text-base font-semibold tracking-tight">Create institution</h1>
+            <p class="text-sm text-muted-foreground">Mock form · RPC <code class="rounded bg-muted px-1 text-xs">create_institution_with_initial_admin</code></p>
+          </header>
+          <form class="space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm" onsubmit="event.preventDefault();">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="space-y-2">
+                <label for="f-name" class="text-sm font-medium leading-none">Institution name</label>
+                <input
+                  id="f-name"
+                  name="name"
+                  type="text"
+                  autocomplete="organization"
+                  placeholder="Pflegeschule Muster"
+                  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 md:text-sm"
+                />
+              </div>
+              <div class="space-y-2">
+                <label for="f-admin" class="text-sm font-medium leading-none">Initial admin (user_id / invite email)</label>
+                <input
+                  id="f-admin"
+                  name="initial_admin"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="admin@institution.de"
+                  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
+                />
+              </div>
+              <div class="space-y-2">
+                <label for="f-region" class="text-sm font-medium leading-none">data_region</label>
+                <select
+                  id="f-region"
+                  name="data_region"
+                  class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
+                  <option>DE / EU</option>
+                  <option>AT / EU</option>
+                  <option>CH / EU</option>
+                </select>
+              </div>
+              <div class="space-y-2">
+                <label for="f-retention" class="text-sm font-medium leading-none">default_retention_policy_code</label>
+                <input
+                  id="f-retention"
+                  name="default_retention_policy_code"
+                  type="text"
+                  placeholder="learning_events_90d"
+                  class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="f-policy" class="text-sm font-medium leading-none">email_domain_policy (JSON)</label>
+              <textarea
+                id="f-policy"
+                name="email_domain_policy"
+                rows="3"
+                class="placeholder:text-muted-foreground min-h-16 w-full resize-y rounded-md border border-input bg-transparent px-3 py-2 text-base leading-normal outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
+                placeholder='{"allowed_domains":["@klinikum.de"]}'
+              ></textarea>
+            </div>
+            <div class="flex justify-end gap-2 border-t border-border pt-4">
+              <button
+                type="button"
+                data-go-page="institutions"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                Create + invite admin
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Plans -->
+        <section id="pg-plans" class="hidden space-y-4" aria-labelledby="plans-heading" hidden>
+          <header>
+            <h1 id="plans-heading" class="text-base font-semibold tracking-tight">Plan catalog</h1>
+            <p class="text-sm text-muted-foreground">plan_catalog · 3 rows · is_active</p>
+          </header>
+          <div class="grid gap-4 md:grid-cols-3">
+            <article class="rounded-xl border border-border bg-card p-5 shadow-sm">
+              <h2 class="mb-3 font-mono text-sm font-semibold">edu_basic</h2>
+              <dl class="space-y-2 text-sm">
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">name</dt><dd class="font-medium">EDU Basic</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">price_amount</dt><dd class="font-variant-numeric tabular-nums font-medium">2400 · EUR</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">billing_interval</dt><dd class="font-medium">annual</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">seat_cap_default</dt><dd class="font-medium">10 teachers / 150 students</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">storage_bytes_cap_default</dt><dd class="font-medium">20 GB</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">is_active</dt><dd><span class="text-xs font-medium text-[oklch(var(--oklch-green))]">true</span></dd></div>
+              </dl>
+            </article>
+            <article class="rounded-xl border-2 border-primary bg-card p-5 shadow-sm">
+              <p class="mb-2 inline-block rounded-md bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">Popular</p>
+              <h2 class="mb-3 font-mono text-sm font-semibold">edu_plus</h2>
+              <dl class="space-y-2 text-sm">
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">name</dt><dd class="font-medium">EDU Plus</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">price_amount</dt><dd class="font-variant-numeric tabular-nums font-medium">7200 · EUR</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">billing_interval</dt><dd class="font-medium">annual</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">seat_cap_default</dt><dd class="font-medium">25 / 400</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">is_active</dt><dd><span class="text-xs font-medium text-[oklch(var(--oklch-green))]">true</span></dd></div>
+              </dl>
+            </article>
+            <article class="rounded-xl border border-border bg-card p-5 shadow-sm">
+              <h2 class="mb-3 font-mono text-sm font-semibold">faculty_pro</h2>
+              <dl class="space-y-2 text-sm">
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">name</dt><dd class="font-medium">Faculty Pro</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">price_amount</dt><dd class="font-variant-numeric tabular-nums font-medium">18 000 · EUR</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">billing_interval</dt><dd class="font-medium">annual</dd></div>
+                <div class="flex justify-between gap-2"><dt class="text-muted-foreground">is_active</dt><dd><span class="text-xs font-medium text-[oklch(var(--oklch-green))]">true</span></dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+        <!-- Features -->
+        <section id="pg-features" class="hidden space-y-4" aria-labelledby="feat-heading" hidden>
+          <header>
+            <h1 id="feat-heading" class="text-base font-semibold tracking-tight">Feature definitions</h1>
+            <p class="text-sm text-muted-foreground">feature_definitions · plan_entitlements matrix (mock)</p>
+          </header>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">key</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">name</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">value_type</th>
+                  <th class="h-10 px-2 text-center text-xs font-medium text-muted-foreground">Basic</th>
+                  <th class="h-10 px-2 text-center text-xs font-medium text-muted-foreground">Plus</th>
+                  <th class="h-10 px-2 text-center text-xs font-medium text-muted-foreground">Pro</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-mono text-xs">game_studio</td>
+                  <td class="p-2">Game Studio</td>
+                  <td class="p-2">boolean</td>
+                  <td class="p-2 text-center">on</td>
+                  <td class="p-2 text-center">on</td>
+                  <td class="p-2 text-center">on</td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-mono text-xs">pdf_import</td>
+                  <td class="p-2">PDF import</td>
+                  <td class="p-2">boolean</td>
+                  <td class="p-2 text-center">off</td>
+                  <td class="p-2 text-center">on</td>
+                  <td class="p-2 text-center">on</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Users -->
+        <section id="pg-users" class="hidden space-y-4" aria-labelledby="users-heading" hidden>
+          <header>
+            <h1 id="users-heading" class="text-base font-semibold tracking-tight">Global user directory</h1>
+            <p class="text-sm text-muted-foreground">list_admin_users() · admin_delete_user · admin_set_user_active_status</p>
+          </header>
+          <div class="flex flex-wrap gap-2">
+            <input
+              type="search"
+              placeholder="Search email or name"
+              class="h-9 w-full max-w-xs rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <select class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
+              <option>All institutions</option>
+              <option>Klinikum Nord</option>
+            </select>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Name</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Email</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Institution</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Role</th>
+                  <th class="h-10 px-2 text-right text-xs font-medium text-muted-foreground"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2">Lena Fischer</td>
+                  <td class="p-2 font-variant-numeric tabular-nums">l.fischer@pflegeschule.de</td>
+                  <td class="p-2">Pflegeschule Nord</td>
+                  <td class="p-2">student</td>
+                  <td class="p-2 text-right">
+                    <button type="button" class="inline-flex h-8 items-center rounded-md bg-destructive px-2 text-xs font-medium text-white hover:bg-destructive/90">Ban</button>
+                  </td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2">T. Bauer</td>
+                  <td class="p-2 font-variant-numeric tabular-nums">t.bauer@extern.de</td>
+                  <td class="p-2">Klinikum Nord</td>
+                  <td class="p-2">teacher</td>
+                  <td class="p-2 text-right">
+                    <button type="button" class="inline-flex h-8 items-center rounded-md border border-input bg-background px-2 text-xs font-medium hover:bg-accent">Unban</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Audit -->
+        <section id="pg-audit" class="hidden space-y-4" aria-labelledby="audit-heading" hidden>
+          <header>
+            <h1 id="audit-heading" class="text-base font-semibold tracking-tight">Audit log</h1>
+            <p class="text-sm text-muted-foreground">audit.events · super_admin SELECT · append-only via audit.log_event()</p>
+          </header>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="h-10 px-2 text-left text-xs font-medium whitespace-nowrap text-muted-foreground">occurred_at</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium whitespace-nowrap text-muted-foreground">event_type</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium whitespace-nowrap text-muted-foreground">actor_user_id</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium whitespace-nowrap text-muted-foreground">subject_type</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium whitespace-nowrap text-muted-foreground">subject_id</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium whitespace-nowrap text-muted-foreground">institution_id</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-variant-numeric tabular-nums text-xs whitespace-nowrap">2d ago</td>
+                  <td class="p-2 font-mono text-xs">institution.suspended</td>
+                  <td class="p-2 font-mono text-xs">null</td>
+                  <td class="p-2">institution</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                  <td class="p-2 text-muted-foreground">—</td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-variant-numeric tabular-nums text-xs whitespace-nowrap">3d ago</td>
+                  <td class="p-2 font-mono text-xs">user.banned</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                  <td class="p-2">user</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- GDPR -->
+        <section id="pg-gdpr" class="hidden space-y-4" aria-labelledby="gdpr-heading" hidden>
+          <header>
+            <h1 id="gdpr-heading" class="text-base font-semibold tracking-tight">Data subject requests</h1>
+            <p class="text-sm text-muted-foreground">data_subject_requests · request_type · status</p>
+          </header>
+          <div class="rounded-lg border border-[oklch(var(--oklch-orange)_/_0.35)] bg-card px-4 py-3 text-sm" role="status">
+            <p class="text-muted-foreground">DSR-0041 · <span class="font-medium text-[oklch(var(--oklch-orange))]">pending</span> · day 18 / 30 SLA</p>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">id</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">request_type</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">subject_user_id</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">institution</th>
+                  <th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">status</th>
+                  <th class="h-10 px-2 text-right text-xs font-medium text-muted-foreground"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-mono text-xs">DSR-0041</td>
+                  <td class="p-2 font-mono text-xs">access</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                  <td class="p-2">Pflegeschule Nord</td>
+                  <td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-orange)/0.12)] px-2 py-0.5 text-xs">pending</span></td>
+                  <td class="p-2 text-right">
+                    <button type="button" class="inline-flex h-8 items-center rounded-md border border-input px-2 text-xs font-medium hover:bg-accent">Approve</button>
+                  </td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-mono text-xs">DSR-0039</td>
+                  <td class="p-2 font-mono text-xs">erasure</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                  <td class="p-2">Klinikum Nord</td>
+                  <td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-orange)/0.12)] px-2 py-0.5 text-xs">processing</span></td>
+                  <td class="p-2 text-right"></td>
+                </tr>
+                <tr class="border-b border-border hover:bg-muted/50">
+                  <td class="p-2 font-mono text-xs">DSR-0035</td>
+                  <td class="p-2 font-mono text-xs">erasure</td>
+                  <td class="p-2 font-mono text-xs">uuid…</td>
+                  <td class="p-2">Pflegeschule West</td>
+                  <td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-green)/0.12)] px-2 py-0.5 text-xs">completed</span></td>
+                  <td class="p-2 text-right"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-muted-foreground">Types: access · erasure · portability · rectification · Status: pending · processing · completed · rejected</p>
+        </section>
+
+        <!-- Ops -->
+        <section id="pg-ops" class="hidden space-y-4" aria-labelledby="ops-heading" hidden>
+          <header>
+            <h1 id="ops-heading" class="text-base font-semibold tracking-tight">Reliability signals</h1>
+            <p class="text-sm text-muted-foreground">Derived from institution_quotas_usage · institution_subscriptions (no dedicated table)</p>
+          </header>
+          <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <h2 class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Storage % (mock)</h2>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-40 shrink-0 truncate">Pflegeschule Nord</span>
+                <div class="h-1.5 flex-1 rounded-full bg-muted">
+                  <div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div>
+                </div>
+                <span class="w-12 text-right font-variant-numeric tabular-nums">86%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-40 shrink-0 truncate">Pflegeschule Ost</span>
+                <div class="h-1.5 flex-1 rounded-full bg-muted">
+                  <div class="h-full w-[94%] rounded-full bg-destructive"></div>
+                </div>
+                <span class="w-12 text-right font-variant-numeric tabular-nums text-destructive">94%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      ;(function () {
+        var PAGES = [
+          'overview',
+          'institutions',
+          'institution-detail',
+          'create-institution',
+          'plans',
+          'features',
+          'users',
+          'audit',
+          'gdpr',
+          'ops',
+        ]
+
+        var NAV = 'button[data-nav][data-page]'
+
+        var BTN_OUT =
+          'inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background text-sm font-medium shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none'
+        var BTN_DEST = 'inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90 focus-visible:ring-[3px] focus-visible:ring-destructive/20 outline-none'
+        var BTN_SM = ' h-8 px-3 text-xs'
+
+        var institutions = {
+          kn: { avatar: 'KN', name: 'Klinikum Nord', meta: 'EDU Plus · 1\u202f240 users · Active', danger: false },
+          psn: { avatar: 'PN', name: 'Pflegeschule Nord', meta: 'EDU Plus · 330 users · Active', danger: false },
+          pas: { avatar: 'PS', name: 'Pflegeakademie Süd', meta: 'EDU Basic · 180 users · Grace (billing)', danger: true },
+        }
+
+        function showPage(page) {
+          PAGES.forEach(function (p) {
+            var el = document.getElementById('pg-' + p)
+            if (!el) return
+            var on = p === page
+            el.classList.toggle('hidden', !on)
+            el.hidden = !on
+          })
+        }
+
+        function navButtonFor(page) {
+          return document.querySelector(NAV + '[data-page="' + page + '"]')
+        }
+
+        function setNavActive(pageId) {
+          document.querySelectorAll(NAV).forEach(function (btn) {
+            var active = btn.getAttribute('data-page') === pageId
+            btn.dataset.active = active ? 'true' : 'false'
+            btn.setAttribute('aria-current', active ? 'page' : 'false')
+          })
+        }
+
+        function goPage(page, navEl) {
+          showPage(page)
+          if (navEl && navEl.matches(NAV)) {
+            setNavActive(navEl.getAttribute('data-page'))
+          } else if (page === 'institution-detail') {
+            setNavActive('institutions')
+          } else {
+            setNavActive(page)
+          }
+        }
+
+        function setInstitutionTab(tab) {
+          document.querySelectorAll('[data-inst-tab]').forEach(function (b) {
+            var on = b.getAttribute('data-tab') === tab
+            b.dataset.active = on ? 'true' : 'false'
+            b.setAttribute('aria-selected', on ? 'true' : 'false')
+          })
+          ;['profile', 'subscription', 'quotas', 'entitlements', 'health', 'invoices'].forEach(function (t) {
+            var el = document.getElementById('idt-' + t)
+            if (!el) return
+            var on = t === tab
+            el.classList.toggle('hidden', !on)
+            el.hidden = !on
+          })
+        }
+
+        function openInstitution(id) {
+          var inst = institutions[id]
+          if (!inst) return
+          var av = document.getElementById('id-avatar')
+          var meta = document.getElementById('id-meta')
+          var dtName = document.getElementById('dt-name')
+          var heading = document.getElementById('detail-heading')
+          if (av) av.textContent = inst.avatar
+          if (heading) heading.textContent = inst.name
+          if (meta) meta.textContent = inst.meta
+          if (dtName) dtName.textContent = inst.name
+          var actDiv = document.getElementById('id-actions')
+          if (actDiv) {
+            if (inst.danger) {
+              actDiv.innerHTML =
+                '<button type="button" class="' +
+                BTN_OUT +
+                BTN_SM +
+                '">Reactivate</button><button type="button" class="' +
+                BTN_DEST +
+                BTN_SM +
+                '">Soft-delete</button>'
+            } else {
+              actDiv.innerHTML =
+                '<button type="button" class="' +
+                BTN_OUT +
+                BTN_SM +
+                '">Suspend</button><button type="button" class="' +
+                BTN_DEST +
+                BTN_SM +
+                '">Soft-delete</button>'
+            }
+          }
+          setInstitutionTab('profile')
+          goPage('institution-detail', null)
+        }
+
+        document.getElementById('sa-sidebar').addEventListener('click', function (e) {
+          var btn = e.target.closest(NAV)
+          if (!btn || !e.currentTarget.contains(btn)) return
+          goPage(btn.getAttribute('data-page'), btn)
+        })
+
+        ;(function workspaceSwitcher() {
+          var root = document.querySelector('[data-workspace-switcher]')
+          if (!root) return
+          var trig = document.getElementById('sa-ws-trigger')
+          var menu = document.getElementById('sa-ws-menu')
+          var logoEl = document.getElementById('sa-ws-logo')
+          var nameEl = document.getElementById('sa-ws-name')
+          var planEl = document.getElementById('sa-ws-plan')
+          var rows = [
+            { logo: 'WQ', name: 'WQ Health Platform', plan: 'Super Admin · Production' },
+            { logo: 'EU', name: 'EU Staging', plan: 'Super Admin · Preview' },
+            { logo: 'SB', name: 'Training sandbox', plan: 'Super Admin · Demo data' },
+          ]
+          function closeAccountIfOpen() {
+            var am = document.getElementById('sa-ac-menu')
+            var at = document.getElementById('sa-ac-trigger')
+            if (!am || !at || am.classList.contains('hidden')) return
+            am.classList.add('hidden')
+            am.setAttribute('aria-hidden', 'true')
+            at.setAttribute('aria-expanded', 'false')
+          }
+          function setOpen(open) {
+            if (open) closeAccountIfOpen()
+            menu.classList.toggle('hidden', !open)
+            menu.setAttribute('aria-hidden', open ? 'false' : 'true')
+            trig.setAttribute('aria-expanded', open ? 'true' : 'false')
+          }
+          trig.addEventListener('click', function (e) {
+            e.stopPropagation()
+            setOpen(menu.classList.contains('hidden'))
+          })
+          root.addEventListener('click', function (e) {
+            var pick = e.target.closest('[data-ws-pick]')
+            if (!pick || !menu.contains(pick)) return
+            var i = parseInt(pick.getAttribute('data-ws-pick'), 10)
+            var row = rows[i]
+            if (row) {
+              logoEl.textContent = row.logo
+              nameEl.textContent = row.name
+              planEl.textContent = row.plan
+            }
+            setOpen(false)
+          })
+          var addBtn = root.querySelector('[data-ws-add]')
+          if (addBtn)
+            addBtn.addEventListener('click', function (e) {
+              e.stopPropagation()
+              setOpen(false)
+            })
+          document.addEventListener('click', function (e) {
+            if (!root.contains(e.target)) setOpen(false)
+          })
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setOpen(false)
+          })
+        })()
+
+        ;(function accountMenu() {
+          var root = document.querySelector('#sa-sidebar [data-account-menu]')
+          if (!root) return
+          var trig = document.getElementById('sa-ac-trigger')
+          var menu = document.getElementById('sa-ac-menu')
+          function closeWorkspaceIfOpen() {
+            var wm = document.getElementById('sa-ws-menu')
+            var wt = document.getElementById('sa-ws-trigger')
+            if (!wm || !wt || wm.classList.contains('hidden')) return
+            wm.classList.add('hidden')
+            wm.setAttribute('aria-hidden', 'true')
+            wt.setAttribute('aria-expanded', 'false')
+          }
+          function setOpen(open) {
+            if (open) closeWorkspaceIfOpen()
+            menu.classList.toggle('hidden', !open)
+            menu.setAttribute('aria-hidden', open ? 'false' : 'true')
+            trig.setAttribute('aria-expanded', open ? 'true' : 'false')
+          }
+          trig.addEventListener('click', function (e) {
+            e.stopPropagation()
+            setOpen(menu.classList.contains('hidden'))
+          })
+          menu.addEventListener('click', function (e) {
+            var item = e.target.closest('[role="menuitem"]')
+            if (!item || !menu.contains(item)) return
+            setOpen(false)
+          })
+          document.addEventListener('click', function (e) {
+            if (!root.contains(e.target)) setOpen(false)
+          })
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setOpen(false)
+          })
+        })()
+
+        document.getElementById('inst-back').addEventListener('click', function () {
+          goPage('institutions', navButtonFor('institutions'))
+        })
+
+        document.getElementById('inst-tabs').addEventListener('click', function (e) {
+          var tab = e.target.closest('[data-inst-tab]')
+          if (!tab) return
+          setInstitutionTab(tab.getAttribute('data-tab'))
+        })
+
+        document.querySelector('main').addEventListener('click', function (e) {
+          var gp = e.target.closest('[data-go-page]')
+          if (gp) {
+            var p = gp.getAttribute('data-go-page')
+            goPage(p, navButtonFor(p))
+            return
+          }
+          var gi = e.target.closest('[data-go-inst]')
+          if (gi) {
+            var iid = gi.getAttribute('data-go-inst')
+            goPage('institutions', navButtonFor('institutions'))
+            requestAnimationFrame(function () {
+              openInstitution(iid)
+            })
+            return
+          }
+          var oi = e.target.closest('[data-open-inst]')
+          if (oi) {
+            e.stopPropagation()
+            openInstitution(oi.getAttribute('data-open-inst'))
+          }
+        })
+
+        showPage('overview')
+      })()
+    </script>
+  </body>
+</html>

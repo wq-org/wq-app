@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WQ Health — Institution Admin (design mock)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      :root {
+        --radius: 0.625rem;
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.145 0 0);
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.145 0 0);
+        --primary: oklch(0.205 0 0);
+        --primary-foreground: oklch(0.985 0 0);
+        --secondary: oklch(0.97 0 0);
+        --secondary-foreground: oklch(0.205 0 0);
+        --muted: oklch(0.97 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --accent: oklch(0.97 0 0);
+        --accent-foreground: oklch(0.205 0 0);
+        --destructive: oklch(0.577 0.245 27.325);
+        --border: oklch(0.922 0 0);
+        --input: oklch(0.922 0 0);
+        --ring: oklch(0.708 0 0);
+        --sidebar: oklch(0.985 0 0);
+        --sidebar-foreground: oklch(0.145 0 0);
+        --sidebar-primary: oklch(0.205 0 0);
+        --sidebar-primary-foreground: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.97 0 0);
+        --sidebar-accent-foreground: oklch(0.205 0 0);
+        --sidebar-border: oklch(0.922 0 0);
+        --sidebar-ring: oklch(0.708 0 0);
+        --oklch-green: 0.8 0.16 150;
+        --oklch-orange: 0.82 0.17 55;
+        --oklch-blue: 0.78 0.14 245;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+    </style>
+    <style type="text/tailwindcss">
+      @import "tailwindcss";
+      @theme {
+        --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-sidebar: var(--sidebar);
+        --color-sidebar-foreground: var(--sidebar-foreground);
+        --color-sidebar-primary: var(--sidebar-primary);
+        --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+        --color-sidebar-accent: var(--sidebar-accent);
+        --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+        --color-sidebar-border: var(--sidebar-border);
+        --color-sidebar-ring: var(--sidebar-ring);
+      }
+    </style>
+  </head>
+  <body class="bg-muted/30 font-sans text-foreground antialiased">
+    <div class="mx-auto my-4 flex max-h-[min(100vh-2rem,900px)] min-h-[620px] max-w-[1400px] overflow-hidden rounded-xl border border-border shadow-sm">
+      <aside
+        id="ia-sidebar"
+        class="flex h-full min-h-0 w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
+        aria-label="Institution admin navigation"
+      >
+        <!-- Workspace switcher (pattern from SidebarWorkspaceSwitcher.tsx — static HTML only) -->
+        <div class="relative border-b border-sidebar-border p-2" data-workspace-switcher>
+          <button
+            type="button"
+            id="ia-ws-trigger"
+            class="flex w-full items-center gap-2 rounded-lg p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 aria-expanded:bg-sidebar-accent aria-expanded:text-sidebar-accent-foreground"
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-controls="ia-ws-menu"
+          >
+            <div
+              class="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground"
+              id="ia-ws-logo"
+              aria-hidden="true"
+            >
+              PN
+            </div>
+            <div class="grid min-w-0 flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold" id="ia-ws-name">Pflegeschule Nord</span>
+              <span class="truncate text-xs text-muted-foreground" id="ia-ws-plan">EDU Plus · institution_admin</span>
+            </div>
+            <svg class="ml-auto size-4 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m7 15 5 5 5-5" />
+              <path d="m7 9 5-5 5 5" />
+            </svg>
+          </button>
+          <div
+            id="ia-ws-menu"
+            role="menu"
+            class="absolute top-0 left-full z-50 ml-1 hidden min-w-56 rounded-lg border border-border bg-card p-1 text-card-foreground shadow-md"
+            aria-hidden="true"
+          >
+            <p class="px-2 py-1.5 text-xs text-muted-foreground">Institutions</p>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-pick="0"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border text-[10px] font-medium" aria-hidden="true">PN</div>
+              <span class="min-w-0 flex-1 truncate">Pflegeschule Nord</span>
+              <span class="ml-auto text-xs tracking-widest text-muted-foreground">⌘1</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-pick="1"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border text-[10px] font-medium" aria-hidden="true">KD</div>
+              <span class="min-w-0 flex-1 truncate">Klinikum Demo</span>
+              <span class="ml-auto text-xs tracking-widest text-muted-foreground">⌘2</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-pick="2"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border text-[10px] font-medium" aria-hidden="true">PS</div>
+              <span class="min-w-0 flex-1 truncate">Pflegeakademie Süd</span>
+              <span class="ml-auto text-xs tracking-widest text-muted-foreground">⌘3</span>
+            </button>
+            <div class="my-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              data-ws-add
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-md border border-border bg-background" aria-hidden="true">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14" />
+                  <path d="M12 5v14" />
+                </svg>
+              </div>
+              <span class="font-medium">Add institution</span>
+            </button>
+          </div>
+          <div class="mt-1 px-2 pb-0.5 text-[10px] text-muted-foreground">Switching updates the mock header only.</div>
+        </div>
+        <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2 text-sm" role="navigation">
+          <button type="button" data-nav data-page="overview" data-active="true" aria-current="page" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Overview</button>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Organisation</p>
+          <button type="button" data-nav data-page="org" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Faculties &amp; cohorts</button>
+          <button type="button" data-nav data-page="classrooms" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Classrooms</button>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">People</p>
+          <button type="button" data-nav data-page="teachers" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Teachers</button>
+          <button type="button" data-nav data-page="students" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Students</button>
+          <button type="button" data-nav data-page="invites" data-active="false" aria-current="false" class="ia-nav flex w-full items-center justify-between gap-2 rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"><span>Invitations</span><span class="rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-medium text-white">3</span></button>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Billing</p>
+          <button type="button" data-nav data-page="license" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">License &amp; usage</button>
+          <button type="button" data-nav data-page="entitlements" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Entitlements</button>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Compliance</p>
+          <button type="button" data-nav data-page="settings" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Settings</button>
+          <button type="button" data-nav data-page="audit" data-active="false" aria-current="false" class="ia-nav flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Audit log</button>
+        </nav>
+        <!-- Account menu (pattern from SidebarAccountMenu.tsx — static HTML only) -->
+        <div class="relative mt-auto border-t border-sidebar-border p-2" data-account-menu>
+          <button
+            type="button"
+            id="ia-ac-trigger"
+            class="flex w-full items-center gap-2 rounded-lg p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 aria-expanded:bg-sidebar-accent aria-expanded:text-sidebar-accent-foreground"
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-controls="ia-ac-menu"
+          >
+            <div
+              class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-xs font-semibold text-muted-foreground"
+              aria-hidden="true"
+            >
+              MS
+            </div>
+            <div class="grid min-w-0 flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold">Maria Schulz</span>
+              <span class="truncate text-xs text-muted-foreground">maria.schulz@pflegeschule.de</span>
+            </div>
+            <svg class="ml-auto size-4 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m7 15 5 5 5-5" />
+              <path d="m7 9 5-5 5 5" />
+            </svg>
+          </button>
+          <div
+            id="ia-ac-menu"
+            role="menu"
+            class="absolute bottom-0 left-full z-50 ml-1 hidden min-w-56 rounded-lg border border-border bg-card p-1 text-card-foreground shadow-md"
+            aria-hidden="true"
+          >
+            <div class="px-1 py-1">
+              <div class="flex items-center gap-2 rounded-md px-1 py-1.5 text-left text-sm font-normal">
+                <div class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-xs font-semibold text-muted-foreground" aria-hidden="true">MS</div>
+                <div class="grid min-w-0 flex-1 text-left text-sm leading-tight">
+                  <span class="truncate font-semibold text-foreground">Maria Schulz</span>
+                  <span class="truncate text-xs text-muted-foreground">maria.schulz@pflegeschule.de</span>
+                </div>
+              </div>
+            </div>
+            <div class="mx-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4M19 17v4M3 5h4M17 19h4" />
+              </svg>
+              Upgrade to Pro
+            </button>
+            <div class="mx-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.77 4 4 0 0 1 0 6.76 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              Account
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+              Billing
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+              </svg>
+              Notifications
+            </button>
+            <div class="mx-1 h-px bg-border" role="separator"></div>
+            <button
+              type="button"
+              role="menuitem"
+              data-ac-logout
+              class="flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+            >
+              <svg class="size-4 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+              Log out
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="relative flex min-h-0 flex-1 flex-col overflow-auto bg-background p-6">
+        <section id="pg-overview" class="space-y-5" aria-labelledby="h-overview">
+          <header>
+            <h1 id="h-overview" class="text-base font-semibold tracking-tight">Overview</h1>
+            <p class="text-sm text-muted-foreground"><span data-ws-context-name>Pflegeschule Nord</span> · <span class="font-variant-numeric tabular-nums">2025/26</span> · institution_quotas_usage + memberships snapshot</p>
+          </header>
+          <div class="rounded-lg border border-[oklch(var(--oklch-orange)_/_0.35)] bg-card px-4 py-3 text-sm" role="status">
+            <p class="text-muted-foreground"><span aria-hidden="true">⚠</span> 3 pending rows in <code class="rounded bg-muted px-1 text-xs">institution_invites</code>. <button type="button" data-go-page="invites" class="font-medium text-primary underline-offset-4 hover:underline">Review invitations →</button></p>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Active teachers</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold">18</p>
+              <p class="text-xs text-muted-foreground">institution_memberships · of <span class="tabular-nums">25</span> seats_cap</p>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Active students</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold">312</p>
+              <p class="text-xs text-[oklch(var(--oklch-green))]">↑ <span class="tabular-nums">24</span> this month</p>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Classrooms</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold">14</p>
+              <p class="text-xs text-muted-foreground"><span class="tabular-nums">12</span> active · <code class="text-[10px]">classrooms</code></p>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Storage</p>
+              <p class="font-variant-numeric tabular-nums text-2xl font-semibold">43 GB</p>
+              <p class="text-xs text-[oklch(var(--oklch-orange))]"><span class="tabular-nums">86%</span> of cap · institution_quotas_usage</p>
+              <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"><div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div></div>
+            </div>
+          </div>
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-3 text-sm font-medium">Seat utilisation</h2>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2"><span class="w-24 text-muted-foreground">Teachers</span><div class="h-1.5 flex-1 rounded-full bg-muted"><div class="h-full w-[72%] rounded-full bg-[oklch(var(--oklch-green))]"></div></div><span class="w-20 text-right font-variant-numeric tabular-nums text-xs text-muted-foreground">18 / 25</span></div>
+                <div class="flex items-center gap-2"><span class="w-24 text-muted-foreground">Students</span><div class="h-1.5 flex-1 rounded-full bg-muted"><div class="h-full w-[78%] rounded-full bg-[oklch(var(--oklch-green))]"></div></div><span class="w-20 text-right font-variant-numeric tabular-nums text-xs text-muted-foreground">312 / 400</span></div>
+                <div class="flex items-center gap-2"><span class="w-24 text-muted-foreground">Storage</span><div class="h-1.5 flex-1 rounded-full bg-muted"><div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div></div><span class="w-20 text-right font-variant-numeric tabular-nums text-xs text-muted-foreground">43 / 50 GB</span></div>
+              </div>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <h2 class="mb-3 text-sm font-medium">Recent activity</h2>
+              <ul class="divide-y divide-border text-sm">
+                <li class="flex gap-2 py-2"><span class="mt-1 size-2 shrink-0 rounded-full bg-[oklch(var(--oklch-green))]" aria-hidden="true"></span><div><p>M. Baumann · institution_memberships active</p><p class="text-xs text-muted-foreground">2h ago</p></div></li>
+                <li class="flex gap-2 py-2"><span class="mt-1 size-2 shrink-0 rounded-full bg-[oklch(var(--oklch-blue))]" aria-hidden="true"></span><div><p>Classroom PG 3A · classrooms</p><p class="text-xs text-muted-foreground">Yesterday</p></div></li>
+                <li class="flex gap-2 py-2"><span class="mt-1 size-2 shrink-0 rounded-full bg-muted-foreground" aria-hidden="true"></span><div><p>institution_invites pending</p><p class="text-xs text-muted-foreground">3 rows</p></div></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="pg-org" class="hidden space-y-4" hidden aria-labelledby="h-org">
+          <header><h1 id="h-org" class="text-base font-semibold">Faculties &amp; cohorts</h1><p class="text-sm text-muted-foreground">Hierarchy: <code class="text-xs">faculties</code> → <code class="text-xs">programmes</code> → <code class="text-xs">cohorts</code> → <code class="text-xs">class_groups</code> → offerings · <code class="text-xs">class_group_offering_id</code> on classrooms</p></header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Tree / CRUD mock: create faculty, programme, cohort, class group, then programme_offering / cohort_offering / class_group_offering per academic year.</div>
+        </section>
+
+        <section id="pg-classrooms" class="hidden space-y-4" hidden aria-labelledby="h-class">
+          <header class="flex flex-wrap items-end justify-between gap-2"><div><h1 id="h-class" class="text-base font-semibold">Classrooms</h1><p class="text-sm text-muted-foreground">public.classrooms · scoped to institution</p></div><button type="button" class="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50">Create classroom</button></header>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead class="border-b border-border"><tr><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Name</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Lead</th><th class="h-10 px-2 text-right text-xs font-medium text-muted-foreground">Students</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Programme</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Status</th><th class="h-10 px-2"></th></tr></thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50"><td class="p-2 font-medium">PG 3A</td><td class="p-2">K. Hoffmann</td><td class="p-2 text-right font-variant-numeric tabular-nums">24</td><td class="p-2">Generalistische Pflege</td><td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">active</span></td><td class="p-2"><button type="button" class="text-xs font-medium text-primary">Edit</button></td></tr>
+                <tr class="border-b border-border hover:bg-muted/50"><td class="p-2 font-medium">WM 1A</td><td class="p-2">—</td><td class="p-2 text-right font-variant-numeric tabular-nums">0</td><td class="p-2">Wundmanagement</td><td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-orange)_/_0.12)] px-2 py-0.5 text-xs">no teacher</span></td><td class="p-2"><button type="button" class="text-xs font-medium text-primary">Assign</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="pg-teachers" class="hidden space-y-4" hidden aria-labelledby="h-teach">
+          <header class="flex flex-wrap items-end justify-between gap-2"><div><h1 id="h-teach" class="text-base font-semibold">Teachers</h1><p class="text-sm text-muted-foreground">institution_memberships · role teacher</p></div><button type="button" class="inline-flex h-9 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50">Invite teacher</button></header>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead class="border-b border-border"><tr><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Name</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Email</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Faculty</th><th class="h-10 px-2 text-right text-xs font-medium text-muted-foreground">Classrooms</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Status</th></tr></thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50"><td class="p-2">Katharina Hoffmann</td><td class="p-2 font-variant-numeric tabular-nums text-xs">k.hoffmann@pflegeschule.de</td><td class="p-2">Pflege</td><td class="p-2 text-right tabular-nums">2</td><td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">active</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="pg-students" class="hidden space-y-4" hidden aria-labelledby="h-stud">
+          <header><h1 id="h-stud" class="text-base font-semibold">Students</h1><p class="text-sm text-muted-foreground">institution_memberships · classroom_members roster</p></header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Directory: search, invite via <code class="text-xs">create_institution_invite_by_email</code>, assign to classrooms, withdraw from institution.</div>
+        </section>
+
+        <section id="pg-invites" class="hidden space-y-4" hidden aria-labelledby="h-inv">
+          <header><h1 id="h-inv" class="text-base font-semibold">Invitations</h1><p class="text-sm text-muted-foreground">institution_invites · RPCs invite_institution_member, create_institution_invite_by_email, activate_institution_invite</p></header>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead class="border-b border-border"><tr><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Email</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Role</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Invited by</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Sent</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Status</th><th class="h-10 px-2"></th></tr></thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50"><td class="p-2 font-variant-numeric tabular-nums text-xs">n.wagner@extern.de</td><td class="p-2">teacher</td><td class="p-2">K. Hoffmann</td><td class="p-2">3d ago</td><td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-orange)_/_0.12)] px-2 py-0.5 text-xs">pending</span></td><td class="p-2"><button type="button" class="text-xs font-medium text-primary">Resend</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="pg-license" class="hidden space-y-4" hidden aria-labelledby="h-lic">
+          <header><h1 id="h-lic" class="text-base font-semibold">License &amp; usage</h1><p class="text-sm text-muted-foreground">institution_subscriptions (read-only) · billing_status, renewal_at, seats_cap, storage_bytes_cap, grace_ends_at</p></header>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs font-medium uppercase text-muted-foreground">Plan</p><p class="mt-1 text-lg font-semibold">EDU Plus</p><p class="text-xs text-muted-foreground">plan_catalog</p></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs font-medium uppercase text-muted-foreground">billing_status</p><p class="mt-1 text-lg font-semibold text-[oklch(var(--oklch-green))]">active</p><p class="text-xs text-muted-foreground">renewal_at · 2026-09-01</p></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs font-medium uppercase text-muted-foreground">Next invoice (mock)</p><p class="mt-1 font-variant-numeric tabular-nums text-lg font-semibold">€ 890</p></div>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <h2 class="mb-3 text-sm font-medium">institution_quotas_usage</h2>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2"><span class="w-28 text-muted-foreground">Teacher seats</span><div class="h-1.5 flex-1 rounded-full bg-muted"><div class="h-full w-[72%] rounded-full bg-[oklch(var(--oklch-green))]"></div></div><span class="w-24 text-right font-variant-numeric tabular-nums text-xs">18 / 25</span></div>
+              <div class="flex items-center gap-2"><span class="w-28 text-muted-foreground">Student seats</span><div class="h-1.5 flex-1 rounded-full bg-muted"><div class="h-full w-[78%] rounded-full bg-[oklch(var(--oklch-green))]"></div></div><span class="w-24 text-right font-variant-numeric tabular-nums text-xs">312 / 400</span></div>
+              <div class="flex items-center gap-2"><span class="w-28 text-muted-foreground">Storage</span><div class="h-1.5 flex-1 rounded-full bg-muted"><div class="h-full w-[86%] rounded-full bg-[oklch(var(--oklch-orange))]"></div></div><span class="w-24 text-right font-variant-numeric tabular-nums text-xs">43 / 50 GB</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pg-entitlements" class="hidden space-y-4" hidden aria-labelledby="h-ent">
+          <header><h1 id="h-ent" class="text-base font-semibold">Entitlements</h1><p class="text-sm text-muted-foreground">plan_entitlements + institution_entitlement_overrides · read-only for institution_admin</p></header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Feature matrix vs plan defaults; overrides shown with created_by super_admin only.</div>
+        </section>
+
+        <section id="pg-settings" class="hidden space-y-4" hidden aria-labelledby="h-set">
+          <header><h1 id="h-set" class="text-base font-semibold">Settings &amp; compliance</h1><p class="text-sm text-muted-foreground">institution_settings · data_subject_requests</p></header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Locale, timezone, retention_policy_code, notification_defaults (jsonb). GDPR queue for institution-scoped DSRs.</div>
+        </section>
+
+        <section id="pg-audit" class="hidden space-y-4" hidden aria-labelledby="h-aud">
+          <header><h1 id="h-aud" class="text-base font-semibold">Audit log</h1><p class="text-sm text-muted-foreground">audit.events · institution_id scoped · read-only</p></header>
+          <div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Filter by occurred_at, event_type, actor_user_id. No INSERT from client — audit.log_event() only.</div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      ;(function () {
+        var PAGES = ['overview', 'org', 'classrooms', 'teachers', 'students', 'invites', 'license', 'entitlements', 'settings', 'audit']
+        var NAV_SEL = '#ia-sidebar button[data-nav][data-page]'
+        function showPage(page) {
+          PAGES.forEach(function (p) {
+            var el = document.getElementById('pg-' + p)
+            if (!el) return
+            var on = p === page
+            el.classList.toggle('hidden', !on)
+            el.hidden = !on
+          })
+        }
+        function navBtn(page) {
+          return document.querySelector(NAV_SEL + '[data-page="' + page + '"]')
+        }
+        function setNavActive(pageId) {
+          document.querySelectorAll(NAV_SEL).forEach(function (btn) {
+            var active = btn.getAttribute('data-page') === pageId
+            btn.dataset.active = active ? 'true' : 'false'
+            btn.setAttribute('aria-current', active ? 'page' : 'false')
+          })
+        }
+        function goPage(page, navEl) {
+          showPage(page)
+          if (navEl && navEl.hasAttribute('data-nav')) {
+            setNavActive(navEl.getAttribute('data-page'))
+          } else {
+            setNavActive(page)
+          }
+        }
+        document.getElementById('ia-sidebar').addEventListener('click', function (e) {
+          var btn = e.target.closest('button[data-nav][data-page]')
+          if (!btn || !e.currentTarget.contains(btn)) return
+          goPage(btn.getAttribute('data-page'), btn)
+        })
+
+        ;(function workspaceSwitcher() {
+          var root = document.querySelector('#ia-sidebar [data-workspace-switcher]')
+          if (!root) return
+          var trig = document.getElementById('ia-ws-trigger')
+          var menu = document.getElementById('ia-ws-menu')
+          var logoEl = document.getElementById('ia-ws-logo')
+          var nameEl = document.getElementById('ia-ws-name')
+          var planEl = document.getElementById('ia-ws-plan')
+          var ctxName = document.querySelector('[data-ws-context-name]')
+          var rows = [
+            { logo: 'PN', name: 'Pflegeschule Nord', plan: 'EDU Plus · institution_admin' },
+            { logo: 'KD', name: 'Klinikum Demo', plan: 'Trial · institution_admin' },
+            { logo: 'PS', name: 'Pflegeakademie Süd', plan: 'EDU Basic · institution_admin' },
+          ]
+          function closeAccountIfOpen() {
+            var am = document.getElementById('ia-ac-menu')
+            var at = document.getElementById('ia-ac-trigger')
+            if (!am || !at || am.classList.contains('hidden')) return
+            am.classList.add('hidden')
+            am.setAttribute('aria-hidden', 'true')
+            at.setAttribute('aria-expanded', 'false')
+          }
+          function setOpen(open) {
+            if (open) closeAccountIfOpen()
+            menu.classList.toggle('hidden', !open)
+            menu.setAttribute('aria-hidden', open ? 'false' : 'true')
+            trig.setAttribute('aria-expanded', open ? 'true' : 'false')
+          }
+          trig.addEventListener('click', function (e) {
+            e.stopPropagation()
+            setOpen(menu.classList.contains('hidden'))
+          })
+          root.addEventListener('click', function (e) {
+            var pick = e.target.closest('[data-ws-pick]')
+            if (!pick || !menu.contains(pick)) return
+            var i = parseInt(pick.getAttribute('data-ws-pick'), 10)
+            var row = rows[i]
+            if (row) {
+              logoEl.textContent = row.logo
+              nameEl.textContent = row.name
+              planEl.textContent = row.plan
+              if (ctxName) ctxName.textContent = row.name
+            }
+            setOpen(false)
+          })
+          var addBtn = root.querySelector('[data-ws-add]')
+          if (addBtn)
+            addBtn.addEventListener('click', function (e) {
+              e.stopPropagation()
+              setOpen(false)
+            })
+          document.addEventListener('click', function (e) {
+            if (!root.contains(e.target)) setOpen(false)
+          })
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setOpen(false)
+          })
+        })()
+
+        ;(function accountMenu() {
+          var root = document.querySelector('#ia-sidebar [data-account-menu]')
+          if (!root) return
+          var trig = document.getElementById('ia-ac-trigger')
+          var menu = document.getElementById('ia-ac-menu')
+          function closeWorkspaceIfOpen() {
+            var wm = document.getElementById('ia-ws-menu')
+            var wt = document.getElementById('ia-ws-trigger')
+            if (!wm || !wt || wm.classList.contains('hidden')) return
+            wm.classList.add('hidden')
+            wm.setAttribute('aria-hidden', 'true')
+            wt.setAttribute('aria-expanded', 'false')
+          }
+          function setOpen(open) {
+            if (open) closeWorkspaceIfOpen()
+            menu.classList.toggle('hidden', !open)
+            menu.setAttribute('aria-hidden', open ? 'false' : 'true')
+            trig.setAttribute('aria-expanded', open ? 'true' : 'false')
+          }
+          trig.addEventListener('click', function (e) {
+            e.stopPropagation()
+            setOpen(menu.classList.contains('hidden'))
+          })
+          menu.addEventListener('click', function (e) {
+            var item = e.target.closest('[role="menuitem"]')
+            if (!item || !menu.contains(item)) return
+            setOpen(false)
+          })
+          document.addEventListener('click', function (e) {
+            if (!root.contains(e.target)) setOpen(false)
+          })
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setOpen(false)
+          })
+        })()
+
+        document.querySelector('main').addEventListener('click', function (e) {
+          var t = e.target.closest('[data-go-page]')
+          if (!t) return
+          var p = t.getAttribute('data-go-page')
+          goPage(p, navBtn(p))
+        })
+        showPage('overview')
+        setNavActive('overview')
+      })()
+    </script>
+  </body>
+</html>

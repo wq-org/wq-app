@@ -362,16 +362,24 @@ Frau Müller  [profiles.role = teacher]
 │       │   └── Herr Bauer     [co_teacher, enrolled_at: 2023-09-01]
 │       │
 │       ├── classroom_attendance_schedules
-│       │   └── Mo/Mi/Fr 08:00–09:30, Europe/Berlin, active_from: 2023-09-01
-│       │       ├── exceptions
-│       │       │   └── 2026-04-18  [exception_type: skip — public holiday]
-│       │       └── classroom_attendance_sessions  (materialized)
-│       │           ├── 2026-03-31 Mo 08:00–09:30  [schedule_id set]
+│       │   └── course_id → Grundlagen Farbe   is_active: true   active_from: 2023-09-01   active_until: null
+│       │       days_of_week: [1,3,5]   start_time: 08:00   end_time: 09:30   timezone: Europe/Berlin
+│       │       ├── classroom_attendance_schedule_exceptions
+│       │       │   └── exception_date: 2026-04-18   exception_type: skip
+│       │       │       override_start_time: null   override_end_time: null
+│       │       │       [skip type — no session generated for this date]
+│       │       └── classroom_attendance_sessions  (materialized via materialize_classroom_attendance_sessions)
+│       │           ├── session_date: 2026-03-31 Mo   title: "Farbenlehre – Stunde 12"
+│       │           │   course_id → Grundlagen Farbe   starts_at: 08:00   ends_at: 09:30
+│       │           │   schedule_id: set   schedule_exception_id: null
 │       │           │   └── classroom_attendance_records
-│       │           │       ├── Anna Schmidt:  present, check_in: 08:02
-│       │           │       ├── Tom Weber:     late,    check_in: 08:18
-│       │           │       └── Lena Fischer:  present, check_in: 07:59
-│       │           └── 2026-04-02 Mi 08:00–09:30  [no records yet — open]
+│       │           │       ├── Anna Schmidt:  status: present   check_in: 08:02   source: self_check_in
+│       │           │       ├── Tom Weber:     status: late      check_in: 08:18   source: manual
+│       │           │       └── Lena Fischer:  status: present   check_in: 07:59   source: self_check_in
+│       │           └── session_date: 2026-04-02 Mi   title: null   course_id → Grundlagen Farbe
+│       │               starts_at: 08:00   ends_at: 09:30   schedule_id: set   schedule_exception_id: null
+│       │               [no records yet — session open]
+│       │               [2026-04-18 Fr → skipped via exception — no session row generated]
 │       │
 │       └── classroom_reward_settings
 │           ├── leaderboard_opt_in: true
