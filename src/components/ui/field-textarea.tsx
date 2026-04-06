@@ -33,6 +33,7 @@ type FieldTextareaProps = {
    */
   showCounter?: boolean
   hideSeparator?: boolean
+  disabled?: boolean
   className?: string
   /**
    * Fires once when the value grows to exactly `maxLength` (previous length was below the limit).
@@ -56,6 +57,7 @@ export const FieldTextarea = ({
   maxLength: maxLengthProp,
   showCounter: showCounterProp,
   hideSeparator = false,
+  disabled = false,
   className,
   onReachMaxLength,
   onOverMaxLength,
@@ -146,6 +148,7 @@ export const FieldTextarea = ({
           value={value}
           onChange={handleChange}
           onScroll={useHighlightOverlay ? handleScroll : undefined}
+          disabled={disabled}
         />
       </div>
 

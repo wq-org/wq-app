@@ -34,16 +34,35 @@ export { listAdminUsers, deleteUserCompletely, setUserActiveStatus } from './api
 export type { AdminUserRow, AdminDeleteUserResult, AdminSetUserActiveResult } from './api/userApi'
 export { useInstitutions } from './hooks/useInstitutions'
 export { useAdminUsers } from './hooks/useAdminUsers'
+export { useFeatureDefinitions } from './hooks/useFeatureDefinitions'
+export {
+  listFeatureDefinitions,
+  getFeatureDefinitionById,
+  createFeatureDefinition,
+  updateFeatureDefinition,
+  deleteFeatureDefinition,
+  assertValidFeatureKey,
+} from './api/featureDefinitionsApi'
+export type {
+  FeatureDefinition,
+  FeatureDefinitionRow,
+  FeatureDefinitionInsert,
+  FeatureDefinitionUpdate,
+  FeatureDefinitionFormValues,
+  EntitlementValueType,
+} from './types/featureDefinitions.types'
+export { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from './types/featureDefinitions.types'
 export { AdminAnalytics } from './pages/analytics'
 export { AdminBilling } from './pages/billing'
 export { AdminAuditLogs } from './pages/auditLogs'
 export { AdminDashboard } from './pages/dashboard'
 export { AdminFeatureDefinitions } from './pages/featureDefinitions'
+export { AdminFeatureDefinitionEditor } from './pages/featureDefinitionEditor'
 export { AdminFeatures } from './pages/features'
 export { AdminGdprRequest } from './pages/gdprRequest'
 export { AdminInstitution } from './pages/institution'
 export { AdminLicenses } from './pages/licenses'
 export { NewInstitution } from './pages/newInstitution'
 export { AdminPlanCatalog } from './pages/planCatalog'
-export { AdminSystem } from './pages/system'
+export { AdminSettings } from './pages/settings'
 export { AdminUsers } from './pages/users'

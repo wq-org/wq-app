@@ -8,7 +8,7 @@ import {
   GraduationCap,
   Home,
   KeyRound,
-  Puzzle,
+  Blocks,
   ShieldCheck,
   Settings,
   Users,
@@ -76,7 +76,7 @@ const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
     {
       titleKey: 'nav.featureDefinitions',
       url: '/feature-definitions',
-      icon: Puzzle,
+      icon: Blocks,
     },
     {
       titleKey: 'nav.auditLogs',

@@ -65,10 +65,10 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
       })),
     [navigation.navItems, t],
   )
-  const systemPath = `${routePrefix}/system`
-  const isSystemActive =
+  const settingsPath = `${routePrefix}/settings`
+  const isSettingsActive =
     currentRole === USER_ROLES.SUPER_ADMIN &&
-    (location.pathname === systemPath || location.pathname.startsWith(`${systemPath}/`))
+    (location.pathname === settingsPath || location.pathname.startsWith(`${settingsPath}/`))
 
   const currentLang: 'de' | 'en' = i18n.language.startsWith('de') ? 'de' : 'en'
   const nextLang: 'de' | 'en' = currentLang === 'de' ? 'en' : 'de'
@@ -153,12 +153,12 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
             {currentRole === USER_ROLES.SUPER_ADMIN ? (
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  isActive={isSystemActive}
-                  tooltip={t('nav.system')}
-                  onClick={() => navigate(systemPath)}
+                  isActive={isSettingsActive}
+                  tooltip={t('nav.settings')}
+                  onClick={() => navigate(settingsPath)}
                 >
                   <Settings />
-                  <span>{t('nav.system')}</span>
+                  <span>{t('nav.settings')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ) : null}

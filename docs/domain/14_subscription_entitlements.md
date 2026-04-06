@@ -58,6 +58,7 @@ flowchart TD
 - Table: `feature_definitions`
 - Fields: key (unique text), name, description, default_enabled, category, value_type (boolean | integer | bigint | text)
 - RLS: `feature_defs_super_admin` (CRUD); `feature_defs_authenticated_read` (SELECT for any logged-in user)
+- Super admin UI: catalog rows are managed in-app (Feature definitions); `key` is immutable after insert and globally unique. Hard delete is allowed only when no `plan_entitlements` or `institution_entitlement_overrides` row references the feature.
 
 **Set plan default for feature**
 

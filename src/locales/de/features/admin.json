@@ -13,7 +13,6 @@
     "licenses": "Lizenzen",
     "features": "Funktionen",
     "analytics": "Analysen",
-    "system": "System",
     "teachers": "Lehrkräfte",
     "students": "Lernende",
     "courses": "Kurse",
@@ -122,6 +121,116 @@
       "activateDescription": "{{username}} kann sich wieder anmelden.",
       "deactivateDescription": "{{username}} kann sich nicht mehr anmelden.",
       "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    }
+  },
+  "featureDefinitions": {
+    "pageTitle": "Funktionsdefinitionen",
+    "pageDescription": "Dieser Katalog ist die Berechtigungsebene der Plattform: Jeder stabile Schlüssel kann in kommerziellen Plänen und institutionsbezogenen Overrides vorkommen. Die wirksame Berechtigung folgt dieser Reihenfolge—zuerst Institutions-Override, dann Planvorgaben, dann die hier gesetzten Standardwerte—bevor das Produkt Funktionen freigibt.",
+    "filterLabel": "Katalog durchsuchen",
+    "filterPlaceholder": "Nach Schlüssel oder Anzeigenamen filtern…",
+    "filterEmpty": "Keine Einträge passen zur Suche. Versuche einen anderen Schlüssel oder Namen.",
+    "addButton": "Funktion hinzufügen",
+    "loadError": "Funktionsdefinitionen konnten nicht geladen werden",
+    "card": {
+      "coreBadge": "Kern",
+      "defaultOn": "Standard an",
+      "defaultOff": "Standard aus",
+      "edit": "Bearbeiten",
+      "updatedRecently": "Kürzlich aktualisiert",
+      "updatedRelative": "Aktualisiert {{relative}}",
+      "noCategory": "Keine Kategorie"
+    },
+    "editor": {
+      "back": "Zurück zur Liste",
+      "pageTitleNew": "Neue Funktionsdefinition",
+      "pageTitleEdit": "Funktionsdefinition bearbeiten",
+      "notFound": "Diese Funktionsdefinition wurde nicht gefunden.",
+      "dangerZone": "Gefahrenbereich",
+      "deleteHint": "Beim Löschen wird der Katalogeintrag entfernt. Das schlägt fehl, wenn ein Plan oder Override noch darauf verweist.",
+      "holdToDelete": "Zum Löschen halten"
+    },
+    "empty": {
+      "title": "Noch keine Funktionen",
+      "description": "Lege eine Funktion im Katalog an, damit Pläne und Berechtigungs-Overrides darauf verweisen können.",
+      "hintKeys": "Jeder Schlüssel ist eindeutig und kann später nicht umbenannt werden.",
+      "hintPlans": "Kleinbuchstaben und snake_case verwenden (z. B. custom_reports)."
+    },
+    "table": {
+      "key": "Schlüssel",
+      "name": "Name",
+      "category": "Kategorie",
+      "valueType": "Werttyp",
+      "defaultEnabled": "Standard (Boolean)",
+      "updatedAt": "Aktualisiert",
+      "actions": "Aktionen"
+    },
+    "valueTypes": {
+      "boolean": "Boolean",
+      "integer": "Ganzzahl",
+      "bigint": "Große Ganzzahl",
+      "text": "Text"
+    },
+    "badges": {
+      "on": "An",
+      "off": "Aus"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "form": {
+      "createTitle": "Neue Funktionsdefinition",
+      "editTitle": "Funktionsdefinition bearbeiten",
+      "description": "Stabile Schlüssel identifizieren die Funktion in Plänen und Overrides. Der Schlüssel kann nach der Erstellung nicht geändert werden.",
+      "key": "Schlüssel",
+      "keyPlaceholder": "z. B. custom_reports",
+      "keyReadOnlyHint": "Der Schlüssel bleibt fest, damit bestehende Planzeilen stabil referenzieren können.",
+      "name": "Anzeigename",
+      "namePlaceholder": "Menschenlesbare Bezeichnung",
+      "category": "Kategorie",
+      "categoryPlaceholder": "Kategorie auswählen",
+      "descriptionField": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Hinweise für Admins",
+      "valueType": "Werttyp",
+      "defaultEnabled": "Standard aktiviert",
+      "defaultEnabledHint": "Gilt bei Werttyp Boolean, bevor Plan- oder Institutions-Overrides greifen.",
+      "cancel": "Abbrechen",
+      "create": "Anlegen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert..."
+    },
+    "validation": {
+      "keyInvalid": "Nur Kleinbuchstaben und snake_case: mit Buchstabe beginnen, danach Buchstaben, Ziffern oder Unterstriche."
+    },
+    "categories": {
+      "none": "Keine Kategorie",
+      "core": "Kern",
+      "collaboration": "Zusammenarbeit",
+      "engagement": "Engagement",
+      "infrastructure": "Infrastruktur",
+      "learning": "Lernen",
+      "limits": "Limits",
+      "scheduling": "Planung"
+    },
+    "deleteDialog": {
+      "title": "Diese Funktion löschen?",
+      "description": "Das kann nicht rückgängig gemacht werden. Wenn ein Plan-Entitlement oder ein Override noch darauf verweist, schlägt das Löschen fehl.",
+      "confirmLabel": "Schlüssel {{key}} zum Bestätigen eingeben.",
+      "confirmFieldLabel": "Bestätigung",
+      "confirmInputAria": "Bestätigung Funktionsschlüssel",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen",
+      "deleting": "Wird gelöscht..."
+    },
+    "toasts": {
+      "createSuccess": "Funktion angelegt",
+      "updateSuccess": "Funktion aktualisiert",
+      "createError": "Funktion konnte nicht angelegt werden",
+      "updateError": "Funktion konnte nicht aktualisiert werden",
+      "deleteSuccess": "Funktion gelöscht",
+      "deleteError": "Funktion konnte nicht gelöscht werden",
+      "deleteBlockedByReferences": "Diese Funktion wird noch von einem Plan oder Override referenziert. Entferne diese Zeilen zuerst.",
+      "unexpected": "Etwas ist schiefgelaufen."
     }
   },
   "form": {

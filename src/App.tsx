@@ -49,13 +49,14 @@ import {
   AdminBilling,
   AdminDashboard,
   AdminFeatureDefinitions,
+  AdminFeatureDefinitionEditor,
   AdminFeatures,
   AdminGdprRequest,
   AdminInstitution,
   AdminLicenses,
   NewInstitution,
   AdminPlanCatalog,
-  AdminSystem,
+  AdminSettings,
   AdminUsers,
 } from '@/features/admin'
 import {
@@ -290,6 +291,14 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="feature-definitions/:featureId"
+                  element={
+                    <RequireAuth>
+                      <AdminFeatureDefinitionEditor />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="audit-logs"
                   element={
                     <RequireAuth>
@@ -338,11 +347,20 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="system"
+                  path="settings"
                   element={
                     <RequireAuth>
-                      <AdminSystem />
+                      <AdminSettings />
                     </RequireAuth>
+                  }
+                />
+                <Route
+                  path="system"
+                  element={
+                    <Navigate
+                      to="/super_admin/settings"
+                      replace
+                    />
                   }
                 />
               </Route>

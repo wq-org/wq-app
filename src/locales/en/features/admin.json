@@ -13,7 +13,6 @@
     "licenses": "Licenses",
     "features": "Features",
     "analytics": "Analytics",
-    "system": "System",
     "teachers": "Teachers",
     "students": "Students",
     "courses": "Courses",
@@ -122,6 +121,116 @@
       "activateDescription": "{{username}} can log in again.",
       "deactivateDescription": "{{username}} can no longer log in.",
       "unexpectedError": "An unexpected error occurred."
+    }
+  },
+  "featureDefinitions": {
+    "pageTitle": "Feature definitions",
+    "pageDescription": "This catalog is the platform entitlement layer: each stable key can appear in commercial plans and per-institution overrides. Effective access resolves in order—institution override first, then plan defaults, then the defaults you set here—before the product gates features.",
+    "filterLabel": "Search catalog",
+    "filterPlaceholder": "Filter by key or display name…",
+    "filterEmpty": "No definitions match your search. Try another key or name.",
+    "addButton": "Add feature",
+    "loadError": "Failed to load feature definitions",
+    "card": {
+      "coreBadge": "Core",
+      "defaultOn": "Default on",
+      "defaultOff": "Default off",
+      "edit": "Edit",
+      "updatedRecently": "Updated recently",
+      "updatedRelative": "Updated {{relative}}",
+      "noCategory": "No category"
+    },
+    "editor": {
+      "back": "Back to list",
+      "pageTitleNew": "New feature definition",
+      "pageTitleEdit": "Edit feature definition",
+      "notFound": "This feature definition could not be found.",
+      "dangerZone": "Danger zone",
+      "deleteHint": "Deleting removes the catalog row. This fails if a plan or override still references it.",
+      "holdToDelete": "Hold to delete"
+    },
+    "empty": {
+      "title": "No features yet",
+      "description": "Add a feature to the catalog so plans and entitlement overrides can reference it.",
+      "hintKeys": "Each key is unique and cannot be renamed later.",
+      "hintPlans": "Use lowercase snake_case (for example custom_reports)."
+    },
+    "table": {
+      "key": "Key",
+      "name": "Name",
+      "category": "Category",
+      "valueType": "Value type",
+      "defaultEnabled": "Default (boolean)",
+      "updatedAt": "Updated",
+      "actions": "Actions"
+    },
+    "valueTypes": {
+      "boolean": "Boolean",
+      "integer": "Integer",
+      "bigint": "Big integer",
+      "text": "Text"
+    },
+    "badges": {
+      "on": "On",
+      "off": "Off"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "createTitle": "New feature definition",
+      "editTitle": "Edit feature definition",
+      "description": "Stable keys identify the feature in plans and overrides. The key cannot be changed after creation.",
+      "key": "Key",
+      "keyPlaceholder": "e.g. custom_reports",
+      "keyReadOnlyHint": "The key is fixed so existing plan rows keep a stable reference.",
+      "name": "Display name",
+      "namePlaceholder": "Human-readable label",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "descriptionField": "Description",
+      "descriptionPlaceholder": "Optional notes for admins",
+      "valueType": "Value type",
+      "defaultEnabled": "Default enabled",
+      "defaultEnabledHint": "Used when value type is boolean, before plan or institution overrides.",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "validation": {
+      "keyInvalid": "Use lowercase snake_case: start with a letter, then letters, digits, or underscores only."
+    },
+    "categories": {
+      "none": "No category",
+      "core": "Core",
+      "collaboration": "Collaboration",
+      "engagement": "Engagement",
+      "infrastructure": "Infrastructure",
+      "learning": "Learning",
+      "limits": "Limits",
+      "scheduling": "Scheduling"
+    },
+    "deleteDialog": {
+      "title": "Delete this feature?",
+      "description": "This cannot be undone. If any plan entitlement or institution override references this feature, deletion will be blocked.",
+      "confirmLabel": "Type the key {{key}} to confirm.",
+      "confirmFieldLabel": "Confirmation",
+      "confirmInputAria": "Feature key confirmation",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting..."
+    },
+    "toasts": {
+      "createSuccess": "Feature created",
+      "updateSuccess": "Feature updated",
+      "createError": "Could not create feature",
+      "updateError": "Could not update feature",
+      "deleteSuccess": "Feature deleted",
+      "deleteError": "Could not delete feature",
+      "deleteBlockedByReferences": "This feature is still referenced by a plan or override. Remove those rows first.",
+      "unexpected": "Something went wrong."
     }
   },
   "form": {
