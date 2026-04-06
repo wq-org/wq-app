@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Input } from '@/components/ui/input'
+import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import type { NewInstitutionWizardValues } from '../types/institution.types'
 
@@ -18,31 +18,34 @@ function NewInstitutionWizardBillingStep({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="new-inst-legal-name">{t('wizard.billing.legalName')}</Label>
-        <Input
+        <FieldInput
           id="new-inst-legal-name"
+          label={t('wizard.billing.legalName')}
           value={values.legalName}
-          onChange={(e) => onChange({ legalName: e.target.value })}
+          onValueChange={(legalName) => onChange({ legalName })}
           placeholder={t('form.legal.legalNamePlaceholder')}
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-billing-email">{t('wizard.billing.billingEmail')}</Label>
-        <Input
+        <FieldInput
           id="new-inst-billing-email"
+          label={t('wizard.billing.billingEmail')}
           type="email"
           value={values.billingEmail}
-          onChange={(e) => onChange({ billingEmail: e.target.value })}
+          onValueChange={(billingEmail) => onChange({ billingEmail })}
           placeholder={t('form.billing.billingEmailPlaceholder')}
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-country">{t('wizard.billing.country')}</Label>
-        <Input
+        <FieldInput
           id="new-inst-country"
+          label={t('wizard.billing.country')}
           value={values.country}
-          onChange={(e) => onChange({ country: e.target.value })}
+          onValueChange={(country) => onChange({ country })}
           placeholder={t('form.address.countryPlaceholder')}
         />
       </div>

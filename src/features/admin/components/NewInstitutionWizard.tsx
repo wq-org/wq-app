@@ -3,14 +3,7 @@ import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { FieldCard } from '@/components/ui/field-card'
 import {
   Dialog,
   DialogContent,
@@ -109,12 +102,12 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
 
   return (
     <>
-      <Card className="w-full max-w-2xl shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('wizard.title')}</CardTitle>
-          <CardDescription className="max-w-prose text-pretty leading-relaxed">
+      <FieldCard className="w-full max-w-2xl rounded-xl border-border px-0 py-0 shadow-sm">
+        <div className="space-y-2 border-b border-border px-6 py-6">
+          <h2 className="leading-none font-semibold">{t('wizard.title')}</h2>
+          <p className="max-w-prose text-sm text-muted-foreground text-pretty leading-relaxed">
             {t('wizard.subtitle')}
-          </CardDescription>
+          </p>
 
           <div className="mt-4 w-full min-w-0 overflow-x-auto">
             <Stepper
@@ -151,9 +144,9 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
               ))}
             </Stepper>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-4">
+        <div className="space-y-4 px-6 py-6">
           {step === 1 ? (
             <NewInstitutionWizardIdentityStep
               values={values}
@@ -167,9 +160,9 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
             />
           ) : null}
           {step === 3 ? <NewInstitutionWizardReviewStep values={values} /> : null}
-        </CardContent>
+        </div>
 
-        <CardFooter className="flex flex-wrap justify-between gap-2 border-t border-border pt-4">
+        <div className="flex flex-wrap justify-between gap-2 border-t border-border px-6 py-4">
           <Button
             type="button"
             variant="outline"
@@ -200,8 +193,8 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
               {!isSubmitting ? <ChevronRight className="size-4" /> : null}
             </Button>
           )}
-        </CardFooter>
-      </Card>
+        </div>
+      </FieldCard>
 
       <Dialog
         open={inviteToken !== null}

@@ -123,7 +123,7 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
 
         <SidebarContent>
           <SidebarPrimaryNav
-            items={[...navigation.navItems]}
+            items={navigation.navItems}
             routePrefix={routePrefix}
           />
         </SidebarContent>

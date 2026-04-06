@@ -13,8 +13,9 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useUser } from '@/contexts/user/UserContext'
+import { useMemo, useState } from 'react'
 
 type SidebarPrimaryNavSubItem = {
   title: string
@@ -36,6 +37,7 @@ type SidebarPrimaryNavProps = {
 
 export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { getRole } = useUser()
 
   const role = getRole()
@@ -57,6 +59,28 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
     navigateTo(concatPath)
   }
 
+  const currentPath = location.pathname
+
+  const activeStatesByTitle = useMemo(() => {
+    return Object.fromEntries(
+      items.map((item) => {
+        const fullItemPath = `${routePrefix ?? `/${role ?? ''}`}${item.url}`
+        const hasActiveSubItem =
+          item.items?.some((subItem) => currentPath === `${fullItemPath}${subItem.url}`) ?? false
+        const isItemPathActive =
+          currentPath === fullItemPath || currentPath.startsWith(`${fullItemPath}/`)
+
+        return [item.title, isItemPathActive || hasActiveSubItem]
+      }),
+    )
+  }, [currentPath, items, role, routePrefix])
+
+  const [manualOpenByTitle, setManualOpenByTitle] = useState<Record<string, boolean>>({})
+
+  function handleOpenChange(itemTitle: string, isOpen: boolean) {
+    setManualOpenByTitle((prev) => ({ ...prev, [itemTitle]: isOpen }))
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -65,7 +89,13 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={item.isActive}
+            open={
+              activeStatesByTitle[item.title] ||
+              manualOpenByTitle[item.title] ||
+              item.isActive ||
+              false
+            }
+            onOpenChange={(isOpen) => handleOpenChange(item.title, isOpen)}
             className="group/collapsible"
           >
             <SidebarMenuItem>

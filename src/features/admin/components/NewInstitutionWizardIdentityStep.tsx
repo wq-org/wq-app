@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Input } from '@/components/ui/input'
+import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -36,11 +36,11 @@ function NewInstitutionWizardIdentityStep({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="new-inst-name">{t('wizard.identity.name')}</Label>
-        <Input
+        <FieldInput
           id="new-inst-name"
+          label={t('wizard.identity.name')}
           value={values.name}
-          onChange={(e) => {
-            const name = e.target.value
+          onValueChange={(name) => {
             onChange({
               name,
               ...(isSlugTouched ? {} : { slug: slugify(name) }),
@@ -52,18 +52,19 @@ function NewInstitutionWizardIdentityStep({
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-slug">{t('wizard.identity.slug')}</Label>
-        <Input
+        <FieldInput
           id="new-inst-slug"
+          label={t('wizard.identity.slug')}
           value={values.slug}
-          onChange={(e) => {
+          onValueChange={(slug) => {
             setIsSlugTouched(true)
-            onChange({ slug: e.target.value })
+            onChange({ slug })
           }}
           placeholder={t('form.fields.slugPlaceholder')}
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="my-5 space-y-3">
         <Label>{t('wizard.identity.type')}</Label>
         <Select
           value={values.type || undefined}
@@ -87,11 +88,12 @@ function NewInstitutionWizardIdentityStep({
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-admin-email">{t('wizard.identity.adminEmail')}</Label>
-        <Input
+        <FieldInput
           id="new-inst-admin-email"
+          label={t('wizard.identity.adminEmail')}
           type="email"
           value={values.adminEmail}
-          onChange={(e) => onChange({ adminEmail: e.target.value })}
+          onValueChange={(adminEmail) => onChange({ adminEmail })}
           placeholder={t('wizard.identity.adminEmailPlaceholder')}
         />
         <p className="text-xs text-muted-foreground">{t('wizard.identity.adminEmailHint')}</p>
