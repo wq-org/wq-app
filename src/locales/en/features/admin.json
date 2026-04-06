@@ -1,9 +1,14 @@
 {
   "nav": {
+    "platform": "Platform",
     "dashboard": "Dashboard",
     "institutions": "Institutions",
     "createInstitution": "Create institution",
     "users": "Users",
+    "planCatalog": "Plan catalog",
+    "featureDefinitions": "Feature definitions",
+    "auditLogs": "Audit logs",
+    "gdprRequest": "GDPR Request",
     "billing": "Billing",
     "licenses": "Licenses",
     "features": "Features",
@@ -17,7 +22,9 @@
   "shell": {
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
-    "logout": "Log out"
+    "logout": "Log out",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Failed to log out. Please try again."
   },
   "workspace": {
     "superAdmin": {
@@ -27,6 +34,14 @@
     "institutionAdmin": {
       "name": "Institution",
       "plan": "Admin"
+    }
+  },
+  "dashboard": {
+    "stats": {
+      "institutions": "Institutions",
+      "users": "Users",
+      "requests": "Requests",
+      "viewMore": "View more"
     }
   },
   "institutions": {
@@ -248,7 +263,7 @@
       "type": "Type",
       "adminEmail": "Institution admin email",
       "adminEmailPlaceholder": "admin@school.example",
-      "adminEmailHint": "They sign up with this address and redeem the invite token."
+      "adminEmailHint": "This is the email address of the future institution admin. They will use this exact address to create their account after they receive the invitation email."
     },
     "billing": {
       "legalName": "Legal name",
@@ -286,6 +301,9 @@
     "success": {
       "title": "Institution created",
       "description": "A pending invite was created for {{email}}.",
+      "emailSentTitle": "Invite email sent",
+      "emailSentDescription": "We emailed {{email}} with a signup link.",
+      "emailSendFailedTitle": "Invite email not sent",
       "copyToken": "Copy token",
       "tokenCopied": "Invite token copied.",
       "tokenCopyFailed": "Could not copy invite token.",

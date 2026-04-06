@@ -29,6 +29,7 @@ import { createDefaultNewInstitutionWizardValues } from '../types/institution.ty
 import { NewInstitutionWizardBillingStep } from './NewInstitutionWizardBillingStep'
 import { NewInstitutionWizardIdentityStep } from './NewInstitutionWizardIdentityStep'
 import { NewInstitutionWizardReviewStep } from './NewInstitutionWizardReviewStep'
+import { sendInstitutionAdminInviteEmail } from '../api/institutionApi'
 import { validateNewInstitutionWizardStep } from './NewInstitutionWizardValidation'
 
 const STEP_COUNT = 3
@@ -78,6 +79,23 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
       setIsSubmitting(true)
       const result = await onCreate(values)
       setInviteToken(result.inviteToken)
+      try {
+        await sendInstitutionAdminInviteEmail({
+          inviteToken: result.inviteToken,
+          adminEmail: values.adminEmail,
+          institutionName: values.name,
+        })
+        toast.success(t('wizard.success.emailSentTitle'), {
+          description: t('wizard.success.emailSentDescription', {
+            email: values.adminEmail.trim(),
+          }),
+        })
+      } catch (emailErr) {
+        toast.warning(t('wizard.success.emailSendFailedTitle'), {
+          description:
+            emailErr instanceof Error ? emailErr.message : t('institutions.toasts.unexpectedError'),
+        })
+      }
     } finally {
       setIsSubmitting(false)
     }

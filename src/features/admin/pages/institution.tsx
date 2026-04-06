@@ -38,7 +38,7 @@ import type { Institution, InstitutionStatus } from '../types/institution.types'
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
 const STATUS_VARIANT: Record<InstitutionStatus, BadgeVariant> = {
-  active: 'darkblue',
+  active: 'outline',
   pending: 'orange',
   inactive: 'secondary',
   suspended: 'destructive',
@@ -125,7 +125,7 @@ const AdminInstitution = () => {
             </EmptyContent>
           </Empty>
         ) : (
-          <div className="rounded-lg border animate-in fade-in-0 slide-in-from-bottom-4">
+          <div className="rounded-2xl border animate-in fade-in-0 slide-in-from-bottom-4">
             <Table>
               <TableHeader>
                 <TableRow>

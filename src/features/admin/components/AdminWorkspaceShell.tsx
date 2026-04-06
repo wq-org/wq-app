@@ -1,13 +1,19 @@
-import { useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { LogOut, Moon, Sun, Languages, ChevronsUpDown } from 'lucide-react'
+import { LogOut, Moon, Sun, Languages, ChevronsUpDown, Settings } from 'lucide-react'
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarProvider,
+  SidebarSeparator,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Spinner } from '@/components/ui/spinner'
@@ -16,10 +22,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarPrimaryNav } from '@/components/shared'
+import { USER_ROLES } from '@/features/auth'
 import { useUser } from '@/contexts/user'
 import { useTheme } from '@/hooks/useTheme'
 import {
@@ -35,6 +41,7 @@ type AdminWorkspaceShellProps = {
 
 export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { i18n, t } = useTranslation('features.admin')
   const { t: tLang } = useTranslation('shared.languageSwitcher')
   const { loading, getRole, logout } = useUser()
@@ -43,6 +50,25 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
   const currentRole = resolveAdminWorkspaceRole(role ?? getRole())
   const navigation = getAdminWorkspaceNavigation(currentRole)
   const routePrefix = `/${currentRole}`
+
+  const translatedNavItems = useMemo(
+    () =>
+      navigation.navItems.map((item) => ({
+        title: t(item.titleKey),
+        url: item.url,
+        icon: item.icon,
+        isActive: item.isActive,
+        items: item.items?.map((sub) => ({
+          title: t(sub.titleKey),
+          url: sub.url,
+        })),
+      })),
+    [navigation.navItems, t],
+  )
+  const systemPath = `${routePrefix}/system`
+  const isSystemActive =
+    currentRole === USER_ROLES.SUPER_ADMIN &&
+    (location.pathname === systemPath || location.pathname.startsWith(`${systemPath}/`))
 
   const currentLang: 'de' | 'en' = i18n.language.startsWith('de') ? 'de' : 'en'
   const nextLang: 'de' | 'en' = currentLang === 'de' ? 'en' : 'de'
@@ -55,10 +81,10 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
   const handleLogout = async () => {
     try {
       await logout()
-      toast.success('Logged out successfully')
+      toast.success(t('shell.logoutSuccess'))
       navigate('/')
     } catch {
-      toast.error('Failed to logout. Please try again.')
+      toast.error(t('shell.logoutError'))
     }
   }
 
@@ -109,13 +135,6 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
                   {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
                   <span>{isDark ? t('shell.lightMode') : t('shell.darkMode')}</span>
                 </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="size-4" />
-                  <span>{t('shell.logout')}</span>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -123,10 +142,38 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
 
         <SidebarContent>
           <SidebarPrimaryNav
-            items={navigation.navItems}
+            groupLabel={t('nav.platform')}
+            items={translatedNavItems}
             routePrefix={routePrefix}
           />
         </SidebarContent>
+
+        <SidebarFooter className="mt-auto border-t border-sidebar-border">
+          <SidebarMenu>
+            {currentRole === USER_ROLES.SUPER_ADMIN ? (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={isSystemActive}
+                  tooltip={t('nav.system')}
+                  onClick={() => navigate(systemPath)}
+                >
+                  <Settings />
+                  <span>{t('nav.system')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ) : null}
+            {currentRole === USER_ROLES.SUPER_ADMIN ? <SidebarSeparator className="mx-0" /> : null}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={t('shell.logout')}
+                onClick={handleLogout}
+              >
+                <LogOut />
+                <span>{t('shell.logout')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
       </Sidebar>
 
       <main className="w-full">

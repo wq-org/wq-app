@@ -6,8 +6,8 @@ import {
   FileStack,
   GalleryVerticalEnd,
   GraduationCap,
+  Home,
   KeyRound,
-  LayoutDashboard,
   Puzzle,
   ShieldCheck,
   Settings,
@@ -19,13 +19,14 @@ import { USER_ROLES, type UserRole } from '@/features/auth'
 
 export type AdminWorkspaceRole = typeof USER_ROLES.SUPER_ADMIN | typeof USER_ROLES.INSTITUTION_ADMIN
 
+/** i18n keys under `features.admin` (e.g. `nav.dashboard`). */
 export type AdminWorkspaceNavigationItem = {
-  title: string
+  titleKey: string
   url: string
   icon: LucideIcon
   isActive?: boolean
   items?: readonly {
-    title: string
+    titleKey: string
     url: string
   }[]
 }
@@ -51,46 +52,41 @@ const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
   ],
   navItems: [
     {
-      title: 'Dashboard',
+      titleKey: 'nav.dashboard',
       url: '/dashboard',
       isActive: true,
-      icon: LayoutDashboard,
+      icon: Home,
     },
     {
-      title: 'Institutions',
+      titleKey: 'nav.institutions',
       url: '/institution',
       icon: Building2,
-      items: [{ title: 'Create institution', url: '/new-institution' }],
+      items: [{ titleKey: 'nav.createInstitution', url: '/new-institution' }],
     },
     {
-      title: 'Users',
+      titleKey: 'nav.users',
       url: '/users',
       icon: Users,
     },
     {
-      title: 'Plan Catalog',
+      titleKey: 'nav.planCatalog',
       url: '/plan-catalog',
       icon: FileStack,
     },
     {
-      title: 'Feature Definitions',
+      titleKey: 'nav.featureDefinitions',
       url: '/feature-definitions',
       icon: Puzzle,
     },
     {
-      title: 'Audit Logs',
+      titleKey: 'nav.auditLogs',
       url: '/audit-logs',
       icon: ClipboardList,
     },
     {
-      title: 'GDPR Request (DSGVO)',
+      titleKey: 'nav.gdprRequest',
       url: '/gdpr-request',
       icon: ShieldCheck,
-    },
-    {
-      title: 'System',
-      url: '/system',
-      icon: Settings,
     },
   ],
 }
@@ -105,42 +101,42 @@ const INSTITUTION_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
   ],
   navItems: [
     {
-      title: 'Dashboard',
+      titleKey: 'nav.dashboard',
       url: '/dashboard',
-      icon: LayoutDashboard,
+      icon: Home,
     },
     {
-      title: 'Teachers',
+      titleKey: 'nav.teachers',
       url: '/teacher',
       icon: GraduationCap,
     },
     {
-      title: 'Students',
+      titleKey: 'nav.students',
       url: '/students',
       icon: Users,
     },
     {
-      title: 'Licenses',
+      titleKey: 'nav.licenses',
       url: '/licenses',
       icon: KeyRound,
     },
     {
-      title: 'Billing',
+      titleKey: 'nav.billing',
       url: '/billing',
       icon: CreditCard,
     },
     {
-      title: 'Courses',
+      titleKey: 'nav.courses',
       url: '/courses',
       icon: BookOpen,
     },
     {
-      title: 'Analytics',
+      titleKey: 'nav.analytics',
       url: '/analytics',
       icon: BarChart3,
     },
     {
-      title: 'Settings',
+      titleKey: 'nav.settings',
       url: '/settings',
       icon: Settings,
     },

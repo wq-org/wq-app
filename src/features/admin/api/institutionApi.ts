@@ -1,3 +1,5 @@
+import { FunctionsHttpError } from '@supabase/supabase-js'
+
 import { supabase } from '@/lib/supabase'
 import type {
   BootstrapInstitutionFromWizardResult,
@@ -184,5 +186,62 @@ export async function bootstrapInstitutionFromWizard(
   return {
     institution: toInstitution(institution as InstitutionRow),
     inviteToken: row.invite_token,
+  }
+}
+
+type SendInstitutionAdminInviteEmailParams = {
+  inviteToken: string
+  adminEmail: string
+  institutionName?: string
+}
+
+type SendInstitutionAdminInviteEmailResponse = {
+  ok?: boolean
+  error?: string
+}
+
+/** Calls Edge Function that sends Brevo transactional email (API key server-side only). */
+export async function sendInstitutionAdminInviteEmail(
+  params: SendInstitutionAdminInviteEmailParams,
+): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase.functions.invoke<SendInstitutionAdminInviteEmailResponse>(
+    'send-institution-admin-invite-email',
+    {
+      body: {
+        inviteToken: params.inviteToken,
+        adminEmail: params.adminEmail.trim(),
+        institutionName: params.institutionName?.trim(),
+      },
+    },
+  )
+
+  if (error) {
+    if (error instanceof FunctionsHttpError) {
+      let message = error.message
+      try {
+        const ctx: unknown = await error.context.json()
+        if (
+          ctx &&
+          typeof ctx === 'object' &&
+          'error' in ctx &&
+          typeof (ctx as { error: unknown }).error === 'string'
+        ) {
+          message = (ctx as { error: string }).error
+        }
+      } catch {
+        /* keep message */
+      }
+      throw new Error(message)
+    }
+    throw new Error(error.message)
+  }
+
+  if (!data?.ok) {
+    throw new Error(data?.error ?? 'Failed to send invite email')
   }
 }

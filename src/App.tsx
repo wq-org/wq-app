@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import {
+  AuthInvitePage,
   LoginPage,
   SignUpPage,
   VerifyEmailPage,
@@ -209,6 +210,10 @@ const App = () => {
                 <Route
                   path="login"
                   element={<LoginPage />}
+                />
+                <Route
+                  path="invite"
+                  element={<AuthInvitePage />}
                 />
                 <Route
                   path="signup"

@@ -1,9 +1,14 @@
 {
   "nav": {
+    "platform": "Plattform",
     "dashboard": "Dashboard",
     "institutions": "Institutionen",
     "createInstitution": "Institution erstellen",
     "users": "Benutzer",
+    "planCatalog": "Plankatalog",
+    "featureDefinitions": "Funktionsdefinitionen",
+    "auditLogs": "Audit-Logs",
+    "gdprRequest": "DSGVO Anfragen",
     "billing": "Abrechnung",
     "licenses": "Lizenzen",
     "features": "Funktionen",
@@ -17,7 +22,9 @@
   "shell": {
     "lightMode": "Helles Design",
     "darkMode": "Dunkles Design",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "logoutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen."
   },
   "workspace": {
     "superAdmin": {
@@ -27,6 +34,14 @@
     "institutionAdmin": {
       "name": "Institution",
       "plan": "Admin"
+    }
+  },
+  "dashboard": {
+    "stats": {
+      "institutions": "Institutionen",
+      "users": "Benutzer",
+      "requests": "Anfragen",
+      "viewMore": "Mehr anzeigen"
     }
   },
   "institutions": {
@@ -248,7 +263,7 @@
       "type": "Typ",
       "adminEmail": "E-Mail Institution-Admin",
       "adminEmailPlaceholder": "admin@schule.example",
-      "adminEmailHint": "Diese Person registriert sich mit dieser Adresse und löst danach das Einladungs-Token ein."
+      "adminEmailHint": "Das ist die E-Mail-Adresse des künftigen Institution-Admins. Mit genau dieser Adresse legt die Person ihr Konto an, nachdem sie die Einladung per E-Mail erhalten hat."
     },
     "billing": {
       "legalName": "Rechtlicher Name",
@@ -286,6 +301,9 @@
     "success": {
       "title": "Institution erstellt",
       "description": "Eine ausstehende Einladung wurde für {{email}} erstellt.",
+      "emailSentTitle": "Einladungs-E-Mail gesendet",
+      "emailSentDescription": "Wir haben {{email}} einen Registrierungslink geschickt.",
+      "emailSendFailedTitle": "Einladungs-E-Mail nicht gesendet",
       "copyToken": "Token kopieren",
       "tokenCopied": "Einladungs-Token kopiert.",
       "tokenCopyFailed": "Einladungs-Token konnte nicht kopiert werden.",

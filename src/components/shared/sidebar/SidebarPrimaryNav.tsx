@@ -33,9 +33,15 @@ type SidebarPrimaryNavItem = {
 type SidebarPrimaryNavProps = {
   items: readonly SidebarPrimaryNavItem[]
   routePrefix?: string
+  /** Sidebar section label (e.g. translated "Platform"). */
+  groupLabel?: string
 }
 
-export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps) {
+export function SidebarPrimaryNav({
+  items,
+  routePrefix,
+  groupLabel = 'Platform',
+}: SidebarPrimaryNavProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { getRole } = useUser()
@@ -61,7 +67,7 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
 
   const currentPath = location.pathname
 
-  const activeStatesByTitle = useMemo(() => {
+  const activeStatesByUrl = useMemo(() => {
     return Object.fromEntries(
       items.map((item) => {
         const fullItemPath = `${routePrefix ?? `/${role ?? ''}`}${item.url}`
@@ -70,32 +76,29 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
         const isItemPathActive =
           currentPath === fullItemPath || currentPath.startsWith(`${fullItemPath}/`)
 
-        return [item.title, isItemPathActive || hasActiveSubItem]
+        return [item.url, isItemPathActive || hasActiveSubItem]
       }),
     )
   }, [currentPath, items, role, routePrefix])
 
-  const [manualOpenByTitle, setManualOpenByTitle] = useState<Record<string, boolean>>({})
+  const [manualOpenByUrl, setManualOpenByUrl] = useState<Record<string, boolean>>({})
 
-  function handleOpenChange(itemTitle: string, isOpen: boolean) {
-    setManualOpenByTitle((prev) => ({ ...prev, [itemTitle]: isOpen }))
+  function handleOpenChange(itemUrl: string, isOpen: boolean) {
+    setManualOpenByUrl((prev) => ({ ...prev, [itemUrl]: isOpen }))
   }
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
-            key={item.title}
+            key={item.url}
             asChild
             open={
-              activeStatesByTitle[item.title] ||
-              manualOpenByTitle[item.title] ||
-              item.isActive ||
-              false
+              activeStatesByUrl[item.url] || manualOpenByUrl[item.url] || item.isActive || false
             }
-            onOpenChange={(isOpen) => handleOpenChange(item.title, isOpen)}
+            onOpenChange={(isOpen) => handleOpenChange(item.url, isOpen)}
             className="group/collapsible"
           >
             <SidebarMenuItem>
@@ -120,7 +123,7 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
+                      <SidebarMenuSubItem key={`${item.url}:${subItem.url}`}>
                         <SidebarMenuSubButton
                           className="cursor-pointer"
                           onClick={() => navigateToSubPath(item.url, subItem.url)}

@@ -39,6 +39,7 @@ export type {
 
 export { LoginPage } from './pages/login'
 export { SignUpPage } from './pages/signUp'
+export { AuthInvitePage } from './pages/invite'
 
 export { VerifyEmailPage } from './pages/verify-email'
 export { ResetPasswordPage } from './pages/reset-password'

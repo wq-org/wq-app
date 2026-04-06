@@ -28,6 +28,7 @@ export {
   fetchInstitutions,
   createInstitution,
   bootstrapInstitutionFromWizard,
+  sendInstitutionAdminInviteEmail,
 } from './api/institutionApi'
 export { listAdminUsers, deleteUserCompletely, setUserActiveStatus } from './api/userApi'
 export type { AdminUserRow, AdminDeleteUserResult, AdminSetUserActiveResult } from './api/userApi'
