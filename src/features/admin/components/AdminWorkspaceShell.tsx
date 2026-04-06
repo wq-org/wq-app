@@ -1,25 +1,35 @@
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { LogOut, Moon, Sun, Languages, ChevronsUpDown } from 'lucide-react'
+
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Spinner } from '@/components/ui/spinner'
+import { Logo } from '@/components/ui/logo'
 import {
-  SidebarAccountMenu,
-  SidebarPrimaryNav,
-  SidebarWorkspaceSwitcher,
-} from '@/components/shared'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { SidebarPrimaryNav } from '@/components/shared'
 import { useUser } from '@/contexts/user'
-import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
+import { useTheme } from '@/hooks/useTheme'
 import {
   getAdminWorkspaceNavigation,
   resolveAdminWorkspaceRole,
   type AdminWorkspaceRole,
 } from '../config/adminWorkspaceNavigation'
+
+const LANGUAGE_FLAGS: Record<'de' | 'en', string> = { de: '🇩🇪', en: '🇺🇸' }
+const LANGUAGE_LABELS: Record<'de' | 'en', string> = { de: 'Deutsch', en: 'English' }
 
 type AdminWorkspaceShellProps = {
   children: React.ReactNode
@@ -27,15 +37,31 @@ type AdminWorkspaceShellProps = {
 }
 
 export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps) {
-  const { profile, loading, getRole } = useUser()
+  const navigate = useNavigate()
+  const { i18n, t } = useTranslation('features.admin')
+  const { loading, getRole, logout } = useUser()
+  const { mode, setMode } = useTheme()
+
   const currentRole = resolveAdminWorkspaceRole(role ?? getRole())
   const navigation = getAdminWorkspaceNavigation(currentRole)
   const routePrefix = `/${currentRole}`
 
-  const userProfile = {
-    name: profile?.display_name || 'User',
-    email: profile?.email || 'user@wq-app.de',
-    avatar: profile?.avatar_url || DEFAULT_INSTITUTION_IMAGE,
+  const currentLang: 'de' | 'en' = i18n.language.startsWith('de') ? 'de' : 'en'
+  const nextLang: 'de' | 'en' = currentLang === 'de' ? 'en' : 'de'
+  const isDark = mode === 'dark'
+
+  const handleToggleLanguage = () => i18n.changeLanguage(nextLang)
+
+  const handleToggleMode = () => setMode(isDark ? 'light' : 'dark')
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast.success('Logged out successfully')
+      navigate('/')
+    } catch {
+      toast.error('Failed to logout. Please try again.')
+    }
   }
 
   if (loading) {
@@ -54,19 +80,57 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <SidebarMenu>
-            <SidebarWorkspaceSwitcher teams={[...navigation.teams]} />
-          </SidebarMenu>
+          <div className="flex items-center justify-between px-2 py-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label="Account menu"
+                >
+                  <Logo
+                    showText={false}
+                    className="size-8"
+                  />
+                  <span className="truncate text-sm font-semibold">WQ GmbH</span>
+                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="min-w-48 rounded-lg"
+                side="bottom"
+                align="end"
+                sideOffset={8}
+              >
+                <DropdownMenuItem onClick={handleToggleLanguage}>
+                  <Languages className="size-4" />
+                  <span>
+                    {LANGUAGE_FLAGS[nextLang]} {LANGUAGE_LABELS[nextLang]}
+                  </span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={handleToggleMode}>
+                  {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+                  <span>{isDark ? t('shell.lightMode') : t('shell.darkMode')}</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="size-4" />
+                  <span>{t('shell.logout')}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </SidebarHeader>
+
         <SidebarContent>
           <SidebarPrimaryNav
             items={[...navigation.navItems]}
             routePrefix={routePrefix}
           />
         </SidebarContent>
-        <SidebarFooter>
-          <SidebarAccountMenu user={userProfile} />
-        </SidebarFooter>
       </Sidebar>
 
       <main className="w-full">

@@ -74,15 +74,17 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
                   {item.icon ? <item.icon /> : null}
                   <span>{item.title}</span>
                 </SidebarMenuButton>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    className="cursor-pointer"
-                    variant="ghost"
-                    size="icon"
-                  >
-                    <ChevronRight className=" transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </Button>
-                </CollapsibleTrigger>
+                {item.items && item.items.length > 0 && (
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      className="cursor-pointer"
+                      variant="ghost"
+                      size="icon"
+                    >
+                      <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </Button>
+                  </CollapsibleTrigger>
+                )}
               </div>
               <CollapsibleContent>
                 <SidebarMenuSub>

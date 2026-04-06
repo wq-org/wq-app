@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
-import { UserCheck, UserX } from 'lucide-react'
+import { UserCheck, UserX, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,14 @@ import { Spinner } from '@/components/ui/spinner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Logo } from '@/components/ui/logo'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import {
   Table,
   TableBody,
@@ -25,13 +34,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  deleteUserCompletely,
-  listAdminUsers,
-  setUserActiveStatus,
-  type AdminUserRow,
-} from '../api/userApi'
+
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { useAdminUsers } from '../hooks/useAdminUsers'
+import type { AdminUserRow } from '../api/userApi'
 
 function initialsFromName(name?: string | null, username?: string | null): string {
   const source = name?.trim() || username?.trim() || 'U'
@@ -44,8 +50,9 @@ function initialsFromName(name?: string | null, username?: string | null): strin
 
 const AdminUsers = () => {
   const { getRole } = useUser()
-  const [users, setUsers] = useState<AdminUserRow[]>([])
-  const [loading, setLoading] = useState(true)
+  const { t } = useTranslation('features.admin')
+  const { users, isLoading, removeUser, toggleUserActive } = useAdminUsers()
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<AdminUserRow | null>(null)
   const [confirmUsername, setConfirmUsername] = useState('')
@@ -55,44 +62,16 @@ const AdminUsers = () => {
   const [accessLoading, setAccessLoading] = useState(false)
 
   const canDeleteUsers = getRole() === 'super_admin'
-  const expectedUsername = selectedUser?.username ?? ''
-  const isConfirmMatch = confirmUsername === expectedUsername
   const canToggleAccess = (user: AdminUserRow) =>
     ['teacher', 'student', 'institution_admin'].includes(user.role ?? '')
-
-  useEffect(() => {
-    async function loadUsers() {
-      try {
-        const rows = await listAdminUsers()
-        setUsers(rows)
-      } catch (error) {
-        toast.error('Failed to load users', {
-          description: error instanceof Error ? error.message : 'An unexpected error occurred.',
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadUsers()
-  }, [])
-
-  const sortedUsers = useMemo(
-    () =>
-      [...users]
-        .filter((user) => user.role !== 'super_admin')
-        .sort((a, b) =>
-          (a.display_name || a.username || '').localeCompare(b.display_name || b.username || ''),
-        ),
-    [users],
-  )
+  const expectedUsername = selectedUser?.username ?? ''
+  const isConfirmMatch = confirmUsername === expectedUsername
 
   function openDeleteDialog(user: AdminUserRow) {
     if (!user.username) {
-      toast.error('Cannot delete user without username')
+      toast.error(t('users.toasts.noUsernameError'))
       return
     }
-
     setSelectedUser(user)
     setConfirmUsername('')
     setDialogOpen(true)
@@ -103,18 +82,18 @@ const AdminUsers = () => {
 
     setDeleting(true)
     try {
-      const result = await deleteUserCompletely(selectedUser.user_id, selectedUser.username)
-      setUsers((prev) => prev.filter((user) => user.user_id !== selectedUser.user_id))
+      const result = await removeUser(selectedUser.user_id, selectedUser.username)
       setDialogOpen(false)
       setSelectedUser(null)
       setConfirmUsername('')
-
-      toast.success('User deleted permanently', {
-        description: `${result.deleted_username} was deleted from auth and profile tables.`,
+      toast.success(t('users.toasts.deleteSuccess'), {
+        description: t('users.toasts.deleteSuccessDescription', {
+          username: result.deleted_username,
+        }),
       })
     } catch (error) {
-      toast.error('Failed to delete user', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      toast.error(t('users.toasts.deleteError'), {
+        description: error instanceof Error ? error.message : t('users.toasts.unexpectedError'),
       })
     } finally {
       setDeleting(false)
@@ -131,26 +110,20 @@ const AdminUsers = () => {
 
     setAccessLoading(true)
     try {
-      const nextActive = !accessUser.is_active
-      const result = await setUserActiveStatus(accessUser.user_id, nextActive)
-
-      setUsers((prev) =>
-        prev.map((user) =>
-          user.user_id === accessUser.user_id ? { ...user, is_active: result.is_active } : user,
-        ),
-      )
-
+      const result = await toggleUserActive(accessUser.user_id, !accessUser.is_active)
       setAccessDialogOpen(false)
       setAccessUser(null)
-
-      toast.success(result.is_active ? 'User activated' : 'User deactivated', {
-        description: `${accessUser.username ?? 'User'} can ${
-          result.is_active ? 'log in again' : 'no longer log in'
-        }.`,
-      })
+      toast.success(
+        result.is_active ? t('users.toasts.activateSuccess') : t('users.toasts.deactivateSuccess'),
+        {
+          description: result.is_active
+            ? t('users.toasts.activateDescription', { username: accessUser.username ?? 'User' })
+            : t('users.toasts.deactivateDescription', { username: accessUser.username ?? 'User' }),
+        },
+      )
     } catch (error) {
-      toast.error('Failed to change user access', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      toast.error(t('users.toasts.accessError'), {
+        description: error instanceof Error ? error.message : t('users.toasts.unexpectedError'),
       })
     } finally {
       setAccessLoading(false)
@@ -161,10 +134,10 @@ const AdminUsers = () => {
     <AdminWorkspaceShell>
       <div className="flex flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
-          <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">{t('users.pageTitle')}</h1>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center min-h-[300px]">
             <Spinner
               variant="gray"
@@ -172,26 +145,35 @@ const AdminUsers = () => {
               speed={1750}
             />
           </div>
-        ) : sortedUsers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] gap-2 text-center">
-            <p className="text-muted-foreground text-sm">No users found.</p>
-          </div>
+        ) : users.length === 0 ? (
+          <Empty>
+            <EmptyMedia variant="icon">
+              <Users />
+            </EmptyMedia>
+            <EmptyHeader>
+              <EmptyTitle>{t('users.empty.title')}</EmptyTitle>
+              <EmptyDescription>{t('users.empty.description')}</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent />
+          </Empty>
         ) : (
           <div className="rounded-lg border animate-in fade-in-0 slide-in-from-bottom-4">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Institution</TableHead>
-                  <TableHead>Username</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Access</TableHead>
-                  {canDeleteUsers && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t('users.table.user')}</TableHead>
+                  <TableHead>{t('users.table.email')}</TableHead>
+                  <TableHead>{t('users.table.institution')}</TableHead>
+                  <TableHead>{t('users.table.username')}</TableHead>
+                  <TableHead>{t('users.table.role')}</TableHead>
+                  <TableHead>{t('users.table.access')}</TableHead>
+                  {canDeleteUsers && (
+                    <TableHead className="text-right">{t('users.table.actions')}</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedUsers.map((user) => (
+                {users.map((user) => (
                   <TableRow
                     key={user.user_id}
                     className="animate-in fade-in-0 slide-in-from-bottom-2"
@@ -223,9 +205,9 @@ const AdminUsers = () => {
                     <TableCell>{user.role || '—'}</TableCell>
                     <TableCell>
                       {user.is_active ? (
-                        <span className="text-green-700">Active</span>
+                        <span className="text-green-700">{t('users.access.active')}</span>
                       ) : (
-                        <span className="text-red-600">Deactivated</span>
+                        <span className="text-red-600">{t('users.access.deactivated')}</span>
                       )}
                     </TableCell>
                     {canDeleteUsers && (
@@ -240,12 +222,12 @@ const AdminUsers = () => {
                             {user.is_active ? (
                               <>
                                 <UserX className="mr-1 h-4 w-4" />
-                                Deactivate
+                                {t('users.actions.deactivate')}
                               </>
                             ) : (
                               <>
                                 <UserCheck className="mr-1 h-4 w-4" />
-                                Activate
+                                {t('users.actions.activate')}
                               </>
                             )}
                           </Button>
@@ -255,7 +237,7 @@ const AdminUsers = () => {
                             onClick={() => openDeleteDialog(user)}
                             disabled={!user.username}
                           >
-                            Delete
+                            {t('users.actions.delete')}
                           </Button>
                         </div>
                       </TableCell>
@@ -282,23 +264,19 @@ const AdminUsers = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete user permanently?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. It will permanently delete the user from profiles and
-              auth.users. Stored files are kept and can be cleaned up manually later.
-            </DialogDescription>
+            <DialogTitle>{t('users.deleteDialog.title')}</DialogTitle>
+            <DialogDescription>{t('users.deleteDialog.description')}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
             <p className="text-sm text-gray-600">
-              Type username <span className="font-semibold">{expectedUsername || '—'}</span> to
-              confirm.
+              {t('users.deleteDialog.confirmLabel', { username: expectedUsername || '—' })}
             </p>
             <Input
               value={confirmUsername}
               onChange={(e) => setConfirmUsername(e.target.value)}
-              placeholder="Type exact username to confirm"
-              aria-label="Confirm username"
+              placeholder={t('users.deleteDialog.confirmPlaceholder')}
+              aria-label={t('users.deleteDialog.confirmPlaceholder')}
             />
           </div>
 
@@ -308,14 +286,16 @@ const AdminUsers = () => {
               onClick={() => setDialogOpen(false)}
               disabled={deleting}
             >
-              Cancel
+              {t('users.deleteDialog.cancelButton')}
             </Button>
             <HoldToDeleteButton
               holdDuration={1500}
               onDelete={handleDeleteUser}
               disabled={!isConfirmMatch || deleting || !selectedUser?.username}
             >
-              {deleting ? 'Deleting...' : 'Hold to delete permanently'}
+              {deleting
+                ? t('users.deleteDialog.deletingButton')
+                : t('users.deleteDialog.holdButton')}
             </HoldToDeleteButton>
           </DialogFooter>
         </DialogContent>
@@ -333,12 +313,14 @@ const AdminUsers = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {accessUser?.is_active ? 'Deactivate this user?' : 'Activate this user?'}
+              {accessUser?.is_active
+                ? t('users.accessDialog.deactivateTitle')
+                : t('users.accessDialog.activateTitle')}
             </DialogTitle>
             <DialogDescription>
               {accessUser?.is_active
-                ? 'User will not be able to log in until reactivated by super admin.'
-                : 'User will be able to log in again after activation.'}
+                ? t('users.accessDialog.deactivateDescription')
+                : t('users.accessDialog.activateDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -347,7 +329,7 @@ const AdminUsers = () => {
               onClick={() => setAccessDialogOpen(false)}
               disabled={accessLoading}
             >
-              Cancel
+              {t('users.accessDialog.cancelButton')}
             </Button>
             <Button
               variant={accessUser?.is_active ? 'destructive' : 'default'}
@@ -355,10 +337,10 @@ const AdminUsers = () => {
               disabled={accessLoading || !accessUser}
             >
               {accessLoading
-                ? 'Saving...'
+                ? t('users.accessDialog.savingButton')
                 : accessUser?.is_active
-                  ? 'Deactivate user'
-                  : 'Activate user'}
+                  ? t('users.accessDialog.deactivateButton')
+                  : t('users.accessDialog.activateButton')}
             </Button>
           </DialogFooter>
         </DialogContent>

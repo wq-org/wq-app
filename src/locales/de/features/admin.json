@@ -1,1 +1,236 @@
-{}
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "institutions": "Institutionen",
+    "createInstitution": "Institution erstellen",
+    "users": "Benutzer",
+    "billing": "Abrechnung",
+    "licenses": "Lizenzen",
+    "features": "Funktionen",
+    "analytics": "Analysen",
+    "system": "System",
+    "teachers": "Lehrkräfte",
+    "students": "Lernende",
+    "courses": "Kurse",
+    "settings": "Einstellungen"
+  },
+  "shell": {
+    "lightMode": "Helles Design",
+    "darkMode": "Dunkles Design",
+    "logout": "Abmelden"
+  },
+  "workspace": {
+    "superAdmin": {
+      "name": "WQ",
+      "plan": "Bildung"
+    },
+    "institutionAdmin": {
+      "name": "Institution",
+      "plan": "Admin"
+    }
+  },
+  "institutions": {
+    "pageTitle": "Institutionen",
+    "newButton": "Institution hinzufügen",
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "type": "Typ",
+      "email": "E-Mail",
+      "status": "Status"
+    },
+    "empty": {
+      "title": "Noch keine Institutionen",
+      "description": "Erstelle deine erste Institution, um loszulegen.",
+      "action": "Institution erstellen"
+    },
+    "toasts": {
+      "loadError": "Institutionen konnten nicht geladen werden",
+      "createSuccess": "Institution erstellt",
+      "createSuccessDescription": "Die Institution wurde erfolgreich erstellt.",
+      "createError": "Institution konnte nicht erstellt werden",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    }
+  },
+  "users": {
+    "pageTitle": "Benutzer",
+    "table": {
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "institution": "Institution",
+      "username": "Benutzername",
+      "role": "Rolle",
+      "access": "Zugang",
+      "actions": "Aktionen"
+    },
+    "empty": {
+      "title": "Keine Benutzer gefunden",
+      "description": "Benutzer erscheinen hier, sobald sie der Plattform beitreten."
+    },
+    "access": {
+      "active": "Aktiv",
+      "deactivated": "Deaktiviert"
+    },
+    "actions": {
+      "deactivate": "Deaktivieren",
+      "activate": "Aktivieren",
+      "delete": "Löschen"
+    },
+    "deleteDialog": {
+      "title": "Benutzer dauerhaft löschen?",
+      "description": "Diese Aktion kann nicht rückgängig gemacht werden. Der Benutzer wird dauerhaft aus den Profil- und auth.users-Tabellen gelöscht. Gespeicherte Dateien bleiben erhalten und können später manuell bereinigt werden.",
+      "confirmLabel": "Gib den Benutzernamen {{username}} zur Bestätigung ein.",
+      "confirmPlaceholder": "Gib den genauen Benutzernamen ein",
+      "holdButton": "Halten zum dauerhaften Löschen",
+      "deletingButton": "Löschen...",
+      "cancelButton": "Abbrechen"
+    },
+    "accessDialog": {
+      "deactivateTitle": "Diesen Benutzer deaktivieren?",
+      "activateTitle": "Diesen Benutzer aktivieren?",
+      "deactivateDescription": "Der Benutzer kann sich erst wieder anmelden, wenn er vom Super-Admin reaktiviert wird.",
+      "activateDescription": "Der Benutzer kann sich nach der Aktivierung wieder anmelden.",
+      "deactivateButton": "Benutzer deaktivieren",
+      "activateButton": "Benutzer aktivieren",
+      "savingButton": "Speichern...",
+      "cancelButton": "Abbrechen"
+    },
+    "toasts": {
+      "loadError": "Benutzer konnten nicht geladen werden",
+      "noUsernameError": "Benutzer ohne Benutzernamen kann nicht gelöscht werden",
+      "deleteSuccess": "Benutzer dauerhaft gelöscht",
+      "deleteSuccessDescription": "{{username}} wurde aus Auth- und Profiltabellen gelöscht.",
+      "deleteError": "Benutzer konnte nicht gelöscht werden",
+      "accessError": "Benutzerzugang konnte nicht geändert werden",
+      "activateSuccess": "Benutzer aktiviert",
+      "deactivateSuccess": "Benutzer deaktiviert",
+      "activateDescription": "{{username}} kann sich wieder anmelden.",
+      "deactivateDescription": "{{username}} kann sich nicht mehr anmelden.",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    }
+  },
+  "form": {
+    "title": "Grundinformationen",
+    "subtitle": "Gib die grundlegenden Details deiner Institution ein. Mit * markierte Felder sind Pflichtfelder.",
+    "fields": {
+      "name": "Institutionsname",
+      "namePlaceholder": "z. B. Kreiskliniken Reutlingen",
+      "slug": "Slug",
+      "slugPlaceholder": "kreiskliniken-reutlingen",
+      "slugHint": "URL-freundlicher Bezeichner. Wird automatisch aus dem Namen generiert, sofern nicht manuell bearbeitet.",
+      "type": "Typ",
+      "typePlaceholder": "Institutionstyp auswählen",
+      "status": "Status",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Gib eine kurze Beschreibung der Institution ein...",
+      "email": "E-Mail",
+      "emailPlaceholder": "kontakt@institution.de",
+      "phone": "Telefon",
+      "phonePlaceholder": "+49 7121 200-0",
+      "website": "Webseite",
+      "websitePlaceholder": "https://www.institution.de",
+      "imageUrl": "Bild-URL",
+      "imageUrlPlaceholder": "https://example.com/bild.png",
+      "imageUrlHint": "Gib eine direkte URL zum Institutionsbild ein."
+    },
+    "types": {
+      "school": "Schule",
+      "university": "Universität",
+      "college": "Hochschule",
+      "organization": "Organisation",
+      "hospital": "Krankenhaus",
+      "other": "Sonstiges"
+    },
+    "statuses": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "suspended": "Gesperrt",
+      "pending": "Ausstehend"
+    },
+    "legal": {
+      "sectionTitle": "Rechtliche Informationen",
+      "legalName": "Rechtlicher Name",
+      "legalNamePlaceholder": "Kreiskliniken Reutlingen gGmbH",
+      "legalForm": "Rechtsform",
+      "legalFormPlaceholder": "Rechtsform auswählen",
+      "vatId": "USt-IdNr.",
+      "vatIdPlaceholder": "DE123456789",
+      "registrationNumber": "Handelsregister (HRB)",
+      "registrationNumberPlaceholder": "HRB 12345",
+      "taxId": "Steuernummer",
+      "taxIdPlaceholder": "12/345/67890"
+    },
+    "legalForms": {
+      "gmbh": "GmbH",
+      "ggmbh": "gGmbH (gemeinnützig)",
+      "ag": "AG",
+      "ev": "e.V.",
+      "kg": "KG",
+      "other": "Sonstiges"
+    },
+    "primaryContact": {
+      "sectionTitle": "Hauptkontakt",
+      "contactName": "Kontaktname",
+      "contactNamePlaceholder": "Astrid",
+      "contactRole": "Rolle / Titel",
+      "contactRolePlaceholder": "Pflegedirektion",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactEmailPlaceholder": "m.schmidt@example.de",
+      "contactPhone": "Kontakttelefon",
+      "contactPhonePlaceholder": "+49 7121 200-1234"
+    },
+    "billing": {
+      "sectionTitle": "Abrechnungsinformationen",
+      "billingEmail": "Abrechnungs-E-Mail",
+      "billingEmailPlaceholder": "abrechnung@institution.de",
+      "billingContactName": "Name Abrechnungskontakt",
+      "billingContactNamePlaceholder": "Buchhaltung",
+      "billingContactPhone": "Telefon Abrechnungskontakt",
+      "billingContactPhonePlaceholder": "+49 7121 200-900",
+      "invoiceLanguage": "Rechnungssprache",
+      "paymentTerms": "Zahlungsziel (Tage)",
+      "paymentTermsPlaceholder": "30"
+    },
+    "invoiceLanguages": {
+      "de": "Deutsch (DE)",
+      "en": "Englisch (EN)"
+    },
+    "address": {
+      "sectionTitle": "Adresse",
+      "street": "Straße & Hausnummer",
+      "streetPlaceholder": "Am Steinenberg 70",
+      "addressLine2": "Adresszusatz (Gebäude, Etage)",
+      "addressLine2Placeholder": "Gebäude A, 2. OG",
+      "postalCode": "Postleitzahl (PLZ)",
+      "postalCodePlaceholder": "72764",
+      "city": "Stadt",
+      "cityPlaceholder": "Reutlingen",
+      "state": "Bundesland (optional)",
+      "statePlaceholder": "Baden-Württemberg",
+      "country": "Land",
+      "countryPlaceholder": "Deutschland"
+    },
+    "hospital": {
+      "sectionTitle": "Krankenhausdetails",
+      "institutionNumber": "IK-Nummer (Institutionskennzeichen)",
+      "institutionNumberPlaceholder": "123456789",
+      "numberOfBeds": "Anzahl der Betten",
+      "numberOfBedsPlaceholder": "500",
+      "departments": "Abteilungen (kommagetrennt)",
+      "departmentsPlaceholder": "Intensivpflege, Wundmanagement, Notaufnahme",
+      "accreditation": "Akkreditierung",
+      "accreditationPlaceholder": "ISO 9001"
+    },
+    "socialLinks": {
+      "sectionTitle": "Social-Media-Links",
+      "linkedin": "LinkedIn",
+      "linkedinPlaceholder": "https://www.linkedin.com/company/institution",
+      "instagram": "Instagram",
+      "instagramPlaceholder": "https://www.instagram.com/institution"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "create": "Institution hinzufügen"
+    }
+  }
+}

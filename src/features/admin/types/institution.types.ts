@@ -8,7 +8,7 @@ export type InstitutionType =
 export type InstitutionStatus = 'active' | 'inactive' | 'suspended' | 'pending'
 export type InvoiceLanguage = 'de' | 'en'
 
-export interface AddressJsonb {
+export type AddressJsonb = {
   street?: string
   addressLine2?: string
   city?: string
@@ -17,12 +17,12 @@ export interface AddressJsonb {
   postalCode?: string
 }
 
-interface SocialLinks {
+export type SocialLinks = {
   linkedin?: string
   instagram?: string
 }
 
-export interface InstitutionFormData {
+export type InstitutionFormData = {
   name: string
   slug: string
   type: InstitutionType | ''
@@ -54,6 +54,7 @@ export interface InstitutionFormData {
   imageUrl: string
 }
 
+// Row — mirrors the DB schema exactly
 export type InstitutionRow = {
   id: string
   name: string
@@ -63,4 +64,16 @@ export type InstitutionRow = {
   email: string | null
   image_url: string | null
   created_at: string
+}
+
+// Model — what the UI actually uses
+export type Institution = {
+  id: string
+  name: string
+  slug: string | null
+  type: string | null
+  status: InstitutionStatus | null
+  email: string | null
+  imageUrl: string | null
+  createdAt: Date
 }

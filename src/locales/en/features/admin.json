@@ -1,1 +1,236 @@
-{}
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "institutions": "Institutions",
+    "createInstitution": "Create institution",
+    "users": "Users",
+    "billing": "Billing",
+    "licenses": "Licenses",
+    "features": "Features",
+    "analytics": "Analytics",
+    "system": "System",
+    "teachers": "Teachers",
+    "students": "Students",
+    "courses": "Courses",
+    "settings": "Settings"
+  },
+  "shell": {
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "logout": "Log out"
+  },
+  "workspace": {
+    "superAdmin": {
+      "name": "WQ",
+      "plan": "Education"
+    },
+    "institutionAdmin": {
+      "name": "Institution",
+      "plan": "Admin"
+    }
+  },
+  "institutions": {
+    "pageTitle": "Institutions",
+    "newButton": "Add Institution",
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "type": "Type",
+      "email": "Email",
+      "status": "Status"
+    },
+    "empty": {
+      "title": "No institutions yet",
+      "description": "Create your first institution to get started.",
+      "action": "Create institution"
+    },
+    "toasts": {
+      "loadError": "Failed to Load Institutions",
+      "createSuccess": "Institution Created",
+      "createSuccessDescription": "The institution has been created successfully.",
+      "createError": "Failed to Create Institution",
+      "unexpectedError": "An unexpected error occurred."
+    }
+  },
+  "users": {
+    "pageTitle": "Users",
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "institution": "Institution",
+      "username": "Username",
+      "role": "Role",
+      "access": "Access",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No users found",
+      "description": "Users will appear here once they join the platform."
+    },
+    "access": {
+      "active": "Active",
+      "deactivated": "Deactivated"
+    },
+    "actions": {
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "delete": "Delete"
+    },
+    "deleteDialog": {
+      "title": "Delete user permanently?",
+      "description": "This action cannot be undone. It will permanently delete the user from profiles and auth.users. Stored files are kept and can be cleaned up manually later.",
+      "confirmLabel": "Type username {{username}} to confirm.",
+      "confirmPlaceholder": "Type exact username to confirm",
+      "holdButton": "Hold to delete permanently",
+      "deletingButton": "Deleting...",
+      "cancelButton": "Cancel"
+    },
+    "accessDialog": {
+      "deactivateTitle": "Deactivate this user?",
+      "activateTitle": "Activate this user?",
+      "deactivateDescription": "User will not be able to log in until reactivated by super admin.",
+      "activateDescription": "User will be able to log in again after activation.",
+      "deactivateButton": "Deactivate user",
+      "activateButton": "Activate user",
+      "savingButton": "Saving...",
+      "cancelButton": "Cancel"
+    },
+    "toasts": {
+      "loadError": "Failed to load users",
+      "noUsernameError": "Cannot delete user without username",
+      "deleteSuccess": "User deleted permanently",
+      "deleteSuccessDescription": "{{username}} was deleted from auth and profile tables.",
+      "deleteError": "Failed to delete user",
+      "accessError": "Failed to change user access",
+      "activateSuccess": "User activated",
+      "deactivateSuccess": "User deactivated",
+      "activateDescription": "{{username}} can log in again.",
+      "deactivateDescription": "{{username}} can no longer log in.",
+      "unexpectedError": "An unexpected error occurred."
+    }
+  },
+  "form": {
+    "title": "Basic Information",
+    "subtitle": "Add the basic details for your institution. Fields marked with * are required.",
+    "fields": {
+      "name": "Institution Name",
+      "namePlaceholder": "e.g., Kreiskliniken Reutlingen",
+      "slug": "Slug",
+      "slugPlaceholder": "kreiskliniken-reutlingen",
+      "slugHint": "URL-friendly identifier. Auto-generated from name unless manually edited.",
+      "type": "Type",
+      "typePlaceholder": "Select institution type",
+      "status": "Status",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter a brief description of the institution...",
+      "email": "Email",
+      "emailPlaceholder": "contact@institution.de",
+      "phone": "Phone",
+      "phonePlaceholder": "+49 7121 200-0",
+      "website": "Website",
+      "websitePlaceholder": "https://www.institution.de",
+      "imageUrl": "Image URL",
+      "imageUrlPlaceholder": "https://example.com/image.png",
+      "imageUrlHint": "Enter a direct URL to the institution image."
+    },
+    "types": {
+      "school": "School",
+      "university": "University",
+      "college": "College",
+      "organization": "Organization",
+      "hospital": "Hospital",
+      "other": "Other"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "pending": "Pending"
+    },
+    "legal": {
+      "sectionTitle": "Legal Information",
+      "legalName": "Legal Name",
+      "legalNamePlaceholder": "Kreiskliniken Reutlingen gGmbH",
+      "legalForm": "Legal Form",
+      "legalFormPlaceholder": "Select legal form",
+      "vatId": "VAT ID (USt-ID)",
+      "vatIdPlaceholder": "DE123456789",
+      "registrationNumber": "Handelsregister (HRB)",
+      "registrationNumberPlaceholder": "HRB 12345",
+      "taxId": "Steuernummer",
+      "taxIdPlaceholder": "12/345/67890"
+    },
+    "legalForms": {
+      "gmbh": "GmbH",
+      "ggmbh": "gGmbH (gemeinnützig)",
+      "ag": "AG",
+      "ev": "e.V.",
+      "kg": "KG",
+      "other": "Other"
+    },
+    "primaryContact": {
+      "sectionTitle": "Primary Contact",
+      "contactName": "Contact Name",
+      "contactNamePlaceholder": "Astrid",
+      "contactRole": "Role / Title",
+      "contactRolePlaceholder": "Pflegedirektion",
+      "contactEmail": "Contact Email",
+      "contactEmailPlaceholder": "m.schmidt@example.de",
+      "contactPhone": "Contact Phone",
+      "contactPhonePlaceholder": "+49 7121 200-1234"
+    },
+    "billing": {
+      "sectionTitle": "Billing Information",
+      "billingEmail": "Billing Email",
+      "billingEmailPlaceholder": "billing@institution.de",
+      "billingContactName": "Billing Contact Name",
+      "billingContactNamePlaceholder": "Buchhaltung",
+      "billingContactPhone": "Billing Contact Phone",
+      "billingContactPhonePlaceholder": "+49 7121 200-900",
+      "invoiceLanguage": "Invoice Language",
+      "paymentTerms": "Payment Terms (days)",
+      "paymentTermsPlaceholder": "30"
+    },
+    "invoiceLanguages": {
+      "de": "German (DE)",
+      "en": "English (EN)"
+    },
+    "address": {
+      "sectionTitle": "Address",
+      "street": "Street & Number",
+      "streetPlaceholder": "Am Steinenberg 70",
+      "addressLine2": "Additional Address (Building, Floor)",
+      "addressLine2Placeholder": "Building A, 2nd Floor",
+      "postalCode": "Postal Code (PLZ)",
+      "postalCodePlaceholder": "72764",
+      "city": "City",
+      "cityPlaceholder": "Reutlingen",
+      "state": "State (optional)",
+      "statePlaceholder": "Baden-Württemberg",
+      "country": "Country",
+      "countryPlaceholder": "Germany"
+    },
+    "hospital": {
+      "sectionTitle": "Hospital Details",
+      "institutionNumber": "IK-Nummer (Institutionskennzeichen)",
+      "institutionNumberPlaceholder": "123456789",
+      "numberOfBeds": "Number of Beds",
+      "numberOfBedsPlaceholder": "500",
+      "departments": "Departments (comma-separated)",
+      "departmentsPlaceholder": "Intensive Care, Wound Management, Emergency",
+      "accreditation": "Accreditation",
+      "accreditationPlaceholder": "ISO 9001"
+    },
+    "socialLinks": {
+      "sectionTitle": "Social Links",
+      "linkedin": "LinkedIn",
+      "linkedinPlaceholder": "https://www.linkedin.com/company/institution",
+      "instagram": "Instagram",
+      "instagramPlaceholder": "https://www.instagram.com/institution"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Add Institution"
+    }
+  }
+}

@@ -1,42 +1,44 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
-import { InstitutionInformationForm } from '../components/InstitutionInformationForm'
-import { createInstitution } from '../api/institutionApi'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { useUser } from '@/contexts/user'
 import { Spinner } from '@/components/ui/spinner'
 import type { InstitutionFormData } from '../types/institution.types'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { InstitutionInformationForm } from '../components/InstitutionInformationForm'
+import { useInstitutions } from '../hooks/useInstitutions'
 
 const NewInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
-  const [loading, setLoading] = useState(false)
+  const { t } = useTranslation('features.admin')
+  const { addInstitution } = useInstitutions()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const role = getRole()
 
   const handleSubmit = async (data: InstitutionFormData) => {
-    setLoading(true)
+    setIsSubmitting(true)
     try {
-      await createInstitution(data)
-      toast.success('Institution Created', {
-        description: 'The institution has been created successfully.',
+      await addInstitution(data)
+      toast.success(t('institutions.toasts.createSuccess'), {
+        description: t('institutions.toasts.createSuccessDescription'),
       })
       navigate(`/${role}/institution`)
     } catch (err) {
-      toast.error('Failed to Create Institution', {
-        description: err instanceof Error ? err.message : 'An unexpected error occurred.',
+      toast.error(t('institutions.toasts.createError'), {
+        description: err instanceof Error ? err.message : t('institutions.toasts.unexpectedError'),
       })
     } finally {
-      setLoading(false)
+      setIsSubmitting(false)
     }
   }
 
-  const handleCancel = () => {
-    navigate(`/${role}/institution`)
-  }
+  const handleCancel = () => navigate(`/${role}/institution`)
 
-  if (loading) {
+  if (isSubmitting) {
     return (
       <AdminWorkspaceShell>
         <div className="flex items-center justify-center min-h-[400px]">

@@ -15,12 +15,16 @@ export type {
   InstitutionStatus,
   InvoiceLanguage,
   AddressJsonb,
+  SocialLinks,
   InstitutionFormData,
   InstitutionRow,
+  Institution,
 } from './types/institution.types'
 export { fetchInstitutions, createInstitution } from './api/institutionApi'
 export { listAdminUsers, deleteUserCompletely, setUserActiveStatus } from './api/userApi'
 export type { AdminUserRow, AdminDeleteUserResult, AdminSetUserActiveResult } from './api/userApi'
+export { useInstitutions } from './hooks/useInstitutions'
+export { useAdminUsers } from './hooks/useAdminUsers'
 export { AdminAnalytics } from './pages/analytics'
 export { AdminBilling } from './pages/billing'
 export { AdminDashboard } from './pages/dashboard'

@@ -1,5 +1,20 @@
 import { supabase } from '@/lib/supabase'
-import type { InstitutionFormData, InstitutionRow } from '@/features/admin/types/institution.types'
+import type { Institution, InstitutionFormData, InstitutionRow } from '../types/institution.types'
+
+const INSTITUTION_COLUMNS = 'id, name, slug, type, status, email, image_url, created_at' as const
+
+function toInstitution(row: InstitutionRow): Institution {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    type: row.type,
+    status: row.status as Institution['status'],
+    email: row.email,
+    imageUrl: row.image_url,
+    createdAt: new Date(row.created_at),
+  }
+}
 
 function toOptionalText(value?: string) {
   const normalized = value?.trim()
@@ -11,31 +26,25 @@ function toOptionalPositiveInteger(value?: number) {
 }
 
 /** Fetch all institutions ordered by creation date (newest first). */
-export async function fetchInstitutions() {
+export async function fetchInstitutions(): Promise<Institution[]> {
   const { data, error } = await supabase
     .from('institutions')
-    .select('id, name, slug, type, status, email, image_url, created_at')
+    .select(INSTITUTION_COLUMNS)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching institutions:', error)
-    throw error
-  }
-
-  return data as InstitutionRow[]
+  if (error) throw new Error(error.message)
+  return (data as InstitutionRow[]).map(toInstitution)
 }
 
 /**
  * Create a new institution in the database.
  * Maps form data to the institutions schema (address and social_links as JSONB).
  */
-export async function createInstitution(data: InstitutionFormData) {
+export async function createInstitution(data: InstitutionFormData): Promise<Institution> {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) {
-    throw new Error('Not authenticated')
-  }
+  if (!user) throw new Error('Not authenticated')
 
   const hasAddress = Object.values(data.address || {}).some((v) => (v ?? '').trim().length > 0)
   const hasSocialLinks =
@@ -82,13 +91,9 @@ export async function createInstitution(data: InstitutionFormData) {
       image_url: toOptionalText(data.imageUrl),
       created_by_admin_id: user.id,
     })
-    .select()
+    .select(INSTITUTION_COLUMNS)
     .single()
 
-  if (error) {
-    console.error('Error creating institution:', error)
-    throw error
-  }
-
-  return institution
+  if (error) throw new Error(error.message)
+  return toInstitution(institution as InstitutionRow)
 }
