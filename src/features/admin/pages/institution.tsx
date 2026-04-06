@@ -67,7 +67,7 @@ const AdminInstitution = () => {
             className="active:animate-in active:zoom-in-95"
           >
             <Plus className="size-4" />
-            {t('institutions.newButton')}
+            {t('institutions.empty.action')}
           </Button>
         </div>
 
