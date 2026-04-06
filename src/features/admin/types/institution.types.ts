@@ -22,6 +22,37 @@ export type SocialLinks = {
   instagram?: string
 }
 
+export type NewInstitutionWizardValues = {
+  name: string
+  slug: string
+  type: InstitutionType | ''
+  adminEmail: string
+  legalName: string
+  billingEmail: string
+  country: string
+  createInitialStructure: boolean
+  facultyName: string
+  programmeName: string
+}
+
+export const createDefaultNewInstitutionWizardValues = (): NewInstitutionWizardValues => ({
+  name: '',
+  slug: '',
+  type: '',
+  adminEmail: '',
+  legalName: '',
+  billingEmail: '',
+  country: '',
+  createInitialStructure: false,
+  facultyName: '',
+  programmeName: '',
+})
+
+export type BootstrapInstitutionFromWizardResult = {
+  institution: Institution
+  inviteToken: string
+}
+
 export type InstitutionFormData = {
   name: string
   slug: string

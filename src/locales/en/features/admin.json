@@ -232,5 +232,64 @@
       "cancel": "Cancel",
       "create": "Add Institution"
     }
+  },
+  "wizard": {
+    "title": "Create institution",
+    "subtitle": "Identity and billing seed only. Subscription and quotas use platform defaults. The first admin receives an email invite.",
+    "steps": {
+      "identity": "Identity",
+      "billing": "Billing",
+      "structure": "Structure",
+      "review": "Review"
+    },
+    "identity": {
+      "name": "Institution name",
+      "slug": "Slug",
+      "type": "Type",
+      "adminEmail": "Institution admin email",
+      "adminEmailPlaceholder": "admin@school.example",
+      "adminEmailHint": "They sign up with this address and redeem the invite token."
+    },
+    "billing": {
+      "legalName": "Legal name",
+      "billingEmail": "Billing email",
+      "country": "Country"
+    },
+    "structure": {
+      "toggleLabel": "Create initial structure",
+      "toggleHint": "Optional: add one faculty and one optional programme.",
+      "facultyName": "Faculty name",
+      "facultyPlaceholder": "e.g. Nursing",
+      "programmeName": "Programme name (optional)",
+      "programmePlaceholder": "e.g. General Nursing",
+      "programmeHint": "Leave empty to create only a faculty.",
+      "summaryLabel": "Initial structure",
+      "skipped": "Skipped"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create institution",
+      "creating": "Creating..."
+    },
+    "validation": {
+      "nameRequired": "Institution name is required.",
+      "slugRequired": "Slug is required.",
+      "typeRequired": "Institution type is required.",
+      "adminEmailInvalid": "Enter a valid admin email.",
+      "legalNameRequired": "Legal name is required.",
+      "billingEmailInvalid": "Enter a valid billing email.",
+      "countryRequired": "Country is required.",
+      "facultyRequired": "Faculty name is required when structure setup is enabled."
+    },
+    "success": {
+      "title": "Institution created",
+      "description": "A pending invite was created for {{email}}.",
+      "copyToken": "Copy token",
+      "tokenCopied": "Invite token copied.",
+      "tokenCopyFailed": "Could not copy invite token.",
+      "done": "Done"
+    }
   }
 }

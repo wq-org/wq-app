@@ -62,7 +62,7 @@ const AdminInstitution = () => {
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
           <h1 className="text-2xl font-semibold text-gray-900">{t('institutions.pageTitle')}</h1>
           <Button
-            variant="outline"
+            variant="darkblue"
             onClick={() => navigate(`/${role}/institution/new-institution`)}
             className="active:animate-in active:zoom-in-95"
           >

@@ -1,5 +1,6 @@
 export { AdminWorkspaceShell } from './components/AdminWorkspaceShell'
 export { InstitutionInformationForm } from './components/InstitutionInformationForm'
+export { NewInstitutionWizard } from './components/NewInstitutionWizard'
 export {
   getAdminWorkspaceNavigation,
   resolveAdminWorkspaceRole,
@@ -16,11 +17,18 @@ export type {
   InvoiceLanguage,
   AddressJsonb,
   SocialLinks,
+  NewInstitutionWizardValues,
+  BootstrapInstitutionFromWizardResult,
   InstitutionFormData,
   InstitutionRow,
   Institution,
 } from './types/institution.types'
-export { fetchInstitutions, createInstitution } from './api/institutionApi'
+export { createDefaultNewInstitutionWizardValues } from './types/institution.types'
+export {
+  fetchInstitutions,
+  createInstitution,
+  bootstrapInstitutionFromWizard,
+} from './api/institutionApi'
 export { listAdminUsers, deleteUserCompletely, setUserActiveStatus } from './api/userApi'
 export type { AdminUserRow, AdminDeleteUserResult, AdminSetUserActiveResult } from './api/userApi'
 export { useInstitutions } from './hooks/useInstitutions'

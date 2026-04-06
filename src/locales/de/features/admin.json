@@ -232,5 +232,64 @@
       "cancel": "Abbrechen",
       "create": "Institution hinzufügen"
     }
+  },
+  "wizard": {
+    "title": "Institution anlegen",
+    "subtitle": "Nur Stammdaten und Rechnungs-Seed. Abos und Kontingente kommen aus den System-Defaults. Die erste Admin-Person erhält eine E-Mail-Einladung.",
+    "steps": {
+      "identity": "Stammdaten",
+      "billing": "Abrechnung",
+      "structure": "Struktur",
+      "review": "Prüfen"
+    },
+    "identity": {
+      "name": "Institutionsname",
+      "slug": "Slug",
+      "type": "Typ",
+      "adminEmail": "E-Mail Institution-Admin",
+      "adminEmailPlaceholder": "admin@schule.example",
+      "adminEmailHint": "Diese Person registriert sich mit dieser Adresse und löst danach das Einladungs-Token ein."
+    },
+    "billing": {
+      "legalName": "Rechtlicher Name",
+      "billingEmail": "Abrechnungs-E-Mail",
+      "country": "Land"
+    },
+    "structure": {
+      "toggleLabel": "Initiale Struktur anlegen",
+      "toggleHint": "Optional: eine Fakultät und optional ein Programm anlegen.",
+      "facultyName": "Fakultätsname",
+      "facultyPlaceholder": "z. B. Pflege",
+      "programmeName": "Programmname (optional)",
+      "programmePlaceholder": "z. B. Generalistische Pflege",
+      "programmeHint": "Leer lassen, um nur eine Fakultät anzulegen.",
+      "summaryLabel": "Initiale Struktur",
+      "skipped": "Übersprungen"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "create": "Institution erstellen",
+      "creating": "Wird erstellt..."
+    },
+    "validation": {
+      "nameRequired": "Institutionsname ist erforderlich.",
+      "slugRequired": "Slug ist erforderlich.",
+      "typeRequired": "Institutionstyp ist erforderlich.",
+      "adminEmailInvalid": "Gültige Admin-E-Mail eingeben.",
+      "legalNameRequired": "Rechtlicher Name ist erforderlich.",
+      "billingEmailInvalid": "Gültige Abrechnungs-E-Mail eingeben.",
+      "countryRequired": "Land ist erforderlich.",
+      "facultyRequired": "Fakultätsname ist erforderlich, wenn Struktur-Setup aktiv ist."
+    },
+    "success": {
+      "title": "Institution erstellt",
+      "description": "Eine ausstehende Einladung wurde für {{email}} erstellt.",
+      "copyToken": "Token kopieren",
+      "tokenCopied": "Einladungs-Token kopiert.",
+      "tokenCopyFailed": "Einladungs-Token konnte nicht kopiert werden.",
+      "done": "Fertig"
+    }
   }
 }

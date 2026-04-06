@@ -28,9 +28,6 @@ import {
   type AdminWorkspaceRole,
 } from '../config/adminWorkspaceNavigation'
 
-const LANGUAGE_FLAGS: Record<'de' | 'en', string> = { de: '🇩🇪', en: '🇺🇸' }
-const LANGUAGE_LABELS: Record<'de' | 'en', string> = { de: 'Deutsch', en: 'English' }
-
 type AdminWorkspaceShellProps = {
   children: React.ReactNode
   role?: AdminWorkspaceRole
@@ -39,6 +36,7 @@ type AdminWorkspaceShellProps = {
 export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps) {
   const navigate = useNavigate()
   const { i18n, t } = useTranslation('features.admin')
+  const { t: tLang } = useTranslation('shared.languageSwitcher')
   const { loading, getRole, logout } = useUser()
   const { mode, setMode } = useTheme()
 
@@ -104,9 +102,7 @@ export function AdminWorkspaceShell({ children, role }: AdminWorkspaceShellProps
               >
                 <DropdownMenuItem onClick={handleToggleLanguage}>
                   <Languages className="size-4" />
-                  <span>
-                    {LANGUAGE_FLAGS[nextLang]} {LANGUAGE_LABELS[nextLang]}
-                  </span>
+                  <span>{tLang(`languages.${nextLang}.name`)}</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={handleToggleMode}>

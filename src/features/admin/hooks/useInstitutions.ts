@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
-import { fetchInstitutions, createInstitution } from '../api/institutionApi'
-import type { Institution, InstitutionFormData } from '../types/institution.types'
+import {
+  bootstrapInstitutionFromWizard,
+  createInstitution,
+  fetchInstitutions,
+} from '../api/institutionApi'
+import type {
+  BootstrapInstitutionFromWizardResult,
+  Institution,
+  InstitutionFormData,
+  NewInstitutionWizardValues,
+} from '../types/institution.types'
 
 export function useInstitutions() {
   const [institutions, setInstitutions] = useState<Institution[]>([])
@@ -20,5 +29,13 @@ export function useInstitutions() {
     return institution
   }
 
-  return { institutions, isLoading, error, addInstitution }
+  const addInstitutionFromWizard = async (
+    values: NewInstitutionWizardValues,
+  ): Promise<BootstrapInstitutionFromWizardResult> => {
+    const result = await bootstrapInstitutionFromWizard(values)
+    setInstitutions((prev) => [result.institution, ...prev])
+    return result
+  }
+
+  return { institutions, isLoading, error, addInstitution, addInstitutionFromWizard }
 }

@@ -96,9 +96,9 @@ flowchart TD
 
 **Invite teacher by email (no account yet)**
 
-- RPC: `create_institution_invite_by_email(institution_id, email, role = 'teacher', expires_in)`
+- RPC: `create_institution_invite_by_email(institution_id, email, role, expires_in)` — `role` may be `teacher`, `student`, or `institution_admin` (super_admin bootstrap uses the dedicated `create_institution_with_admin_email_invite` RPC, which creates the tenant and the pending admin invite in one step).
 - Creates: `institution_invites` row with secret token
-- Teacher redeems via: `redeem_institution_invite(token)` after sign-up
+- Invitee redeems via: `redeem_institution_invite(token)` after sign-up (profile email must match the invite)
 
 **Assign teacher to faculty / programme**
 
