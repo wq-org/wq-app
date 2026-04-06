@@ -43,13 +43,17 @@ import { AppShell } from './components/layout'
 import { GameEditorCanvas } from '@/features/game-studio'
 import { ProfileViewPage } from '@/features/profile'
 import {
+  AdminAuditLogs,
   AdminAnalytics,
   AdminBilling,
   AdminDashboard,
+  AdminFeatureDefinitions,
   AdminFeatures,
+  AdminGdprRequest,
   AdminInstitution,
   AdminLicenses,
   NewInstitution,
+  AdminPlanCatalog,
   AdminSystem,
   AdminUsers,
 } from '@/features/admin'
@@ -261,6 +265,38 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <AdminUsers />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="plan-catalog"
+                  element={
+                    <RequireAuth>
+                      <AdminPlanCatalog />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="feature-definitions"
+                  element={
+                    <RequireAuth>
+                      <AdminFeatureDefinitions />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="audit-logs"
+                  element={
+                    <RequireAuth>
+                      <AdminAuditLogs />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="gdpr-request"
+                  element={
+                    <RequireAuth>
+                      <AdminGdprRequest />
                     </RequireAuth>
                   }
                 />

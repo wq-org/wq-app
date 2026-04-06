@@ -86,20 +86,22 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
                   </CollapsibleTrigger>
                 )}
               </div>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        className="cursor-pointer"
-                        onClick={() => navigateToSubPath(item.url, subItem.url)}
-                      >
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+              {item.items && item.items.length > 0 ? (
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          className="cursor-pointer"
+                          onClick={() => navigateToSubPath(item.url, subItem.url)}
+                        >
+                          <span>{subItem.title}</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              ) : null}
             </SidebarMenuItem>
           </Collapsible>
         ))}
