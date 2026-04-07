@@ -54,6 +54,7 @@ import {
   AdminGdprRequest,
   AdminInstitution,
   AdminLicenses,
+  AdminPlanEntitlementsEditor,
   NewInstitution,
   AdminPlanCatalog,
   AdminSettings,
@@ -279,6 +280,14 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <AdminPlanCatalog />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="plan-catalog/:planId/entitlements"
+                  element={
+                    <RequireAuth>
+                      <AdminPlanEntitlementsEditor />
                     </RequireAuth>
                   }
                 />

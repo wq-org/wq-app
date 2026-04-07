@@ -32,6 +32,7 @@ type FieldTextareaProps = {
    * Pass explicitly to override.
    */
   showCounter?: boolean
+  /** Hide the bottom separator line. Defaults to true since textareas are typically inside cards or bordered containers. */
   hideSeparator?: boolean
   disabled?: boolean
   className?: string
@@ -56,7 +57,7 @@ export const FieldTextarea = ({
   rows = 4,
   maxLength: maxLengthProp,
   showCounter: showCounterProp,
-  hideSeparator = false,
+  hideSeparator = true,
   disabled = false,
   className,
   onReachMaxLength,

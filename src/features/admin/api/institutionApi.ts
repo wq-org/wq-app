@@ -6,10 +6,12 @@ import type {
   Institution,
   InstitutionFormData,
   InstitutionRow,
+  InstitutionUpdateValues,
   NewInstitutionWizardValues,
 } from '../types/institution.types'
 
-const INSTITUTION_COLUMNS = 'id, name, slug, type, status, email, image_url, created_at' as const
+const INSTITUTION_COLUMNS =
+  'id, name, slug, type, status, email, description, image_url, created_at' as const
 
 function toInstitution(row: InstitutionRow): Institution {
   return {
@@ -19,6 +21,7 @@ function toInstitution(row: InstitutionRow): Institution {
     type: row.type,
     status: row.status as Institution['status'],
     email: row.email,
+    description: row.description,
     imageUrl: row.image_url,
     createdAt: new Date(row.created_at),
   }
@@ -104,6 +107,27 @@ export async function createInstitution(data: InstitutionFormData): Promise<Inst
 
   if (error) throw new Error(error.message)
   return toInstitution(institution as InstitutionRow)
+}
+
+export async function updateInstitution(
+  institutionId: string,
+  values: InstitutionUpdateValues,
+): Promise<Institution> {
+  const { data, error } = await supabase
+    .from('institutions')
+    .update({
+      name: values.name.trim(),
+      type: toOptionalText(values.type),
+      status: values.status,
+      email: toOptionalText(values.email),
+      description: toOptionalText(values.description),
+    })
+    .eq('id', institutionId)
+    .select(INSTITUTION_COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+  return toInstitution(data as InstitutionRow)
 }
 
 type InstitutionWizardBootstrapRpcRow = {

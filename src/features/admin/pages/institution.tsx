@@ -1,14 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Building2, Plus } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { VariantProps } from 'class-variance-authority'
 
 import { useUser } from '@/contexts/user'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { badgeVariants } from '@/components/ui/badge-variants'
 import { Spinner } from '@/components/ui/spinner'
 import {
   Empty,
@@ -32,47 +30,55 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { InstitutionDetailsDrawer } from '../components/InstitutionDetailsDrawer'
 import { useInstitutions } from '../hooks/useInstitutions'
-import type { Institution, InstitutionStatus } from '../types/institution.types'
+import {
+  createFormValuesFromInstitution,
+  type Institution,
+  type InstitutionEditFormValues,
+  type InstitutionStatus,
+} from '../types/institution.types'
+import type { VariantProps } from 'class-variance-authority'
+import { badgeVariants } from '@/components/ui/badge-variants'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
 const STATUS_VARIANT: Record<InstitutionStatus, BadgeVariant> = {
   active: 'outline',
-  pending: 'orange',
+  pending: 'blue',
   inactive: 'secondary',
   suspended: 'destructive',
 }
-
-const MOCK_INSTITUTIONS: Institution[] = [
-  {
-    id: 'mock-pending-berlin',
-    name: 'Berlin Health Academy',
-    slug: 'berlin-health-academy',
-    type: 'school',
-    status: 'pending',
-    email: 'onboarding@berlin-health.example',
-    imageUrl: null,
-    createdAt: new Date('2026-04-06T08:30:00.000Z'),
-  },
-  {
-    id: 'mock-active-hamburg',
-    name: 'Hamburg Care Institute',
-    slug: 'hamburg-care-institute',
-    type: 'university',
-    status: 'active',
-    email: 'admin@hamburg-care.example',
-    imageUrl: null,
-    createdAt: new Date('2026-03-22T10:15:00.000Z'),
-  },
-]
 
 const AdminInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.admin')
-  const { institutions, isLoading, error } = useInstitutions()
-  const institutionsForTable = institutions.length > 0 ? institutions : MOCK_INSTITUTIONS
+  const { institutions, isLoading, error, editInstitution } = useInstitutions()
+  const [selectedInstitution, setSelectedInstitution] = useState<Institution | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [formValues, setFormValues] = useState<InstitutionEditFormValues>({
+    name: '',
+    type: '',
+    email: '',
+    description: '',
+    phone: '',
+    website: '',
+    legalName: '',
+    legalForm: '',
+    registrationNumber: '',
+    taxId: '',
+    vatId: '',
+    primaryContactName: '',
+    primaryContactEmail: '',
+    primaryContactPhone: '',
+    primaryContactRole: '',
+    billingEmail: '',
+    billingContactName: '',
+    billingContactPhone: '',
+    invoiceLanguage: 'de',
+    paymentTerms: 30,
+  })
 
   const role = getRole()
 
@@ -81,6 +87,34 @@ const AdminInstitution = () => {
       toast.error(t('institutions.toasts.loadError'), { description: error })
     }
   }, [error, t])
+
+  const handleOpenEditDrawer = (institution: Institution) => {
+    setSelectedInstitution(institution)
+    setFormValues(createFormValuesFromInstitution(institution))
+    setIsDrawerOpen(true)
+  }
+
+  const handleSaveInstitution = async () => {
+    if (!selectedInstitution) return
+    const loadingToastId = toast.loading(t('institutions.editDrawer.saving'))
+    try {
+      await editInstitution(selectedInstitution.id, {
+        name: formValues.name,
+        type: formValues.type,
+        email: formValues.email,
+        status: selectedInstitution.status ?? 'active',
+        description: formValues.description,
+      })
+      toast.dismiss(loadingToastId)
+      toast.success(t('institutions.toasts.updateSuccess'))
+      setIsDrawerOpen(false)
+    } catch (e) {
+      toast.dismiss(loadingToastId)
+      toast.error(t('institutions.toasts.updateError'), {
+        description: e instanceof Error ? e.message : t('institutions.toasts.unexpectedError'),
+      })
+    }
+  }
 
   return (
     <AdminWorkspaceShell>
@@ -105,7 +139,7 @@ const AdminInstitution = () => {
               speed={1750}
             />
           </div>
-        ) : institutionsForTable.length === 0 ? (
+        ) : institutions.length === 0 ? (
           <Empty>
             <EmptyMedia variant="icon">
               <Building2 />
@@ -133,10 +167,11 @@ const AdminInstitution = () => {
                   <TableHead>{t('institutions.table.type')}</TableHead>
                   <TableHead>{t('institutions.table.email')}</TableHead>
                   <TableHead>{t('institutions.table.status')}</TableHead>
+                  <TableHead>{t('institutions.table.action')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {institutionsForTable.map((inst) => (
+                {institutions.map((inst) => (
                   <TableRow
                     key={inst.id}
                     className="animate-in fade-in-0 slide-in-from-bottom-2"
@@ -147,6 +182,7 @@ const AdminInstitution = () => {
                           <button
                             type="button"
                             className="flex max-w-full min-w-0 items-center gap-2 rounded-md p-0 text-left font-medium outline-none ring-offset-background hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
+                            onClick={() => handleOpenEditDrawer(inst)}
                           >
                             <Avatar className="h-8 w-8 shrink-0">
                               <AvatarImage
@@ -196,6 +232,15 @@ const AdminInstitution = () => {
                         '—'
                       )}
                     </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="darkblue"
+                        size="sm"
+                        onClick={() => handleOpenEditDrawer(inst)}
+                      >
+                        {t('institutions.table.viewDetails')}
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -203,6 +248,15 @@ const AdminInstitution = () => {
           </div>
         )}
       </div>
+
+      <InstitutionDetailsDrawer
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        institution={selectedInstitution}
+        formValues={formValues}
+        onFormChange={setFormValues}
+        onSave={handleSaveInstitution}
+      />
     </AdminWorkspaceShell>
   )
 }

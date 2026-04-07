@@ -242,16 +242,17 @@ const AdminFeatureDefinitionEditor = () => {
                 >
                   {t('featureDefinitions.editor.deleteHint')}
                 </Text>
-                <HoldToDeleteButton
-                  variant="outline"
-                  className="mt-4 border-destructive/40 text-destructive hover:bg-destructive/10"
-                  onDelete={() => {
-                    setConfirmKey('')
-                    setDeleteOpen(true)
-                  }}
-                >
-                  {t('featureDefinitions.editor.holdToDelete')}
-                </HoldToDeleteButton>
+                <div className="mt-4">
+                  <HoldToDeleteButton
+                    variant="outline"
+                    onDelete={() => {
+                      setConfirmKey('')
+                      setDeleteOpen(true)
+                    }}
+                  >
+                    {t('featureDefinitions.editor.holdToDelete')}
+                  </HoldToDeleteButton>
+                </div>
               </div>
             ) : null}
           </>

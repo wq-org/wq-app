@@ -51,7 +51,9 @@
       "slug": "Slug",
       "type": "Type",
       "email": "Email",
-      "status": "Status"
+      "status": "Status",
+      "action": "Action",
+      "viewDetails": "View Details"
     },
     "empty": {
       "title": "No institutions yet",
@@ -62,8 +64,21 @@
       "loadError": "Failed to Load Institutions",
       "createSuccess": "Institution Created",
       "createSuccessDescription": "The institution has been created successfully.",
+      "updateSuccess": "Institution updated",
+      "updateError": "Failed to update institution",
       "createError": "Failed to Create Institution",
       "unexpectedError": "An unexpected error occurred."
+    },
+    "editDrawer": {
+      "title": "Edit institution",
+      "description": "Update core institution values. Changes apply immediately.",
+      "slugNote": "Slug is read-only and cannot be edited here.",
+      "selectType": "Select institution type",
+      "statusReadOnly": "Status is read-only here and cannot be changed in this drawer.",
+      "noteLabel": "Note",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
     }
   },
   "users": {
@@ -121,6 +136,43 @@
       "activateDescription": "{{username}} can log in again.",
       "deactivateDescription": "{{username}} can no longer log in.",
       "unexpectedError": "An unexpected error occurred."
+    }
+  },
+  "planCatalog": {
+    "pageTitle": "Plan catalog",
+    "pageDescription": "Manage commercial plans and configure entitlement values per plan.",
+    "filterLabel": "Search plans",
+    "filterPlaceholder": "Filter by name or code…",
+    "filterEmpty": "No plans match your search.",
+    "loadError": "Failed to load plans",
+    "noDescription": "No description",
+    "actions": {
+      "editEntitlements": "Edit entitlements"
+    },
+    "empty": {
+      "title": "No plans yet",
+      "description": "Add plans before configuring entitlement values."
+    },
+    "editor": {
+      "back": "Back to plans",
+      "pageTitle": "Edit entitlements for {{plan}}",
+      "pageDescription": "Set plan-level defaults per feature. Empty values fall back to global defaults or downstream overrides.",
+      "loadError": "Failed to load plan entitlements",
+      "booleanHint": "Global default: {{defaultValue}}",
+      "placeholders": {
+        "integer": "Enter number",
+        "bigint": "Enter large number",
+        "text": "Enter text value"
+      },
+      "bigintPreview": "{{value}} = {{formatted}}",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "toasts": {
+        "saveSuccess": "Plan entitlements updated",
+        "saveError": "Could not save plan entitlements",
+        "unexpected": "Something went wrong."
+      }
     }
   },
   "featureDefinitions": {
@@ -192,8 +244,15 @@
       "descriptionField": "Description",
       "descriptionPlaceholder": "Optional notes for admins",
       "valueType": "Value type",
-      "defaultEnabled": "Default enabled",
-      "defaultEnabledHint": "Used when value type is boolean, before plan or institution overrides.",
+      "valueTypeHints": {
+        "boolean": "Plans and overrides will store an on/off toggle. Use for feature flags like \"chat_enabled\".",
+        "integer": "Plans and overrides will store a whole number. Use for limits like \"max_students = 500\".",
+        "bigint": "Plans and overrides will store a large number. Use for byte-level caps like \"storage_bytes_cap\" (for example: 10737418240 = 10 GB).",
+        "text": "Plans and overrides will store a text value. Use for configurable strings like region codes."
+      },
+      "defaultEnabled": "Default value",
+      "defaultEnabledHint": "Global fallback when no plan or institution override is set. This is the platform-wide default for this toggle.",
+      "nonBooleanHint": "The actual default value (number or text) is configured per plan in Plan entitlements. This definition only registers the feature in the catalog.",
       "cancel": "Cancel",
       "create": "Create",
       "save": "Save",

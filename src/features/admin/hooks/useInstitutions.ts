@@ -3,11 +3,13 @@ import {
   bootstrapInstitutionFromWizard,
   createInstitution,
   fetchInstitutions,
+  updateInstitution,
 } from '../api/institutionApi'
 import type {
   BootstrapInstitutionFromWizardResult,
   Institution,
   InstitutionFormData,
+  InstitutionUpdateValues,
   NewInstitutionWizardValues,
 } from '../types/institution.types'
 
@@ -37,5 +39,21 @@ export function useInstitutions() {
     return result
   }
 
-  return { institutions, isLoading, error, addInstitution, addInstitutionFromWizard }
+  const editInstitution = async (
+    institutionId: string,
+    values: InstitutionUpdateValues,
+  ): Promise<Institution> => {
+    const updated = await updateInstitution(institutionId, values)
+    setInstitutions((prev) => prev.map((item) => (item.id === institutionId ? updated : item)))
+    return updated
+  }
+
+  return {
+    institutions,
+    isLoading,
+    error,
+    addInstitution,
+    addInstitutionFromWizard,
+    editInstitution,
+  }
 }

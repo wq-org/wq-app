@@ -6,6 +6,7 @@ import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 import { FeatureDefinitionCategoryPopover } from './FeatureDefinitionCategoryPopover'
 import {
   Select,
@@ -21,6 +22,16 @@ import type { FeatureDefinition } from '../types/featureDefinitions.types'
 import { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from '../types/featureDefinitions.types'
 
 const FIELD_LABEL_CLASS = 'text-sm font-medium leading-none'
+
+function normalizeFeatureKey(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .replace(/_+/g, '_')
+    .replace(/^[^a-z]+/, '')
+}
 
 export type FeatureDefinitionEditorFormValues = {
   key: string
@@ -84,8 +95,8 @@ export function FeatureDefinitionEditorForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (mode === 'create') {
-      const trimmedKey = values.key.trim()
-      if (!trimmedKey || !FEATURE_KEY_PATTERN.test(trimmedKey)) {
+      const normalized = normalizeFeatureKey(values.key)
+      if (!normalized || !FEATURE_KEY_PATTERN.test(normalized)) {
         setKeyError(t('featureDefinitions.validation.keyInvalid'))
         return
       }
@@ -97,7 +108,7 @@ export function FeatureDefinitionEditorForm({
     }
 
     await onSubmit({
-      key: values.key.trim(),
+      key: mode === 'create' ? normalizeFeatureKey(values.key) : values.key.trim(),
       name: values.name.trim(),
       description: values.description,
       category: values.category,
@@ -105,6 +116,9 @@ export function FeatureDefinitionEditorForm({
       defaultEnabled: values.defaultEnabled,
     })
   }
+
+  const isBoolean = values.valueType === 'boolean'
+  const normalizedKey = normalizeFeatureKey(values.key)
 
   const keyLabel = t('featureDefinitions.form.key')
   const nameLabel = t('featureDefinitions.form.name')
@@ -140,6 +154,16 @@ export function FeatureDefinitionEditorForm({
               required={mode === 'create'}
             />
             {keyError ? <p className="text-sm text-destructive">{keyError}</p> : null}
+            {mode === 'create' && normalizedKey ? (
+              <Text
+                as="p"
+                variant="small"
+                color="muted"
+                className="text-xs"
+              >
+                Stored key: <span className="font-mono">{normalizedKey}</span>
+              </Text>
+            ) : null}
             {mode === 'edit' ? (
               <p className="text-xs text-muted-foreground">
                 {t('featureDefinitions.form.keyReadOnlyHint')}
@@ -194,8 +218,8 @@ export function FeatureDefinitionEditorForm({
               value={values.description}
               onValueChange={(next) => setValues((v) => ({ ...v, description: next }))}
               rows={3}
+              hideSeparator={false}
               disabled={saving}
-              hideSeparator
             />
           </div>
 
@@ -208,12 +232,14 @@ export function FeatureDefinitionEditorForm({
             </Label>
             <Select
               value={values.valueType}
-              onValueChange={(v) =>
+              onValueChange={(v) => {
+                const next = v as (typeof ENTITLEMENT_VALUE_TYPES)[number]
                 setValues((prev) => ({
                   ...prev,
-                  valueType: v as (typeof ENTITLEMENT_VALUE_TYPES)[number],
+                  valueType: next,
+                  defaultEnabled: next === 'boolean' ? prev.defaultEnabled : true,
                 }))
-              }
+              }}
               disabled={saving}
             >
               <SelectTrigger
@@ -233,38 +259,51 @@ export function FeatureDefinitionEditorForm({
                 ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              {t(`featureDefinitions.form.valueTypeHints.${values.valueType}`)}
+            </p>
           </div>
 
           <div className="flex items-center justify-between gap-4 border-t border-border pt-4">
-            <div className="min-w-0 space-y-1">
-              <Label
-                htmlFor={saving ? undefined : 'fd-editor-default'}
-                className={FIELD_LABEL_CLASS}
-              >
-                {t('featureDefinitions.form.defaultEnabled')}
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {t('featureDefinitions.form.defaultEnabledHint')}
-              </p>
-            </div>
-            {saving ? (
-              <div
-                className="flex h-[1.15rem] w-8 shrink-0 items-center justify-center"
-                aria-busy="true"
-                aria-label={t('featureDefinitions.form.saving')}
-              >
-                <Spinner
-                  size="xs"
-                  variant="gray"
-                  speed={1750}
-                />
-              </div>
+            {isBoolean ? (
+              <>
+                <div className="min-w-0 space-y-1">
+                  <Label
+                    htmlFor={saving ? undefined : 'fd-editor-default'}
+                    className={FIELD_LABEL_CLASS}
+                  >
+                    {t('featureDefinitions.form.defaultEnabled')}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t('featureDefinitions.form.defaultEnabledHint')}
+                  </p>
+                </div>
+                {saving ? (
+                  <div
+                    className="flex h-[1.15rem] w-8 shrink-0 items-center justify-center"
+                    aria-busy="true"
+                    aria-label={t('featureDefinitions.form.saving')}
+                  >
+                    <Spinner
+                      size="xs"
+                      variant="gray"
+                      speed={1750}
+                    />
+                  </div>
+                ) : (
+                  <Switch
+                    id="fd-editor-default"
+                    checked={values.defaultEnabled}
+                    onCheckedChange={(checked) =>
+                      setValues((v) => ({ ...v, defaultEnabled: checked }))
+                    }
+                  />
+                )}
+              </>
             ) : (
-              <Switch
-                id="fd-editor-default"
-                checked={values.defaultEnabled}
-                onCheckedChange={(checked) => setValues((v) => ({ ...v, defaultEnabled: checked }))}
-              />
+              <p className="text-xs text-muted-foreground">
+                {t('featureDefinitions.form.nonBooleanHint')}
+              </p>
             )}
           </div>
         </div>

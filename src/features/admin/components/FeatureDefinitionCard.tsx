@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -5,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { formatRelativeUpdatedTime } from '@/features/lesson'
 import { cn } from '@/lib/utils'
 
@@ -23,6 +25,8 @@ export type FeatureDefinitionCardProps = {
 export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDefinitionCardProps) {
   const { t, i18n } = useTranslation('features.admin')
   const isBoolean = feature.valueType === 'boolean'
+  const titleRef = useRef<HTMLDivElement | null>(null)
+  const [isTitleTruncated, setIsTitleTruncated] = useState(false)
 
   const updatedText = formatRelativeUpdatedTime(feature.updatedAt, undefined, i18n.language, {
     updatedRecently: t('featureDefinitions.card.updatedRecently'),
@@ -34,6 +38,35 @@ export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDe
   const categoryLabel = categoryRaw || t('featureDefinitions.card.noCategory')
   const isCoreCategory = categoryRaw.toLowerCase() === 'core'
   const displayName = feature.name?.trim() || feature.key
+
+  useEffect(() => {
+    const element = titleRef.current
+    if (!element) return
+
+    const updateTruncationState = () => {
+      setIsTitleTruncated(element.scrollHeight > element.clientHeight + 1)
+    }
+
+    updateTruncationState()
+
+    const observer = new ResizeObserver(updateTruncationState)
+    observer.observe(element)
+    window.addEventListener('resize', updateTruncationState)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateTruncationState)
+    }
+  }, [displayName])
+
+  const titleContent: ReactNode = (
+    <CardTitle
+      ref={titleRef}
+      className="line-clamp-2 overflow-hidden text-ellipsis text-sm font-semibold leading-tight"
+    >
+      {displayName}
+    </CardTitle>
+  )
 
   return (
     <Card className={cn(CARD_WIDTH, 'gap-0 pt-4 pb-2.5 shadow-sm')}>
@@ -47,9 +80,14 @@ export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDe
           </div>
 
           <div className="min-w-0 flex-1 space-y-1.5">
-            <CardTitle className="truncate text-sm font-semibold leading-tight">
-              {displayName}
-            </CardTitle>
+            {isTitleTruncated ? (
+              <Tooltip>
+                <TooltipTrigger asChild>{titleContent}</TooltipTrigger>
+                <TooltipContent side="top">{displayName}</TooltipContent>
+              </Tooltip>
+            ) : (
+              titleContent
+            )}
 
             <div className="flex flex-wrap gap-1">
               <Badge

@@ -51,7 +51,9 @@
       "slug": "Slug",
       "type": "Typ",
       "email": "E-Mail",
-      "status": "Status"
+      "status": "Status",
+      "action": "Aktion",
+      "viewDetails": "Details anzeigen"
     },
     "empty": {
       "title": "Noch keine Institutionen",
@@ -62,8 +64,21 @@
       "loadError": "Institutionen konnten nicht geladen werden",
       "createSuccess": "Institution erstellt",
       "createSuccessDescription": "Die Institution wurde erfolgreich erstellt.",
+      "updateSuccess": "Institution aktualisiert",
+      "updateError": "Institution konnte nicht aktualisiert werden",
       "createError": "Institution konnte nicht erstellt werden",
       "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "editDrawer": {
+      "title": "Institution bearbeiten",
+      "description": "Aktualisiere zentrale Institutionswerte. Änderungen werden sofort übernommen.",
+      "slugNote": "Der Slug ist schreibgeschützt und kann hier nicht bearbeitet werden.",
+      "selectType": "Institutionstyp auswählen",
+      "statusReadOnly": "Der Status ist hier schreibgeschützt und kann in diesem Drawer nicht geändert werden.",
+      "noteLabel": "Notiz",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert..."
     }
   },
   "users": {
@@ -121,6 +136,43 @@
       "activateDescription": "{{username}} kann sich wieder anmelden.",
       "deactivateDescription": "{{username}} kann sich nicht mehr anmelden.",
       "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    }
+  },
+  "planCatalog": {
+    "pageTitle": "Plankatalog",
+    "pageDescription": "Verwalte kommerzielle Pläne und konfiguriere Entitlement-Werte pro Plan.",
+    "filterLabel": "Pläne durchsuchen",
+    "filterPlaceholder": "Nach Name oder Code filtern…",
+    "filterEmpty": "Keine Pläne passen zur Suche.",
+    "loadError": "Pläne konnten nicht geladen werden",
+    "noDescription": "Keine Beschreibung",
+    "actions": {
+      "editEntitlements": "Entitlements bearbeiten"
+    },
+    "empty": {
+      "title": "Noch keine Pläne",
+      "description": "Lege zuerst Pläne an, bevor du Entitlement-Werte konfigurierst."
+    },
+    "editor": {
+      "back": "Zurück zu den Plänen",
+      "pageTitle": "Entitlements für {{plan}} bearbeiten",
+      "pageDescription": "Setze planbasierte Standardwerte pro Funktion. Leere Werte fallen auf globale Standards oder nachgelagerte Overrides zurück.",
+      "loadError": "Plan-Entitlements konnten nicht geladen werden",
+      "booleanHint": "Globaler Standard: {{defaultValue}}",
+      "placeholders": {
+        "integer": "Zahl eingeben",
+        "bigint": "Große Zahl eingeben",
+        "text": "Textwert eingeben"
+      },
+      "bigintPreview": "{{value}} = {{formatted}}",
+      "cancel": "Abbrechen",
+      "save": "Änderungen speichern",
+      "saving": "Speichern…",
+      "toasts": {
+        "saveSuccess": "Plan-Entitlements aktualisiert",
+        "saveError": "Plan-Entitlements konnten nicht gespeichert werden",
+        "unexpected": "Etwas ist schiefgelaufen."
+      }
     }
   },
   "featureDefinitions": {
@@ -192,8 +244,15 @@
       "descriptionField": "Beschreibung",
       "descriptionPlaceholder": "Optionale Hinweise für Admins",
       "valueType": "Werttyp",
-      "defaultEnabled": "Standard aktiviert",
-      "defaultEnabledHint": "Gilt bei Werttyp Boolean, bevor Plan- oder Institutions-Overrides greifen.",
+      "valueTypeHints": {
+        "boolean": "Pläne und Overrides speichern einen An/Aus-Schalter. Verwende dies für Feature-Flags wie chat_enabled.",
+        "integer": "Pläne und Overrides speichern eine ganze Zahl. Verwende dies für Limits wie max_students = 500.",
+        "bigint": "Pläne und Overrides speichern eine grosse Zahl. Verwende dies für Byte-Obergrenzen wie storage_bytes_cap (zum Beispiel: 10737418240 = 10 GB).",
+        "text": "Pläne und Overrides speichern einen Textwert. Verwende dies für konfigurierbare Zeichenketten wie Regionscodes."
+      },
+      "defaultEnabled": "Standardwert",
+      "defaultEnabledHint": "Globaler Fallback, wenn kein Plan- oder Institutions-Override gesetzt ist. Dies ist der plattformweite Standard für diesen Schalter.",
+      "nonBooleanHint": "Der tatsächliche Standardwert (Zahl oder Text) wird pro Plan unter Plan-Entitlements konfiguriert. Diese Definition registriert die Funktion nur im Katalog.",
       "cancel": "Abbrechen",
       "create": "Anlegen",
       "save": "Speichern",

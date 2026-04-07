@@ -35,6 +35,8 @@ export type { AdminUserRow, AdminDeleteUserResult, AdminSetUserActiveResult } fr
 export { useInstitutions } from './hooks/useInstitutions'
 export { useAdminUsers } from './hooks/useAdminUsers'
 export { useFeatureDefinitions } from './hooks/useFeatureDefinitions'
+export { usePlanCatalog } from './hooks/usePlanCatalog'
+export { usePlanEntitlements } from './hooks/usePlanEntitlements'
 export {
   listFeatureDefinitions,
   getFeatureDefinitionById,
@@ -43,6 +45,13 @@ export {
   deleteFeatureDefinition,
   assertValidFeatureKey,
 } from './api/featureDefinitionsApi'
+export {
+  listPlanCatalog,
+  getPlanById,
+  listPlanEntitlements,
+  getPlanEntitlementsEditorData,
+  savePlanEntitlements,
+} from './api/planEntitlementsApi'
 export type {
   FeatureDefinition,
   FeatureDefinitionRow,
@@ -52,6 +61,15 @@ export type {
   EntitlementValueType,
 } from './types/featureDefinitions.types'
 export { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from './types/featureDefinitions.types'
+export type {
+  PlanCatalog,
+  PlanCatalogRow,
+  PlanEntitlement,
+  PlanEntitlementRow,
+  PlanEntitlementEditorValue,
+  PlanEntitlementEditorGroup,
+  PlanEntitlementUpsertPayload,
+} from './types/planEntitlements.types'
 export { AdminAnalytics } from './pages/analytics'
 export { AdminBilling } from './pages/billing'
 export { AdminAuditLogs } from './pages/auditLogs'
@@ -64,5 +82,6 @@ export { AdminInstitution } from './pages/institution'
 export { AdminLicenses } from './pages/licenses'
 export { NewInstitution } from './pages/newInstitution'
 export { AdminPlanCatalog } from './pages/planCatalog'
+export { AdminPlanEntitlementsEditor } from './pages/planEntitlementsEditor'
 export { AdminSettings } from './pages/settings'
 export { AdminUsers } from './pages/users'
