@@ -5,11 +5,15 @@ import { Stats05, type Stats05Item } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { useInstitutions } from '../hooks/useInstitutions'
+import { useAdminUsers } from '../hooks/useAdminUsers'
 
 const AdminDashboard = () => {
   const { getRole } = useUser()
   const { t } = useTranslation('features.admin')
   const role = getRole()
+  const { institutions } = useInstitutions()
+  const { users } = useAdminUsers()
 
   const statsItems = useMemo((): Stats05Item[] => {
     if (!role) return []
@@ -17,28 +21,24 @@ const AdminDashboard = () => {
     return [
       {
         name: t('dashboard.stats.institutions'),
-        value: '12',
-        change: '+2',
-        changeType: 'positive',
+        value: String(institutions.length),
         to: `${prefix}/institution`,
         viewMoreLabel: t('dashboard.stats.viewMore'),
       },
       {
         name: t('dashboard.stats.users'),
-        value: '1,847',
-        change: '+128',
-        changeType: 'positive',
+        value: String(users.length),
         to: `${prefix}/users`,
         viewMoreLabel: t('dashboard.stats.viewMore'),
       },
       {
         name: t('dashboard.stats.requests'),
-        value: '34',
+        value: '0',
         to: `${prefix}/gdpr-request`,
         viewMoreLabel: t('dashboard.stats.viewMore'),
       },
     ]
-  }, [role, t])
+  }, [role, t, institutions.length, users.length])
 
   return (
     <AdminWorkspaceShell>
