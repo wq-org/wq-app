@@ -182,6 +182,9 @@
     "filterPlaceholder": "Nach Schlüssel oder Anzeigenamen filtern…",
     "filterEmpty": "Keine Einträge passen zur Suche. Versuche einen anderen Schlüssel oder Namen.",
     "addButton": "Funktion hinzufügen",
+    "addMenuTrigger": "Hinzufügen",
+    "addMenuFeature": "Funktion hinzufügen",
+    "addMenuCategory": "Kategorie hinzufügen",
     "loadError": "Funktionsdefinitionen konnten nicht geladen werden",
     "card": {
       "coreBadge": "Kern",
@@ -241,6 +244,8 @@
       "namePlaceholder": "Menschenlesbare Bezeichnung",
       "category": "Kategorie",
       "categoryPlaceholder": "Kategorie auswählen",
+      "customCategoryLabel": "Eigener Kategorie-Slug",
+      "customCategoryPlaceholder": "z. B. billing_oder_integrationen",
       "descriptionField": "Beschreibung",
       "descriptionPlaceholder": "Optionale Hinweise für Admins",
       "valueType": "Werttyp",
@@ -259,7 +264,9 @@
       "saving": "Wird gespeichert..."
     },
     "validation": {
-      "keyInvalid": "Nur Kleinbuchstaben und snake_case: mit Buchstabe beginnen, danach Buchstaben, Ziffern oder Unterstriche."
+      "keyInvalid": "Nur Kleinbuchstaben und snake_case: mit Buchstabe beginnen, danach Buchstaben, Ziffern oder Unterstriche.",
+      "categoryCustomRequired": "Bitte einen Kategorie-Slug eingeben (Buchstaben, Ziffern, Unterstriche).",
+      "categoryReservedSlug": "Dieser Slug entspricht einer festen Kategorie oder ist reserviert. Bitte einen anderen Namen wählen."
     },
     "categories": {
       "none": "Keine Kategorie",
@@ -267,9 +274,11 @@
       "collaboration": "Zusammenarbeit",
       "engagement": "Engagement",
       "infrastructure": "Infrastruktur",
+      "integrations": "Integrationen",
       "learning": "Lernen",
       "limits": "Limits",
-      "scheduling": "Planung"
+      "scheduling": "Planung",
+      "new_category": "Neue Kategorie"
     },
     "deleteDialog": {
       "title": "Diese Funktion löschen?",

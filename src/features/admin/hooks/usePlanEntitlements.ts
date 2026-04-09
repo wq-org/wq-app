@@ -56,7 +56,7 @@ function toUpsertRows(
       }
 
       if (row.valueType === 'bigint') {
-        const trimmed = row.bigintValue.trim()
+        const trimmed = String(row.bigintValue ?? '').trim()
         if (!trimmed) return null
         return {
           plan_id: planId,

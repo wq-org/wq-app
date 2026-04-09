@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -18,10 +18,16 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import { Switch } from '@/components/ui/switch'
 
-import type { FeatureDefinition } from '../types/featureDefinitions.types'
+import type {
+  FeatureDefinitionEditorFormProps,
+  FeatureDefinitionEditorFormValues,
+} from '../types/featureDefinitions.types'
 import { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from '../types/featureDefinitions.types'
-
-const FIELD_LABEL_CLASS = 'text-sm font-medium leading-none'
+import {
+  NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM,
+  isReservedFeatureDefinitionCategorySlug,
+  normalizeFeatureDefinitionCategorySlug,
+} from '../config/featureDefinitionCategories'
 
 function normalizeFeatureKey(raw: string): string {
   return raw
@@ -31,23 +37,6 @@ function normalizeFeatureKey(raw: string): string {
     .replace(/^_+|_+$/g, '')
     .replace(/_+/g, '_')
     .replace(/^[^a-z]+/, '')
-}
-
-export type FeatureDefinitionEditorFormValues = {
-  key: string
-  name: string
-  description: string
-  category: string
-  valueType: (typeof ENTITLEMENT_VALUE_TYPES)[number]
-  defaultEnabled: boolean
-}
-
-export type FeatureDefinitionEditorFormProps = {
-  mode: 'create' | 'edit'
-  initial: FeatureDefinition | null
-  saving: boolean
-  onSubmit: (values: FeatureDefinitionEditorFormValues) => Promise<void>
-  onCancel: () => void
 }
 
 const emptyForm: FeatureDefinitionEditorFormValues = {
@@ -65,16 +54,31 @@ export function FeatureDefinitionEditorForm({
   saving,
   onSubmit,
   onCancel,
+  focusCategoryField = false,
+  dbCategories = [],
 }: FeatureDefinitionEditorFormProps) {
   const { t } = useTranslation('features.admin')
   const [values, setValues] = useState(emptyForm)
   const [keyError, setKeyError] = useState<string | null>(null)
+  const [customCategoryName, setCustomCategoryName] = useState('')
+  const didFocusCategoryRef = useRef(false)
 
   const keyInputId = useId()
   const nameInputId = useId()
   const categoryInputId = useId()
+  const customCategoryInputId = useId()
   const descriptionInputId = useId()
   const valueTypeTriggerId = useId()
+
+  useEffect(() => {
+    if (!focusCategoryField || mode !== 'create' || didFocusCategoryRef.current) return
+    didFocusCategoryRef.current = true
+    const id = categoryInputId
+    const handle = window.setTimeout(() => {
+      document.getElementById(id)?.focus()
+    }, 0)
+    return () => window.clearTimeout(handle)
+  }, [focusCategoryField, mode, categoryInputId])
 
   useEffect(() => {
     if (mode === 'edit' && initial) {
@@ -90,6 +94,7 @@ export function FeatureDefinitionEditorForm({
       setValues(emptyForm)
     }
     setKeyError(null)
+    setCustomCategoryName('')
   }, [mode, initial])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,11 +112,22 @@ export function FeatureDefinitionEditorForm({
       return
     }
 
+    const categoryTrimmed = values.category.trim()
+    const isNewCategoryFlow = categoryTrimmed === NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM
+    const normalizedCustom = normalizeFeatureDefinitionCategorySlug(customCategoryName)
+    if (isNewCategoryFlow) {
+      if (!normalizedCustom || isReservedFeatureDefinitionCategorySlug(normalizedCustom)) {
+        return
+      }
+    }
+
+    const categoryForSave = isNewCategoryFlow ? normalizedCustom : values.category.trim()
+
     await onSubmit({
       key: mode === 'create' ? normalizeFeatureKey(values.key) : values.key.trim(),
       name: values.name.trim(),
       description: values.description,
-      category: values.category,
+      category: categoryForSave,
       valueType: values.valueType,
       defaultEnabled: values.defaultEnabled,
     })
@@ -126,6 +142,19 @@ export function FeatureDefinitionEditorForm({
   const descriptionLabel = t('featureDefinitions.form.descriptionField')
   const valueTypeLabel = t('featureDefinitions.form.valueType')
 
+  const isNewCategoryFlow = values.category.trim() === NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM
+  const normalizedCustomCategory = normalizeFeatureDefinitionCategorySlug(customCategoryName)
+  const customCategoryMessage = isNewCategoryFlow
+    ? !normalizedCustomCategory
+      ? t('featureDefinitions.validation.categoryCustomRequired')
+      : isReservedFeatureDefinitionCategorySlug(normalizedCustomCategory)
+        ? t('featureDefinitions.validation.categoryReservedSlug')
+        : null
+    : null
+  const customCategoryBlocksSave =
+    isNewCategoryFlow &&
+    (!normalizedCustomCategory || isReservedFeatureDefinitionCategorySlug(normalizedCustomCategory))
+
   return (
     <form
       className="flex flex-col gap-6"
@@ -136,7 +165,7 @@ export function FeatureDefinitionEditorForm({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor={keyInputId}
-              className={FIELD_LABEL_CLASS}
+              className="text-sm font-medium leading-none"
             >
               {keyLabel}
             </Label>
@@ -174,7 +203,7 @@ export function FeatureDefinitionEditorForm({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor={nameInputId}
-              className={FIELD_LABEL_CLASS}
+              className="text-sm font-medium leading-none"
             >
               {nameLabel}
             </Label>
@@ -192,22 +221,45 @@ export function FeatureDefinitionEditorForm({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor={categoryInputId}
-              className={FIELD_LABEL_CLASS}
+              className="text-sm font-medium leading-none"
             >
               {categoryLabel}
             </Label>
             <FeatureDefinitionCategoryPopover
               id={categoryInputId}
               value={values.category}
-              onValueChange={(next) => setValues((v) => ({ ...v, category: next }))}
+              onValueChange={(next) => {
+                setValues((v) => ({ ...v, category: next }))
+                if (next.trim() !== NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM) {
+                  setCustomCategoryName('')
+                }
+              }}
               disabled={saving}
+              dbCategories={dbCategories}
             />
+            {isNewCategoryFlow ? (
+              <div className="flex flex-col gap-2 pt-1">
+                <FieldInput
+                  id={customCategoryInputId}
+                  label={t('featureDefinitions.form.customCategoryLabel')}
+                  placeholder={t('featureDefinitions.form.customCategoryPlaceholder')}
+                  value={customCategoryName}
+                  onValueChange={setCustomCategoryName}
+                  disabled={saving}
+                  autoComplete="off"
+                  required
+                />
+                {customCategoryMessage ? (
+                  <p className="text-sm text-destructive">{customCategoryMessage}</p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-2">
             <Label
               htmlFor={descriptionInputId}
-              className={FIELD_LABEL_CLASS}
+              className="text-sm font-medium leading-none"
             >
               {descriptionLabel}
             </Label>
@@ -226,7 +278,7 @@ export function FeatureDefinitionEditorForm({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor={valueTypeTriggerId}
-              className={FIELD_LABEL_CLASS}
+              className="text-sm font-medium leading-none"
             >
               {valueTypeLabel}
             </Label>
@@ -270,7 +322,7 @@ export function FeatureDefinitionEditorForm({
                 <div className="min-w-0 space-y-1">
                   <Label
                     htmlFor={saving ? undefined : 'fd-editor-default'}
-                    className={FIELD_LABEL_CLASS}
+                    className="text-sm font-medium leading-none"
                   >
                     {t('featureDefinitions.form.defaultEnabled')}
                   </Label>
@@ -321,7 +373,7 @@ export function FeatureDefinitionEditorForm({
         <Button
           type="submit"
           variant="darkblue"
-          disabled={saving || !values.name.trim()}
+          disabled={saving || !values.name.trim() || customCategoryBlocksSave}
           className="gap-2"
         >
           {saving ? (

@@ -1,16 +1,20 @@
 /**
- * Sends the institution-admin invite email via Brevo transactional API.
+ * Sends the institution-admin invite email via Resend (https://resend.com).
+ *
+ * Use this function when your verified sending domain is `updates.wq-app.de` (configure in Resend
+ * dashboard). To switch from Brevo, deploy this function and call
+ * `send-institution-admin-invite-email-resend` from `supabase.functions.invoke` instead of
+ * `send-institution-admin-invite-email`.
  *
  * Required Supabase Edge secrets (Dashboard → Edge Functions → Secrets, or `supabase secrets set`):
- * - INSTITUTION_ADMIN_INVITE_KEY — Brevo API key (sent as `api-key` header; see Brevo sendTransacEmail docs).
- * - BREVO_SENDER_EMAIL — Verified sender address in Brevo.
- * - BREVO_SENDER_NAME — Display name for the From header.
+ * - RESEND_API_KEY — Resend API key (Bearer token for api.resend.com).
+ * - RESEND_SENDER_EMAIL — Verified address on your Resend domain (e.g. noreply@updates.wq-app.de).
+ * - RESEND_SENDER_NAME — Display name for the From header (combined as "Name <email>").
  * - PUBLIC_SITE_URL — App origin without trailing slash (e.g. https://app.example.com) for signup links.
  *
- * Auto-provided by Supabase: SUPABASE_URL, SUPABASE_ANON_KEY (and SERVICE_ROLE_KEY if needed later).
+ * Auto-provided by Supabase: SUPABASE_URL, SUPABASE_ANON_KEY.
  *
- * Resend alternative (verified domain e.g. updates.wq-app.de): deploy and invoke
- * `send-institution-admin-invite-email-resend` instead; see that function’s header for RESEND_* secrets.
+ * Sends `Idempotency-Key: <inviteToken>` to Resend (same token as Brevo’s idempotency header) to dedupe retries.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
@@ -19,7 +23,7 @@ const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const BREVO_URL = 'https://api.brevo.com/v3/smtp/email'
+const RESEND_URL = 'https://api.resend.com/emails'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -39,22 +43,24 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
 
-  const brevoKey = Deno.env.get('INSTITUTION_ADMIN_INVITE_KEY')
-  const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL')
-  const senderName = Deno.env.get('BREVO_SENDER_NAME')
+  const resendKey = Deno.env.get('RESEND_API_KEY')
+  const senderEmail = Deno.env.get('RESEND_SENDER_EMAIL')
+  const senderName = Deno.env.get('RESEND_SENDER_NAME')
   const publicSiteUrlRaw = Deno.env.get('PUBLIC_SITE_URL')
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
   if (
-    !brevoKey ||
+    !resendKey ||
     !senderEmail ||
     !senderName ||
     !publicSiteUrlRaw ||
     !supabaseUrl ||
     !supabaseAnonKey
   ) {
-    console.error('send-institution-admin-invite-email: missing required environment configuration')
+    console.error(
+      'send-institution-admin-invite-email-resend: missing required environment configuration',
+    )
     return jsonResponse({ error: 'Server configuration error' }, 500)
   }
 
@@ -170,29 +176,35 @@ Deno.serve(async (req) => {
   <p style="color:#666;font-size:14px">This link expires soon. If you did not expect this email, you can ignore it.</p>
 </body></html>`
 
-  const brevoRes = await fetch(BREVO_URL, {
+  const fromHeader = `${senderName} <${senderEmail}>`
+
+  const resendRes = await fetch(RESEND_URL, {
     method: 'POST',
     headers: {
-      accept: 'application/json',
-      'api-key': brevoKey,
-      'content-type': 'application/json',
+      Authorization: `Bearer ${resendKey}`,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': inviteToken,
     },
     body: JSON.stringify({
-      sender: { email: senderEmail, name: senderName },
-      to: [{ email: adminEmailRaw, name: 'Admin' }],
+      from: fromHeader,
+      to: [adminEmailRaw],
       subject,
-      htmlContent,
-      textContent,
-      tags: ['institution_admin_invite'],
-      headers: {
-        'Idempotency-Key': inviteToken,
-      },
+      html: htmlContent,
+      text: textContent,
+      tags: [{ name: 'category', value: 'institution_admin_invite' }],
     }),
   })
 
-  if (!brevoRes.ok) {
-    const errBody = await brevoRes.text()
-    console.error('Brevo error:', brevoRes.status, errBody)
+  if (!resendRes.ok) {
+    const errBody = await resendRes.text()
+    let logged = errBody
+    try {
+      const errJson = JSON.parse(errBody) as { message?: string }
+      if (typeof errJson?.message === 'string') logged = errJson.message
+    } catch {
+      /* keep raw body */
+    }
+    console.error('Resend error:', resendRes.status, logged)
     return jsonResponse({ error: 'Failed to send email' }, 502)
   }
 

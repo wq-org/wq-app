@@ -58,6 +58,8 @@ export type {
   FeatureDefinitionInsert,
   FeatureDefinitionUpdate,
   FeatureDefinitionFormValues,
+  FeatureDefinitionEditorFormValues,
+  FeatureDefinitionEditorFormProps,
   EntitlementValueType,
 } from './types/featureDefinitions.types'
 export { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from './types/featureDefinitions.types'

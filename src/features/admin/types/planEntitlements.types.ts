@@ -81,7 +81,7 @@ export function toPlanEntitlementEditorValue(
     defaultEnabled: feature.defaultEnabled,
     booleanValue: entitlement?.booleanValue ?? feature.defaultEnabled,
     integerValue: entitlement?.integerValue != null ? String(entitlement.integerValue) : '',
-    bigintValue: entitlement?.bigintValue ?? '',
+    bigintValue: entitlement?.bigintValue != null ? String(entitlement.bigintValue) : '',
     textValue: entitlement?.textValue ?? '',
   }
 }

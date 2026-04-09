@@ -31,7 +31,7 @@ function mapEntitlement(row: PlanEntitlementRow): PlanEntitlement {
     featureId: row.feature_id,
     booleanValue: row.boolean_value,
     integerValue: row.integer_value,
-    bigintValue: row.bigint_value,
+    bigintValue: row.bigint_value != null ? String(row.bigint_value) : null,
     textValue: row.text_value,
   }
 }

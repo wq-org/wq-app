@@ -146,15 +146,7 @@ const AdminPlanCatalog = () => {
                     as="p"
                     variant="small"
                     color="muted"
-                    className="font-mono text-xs"
-                  >
-                    {plan.code}
-                  </Text>
-                  <Text
-                    as="p"
-                    variant="small"
-                    color="muted"
-                    className="line-clamp-2 text-xs"
+                    className="line-clamp-2 text-xs "
                   >
                     {plan.description || t('planCatalog.noDescription')}
                   </Text>

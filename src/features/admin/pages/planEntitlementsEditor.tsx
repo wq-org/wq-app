@@ -28,9 +28,12 @@ function usePlanCatalogBasePath() {
   return `/${role}/plan-catalog`
 }
 
-function getCategoryLabel(category: string, t: (key: string) => string): string {
+function getCategoryLabel(
+  category: string,
+  t: (key: string, o?: { defaultValue?: string }) => string,
+): string {
   if (category === 'none') return t('featureDefinitions.categories.none')
-  return t(`featureDefinitions.categories.${category}`)
+  return t(`featureDefinitions.categories.${category}`, { defaultValue: category })
 }
 
 function formatBigIntExample(value: string): string {
@@ -154,14 +157,6 @@ const AdminPlanEntitlementsEditor = () => {
                               className="font-semibold text-foreground"
                             >
                               {feature.name}
-                            </Text>
-                            <Text
-                              as="p"
-                              variant="small"
-                              color="muted"
-                              className="font-mono text-xs"
-                            >
-                              {feature.key}
                             </Text>
                             {feature.description ? (
                               <Text

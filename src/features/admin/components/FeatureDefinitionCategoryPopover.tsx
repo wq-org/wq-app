@@ -6,18 +6,26 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 
-import { buildFeatureDefinitionCategoryMenuIds } from '../config/featureDefinitionCategories'
+import {
+  NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM,
+  buildFeatureDefinitionCategoryMenuIds,
+} from '../config/featureDefinitionCategories'
 
 export type FeatureDefinitionCategoryPopoverProps = {
   id: string
   value: string
   onValueChange: (next: string) => void
   disabled?: boolean
+  /** Extra categories fetched from the database. */
+  dbCategories?: readonly string[]
 }
 
 function categoryRowLabel(slug: string, t: (key: string, o?: { defaultValue?: string }) => string) {
   if (!slug) {
     return t('featureDefinitions.categories.none')
+  }
+  if (slug === NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM) {
+    return t('featureDefinitions.categories.new_category')
   }
   return t(`featureDefinitions.categories.${slug}`, { defaultValue: slug })
 }
@@ -27,11 +35,15 @@ export function FeatureDefinitionCategoryPopover({
   value,
   onValueChange,
   disabled = false,
+  dbCategories = [],
 }: FeatureDefinitionCategoryPopoverProps) {
   const { t } = useTranslation('features.admin')
   const [open, setOpen] = useState(false)
 
-  const menuIds = useMemo(() => buildFeatureDefinitionCategoryMenuIds(value), [value])
+  const menuIds = useMemo(
+    () => buildFeatureDefinitionCategoryMenuIds(value, dbCategories),
+    [value, dbCategories],
+  )
   const selectedTrimmed = value.trim()
   const triggerText = categoryRowLabel(selectedTrimmed, t)
 

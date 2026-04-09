@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
@@ -29,6 +29,7 @@ import {
   getFeatureDefinitionById,
   updateFeatureDefinition,
 } from '../api/featureDefinitionsApi'
+import { useFeatureDefinitionCategories } from '../hooks/useFeatureDefinitionCategories'
 import type { FeatureDefinition } from '../types/featureDefinitions.types'
 
 function useFeatureDefinitionsBasePath() {
@@ -40,10 +41,18 @@ function useFeatureDefinitionsBasePath() {
 const AdminFeatureDefinitionEditor = () => {
   const { featureId } = useParams<{ featureId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useTranslation('features.admin')
   const basePath = useFeatureDefinitionsBasePath()
   const isNew = featureId === 'new'
+  const focusCategoryField =
+    isNew &&
+    typeof location.state === 'object' &&
+    location.state !== null &&
+    'focusCategory' in location.state &&
+    (location.state as { focusCategory?: boolean }).focusCategory === true
 
+  const { dbCategories } = useFeatureDefinitionCategories()
   const [feature, setFeature] = useState<FeatureDefinition | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(!isNew)
@@ -199,7 +208,7 @@ const AdminFeatureDefinitionEditor = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[240px] items-center justify-center">
+          <div className="flex min-h-60 items-center justify-center">
             <Spinner
               variant="gray"
               size="sm"
@@ -223,6 +232,8 @@ const AdminFeatureDefinitionEditor = () => {
               saving={saving}
               onSubmit={handleSubmit}
               onCancel={handleBack}
+              focusCategoryField={focusCategoryField}
+              dbCategories={dbCategories}
             />
 
             {!isNew && feature ? (

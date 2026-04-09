@@ -54,3 +54,24 @@ export type FeatureDefinitionFormValues = {
   valueType: EntitlementValueType
   defaultEnabled: boolean
 }
+
+export type FeatureDefinitionEditorFormValues = {
+  key: string
+  name: string
+  description: string
+  category: string
+  valueType: EntitlementValueType
+  defaultEnabled: boolean
+}
+
+export type FeatureDefinitionEditorFormProps = {
+  mode: 'create' | 'edit'
+  initial: FeatureDefinition | null
+  saving: boolean
+  onSubmit: (values: FeatureDefinitionEditorFormValues) => Promise<void>
+  onCancel: () => void
+  /** When creating, focus the category control once (e.g. after “Add category” from the list). */
+  focusCategoryField?: boolean
+  /** Extra categories fetched from the database. */
+  dbCategories?: readonly string[]
+}

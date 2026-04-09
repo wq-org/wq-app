@@ -125,6 +125,25 @@ export async function updateFeatureDefinition(
   return mapRow(data as FeatureDefinitionRow)
 }
 
+/** Returns distinct non-null category slugs already stored in `feature_definitions`. */
+export async function listFeatureDefinitionCategories(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('feature_definitions')
+    .select('category')
+    .not('category', 'is', null)
+
+  if (error) {
+    console.error('listFeatureDefinitionCategories:', error)
+    throw new Error(error.message)
+  }
+
+  const unique = [
+    ...new Set((data as { category: string }[]).map((r) => r.category.trim()).filter(Boolean)),
+  ]
+  unique.sort((a, b) => a.localeCompare(b))
+  return unique
+}
+
 /** Hard delete. Fails with a Postgres FK error if plan_entitlements or overrides reference this feature. */
 export async function deleteFeatureDefinition(id: string): Promise<void> {
   const { error } = await supabase.from('feature_definitions').delete().eq('id', id)

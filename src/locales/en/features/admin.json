@@ -182,6 +182,9 @@
     "filterPlaceholder": "Filter by key or display name…",
     "filterEmpty": "No definitions match your search. Try another key or name.",
     "addButton": "Add feature",
+    "addMenuTrigger": "Add",
+    "addMenuFeature": "Add feature",
+    "addMenuCategory": "Add category",
     "loadError": "Failed to load feature definitions",
     "card": {
       "coreBadge": "Core",
@@ -241,6 +244,8 @@
       "namePlaceholder": "Human-readable label",
       "category": "Category",
       "categoryPlaceholder": "Select a category",
+      "customCategoryLabel": "Custom category slug",
+      "customCategoryPlaceholder": "e.g. billing_or_integrations",
       "descriptionField": "Description",
       "descriptionPlaceholder": "Optional notes for admins",
       "valueType": "Value type",
@@ -259,7 +264,9 @@
       "saving": "Saving..."
     },
     "validation": {
-      "keyInvalid": "Use lowercase snake_case: start with a letter, then letters, digits, or underscores only."
+      "keyInvalid": "Use lowercase snake_case: start with a letter, then letters, digits, or underscores only.",
+      "categoryCustomRequired": "Enter a category slug (letters, numbers, underscores).",
+      "categoryReservedSlug": "That slug matches a built-in category or is reserved. Choose a different name."
     },
     "categories": {
       "none": "No category",
@@ -267,9 +274,11 @@
       "collaboration": "Collaboration",
       "engagement": "Engagement",
       "infrastructure": "Infrastructure",
+      "integrations": "Integrations",
       "learning": "Learning",
       "limits": "Limits",
-      "scheduling": "Scheduling"
+      "scheduling": "Scheduling",
+      "new_category": "New category"
     },
     "deleteDialog": {
       "title": "Delete this feature?",

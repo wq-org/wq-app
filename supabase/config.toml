@@ -372,6 +372,9 @@ deno_version = 2
 [functions.send-institution-admin-invite-email]
 verify_jwt = true
 
+[functions.send-institution-admin-invite-email-resend]
+verify_jwt = true
+
 [analytics]
 enabled = true
 port = 54327

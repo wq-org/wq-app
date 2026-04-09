@@ -6,6 +6,7 @@ import {
   Book,
   Calendar,
   CalendarRange,
+  CircleGauge,
   Cloud,
   GraduationCap,
   ListTodo,
@@ -33,10 +34,10 @@ const FEATURE_ICON_BY_KEY: Readonly<Record<string, LucideIcon>> = {
   note: StickyNote,
   chat: MessageCircle,
   notification: Bell,
-  max_teachers: GraduationCap,
-  max_students: BellElectric,
-  max_classrooms: Warehouse,
-  storage_quota_mb: Cloud,
+  max_teachers: CircleGauge,
+  max_students: CircleGauge,
+  max_classrooms: CircleGauge,
+  storage_quota_mb: CircleGauge,
 }
 
 function iconFromKeyHeuristic(key: string): LucideIcon | null {
@@ -45,6 +46,7 @@ function iconFromKeyHeuristic(key: string): LucideIcon | null {
   if (k.includes('calendar') || k.includes('schedule')) return CalendarRange
   if (k.includes('chat') || k.includes('message')) return MessageCircle
   if (k.includes('course') || k.includes('lesson') || k.includes('learn')) return Book
+  if (k.includes('limit') || k.startsWith('max_') || k.includes('quota')) return CircleGauge
   if (k.includes('cloud') || k.includes('storage') || k.includes('quota') || k.includes('file'))
     return Cloud
   if (k.includes('game') || k.includes('studio') || k.includes('workflow')) return MousePointer2
