@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Copy, ChevronRight, Mail } from 'lucide-react'
+import { Copy, ChevronRight, Mail, MailPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import type { VariantProps } from 'class-variance-authority'
 
@@ -38,15 +38,38 @@ function membershipRoleVariant(role: string): BadgeVariant {
 type InstitutionInvitesTableProps = {
   invites: readonly InstitutionInvite[]
   inviterEmailByUserId: ReadonlyMap<string, string>
+  onResend?: (institutionId: string) => Promise<void>
 }
 
 export function InstitutionInvitesTable({
   invites,
   inviterEmailByUserId,
+  onResend,
 }: InstitutionInvitesTableProps) {
   const { t } = useTranslation('features.admin')
   const [selectedInvite, setSelectedInvite] = useState<InstitutionInvite | null>(null)
+  const [resendingId, setResendingId] = useState<string | null>(null)
   const sheetOpen = selectedInvite !== null
+
+  async function handleResendInvite(e: React.MouseEvent, institutionId: string) {
+    e.stopPropagation()
+    if (!onResend) return
+
+    setResendingId(institutionId)
+    try {
+      await onResend(institutionId)
+      toast.success(t('institutionInvites.resendSuccess', { defaultValue: 'Invite email sent' }))
+    } catch (e) {
+      toast.error(
+        t('institutionInvites.resendError', { defaultValue: 'Failed to resend invite' }),
+        {
+          description: e instanceof Error ? e.message : undefined,
+        },
+      )
+    } finally {
+      setResendingId(null)
+    }
+  }
 
   async function handleCopyToken(e: React.MouseEvent, token: string) {
     e.stopPropagation()
@@ -122,6 +145,18 @@ export function InstitutionInvitesTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
+                    {!row.acceptedAtIso && onResend && (
+                      <Button
+                        type="button"
+                        variant="darkblue"
+                        size="sm"
+                        onClick={(e) => void handleResendInvite(e, row.institutionId)}
+                        disabled={resendingId === row.institutionId}
+                      >
+                        <MailPlus className="size-4" />
+                        {resendingId === row.institutionId ? 'Sending...' : 'Resend'}
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="darkblue"

@@ -1,7 +1,7 @@
-import { AdminWorkspaceShell } from '@/features/admin'
+import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 
 const AdminAnalytics = () => {
-  return <AdminWorkspaceShell role="institution_admin">Analytics</AdminWorkspaceShell>
+  return <InstitutionAdminWorkspaceShell>Analytics</InstitutionAdminWorkspaceShell>
 }
 
 export { AdminAnalytics }

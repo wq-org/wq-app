@@ -1,0 +1,70 @@
+{
+  "nav": {
+    "groupLabel": "Institution",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "faculties": "Faculties",
+    "classrooms": "Classrooms",
+    "licenseUsage": "License usage",
+    "gdprRequest": "GDPR requests",
+    "billing": "Billing",
+    "analytics": "Analytics",
+    "cloudStorage": "Cloud storage",
+    "auditLogs": "Audit logs"
+  },
+  "shell": {
+    "settings": "Settings",
+    "logout": "Log out",
+    "logoutSuccess": "Signed out successfully",
+    "logoutError": "Could not sign out. Please try again.",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "dashboard": {
+    "title": "Institution overview",
+    "subtitle": "Key metrics for your organization at a glance.",
+    "stats": {
+      "viewMore": "View more",
+      "students": {
+        "label": "Students"
+      },
+      "teachers": {
+        "label": "Teachers"
+      },
+      "classrooms": {
+        "label": "Classrooms"
+      },
+      "storage": {
+        "label": "Storage"
+      }
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage students, teachers, and staff in your institution."
+  },
+  "faculties": {
+    "title": "Faculties",
+    "subtitle": "Organize departments and academic units."
+  },
+  "classrooms": {
+    "title": "Classrooms",
+    "subtitle": "View and manage classrooms linked to your institution."
+  },
+  "licenseUsage": {
+    "title": "License usage",
+    "subtitle": "Monitor seat usage and entitlements."
+  },
+  "gdprRequest": {
+    "title": "GDPR requests",
+    "subtitle": "Handle data subject requests and compliance tasks."
+  },
+  "cloudStorage": {
+    "title": "Cloud storage",
+    "subtitle": "Files and folders for your institution."
+  },
+  "auditLogs": {
+    "title": "Audit logs",
+    "subtitle": "Review important actions across your institution."
+  }
+}

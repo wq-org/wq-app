@@ -1,7 +1,7 @@
-import { AdminWorkspaceShell } from '@/features/admin'
+import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 
 const AdminBilling = () => {
-  return <AdminWorkspaceShell role="institution_admin">Billing</AdminWorkspaceShell>
+  return <InstitutionAdminWorkspaceShell>Billing</InstitutionAdminWorkspaceShell>
 }
 
 export { AdminBilling }

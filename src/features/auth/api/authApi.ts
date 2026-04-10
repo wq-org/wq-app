@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
 import { isValidRole } from '../types/auth.types'
+import { logRoleDebug } from '../utils/roleDebugLog'
 
 export interface AuthApiResponse {
   success: boolean
@@ -90,6 +91,13 @@ export async function signUpUser(signUpData: AuthData): Promise<AuthApiResponse>
   }
 
   try {
+    logRoleDebug('signUpUser: auth.signUp metadata', {
+      email: signUpData.email,
+      rawRole: signUpData.role,
+      normalizedRole,
+      note: 'handle_new_user only persists student|teacher from metadata; institution_admin becomes student until redeem/upsert',
+    })
+
     const { data, error } = await supabase.auth.signUp({
       email: signUpData.email,
       password: signUpData.password,
@@ -233,8 +241,15 @@ export async function resendVerificationEmail(email?: string): Promise<{ error: 
  * Must be called after sign-up when the user is authenticated and profile email matches.
  */
 export async function redeemInstitutionInvite(token: string): Promise<void> {
+  logRoleDebug('redeemInstitutionInvite: calling RPC', { tokenPrefix: token.slice(0, 8) + '…' })
   const { error } = await supabase.rpc('redeem_institution_invite', { p_token: token })
-  if (error) throw new Error(error.message)
+  if (error) {
+    logRoleDebug('redeemInstitutionInvite: RPC error', { message: error.message })
+    throw new Error(error.message)
+  }
+  logRoleDebug('redeemInstitutionInvite: RPC ok', {
+    note: 'profiles.role should match invite membership_role if DB migration is applied',
+  })
 }
 
 /**
@@ -394,12 +409,21 @@ export async function upsertProfile(
     payload.role !== undefined
       ? { ...payload, role: normalizeRole(payload.role) ?? payload.role }
       : payload
+  logRoleDebug('upsertProfile', {
+    userId,
+    role: normalized.role ?? '(unchanged)',
+    is_onboarded: normalized.is_onboarded,
+  })
   const { data, error } = await supabase
     .from('profiles')
     .upsert({ user_id: userId, ...normalized }, { onConflict: 'user_id' })
     .select()
     .single()
   if (error) throw error
+  logRoleDebug('upsertProfile result', {
+    returnedRole: data?.role ?? null,
+    is_onboarded: data?.is_onboarded,
+  })
   return data
 }
 

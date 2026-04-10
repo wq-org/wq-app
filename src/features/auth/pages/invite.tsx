@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import { AuthCardLayout } from '../components/AuthCardLayout'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
+import { logRoleDebug } from '../utils/roleDebugLog'
 import { Label } from '@/components/ui/label'
 
 type InviteState =
@@ -24,7 +25,7 @@ export function AuthInvitePage() {
   const token = params.get('token')?.trim() ?? ''
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
-  const { setPendingRole } = useUser()
+  const { setPendingRole, refreshProfile } = useUser()
 
   const [inviteState, setInviteState] = useState<InviteState>({ status: 'loading' })
   const [password, setPassword] = useState('')
@@ -50,6 +51,10 @@ export function AuthInvitePage() {
           institutionId: result.institutionId,
           membershipRole: result.membershipRole,
         })
+        logRoleDebug('invite: token valid', {
+          membershipRole: result.membershipRole,
+          institutionId: result.institutionId,
+        })
       }
     })
   }, [token])
@@ -68,6 +73,10 @@ export function AuthInvitePage() {
 
     try {
       setPendingRole('institution_admin')
+      logRoleDebug('invite: submit start', {
+        setPendingRole: 'institution_admin',
+        inviteMembershipRole: inviteState.status === 'valid' ? inviteState.membershipRole : null,
+      })
 
       const response = await signUpUser({
         email: inviteState.email,
@@ -86,10 +95,19 @@ export function AuthInvitePage() {
       // Redeem the invite to create membership and activate institution
       try {
         await redeemInstitutionInvite(token)
+        // Refresh profile so React state picks up the DB role (institution_admin)
+        await refreshProfile()
       } catch (redeemError) {
+        logRoleDebug('invite: redeem failed (profile.role may stay student)', {
+          error: redeemError instanceof Error ? redeemError.message : String(redeemError),
+        })
         console.error('Invite redemption failed:', redeemError)
         // Still proceed to onboarding — invite can be redeemed later on login
       }
+
+      logRoleDebug('invite: navigate /onboarding', {
+        note: 'check prior logs for redeem success vs failure',
+      })
 
       toast.success('Account Created!', {
         description: "Welcome! Let's complete your profile.",

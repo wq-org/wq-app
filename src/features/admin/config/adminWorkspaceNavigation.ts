@@ -1,23 +1,14 @@
 import {
-  BarChart3,
   Building2,
   ClipboardList,
-  CreditCard,
   FileStack,
   GalleryVerticalEnd,
-  GraduationCap,
   Home,
-  KeyRound,
   Blocks,
   ShieldCheck,
-  Settings,
   Users,
-  BookOpen,
   type LucideIcon,
 } from 'lucide-react'
-import { USER_ROLES, type UserRole } from '@/features/auth'
-
-export type AdminWorkspaceRole = typeof USER_ROLES.SUPER_ADMIN | typeof USER_ROLES.INSTITUTION_ADMIN
 
 /** i18n keys under `features.admin` (e.g. `nav.dashboard`). */
 export type AdminWorkspaceNavigationItem = {
@@ -94,70 +85,6 @@ const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
   ],
 }
 
-const INSTITUTION_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
-  teams: [
-    {
-      name: 'Institution',
-      logo: Building2,
-      plan: 'Admin',
-    },
-  ],
-  navItems: [
-    {
-      titleKey: 'nav.dashboard',
-      url: '/dashboard',
-      icon: Home,
-    },
-    {
-      titleKey: 'nav.teachers',
-      url: '/teacher',
-      icon: GraduationCap,
-    },
-    {
-      titleKey: 'nav.students',
-      url: '/students',
-      icon: Users,
-    },
-    {
-      titleKey: 'nav.licenses',
-      url: '/licenses',
-      icon: KeyRound,
-    },
-    {
-      titleKey: 'nav.billing',
-      url: '/billing',
-      icon: CreditCard,
-    },
-    {
-      titleKey: 'nav.courses',
-      url: '/courses',
-      icon: BookOpen,
-    },
-    {
-      titleKey: 'nav.analytics',
-      url: '/analytics',
-      icon: BarChart3,
-    },
-    {
-      titleKey: 'nav.settings',
-      url: '/settings',
-      icon: Settings,
-    },
-  ],
-}
-
-const ADMIN_WORKSPACE_NAVIGATION_BY_ROLE: Record<AdminWorkspaceRole, AdminWorkspaceNavigation> = {
-  [USER_ROLES.SUPER_ADMIN]: SUPER_ADMIN_NAVIGATION,
-  [USER_ROLES.INSTITUTION_ADMIN]: INSTITUTION_ADMIN_NAVIGATION,
-}
-
-export function resolveAdminWorkspaceRole(role: UserRole | null | undefined): AdminWorkspaceRole {
-  if (role === USER_ROLES.INSTITUTION_ADMIN) {
-    return USER_ROLES.INSTITUTION_ADMIN
-  }
-  return USER_ROLES.SUPER_ADMIN
-}
-
-export function getAdminWorkspaceNavigation(role: AdminWorkspaceRole): AdminWorkspaceNavigation {
-  return ADMIN_WORKSPACE_NAVIGATION_BY_ROLE[role]
+export function getSuperAdminNavigation(): AdminWorkspaceNavigation {
+  return SUPER_ADMIN_NAVIGATION
 }

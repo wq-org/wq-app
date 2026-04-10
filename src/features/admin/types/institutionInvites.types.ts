@@ -1,6 +1,7 @@
 /** Raw row from `institution_invites` (explicit select list). */
 export type InstitutionInviteRow = {
   id: string
+  institution_id: string
   email: string
   membership_role: string
   token: string
@@ -14,6 +15,7 @@ export type InstitutionInviteRow = {
 /** UI model — mapped in api module only. */
 export type InstitutionInvite = {
   id: string
+  institutionId: string
   email: string
   membershipRole: string
   token: string

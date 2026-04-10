@@ -1,14 +1,10 @@
 export { AdminWorkspaceShell } from './components/AdminWorkspaceShell'
 export { InstitutionInformationForm } from './components/InstitutionInformationForm'
 export { NewInstitutionWizard } from './components/NewInstitutionWizard'
-export {
-  getAdminWorkspaceNavigation,
-  resolveAdminWorkspaceRole,
-} from './config/adminWorkspaceNavigation'
+export { getSuperAdminNavigation } from './config/adminWorkspaceNavigation'
 export type {
   AdminWorkspaceNavigation,
   AdminWorkspaceNavigationItem,
-  AdminWorkspaceRole,
   AdminWorkspaceTeam,
 } from './config/adminWorkspaceNavigation'
 export type {

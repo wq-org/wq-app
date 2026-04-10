@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Building2, MailPlus, Plus } from 'lucide-react'
+import { Building2, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -54,7 +54,7 @@ const AdminInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.admin')
-  const { institutions, isLoading, error, editInstitution, resendInviteEmail } = useInstitutions()
+  const { institutions, isLoading, error, editInstitution } = useInstitutions()
   const [selectedInstitution, setSelectedInstitution] = useState<Institution | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [formValues, setFormValues] = useState<InstitutionEditFormValues>({
@@ -87,25 +87,6 @@ const AdminInstitution = () => {
       toast.error(t('institutions.toasts.loadError'), { description: error })
     }
   }, [error, t])
-
-  const [resendingId, setResendingId] = useState<string | null>(null)
-
-  const handleResendInvite = async (inst: Institution) => {
-    setResendingId(inst.id)
-    try {
-      await resendInviteEmail(inst.id)
-      toast.success(t('institutions.toasts.resendSuccess', { defaultValue: 'Invite email sent' }))
-    } catch (e) {
-      toast.error(
-        t('institutions.toasts.resendError', { defaultValue: 'Failed to resend invite' }),
-        {
-          description: e instanceof Error ? e.message : undefined,
-        },
-      )
-    } finally {
-      setResendingId(null)
-    }
-  }
 
   const handleOpenEditDrawer = (institution: Institution) => {
     setSelectedInstitution(institution)
@@ -252,17 +233,6 @@ const AdminInstitution = () => {
                       )}
                     </TableCell>
                     <TableCell className="flex items-center gap-2">
-                      {inst.status === 'pending' && (
-                        <Button
-                          variant="darkblue"
-                          size="sm"
-                          onClick={() => handleResendInvite(inst)}
-                          disabled={resendingId === inst.id}
-                        >
-                          <MailPlus className="size-4" />
-                          {resendingId === inst.id ? 'Sending...' : 'Resend Email'}
-                        </Button>
-                      )}
                       <Button
                         variant="darkblue"
                         size="sm"

@@ -65,10 +65,17 @@ import {
   InstitutionAdminDashboardPage,
   InstitutionAdminTeachersPage,
   InstitutionAdminStudentsPage,
+  InstitutionAdminUsersPage,
+  InstitutionAdminFacultiesPage,
+  InstitutionAdminClassroomsPage,
   InstitutionAdminLicensesPage,
+  InstitutionAdminLicenseUsagePage,
+  InstitutionAdminGDPRRequestPage,
   InstitutionAdminBillingPage,
   InstitutionAdminCoursesPage,
   InstitutionAdminAnalyticsPage,
+  InstitutionAdminCloudStoragePage,
+  InstitutionAdminAuditLogsPage,
   InstitutionAdminSettingsPage,
 } from '@/features/institution-admin'
 
@@ -447,6 +454,62 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <InstitutionAdminAnalyticsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="users"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminUsersPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="classrooms"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminClassroomsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="license-usage"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminLicenseUsagePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="gdpr-request"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminGDPRRequestPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="cloud-storage"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCloudStoragePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="audit-logs"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminAuditLogsPage />
                     </RequireAuth>
                   }
                 />

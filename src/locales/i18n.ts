@@ -24,6 +24,7 @@ import featuresFilesDE from './de/features/files.json'
 import featuresGamesDE from './de/features/games.json'
 import featuresGameStudioDE from './de/features/gameStudio.json'
 import featuresInstitutionDE from './de/features/institution.json'
+import featuresInstitutionAdminDE from './de/features/institution-admin.json'
 import featuresLessonDE from './de/features/lesson.json'
 import featuresNotificationDE from './de/features/notification.json'
 import featuresOnboardingDE from './de/features/onboarding.json'
@@ -54,6 +55,7 @@ import featuresFilesEN from './en/features/files.json'
 import featuresGamesEN from './en/features/games.json'
 import featuresGameStudioEN from './en/features/gameStudio.json'
 import featuresInstitutionEN from './en/features/institution.json'
+import featuresInstitutionAdminEN from './en/features/institution-admin.json'
 import featuresLessonEN from './en/features/lesson.json'
 import featuresNotificationEN from './en/features/notification.json'
 import featuresOnboardingEN from './en/features/onboarding.json'
@@ -109,6 +111,7 @@ i18n.use(initReactI18next).init({
       'features.games': featuresGamesEN,
       'features.gameStudio': featuresGameStudioEN,
       'features.institution': featuresInstitutionEN,
+      'features.institution-admin': featuresInstitutionAdminEN,
       'features.lesson': featuresLessonEN,
       'features.notification': featuresNotificationEN,
       'features.onboarding': featuresOnboardingEN,
@@ -139,6 +142,7 @@ i18n.use(initReactI18next).init({
       'features.games': featuresGamesDE,
       'features.gameStudio': featuresGameStudioDE,
       'features.institution': featuresInstitutionDE,
+      'features.institution-admin': featuresInstitutionAdminDE,
       'features.lesson': featuresLessonDE,
       'features.notification': featuresNotificationDE,
       'features.onboarding': featuresOnboardingDE,
@@ -172,6 +176,7 @@ i18n.use(initReactI18next).init({
     'features.games',
     'features.gameStudio',
     'features.institution',
+    'features.institution-admin',
     'features.lesson',
     'features.notification',
     'features.onboarding',

@@ -17,6 +17,7 @@ import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
+import { logRoleDebug } from '../utils/roleDebugLog'
 import { Label } from '@/components/ui/label'
 
 const roleTabs: TabItem[] = [
@@ -45,6 +46,7 @@ export const SignUpPage = () => {
   const handleRoleChange = (tabId: string) => {
     setSelectedRole(tabId)
     setPendingRole(tabId)
+    logRoleDebug('signUp: role tab changed', { selectedRole: tabId, pendingRoleUpdated: true })
   }
 
   const handleEmailChange = (value: string) => {
@@ -76,14 +78,17 @@ export const SignUpPage = () => {
     try {
       // Persist the chosen role before auth/signup so onboarding can continue in first session.
       setPendingRole(selectedRole)
+      logRoleDebug('signUp: submit', { selectedRole, pendingRoleSet: selectedRole })
       const responseData = await signUpUser({ email, password, role: selectedRole })
 
       if (responseData.success) {
+        logRoleDebug('signUp: success → navigate /onboarding', { selectedRole })
         toast.success('Account Created!', {
           description: "Welcome to WQ Health. Let's complete your profile.",
         })
         navigate('/onboarding')
       } else {
+        logRoleDebug('signUp: failed', { error: responseData.error })
         console.error('Signup failed:', responseData.error)
         toast.error('Sign Up Failed', {
           description: responseData.error || 'Unable to create account. Please try again.',

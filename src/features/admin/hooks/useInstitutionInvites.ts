@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { fetchEmailsForUserIds, listInstitutionInvites } from '../api/institutionInvitesApi'
+import {
+  fetchEmailsForUserIds,
+  listInstitutionInvites,
+  resendInviteEmail,
+} from '../api/institutionInvitesApi'
 import type { InstitutionInvite } from '../types/institutionInvites.types'
 
 type UseInstitutionInvitesResult = {
@@ -9,6 +13,7 @@ type UseInstitutionInvitesResult = {
   isLoading: boolean
   error: string | null
   refresh: () => Promise<void>
+  resend: (institutionId: string) => Promise<void>
 }
 
 export function useInstitutionInvites(): UseInstitutionInvitesResult {
@@ -43,11 +48,16 @@ export function useInstitutionInvites(): UseInstitutionInvitesResult {
 
   const readonlyMap = useMemo(() => inviterEmailByUserId, [inviterEmailByUserId])
 
+  const resend = useCallback(async (institutionId: string): Promise<void> => {
+    await resendInviteEmail(institutionId)
+  }, [])
+
   return {
     invites,
     inviterEmailByUserId: readonlyMap,
     isLoading,
     error,
     refresh: load,
+    resend,
   }
 }

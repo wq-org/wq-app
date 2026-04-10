@@ -16,13 +16,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   })
 
   // Fetch complete profile data from profiles table (includes all fields)
-  const fetchProfile = useCallback(async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
       const data = await getCompleteProfile(userId)
-      setProfile(data as Profile | null)
+      const prof = data as Profile | null
+      setProfile(prof)
+      return prof
     } catch (error) {
       console.error('Error fetching profile:', error)
       setProfile(null)
+      return null
     }
   }, [])
 
@@ -86,10 +89,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [profile?.role, profile?.is_onboarded, pendingRole, clearPendingRole, setPendingRole])
 
-  const refreshProfile = async () => {
+  const refreshProfile = async (): Promise<Profile | null> => {
     if (session?.user) {
-      await fetchProfile(session.user.id)
+      return fetchProfile(session.user.id)
     }
+    return null
   }
 
   const getUserId = () => {

@@ -15,8 +15,10 @@
     "db:update": "supabase migration up",
     "db:deploy": "supabase db push",
     "db:migrate": "supabase migration up",
+    "db:reset": "supabase db reset",
     "prepare": "husky",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:psql": "psql \"postgresql://postgres:postgres@127.0.0.1:54322/postgres\""
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

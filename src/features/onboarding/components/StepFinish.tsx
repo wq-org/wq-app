@@ -2,6 +2,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
 import { upsertProfile, updateProfile } from '@/features/auth'
+import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { SuccessPage } from './SuccessPage'
@@ -13,9 +14,10 @@ import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
 
 export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
-  const { session, pendingRole, profile, setPendingRole, refreshProfile } = useUser()
+  const { session, profile, refreshProfile } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [completedRole, setCompletedRole] = useState<string | null>(null)
   const { t } = useTranslation('features.onboarding')
 
   // Generate signed URL for displaying avatar (accountData.avatar.src is just the path)
@@ -29,43 +31,47 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
 
     setIsSubmitting(true)
 
-    const trimmedPending = pendingRole?.trim() ?? ''
-    const trimmedProfileRole = profile?.role?.trim() ?? ''
-    const onboardingRole = trimmedPending || trimmedProfileRole
-
-    if (!onboardingRole) {
-      setIsSubmitting(false)
-      // Show error or prevent submission if role is not selected using the sonner toast
-      toast.error(t('finish.errors.missingRole'))
-      return
-    }
-
-    // Keep role in context/sessionStorage for the final navigation step.
-    setPendingRole(onboardingRole)
+    logRoleDebug('StepFinish handleFinish start', {
+      profileRole: profile?.role ?? '(none)',
+      note: 'role comes from DB (handle_new_user or redeem_institution_invite), not written by frontend',
+    })
 
     try {
       // Persist profile data and mark onboarding as complete.
+      // Do NOT write `role` — the DB already has the correct role set by
+      // handle_new_user (student/teacher) or redeem_institution_invite (institution_admin).
       await upsertProfile(session.user.id, {
         email: session.user.email,
         username: accountData.username,
         description: accountData.description,
         display_name: accountData.displayName,
         avatar_url: accountData.avatar.src,
-        role: onboardingRole,
         is_onboarded: false,
       })
 
       await updateProfile(session.user.id, { is_onboarded: true })
 
-      // Refresh profile to get the updated is_onboarded status
-      await refreshProfile()
+      // Refresh profile to get updated is_onboarded and the authoritative role from DB
+      const freshProfile = await refreshProfile()
+      const freshRole = freshProfile?.role ?? profile?.role ?? null
 
-      // Small delay to ensure context state is updated before navigation
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      logRoleDebug('StepFinish after upsert + is_onboarded + refreshProfile', {
+        freshRole: freshRole ?? '(none)',
+        note: 'role read from DB, not from pendingRole',
+      })
 
-      // Show success dialog which will trigger confetti
+      if (!freshRole) {
+        setIsSubmitting(false)
+        toast.error(t('finish.errors.missingRole'))
+        return
+      }
+
+      setCompletedRole(freshRole)
       setShowSuccess(true)
     } catch (error) {
+      logRoleDebug('StepFinish completion error', {
+        error: error instanceof Error ? error.message : String(error),
+      })
       console.error('Error completing onboarding:', error)
       setIsSubmitting(false)
       toast.error(t('finish.errors.completionTitle'), {
@@ -78,6 +84,7 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
     <>
       <SuccessPage
         isOpen={showSuccess}
+        dashboardRole={completedRole}
         title={t('finish.successDialog.title')}
         description={t('finish.successDialog.description')}
         onClickHandler={onFinish}

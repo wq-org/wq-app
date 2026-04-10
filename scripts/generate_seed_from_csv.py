@@ -1,9 +1,16 @@
 from __future__ import annotations
 
 """
-recover.py
-
 Generate SQL seed files from CSV exports.
+
+Usage:
+  python scripts/generate_seed_from_csv.py path/to/file.csv
+  python scripts/generate_seed_from_csv.py path/to/file.csv public.my_table
+
+Relative paths are resolved against the current directory first, then against the
+repository root (parent of ``scripts/``). So you can run from ``scripts/`` with
+``python generate_seed_from_csv.py src/assets/data/foo.csv`` and still find
+``src/`` at the repo root.
 
 This version:
 - Uses Python's csv reader (handles commas/quotes correctly)
@@ -16,8 +23,43 @@ import csv
 import json
 import os
 import re
+import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
+
+# Repo root = parent of this file's directory (…/scripts/generate_seed_from_csv.py → …/)
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def resolve_user_csv_path(user_path: str) -> str:
+    """
+    Resolve a CLI path to an existing CSV file.
+
+    Order: absolute path as given → path relative to cwd → path relative to REPO_ROOT.
+    """
+    user_path = user_path.strip()
+    if not user_path:
+        raise FileNotFoundError("Empty CSV path")
+
+    if os.path.isabs(user_path):
+        p = os.path.normpath(user_path)
+        if os.path.isfile(p):
+            return p
+        raise FileNotFoundError(f"CSV not found: {p}")
+
+    from_cwd = os.path.abspath(os.path.normpath(user_path))
+    if os.path.isfile(from_cwd):
+        return from_cwd
+
+    from_repo = os.path.abspath(os.path.normpath(os.path.join(REPO_ROOT, user_path)))
+    if os.path.isfile(from_repo):
+        return from_repo
+
+    raise FileNotFoundError(
+        "CSV not found. Tried:\n"
+        f"  (current directory) {from_cwd}\n"
+        f"  (repository root)   {from_repo}"
+    )
 
 
 UUID_RE = re.compile(
@@ -144,22 +186,33 @@ def _to_sql_literal(raw: Optional[str], *, table_name: str, column_name: str) ->
 
 def generate_seed_sql_from_csv(
     *,
-    csv_filename: str,
-    output_sql_filename: Optional[str] = None,
+    csv_path: str,
+    output_sql_path: Optional[str] = None,
     table_name: Optional[str] = None,
     batch_size: int = 500,
 ) -> str:
-    if output_sql_filename is None:
-        output_sql_filename = f"seed_{csv_filename}.sql"
+    """
+    csv_path: Path to the .csv file (use ``resolve_user_csv_path`` from the CLI, or any
+        absolute / cwd-relative path that exists).
+    output_sql_path: If omitted, writes ``{same_dir}/{stem}_seed.sql`` next to the CSV.
+    table_name: If omitted, uses ``public.{stem}`` where stem is the CSV basename without extension.
+    """
+    csv_path = os.path.abspath(os.path.normpath(csv_path))
+    if not os.path.isfile(csv_path):
+        raise FileNotFoundError(f"CSV not found: {csv_path}")
+
+    stem = os.path.splitext(os.path.basename(csv_path))[0]
+
+    if output_sql_path is None:
+        out_dir = os.path.dirname(csv_path)
+        output_sql_path = os.path.join(out_dir, f"{stem}_seed.sql")
+    else:
+        output_sql_path = os.path.abspath(os.path.normpath(output_sql_path))
 
     if table_name is None:
-        table_name = csv_filename
+        table_name = f"public.{stem}"
 
-    csv_path = os.path.join("csv", f"{csv_filename}.csv")
-    out_path = os.path.join("csv", output_sql_filename)
-
-    if not os.path.exists(csv_path):
-        raise FileNotFoundError(f"CSV not found: {csv_path}")
+    out_path = output_sql_path
 
     print(f"Creating SQL seed from {csv_path} -> {out_path}")
 
@@ -214,19 +267,46 @@ def generate_seed_sql_from_csv(
 
 
 def generate_recovery_data_by_csv(csv_filename: str) -> None:
+    """Legacy helper: expects ``csv/{csv_filename}.csv`` under the repo root."""
+    legacy_csv = os.path.join(REPO_ROOT, "csv", f"{csv_filename}.csv")
+    out = os.path.join(REPO_ROOT, "csv", f"seed_{csv_filename}.sql")
     generate_seed_sql_from_csv(
-        csv_filename=csv_filename,
-        output_sql_filename=f"seed_{csv_filename}.sql",
+        csv_path=legacy_csv,
+        output_sql_path=out,
         table_name=csv_filename,
     )
 
 
-# Example usage
-# generate_recovery_data_by_csv("public.courses")
-# generate_recovery_data_by_csv("public.games")
-# generate_recovery_data_by_csv("public.institutions")
-generate_recovery_data_by_csv("public.lessons")
-# generate_recovery_data_by_csv("public.profiles")
-# generate_recovery_data_by_csv("public.teacher_followers")
-# generate_recovery_data_by_csv("public.topics")
-# generate_recovery_data_by_csv("public.user_institutions")
+def main() -> None:
+    if len(sys.argv) < 2:
+        print("Please add a path to your CSV file.")
+        print(
+            "Example: python scripts/generate_seed_from_csv.py src/assets/data/feature_definitions.csv\n"
+            "   or from scripts/: python generate_seed_from_csv.py src/assets/data/feature_definitions.csv"
+        )
+        sys.exit(1)
+
+    csv_arg = sys.argv[1].strip()
+    if not csv_arg:
+        print("Please add a path to your CSV file.")
+        print(
+            "Example: python scripts/generate_seed_from_csv.py src/assets/data/feature_definitions.csv\n"
+            "   or from scripts/: python generate_seed_from_csv.py src/assets/data/feature_definitions.csv"
+        )
+        sys.exit(1)
+
+    table_override = sys.argv[2].strip() if len(sys.argv) > 2 and sys.argv[2].strip() else None
+
+    try:
+        csv_path = resolve_user_csv_path(csv_arg)
+        generate_seed_sql_from_csv(
+            csv_path=csv_path,
+            table_name=table_override,
+        )
+    except (FileNotFoundError, ValueError) as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

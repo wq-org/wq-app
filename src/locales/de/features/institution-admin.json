@@ -1,0 +1,70 @@
+{
+  "nav": {
+    "groupLabel": "Institution",
+    "dashboard": "Dashboard",
+    "users": "Benutzer",
+    "faculties": "Fakultäten",
+    "classrooms": "Klassenräume",
+    "licenseUsage": "Lizenznutzung",
+    "gdprRequest": "DSGVO-Anfragen",
+    "billing": "Abrechnung",
+    "analytics": "Analysen",
+    "cloudStorage": "Cloud-Speicher",
+    "auditLogs": "Audit-Logs"
+  },
+  "shell": {
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "logoutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen.",
+    "lightMode": "Helles Design",
+    "darkMode": "Dunkles Design"
+  },
+  "dashboard": {
+    "title": "Institutionsübersicht",
+    "subtitle": "Wichtige Kennzahlen Ihrer Organisation auf einen Blick.",
+    "stats": {
+      "viewMore": "Mehr anzeigen",
+      "students": {
+        "label": "Lernende"
+      },
+      "teachers": {
+        "label": "Lehrkräfte"
+      },
+      "classrooms": {
+        "label": "Klassenräume"
+      },
+      "storage": {
+        "label": "Speicher"
+      }
+    }
+  },
+  "users": {
+    "title": "Benutzer",
+    "subtitle": "Verwalten Sie Lernende, Lehrkräfte und Mitarbeitende Ihrer Institution."
+  },
+  "faculties": {
+    "title": "Fakultäten",
+    "subtitle": "Organisieren Sie Bereiche und akademische Einheiten."
+  },
+  "classrooms": {
+    "title": "Klassenräume",
+    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten."
+  },
+  "licenseUsage": {
+    "title": "Lizenznutzung",
+    "subtitle": "Plätze und Berechtigungen im Blick behalten."
+  },
+  "gdprRequest": {
+    "title": "DSGVO-Anfragen",
+    "subtitle": "Anfragen betroffener Personen und Compliance-Aufgaben bearbeiten."
+  },
+  "cloudStorage": {
+    "title": "Cloud-Speicher",
+    "subtitle": "Dateien und Ordner für Ihre Institution."
+  },
+  "auditLogs": {
+    "title": "Audit-Logs",
+    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen."
+  }
+}

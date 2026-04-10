@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { LogOut, Moon, Sun, Languages, ChevronsUpDown, Settings } from 'lucide-react'
@@ -13,11 +13,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarSeparator,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { Spinner } from '@/components/ui/spinner'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Logo } from '@/components/ui/logo'
+import { Spinner } from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,41 +28,35 @@ import {
 import { SidebarPrimaryNav } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { useTheme } from '@/hooks/useTheme'
-import { getSuperAdminNavigation } from '../config/adminWorkspaceNavigation'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
+import { getInstitutionAdminNavItems } from '../config/institutionAdminNavigation'
 
-type AdminWorkspaceShellProps = {
+const ROUTE_PREFIX = '/institution_admin'
+
+type InstitutionAdminWorkspaceShellProps = {
   children: React.ReactNode
 }
 
-export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
+export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWorkspaceShellProps) {
   const navigate = useNavigate()
-  const location = useLocation()
-  const { i18n, t } = useTranslation('features.admin')
+  const { i18n, t } = useTranslation('features.institution-admin')
   const { t: tLang } = useTranslation('shared.languageSwitcher')
-  const { loading, logout } = useUser()
+  const { loading, logout, profile } = useUser()
   const { mode, setMode } = useTheme()
+  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url)
 
-  const navigation = getSuperAdminNavigation()
-  const routePrefix = '/super_admin'
+  const navItems = getInstitutionAdminNavItems()
 
   const translatedNavItems = useMemo(
     () =>
-      navigation.navItems.map((item) => ({
+      navItems.map((item) => ({
         title: t(item.titleKey),
         url: item.url,
         icon: item.icon,
         isActive: item.isActive,
-        items: item.items?.map((sub) => ({
-          title: t(sub.titleKey),
-          url: sub.url,
-        })),
       })),
-    [navigation.navItems, t],
+    [navItems, t],
   )
-
-  const settingsPath = `${routePrefix}/settings`
-  const isSettingsActive =
-    location.pathname === settingsPath || location.pathname.startsWith(`${settingsPath}/`)
 
   const currentLang: 'de' | 'en' = i18n.language.startsWith('de') ? 'de' : 'en'
   const nextLang: 'de' | 'en' = currentLang === 'de' ? 'en' : 'de'
@@ -69,6 +64,10 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
 
   const handleToggleLanguage = () => i18n.changeLanguage(nextLang)
   const handleToggleMode = () => setMode(isDark ? 'light' : 'dark')
+
+  const handleOpenSettings = () => {
+    navigate(`${ROUTE_PREFIX}/settings`)
+  }
 
   const handleLogout = async () => {
     try {
@@ -101,15 +100,36 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring w-full"
                   aria-label="Account menu"
                 >
-                  <Logo
-                    showText={false}
-                    className="size-8"
-                  />
-                  <span className="truncate text-sm font-semibold">WQ GmbH</span>
-                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage src={signedAvatarUrl || undefined} />
+                    <AvatarFallback>
+                      <Logo
+                        showText={false}
+                        className="size-8 items-center justify-center"
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1 text-left">
+                    <Text
+                      as="p"
+                      variant="small"
+                      className="truncate font-semibold text-xs"
+                    >
+                      {profile?.display_name || profile?.username || 'User'}
+                    </Text>
+                    <Text
+                      as="p"
+                      variant="small"
+                      color="muted"
+                      className="truncate text-xs"
+                    >
+                      {profile?.email}
+                    </Text>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground shrink-0" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -134,9 +154,9 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
 
         <SidebarContent>
           <SidebarPrimaryNav
-            groupLabel={t('nav.platform')}
+            groupLabel={t('nav.groupLabel')}
             items={translatedNavItems}
-            routePrefix={routePrefix}
+            routePrefix={ROUTE_PREFIX}
           />
         </SidebarContent>
 
@@ -144,15 +164,13 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                isActive={isSettingsActive}
-                tooltip={t('nav.settings')}
-                onClick={() => navigate(settingsPath)}
+                tooltip={t('shell.settings')}
+                onClick={handleOpenSettings}
               >
                 <Settings />
-                <span>{t('nav.settings')}</span>
+                <span>{t('shell.settings')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarSeparator className="mx-0" />
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip={t('shell.logout')}

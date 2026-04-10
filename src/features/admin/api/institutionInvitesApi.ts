@@ -3,11 +3,12 @@ import { supabase } from '@/lib/supabase'
 import type { InstitutionInvite, InstitutionInviteRow } from '../types/institutionInvites.types'
 
 const INVITE_SELECT =
-  'id, email, membership_role, token, expires_at, invited_by, accepted_at, accepted_user_id, created_at' as const
+  'id, institution_id, email, membership_role, token, expires_at, invited_by, accepted_at, accepted_user_id, created_at' as const
 
 function toInstitutionInvite(row: InstitutionInviteRow): InstitutionInvite {
   return {
     id: row.id,
+    institutionId: row.institution_id,
     email: row.email,
     membershipRole: row.membership_role,
     token: row.token,
@@ -55,4 +56,16 @@ export async function fetchEmailsForUserIds(
   }
 
   return map
+}
+
+/** Resend an institution invite email for a specific invite token. */
+export async function resendInviteEmail(institutionId: string): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Import institutionApi function to reuse the same logic
+  const { resendInstitutionAdminInviteEmail } = await import('./institutionApi')
+  await resendInstitutionAdminInviteEmail(institutionId)
 }

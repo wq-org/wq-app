@@ -14,7 +14,8 @@ import { useInstitutionInvites } from '../hooks/useInstitutionInvites'
 
 export function AdminInstitutionInvites() {
   const { t } = useTranslation('features.admin')
-  const { invites, inviterEmailByUserId, isLoading, error, refresh } = useInstitutionInvites()
+  const { invites, inviterEmailByUserId, isLoading, error, refresh, resend } =
+    useInstitutionInvites()
 
   useEffect(() => {
     if (error) {
@@ -82,6 +83,7 @@ export function AdminInstitutionInvites() {
           <InstitutionInvitesTable
             invites={invites}
             inviterEmailByUserId={inviterEmailByUserId}
+            onResend={resend}
           />
         ) : null}
       </div>

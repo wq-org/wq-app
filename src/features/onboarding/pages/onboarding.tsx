@@ -9,9 +9,10 @@ import {
   StepperSeparator,
 } from '@/components/ui/stepper'
 import { CheckIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
+import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
 import { StepAccount } from '../components/StepAccount'
 import { StepAvatar } from '../components/StepAvatar'
 import { StepFinish } from '../components/StepFinish'
@@ -23,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 
 const Onboarding = () => {
   const navigate = useNavigate()
-  const { pendingRole, profile } = useUser()
+  const { profile } = useUser()
   const { t } = useTranslation('features.onboarding')
   const [step, setStep] = useState(1)
   const [accountDetails, setAccountDetails] = useState<AccountDetailsData | null>(null)
@@ -40,6 +41,14 @@ const Onboarding = () => {
     }
   }, [accountDetails, selectedAvatar])
 
+  useEffect(() => {
+    logRoleDebug('onboarding snapshot', {
+      step,
+      profileRole: profile?.role ?? null,
+      is_onboarded: profile?.is_onboarded ?? null,
+    })
+  }, [step, profile?.role, profile?.is_onboarded])
+
   const handleStepChange = (nextStep: number) => {
     setStep((prev) => (nextStep <= prev ? nextStep : prev))
   }
@@ -55,9 +64,11 @@ const Onboarding = () => {
   }
 
   const handleFinish = () => {
-    const trimmedPending = pendingRole?.trim() ?? ''
-    const trimmedProfileRole = profile?.role?.trim() ?? ''
-    const role = trimmedPending || trimmedProfileRole
+    const role = profile?.role?.trim() ?? ''
+    logRoleDebug('onboarding handleFinish (SuccessPage onClick fallback)', {
+      profileRole: role || '(none)',
+      navigateTo: role ? getDashboardPathForRole(role as UserRole) : null,
+    })
     if (!role) {
       toast.error('Something went wrong', {
         description:
