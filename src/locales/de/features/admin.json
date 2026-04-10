@@ -4,6 +4,7 @@
     "dashboard": "Dashboard",
     "institutions": "Institutionen",
     "createInstitution": "Institution erstellen",
+    "institutionInvites": "Einladungen",
     "users": "Benutzer",
     "planCatalog": "Plankatalog",
     "featureDefinitions": "Funktionsdefinitionen",
@@ -99,6 +100,36 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Wird gespeichert..."
+    }
+  },
+  "institutionInvites": {
+    "pageTitle": "Einladungen",
+    "pageDescription": "Ausstehende und eingelöste E-Mail-Einladungen aus institution_invites (neueste zuerst). Die E-Mail der einladenden Person wird über profiles aufgelöst, sofern verfügbar.",
+    "refresh": "Aktualisieren",
+    "loadError": "Einladungen konnten nicht geladen werden",
+    "errorTitle": "Einladungen konnten nicht geladen werden",
+    "errorDescription": "{{message}}",
+    "emptyTitle": "Noch keine Einladungen",
+    "emptyDescription": "Einladungen aus dem Institutions-Assistenten oder anderen Einladungsflows erscheinen hier.",
+    "copySuccess": "Token kopiert",
+    "copyFailed": "Token konnte nicht kopiert werden",
+    "copyTokenAria": "Einladungs-Token kopieren",
+    "acceptedYes": "Angenommen",
+    "acceptedNo": "Nicht angenommen",
+    "table": {
+      "email": "E-Mail",
+      "membershipRole": "Mitgliedsrolle",
+      "token": "Token",
+      "actions": "Aktionen",
+      "openDetails": "Details öffnen",
+      "expiresAt": "Läuft ab am",
+      "invitedBy": "Eingeladen von",
+      "accepted": "Angenommen",
+      "acceptedUserId": "Angenommen (Benutzer-ID)"
+    },
+    "sheet": {
+      "title": "Einladungsdetails",
+      "subtitle": "Ablauf, einladende Person und Annahme unten (nur lesen)."
     }
   },
   "users": {

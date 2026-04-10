@@ -65,6 +65,7 @@ export type {
   EntitlementValueType,
 } from './types/featureDefinitions.types'
 export { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from './types/featureDefinitions.types'
+export type { InstitutionInvite, InstitutionInviteRow } from './types/institutionInvites.types'
 export type {
   PlanCatalog,
   PlanCatalogEditorPlan,
@@ -86,6 +87,7 @@ export { AdminFeatureDefinitionEditor } from './pages/featureDefinitionEditor'
 export { AdminFeatures } from './pages/features'
 export { AdminGdprRequest } from './pages/gdprRequest'
 export { AdminInstitution } from './pages/institution'
+export { AdminInstitutionInvites } from './pages/institutionInvites'
 export { AdminLicenses } from './pages/licenses'
 export { NewInstitution } from './pages/newInstitution'
 export { AdminPlanCatalog } from './pages/planCatalog'

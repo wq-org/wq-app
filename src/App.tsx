@@ -53,6 +53,7 @@ import {
   AdminFeatures,
   AdminGdprRequest,
   AdminInstitution,
+  AdminInstitutionInvites,
   AdminLicenses,
   AdminPlanEntitlementsEditor,
   NewInstitution,
@@ -258,6 +259,14 @@ const App = () => {
                 <Route
                   path="institution/new-institution"
                   element={<NewInstitution />}
+                />
+                <Route
+                  path="institution/institution-invites"
+                  element={
+                    <RequireAuth>
+                      <AdminInstitutionInvites />
+                    </RequireAuth>
+                  }
                 />
                 <Route
                   path="institution"

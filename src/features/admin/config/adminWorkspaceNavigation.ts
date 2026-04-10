@@ -61,7 +61,10 @@ const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
       titleKey: 'nav.institutions',
       url: '/institution',
       icon: Building2,
-      items: [{ titleKey: 'nav.createInstitution', url: '/new-institution' }],
+      items: [
+        { titleKey: 'nav.createInstitution', url: '/new-institution' },
+        { titleKey: 'nav.institutionInvites', url: '/institution-invites' },
+      ],
     },
     {
       titleKey: 'nav.users',

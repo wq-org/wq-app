@@ -4,6 +4,7 @@
     "dashboard": "Dashboard",
     "institutions": "Institutions",
     "createInstitution": "Create institution",
+    "institutionInvites": "Institution invites",
     "users": "Users",
     "planCatalog": "Plan catalog",
     "featureDefinitions": "Feature definitions",
@@ -99,6 +100,36 @@
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving..."
+    }
+  },
+  "institutionInvites": {
+    "pageTitle": "Institution invites",
+    "pageDescription": "Pending and redeemed email invites from institution_invites (newest first). Inviter email is resolved from profiles when available.",
+    "refresh": "Refresh",
+    "loadError": "Could not load institution invites",
+    "errorTitle": "Could not load invites",
+    "errorDescription": "{{message}}",
+    "emptyTitle": "No invites yet",
+    "emptyDescription": "Invites created from the institution wizard or invite flows will appear here.",
+    "copySuccess": "Token copied",
+    "copyFailed": "Could not copy token",
+    "copyTokenAria": "Copy invite token",
+    "acceptedYes": "Accepted",
+    "acceptedNo": "Not accepted",
+    "table": {
+      "email": "Email",
+      "membershipRole": "Membership role",
+      "token": "Token",
+      "actions": "Actions",
+      "openDetails": "Open details",
+      "expiresAt": "Expires at",
+      "invitedBy": "Invited by",
+      "accepted": "Accepted",
+      "acceptedUserId": "Accepted user ID"
+    },
+    "sheet": {
+      "title": "Invite details",
+      "subtitle": "Expires at, inviter, and acceptance are shown below (read-only)."
     }
   },
   "users": {
