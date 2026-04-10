@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Mail } from 'lucide-react'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Text } from '@/components/ui/text'
 import {
   Select,
   SelectContent,
@@ -98,6 +101,28 @@ function NewInstitutionWizardIdentityStep({
         />
         <p className="text-xs text-muted-foreground">{t('wizard.identity.adminEmailHint')}</p>
       </div>
+
+      <Alert>
+        <Mail className="size-4" />
+        <AlertTitle>
+          <Text
+            as="span"
+            variant="small"
+            className="font-medium"
+          >
+            {t('wizard.identity.inviteAlertTitle')}
+          </Text>
+        </AlertTitle>
+        <AlertDescription>
+          <Text
+            as="span"
+            variant="small"
+            color="muted"
+          >
+            {t('wizard.identity.inviteAlertDescription')}
+          </Text>
+        </AlertDescription>
+      </Alert>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, type FormEvent } from 'react'
+import { useState, useCallback, useMemo, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,6 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from '@/components/ui/combobox'
+import { COUNTRY_OPTIONS, getCountryLabel, findCountryByCode } from '../config/countryOptions'
 import type {
   InstitutionType,
   InstitutionStatus,
@@ -70,7 +79,7 @@ const initialFormData: InstitutionFormData = {
   primaryContactRole: '',
   invoiceLanguage: 'de',
   paymentTerms: 30,
-  address: { country: 'Germany' },
+  address: { country: 'DE' },
   institutionNumber: '',
   numberOfBeds: undefined,
   departments: [],
@@ -91,6 +100,49 @@ function slugify(text: string): string {
 function parseOptionalNumber(value: string): number | undefined {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : undefined
+}
+
+type CountryComboboxProps = {
+  value: string
+  onValueChange: (code: string) => void
+  placeholder?: string
+  disabled?: boolean
+}
+
+function CountryCombobox({ value, onValueChange, placeholder, disabled }: CountryComboboxProps) {
+  const { i18n, t } = useTranslation('features.admin')
+  const lang = i18n.language
+
+  const selectedOption = useMemo(() => (value ? findCountryByCode(value) : undefined), [value])
+
+  return (
+    <Combobox
+      value={value}
+      onValueChange={(v) => onValueChange((v as string) ?? '')}
+      getOptionAsString={(opt) => {
+        const country = findCountryByCode(opt as string)
+        return country ? `${country.en} ${country.de}` : (opt as string)
+      }}
+    >
+      <ComboboxInput
+        placeholder={selectedOption ? getCountryLabel(selectedOption, lang) : placeholder}
+        disabled={disabled}
+      />
+      <ComboboxContent>
+        <ComboboxList>
+          <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
+          {COUNTRY_OPTIONS.map((country) => (
+            <ComboboxItem
+              key={country.code}
+              value={country.code}
+            >
+              {getCountryLabel(country, lang)}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
 }
 
 export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
@@ -777,12 +829,10 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                 >
                   {t('form.address.country')} *
                 </Label>
-                <Input
-                  id="institution-country"
-                  placeholder={t('form.address.countryPlaceholder')}
+                <CountryCombobox
                   value={formData.address.country || ''}
-                  onChange={(e) => handleAddressChange('country', e.target.value)}
-                  className="text-base py-2 px-3 w-full"
+                  onValueChange={(country) => handleAddressChange('country', country)}
+                  placeholder={t('form.address.countryPlaceholder')}
                 />
               </div>
             </div>

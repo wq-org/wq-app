@@ -144,6 +144,23 @@ export async function listFeatureDefinitionCategories(): Promise<string[]> {
   return unique
 }
 
+/** Batch-update `default_enabled` for a set of features. */
+export async function batchUpdateDefaultEnabled(
+  changes: { id: string; defaultEnabled: boolean }[],
+): Promise<void> {
+  await Promise.all(
+    changes.map(({ id, defaultEnabled }) =>
+      supabase
+        .from('feature_definitions')
+        .update({ default_enabled: defaultEnabled })
+        .eq('id', id)
+        .then(({ error }) => {
+          if (error) throw new Error(error.message)
+        }),
+    ),
+  )
+}
+
 /** Hard delete. Fails with a Postgres FK error if plan_entitlements or overrides reference this feature. */
 export async function deleteFeatureDefinition(id: string): Promise<void> {
   const { error } = await supabase.from('feature_definitions').delete().eq('id', id)

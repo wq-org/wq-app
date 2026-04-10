@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { getPlanEntitlementsEditorData, savePlanEntitlements } from '../api/planEntitlementsApi'
 import type {
-  PlanCatalog,
+  PlanCatalogEditorPlan,
   PlanEntitlementEditorGroup,
   PlanEntitlementEditorValue,
   PlanEntitlementUpsertPayload,
@@ -83,7 +83,7 @@ function toUpsertRows(
 }
 
 export function usePlanEntitlements(planId: string | undefined): UsePlanEntitlementsResult {
-  const [plan, setPlan] = useState<PlanCatalog | null>(null)
+  const [plan, setPlan] = useState<PlanCatalogEditorPlan | null>(null)
   const [rows, setRows] = useState<PlanEntitlementEditorValue[]>([])
   const [originalRows, setOriginalRows] = useState<PlanEntitlementEditorValue[]>([])
   const [isLoading, setIsLoading] = useState(true)

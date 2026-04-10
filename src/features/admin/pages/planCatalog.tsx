@@ -1,10 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FileStack, Settings2 } from 'lucide-react'
+import { FileStack } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia } from '@/components/ui/empty'
 import { FieldInput } from '@/components/ui/field-input'
 import { Spinner } from '@/components/ui/spinner'
@@ -13,7 +11,10 @@ import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { PlanCatalogCardList } from '../components/PlanCatalogCardList'
+import { PlanCatalogPreviewDrawer } from '../components/PlanCatalogPreviewDrawer'
 import { usePlanCatalog } from '../hooks/usePlanCatalog'
+import type { PlanCatalog } from '../types/planEntitlements.types'
 
 function usePlanCatalogBasePath() {
   const { getRole } = useUser()
@@ -39,12 +40,18 @@ const AdminPlanCatalog = () => {
   const showFilterEmpty =
     !isLoading && items.length > 0 && filteredPlans.length === 0 && hasActiveFilter
 
+  const [previewPlan, setPreviewPlan] = useState<PlanCatalog | null>(null)
+
   const handleEdit = useCallback(
     (planId: string) => {
       navigate(`${basePath}/${planId}/entitlements`)
     },
     [basePath, navigate],
   )
+
+  const handlePreview = useCallback((plan: PlanCatalog) => {
+    setPreviewPlan(plan)
+  }, [])
 
   return (
     <AdminWorkspaceShell>
@@ -132,41 +139,21 @@ const AdminPlanCatalog = () => {
             <EmptyContent className="max-w-md gap-5" />
           </Empty>
         ) : (
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {filteredPlans.map((plan) => (
-              <Card
-                key={plan.id}
-                className="gap-0 py-3"
-              >
-                <CardHeader className="px-4 pb-2 pt-0">
-                  <CardTitle className="text-base font-semibold">{plan.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1 px-4 pb-2">
-                  <Text
-                    as="p"
-                    variant="small"
-                    color="muted"
-                    className="line-clamp-2 text-xs "
-                  >
-                    {plan.description || t('planCatalog.noDescription')}
-                  </Text>
-                </CardContent>
-                <CardFooter className="px-4 pt-2">
-                  <Button
-                    type="button"
-                    variant="darkblue"
-                    size="sm"
-                    onClick={() => handleEdit(plan.id)}
-                  >
-                    <Settings2 className="size-4" />
-                    {t('planCatalog.actions.editEntitlements')}
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          <PlanCatalogCardList
+            plans={filteredPlans}
+            onEdit={handleEdit}
+            onPreview={handlePreview}
+          />
         )}
       </div>
+
+      <PlanCatalogPreviewDrawer
+        plan={previewPlan}
+        open={previewPlan !== null}
+        onOpenChange={(open) => {
+          if (!open) setPreviewPlan(null)
+        }}
+      />
     </AdminWorkspaceShell>
   )
 }

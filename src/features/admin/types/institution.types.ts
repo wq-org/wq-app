@@ -29,6 +29,10 @@ export type NewInstitutionWizardValues = {
   adminEmail: string
   legalName: string
   billingEmail: string
+  street: string
+  streetNumber: string
+  postalCode: string
+  city: string
   country: string
   createInitialStructure: boolean
   facultyName: string
@@ -42,6 +46,10 @@ export const createDefaultNewInstitutionWizardValues = (): NewInstitutionWizardV
   adminEmail: '',
   legalName: '',
   billingEmail: '',
+  street: '',
+  streetNumber: '',
+  postalCode: '',
+  city: '',
   country: '',
   createInitialStructure: false,
   facultyName: '',

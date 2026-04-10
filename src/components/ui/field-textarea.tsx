@@ -35,6 +35,8 @@ type FieldTextareaProps = {
   /** Hide the bottom separator line. Defaults to true since textareas are typically inside cards or bordered containers. */
   hideSeparator?: boolean
   disabled?: boolean
+  /** When true, the textarea is not editable and stays visually normal (unlike `disabled`). */
+  readOnly?: boolean
   className?: string
   /**
    * Fires once when the value grows to exactly `maxLength` (previous length was below the limit).
@@ -59,6 +61,7 @@ export const FieldTextarea = ({
   showCounter: showCounterProp,
   hideSeparator = true,
   disabled = false,
+  readOnly = false,
   className,
   onReachMaxLength,
   onOverMaxLength,
@@ -147,9 +150,10 @@ export const FieldTextarea = ({
           placeholder={placeholder}
           rows={rows}
           value={value}
-          onChange={handleChange}
+          onChange={readOnly ? undefined : handleChange}
           onScroll={useHighlightOverlay ? handleScroll : undefined}
-          disabled={disabled}
+          disabled={disabled && !readOnly}
+          readOnly={readOnly}
         />
       </div>
 

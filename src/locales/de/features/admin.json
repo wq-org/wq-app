@@ -43,6 +43,26 @@
       "viewMore": "Mehr anzeigen"
     }
   },
+  "auditLogs": {
+    "pageTitle": "Audit-Logs",
+    "pageDescription": "Nur-Lese-Sicherheits- und Compliance-Ereignisse aus audit.events (neueste zuerst). Die E-Mail des Ausführenden wird angezeigt, wenn der Benutzer in der Admin-Benutzerliste vorkommt.",
+    "loadError": "Audit-Ereignisse konnten nicht geladen werden",
+    "emptyTitle": "Noch keine Audit-Ereignisse",
+    "empty": "Sicherheits- und Compliance-Ereignisse erscheinen hier, sobald sie protokolliert werden.",
+    "errorTitle": "Audit-Log konnte nicht geladen werden",
+    "errorDescription": "{{message}}",
+    "refresh": "Aktualisieren",
+    "table": {
+      "occurredAt": "Zeitpunkt",
+      "actor": "Ausführend",
+      "eventType": "Ereignistyp",
+      "subjectType": "Subjekttyp",
+      "subjectId": "Subjekt-ID",
+      "institutionId": "Institutions-ID",
+      "payload": "Payload",
+      "metadata": "Metadaten"
+    }
+  },
   "institutions": {
     "pageTitle": "Institutionen",
     "newButton": "Institution hinzufügen",
@@ -149,6 +169,10 @@
     "actions": {
       "editEntitlements": "Entitlements bearbeiten"
     },
+    "preview": {
+      "title": "Vorschau",
+      "close": "Schließen"
+    },
     "empty": {
       "title": "Noch keine Pläne",
       "description": "Lege zuerst Pläne an, bevor du Entitlement-Werte konfigurierst."
@@ -168,10 +192,47 @@
       "cancel": "Abbrechen",
       "save": "Änderungen speichern",
       "saving": "Speichern…",
+      "tabs": {
+        "editor": "Editor",
+        "settings": "Einstellungen"
+      },
+      "settings": {
+        "codeLabel": "Plan-Code",
+        "deletedBadge": "Gelöscht",
+        "seatCapDefault": "Sitzplatzlimit (Standard)",
+        "storageBytesCapDefault": "Speicherlimit in Bytes (Standard)",
+        "metadata": "Metadaten (JSON)",
+        "priceAmount": "Preis",
+        "currency": "Währung",
+        "billingInterval": "Abrechnungsintervall",
+        "isActive": "Plan aktiv",
+        "isActiveHint": "Wenn aus, ist der Plan für neue Zuweisungen ausgeblendet.",
+        "updatedAt": "Aktualisiert am",
+        "deletedAt": "Gelöscht am",
+        "placeholders": {
+          "seatCap": "z. B. 50 (leer = kein Limit)",
+          "storageBytes": "Bytes (nur Ziffern)",
+          "metadata": "{ }",
+          "priceAmount": "z. B. 99,00"
+        },
+        "billing": {
+          "none": "Standard (keines)",
+          "monthly": "Monatlich",
+          "yearly": "Jährlich"
+        },
+        "errors": {
+          "seatCap": "Gültiges nicht negatives Limit oder leer lassen.",
+          "metadataJson": "Metadaten müssen gültiges JSON sein.",
+          "priceAmount": "Gültigen Preis eingeben oder leer lassen.",
+          "billingInterval": "Abrechnungsintervall wählen."
+        }
+      },
       "toasts": {
         "saveSuccess": "Plan-Entitlements aktualisiert",
         "saveError": "Plan-Entitlements konnten nicht gespeichert werden",
-        "unexpected": "Etwas ist schiefgelaufen."
+        "unexpected": "Etwas ist schiefgelaufen.",
+        "settingsSaveSuccess": "Planeinstellungen aktualisiert",
+        "settingsSaveError": "Planeinstellungen konnten nicht gespeichert werden"
       }
     }
   },
@@ -180,6 +241,7 @@
     "pageDescription": "Dieser Katalog ist die Berechtigungsebene der Plattform: Jeder stabile Schlüssel kann in kommerziellen Plänen und institutionsbezogenen Overrides vorkommen. Die wirksame Berechtigung folgt dieser Reihenfolge—zuerst Institutions-Override, dann Planvorgaben, dann die hier gesetzten Standardwerte—bevor das Produkt Funktionen freigibt.",
     "filterLabel": "Katalog durchsuchen",
     "filterPlaceholder": "Nach Schlüssel oder Anzeigenamen filtern…",
+    "filterEmptyTitle": "Keine Ergebnisse",
     "filterEmpty": "Keine Einträge passen zur Suche. Versuche einen anderen Schlüssel oder Namen.",
     "addButton": "Funktion hinzufügen",
     "addMenuTrigger": "Hinzufügen",
@@ -193,7 +255,13 @@
       "edit": "Bearbeiten",
       "updatedRecently": "Kürzlich aktualisiert",
       "updatedRelative": "Aktualisiert {{relative}}",
-      "noCategory": "Keine Kategorie"
+      "noCategory": "Keine Kategorie",
+      "globalDefault": "Globaler Standard:"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Speichern…"
     },
     "editor": {
       "back": "Zurück zur Liste",
@@ -400,7 +468,8 @@
       "state": "Bundesland (optional)",
       "statePlaceholder": "Baden-Württemberg",
       "country": "Land",
-      "countryPlaceholder": "Deutschland"
+      "countryPlaceholder": "Deutschland",
+      "countryNoResults": "Kein Land gefunden"
     },
     "hospital": {
       "sectionTitle": "Krankenhausdetails",
@@ -440,12 +509,23 @@
       "type": "Typ",
       "adminEmail": "E-Mail Institution-Admin",
       "adminEmailPlaceholder": "admin@schule.example",
-      "adminEmailHint": "Das ist die E-Mail-Adresse des künftigen Institution-Admins. Mit genau dieser Adresse legt die Person ihr Konto an, nachdem sie die Einladung per E-Mail erhalten hat."
+      "adminEmailHint": "Das ist die E-Mail-Adresse des künftigen Institution-Admins. Mit genau dieser Adresse legt die Person ihr Konto an, nachdem sie die Einladung per E-Mail erhalten hat.",
+      "inviteAlertTitle": "Einladungs-E-Mail",
+      "inviteAlertDescription": "Nach der Erstellung wird ein Einladungslink an die angegebene E-Mail-Adresse gesendet. Der Link ist 30 Minuten gültig."
     },
     "billing": {
       "legalName": "Rechtlicher Name",
       "billingEmail": "Abrechnungs-E-Mail",
-      "country": "Land"
+      "street": "Straße",
+      "streetPlaceholder": "z. B. Am Steinenberg",
+      "streetNumber": "Nr.",
+      "streetNumberPlaceholder": "70",
+      "postalCode": "PLZ",
+      "postalCodePlaceholder": "72764",
+      "city": "Stadt",
+      "cityPlaceholder": "Reutlingen",
+      "country": "Land",
+      "address": "Adresse"
     },
     "structure": {
       "toggleLabel": "Initiale Struktur anlegen",

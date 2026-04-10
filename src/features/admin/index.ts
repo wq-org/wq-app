@@ -48,6 +48,8 @@ export {
 export {
   listPlanCatalog,
   getPlanById,
+  getPlanCatalogForEditor,
+  updatePlanCatalogSettings,
   listPlanEntitlements,
   getPlanEntitlementsEditorData,
   savePlanEntitlements,
@@ -65,7 +67,10 @@ export type {
 export { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from './types/featureDefinitions.types'
 export type {
   PlanCatalog,
+  PlanCatalogEditorPlan,
+  PlanCatalogEditorRow,
   PlanCatalogRow,
+  PlanCatalogSettingsPatch,
   PlanEntitlement,
   PlanEntitlementRow,
   PlanEntitlementEditorValue,

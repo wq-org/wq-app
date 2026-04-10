@@ -1,13 +1,20 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Blocks, Plus } from 'lucide-react'
+import { Blocks, Plus, SearchX } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { FieldInput } from '@/components/ui/field-input'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { Empty, EmptyContent, EmptyHeader, EmptyMedia } from '@/components/ui/empty'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
@@ -115,14 +122,15 @@ const AdminFeatureDefinitions = () => {
             />
           </div>
         ) : showFilterEmpty ? (
-          <Text
-            as="p"
-            variant="small"
-            color="muted"
-            className="rounded-lg border border-dashed border-border px-4 py-8 text-center"
-          >
-            {t('featureDefinitions.filterEmpty')}
-          </Text>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <SearchX aria-hidden />
+              </EmptyMedia>
+              <EmptyTitle>{t('featureDefinitions.filterEmptyTitle')}</EmptyTitle>
+              <EmptyDescription>{t('featureDefinitions.filterEmpty')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : items.length === 0 ? (
           <Empty>
             <EmptyMedia variant="icon">

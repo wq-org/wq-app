@@ -1,82 +1,38 @@
+import type { ReactNode } from 'react'
+import { Check } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { Check, Sparkles, Star } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type PricingValue = boolean | string
 
-export type PricingRow = {
-  feature: string
-  free: PricingValue
-  pro: PricingValue
-  startup: PricingValue
+export type PricingColumn = {
+  name: string
+  cta?: {
+    text: string
+    href: string
+    variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive'
+  }
 }
 
-export type PricingPlan = {
-  name: string
-  ctaText: string
-  ctaHref: string
-  ctaVariant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive'
+export type PricingRow = {
+  feature: string
+  values: PricingValue[]
+}
+
+export type PricingSection = {
+  heading: string
+  icon?: ReactNode
+  rows: PricingRow[]
 }
 
 export type PricingComparatorProps = {
-  plans?: [PricingPlan, PricingPlan, PricingPlan]
-  featuresHeading?: string
-  modelsHeading?: string
-  featureRows?: PricingRow[]
-  modelRows?: PricingRow[]
+  columns: PricingColumn[]
+  sections: PricingSection[]
+  className?: string
 }
 
-const defaultPlans: [PricingPlan, PricingPlan, PricingPlan] = [
-  { name: 'Free', ctaText: 'Get Started', ctaHref: '#', ctaVariant: 'outline' },
-  { name: 'Pro', ctaText: 'Get Started', ctaHref: '#', ctaVariant: 'default' },
-  { name: 'Startup', ctaText: 'Get Started', ctaHref: '#', ctaVariant: 'outline' },
-]
-
-const defaultRows: PricingRow[] = [
-  {
-    feature: 'Feature 1',
-    free: true,
-    pro: true,
-    startup: true,
-  },
-  {
-    feature: 'Feature 2',
-    free: true,
-    pro: true,
-    startup: true,
-  },
-  {
-    feature: 'Feature 3',
-    free: false,
-    pro: true,
-    startup: true,
-  },
-  {
-    feature: 'Tokens',
-    free: '',
-    pro: '20 Users',
-    startup: 'Unlimited',
-  },
-  {
-    feature: 'Video calls',
-    free: '',
-    pro: '12 Weeks',
-    startup: '56',
-  },
-  {
-    feature: 'Support',
-    free: '',
-    pro: 'Seconds',
-    startup: 'Unlimited',
-  },
-  {
-    feature: 'Security',
-    free: '',
-    pro: '20 Users',
-    startup: 'Unlimited',
-  },
-]
-
-function renderPricingValue(value: PricingValue) {
+function renderValue(value: PricingValue) {
   if (value === true) {
     return (
       <Check
@@ -85,94 +41,98 @@ function renderPricingValue(value: PricingValue) {
       />
     )
   }
-
-  if (value === false) {
-    return ''
-  }
-
+  if (value === false || value === '') return null
   return value
 }
 
-export default function PricingComparator({
-  plans = defaultPlans,
-  featuresHeading = 'Features',
-  modelsHeading = 'AI Models',
-  featureRows = defaultRows.slice(0, 3),
-  modelRows = defaultRows,
-}: PricingComparatorProps) {
+export function PricingComparator({ columns, sections, className }: PricingComparatorProps) {
+  const hasCta = columns.some((col) => col.cta)
+  const isSingle = columns.length === 1
+
   return (
-    <section className="bg-muted py-16 md:py-32">
-      <div className="mx-auto max-w-5xl px-6">
-        <div className="w-full overflow-auto lg:overflow-visible">
-          <table className="w-[200vw] border-separate border-spacing-x-3 md:w-full dark:[--color-muted:var(--color-zinc-900)]">
-            <thead className="bg-muted/95 sticky top-0">
-              <tr className="*:py-4 *:text-left *:font-medium">
-                <th className="lg:w-2/5"></th>
-                {plans.map((plan) => (
-                  <th
-                    key={plan.name}
-                    className="space-y-3"
-                  >
-                    <span className="block">{plan.name}</span>
+    <div className={cn('w-full overflow-auto', className)}>
+      <table className="w-full border-separate border-spacing-x-3">
+        {hasCta ? (
+          <thead>
+            <tr className="*:py-4 *:text-left *:font-medium">
+              <th className={cn(!isSingle && 'lg:w-2/5')} />
+              {columns.map((col) => (
+                <th
+                  key={col.name}
+                  className="space-y-3"
+                >
+                  <span className="block">{col.name}</span>
+                  {col.cta ? (
                     <Button
                       asChild
-                      variant={plan.ctaVariant ?? 'default'}
+                      variant={col.cta.variant ?? 'default'}
                     >
-                      <a href={plan.ctaHref}>{plan.ctaText}</a>
+                      <a href={col.cta.href}>{col.cta.text}</a>
                     </Button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr className="*:py-4">
-                <td className="flex items-center gap-2 font-medium">
-                  <Star className="size-4" />
-                  <span>{featuresHeading}</span>
-                </td>
-                <td></td>
-                <td className="border-none px-4"></td>
-                <td></td>
-              </tr>
-
-              {featureRows.map((row) => (
-                <tr
-                  key={`feature-${row.feature}`}
-                  className="*:border-b *:py-4"
-                >
-                  <td className="text-muted-foreground">{row.feature}</td>
-                  <td>{renderPricingValue(row.free)}</td>
-                  <td>{renderPricingValue(row.pro)}</td>
-                  <td>{renderPricingValue(row.startup)}</td>
-                </tr>
+                  ) : null}
+                </th>
               ))}
+            </tr>
+          </thead>
+        ) : null}
 
-              <tr className="*:pb-4 *:pt-8">
-                <td className="flex items-center gap-2 font-medium">
-                  <Sparkles className="size-4" />
-                  <span>{modelsHeading}</span>
-                </td>
-                <td></td>
-                <td className="bg-muted border-none px-4"></td>
-                <td></td>
-              </tr>
+        <tbody>
+          {sections.map((section) => (
+            <SectionBlock
+              key={section.heading}
+              section={section}
+              columnCount={columns.length}
+              showHeader={!hasCta}
+              columns={columns}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
-              {modelRows.map((row) => (
-                <tr
-                  key={`model-${row.feature}`}
-                  className="*:border-b *:py-4"
-                >
-                  <td className="text-muted-foreground">{row.feature}</td>
-                  <td>{renderPricingValue(row.free)}</td>
-                  <td>{renderPricingValue(row.pro)}</td>
-                  <td>{renderPricingValue(row.startup)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+function SectionBlock({
+  section,
+  columnCount,
+  showHeader,
+  columns,
+}: {
+  section: PricingSection
+  columnCount: number
+  showHeader: boolean
+  columns: PricingColumn[]
+}) {
+  return (
+    <>
+      <tr className="*:pb-4 *:pt-6">
+        <td className="flex items-center gap-2 font-medium">
+          {section.icon}
+          <span>{section.heading}</span>
+        </td>
+        {showHeader
+          ? columns.map((col) => (
+              <td
+                key={col.name}
+                className="font-medium"
+              >
+                {col.name}
+              </td>
+            ))
+          : Array.from({ length: columnCount }, (_, i) => <td key={i} />)}
+      </tr>
+
+      {section.rows.map((row) => (
+        <tr
+          key={row.feature}
+          className="*:border-b *:py-4"
+        >
+          <td className="text-muted-foreground">{row.feature}</td>
+          {row.values.map((value, i) => (
+            <td key={i}>{renderValue(value)}</td>
+          ))}
+        </tr>
+      ))}
+    </>
   )
 }

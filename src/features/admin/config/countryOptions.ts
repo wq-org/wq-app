@@ -1,0 +1,53 @@
+export type CountryOption = {
+  /** ISO 3166-1 alpha-2 code, used as DB value */
+  code: string
+  en: string
+  de: string
+}
+
+/**
+ * EU member states + UK + Switzerland.
+ * Sorted alphabetically by English name.
+ */
+export const COUNTRY_OPTIONS: readonly CountryOption[] = [
+  { code: 'AT', en: 'Austria', de: 'Österreich' },
+  { code: 'BE', en: 'Belgium', de: 'Belgien' },
+  { code: 'BG', en: 'Bulgaria', de: 'Bulgarien' },
+  { code: 'HR', en: 'Croatia', de: 'Kroatien' },
+  { code: 'CY', en: 'Cyprus', de: 'Zypern' },
+  { code: 'CZ', en: 'Czech Republic', de: 'Tschechien' },
+  { code: 'DK', en: 'Denmark', de: 'Dänemark' },
+  { code: 'EE', en: 'Estonia', de: 'Estland' },
+  { code: 'FI', en: 'Finland', de: 'Finnland' },
+  { code: 'FR', en: 'France', de: 'Frankreich' },
+  { code: 'DE', en: 'Germany', de: 'Deutschland' },
+  { code: 'GR', en: 'Greece', de: 'Griechenland' },
+  { code: 'HU', en: 'Hungary', de: 'Ungarn' },
+  { code: 'IE', en: 'Ireland', de: 'Irland' },
+  { code: 'IT', en: 'Italy', de: 'Italien' },
+  { code: 'LV', en: 'Latvia', de: 'Lettland' },
+  { code: 'LT', en: 'Lithuania', de: 'Litauen' },
+  { code: 'LU', en: 'Luxembourg', de: 'Luxemburg' },
+  { code: 'MT', en: 'Malta', de: 'Malta' },
+  { code: 'NL', en: 'Netherlands', de: 'Niederlande' },
+  { code: 'PL', en: 'Poland', de: 'Polen' },
+  { code: 'PT', en: 'Portugal', de: 'Portugal' },
+  { code: 'RO', en: 'Romania', de: 'Rumänien' },
+  { code: 'SK', en: 'Slovakia', de: 'Slowakei' },
+  { code: 'SI', en: 'Slovenia', de: 'Slowenien' },
+  { code: 'ES', en: 'Spain', de: 'Spanien' },
+  { code: 'SE', en: 'Sweden', de: 'Schweden' },
+  { code: 'CH', en: 'Switzerland', de: 'Schweiz' },
+  { code: 'GB', en: 'United Kingdom', de: 'Vereinigtes Königreich' },
+] as const
+
+/** Returns the localized label for a country option. */
+export function getCountryLabel(country: CountryOption, lang: string): string {
+  return lang.startsWith('de') ? country.de : country.en
+}
+
+/** Finds a country option by code (case-insensitive). */
+export function findCountryByCode(code: string): CountryOption | undefined {
+  const upper = code.toUpperCase()
+  return COUNTRY_OPTIONS.find((c) => c.code === upper)
+}

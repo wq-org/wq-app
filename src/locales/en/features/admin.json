@@ -43,6 +43,26 @@
       "viewMore": "View more"
     }
   },
+  "auditLogs": {
+    "pageTitle": "Audit logs",
+    "pageDescription": "Read-only security and compliance events from audit.events (newest first). Actor email is shown when the user appears in the admin user list.",
+    "loadError": "Could not load audit events",
+    "emptyTitle": "No audit events yet",
+    "empty": "Security and compliance events will appear here when they are recorded.",
+    "errorTitle": "Could not load audit log",
+    "errorDescription": "{{message}}",
+    "refresh": "Refresh",
+    "table": {
+      "occurredAt": "Occurred at",
+      "actor": "Actor",
+      "eventType": "Event type",
+      "subjectType": "Subject type",
+      "subjectId": "Subject ID",
+      "institutionId": "Institution ID",
+      "payload": "Payload",
+      "metadata": "Metadata"
+    }
+  },
   "institutions": {
     "pageTitle": "Institutions",
     "newButton": "Add Institution",
@@ -149,6 +169,10 @@
     "actions": {
       "editEntitlements": "Edit entitlements"
     },
+    "preview": {
+      "title": "Preview",
+      "close": "Close"
+    },
     "empty": {
       "title": "No plans yet",
       "description": "Add plans before configuring entitlement values."
@@ -168,10 +192,47 @@
       "cancel": "Cancel",
       "save": "Save changes",
       "saving": "Saving…",
+      "tabs": {
+        "editor": "Editor",
+        "settings": "Settings"
+      },
+      "settings": {
+        "codeLabel": "Plan code",
+        "deletedBadge": "Deleted",
+        "seatCapDefault": "Seat cap (default)",
+        "storageBytesCapDefault": "Storage cap (bytes, default)",
+        "metadata": "Metadata (JSON)",
+        "priceAmount": "Price amount",
+        "currency": "Currency",
+        "billingInterval": "Billing interval",
+        "isActive": "Plan active",
+        "isActiveHint": "When off, the plan is hidden from new assignments.",
+        "updatedAt": "Updated at",
+        "deletedAt": "Deleted at",
+        "placeholders": {
+          "seatCap": "e.g. 50 (empty = no cap)",
+          "storageBytes": "Bytes (digits only)",
+          "metadata": "{ }",
+          "priceAmount": "e.g. 99.00"
+        },
+        "billing": {
+          "none": "Default (none)",
+          "monthly": "Monthly",
+          "yearly": "Yearly"
+        },
+        "errors": {
+          "seatCap": "Enter a valid non-negative seat cap or leave empty.",
+          "metadataJson": "Metadata must be valid JSON.",
+          "priceAmount": "Enter a valid price or leave empty.",
+          "billingInterval": "Choose a billing interval."
+        }
+      },
       "toasts": {
         "saveSuccess": "Plan entitlements updated",
         "saveError": "Could not save plan entitlements",
-        "unexpected": "Something went wrong."
+        "unexpected": "Something went wrong.",
+        "settingsSaveSuccess": "Plan settings updated",
+        "settingsSaveError": "Could not save plan settings"
       }
     }
   },
@@ -180,6 +241,7 @@
     "pageDescription": "This catalog is the platform entitlement layer: each stable key can appear in commercial plans and per-institution overrides. Effective access resolves in order—institution override first, then plan defaults, then the defaults you set here—before the product gates features.",
     "filterLabel": "Search catalog",
     "filterPlaceholder": "Filter by key or display name…",
+    "filterEmptyTitle": "No results",
     "filterEmpty": "No definitions match your search. Try another key or name.",
     "addButton": "Add feature",
     "addMenuTrigger": "Add",
@@ -193,7 +255,13 @@
       "edit": "Edit",
       "updatedRecently": "Updated recently",
       "updatedRelative": "Updated {{relative}}",
-      "noCategory": "No category"
+      "noCategory": "No category",
+      "globalDefault": "Global default:"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "saveChanges": "Save changes",
+      "saving": "Saving…"
     },
     "editor": {
       "back": "Back to list",
@@ -291,6 +359,8 @@
       "deleting": "Deleting..."
     },
     "toasts": {
+      "saveSuccess": "Default values updated",
+      "saveError": "Could not update default values",
       "createSuccess": "Feature created",
       "updateSuccess": "Feature updated",
       "createError": "Could not create feature",
@@ -400,7 +470,8 @@
       "state": "State (optional)",
       "statePlaceholder": "Baden-Württemberg",
       "country": "Country",
-      "countryPlaceholder": "Germany"
+      "countryPlaceholder": "Germany",
+      "countryNoResults": "No country found"
     },
     "hospital": {
       "sectionTitle": "Hospital Details",
@@ -440,12 +511,23 @@
       "type": "Type",
       "adminEmail": "Institution admin email",
       "adminEmailPlaceholder": "admin@school.example",
-      "adminEmailHint": "This is the email address of the future institution admin. They will use this exact address to create their account after they receive the invitation email."
+      "adminEmailHint": "This is the email address of the future institution admin. They will use this exact address to create their account after they receive the invitation email.",
+      "inviteAlertTitle": "Invite email",
+      "inviteAlertDescription": "After creation we will send an invite link to the given email address. The link is valid for 30 minutes."
     },
     "billing": {
       "legalName": "Legal name",
       "billingEmail": "Billing email",
-      "country": "Country"
+      "street": "Street",
+      "streetPlaceholder": "e.g. Am Steinenberg",
+      "streetNumber": "No.",
+      "streetNumberPlaceholder": "70",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "72764",
+      "city": "City",
+      "cityPlaceholder": "Reutlingen",
+      "country": "Country",
+      "address": "Address"
     },
     "structure": {
       "toggleLabel": "Create initial structure",
