@@ -229,6 +229,41 @@ export async function resendVerificationEmail(email?: string): Promise<{ error: 
 }
 
 /**
+ * Redeem an institution invite token.
+ * Must be called after sign-up when the user is authenticated and profile email matches.
+ */
+export async function redeemInstitutionInvite(token: string): Promise<void> {
+  const { error } = await supabase.rpc('redeem_institution_invite', { p_token: token })
+  if (error) throw new Error(error.message)
+}
+
+/**
+ * Validate an institution invite token without redeeming it.
+ * Returns invite details if valid, null if not found/expired/accepted.
+ */
+export async function validateInviteToken(
+  token: string,
+): Promise<{ email: string; institutionId: string; membershipRole: string } | null> {
+  const { data, error } = await supabase
+    .from('institution_invites')
+    .select('email, institution_id, membership_role, expires_at, accepted_at')
+    .eq('token', token)
+    .maybeSingle()
+
+  if (error || !data) return null
+  if (data.accepted_at) return null
+
+  const expiresAt = new Date(data.expires_at as string)
+  if (expiresAt.getTime() < Date.now()) return null
+
+  return {
+    email: data.email as string,
+    institutionId: data.institution_id as string,
+    membershipRole: data.membership_role as string,
+  }
+}
+
+/**
  * Verify email with token
  */
 export async function verifyEmail(token: string): Promise<void> {

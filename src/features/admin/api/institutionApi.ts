@@ -176,7 +176,7 @@ export async function bootstrapInstitutionFromWizard(
       billing_email: toOptionalText(values.billingEmail),
       email: toOptionalText(values.billingEmail || values.adminEmail),
       address: { country: values.country.trim() },
-      status: 'active',
+      status: 'pending',
     })
     .eq('id', row.institution_id)
     .select(INSTITUTION_COLUMNS)
@@ -268,4 +268,62 @@ export async function sendInstitutionAdminInviteEmail(
   if (!data?.ok) {
     throw new Error(data?.error ?? 'Failed to send invite email')
   }
+}
+
+/**
+ * Resend the institution admin invite email for a pending institution.
+ * Finds the latest pending invite, creates a fresh one if expired, then sends via Brevo.
+ */
+export async function resendInstitutionAdminInviteEmail(institutionId: string): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Find the latest pending institution_admin invite for this institution
+  const { data: invite, error: inviteError } = await supabase
+    .from('institution_invites')
+    .select('token, email, expires_at')
+    .eq('institution_id', institutionId)
+    .eq('membership_role', 'institution_admin')
+    .is('accepted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (inviteError) throw new Error(inviteError.message)
+  if (!invite) throw new Error('No pending invite found for this institution')
+
+  let token = invite.token as string
+  const adminEmail = invite.email as string
+
+  // If invite is expired, create a fresh one
+  const expiresAt = new Date(invite.expires_at as string)
+  if (expiresAt.getTime() < Date.now()) {
+    const { data: newToken, error: rpcError } = await supabase.rpc(
+      'create_institution_invite_by_email',
+      {
+        p_institution_id: institutionId,
+        p_email: adminEmail,
+        p_role: 'institution_admin',
+      },
+    )
+    if (rpcError) throw new Error(rpcError.message)
+    if (!newToken) throw new Error('Failed to create new invite')
+    token = newToken as string
+  }
+
+  // Get institution name for the email
+  const { data: institution } = await supabase
+    .from('institutions')
+    .select('name')
+    .eq('id', institutionId)
+    .maybeSingle()
+
+  // Send via Brevo edge function
+  await sendInstitutionAdminInviteEmail({
+    inviteToken: token,
+    adminEmail,
+    institutionName: institution?.name ?? undefined,
+  })
 }

@@ -11,7 +11,13 @@ import {
   ComboboxEmpty,
 } from '@/components/ui/combobox'
 import type { NewInstitutionWizardValues } from '../types/institution.types'
-import { COUNTRY_OPTIONS, getCountryLabel, findCountryByCode } from '../config/countryOptions'
+import {
+  COUNTRY_OPTIONS,
+  getCountryLabel,
+  findCountryByValue,
+  getCountryDisplayValue,
+  countryItemMatchesSearchQuery,
+} from '../config/countryOptions'
 
 type NewInstitutionWizardBillingStepProps = {
   values: NewInstitutionWizardValues
@@ -26,9 +32,11 @@ function NewInstitutionWizardBillingStep({
   const lang = i18n.language
 
   const selectedCountry = useMemo(
-    () => (values.country ? findCountryByCode(values.country) : undefined),
+    () => (values.country ? findCountryByValue(values.country) : undefined),
     [values.country],
   )
+
+  const countryItems = useMemo(() => COUNTRY_OPTIONS.map((c) => getCountryLabel(c, lang)), [lang])
 
   return (
     <div className="space-y-4">
@@ -107,12 +115,17 @@ function NewInstitutionWizardBillingStep({
       <div className="space-y-2">
         <Label htmlFor="new-inst-country">{t('wizard.billing.country')}</Label>
         <Combobox
-          value={values.country}
-          onValueChange={(v) => onChange({ country: (v as string) ?? '' })}
-          getOptionAsString={(opt) => {
-            const country = findCountryByCode(opt as string)
-            return country ? `${country.en} ${country.de}` : (opt as string)
+          value={selectedCountry ? getCountryDisplayValue(values.country, lang) : values.country}
+          onValueChange={(v) =>
+            onChange({ country: getCountryDisplayValue((v as string) ?? '', lang) })
+          }
+          items={countryItems}
+          itemToStringLabel={(item) => {
+            const country = findCountryByValue(String(item))
+            return country ? getCountryLabel(country, lang) : String(item)
           }}
+          filter={(item, query) => countryItemMatchesSearchQuery(String(item), query)}
+          autoHighlight
         >
           <ComboboxInput
             placeholder={
@@ -122,16 +135,19 @@ function NewInstitutionWizardBillingStep({
             }
           />
           <ComboboxContent>
+            <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
             <ComboboxList>
-              <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
-              {COUNTRY_OPTIONS.map((country) => (
-                <ComboboxItem
-                  key={country.code}
-                  value={country.code}
-                >
-                  {getCountryLabel(country, lang)}
-                </ComboboxItem>
-              ))}
+              {(item: string) => {
+                const country = findCountryByValue(item)
+                return (
+                  <ComboboxItem
+                    key={country?.code ?? item}
+                    value={item}
+                  >
+                    {item}
+                  </ComboboxItem>
+                )
+              }}
             </ComboboxList>
           </ComboboxContent>
         </Combobox>

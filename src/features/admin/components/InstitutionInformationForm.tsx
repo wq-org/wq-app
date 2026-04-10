@@ -21,7 +21,13 @@ import {
   ComboboxItem,
   ComboboxEmpty,
 } from '@/components/ui/combobox'
-import { COUNTRY_OPTIONS, getCountryLabel, findCountryByCode } from '../config/countryOptions'
+import {
+  COUNTRY_OPTIONS,
+  getCountryLabel,
+  findCountryByValue,
+  getCountryDisplayValue,
+  countryItemMatchesSearchQuery,
+} from '../config/countryOptions'
 import type {
   InstitutionType,
   InstitutionStatus,
@@ -30,6 +36,7 @@ import type {
   InvoiceLanguage,
 } from '../types/institution.types'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
+import { slugifyInstitutionName } from '../utils/institutionSlug'
 
 const INSTITUTION_TYPE_VALUES: InstitutionType[] = [
   'school',
@@ -79,22 +86,13 @@ const initialFormData: InstitutionFormData = {
   primaryContactRole: '',
   invoiceLanguage: 'de',
   paymentTerms: 30,
-  address: { country: 'DE' },
+  address: { country: '' },
   institutionNumber: '',
   numberOfBeds: undefined,
   departments: [],
   accreditation: '',
   socialLinks: { linkedin: '', instagram: '' },
   imageUrl: DEFAULT_INSTITUTION_IMAGE,
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
 }
 
 function parseOptionalNumber(value: string): number | undefined {
@@ -104,7 +102,7 @@ function parseOptionalNumber(value: string): number | undefined {
 
 type CountryComboboxProps = {
   value: string
-  onValueChange: (code: string) => void
+  onValueChange: (country: string) => void
   placeholder?: string
   disabled?: boolean
 }
@@ -113,32 +111,40 @@ function CountryCombobox({ value, onValueChange, placeholder, disabled }: Countr
   const { i18n, t } = useTranslation('features.admin')
   const lang = i18n.language
 
-  const selectedOption = useMemo(() => (value ? findCountryByCode(value) : undefined), [value])
+  const selectedOption = useMemo(() => (value ? findCountryByValue(value) : undefined), [value])
+
+  const countryItems = useMemo(() => COUNTRY_OPTIONS.map((c) => getCountryLabel(c, lang)), [lang])
 
   return (
     <Combobox
-      value={value}
-      onValueChange={(v) => onValueChange((v as string) ?? '')}
-      getOptionAsString={(opt) => {
-        const country = findCountryByCode(opt as string)
-        return country ? `${country.en} ${country.de}` : (opt as string)
+      value={selectedOption ? getCountryDisplayValue(selectedOption.code, lang) : value}
+      onValueChange={(v) => onValueChange(getCountryDisplayValue((v as string) ?? '', lang))}
+      items={countryItems}
+      itemToStringLabel={(item) => {
+        const country = findCountryByValue(String(item))
+        return country ? getCountryLabel(country, lang) : String(item)
       }}
+      filter={(item, query) => countryItemMatchesSearchQuery(String(item), query)}
+      autoHighlight
     >
       <ComboboxInput
         placeholder={selectedOption ? getCountryLabel(selectedOption, lang) : placeholder}
         disabled={disabled}
       />
       <ComboboxContent>
+        <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
         <ComboboxList>
-          <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
-          {COUNTRY_OPTIONS.map((country) => (
-            <ComboboxItem
-              key={country.code}
-              value={country.code}
-            >
-              {getCountryLabel(country, lang)}
-            </ComboboxItem>
-          ))}
+          {(item: string) => {
+            const country = findCountryByValue(item)
+            return (
+              <ComboboxItem
+                key={country?.code ?? item}
+                value={item}
+              >
+                {item}
+              </ComboboxItem>
+            )
+          }}
         </ComboboxList>
       </ComboboxContent>
     </Combobox>
@@ -146,7 +152,7 @@ function CountryCombobox({ value, onValueChange, placeholder, disabled }: Countr
 }
 
 export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
-  const { t } = useTranslation('features.admin')
+  const { t, i18n } = useTranslation('features.admin')
   const [formData, setFormData] = useState<InstitutionFormData>(initialFormData)
   const [isSlugTouched, setIsSlugTouched] = useState(false)
 
@@ -155,7 +161,7 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
       setFormData((prev) => ({
         ...prev,
         name,
-        slug: isSlugTouched ? prev.slug : slugify(name),
+        slug: isSlugTouched ? prev.slug : slugifyInstitutionName(name),
       }))
     },
     [isSlugTouched],
@@ -831,7 +837,9 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                 </Label>
                 <CountryCombobox
                   value={formData.address.country || ''}
-                  onValueChange={(country) => handleAddressChange('country', country)}
+                  onValueChange={(country) =>
+                    handleAddressChange('country', getCountryDisplayValue(country, i18n.language))
+                  }
                   placeholder={t('form.address.countryPlaceholder')}
                 />
               </div>

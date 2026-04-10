@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { NewInstitutionWizardValues } from '../types/institution.types'
-import { findCountryByCode, getCountryLabel } from '../config/countryOptions'
+import { getCountryDisplayValue } from '../config/countryOptions'
 
 type NewInstitutionWizardReviewStepProps = {
   values: NewInstitutionWizardValues
@@ -9,10 +9,7 @@ type NewInstitutionWizardReviewStepProps = {
 function NewInstitutionWizardReviewStep({ values }: NewInstitutionWizardReviewStepProps) {
   const { t, i18n } = useTranslation('features.admin')
 
-  const countryOption = values.country ? findCountryByCode(values.country) : undefined
-  const countryDisplay = countryOption
-    ? getCountryLabel(countryOption, i18n.language)
-    : values.country
+  const countryDisplay = getCountryDisplayValue(values.country, i18n.language)
 
   return (
     <dl className="space-y-3 text-sm">

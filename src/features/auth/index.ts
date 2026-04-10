@@ -19,6 +19,8 @@ export {
   updateCourse,
   deleteCourse,
   createInstitution,
+  redeemInstitutionInvite,
+  validateInviteToken,
 } from './api/authApi'
 export { RequireAuth } from './components/RequireAuth'
 export { RequireOnboarding } from './components/RequireOnboarding'

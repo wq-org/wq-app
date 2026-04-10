@@ -8,9 +8,6 @@
  * - PUBLIC_SITE_URL — App origin without trailing slash (e.g. https://app.example.com) for signup links.
  *
  * Auto-provided by Supabase: SUPABASE_URL, SUPABASE_ANON_KEY (and SERVICE_ROLE_KEY if needed later).
- *
- * Resend alternative (verified domain e.g. updates.wq-app.de): deploy and invoke
- * `send-institution-admin-invite-email-resend` instead; see that function’s header for RESEND_* secrets.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
@@ -162,13 +159,156 @@ Deno.serve(async (req) => {
   ].join('\n')
 
   const htmlContent = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"/></head>
-<body style="font-family:system-ui,sans-serif;line-height:1.5;color:#111">
-  <p>You have been invited to create an <strong>institution admin</strong> account for <strong>${escapeHtml(displayName)}</strong>.</p>
-  <p>Sign up using <strong>${escapeHtml(adminEmailRaw)}</strong>:</p>
-  <p><a href="${escapeHtml(inviteUrl)}">${escapeHtml(inviteUrl)}</a></p>
-  <p style="color:#666;font-size:14px">This link expires soon. If you did not expect this email, you can ignore it.</p>
-</body></html>`
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Institution admin invite</title>
+  </head>
+  <body
+    style="
+      margin:0;
+      padding:24px 12px;
+      background-color:#f5f7f8;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      line-height:1.5;
+      color:#111827;
+    "
+  >
+    <table
+      role="presentation"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      width="100%"
+      style="border-collapse:collapse;"
+    >
+      <tr>
+        <td align="center">
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            width="100%"
+            style="
+              border-collapse:collapse;
+              max-width:420px;
+              background-color:#ffffff;
+              border:1px solid rgba(17,24,39,0.08);
+              border-radius:16px;
+              box-shadow:0 14px 26px rgba(0,0,0,0.08);
+            "
+          >
+            <tr>
+              <td style="padding:22px 20px 18px 20px;">
+                <h1
+                  style="
+                    margin:0 0 8px 0;
+                    font-size:20px;
+                    line-height:1.3;
+                    font-weight:600;
+                    color:#111827;
+                  "
+                >
+                  Institution admin invite
+                </h1>
+
+                <p
+                  style="
+                    margin:0 0 12px 0;
+                    font-size:14px;
+                    line-height:1.6;
+                    color:#4b5563;
+                  "
+                >
+                  You have been invited to create an
+                  <strong style="color:#111827;">institution admin</strong>
+                  account for
+                  <strong style="color:#111827;">${escapeHtml(displayName)}</strong>.
+                </p>
+
+                <p
+                  style="
+                    margin:0 0 16px 0;
+                    font-size:14px;
+                    line-height:1.6;
+                    color:#374151;
+                  "
+                >
+                  Sign up using
+                  <strong style="color:#111827;">${escapeHtml(adminEmailRaw)}</strong>.
+                </p>
+
+                <div style="text-align:center;margin:0 0 14px 0;">
+                  <a
+                    href="${escapeHtml(inviteUrl)}"
+                    style="
+                      display:inline-block;
+                      width:88%;
+                      max-width:320px;
+                      padding:12px 14px;
+                      border-radius:10px;
+                      background-color:#007789;
+                      color:#ffffff !important;
+                      text-decoration:none;
+                      font-size:14px;
+                      font-weight:600;
+                      text-align:center;
+                    "
+                  >
+                    Create account
+                  </a>
+                </div>
+
+                <p
+                  style="
+                    margin:0 0 12px 0;
+                    font-size:12px;
+                    line-height:1.6;
+                    color:#6b7280;
+                  "
+                >
+                  If the button does not work, copy and paste this link into your browser:
+                </p>
+
+                <p
+                  style="
+                    margin:0 0 14px 0;
+                    padding:10px 12px;
+                    background-color:#f9fafb;
+                    border:1px solid #e5e7eb;
+                    border-radius:10px;
+                    font-size:12px;
+                    line-height:1.6;
+                    word-break:break-all;
+                    color:#374151;
+                  "
+                >
+                  <a
+                    href="${escapeHtml(inviteUrl)}"
+                    style="color:#007789;text-decoration:none;"
+                  >${escapeHtml(inviteUrl)}</a>
+                </p>
+
+                <p
+                  style="
+                    margin:0;
+                    font-size:12px;
+                    line-height:1.6;
+                    color:#6b7280;
+                  "
+                >
+                  This link expires soon. If you did not expect this email, you can ignore it.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
 
   const brevoRes = await fetch(BREVO_URL, {
     method: 'POST',

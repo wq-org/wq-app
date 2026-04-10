@@ -1,8 +1,19 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -18,6 +29,7 @@ import { formatAuditOccurredAt } from '../utils/formatAuditOccurredAt'
 import { resolveActorEmail } from '../utils/resolveActorEmail'
 
 const EVENT_BADGE_VARIANTS = ['secondary', 'outline', 'violet', 'indigo', 'blue', 'cyan'] as const
+const PAGE_SIZE = 50
 
 function badgeVariantForEventType(eventType: string) {
   let h = 0
@@ -42,6 +54,31 @@ function formatUuidOrNull(value: string | null): string {
   return value
 }
 
+function buildPaginationItems(currentPage: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  const pages: Array<number | 'ellipsis'> = [1]
+  const left = Math.max(2, currentPage - 1)
+  const right = Math.min(totalPages - 1, currentPage + 1)
+
+  if (left > 2) {
+    pages.push('ellipsis')
+  }
+
+  for (let page = left; page <= right; page++) {
+    pages.push(page)
+  }
+
+  if (right < totalPages - 1) {
+    pages.push('ellipsis')
+  }
+
+  pages.push(totalPages)
+  return pages
+}
+
 const noop = () => {}
 
 type AdminAuditLogTableProps = {
@@ -51,6 +88,27 @@ type AdminAuditLogTableProps = {
 
 function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTableProps) {
   const { t, i18n } = useTranslation('features.admin')
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const totalPages = Math.max(1, Math.ceil(events.length / PAGE_SIZE))
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages))
+  }, [totalPages])
+
+  const visibleEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE
+    return events.slice(startIndex, startIndex + PAGE_SIZE)
+  }, [currentPage, events])
+
+  const paginationItems = useMemo(
+    () => buildPaginationItems(currentPage, totalPages),
+    [currentPage, totalPages],
+  )
+
+  const handlePageChange = (nextPage: number) => {
+    setCurrentPage(Math.min(Math.max(nextPage, 1), totalPages))
+  }
 
   if (events.length === 0) {
     return (
@@ -67,91 +125,163 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="min-w-[200px]">{t('auditLogs.table.occurredAt')}</TableHead>
-          <TableHead className="min-w-[180px]">{t('auditLogs.table.actor')}</TableHead>
-          <TableHead className="min-w-[160px]">{t('auditLogs.table.eventType')}</TableHead>
-          <TableHead className="min-w-[120px]">{t('auditLogs.table.subjectType')}</TableHead>
-          <TableHead className="min-w-[260px] font-mono text-xs">
-            {t('auditLogs.table.subjectId')}
-          </TableHead>
-          <TableHead className="min-w-[260px] font-mono text-xs">
-            {t('auditLogs.table.institutionId')}
-          </TableHead>
-          <TableHead className="min-w-[280px] max-w-[320px] whitespace-normal">
-            {t('auditLogs.table.payload')}
-          </TableHead>
-          <TableHead className="min-w-[280px] max-w-[320px] whitespace-normal">
-            {t('auditLogs.table.metadata')}
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {events.map((row) => {
-          const actor = resolveActorEmail(row.actor_user_id, actorEmailByUserId)
-          const payloadStr = jsonCell(row.payload)
-          const metadataStr = jsonCell(row.metadata)
-
-          return (
-            <TableRow key={row.id}>
-              <TableCell className="whitespace-normal align-top text-sm">
-                {formatAuditOccurredAt(row.occurred_at, i18n.language)}
-              </TableCell>
-              <TableCell className="whitespace-normal align-top text-sm">
-                {actor.kind === 'empty' ? (
-                  '—'
-                ) : actor.kind === 'email' ? (
-                  actor.email
-                ) : (
-                  <span className="font-mono text-xs text-muted-foreground">{actor.id}</span>
-                )}
-              </TableCell>
-              <TableCell className="align-top">
-                <Badge
-                  variant={badgeVariantForEventType(row.event_type)}
-                  className="max-w-[240px] whitespace-normal font-normal"
-                >
-                  {row.event_type}
-                </Badge>
-              </TableCell>
-              <TableCell className="whitespace-normal align-top text-sm">
-                {row.subject_type ?? '—'}
-              </TableCell>
-              <TableCell className="align-top font-mono text-xs text-muted-foreground">
-                {formatUuidOrNull(row.subject_id)}
-              </TableCell>
-              <TableCell className="align-top font-mono text-xs text-muted-foreground">
-                {formatUuidOrNull(row.institution_id)}
-              </TableCell>
-              <TableCell className="max-w-[320px] whitespace-normal align-top p-2">
-                <FieldTextarea
-                  label={t('auditLogs.table.payload')}
-                  value={payloadStr}
-                  onValueChange={noop}
-                  readOnly
-                  rows={4}
-                  hideSeparator
-                  className="[&_.relative]:my-0 [&_textarea]:min-h-[5rem] [&_textarea]:cursor-default [&_textarea]:text-xs"
-                />
-              </TableCell>
-              <TableCell className="max-w-[320px] whitespace-normal align-top p-2">
-                <FieldTextarea
-                  label={t('auditLogs.table.metadata')}
-                  value={metadataStr}
-                  onValueChange={noop}
-                  readOnly
-                  rows={4}
-                  hideSeparator
-                  className="[&_.relative]:my-0 [&_textarea]:min-h-[5rem] [&_textarea]:cursor-default [&_textarea]:text-xs"
-                />
-              </TableCell>
+    <div className="flex flex-col gap-4">
+      <ScrollArea
+        className="h-[min(72vh,42rem)] rounded-lg border"
+        scrollbars="both"
+      >
+        <Table>
+          <TableHeader className="sticky top-0 z-20 bg-background">
+            <TableRow>
+              <TableHead className="min-w-[200px] bg-background">
+                {t('auditLogs.table.occurredAt')}
+              </TableHead>
+              <TableHead className="min-w-[180px] bg-background">
+                {t('auditLogs.table.actor')}
+              </TableHead>
+              <TableHead className="min-w-[160px] bg-background">
+                {t('auditLogs.table.eventType')}
+              </TableHead>
+              <TableHead className="min-w-[120px] bg-background">
+                {t('auditLogs.table.subjectType')}
+              </TableHead>
+              <TableHead className="min-w-[260px] bg-background font-mono text-xs">
+                {t('auditLogs.table.subjectId')}
+              </TableHead>
+              <TableHead className="min-w-[260px] bg-background font-mono text-xs">
+                {t('auditLogs.table.institutionId')}
+              </TableHead>
+              <TableHead className="min-w-[280px] max-w-[320px] bg-background whitespace-normal">
+                {t('auditLogs.table.payload')}
+              </TableHead>
+              <TableHead className="min-w-[280px] max-w-[320px] bg-background whitespace-normal">
+                {t('auditLogs.table.metadata')}
+              </TableHead>
             </TableRow>
-          )
-        })}
-      </TableBody>
-    </Table>
+          </TableHeader>
+          <TableBody>
+            {visibleEvents.map((row) => {
+              const actor = resolveActorEmail(row.actor_user_id, actorEmailByUserId)
+              const payloadStr = jsonCell(row.payload)
+              const metadataStr = jsonCell(row.metadata)
+
+              return (
+                <TableRow key={row.id}>
+                  <TableCell className="whitespace-normal align-top text-sm">
+                    {formatAuditOccurredAt(row.occurred_at, i18n.language)}
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top text-sm">
+                    {actor.kind === 'empty' ? (
+                      '—'
+                    ) : actor.kind === 'email' ? (
+                      actor.email
+                    ) : (
+                      <span className="font-mono text-xs text-muted-foreground">{actor.id}</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="align-top">
+                    <Badge
+                      variant={badgeVariantForEventType(row.event_type)}
+                      className="max-w-[240px] whitespace-normal font-normal"
+                    >
+                      {row.event_type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top text-sm">
+                    {row.subject_type ?? '—'}
+                  </TableCell>
+                  <TableCell className="align-top font-mono text-xs text-muted-foreground">
+                    {formatUuidOrNull(row.subject_id)}
+                  </TableCell>
+                  <TableCell className="align-top font-mono text-xs text-muted-foreground">
+                    {formatUuidOrNull(row.institution_id)}
+                  </TableCell>
+                  <TableCell className="max-w-[320px] whitespace-normal align-top p-2">
+                    <FieldTextarea
+                      label={t('auditLogs.table.payload')}
+                      value={payloadStr}
+                      onValueChange={noop}
+                      readOnly
+                      rows={4}
+                      hideSeparator
+                      className="[&_.relative]:my-0 [&_textarea]:min-h-[5rem] [&_textarea]:cursor-default [&_textarea]:text-xs"
+                    />
+                  </TableCell>
+                  <TableCell className="max-w-[320px] whitespace-normal align-top p-2">
+                    <FieldTextarea
+                      label={t('auditLogs.table.metadata')}
+                      value={metadataStr}
+                      onValueChange={noop}
+                      readOnly
+                      rows={4}
+                      hideSeparator
+                      className="[&_.relative]:my-0 [&_textarea]:min-h-[5rem] [&_textarea]:cursor-default [&_textarea]:text-xs"
+                    />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+
+      {events.length > PAGE_SIZE ? (
+        <div className="flex flex-col gap-2">
+          <div className="text-muted-foreground text-sm">
+            Showing {(currentPage - 1) * PAGE_SIZE + 1}-
+            {Math.min(currentPage * PAGE_SIZE, events.length)} of {events.length}
+          </div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    handlePageChange(currentPage - 1)
+                  }}
+                  aria-disabled={currentPage === 1}
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : undefined}
+                />
+              </PaginationItem>
+              {paginationItems.map((item, index) =>
+                item === 'ellipsis' ? (
+                  <PaginationItem key={`ellipsis-${index}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={item}>
+                    <PaginationLink
+                      href="#"
+                      isActive={item === currentPage}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        handlePageChange(item)
+                      }}
+                    >
+                      {item}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    handlePageChange(currentPage + 1)
+                  }}
+                  aria-disabled={currentPage === totalPages}
+                  className={
+                    currentPage === totalPages ? 'pointer-events-none opacity-50' : undefined
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      ) : null}
+    </div>
   )
 }
 

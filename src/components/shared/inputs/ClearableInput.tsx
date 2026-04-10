@@ -19,6 +19,7 @@ interface ClearableInputProps {
   autoComplete?: string
   required?: boolean
   disabled?: boolean
+  maxLength?: number
   className?: string
   inputClassName?: string
   clearButtonLabel?: string
@@ -39,6 +40,7 @@ export const ClearableInput = ({
   autoComplete,
   required = false,
   disabled = false,
+  maxLength,
   className,
   inputClassName,
   clearButtonLabel = 'Clear input',
@@ -99,6 +101,7 @@ export const ClearableInput = ({
         autoComplete={autoComplete}
         required={required}
         disabled={disabled}
+        maxLength={maxLength}
       />
       {!hideSeparator ? <Separator /> : null}
 

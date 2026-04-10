@@ -1,12 +1,10 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { upsertProfile, updateProfile, USER_ROLES } from '@/features/auth'
+import { upsertProfile, updateProfile } from '@/features/auth'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { SuccessPage } from './SuccessPage'
-import { linkUserInstitutions } from '../api/onboardingApi'
 import type { StepFinishProps } from '../types/onboarding.types'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
 
-export function StepFinish({ onBack, onFinish, accountData, institutions }: StepFinishProps) {
+export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
   const { session, pendingRole, profile, setPendingRole, refreshProfile } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -31,7 +29,9 @@ export function StepFinish({ onBack, onFinish, accountData, institutions }: Step
 
     setIsSubmitting(true)
 
-    const onboardingRole = profile?.role || pendingRole
+    const trimmedPending = pendingRole?.trim() ?? ''
+    const trimmedProfileRole = profile?.role?.trim() ?? ''
+    const onboardingRole = trimmedPending || trimmedProfileRole
 
     if (!onboardingRole) {
       setIsSubmitting(false)
@@ -43,23 +43,8 @@ export function StepFinish({ onBack, onFinish, accountData, institutions }: Step
     // Keep role in context/sessionStorage for the final navigation step.
     setPendingRole(onboardingRole)
 
-    const requiresInstitution =
-      onboardingRole === USER_ROLES.STUDENT ||
-      onboardingRole === USER_ROLES.TEACHER ||
-      onboardingRole === USER_ROLES.INSTITUTION_ADMIN
-
-    if (requiresInstitution && institutions.length === 0) {
-      setIsSubmitting(false)
-      toast.error(
-        t('finish.errors.missingInstitution', {
-          defaultValue: 'Please select at least one institution before finishing onboarding.',
-        }),
-      )
-      return
-    }
-
     try {
-      // First persist profile data but keep onboarding incomplete until institution linking succeeds.
+      // Persist profile data and mark onboarding as complete.
       await upsertProfile(session.user.id, {
         email: session.user.email,
         username: accountData.username,
@@ -69,12 +54,6 @@ export function StepFinish({ onBack, onFinish, accountData, institutions }: Step
         role: onboardingRole,
         is_onboarded: false,
       })
-
-      // Link selected institutions to user (required for teacher/student follow rules).
-      if (requiresInstitution && institutions.length > 0) {
-        const institutionIds = institutions.map((inst) => inst.id)
-        await linkUserInstitutions(session.user.id, institutionIds)
-      }
 
       await updateProfile(session.user.id, { is_onboarded: true })
 
@@ -172,30 +151,6 @@ export function StepFinish({ onBack, onFinish, accountData, institutions }: Step
               >
                 {accountData.description}
               </Text>
-            </div>
-
-            <Separator />
-
-            {/* Institutions */}
-            <div>
-              <Text
-                as="h3"
-                variant="h3"
-                className="font-semibold mb-3"
-              >
-                Following Institutions ({institutions.length})
-              </Text>
-              <div className="flex flex-wrap gap-2">
-                {institutions.map((institution) => (
-                  <Badge
-                    key={institution.id}
-                    variant="secondary"
-                    className="text-sm px-3 py-1"
-                  >
-                    {institution.name}
-                  </Badge>
-                ))}
-              </div>
             </div>
 
             <Separator />

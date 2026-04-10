@@ -12,6 +12,9 @@
     "lint:sql": "python3 scripts/check_sql_naming.py",
     "format:sql": "python3 -m sqlfluff fix supabase/migrations --dialect postgres",
     "format": "prettier . --write",
+    "db:update": "supabase migration up",
+    "db:deploy": "supabase db push",
+    "db:migrate": "supabase migration up",
     "prepare": "husky",
     "type-check": "tsc --noEmit"
   },

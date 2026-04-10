@@ -1,5 +1,6 @@
+import countryOptionsData from './countries.json'
+
 export type CountryOption = {
-  /** ISO 3166-1 alpha-2 code, used as DB value */
   code: string
   en: string
   de: string
@@ -9,45 +10,54 @@ export type CountryOption = {
  * EU member states + UK + Switzerland.
  * Sorted alphabetically by English name.
  */
-export const COUNTRY_OPTIONS: readonly CountryOption[] = [
-  { code: 'AT', en: 'Austria', de: 'Österreich' },
-  { code: 'BE', en: 'Belgium', de: 'Belgien' },
-  { code: 'BG', en: 'Bulgaria', de: 'Bulgarien' },
-  { code: 'HR', en: 'Croatia', de: 'Kroatien' },
-  { code: 'CY', en: 'Cyprus', de: 'Zypern' },
-  { code: 'CZ', en: 'Czech Republic', de: 'Tschechien' },
-  { code: 'DK', en: 'Denmark', de: 'Dänemark' },
-  { code: 'EE', en: 'Estonia', de: 'Estland' },
-  { code: 'FI', en: 'Finland', de: 'Finnland' },
-  { code: 'FR', en: 'France', de: 'Frankreich' },
-  { code: 'DE', en: 'Germany', de: 'Deutschland' },
-  { code: 'GR', en: 'Greece', de: 'Griechenland' },
-  { code: 'HU', en: 'Hungary', de: 'Ungarn' },
-  { code: 'IE', en: 'Ireland', de: 'Irland' },
-  { code: 'IT', en: 'Italy', de: 'Italien' },
-  { code: 'LV', en: 'Latvia', de: 'Lettland' },
-  { code: 'LT', en: 'Lithuania', de: 'Litauen' },
-  { code: 'LU', en: 'Luxembourg', de: 'Luxemburg' },
-  { code: 'MT', en: 'Malta', de: 'Malta' },
-  { code: 'NL', en: 'Netherlands', de: 'Niederlande' },
-  { code: 'PL', en: 'Poland', de: 'Polen' },
-  { code: 'PT', en: 'Portugal', de: 'Portugal' },
-  { code: 'RO', en: 'Romania', de: 'Rumänien' },
-  { code: 'SK', en: 'Slovakia', de: 'Slowakei' },
-  { code: 'SI', en: 'Slovenia', de: 'Slowenien' },
-  { code: 'ES', en: 'Spain', de: 'Spanien' },
-  { code: 'SE', en: 'Sweden', de: 'Schweden' },
-  { code: 'CH', en: 'Switzerland', de: 'Schweiz' },
-  { code: 'GB', en: 'United Kingdom', de: 'Vereinigtes Königreich' },
-] as const
+export const COUNTRY_OPTIONS: readonly CountryOption[] =
+  countryOptionsData as readonly CountryOption[]
 
 /** Returns the localized label for a country option. */
 export function getCountryLabel(country: CountryOption, lang: string): string {
   return lang.startsWith('de') ? country.de : country.en
 }
 
+/** Returns a search string that matches both English and German names and the code. */
+export function getCountrySearchLabel(country: CountryOption): string {
+  return `${country.en} ${country.de} ${country.code}`
+}
+
+/**
+ * Typeahead match for country combobox rows: item values are localized labels, but the query
+ * is matched against English, German, and ISO code (e.g. "germ", "deut", "DE").
+ */
+export function countryItemMatchesSearchQuery(itemDisplayValue: string, query: string): boolean {
+  const trimmed = query.trim()
+  if (!trimmed) return true
+  const country = findCountryByValue(itemDisplayValue)
+  const haystack = (
+    country ? getCountrySearchLabel(country) : itemDisplayValue.trim()
+  ).toLowerCase()
+  return haystack.includes(trimmed.toLowerCase())
+}
+
 /** Finds a country option by code (case-insensitive). */
 export function findCountryByCode(code: string): CountryOption | undefined {
   const upper = code.toUpperCase()
   return COUNTRY_OPTIONS.find((c) => c.code === upper)
+}
+
+/** Finds a country option by code or localized label. */
+export function findCountryByValue(value: string): CountryOption | undefined {
+  const normalized = value.trim().toLowerCase()
+  if (!normalized) return undefined
+
+  return COUNTRY_OPTIONS.find(
+    (country) =>
+      country.code.toLowerCase() === normalized ||
+      country.en.toLowerCase() === normalized ||
+      country.de.toLowerCase() === normalized,
+  )
+}
+
+/** Returns the locale-specific display value for a stored country string. */
+export function getCountryDisplayValue(value: string, lang: string): string {
+  const country = findCountryByValue(value)
+  return country ? getCountryLabel(country, lang) : value.trim()
 }

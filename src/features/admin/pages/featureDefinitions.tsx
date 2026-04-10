@@ -80,8 +80,19 @@ const AdminFeatureDefinitions = () => {
         </div>
 
         {!isLoading && items.length > 0 ? (
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="w-full min-w-0 flex-1 md:max-w-md">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="darkblue"
+                className="w-fit shrink-0 self-start"
+                onClick={handleAdd}
+              >
+                <Plus className="size-4" />
+                {t('featureDefinitions.addButton')}
+              </Button>
+            </div>
+            <div className="w-full min-w-0 md:max-w-md">
               <FieldInput
                 label={t('featureDefinitions.filterLabel')}
                 placeholder={t('featureDefinitions.filterPlaceholder')}
@@ -90,15 +101,6 @@ const AdminFeatureDefinitions = () => {
                 autoComplete="off"
               />
             </div>
-            <Button
-              type="button"
-              variant="darkblue"
-              className="shrink-0"
-              onClick={handleAdd}
-            >
-              <Plus className="size-4" />
-              {t('featureDefinitions.addButton')}
-            </Button>
           </div>
         ) : null}
 

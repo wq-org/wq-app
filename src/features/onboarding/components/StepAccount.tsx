@@ -88,6 +88,7 @@ export function StepAccount({ onNext, initialData }: StepAccountProps) {
           maxLength={120}
           showCounter
           rows={3}
+          hideSeparator={false}
         />
       </div>
 

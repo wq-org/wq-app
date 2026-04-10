@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Mail } from 'lucide-react'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Text } from '@/components/ui/text'
+
 import {
   Select,
   SelectContent,
@@ -13,6 +11,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { InstitutionType, NewInstitutionWizardValues } from '../types/institution.types'
+import { slugifyInstitutionName } from '../utils/institutionSlug'
+import { Text } from '@/components/ui/text'
 
 const INSTITUTION_TYPES: InstitutionType[] = [
   'school',
@@ -46,7 +46,7 @@ function NewInstitutionWizardIdentityStep({
           onValueChange={(name) => {
             onChange({
               name,
-              ...(isSlugTouched ? {} : { slug: slugify(name) }),
+              ...(isSlugTouched ? {} : { slug: slugifyInstitutionName(name) }),
             })
           }}
           placeholder={t('form.fields.namePlaceholder')}
@@ -99,42 +99,15 @@ function NewInstitutionWizardIdentityStep({
           onValueChange={(adminEmail) => onChange({ adminEmail })}
           placeholder={t('wizard.identity.adminEmailPlaceholder')}
         />
-        <p className="text-xs text-muted-foreground">{t('wizard.identity.adminEmailHint')}</p>
+        <Text
+          className="text-muted-foreground"
+          size="xxs"
+        >
+          {t('wizard.identity.adminEmailHint')}
+        </Text>
       </div>
-
-      <Alert>
-        <Mail className="size-4" />
-        <AlertTitle>
-          <Text
-            as="span"
-            variant="small"
-            className="font-medium"
-          >
-            {t('wizard.identity.inviteAlertTitle')}
-          </Text>
-        </AlertTitle>
-        <AlertDescription>
-          <Text
-            as="span"
-            variant="small"
-            color="muted"
-          >
-            {t('wizard.identity.inviteAlertDescription')}
-          </Text>
-        </AlertDescription>
-      </Alert>
     </div>
   )
-}
-
-function slugify(input: string) {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
 }
 
 export { NewInstitutionWizardIdentityStep }

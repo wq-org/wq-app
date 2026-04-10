@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldSeparator } from '@/components/ui/field'
-import { GraduationCap, Presentation, Building2, Check } from 'lucide-react'
+import { GraduationCap, Presentation, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '@/features/auth'
@@ -22,7 +22,6 @@ import { Label } from '@/components/ui/label'
 const roleTabs: TabItem[] = [
   { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
   { id: USER_ROLES.TEACHER, icon: Presentation, title: 'Teacher' },
-  { id: USER_ROLES.INSTITUTION_ADMIN, icon: Building2, title: 'Institution' },
 ]
 
 export const SignUpPage = () => {

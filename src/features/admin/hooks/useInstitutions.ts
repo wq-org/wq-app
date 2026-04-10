@@ -3,6 +3,7 @@ import {
   bootstrapInstitutionFromWizard,
   createInstitution,
   fetchInstitutions,
+  resendInstitutionAdminInviteEmail,
   updateInstitution,
 } from '../api/institutionApi'
 import type {
@@ -48,6 +49,10 @@ export function useInstitutions() {
     return updated
   }
 
+  const resendInviteEmail = async (institutionId: string): Promise<void> => {
+    await resendInstitutionAdminInviteEmail(institutionId)
+  }
+
   return {
     institutions,
     isLoading,
@@ -55,5 +60,6 @@ export function useInstitutions() {
     addInstitution,
     addInstitutionFromWizard,
     editInstitution,
+    resendInviteEmail,
   }
 }

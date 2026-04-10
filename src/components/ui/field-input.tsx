@@ -14,6 +14,7 @@ type FieldInputProps = {
   autoComplete?: string
   required?: boolean
   disabled?: boolean
+  maxLength?: number
   hideSeparator?: boolean
   inputClassName?: string
   className?: string
@@ -30,6 +31,7 @@ export const FieldInput = ({
   autoComplete,
   required = false,
   disabled = false,
+  maxLength,
   hideSeparator = false,
   inputClassName,
   className,
@@ -51,6 +53,7 @@ export const FieldInput = ({
         required={required}
         hideSeparator={hideSeparator}
         disabled={disabled}
+        maxLength={maxLength}
         inputClassName={inputClassName}
       />
     </div>
