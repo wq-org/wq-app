@@ -472,3 +472,139 @@ storage.objects (cloud bucket)
 | Game versions + `games.current_published_version_id`                 | `20260326000003_game_versions_*`                                                                             |
 | Cloud assets (folders, files, links, shares)                         | `20260329000016_cloud_assets_*` … `022`                                                                      |
 | Storage `storage.objects` RLS for cloud                              | `20260329000023_storage_cloud_objects_rls_01_policies.sql`                                                   |
+
+# Institution admin onboarding (DB / migrations)
+
+Flow derived from `supabase/migrations/` — mainly `20260321000002_institution_admin_*` (`create_institution_with_initial_admin`, `invite_institution_admin_membership`, `activate_institution_invite`, alias `activate_institution_admin_invite`).
+
+**Who can invite admins:** only **`super_admin`** (not a tenant `institution_admin`). **Email delivery and GoTrue user creation** are application responsibilities.
+
+**No email-token table for admins:** `institution_invites` is constrained to **teacher / student** only (`institution_invites_role_chk`). Institution admins are always onboarded with a **known `user_id`** + `profiles` row, then optional GoTrue invite + `activate_institution_invite`.
+
+```mermaid
+flowchart TB
+  subgraph Preconditions
+    P1[Caller authenticated]
+    P2[Caller is super_admin]
+    P3[Target user has profiles row]
+  end
+
+  subgraph PathA["Path A — New institution + first institution_admin"]
+    A1[Super admin: create_institution_with_initial_admin<br/>p_name, p_initial_admin_user_id optional, p_initial_admin_status]
+    A2{initial_admin_status}
+    A3a[active: membership active;<br/>user_institutions row inserted]
+    A3b[invited: membership invited;<br/>no user_institutions until active]
+    A4[Also: institution_settings, institution_quotas_usage,<br/>optional trial subscription if plan code trial exists]
+  end
+
+  subgraph PathB["Path B — Existing institution + invite or upgrade admin"]
+    B1[Super admin: invite_institution_admin_membership<br/>institution_id, user_id]
+    B2{Existing membership row for user + institution?}
+    B3[Insert institution_memberships<br/>role institution_admin, status invited]
+    B4[Update existing row:<br/>role → institution_admin, status → invited<br/>unless already active — then error]
+  end
+
+  subgraph AppGoTrue["App / GoTrue not in SQL"]
+    G1[Service role: inviteUserByEmail or equivalent<br/>so user can set password]
+  end
+
+  subgraph Activation["Activation same RPC as teachers/students"]
+    X1[User signed in: activate_institution_invite institution_id]
+    X2[Or legacy alias: activate_institution_admin_invite institution_id]
+    X3[invited → active;<br/>user_institutions upserted]
+  end
+
+  P1 --> A1
+  P2 --> A1
+  P1 --> B1
+  P2 --> B1
+  P3 --> B1
+
+  A1 --> A2
+  A2 -->|active| A3a
+  A2 -->|invited| A3b
+  A1 --> A4
+
+  B1 --> B2
+  B2 -->|none| B3
+  B2 -->|exists| B4
+
+  A3b --> G1
+  B3 --> G1
+  B4 --> G1
+  G1 --> X1 --> X3
+  X1 -.-> X2
+  A3a --> END1[Admin already has tenant access via member_institution_ids]
+  X3 --> END2[Admin has tenant access]
+```
+
+# Teacher and student onboarding (DB / migrations)
+
+Flow derived from `supabase/migrations/` — mainly `20260321000002_institution_admin_*` (RPCs `invite_institution_member`, `create_institution_invite_by_email`, `redeem_institution_invite`, `activate_institution_invite`, tables `institution_memberships`, `institution_invites`). **Email delivery and GoTrue user creation are application responsibilities**; the diagram shows where the SQL layer fits.
+
+```mermaid
+flowchart TB
+  subgraph Preconditions
+    A1[Caller is authenticated]
+    A2["Caller is institution_admin for institution<br/>OR super_admin"]
+    A3[Institution exists and not soft-deleted]
+  end
+
+  subgraph Path1["Path 1 — User already has Auth + profiles row"]
+    B1[Admin: invite_institution_member<br/>institution_id, user_id, teacher|student]
+    B2{Profile exists for user_id?}
+    B3[Insert or update institution_memberships<br/>status = invited, role = teacher|student]
+    B4[App / GoTrue: send invite or magic link<br/>not in SQL]
+    B5[User completes Auth invite / sets password]
+    B6[User or app: activate_institution_invite institution_id]
+    B7[Membership → active;<br/>user_institutions upserted]
+  end
+
+  subgraph Path2["Path 2 — Email first no user yet"]
+    C1[Admin: create_institution_invite_by_email<br/>institution_id, email, teacher|student]
+    C2[Row in institution_invites + token returned]
+    C3[App sends link with token<br/>not in SQL]
+    C4[User signs up / signs in with Auth]
+    C5[User: redeem_institution_invite token]
+    C6{Profile email matches invite email?}
+    C7[Create or activate institution_memberships active;<br/>mark invite accepted;<br/>user_institutions upserted]
+    C8[Error: invalid / expired / email mismatch]
+  end
+
+  subgraph AfterTenantAccess["After tenant access — not automatic in institution_admin migration"]
+    D1[Optional: classroom_members assignment]
+    D2[Optional: classroom_course_links for course visibility]
+  end
+
+  A1 --> B1
+  A2 --> B1
+  A3 --> B1
+  B1 --> B2
+  B2 -->|no| BX[Raise: profile not found]
+  B2 -->|yes| B3 --> B4 --> B5 --> B6 --> B7
+
+  A1 --> C1
+  A2 --> C1
+  A3 --> C1
+  C1 --> C2 --> C3 --> C4 --> C5 --> C6
+  C6 -->|yes| C7
+  C6 -->|no| C8
+
+  B7 --> D1
+  C7 --> D1
+  D1 --> D2
+```
+
+## SQL mapping
+
+| Step                            | Role in migrations                                                                                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authorize admin                 | `invite_institution_member` / `create_institution_invite_by_email` require `app.is_institution_admin(p_institution_id)` or `app.is_super_admin()` |
+| Invited membership (user known) | `invite_institution_member` → `institution_memberships` with `status = invited`                                                                   |
+| Active membership               | `activate_institution_invite(institution_id)` → `active` + `user_institutions` insert on conflict                                                 |
+| Email-first pending row         | `create_institution_invite_by_email` → `institution_invites` + returned token                                                                     |
+| Redeem                          | `redeem_institution_invite(token)` validates email, expiry, acceptance; then membership + `user_institutions`                                     |
+
+## Classroom / course access
+
+Institution membership alone does not assign **classroom** or **published course** access; that uses later migrations (e.g. `classroom_members`, `classroom_course_links`, `app.student_can_access_*`).

@@ -16,8 +16,9 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Spinner } from '@/components/ui/spinner'
-import { Logo } from '@/components/ui/logo'
+import { Text } from '@/components/ui/text'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +27,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SidebarPrimaryNav } from '@/components/shared'
 import { useUser } from '@/contexts/user'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { useTheme } from '@/hooks/useTheme'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { getSuperAdminNavigation } from '../config/adminWorkspaceNavigation'
 
 type AdminWorkspaceShellProps = {
@@ -38,8 +41,9 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
   const location = useLocation()
   const { i18n, t } = useTranslation('features.admin')
   const { t: tLang } = useTranslation('shared.languageSwitcher')
-  const { loading, logout } = useUser()
+  const { loading, logout, profile } = useUser()
   const { mode, setMode } = useTheme()
+  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url)
 
   const navigation = getSuperAdminNavigation()
   const routePrefix = '/super_admin'
@@ -101,15 +105,40 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex w-full items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Account menu"
                 >
-                  <Logo
-                    showText={false}
-                    className="size-8"
-                  />
-                  <span className="truncate text-sm font-semibold">WQ GmbH</span>
-                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage
+                      src={signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE}
+                      alt=""
+                    />
+                    <AvatarFallback className="p-0">
+                      <img
+                        src={DEFAULT_INSTITUTION_IMAGE}
+                        alt=""
+                        className="size-full object-cover"
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1 text-left">
+                    <Text
+                      as="p"
+                      variant="small"
+                      className="truncate font-semibold text-xs"
+                    >
+                      {profile?.username?.trim() || '—'}
+                    </Text>
+                    <Text
+                      as="p"
+                      variant="small"
+                      color="muted"
+                      className="truncate text-xs"
+                    >
+                      {profile?.email?.trim() || '—'}
+                    </Text>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4 shrink-0 text-muted-foreground" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

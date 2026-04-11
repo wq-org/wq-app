@@ -16,7 +16,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Logo } from '@/components/ui/logo'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import {
@@ -29,6 +28,7 @@ import { SidebarPrimaryNav } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { useTheme } from '@/hooks/useTheme'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
+import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { getInstitutionAdminNavItems } from '../config/institutionAdminNavigation'
 
 const ROUTE_PREFIX = '/institution_admin'
@@ -104,11 +104,15 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                   aria-label="Account menu"
                 >
                   <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage src={signedAvatarUrl || undefined} />
-                    <AvatarFallback>
-                      <Logo
-                        showText={false}
-                        className="size-8 items-center justify-center"
+                    <AvatarImage
+                      src={signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE}
+                      alt=""
+                    />
+                    <AvatarFallback className="p-0">
+                      <img
+                        src={DEFAULT_INSTITUTION_IMAGE}
+                        alt=""
+                        className="size-full object-cover"
                       />
                     </AvatarFallback>
                   </Avatar>
@@ -118,7 +122,7 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                       variant="small"
                       className="truncate font-semibold text-xs"
                     >
-                      {profile?.display_name || profile?.username || 'User'}
+                      {profile?.username?.trim() || '—'}
                     </Text>
                     <Text
                       as="p"
@@ -126,7 +130,7 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                       color="muted"
                       className="truncate text-xs"
                     >
-                      {profile?.email}
+                      {profile?.email?.trim() || '—'}
                     </Text>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 text-muted-foreground shrink-0" />
