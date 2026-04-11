@@ -232,7 +232,7 @@ const AdminUsers = () => {
                             )}
                           </Button>
                           <Button
-                            variant="destructive"
+                            variant="delete"
                             size="sm"
                             onClick={() => openDeleteDialog(user)}
                             disabled={!user.username}
