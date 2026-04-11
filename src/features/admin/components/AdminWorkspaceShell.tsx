@@ -127,7 +127,7 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
                       variant="small"
                       className="truncate font-semibold text-xs"
                     >
-                      {profile?.username?.trim() || '—'}
+                      {profile?.display_name?.trim() || profile?.username?.trim() || '—'}
                     </Text>
                     <Text
                       as="p"
