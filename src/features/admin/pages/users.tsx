@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { UserCheck, UserX, Users } from 'lucide-react'
+import { Trash, UserLock, UserRoundCheck, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { useUser } from '@/contexts/user'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
@@ -34,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { useAdminUsers } from '../hooks/useAdminUsers'
@@ -60,6 +62,7 @@ const AdminUsers = () => {
   const [accessDialogOpen, setAccessDialogOpen] = useState(false)
   const [accessUser, setAccessUser] = useState<AdminUserRow | null>(null)
   const [accessLoading, setAccessLoading] = useState(false)
+  const [userActionsPopoverId, setUserActionsPopoverId] = useState<string | null>(null)
 
   const canDeleteUsers = getRole() === 'super_admin'
   const canToggleAccess = (user: AdminUserRow) =>
@@ -205,41 +208,89 @@ const AdminUsers = () => {
                     <TableCell>{user.role || '—'}</TableCell>
                     <TableCell>
                       {user.is_active ? (
-                        <span className="text-green-700">{t('users.access.active')}</span>
+                        <Badge variant="outline">{t('users.access.active')}</Badge>
                       ) : (
-                        <span className="text-red-600">{t('users.access.deactivated')}</span>
+                        <Badge variant="orange">{t('users.access.deactivated')}</Badge>
                       )}
                     </TableCell>
                     {canDeleteUsers && (
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openAccessDialog(user)}
-                            disabled={!canToggleAccess(user)}
+                        <Popover
+                          open={userActionsPopoverId === user.user_id}
+                          onOpenChange={(open) =>
+                            setUserActionsPopoverId(open ? user.user_id : null)
+                          }
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="darkblue"
+                              size="sm"
+                            >
+                              {t('users.actions.edit')}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            align="end"
+                            className="w-52 p-2"
                           >
-                            {user.is_active ? (
-                              <>
-                                <UserX className="mr-1 h-4 w-4" />
-                                {t('users.actions.deactivate')}
-                              </>
-                            ) : (
-                              <>
-                                <UserCheck className="mr-1 h-4 w-4" />
-                                {t('users.actions.activate')}
-                              </>
-                            )}
-                          </Button>
-                          <Button
-                            variant="delete"
-                            size="sm"
-                            onClick={() => openDeleteDialog(user)}
-                            disabled={!user.username}
-                          >
-                            {t('users.actions.delete')}
-                          </Button>
-                        </div>
+                            <div className="flex flex-col gap-1">
+                              {canToggleAccess(user) && user.is_active && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start font-normal"
+                                  onClick={() => {
+                                    setUserActionsPopoverId(null)
+                                    openAccessDialog(user)
+                                  }}
+                                >
+                                  <UserLock
+                                    className="size-4 shrink-0"
+                                    aria-hidden
+                                  />
+                                  {t('users.actions.deactivate')}
+                                </Button>
+                              )}
+                              {canToggleAccess(user) && !user.is_active && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start font-normal"
+                                  onClick={() => {
+                                    setUserActionsPopoverId(null)
+                                    openAccessDialog(user)
+                                  }}
+                                >
+                                  <UserRoundCheck
+                                    className="size-4 shrink-0"
+                                    aria-hidden
+                                  />
+                                  {t('users.actions.activate')}
+                                </Button>
+                              )}
+                              <Button
+                                type="button"
+                                variant="delete"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                disabled={!user.username}
+                                onClick={() => {
+                                  setUserActionsPopoverId(null)
+                                  openDeleteDialog(user)
+                                }}
+                              >
+                                <Trash
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {t('users.actions.delete')}
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                     )}
                   </TableRow>
@@ -332,7 +383,7 @@ const AdminUsers = () => {
               {t('users.accessDialog.cancelButton')}
             </Button>
             <Button
-              variant={accessUser?.is_active ? 'destructive' : 'default'}
+              variant={accessUser?.is_active ? 'delete' : 'darkblue'}
               onClick={handleToggleAccess}
               disabled={accessLoading || !accessUser}
             >

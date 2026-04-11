@@ -152,6 +152,7 @@
       "deactivated": "Deactivated"
     },
     "actions": {
+      "edit": "Edit",
       "deactivate": "Deactivate",
       "activate": "Activate",
       "delete": "Delete"
