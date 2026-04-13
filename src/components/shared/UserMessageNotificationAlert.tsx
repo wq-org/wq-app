@@ -10,7 +10,7 @@ export function Pattern() {
       <Frame>
         <FramePanel className="overflow-hidden p-0!">
           <Alert
-            variant="invert"
+            //            variant="invert"
             className="grid-cols-[32px_1fr] gap-x-3 border-0 shadow-none"
           >
             <Avatar className="border-border/10 size-8 border">

@@ -1,30 +1,30 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-export type Stats13Segment = {
+export type StatsSegmentedProgressSegment = {
   label: string
   value: number
   color: string
 }
 
-export type Stats13Props = {
+export type StatsSegmentedProgressProps = {
   title?: string
   used?: number
   total?: number
   usedLabel?: string
   totalLabel?: string
-  segments?: Stats13Segment[]
+  segments?: StatsSegmentedProgressSegment[]
   className?: string
 }
 
-const defaultSegments: Stats13Segment[] = [
+const defaultSegments: StatsSegmentedProgressSegment[] = [
   { label: 'Documents', value: 2400, color: 'bg-blue-500' },
   { label: 'Photos', value: 1800, color: 'bg-emerald-500' },
   { label: 'Videos', value: 3200, color: 'bg-amber-500' },
   { label: 'Music', value: 900, color: 'bg-purple-500' },
 ]
 
-export default function Stats13({
+export default function StatsSegmentedProgress({
   title = 'Using Storage',
   used = 8300,
   total = 15,
@@ -32,7 +32,7 @@ export default function Stats13({
   totalLabel = 'GB',
   segments = defaultSegments,
   className,
-}: Stats13Props) {
+}: StatsSegmentedProgressProps) {
   const totalValue = total * 1000
   const freeValue = totalValue - used
 

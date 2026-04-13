@@ -133,7 +133,7 @@ function DonutChart({ percentage }: { percentage: number }) {
   )
 }
 
-export default function Stats12() {
+export default function StatsUsageDashboard() {
   return (
     <Card className="w-full max-w-md gap-3 py-5 shadow-2xs">
       <CardHeader className="px-5">

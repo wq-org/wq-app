@@ -37,6 +37,20 @@
       "storage": {
         "label": "Storage"
       }
+    },
+    "usage": {
+      "title": "Usage & quotas",
+      "subtitle": "Cloud storage and transfer relative to your plan limits (sample data).",
+      "storage": {
+        "title": "Cloud storage",
+        "status": "Within plan limits.",
+        "action": "Open cloud storage"
+      },
+      "bandwidth": {
+        "title": "Data transfer",
+        "warning": "Approaching the monthly transfer allowance.",
+        "action": "View usage details"
+      }
     }
   },
   "users": {

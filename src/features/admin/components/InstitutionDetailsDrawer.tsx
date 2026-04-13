@@ -108,7 +108,7 @@ export function InstitutionDetailsDrawer({
       onOpenChange={onOpenChange}
       direction="right"
     >
-      <DrawerContent className="w-[50vw]! !max-w-none min-w-[50vw] sm:!max-w-none flex h-full flex-col">
+      <DrawerContent className="w-[50vw]! max-w-none! min-w-[50vw] sm:max-w-none! flex h-full flex-col">
         <DrawerHeader>
           <DrawerTitle>{t('institutions.editDrawer.title')}</DrawerTitle>
           <DrawerDescription>{t('institutions.editDrawer.description')}</DrawerDescription>
@@ -464,7 +464,7 @@ export function InstitutionDetailsDrawer({
           </ScrollArea>
         </div>
 
-        <DrawerFooter className="sticky bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <DrawerFooter className="sticky bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
           <Button
             type="button"
             variant="outline"

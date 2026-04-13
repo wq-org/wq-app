@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next'
-import { Stats05, type Stats05Item } from '@/components/shared'
+
+import { StatsLinks, type StatsLinksItem } from '@/components/shared'
+
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 
 const InstitutionDashboard = () => {
   const { t } = useTranslation('features.institution-admin')
 
   // Mock data — replace with actual data from API
-  const stats: readonly Stats05Item[] = [
+  const stats: readonly StatsLinksItem[] = [
     {
       name: t('dashboard.stats.students.label'),
       value: '245',
@@ -48,8 +50,7 @@ const InstitutionDashboard = () => {
           <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
           <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
-
-        <Stats05 items={stats} />
+        <StatsLinks items={stats} />
       </div>
     </InstitutionAdminWorkspaceShell>
   )

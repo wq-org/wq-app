@@ -82,7 +82,7 @@ export { SidebarPrimaryNav, SidebarAccountMenu } from './sidebar'
 
 | Barrel                       | Include                                                                               | Exclude                                                                |
 | ---------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `features/<name>/index.ts`   | Shared components, cross-cutting types, API functions, route pages the router imports | Private subcomponents, one-off helpers, hooks used in a single screen  |
+| `features/<name>/index.ts`   | Shared components, cross-cutting types, API functions, route pages the router imports | Private sub components, one-off helpers, hooks used in a single screen |
 | `components/shared/index.ts` | Composable UI used by multiple features                                               | Feature-specific logic, feature API modules, feature-only hooks, pages |
 
 ### When you move a file

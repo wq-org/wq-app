@@ -37,6 +37,20 @@
       "storage": {
         "label": "Speicher"
       }
+    },
+    "usage": {
+      "title": "Nutzung & Kontingente",
+      "subtitle": "Cloud-Speicher und Datentransfer im Verhältnis zu Ihren Tarifgrenzen (Beispieldaten).",
+      "storage": {
+        "title": "Cloud-Speicher",
+        "status": "Innerhalb der Tarifgrenzen.",
+        "action": "Cloud-Speicher öffnen"
+      },
+      "bandwidth": {
+        "title": "Datentransfer",
+        "warning": "Sie nähern sich dem monatlichen Transfer-Kontingent.",
+        "action": "Nutzungsdetails anzeigen"
+      }
     }
   },
   "users": {

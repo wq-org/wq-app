@@ -3,30 +3,30 @@ import { Link } from 'react-router-dom'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-export type Stats05ChangeType = 'positive' | 'negative' | 'neutral'
+export type StatsLinksChangeType = 'positive' | 'negative' | 'neutral'
 
-export type Stats05Item = {
+export type StatsLinksItem = {
   name: string
   value: string
   /** Omit to hide the delta next to the label (e.g. open requests count). */
   change?: string
-  changeType?: Stats05ChangeType
+  changeType?: StatsLinksChangeType
   to: string
   viewMoreLabel?: string
 }
 
-export type Stats05Props = {
-  items: readonly Stats05Item[]
+export type StatsLinksProps = {
+  items: readonly StatsLinksItem[]
   className?: string
 }
 
-function changeClass(changeType: Stats05ChangeType) {
+function changeClass(changeType: StatsLinksChangeType) {
   if (changeType === 'positive') return 'text-emerald-700 dark:text-emerald-500'
   if (changeType === 'negative') return 'text-red-700 dark:text-red-500'
   return 'text-muted-foreground'
 }
 
-export function Stats05({ items, className }: Stats05Props) {
+export function StatsLinks({ items, className }: StatsLinksProps) {
   return (
     <div className={cn('flex w-full items-center justify-center p-10', className)}>
       <div

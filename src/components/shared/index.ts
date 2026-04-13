@@ -31,8 +31,28 @@ export { LanguageSwitcher } from './LanguageSwitcher'
 export { ImageCarousel, PdfPreview, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'
 export { SidebarAccountMenu, SidebarPrimaryNav, SidebarWorkspaceSwitcher } from './sidebar'
-export { Stats05 } from './Stats05'
-export type { Stats05ChangeType, Stats05Item, Stats05Props } from './Stats05'
+export { StatsLinks } from './StatsLinks'
+export type { StatsLinksChangeType, StatsLinksItem, StatsLinksProps } from './StatsLinks'
+export {
+  StatsDashboardProgressBars,
+  StatsDashboardProgressBarsMetricCard,
+} from './StatsDashboardProgressBars'
+export type {
+  StatsDashboardProgressBarsDetailItem,
+  StatsDashboardProgressBarsMetric,
+  StatsDashboardProgressBarsMetricCardProps,
+  StatsDashboardProgressBarsProps,
+} from './StatsDashboardProgressBars'
+export { default as StatsProgress } from './StatsProgress'
+export { default as StatsSegmentedProgress } from './StatsSegmentedProgress'
+export type {
+  StatsSegmentedProgressProps,
+  StatsSegmentedProgressSegment,
+} from './StatsSegmentedProgress'
+export { default as StatsTrending } from './StatsTrending'
+export { StatsUsageBreakdown } from './StatsUsageBreakdown'
+export { default as StatsUsageDashboard } from './StatsUsageDashboard'
+export { StatsValueBreakdown } from './StatsValueBreakdown'
 export { SelectTabs } from './tabs'
 export type { SelectTabsProps, TabItem } from './tabs'
 export { ThemeModeToggle } from './ThemeModeToggle'

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Stats05, type Stats05Item } from '@/components/shared'
+import { StatsLinks, type StatsLinksItem } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   const { institutions } = useInstitutions()
   const { users } = useAdminUsers()
 
-  const statsItems = useMemo((): Stats05Item[] => {
+  const statsItems = useMemo((): StatsLinksItem[] => {
     if (!role) return []
     const prefix = `/${role}`
     return [
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   return (
     <AdminWorkspaceShell>
       <div className="flex flex-col gap-6">
-        <Stats05
+        <StatsLinks
           items={statsItems}
           className="p-0 py-2"
         />

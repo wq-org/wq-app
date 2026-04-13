@@ -28,7 +28,7 @@ const data = [
   },
 ]
 
-export default function Stats01() {
+export default function StatsTrending() {
   return (
     <div className="flex items-center justify-center p-10">
       <div className="mx-auto grid grid-cols-1 gap-px rounded-xl bg-border sm:grid-cols-2 lg:grid-cols-4">
