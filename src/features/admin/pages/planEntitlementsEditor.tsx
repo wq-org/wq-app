@@ -2,20 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowLeft, FilePenLine, Settings } from 'lucide-react'
+import { ArrowLeft, ChevronDown, FilePenLine, Settings } from 'lucide-react'
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { FieldCard } from '@/components/ui/field-card'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
-import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
+import { CompactSettingsTableSwitches } from '@/components/shared/CompactSettingsTableSwitches'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import { useUser } from '@/contexts/user'
 
@@ -70,8 +66,6 @@ const AdminPlanEntitlementsEditor = () => {
   const [activeTabId, setActiveTabId] = useState<'editor' | 'settings'>('editor')
   const [settingsDraft, setSettingsDraft] = useState<PlanSettingsDraft | null>(null)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
-
-  const categoryValues = useMemo(() => groups.map((group) => group.category), [groups])
 
   const selectTabs = useMemo(
     () =>
@@ -215,27 +209,62 @@ const AdminPlanEntitlementsEditor = () => {
             />
 
             {activeTabId === 'editor' ? (
-              <FieldCard className="px-5 py-4">
-                <Accordion
-                  type="multiple"
-                  defaultValue={categoryValues}
-                  className="w-full"
-                >
-                  {groups.map((group) => (
-                    <AccordionItem
+              <div className="rounded-xl border border-border bg-card">
+                {groups.map((group, groupIndex) => {
+                  const boolFeatures = group.features.filter((f) => f.valueType === 'boolean')
+                  const otherFeatures = group.features.filter((f) => f.valueType !== 'boolean')
+
+                  const boolItems = boolFeatures.map((f) => ({
+                    id: f.featureId,
+                    label: f.name,
+                    description: [
+                      f.description,
+                      t('planCatalog.editor.booleanHint', {
+                        defaultValue: f.defaultEnabled
+                          ? t('featureDefinitions.card.defaultOn')
+                          : t('featureDefinitions.card.defaultOff'),
+                      }),
+                    ]
+                      .filter(Boolean)
+                      .join(' · '),
+                    checked: f.booleanValue ?? false,
+                  }))
+
+                  return (
+                    <Collapsible
                       key={group.category}
-                      value={group.category}
+                      defaultOpen
                     >
-                      <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                      {groupIndex > 0 && <Separator />}
+                      <CollapsibleTrigger className="group flex w-full items-center justify-between px-5 py-4 text-sm font-semibold hover:text-foreground">
                         {getCategoryLabel(group.category, t)}
-                      </AccordionTrigger>
-                      <AccordionContent className="space-y-3">
-                        {group.features.map((feature) => (
+                        <ChevronDown
+                          aria-hidden="true"
+                          className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180"
+                        />
+                      </CollapsibleTrigger>
+                      <Separator />
+                      <CollapsibleContent className="px-5 pb-4 pt-1">
+                        {boolItems.length > 0 && (
+                          <CompactSettingsTableSwitches
+                            items={boolItems}
+                            disabled={isSaving}
+                            onCheckedChange={(featureId, checked) =>
+                              setRows((prev) =>
+                                updateRow(prev, featureId, (row) => ({
+                                  ...row,
+                                  booleanValue: checked,
+                                })),
+                              )
+                            }
+                          />
+                        )}
+                        {otherFeatures.map((feature) => (
                           <div
                             key={feature.featureId}
-                            className="rounded-lg border border-border p-3"
+                            className="space-y-2 border-b py-3 last:border-b-0"
                           >
-                            <div className="mb-2">
+                            <div>
                               <Text
                                 as="p"
                                 variant="small"
@@ -254,35 +283,7 @@ const AdminPlanEntitlementsEditor = () => {
                                 </Text>
                               ) : null}
                             </div>
-
-                            {feature.valueType === 'boolean' ? (
-                              <div className="flex items-center justify-between">
-                                <Text
-                                  as="p"
-                                  variant="small"
-                                  color="muted"
-                                  className="text-xs"
-                                >
-                                  {t('planCatalog.editor.booleanHint', {
-                                    defaultValue: feature.defaultEnabled
-                                      ? t('featureDefinitions.card.defaultOn')
-                                      : t('featureDefinitions.card.defaultOff'),
-                                  })}
-                                </Text>
-                                <Switch
-                                  checked={feature.booleanValue}
-                                  disabled={isSaving}
-                                  onCheckedChange={(checked) =>
-                                    setRows((prev) =>
-                                      updateRow(prev, feature.featureId, (row) => ({
-                                        ...row,
-                                        booleanValue: checked,
-                                      })),
-                                    )
-                                  }
-                                />
-                              </div>
-                            ) : feature.valueType === 'integer' ? (
+                            {feature.valueType === 'integer' ? (
                               <Input
                                 type="number"
                                 value={feature.integerValue}
@@ -345,11 +346,11 @@ const AdminPlanEntitlementsEditor = () => {
                             )}
                           </div>
                         ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </FieldCard>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )
+                })}
+              </div>
             ) : settingsDraft ? (
               <FieldCard className="px-5 py-4">
                 <PlanCatalogSettingsForm

@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/select'
 import type { VariantProps } from 'class-variance-authority'
 import { badgeVariants } from '@/components/ui/badge-variants'
+import { InstitutionSubscriptionDetails } from '@/features/institution'
 import type {
   Institution,
   InstitutionEditFormValues,
@@ -235,6 +236,7 @@ export function InstitutionDetailsDrawer({
                 value={formValues.description}
                 onValueChange={(value) => updateField('description', value)}
                 rows={3}
+                hideSeparator={false}
                 disabled={isSaving}
               />
 
@@ -451,6 +453,13 @@ export function InstitutionDetailsDrawer({
                   </div>
                 </div>
               </div>
+
+              {open && institution?.id ? (
+                <InstitutionSubscriptionDetails
+                  key={institution.id}
+                  institutionId={institution.id}
+                />
+              ) : null}
             </div>
           </ScrollArea>
         </div>

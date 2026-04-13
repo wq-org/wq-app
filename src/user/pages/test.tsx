@@ -1,7 +1,11 @@
+import { useState } from 'react'
 import { Pattern as AvatarGroupIconCount } from '@/components/shared/AvatarGroupIconCount'
 import { Pattern as AvatarGroupNumericalCount } from '@/components/shared/AvatarGroupNumericalCount'
 import { Pattern as CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
-import { Pattern as CompactSettingsTableSwitches } from '@/components/shared/CompactSettingsTableSwitches'
+import {
+  CompactSettingsTableSwitches,
+  type SwitchItem,
+} from '@/components/shared/CompactSettingsTableSwitches'
 import { Pattern as ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillingUsageCard'
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
@@ -12,6 +16,34 @@ import Stats12 from '@/components/shared/Stats-12'
 import { Pattern as StatusSummeryCard } from '@/components/shared/StatusSummeryCard'
 import { Pattern as SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
 import { Pattern as UserMessageNotificationAlert } from '@/components/shared/UserMessageNotificationAlert'
+
+const demoSwitchItems: SwitchItem[] = [
+  { id: 'auto-save', label: 'Auto-save', description: 'Save changes automatically', checked: true },
+  {
+    id: 'spell-check',
+    label: 'Spell check',
+    description: 'Highlight spelling errors',
+    checked: true,
+  },
+  {
+    id: 'line-numbers',
+    label: 'Line numbers',
+    description: 'Show line numbers in editor',
+    checked: false,
+  },
+]
+
+function CompactSettingsDemo() {
+  const [items, setItems] = useState(demoSwitchItems)
+  return (
+    <CompactSettingsTableSwitches
+      items={items}
+      onCheckedChange={(id, checked) =>
+        setItems((prev) => prev.map((item) => (item.id === id ? { ...item, checked } : item)))
+      }
+    />
+  )
+}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -40,7 +72,7 @@ export default function Test() {
       </Section>
 
       <Section title="CompactSettingsTableSwitches">
-        <CompactSettingsTableSwitches />
+        <CompactSettingsDemo />
       </Section>
 
       <Section title="ExpandableBillingUsageCard">
