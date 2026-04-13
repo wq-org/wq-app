@@ -103,20 +103,17 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
           <div className="flex items-center justify-between px-2 py-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label="Account menu"
-                >
-                  <Avatar className="h-8 w-8 shrink-0">
+                <div className="flex gap-2 items-center">
+                  <Avatar className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-transparent after:hidden">
                     <AvatarImage
                       src={signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE}
-                      alt=""
+                      alt={signedAvatarUrl?.toString() || 'avatar-profile-image'}
+                      className="object-cover"
                     />
-                    <AvatarFallback className="p-0">
+                    <AvatarFallback className="bg-transparent p-0">
                       <img
                         src={DEFAULT_INSTITUTION_IMAGE}
-                        alt=""
+                        alt={signedAvatarUrl?.toString() || 'avatar-profile-image'}
                         className="size-full object-cover"
                       />
                     </AvatarFallback>
@@ -139,7 +136,7 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
                     </Text>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 shrink-0 text-muted-foreground" />
-                </button>
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="min-w-48 rounded-lg"

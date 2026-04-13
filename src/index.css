@@ -104,6 +104,14 @@ body {
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-invert: var(--invert);
+  --color-invert-foreground: var(--invert-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -139,6 +147,14 @@ body {
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --info: oklch(0.52 0.16 250);
+  --info-foreground: oklch(0.99 0 0);
+  --success: oklch(0.48 0.14 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.72 0.15 85);
+  --warning-foreground: oklch(0.22 0.04 75);
+  --invert: oklch(0.205 0 0);
+  --invert-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -186,6 +202,14 @@ body {
   --accent: oklch(0.26 0.004 285);
   --accent-foreground: oklch(0.97 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --info: oklch(0.68 0.12 250);
+  --info-foreground: oklch(0.12 0.02 250);
+  --success: oklch(0.65 0.14 150);
+  --success-foreground: oklch(0.12 0.02 150);
+  --warning: oklch(0.78 0.12 85);
+  --warning-foreground: oklch(0.2 0.04 75);
+  --invert: oklch(0.97 0 0);
+  --invert-foreground: oklch(0.205 0 0);
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.556 0 0);
@@ -277,6 +301,61 @@ body {
 }
 
 @layer components {
+  .cn-alert {
+    display: grid;
+    width: 100%;
+    align-items: start;
+    gap: 0.125rem 0;
+    border-radius: var(--radius-lg);
+    border-width: 1px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    grid-template-columns: 0 minmax(0, 1fr);
+  }
+
+  .cn-alert:has(> svg) {
+    grid-template-columns: 1rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+
+  .cn-alert > svg {
+    width: 1rem;
+    height: 1rem;
+    translate: 0 0.125rem;
+    color: currentColor;
+  }
+
+  .cn-alert-variant-default {
+    border-color: var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
+  }
+
+  .cn-alert-variant-destructive {
+    border-color: color-mix(in oklch, var(--destructive) 35%, transparent);
+    background-color: var(--card);
+    color: var(--destructive);
+  }
+
+  .cn-alert-variant-destructive > svg {
+    color: currentColor;
+  }
+
+  .cn-alert-variant-destructive *:where([data-slot='alert-description']) {
+    color: color-mix(in oklch, var(--destructive) 90%, transparent);
+  }
+
+  .cn-alert-action {
+    grid-column-start: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
   .editor-shell {
     background-color: var(--card);
     border: 1px dashed var(--border);
