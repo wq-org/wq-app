@@ -65,9 +65,69 @@
     "title": "Klassenräume",
     "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten."
   },
+  "licenses": {
+    "title": "Lizenzen",
+    "subtitle": "Ihr aktueller Tarif und die enthaltenen Funktionen.",
+    "loadError": "Lizenzen konnten nicht geladen werden",
+    "empty": "Für diese Institution wurde kein Abonnement gefunden.",
+    "noFeatures": "In diesem Tarif sind keine Funktionen konfiguriert.",
+    "summary": {
+      "plan": "Tarif",
+      "billingStatus": "Abrechnungsstatus",
+      "effectiveFrom": "Gültig ab",
+      "renewalAt": "Verlängerung am"
+    },
+    "source": {
+      "override": "Sonderregel",
+      "plan": "Tarif",
+      "default": "Standard"
+    }
+  },
   "licenseUsage": {
     "title": "Lizenznutzung",
-    "subtitle": "Plätze und Berechtigungen im Blick behalten."
+    "subtitle": "Plätze und Berechtigungen im Blick behalten.",
+    "loadError": "Nutzung konnte nicht geladen werden",
+    "empty": "Noch keine Nutzungsdaten vorhanden.",
+    "metrics": {
+      "unlimited": "Unbegrenzt",
+      "upgrade": "Upgrade",
+      "seats": {
+        "title": "Plätze",
+        "ok": "Innerhalb der Tarifgrenzen.",
+        "warning": "Sie nähern sich dem Platzlimit."
+      },
+      "students": {
+        "title": "Lernende"
+      },
+      "teachers": {
+        "title": "Lehrkräfte"
+      },
+      "storage": {
+        "title": "Speicher",
+        "using": "Speichernutzung",
+        "used": "Verwendet",
+        "ok": "Innerhalb der Tarifgrenzen.",
+        "warning": "Sie nähern sich dem Speicherlimit."
+      }
+    },
+    "details": {
+      "title": "Nutzungsdetails",
+      "plan": "Tarif",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Laufzeit, Verlängerung und Zahlungsdetails Ihres Abonnements.",
+    "noInstitution": "Ihrem Konto ist keine Institution zugeordnet.",
+    "invoices": {
+      "title": "Rechnungen",
+      "empty": "Noch keine Rechnungen."
+    },
+    "paymentMethod": {
+      "title": "Zahlungsmethode",
+      "empty": "Keine Zahlungsmethode hinterlegt."
+    }
   },
   "gdprRequest": {
     "title": "DSGVO-Anfragen",

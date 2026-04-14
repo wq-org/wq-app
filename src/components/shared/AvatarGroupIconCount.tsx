@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/avatar'
 import { PlusIcon } from 'lucide-react'
 
-export function Pattern() {
+export function AvatarGroupIconCount() {
   return (
     <AvatarGroup>
       <Avatar>

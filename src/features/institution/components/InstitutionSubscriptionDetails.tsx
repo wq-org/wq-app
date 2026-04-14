@@ -10,6 +10,7 @@ import { badgeVariants } from '@/components/ui/badge-variants'
 
 import {
   fetchLatestInstitutionSubscription,
+  resolvePlanCode,
   type BillingStatus,
   type InstitutionSubscriptionWithPlan,
 } from '../api/institutionSubscriptionApi'
@@ -54,15 +55,19 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
 
 function SubscriptionBody({
   sub,
+  resolvedPlanCode,
   locale,
   t,
 }: {
   sub: InstitutionSubscriptionWithPlan
+  resolvedPlanCode: string | null
   locale: string
   t: (key: string) => string
 }) {
   const planLabel =
-    sub.plan_catalog != null ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})` : sub.plan_id
+    sub.plan_catalog != null
+      ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})`
+      : (resolvedPlanCode ?? sub.plan_catalog?.code ?? '—')
 
   const billingVariant = BILLING_STATUS_VARIANT[sub.billing_status] ?? 'secondary'
 
@@ -229,15 +234,22 @@ function SubscriptionBody({
 export function InstitutionSubscriptionDetails({ institutionId }: { institutionId: string }) {
   const { t, i18n } = useTranslation('features.institution')
   const [sub, setSub] = useState<InstitutionSubscriptionWithPlan | null | undefined>(undefined)
+  const [resolvedPlanCode, setResolvedPlanCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
     setSub(undefined)
+    setResolvedPlanCode(null)
     setError(null)
     fetchLatestInstitutionSubscription(institutionId)
-      .then((row) => {
-        if (!cancelled) setSub(row)
+      .then(async (row) => {
+        if (cancelled) return
+        setSub(row)
+        if (row && !row.plan_catalog) {
+          const code = await resolvePlanCode(row.plan_id)
+          if (!cancelled) setResolvedPlanCode(code)
+        }
       })
       .catch((e: Error) => {
         if (!cancelled) {
@@ -312,6 +324,7 @@ export function InstitutionSubscriptionDetails({ institutionId }: { institutionI
       </Text>
       <SubscriptionBody
         sub={sub}
+        resolvedPlanCode={resolvedPlanCode}
         locale={locale}
         t={t}
       />

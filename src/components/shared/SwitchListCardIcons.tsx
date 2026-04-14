@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { BellIcon, MailIcon, SmartphoneIcon } from 'lucide-react'
 
-export function Pattern() {
+export function SwitchListCardIcons() {
   return (
     <Card className="w-full max-w-xs p-0">
       <FieldGroup className="gap-0">

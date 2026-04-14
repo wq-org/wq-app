@@ -65,9 +65,69 @@
     "title": "Classrooms",
     "subtitle": "View and manage classrooms linked to your institution."
   },
+  "licenses": {
+    "title": "Licenses",
+    "subtitle": "What plan you have and which features are included.",
+    "loadError": "Failed to load licenses",
+    "empty": "No subscription found for this institution.",
+    "noFeatures": "No features configured on this plan.",
+    "summary": {
+      "plan": "Plan",
+      "billingStatus": "Billing status",
+      "effectiveFrom": "Effective from",
+      "renewalAt": "Renews on"
+    },
+    "source": {
+      "override": "Override",
+      "plan": "Plan",
+      "default": "Default"
+    }
+  },
   "licenseUsage": {
     "title": "License usage",
-    "subtitle": "Monitor seat usage and entitlements."
+    "subtitle": "Monitor seat usage and entitlements.",
+    "loadError": "Failed to load usage",
+    "empty": "No usage data available yet.",
+    "metrics": {
+      "unlimited": "Unlimited",
+      "upgrade": "Upgrade",
+      "seats": {
+        "title": "Seats",
+        "ok": "Within plan limits.",
+        "warning": "Approaching the seat limit."
+      },
+      "students": {
+        "title": "Students"
+      },
+      "teachers": {
+        "title": "Teachers"
+      },
+      "storage": {
+        "title": "Storage",
+        "using": "Using Storage",
+        "used": "Used",
+        "ok": "Within plan limits.",
+        "warning": "Approaching the storage limit."
+      }
+    },
+    "details": {
+      "title": "Usage details",
+      "plan": "Plan",
+      "updatedAt": "Updated"
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Subscription term, renewal and payment details.",
+    "noInstitution": "No institution associated with your account.",
+    "invoices": {
+      "title": "Invoices",
+      "empty": "No invoices yet."
+    },
+    "paymentMethod": {
+      "title": "Payment method",
+      "empty": "No payment method on file."
+    }
   },
   "gdprRequest": {
     "title": "GDPR requests",

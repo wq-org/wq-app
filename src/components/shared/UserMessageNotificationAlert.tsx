@@ -4,7 +4,7 @@ import { Frame, FramePanel } from '@/components/ui/frame'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 
-export function Pattern() {
+export function UserMessageNotificationAlert() {
   return (
     <div className="mx-auto mb-auto w-full max-w-lg">
       <Frame>

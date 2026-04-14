@@ -6,7 +6,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar'
 
-export function Pattern() {
+export function AvatarGroupNumericalCount() {
   return (
     <AvatarGroup>
       <Avatar>

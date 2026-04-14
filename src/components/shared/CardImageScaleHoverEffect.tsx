@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card'
 
-export function Pattern() {
+export function CardImageScaleHoverEffect() {
   return (
     <Card className="group/card relative h-96 w-full max-w-xs overflow-hidden border-0 p-0!">
       <img

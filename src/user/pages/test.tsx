@@ -1,16 +1,16 @@
 import { useMemo, useState } from 'react'
 import { Box, Edit } from 'lucide-react'
-import { Pattern as AvatarGroupIconCount } from '@/components/shared/AvatarGroupIconCount'
-import { Pattern as AvatarGroupNumericalCount } from '@/components/shared/AvatarGroupNumericalCount'
-import { Pattern as CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
+import { AvatarGroupIconCount } from '@/components/shared/AvatarGroupIconCount'
+import { AvatarGroupNumericalCount } from '@/components/shared/AvatarGroupNumericalCount'
+import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
 import {
   CompactSettingsTableSwitches,
   type SwitchItem,
 } from '@/components/shared/CompactSettingsTableSwitches'
-import { Pattern as ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillingUsageCard'
+import { ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillingUsageCard'
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
-import { Pattern as ProjectTableTeamAvatarStatus } from '@/components/shared/ProjectTableTeamAvatarStatus'
+import { ProjectTableTeamAvatarStatus } from '@/components/shared/ProjectTableTeamAvatarStatus'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -28,9 +28,9 @@ import {
   StatsTrending,
   StatsUsageDashboard,
 } from '@/components/shared'
-import { Pattern as StatusSummeryCard } from '@/components/shared/StatusSummeryCard'
-import { Pattern as SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
-import { Pattern as UserMessageNotificationAlert } from '@/components/shared/UserMessageNotificationAlert'
+import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
+import { SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
+import { UserMessageNotificationAlert } from '@/components/shared/UserMessageNotificationAlert'
 
 const demoSwitchItems: SwitchItem[] = [
   { id: 'auto-save', label: 'Auto-save', description: 'Save changes automatically', checked: true },
@@ -213,7 +213,19 @@ export default function Test() {
       </Section>
 
       <Section title="ExpandableBillingUsageCard">
-        <ExpandableBillingUsageCard />
+        <ExpandableBillingUsageCard
+          title="3 days remaining in cycle"
+          primary={{ label: 'Included Credit', value: '$18.08', max: '$20', percentage: 90 }}
+          secondary={{ label: 'On-Demand Charges', value: '$0' }}
+          rows={[
+            { label: 'Requests', value: '$210.84' },
+            { label: 'Active CPU', value: '$21.95' },
+            { label: 'Events', value: '$21.20' },
+            { label: 'Storage Usage', value: '$20.45' },
+            { label: 'Bandwidth', value: '$0.00' },
+          ]}
+          actionLabel="Billing"
+        />
       </Section>
 
       <Section title="FormLayout-04">
@@ -240,8 +252,17 @@ export default function Test() {
         <StatsUsageDashboard />
       </Section>
 
-      <Section title="StatusSummeryCard">
-        <StatusSummeryCard />
+      <Section title="StatusSummaryCard">
+        <StatusSummaryCard
+          title="Deployment Successful"
+          description="Your app is now live"
+          rows={[
+            { label: 'Environment', value: 'Production' },
+            { label: 'Region', value: 'us-east-1' },
+            { label: 'Version', value: 'v2.4.0' },
+            { label: 'Status', value: 'Healthy' },
+          ]}
+        />
       </Section>
 
       <Section title="SwitchListCardIcons">

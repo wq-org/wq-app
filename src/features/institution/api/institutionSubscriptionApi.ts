@@ -37,6 +37,23 @@ function normalizePlanCatalog(
   return Array.isArray(raw) ? (raw[0] ?? null) : raw
 }
 
+/**
+ * Resolves a human-readable plan code (e.g. "Trial") from a plan UUID.
+ * Use this as a fallback when the plan_catalog join on a subscription returns null.
+ */
+export async function resolvePlanCode(planId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('plan_catalog')
+    .select('code')
+    .eq('id', planId)
+    .maybeSingle()
+  if (error) {
+    console.warn('resolvePlanCode:', error.message)
+    return null
+  }
+  return (data as { code: string } | null)?.code ?? null
+}
+
 /** Latest subscription row for the institution (by effective_from), with plan code/name when RLS allows. */
 export async function fetchLatestInstitutionSubscription(
   institutionId: string,
