@@ -63,6 +63,7 @@ export const badgeDashedBorderVariants = cva('border-2 border-dashed', {
       orange: 'border-[oklch(var(--oklch-orange)/0.45)]',
       pink: 'border-[oklch(var(--oklch-pink)/0.45)]',
       destructive: 'border-white/30',
+      error: 'border-red-500/40',
       info: 'border-info/45',
       success: 'border-success/45',
       warning: 'border-warning/45',
