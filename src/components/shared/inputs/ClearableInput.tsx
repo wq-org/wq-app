@@ -25,6 +25,7 @@ interface ClearableInputProps {
   clearButtonLabel?: string
   hideSeparator?: boolean
   showSearchIcon?: boolean
+  showClearButton?: boolean
 }
 
 export const ClearableInput = ({
@@ -46,6 +47,7 @@ export const ClearableInput = ({
   clearButtonLabel = 'Clear input',
   hideSeparator = false,
   showSearchIcon = false,
+  showClearButton = true,
 }: ClearableInputProps) => {
   const generatedId = useId()
   const inputId = id ?? generatedId
@@ -105,7 +107,7 @@ export const ClearableInput = ({
       />
       {!hideSeparator ? <Separator /> : null}
 
-      {!disabled && inputValue.trim() && type !== 'password' && (
+      {showClearButton && !disabled && inputValue.trim() && type !== 'password' && (
         <Button
           type="button"
           size="icon"

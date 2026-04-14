@@ -69,7 +69,7 @@ import {
   InstitutionAdminFacultiesPage,
   InstitutionAdminClassroomsPage,
   InstitutionAdminLicensesPage,
-  InstitutionAdminLicenseUsagePage,
+  InstitutionAdminUsagePage,
   InstitutionAdminGDPRRequestPage,
   InstitutionAdminBillingPage,
   InstitutionAdminCoursesPage,
@@ -482,10 +482,10 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="license-usage"
+                  path="usage"
                   element={
                     <RequireAuth>
-                      <InstitutionAdminLicenseUsagePage />
+                      <InstitutionAdminUsagePage />
                     </RequireAuth>
                   }
                 />

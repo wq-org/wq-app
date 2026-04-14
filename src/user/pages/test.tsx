@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Box, Edit } from 'lucide-react'
-import { AvatarGroupIconCount } from '@/components/shared/AvatarGroupIconCount'
-import { AvatarGroupNumericalCount } from '@/components/shared/AvatarGroupNumericalCount'
+
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
 import {
   CompactSettingsTableSwitches,
@@ -10,7 +9,6 @@ import {
 import { ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillingUsageCard'
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
-import { ProjectTableTeamAvatarStatus } from '@/components/shared/ProjectTableTeamAvatarStatus'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -30,7 +28,6 @@ import {
 } from '@/components/shared'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
 import { SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
-import { UserMessageNotificationAlert } from '@/components/shared/UserMessageNotificationAlert'
 
 const demoSwitchItems: SwitchItem[] = [
   { id: 'auto-save', label: 'Auto-save', description: 'Save changes automatically', checked: true },
@@ -196,14 +193,6 @@ export default function Test() {
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
-      <Section title="AvatarGroupIconCount">
-        <AvatarGroupIconCount />
-      </Section>
-
-      <Section title="AvatarGroupNumericalCount">
-        <AvatarGroupNumericalCount />
-      </Section>
-
       <Section title="CardImageScaleHoverEffect">
         <CardImageScaleHoverEffect />
       </Section>
@@ -236,10 +225,6 @@ export default function Test() {
         <FormLayout05 />
       </Section>
 
-      <Section title="ProjectTableTeamAvatarStatus">
-        <ProjectTableTeamAvatarStatus />
-      </Section>
-
       <Section title="StatsTrending">
         <StatsTrending />
       </Section>
@@ -267,10 +252,6 @@ export default function Test() {
 
       <Section title="SwitchListCardIcons">
         <SwitchListCardIcons />
-      </Section>
-
-      <Section title="UserMessageNotificationAlert">
-        <UserMessageNotificationAlert />
       </Section>
     </div>
   )

@@ -20,7 +20,7 @@ function pct(used: number, cap: number | null | undefined): number {
   return Math.min(100, Math.round((used / cap) * 1000) / 10)
 }
 
-const InstitutionLicenseUsage = () => {
+const InstitutionUsage = () => {
   const { t } = useTranslation('features.institution-admin')
   const { quotas, isLoading, error } = useInstitutionLicensing()
 
@@ -89,7 +89,7 @@ const InstitutionLicenseUsage = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[240px] items-center justify-center">
+          <div className="flex min-h-60 items-center justify-center">
             <Spinner
               variant="gray"
               size="sm"
@@ -120,13 +120,13 @@ const InstitutionLicenseUsage = () => {
               <div className="flex-1">
                 <StatsProgress
                   items={studentItem}
-                  className="sm:!grid-cols-1 lg:!grid-cols-1"
+                  className="sm:grid-cols-1! lg:grid-cols-1!"
                 />
               </div>
               <div className="flex-1">
                 <StatsProgress
                   items={teacherItem}
-                  className="sm:!grid-cols-1 lg:!grid-cols-1"
+                  className="sm:grid-cols-1! lg:grid-cols-1!"
                 />
               </div>
             </div>
@@ -155,4 +155,4 @@ const InstitutionLicenseUsage = () => {
   )
 }
 
-export { InstitutionLicenseUsage }
+export { InstitutionUsage }

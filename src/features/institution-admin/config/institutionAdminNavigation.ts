@@ -1,12 +1,12 @@
 import {
   BarChart3,
   Building2,
+  ChartSpline,
   ClipboardList,
   Cloud,
   CreditCard,
   GraduationCap,
   Home,
-  KeyRound,
   School,
   ShieldCheck,
   Users,
@@ -44,8 +44,8 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
   },
   {
     titleKey: 'nav.licenseUsage',
-    url: '/license-usage',
-    icon: KeyRound,
+    url: '/usage',
+    icon: ChartSpline,
   },
   {
     titleKey: 'nav.gdprRequest',

@@ -143,6 +143,7 @@ export function InvoiceList({
               label={labels.searchPlaceholder}
               placeholder={labels.searchPlaceholder}
               type="search"
+              showClearButton={false}
               className="flex-1"
             />
 
