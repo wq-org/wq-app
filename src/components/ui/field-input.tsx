@@ -11,6 +11,7 @@ type FieldInputProps = {
   id?: string
   name?: string
   type?: React.HTMLInputTypeAttribute
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
   autoComplete?: string
   required?: boolean
   disabled?: boolean
@@ -29,6 +30,7 @@ export const FieldInput = ({
   id,
   name,
   type = 'text',
+  inputMode,
   autoComplete,
   required = false,
   disabled = false,
@@ -51,6 +53,7 @@ export const FieldInput = ({
         label={label}
         name={name}
         type={type}
+        inputMode={inputMode}
         autoComplete={autoComplete}
         required={required}
         hideSeparator={hideSeparator}

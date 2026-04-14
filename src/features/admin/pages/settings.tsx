@@ -4,7 +4,7 @@ import { USER_ROLES } from '@/features/auth'
 
 const AdminSettings = () => {
   return (
-    <AdminWorkspaceShell role={USER_ROLES.SUPER_ADMIN}>
+    <AdminWorkspaceShell>
       <SettingsPage
         role={USER_ROLES.SUPER_ADMIN}
         embedded

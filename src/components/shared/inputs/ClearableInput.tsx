@@ -15,6 +15,7 @@ interface ClearableInputProps {
   id?: string
   name?: string
   type?: React.HTMLInputTypeAttribute
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
   autoFocus?: boolean
   autoComplete?: string
   required?: boolean
@@ -37,6 +38,7 @@ export const ClearableInput = ({
   id,
   name,
   type = 'text',
+  inputMode,
   autoFocus = false,
   autoComplete,
   required = false,
@@ -104,6 +106,7 @@ export const ClearableInput = ({
         required={required}
         disabled={disabled}
         maxLength={maxLength}
+        inputMode={inputMode}
       />
       {!hideSeparator ? <Separator /> : null}
 

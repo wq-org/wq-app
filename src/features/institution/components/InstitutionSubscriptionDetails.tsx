@@ -64,10 +64,9 @@ function SubscriptionBody({
   locale: string
   t: (key: string) => string
 }) {
-  const planLabel =
-    sub.plan_catalog != null
-      ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})`
-      : (resolvedPlanCode ?? sub.plan_catalog?.code ?? '—')
+  const planLabel = sub.plan_catalog
+    ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})`
+    : (resolvedPlanCode ?? '—')
 
   const billingVariant = BILLING_STATUS_VARIANT[sub.billing_status] ?? 'secondary'
 

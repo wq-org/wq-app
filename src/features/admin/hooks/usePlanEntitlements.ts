@@ -10,7 +10,7 @@ import type {
 import { toPlanEntitlementEditorValue } from '../types/planEntitlements.types'
 
 type UsePlanEntitlementsResult = {
-  plan: PlanCatalog | null
+  plan: PlanCatalogEditorPlan | null
   rows: PlanEntitlementEditorValue[]
   groups: PlanEntitlementEditorGroup[]
   isLoading: boolean
