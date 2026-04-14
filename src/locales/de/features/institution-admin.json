@@ -122,7 +122,25 @@
     "noInstitution": "Ihrem Konto ist keine Institution zugeordnet.",
     "invoices": {
       "title": "Rechnungen",
-      "empty": "Noch keine Rechnungen."
+      "description": "Sehen Sie Ihre Rechnungshistorie ein und laden Sie Rechnungen herunter.",
+      "searchPlaceholder": "Nach Rechnungsnummer oder Beschreibung suchen...",
+      "statusFilterPlaceholder": "Nach Status filtern",
+      "count_one": "{{count}} Rechnung",
+      "count_other": "{{count}} Rechnungen",
+      "status": {
+        "all": "Alle Status",
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen",
+        "refunded": "Erstattet",
+        "void": "Storniert"
+      },
+      "view": "Anzeigen",
+      "emptyFiltered": "Keine Rechnungen entsprechen den Filtern.",
+      "empty": "Keine Rechnungen gefunden.",
+      "page": "Seite",
+      "previous": "Zurück",
+      "next": "Weiter"
     },
     "paymentMethod": {
       "title": "Zahlungsmethode",

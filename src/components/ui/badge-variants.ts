@@ -24,6 +24,8 @@ export const badgeVariants = cva(
         pink: 'border-[oklch(var(--oklch-pink)/0.18)] bg-[oklch(var(--oklch-pink)/0.12)] text-[oklch(var(--oklch-pink))] [a&]:hover:bg-[oklch(var(--oklch-pink)/0.16)]',
         destructive:
           'border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+        error:
+          'text-red-500 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30',
         info: 'border-transparent bg-info text-info-foreground [a&]:hover:bg-info/90',
         success: 'border-transparent bg-success text-success-foreground [a&]:hover:bg-success/90',
         warning: 'border-transparent bg-warning text-warning-foreground [a&]:hover:bg-warning/90',

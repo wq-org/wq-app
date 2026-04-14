@@ -5,7 +5,7 @@
     "users": "Users",
     "faculties": "Faculties",
     "classrooms": "Classrooms",
-    "licenseUsage": "License usage",
+    "licenseUsage": "Usage",
     "gdprRequest": "GDPR requests",
     "billing": "Billing",
     "analytics": "Analytics",
@@ -84,7 +84,7 @@
     }
   },
   "licenseUsage": {
-    "title": "License usage",
+    "title": "Usage",
     "subtitle": "Monitor seat usage and entitlements.",
     "loadError": "Failed to load usage",
     "empty": "No usage data available yet.",
@@ -122,7 +122,25 @@
     "noInstitution": "No institution associated with your account.",
     "invoices": {
       "title": "Invoices",
-      "empty": "No invoices yet."
+      "description": "View and download your invoice history.",
+      "searchPlaceholder": "Search by invoice number or description...",
+      "statusFilterPlaceholder": "Filter by status",
+      "count_one": "{{count}} invoice",
+      "count_other": "{{count}} invoices",
+      "status": {
+        "all": "All statuses",
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded",
+        "void": "Void"
+      },
+      "view": "View",
+      "emptyFiltered": "No invoices match your filters.",
+      "empty": "No invoices found.",
+      "page": "Page",
+      "previous": "Previous",
+      "next": "Next"
     },
     "paymentMethod": {
       "title": "Payment method",

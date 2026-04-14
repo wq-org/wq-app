@@ -33,6 +33,13 @@ export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from '
 export { SidebarAccountMenu, SidebarPrimaryNav, SidebarWorkspaceSwitcher } from './sidebar'
 export { ExpandableBillingUsageCard } from './ExpandableBillingUsageCard'
 export type { ExpandableBillingUsageCardProps, UsageRow } from './ExpandableBillingUsageCard'
+export { InvoiceList } from './InvoiceList'
+export type {
+  InvoiceListItem,
+  InvoiceListLabels,
+  InvoiceListProps,
+  InvoiceStatus,
+} from './InvoiceList'
 export { StatusSummaryCard } from './StatusSummaryCard'
 export type {
   StatusSummaryCardProps,
