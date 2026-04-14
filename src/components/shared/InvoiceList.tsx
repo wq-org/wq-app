@@ -198,7 +198,7 @@ export function InvoiceList({
                         {invoice.description ? (
                           <>
                             <span aria-hidden="true">•</span>
-                            <span className="break-words">{invoice.description}</span>
+                            <span className="wrap-break-word">{invoice.description}</span>
                           </>
                         ) : null}
                       </div>

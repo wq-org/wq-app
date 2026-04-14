@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { CompactSettingsTableSwitches } from '@/components/shared/CompactSettingsTableSwitches'
+import { getFeatureDefinitionIcon } from '../config/featureDefinitionIcons'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
 import { useUser } from '@/contexts/user'
 
@@ -228,6 +229,7 @@ const AdminPlanEntitlementsEditor = () => {
                       .filter(Boolean)
                       .join(' · '),
                     checked: f.booleanValue ?? false,
+                    icon: getFeatureDefinitionIcon(f.key),
                   }))
 
                   return (
@@ -259,93 +261,102 @@ const AdminPlanEntitlementsEditor = () => {
                             }
                           />
                         )}
-                        {otherFeatures.map((feature) => (
-                          <div
-                            key={feature.featureId}
-                            className="space-y-2 border-b py-3 last:border-b-0"
-                          >
-                            <div>
-                              <Text
-                                as="p"
-                                variant="small"
-                                className="font-semibold text-foreground"
-                              >
-                                {feature.name}
-                              </Text>
-                              {feature.description ? (
-                                <Text
-                                  as="p"
-                                  variant="small"
-                                  color="muted"
-                                  className="mt-1 text-xs"
-                                >
-                                  {feature.description}
-                                </Text>
-                              ) : null}
-                            </div>
-                            {feature.valueType === 'integer' ? (
-                              <Input
-                                type="number"
-                                value={feature.integerValue}
-                                disabled={isSaving}
-                                placeholder={t('planCatalog.editor.placeholders.integer')}
-                                onChange={(e) =>
-                                  setRows((prev) =>
-                                    updateRow(prev, feature.featureId, (row) => ({
-                                      ...row,
-                                      integerValue: e.target.value,
-                                    })),
-                                  )
-                                }
-                              />
-                            ) : feature.valueType === 'bigint' ? (
-                              <div className="space-y-2">
+                        {otherFeatures.map((feature) => {
+                          const Icon = getFeatureDefinitionIcon(feature.key)
+                          return (
+                            <div
+                              key={feature.featureId}
+                              className="space-y-2 border-b py-3 last:border-b-0"
+                            >
+                              <div className="flex items-start gap-3">
+                                <Icon
+                                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                                  aria-hidden="true"
+                                />
+                                <div className="min-w-0">
+                                  <Text
+                                    as="p"
+                                    variant="small"
+                                    className="font-semibold text-foreground"
+                                  >
+                                    {feature.name}
+                                  </Text>
+                                  {feature.description ? (
+                                    <Text
+                                      as="p"
+                                      variant="small"
+                                      color="muted"
+                                      className="mt-1 text-xs"
+                                    >
+                                      {feature.description}
+                                    </Text>
+                                  ) : null}
+                                </div>
+                              </div>
+                              {feature.valueType === 'integer' ? (
                                 <Input
-                                  type="text"
-                                  value={feature.bigintValue}
+                                  type="number"
+                                  value={feature.integerValue}
                                   disabled={isSaving}
-                                  placeholder={t('planCatalog.editor.placeholders.bigint')}
+                                  placeholder={t('planCatalog.editor.placeholders.integer')}
                                   onChange={(e) =>
                                     setRows((prev) =>
                                       updateRow(prev, feature.featureId, (row) => ({
                                         ...row,
-                                        bigintValue: e.target.value.replace(/[^\d]/g, ''),
+                                        integerValue: e.target.value,
                                       })),
                                     )
                                   }
                                 />
-                                {formatBigIntExample(feature.bigintValue) ? (
-                                  <Text
-                                    as="p"
-                                    variant="small"
-                                    color="muted"
-                                    className="text-xs"
-                                  >
-                                    {t('planCatalog.editor.bigintPreview', {
-                                      value: feature.bigintValue,
-                                      formatted: formatBigIntExample(feature.bigintValue),
-                                    })}
-                                  </Text>
-                                ) : null}
-                              </div>
-                            ) : (
-                              <Input
-                                type="text"
-                                value={feature.textValue}
-                                disabled={isSaving}
-                                placeholder={t('planCatalog.editor.placeholders.text')}
-                                onChange={(e) =>
-                                  setRows((prev) =>
-                                    updateRow(prev, feature.featureId, (row) => ({
-                                      ...row,
-                                      textValue: e.target.value,
-                                    })),
-                                  )
-                                }
-                              />
-                            )}
-                          </div>
-                        ))}
+                              ) : feature.valueType === 'bigint' ? (
+                                <div className="space-y-2">
+                                  <Input
+                                    type="text"
+                                    value={feature.bigintValue}
+                                    disabled={isSaving}
+                                    placeholder={t('planCatalog.editor.placeholders.bigint')}
+                                    onChange={(e) =>
+                                      setRows((prev) =>
+                                        updateRow(prev, feature.featureId, (row) => ({
+                                          ...row,
+                                          bigintValue: e.target.value.replace(/[^\d]/g, ''),
+                                        })),
+                                      )
+                                    }
+                                  />
+                                  {formatBigIntExample(feature.bigintValue) ? (
+                                    <Text
+                                      as="p"
+                                      variant="small"
+                                      color="muted"
+                                      className="text-xs"
+                                    >
+                                      {t('planCatalog.editor.bigintPreview', {
+                                        value: feature.bigintValue,
+                                        formatted: formatBigIntExample(feature.bigintValue),
+                                      })}
+                                    </Text>
+                                  ) : null}
+                                </div>
+                              ) : (
+                                <Input
+                                  type="text"
+                                  value={feature.textValue}
+                                  disabled={isSaving}
+                                  placeholder={t('planCatalog.editor.placeholders.text')}
+                                  onChange={(e) =>
+                                    setRows((prev) =>
+                                      updateRow(prev, feature.featureId, (row) => ({
+                                        ...row,
+                                        textValue: e.target.value,
+                                      })),
+                                    )
+                                  }
+                                />
+                              )}
+                            </div>
+                          )
+                        })}
                       </CollapsibleContent>
                     </Collapsible>
                   )

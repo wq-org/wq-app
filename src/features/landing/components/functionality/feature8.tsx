@@ -41,7 +41,7 @@ export default function FeaturesSection() {
               className="p-6"
             >
               <div className="flex aspect-video items-center justify-center">
-                <ScheduleIllustation className="border" />
+                <ScheduleIllustration className="border" />
               </div>
               <div className="text-center">
                 <h3 className="text-foreground text-xl font-semibold">AI Meeting Scheduler</h3>
@@ -62,7 +62,7 @@ type IllustrationProps = {
   variant?: 'elevated' | 'outlined' | 'mixed'
 }
 
-export const ScheduleIllustation = ({ className, variant = 'elevated' }: IllustrationProps) => {
+export const ScheduleIllustration = ({ className, variant = 'elevated' }: IllustrationProps) => {
   return (
     <div className={cn('relative', className)}>
       <div

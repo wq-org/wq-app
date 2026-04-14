@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Check, Minus } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -81,7 +82,7 @@ function PlanFeaturesCard({
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="flex min-h-[240px] items-center justify-center">
+        <CardContent className="flex min-h-60 items-center justify-center">
           <Spinner
             variant="gray"
             size="sm"
@@ -177,15 +178,17 @@ function PlanFeaturesCard({
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {feature.valueType === 'boolean' ? (
-                          <Text
-                            as="span"
-                            variant="small"
-                            className={`font-medium ${
-                              isEnabled ? 'text-green-600' : 'text-muted-foreground'
-                            }`}
-                          >
-                            {isEnabled ? 'Enabled' : 'Disabled'}
-                          </Text>
+                          isEnabled ? (
+                            <Check
+                              className="size-4 text-foreground"
+                              aria-label="Enabled"
+                            />
+                          ) : (
+                            <Minus
+                              className="size-4 text-muted-foreground"
+                              aria-label="Disabled"
+                            />
+                          )
                         ) : (
                           <Text
                             as="span"

@@ -11,12 +11,10 @@ export default function ContentSection() {
         <div className="mx-auto w-full max-w-5xl px-6">
           <div>
             <span className="text-primary">Smart Editor</span>
-            <h2 className="text-foreground mt-4 text-4xl font-semibold">
-              Ask Tailark to Edit anything
-            </h2>
+            <h2 className="text-foreground mt-4 text-4xl font-semibold">Ask to Edit anything</h2>
             <p className="text-muted-foreground mb-12 mt-4 text-lg">
-              Efficient content creation is our mission. With Tailark, you can effortlessly edit
-              text, generate code snippets, format documents, create visualizations from data, and
+              Efficient content creation is our mission. With , you can effortlessly edit text,
+              generate code snippets, format documents, create visualizations from data, and
               seamlessly integrate with your existing workflow.
             </p>
           </div>
@@ -41,7 +39,7 @@ export default function ContentSection() {
                 </p>
               </div>
               <div className="row-start-1 flex items-center justify-center pt-12 sm:col-span-2 sm:row-start-auto">
-                <ScheduleIllustation className="pt-8" />
+                <ScheduleIllustration className="pt-8" />
               </div>
             </div>
           </div>
@@ -55,7 +53,7 @@ type IllustrationProps = {
   variant?: 'elevated' | 'outlined' | 'mixed'
 }
 
-export const ScheduleIllustation = ({ className, variant = 'elevated' }: IllustrationProps) => {
+export const ScheduleIllustration = ({ className, variant = 'elevated' }: IllustrationProps) => {
   return (
     <div className={cn('relative', className)}>
       <div
