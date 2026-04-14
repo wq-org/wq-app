@@ -7,6 +7,33 @@ CREATE INDEX IF NOT EXISTS idx_profiles_is_super_admin
 ON public.profiles(is_super_admin)
 WHERE is_super_admin = TRUE;
 
+-- Step 2b: App helpers — canonical super-admin check for RLS (same definitions as 20260321000001).
+-- Use as (select app.is_super_admin()) in policies for initPlan-friendly evaluation.
+CREATE SCHEMA IF NOT EXISTS app;
+
+CREATE OR REPLACE FUNCTION app.auth_uid()
+RETURNS uuid
+LANGUAGE sql STABLE
+SET search_path = ''
+AS $$ select auth.uid() $$;
+
+COMMENT ON FUNCTION app.auth_uid() IS
+  'Cached wrapper for auth.uid(). Use as (select app.auth_uid()) in RLS policies.';
+
+CREATE OR REPLACE FUNCTION app.is_super_admin()
+RETURNS boolean
+LANGUAGE sql STABLE
+SET search_path = ''
+AS $$
+  select coalesce(
+    (select is_super_admin from public.profiles where user_id = auth.uid()),
+    false
+  )
+$$;
+
+COMMENT ON FUNCTION app.is_super_admin() IS
+  'True when the current JWT user has is_super_admin on their profile.';
+
 -- Step 3: Promote first SuperAdmin (run after signup; optionally set is_onboarded = TRUE)
 UPDATE public.profiles
 SET
@@ -15,31 +42,23 @@ SET
   is_onboarded = TRUE
 WHERE email = 'admin@wq-app.de';
 
--- Pattern: SuperAdmin bypass uses (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
--- Always use profiles.user_id (not id); no institution_id on profiles (use user_institutions if needed).
-
--- =============================================================================
--- INSTITUTIONS: SuperAdmin can manage (view already allowed for everyone in baseline)
--- =============================================================================
-DROP POLICY IF EXISTS "Admins can manage institutions" ON public.institutions;
-CREATE POLICY "Admins and SuperAdmin can manage institutions" ON public.institutions
-FOR ALL USING (
-  EXISTS (SELECT 1 FROM public.profiles WHERE user_id = auth.uid() AND (role = 'admin' OR is_super_admin = TRUE))
-);
+-- LMS RLS: super-admin bypass uses (select app.is_super_admin()) (same pattern as platform migration).
+-- public.institutions RLS: multitenant policies live in 20260321000002_institution_admin.sql
+-- (replaces baseline "everyone can view" + legacy admin manage).
 
 -- =============================================================================
 -- COURSES: add SuperAdmin bypass
 -- =============================================================================
 DROP POLICY IF EXISTS "Teachers can manage own courses" ON public.courses;
 CREATE POLICY "Teachers can manage own courses" ON public.courses FOR ALL USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR teacher_id = auth.uid()
 );
 
 DROP POLICY IF EXISTS "Students can view published courses from followed teachers" ON public.courses;
 DROP POLICY IF EXISTS "Authenticated users can view published courses" ON public.courses;
 CREATE POLICY "Authenticated users can view published courses" ON public.courses FOR SELECT TO authenticated USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR (
     is_published = true
     AND EXISTS (
@@ -57,12 +76,12 @@ CREATE POLICY "Authenticated users can view published courses" ON public.courses
 DROP POLICY IF EXISTS "Students can manage their enrollments" ON public.course_enrollments;
 DROP POLICY IF EXISTS "Students can view own enrollments" ON public.course_enrollments;
 CREATE POLICY "Students can view own enrollments" ON public.course_enrollments FOR SELECT USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR auth.uid() = student_id
 );
 DROP POLICY IF EXISTS "Students can join followed teacher published courses" ON public.course_enrollments;
 CREATE POLICY "Students can join followed teacher published courses" ON public.course_enrollments FOR INSERT WITH CHECK (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR (
     auth.uid() = student_id
     AND EXISTS (
@@ -83,13 +102,13 @@ CREATE POLICY "Students can join followed teacher published courses" ON public.c
 );
 DROP POLICY IF EXISTS "Students can leave own enrollments" ON public.course_enrollments;
 CREATE POLICY "Students can leave own enrollments" ON public.course_enrollments FOR DELETE USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR auth.uid() = student_id
 );
 
 DROP POLICY IF EXISTS "Teachers can see enrollments for their courses" ON public.course_enrollments;
 CREATE POLICY "Teachers can see enrollments for their courses" ON public.course_enrollments FOR SELECT USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR course_id IN (SELECT id FROM public.courses WHERE teacher_id = auth.uid())
 );
 
@@ -98,13 +117,13 @@ CREATE POLICY "Teachers can see enrollments for their courses" ON public.course_
 -- =============================================================================
 DROP POLICY IF EXISTS "Teachers can manage topics in their courses" ON public.topics;
 CREATE POLICY "Teachers can manage topics in their courses" ON public.topics FOR ALL USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR course_id IN (SELECT id FROM public.courses WHERE teacher_id = auth.uid())
 );
 
 DROP POLICY IF EXISTS "Students can view topics in enrolled courses" ON public.topics;
 CREATE POLICY "Students can view topics in enrolled courses" ON public.topics FOR SELECT USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR course_id IN (SELECT course_id FROM public.course_enrollments WHERE student_id = auth.uid())
 );
 
@@ -113,13 +132,13 @@ CREATE POLICY "Students can view topics in enrolled courses" ON public.topics FO
 -- =============================================================================
 DROP POLICY IF EXISTS "Teachers can manage lessons in their topics" ON public.lessons;
 CREATE POLICY "Teachers can manage lessons in their topics" ON public.lessons FOR ALL USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR topic_id IN (SELECT t.id FROM public.topics t JOIN public.courses c ON t.course_id = c.id WHERE c.teacher_id = auth.uid())
 );
 
 DROP POLICY IF EXISTS "Students can view lessons in enrolled courses" ON public.lessons;
 CREATE POLICY "Students can view lessons in enrolled courses" ON public.lessons FOR SELECT USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR topic_id IN (
     SELECT t.id FROM public.topics t
     JOIN public.courses c ON t.course_id = c.id
@@ -133,13 +152,13 @@ CREATE POLICY "Students can view lessons in enrolled courses" ON public.lessons 
 -- =============================================================================
 DROP POLICY IF EXISTS "Teachers can manage their games" ON public.games;
 CREATE POLICY "Teachers can manage their games" ON public.games FOR ALL USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR auth.uid() = teacher_id
 );
 
 DROP POLICY IF EXISTS "Students can read published games of followed teachers" ON public.games;
 CREATE POLICY "Students can read published games of followed teachers" ON public.games FOR SELECT TO authenticated USING (
-  (SELECT is_super_admin FROM public.profiles WHERE user_id = auth.uid()) = TRUE
+  (select app.is_super_admin()) is true
   OR (
     status = 'published'
     AND EXISTS (
@@ -173,19 +192,13 @@ SET search_path = public, auth
 AS $$
 DECLARE
   caller_id uuid;
-  caller_is_super_admin boolean;
 BEGIN
   caller_id := auth.uid();
   IF caller_id IS NULL THEN
     RAISE EXCEPTION 'Not authenticated';
   END IF;
 
-  SELECT p.is_super_admin
-  INTO caller_is_super_admin
-  FROM public.profiles p
-  WHERE p.user_id = caller_id;
-
-  IF COALESCE(caller_is_super_admin, false) IS NOT TRUE THEN
+  IF NOT (SELECT app.is_super_admin()) THEN
     RAISE EXCEPTION 'Forbidden: only super_admin can list users';
   END IF;
 
@@ -226,7 +239,6 @@ SET search_path = public, auth
 AS $$
 DECLARE
   caller_id uuid;
-  caller_is_super_admin boolean;
   target_username text;
   target_is_super_admin boolean;
   files_deleted integer := 0;
@@ -236,12 +248,7 @@ BEGIN
     RAISE EXCEPTION 'Not authenticated';
   END IF;
 
-  SELECT p.is_super_admin
-  INTO caller_is_super_admin
-  FROM public.profiles p
-  WHERE p.user_id = caller_id;
-
-  IF COALESCE(caller_is_super_admin, false) IS NOT TRUE THEN
+  IF NOT (SELECT app.is_super_admin()) THEN
     RAISE EXCEPTION 'Forbidden: only super_admin can delete users';
   END IF;
 
@@ -299,7 +306,6 @@ SET search_path = public, auth, storage
 AS $$
 DECLARE
   caller_id uuid;
-  caller_is_super_admin boolean;
   target_role text;
   target_is_super_admin boolean;
 BEGIN
@@ -308,12 +314,7 @@ BEGIN
     RAISE EXCEPTION 'Not authenticated';
   END IF;
 
-  SELECT p.is_super_admin
-  INTO caller_is_super_admin
-  FROM public.profiles p
-  WHERE p.user_id = caller_id;
-
-  IF COALESCE(caller_is_super_admin, false) IS NOT TRUE THEN
+  IF NOT (SELECT app.is_super_admin()) THEN
     RAISE EXCEPTION 'Forbidden: only super_admin can change account access';
   END IF;
 

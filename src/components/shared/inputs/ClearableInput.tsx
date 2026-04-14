@@ -19,11 +19,13 @@ interface ClearableInputProps {
   autoComplete?: string
   required?: boolean
   disabled?: boolean
+  maxLength?: number
   className?: string
   inputClassName?: string
   clearButtonLabel?: string
   hideSeparator?: boolean
   showSearchIcon?: boolean
+  showClearButton?: boolean
 }
 
 export const ClearableInput = ({
@@ -39,11 +41,13 @@ export const ClearableInput = ({
   autoComplete,
   required = false,
   disabled = false,
+  maxLength,
   className,
   inputClassName,
   clearButtonLabel = 'Clear input',
   hideSeparator = false,
   showSearchIcon = false,
+  showClearButton = true,
 }: ClearableInputProps) => {
   const generatedId = useId()
   const inputId = id ?? generatedId
@@ -76,11 +80,12 @@ export const ClearableInput = ({
         {label}
       </Label>
 
-      {hideSeparator && (
-        <div className="absolute left-3 top-9 h-5 w-5 -translate-y-1/2 text-muted-foreground">
-          <Search className="mr-3 h-4 w-4 text-muted-foreground" />
-        </div>
-      )}
+      {showSearchIcon ? (
+        <Search
+          className="pointer-events-none absolute top-6 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+          aria-hidden
+        />
+      ) : null}
 
       <input
         id={inputId}
@@ -98,10 +103,11 @@ export const ClearableInput = ({
         autoComplete={autoComplete}
         required={required}
         disabled={disabled}
+        maxLength={maxLength}
       />
       {!hideSeparator ? <Separator /> : null}
 
-      {!disabled && inputValue.trim() && type !== 'password' && (
+      {showClearButton && !disabled && inputValue.trim() && type !== 'password' && (
         <Button
           type="button"
           size="icon"

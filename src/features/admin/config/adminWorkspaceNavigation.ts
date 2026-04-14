@@ -1,28 +1,23 @@
 import {
-  BarChart3,
   Building2,
-  CreditCard,
+  ClipboardList,
+  FileStack,
   GalleryVerticalEnd,
-  GraduationCap,
-  KeyRound,
-  LayoutDashboard,
-  Puzzle,
-  Settings,
+  Home,
+  Blocks,
+  ShieldCheck,
   Users,
-  BookOpen,
   type LucideIcon,
 } from 'lucide-react'
-import { USER_ROLES, type UserRole } from '@/features/auth'
 
-export type AdminWorkspaceRole = typeof USER_ROLES.SUPER_ADMIN | typeof USER_ROLES.INSTITUTION_ADMIN
-
+/** i18n keys under `features.admin` (e.g. `nav.dashboard`). */
 export type AdminWorkspaceNavigationItem = {
-  title: string
+  titleKey: string
   url: string
   icon: LucideIcon
   isActive?: boolean
   items?: readonly {
-    title: string
+    titleKey: string
     url: string
   }[]
 }
@@ -48,114 +43,48 @@ const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
   ],
   navItems: [
     {
-      title: 'Dashboard',
+      titleKey: 'nav.dashboard',
       url: '/dashboard',
       isActive: true,
-      icon: LayoutDashboard,
+      icon: Home,
     },
     {
-      title: 'Institutions',
+      titleKey: 'nav.institutions',
       url: '/institution',
       icon: Building2,
-      items: [{ title: 'Create institution', url: '/new-institution' }],
+      items: [
+        { titleKey: 'nav.createInstitution', url: '/new-institution' },
+        { titleKey: 'nav.institutionInvites', url: '/institution-invites' },
+      ],
     },
     {
-      title: 'Users',
+      titleKey: 'nav.users',
       url: '/users',
       icon: Users,
     },
     {
-      title: 'Billing',
-      url: '/billing',
-      icon: CreditCard,
+      titleKey: 'nav.planCatalog',
+      url: '/plan-catalog',
+      icon: FileStack,
     },
     {
-      title: 'Licenses',
-      url: '/licenses',
-      icon: KeyRound,
+      titleKey: 'nav.featureDefinitions',
+      url: '/feature-definitions',
+      icon: Blocks,
     },
     {
-      title: 'Features',
-      url: '/features',
-      icon: Puzzle,
+      titleKey: 'nav.auditLogs',
+      url: '/audit-logs',
+      icon: ClipboardList,
     },
     {
-      title: 'Analytics',
-      url: '/analytics',
-      icon: BarChart3,
-    },
-    {
-      title: 'System',
-      url: '/system',
-      icon: Settings,
+      titleKey: 'nav.gdprRequest',
+      url: '/gdpr-request',
+      icon: ShieldCheck,
     },
   ],
 }
 
-const INSTITUTION_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
-  teams: [
-    {
-      name: 'Institution',
-      logo: Building2,
-      plan: 'Admin',
-    },
-  ],
-  navItems: [
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      title: 'Teachers',
-      url: '/teacher',
-      icon: GraduationCap,
-    },
-    {
-      title: 'Students',
-      url: '/students',
-      icon: Users,
-    },
-    {
-      title: 'Licenses',
-      url: '/licenses',
-      icon: KeyRound,
-    },
-    {
-      title: 'Billing',
-      url: '/billing',
-      icon: CreditCard,
-    },
-    {
-      title: 'Courses',
-      url: '/courses',
-      icon: BookOpen,
-    },
-    {
-      title: 'Analytics',
-      url: '/analytics',
-      icon: BarChart3,
-    },
-    {
-      title: 'Settings',
-      url: '/settings',
-      icon: Settings,
-    },
-  ],
-}
-
-const ADMIN_WORKSPACE_NAVIGATION_BY_ROLE: Record<AdminWorkspaceRole, AdminWorkspaceNavigation> = {
-  [USER_ROLES.SUPER_ADMIN]: SUPER_ADMIN_NAVIGATION,
-  [USER_ROLES.INSTITUTION_ADMIN]: INSTITUTION_ADMIN_NAVIGATION,
-}
-
-export function resolveAdminWorkspaceRole(role: UserRole | null | undefined): AdminWorkspaceRole {
-  if (role === USER_ROLES.INSTITUTION_ADMIN) {
-    return USER_ROLES.INSTITUTION_ADMIN
-  }
-  return USER_ROLES.SUPER_ADMIN
-}
-
-export function getAdminWorkspaceNavigation(role: AdminWorkspaceRole): AdminWorkspaceNavigation {
-  return ADMIN_WORKSPACE_NAVIGATION_BY_ROLE[role]
+export function getSuperAdminNavigation(): AdminWorkspaceNavigation {
+  return SUPER_ADMIN_NAVIGATION
 }

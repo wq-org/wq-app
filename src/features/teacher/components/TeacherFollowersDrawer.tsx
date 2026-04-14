@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FollowersDrawer } from '@/components/shared'
-import {
-  getTeacherFollowers,
-  ProfileListItem,
-  type FollowProfileSummary,
-} from '@/features/profiles'
+import { getTeacherFollowers, ProfileListItem, type FollowProfileSummary } from '@/features/profile'
 
 export interface TeacherFollowersDrawerProps {
   open: boolean

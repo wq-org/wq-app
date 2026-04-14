@@ -55,6 +55,8 @@ export { Lesson as LessonRoute } from './pages/lesson'
 export { LessonRedirect } from './pages/LessonRedirect'
 export { LessonView } from './pages/LessonView'
 export { formatLessonMetaTimestamp } from './utils/formatLessonMetaTimestamp'
+export { formatRelativeUpdatedTime } from './utils/relativeTime'
+export type { RelativeUpdatedTimeLabels } from './utils/relativeTime'
 export {
   createLessonStarterContentJson,
   createLessonStarterContentObject,

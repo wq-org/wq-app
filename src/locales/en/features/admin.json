@@ -1,1 +1,604 @@
-{}
+{
+  "nav": {
+    "platform": "Platform",
+    "dashboard": "Dashboard",
+    "institutions": "Institutions",
+    "createInstitution": "Create institution",
+    "institutionInvites": "Institution invites",
+    "users": "Users",
+    "planCatalog": "Plan catalog",
+    "featureDefinitions": "Feature definitions",
+    "auditLogs": "Audit logs",
+    "gdprRequest": "GDPR Request",
+    "billing": "Billing",
+    "licenses": "Licenses",
+    "features": "Features",
+    "analytics": "Analytics",
+    "teachers": "Teachers",
+    "students": "Students",
+    "courses": "Courses",
+    "settings": "Settings"
+  },
+  "shell": {
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "logout": "Log out",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Failed to log out. Please try again."
+  },
+  "workspace": {
+    "superAdmin": {
+      "name": "WQ",
+      "plan": "Education"
+    },
+    "institutionAdmin": {
+      "name": "Institution",
+      "plan": "Admin"
+    }
+  },
+  "dashboard": {
+    "stats": {
+      "institutions": "Institutions",
+      "users": "Users",
+      "requests": "Requests",
+      "viewMore": "View more"
+    }
+  },
+  "auditLogs": {
+    "pageTitle": "Audit logs",
+    "pageDescription": "Read-only security and compliance events from audit.events (newest first). Actor email is shown when the user appears in the admin user list.",
+    "loadError": "Could not load audit events",
+    "emptyTitle": "No audit events yet",
+    "empty": "Security and compliance events will appear here when they are recorded.",
+    "errorTitle": "Could not load audit log",
+    "errorDescription": "{{message}}",
+    "refresh": "Refresh",
+    "table": {
+      "occurredAt": "Occurred at",
+      "actor": "Actor",
+      "eventType": "Event type",
+      "subjectType": "Subject type",
+      "subjectId": "Subject ID",
+      "institutionId": "Institution ID",
+      "payload": "Payload",
+      "metadata": "Metadata"
+    }
+  },
+  "institutions": {
+    "pageTitle": "Institutions",
+    "newButton": "Add Institution",
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "type": "Type",
+      "email": "Email",
+      "status": "Status",
+      "action": "Action",
+      "viewDetails": "View Details"
+    },
+    "empty": {
+      "title": "No institutions yet",
+      "description": "Create your first institution to get started.",
+      "action": "Create institution"
+    },
+    "toasts": {
+      "loadError": "Failed to Load Institutions",
+      "createSuccess": "Institution Created",
+      "createSuccessDescription": "The institution has been created successfully.",
+      "updateSuccess": "Institution updated",
+      "updateError": "Failed to update institution",
+      "createError": "Failed to Create Institution",
+      "unexpectedError": "An unexpected error occurred."
+    },
+    "editDrawer": {
+      "title": "Edit institution",
+      "description": "Update core institution values. Changes apply immediately.",
+      "slugNote": "Slug is read-only and cannot be edited here.",
+      "selectType": "Select institution type",
+      "statusReadOnly": "Status is read-only here and cannot be changed in this drawer.",
+      "noteLabel": "Note",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    }
+  },
+  "institutionInvites": {
+    "pageTitle": "Institution invites",
+    "pageDescription": "Pending and redeemed email invites from institution_invites (newest first). Inviter email is resolved from profiles when available.",
+    "refresh": "Refresh",
+    "loadError": "Could not load institution invites",
+    "errorTitle": "Could not load invites",
+    "errorDescription": "{{message}}",
+    "emptyTitle": "No invites yet",
+    "emptyDescription": "Invites created from the institution wizard or invite flows will appear here.",
+    "copySuccess": "Token copied",
+    "copyFailed": "Could not copy token",
+    "copyTokenAria": "Copy invite token",
+    "acceptedYes": "Accepted",
+    "acceptedNo": "Not accepted",
+    "table": {
+      "email": "Email",
+      "membershipRole": "Membership role",
+      "token": "Token",
+      "actions": "Actions",
+      "openDetails": "Open details",
+      "expiresAt": "Expires at",
+      "invitedBy": "Invited by",
+      "accepted": "Accepted",
+      "acceptedUserId": "Accepted user ID"
+    },
+    "sheet": {
+      "title": "Invite details",
+      "subtitle": "Expires at, inviter, and acceptance are shown below (read-only)."
+    }
+  },
+  "users": {
+    "pageTitle": "Users",
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "institution": "Institution",
+      "username": "Username",
+      "role": "Role",
+      "access": "Access",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No users found",
+      "description": "Users will appear here once they join the platform."
+    },
+    "access": {
+      "active": "Active",
+      "deactivated": "Deactivated"
+    },
+    "actions": {
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "delete": "Delete"
+    },
+    "deleteDialog": {
+      "title": "Delete user permanently?",
+      "description": "This action cannot be undone. It will permanently delete the user from profiles and auth.users. Stored files are kept and can be cleaned up manually later.",
+      "confirmLabel": "Type username {{username}} to confirm.",
+      "confirmPlaceholder": "Type exact username to confirm",
+      "holdButton": "Hold to delete permanently",
+      "deletingButton": "Deleting...",
+      "cancelButton": "Cancel"
+    },
+    "accessDialog": {
+      "deactivateTitle": "Deactivate this user?",
+      "activateTitle": "Activate this user?",
+      "deactivateDescription": "User will not be able to log in until reactivated by super admin.",
+      "activateDescription": "User will be able to log in again after activation.",
+      "deactivateButton": "Deactivate user",
+      "activateButton": "Activate user",
+      "savingButton": "Saving...",
+      "cancelButton": "Cancel"
+    },
+    "toasts": {
+      "loadError": "Failed to load users",
+      "noUsernameError": "Cannot delete user without username",
+      "deleteSuccess": "User deleted permanently",
+      "deleteSuccessDescription": "{{username}} was deleted from auth and profile tables.",
+      "deleteError": "Failed to delete user",
+      "accessError": "Failed to change user access",
+      "activateSuccess": "User activated",
+      "deactivateSuccess": "User deactivated",
+      "activateDescription": "{{username}} can log in again.",
+      "deactivateDescription": "{{username}} can no longer log in.",
+      "unexpectedError": "An unexpected error occurred."
+    }
+  },
+  "planCatalog": {
+    "pageTitle": "Plan catalog",
+    "pageDescription": "Manage commercial plans and configure entitlement values per plan.",
+    "filterLabel": "Search plans",
+    "filterPlaceholder": "Filter by name or code…",
+    "filterEmpty": "No plans match your search.",
+    "loadError": "Failed to load plans",
+    "noDescription": "No description",
+    "actions": {
+      "editEntitlements": "Edit entitlements"
+    },
+    "preview": {
+      "title": "Preview",
+      "close": "Close"
+    },
+    "empty": {
+      "title": "No plans yet",
+      "description": "Add plans before configuring entitlement values."
+    },
+    "editor": {
+      "back": "Back to plans",
+      "pageTitle": "Edit entitlements for {{plan}}",
+      "pageDescription": "Set plan-level defaults per feature. Empty values fall back to global defaults or downstream overrides.",
+      "loadError": "Failed to load plan entitlements",
+      "booleanHint": "Global default: {{defaultValue}}",
+      "placeholders": {
+        "integer": "Enter number",
+        "bigint": "Enter large number",
+        "text": "Enter text value"
+      },
+      "bigintPreview": "{{value}} = {{formatted}}",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "tabs": {
+        "editor": "Editor",
+        "settings": "Settings"
+      },
+      "settings": {
+        "codeLabel": "Plan code",
+        "deletedBadge": "Deleted",
+        "seatCapDefault": "Seat cap (default)",
+        "storageBytesCapDefault": "Storage cap (bytes, default)",
+        "metadata": "Metadata (JSON)",
+        "priceAmount": "Price amount",
+        "currency": "Currency",
+        "billingInterval": "Billing interval",
+        "isActive": "Plan active",
+        "isActiveHint": "When off, the plan is hidden from new assignments.",
+        "updatedAt": "Updated at",
+        "deletedAt": "Deleted at",
+        "placeholders": {
+          "seatCap": "e.g. 50 (empty = no cap)",
+          "storageBytes": "Bytes (digits only)",
+          "metadata": "{ }",
+          "priceAmount": "e.g. 99.00"
+        },
+        "billing": {
+          "none": "Default (none)",
+          "monthly": "Monthly",
+          "yearly": "Yearly"
+        },
+        "errors": {
+          "seatCap": "Enter a valid non-negative seat cap or leave empty.",
+          "metadataJson": "Metadata must be valid JSON.",
+          "priceAmount": "Enter a valid price or leave empty.",
+          "billingInterval": "Choose a billing interval."
+        }
+      },
+      "toasts": {
+        "saveSuccess": "Plan entitlements updated",
+        "saveError": "Could not save plan entitlements",
+        "unexpected": "Something went wrong.",
+        "settingsSaveSuccess": "Plan settings updated",
+        "settingsSaveError": "Could not save plan settings"
+      }
+    }
+  },
+  "featureDefinitions": {
+    "pageTitle": "Feature definitions",
+    "pageDescription": "This catalog is the platform entitlement layer: each stable key can appear in commercial plans and per-institution overrides. Effective access resolves in order—institution override first, then plan defaults, then the defaults you set here—before the product gates features.",
+    "filterLabel": "Search catalog",
+    "filterPlaceholder": "Filter by key or display name…",
+    "filterEmptyTitle": "No results",
+    "filterEmpty": "No definitions match your search. Try another key or name.",
+    "addButton": "Add feature",
+    "addMenuTrigger": "Add",
+    "addMenuFeature": "Add feature",
+    "addMenuCategory": "Add category",
+    "loadError": "Failed to load feature definitions",
+    "card": {
+      "coreBadge": "Core",
+      "defaultOn": "Default on",
+      "defaultOff": "Default off",
+      "edit": "Edit",
+      "updatedRecently": "Updated recently",
+      "updatedRelative": "Updated {{relative}}",
+      "noCategory": "No category",
+      "globalDefault": "Global default:"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "saveChanges": "Save changes",
+      "saving": "Saving…"
+    },
+    "editor": {
+      "back": "Back to list",
+      "pageTitleNew": "New feature definition",
+      "pageTitleEdit": "Edit feature definition",
+      "notFound": "This feature definition could not be found.",
+      "dangerZone": "Danger zone",
+      "deleteHint": "Deleting removes the catalog row. This fails if a plan or override still references it.",
+      "holdToDelete": "Hold to delete"
+    },
+    "empty": {
+      "title": "No features yet",
+      "description": "Add a feature to the catalog so plans and entitlement overrides can reference it.",
+      "hintKeys": "Each key is unique and cannot be renamed later.",
+      "hintPlans": "Use lowercase snake_case (for example custom_reports)."
+    },
+    "table": {
+      "key": "Key",
+      "name": "Name",
+      "category": "Category",
+      "valueType": "Value type",
+      "defaultEnabled": "Default (boolean)",
+      "updatedAt": "Updated",
+      "actions": "Actions"
+    },
+    "valueTypes": {
+      "boolean": "Boolean",
+      "integer": "Integer",
+      "bigint": "Big integer",
+      "text": "Text"
+    },
+    "badges": {
+      "on": "On",
+      "off": "Off"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "createTitle": "New feature definition",
+      "editTitle": "Edit feature definition",
+      "description": "Stable keys identify the feature in plans and overrides. The key cannot be changed after creation.",
+      "key": "Key",
+      "keyPlaceholder": "e.g. custom_reports",
+      "keyReadOnlyHint": "The key is fixed so existing plan rows keep a stable reference.",
+      "name": "Display name",
+      "namePlaceholder": "Human-readable label",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "customCategoryLabel": "Custom category slug",
+      "customCategoryPlaceholder": "e.g. billing_or_integrations",
+      "descriptionField": "Description",
+      "descriptionPlaceholder": "Optional notes for admins",
+      "valueType": "Value type",
+      "valueTypeHints": {
+        "boolean": "Plans and overrides will store an on/off toggle. Use for feature flags like \"chat_enabled\".",
+        "integer": "Plans and overrides will store a whole number. Use for limits like \"max_students = 500\".",
+        "bigint": "Plans and overrides will store a large number. Use for byte-level caps like \"storage_bytes_cap\" (for example: 10737418240 = 10 GB).",
+        "text": "Plans and overrides will store a text value. Use for configurable strings like region codes."
+      },
+      "defaultEnabled": "Default value",
+      "defaultEnabledHint": "Global fallback when no plan or institution override is set. This is the platform-wide default for this toggle.",
+      "nonBooleanHint": "The actual default value (number or text) is configured per plan in Plan entitlements. This definition only registers the feature in the catalog.",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "validation": {
+      "keyInvalid": "Use lowercase snake_case: start with a letter, then letters, digits, or underscores only.",
+      "categoryCustomRequired": "Enter a category slug (letters, numbers, underscores).",
+      "categoryReservedSlug": "That slug matches a built-in category or is reserved. Choose a different name."
+    },
+    "categories": {
+      "none": "No category",
+      "core": "Core",
+      "collaboration": "Collaboration",
+      "engagement": "Engagement",
+      "infrastructure": "Infrastructure",
+      "integrations": "Integrations",
+      "learning": "Learning",
+      "limits": "Limits",
+      "scheduling": "Scheduling",
+      "new_category": "New category"
+    },
+    "deleteDialog": {
+      "title": "Delete this feature?",
+      "description": "This cannot be undone. If any plan entitlement or institution override references this feature, deletion will be blocked.",
+      "confirmLabel": "Type the key {{key}} to confirm.",
+      "confirmFieldLabel": "Confirmation",
+      "confirmInputAria": "Feature key confirmation",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting..."
+    },
+    "toasts": {
+      "saveSuccess": "Default values updated",
+      "saveError": "Could not update default values",
+      "createSuccess": "Feature created",
+      "updateSuccess": "Feature updated",
+      "createError": "Could not create feature",
+      "updateError": "Could not update feature",
+      "deleteSuccess": "Feature deleted",
+      "deleteError": "Could not delete feature",
+      "deleteBlockedByReferences": "This feature is still referenced by a plan or override. Remove those rows first.",
+      "unexpected": "Something went wrong."
+    }
+  },
+  "form": {
+    "title": "Basic Information",
+    "subtitle": "Add the basic details for your institution. Fields marked with * are required.",
+    "fields": {
+      "name": "Institution Name",
+      "namePlaceholder": "e.g., Kreiskliniken Reutlingen",
+      "slug": "Slug",
+      "slugPlaceholder": "kreiskliniken-reutlingen",
+      "slugHint": "URL-friendly identifier. Auto-generated from name unless manually edited.",
+      "type": "Type",
+      "typePlaceholder": "Select institution type",
+      "status": "Status",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter a brief description of the institution...",
+      "email": "Email",
+      "emailPlaceholder": "contact@institution.de",
+      "phone": "Phone",
+      "phonePlaceholder": "+49 7121 200-0",
+      "website": "Website",
+      "websitePlaceholder": "https://www.institution.de",
+      "imageUrl": "Image URL",
+      "imageUrlPlaceholder": "https://example.com/image.png",
+      "imageUrlHint": "Enter a direct URL to the institution image."
+    },
+    "types": {
+      "school": "School",
+      "university": "University",
+      "college": "College",
+      "organization": "Organization",
+      "hospital": "Hospital",
+      "other": "Other"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "pending": "Pending"
+    },
+    "legal": {
+      "sectionTitle": "Legal Information",
+      "legalName": "Legal Name",
+      "legalNamePlaceholder": "Kreiskliniken Reutlingen gGmbH",
+      "legalForm": "Legal Form",
+      "legalFormPlaceholder": "Select legal form",
+      "vatId": "VAT ID (USt-ID)",
+      "vatIdPlaceholder": "DE123456789",
+      "registrationNumber": "Handelsregister (HRB)",
+      "registrationNumberPlaceholder": "HRB 12345",
+      "taxId": "Steuernummer",
+      "taxIdPlaceholder": "12/345/67890"
+    },
+    "legalForms": {
+      "gmbh": "GmbH",
+      "ggmbh": "gGmbH (gemeinnützig)",
+      "ag": "AG",
+      "ev": "e.V.",
+      "kg": "KG",
+      "other": "Other"
+    },
+    "primaryContact": {
+      "sectionTitle": "Primary Contact",
+      "contactName": "Contact Name",
+      "contactNamePlaceholder": "Astrid",
+      "contactRole": "Role / Title",
+      "contactRolePlaceholder": "Pflegedirektion",
+      "contactEmail": "Contact Email",
+      "contactEmailPlaceholder": "m.schmidt@example.de",
+      "contactPhone": "Contact Phone",
+      "contactPhonePlaceholder": "+49 7121 200-1234"
+    },
+    "billing": {
+      "sectionTitle": "Billing Information",
+      "billingEmail": "Billing Email",
+      "billingEmailPlaceholder": "billing@institution.de",
+      "billingContactName": "Billing Contact Name",
+      "billingContactNamePlaceholder": "Buchhaltung",
+      "billingContactPhone": "Billing Contact Phone",
+      "billingContactPhonePlaceholder": "+49 7121 200-900",
+      "invoiceLanguage": "Invoice Language",
+      "paymentTerms": "Payment Terms (days)",
+      "paymentTermsPlaceholder": "30"
+    },
+    "invoiceLanguages": {
+      "de": "German (DE)",
+      "en": "English (EN)"
+    },
+    "address": {
+      "sectionTitle": "Address",
+      "street": "Street & Number",
+      "streetPlaceholder": "Am Steinenberg 70",
+      "addressLine2": "Additional Address (Building, Floor)",
+      "addressLine2Placeholder": "Building A, 2nd Floor",
+      "postalCode": "Postal Code (PLZ)",
+      "postalCodePlaceholder": "72764",
+      "city": "City",
+      "cityPlaceholder": "Reutlingen",
+      "state": "State (optional)",
+      "statePlaceholder": "Baden-Württemberg",
+      "country": "Country",
+      "countryPlaceholder": "Germany",
+      "countryNoResults": "No country found"
+    },
+    "hospital": {
+      "sectionTitle": "Hospital Details",
+      "institutionNumber": "IK-Nummer (Institutionskennzeichen)",
+      "institutionNumberPlaceholder": "123456789",
+      "numberOfBeds": "Number of Beds",
+      "numberOfBedsPlaceholder": "500",
+      "departments": "Departments (comma-separated)",
+      "departmentsPlaceholder": "Intensive Care, Wound Management, Emergency",
+      "accreditation": "Accreditation",
+      "accreditationPlaceholder": "ISO 9001"
+    },
+    "socialLinks": {
+      "sectionTitle": "Social Links",
+      "linkedin": "LinkedIn",
+      "linkedinPlaceholder": "https://www.linkedin.com/company/institution",
+      "instagram": "Instagram",
+      "instagramPlaceholder": "https://www.instagram.com/institution"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Add Institution"
+    }
+  },
+  "wizard": {
+    "title": "Create institution",
+    "subtitle": "Identity and billing seed only. Subscription and quotas use platform defaults. The first admin receives an email invite.",
+    "steps": {
+      "identity": "Identity",
+      "billing": "Billing",
+      "structure": "Structure",
+      "review": "Review"
+    },
+    "identity": {
+      "name": "Institution name",
+      "slug": "Slug",
+      "type": "Type",
+      "adminEmail": "Institution admin email",
+      "adminEmailPlaceholder": "admin@school.example",
+      "adminEmailHint": "This is the email address of the future institution admin. They will use this exact address to create their account after they receive the invitation email.",
+      "inviteAlertTitle": "Invite email",
+      "inviteAlertDescription": "After creation we will send an invite link to the given email address. The link is valid for 30 minutes."
+    },
+    "billing": {
+      "legalName": "Legal name",
+      "billingEmail": "Billing email",
+      "street": "Street",
+      "streetPlaceholder": "e.g. Am Steinenberg",
+      "streetNumber": "No.",
+      "streetNumberPlaceholder": "70",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "72764",
+      "city": "City",
+      "cityPlaceholder": "Reutlingen",
+      "country": "Country",
+      "address": "Address"
+    },
+    "structure": {
+      "toggleLabel": "Create initial structure",
+      "toggleHint": "Optional: add one faculty and one optional programme.",
+      "facultyName": "Faculty name",
+      "facultyPlaceholder": "e.g. Nursing",
+      "programmeName": "Programme name (optional)",
+      "programmePlaceholder": "e.g. General Nursing",
+      "programmeHint": "Leave empty to create only a faculty.",
+      "summaryLabel": "Initial structure",
+      "skipped": "Skipped"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create institution",
+      "creating": "Creating..."
+    },
+    "validation": {
+      "nameRequired": "Institution name is required.",
+      "slugRequired": "Slug is required.",
+      "typeRequired": "Institution type is required.",
+      "adminEmailInvalid": "Enter a valid admin email.",
+      "legalNameRequired": "Legal name is required.",
+      "billingEmailInvalid": "Enter a valid billing email.",
+      "countryRequired": "Country is required.",
+      "facultyRequired": "Faculty name is required when structure setup is enabled."
+    },
+    "success": {
+      "title": "Institution created",
+      "description": "A pending invite was created for {{email}}.",
+      "emailSentTitle": "Invite email sent",
+      "emailSentDescription": "We emailed {{email}} with a signup link.",
+      "emailSendFailedTitle": "Invite email not sent",
+      "copyToken": "Copy token",
+      "tokenCopied": "Invite token copied.",
+      "tokenCopyFailed": "Could not copy invite token.",
+      "done": "Done"
+    }
+  }
+}

@@ -18,5 +18,39 @@
   },
   "view": {
     "notFound": "Institution nicht gefunden"
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "loading": "Abonnement wird geladen…",
+    "loadError": "Abonnementdetails konnten nicht geladen werden.",
+    "empty": "Kein Abonnement vorhanden, oder Sie haben keinen Zugriff auf diese Angaben.",
+    "sectionPlan": "Tarif",
+    "sectionTerm": "Laufzeit",
+    "sectionBilling": "Abrechnung",
+    "sectionPeriod": "Aktuelle Abrechnungsperiode",
+    "sectionCancellation": "Kündigung & Testphase",
+    "sectionRecord": "Datensatz",
+    "plan": "Tarif",
+    "effectiveFrom": "Gültig ab",
+    "effectiveTo": "Gültig bis",
+    "billingStatus": "Abrechnungsstatus",
+    "renewalAt": "Verlängerung",
+    "currentPeriodStart": "Periodenbeginn",
+    "currentPeriodEnd": "Periodenende",
+    "cancelAtPeriodEnd": "Kündigung zum Periodenende",
+    "canceledAt": "Gekündigt am",
+    "trialEndsAt": "Testphase endet",
+    "updatedAt": "Aktualisiert",
+    "yes": "Ja",
+    "no": "Nein",
+    "billingStatuses": {
+      "active": "Aktiv",
+      "trialing": "Testphase",
+      "past_due": "Überfällig",
+      "grace": "Kulanz",
+      "suspended": "Ausgesetzt",
+      "expired": "Abgelaufen",
+      "cancelled": "Gekündigt"
+    }
   }
 }

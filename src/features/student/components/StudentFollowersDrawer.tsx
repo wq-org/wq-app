@@ -5,7 +5,7 @@ import {
   getFollowedTeacherProfiles,
   ProfileListItem,
   type FollowProfileSummary,
-} from '@/features/profiles'
+} from '@/features/profile'
 
 export interface StudentFollowersDrawerProps {
   open: boolean

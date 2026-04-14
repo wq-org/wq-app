@@ -1,4 +1,5 @@
 export { EmptyTeachersView } from './components/EmptyTeachersView'
+export { InstitutionSubscriptionDetails } from './components/InstitutionSubscriptionDetails'
 export { InstitutionProfileView } from './components/InstitutionProfileView'
 export { InstitutionView } from './components/InstitutionView'
 export { Institution } from './pages/institution'

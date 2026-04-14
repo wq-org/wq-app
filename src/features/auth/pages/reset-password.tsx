@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { Field, FieldDescription, FieldGroup } from '@/components/ui/field'
+import { FieldInput } from '@/components/ui/field-input'
 import { useNavigate } from 'react-router-dom'
 import { Text } from '@/components/ui/text'
 import { resetPassword } from '../api/authApi'
@@ -223,30 +223,26 @@ export function ResetPasswordPage() {
           >
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="new-password">{t('resetPassword.newPassword')}</FieldLabel>
-                <Input
+                <FieldInput
                   id="new-password"
-                  type="password"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onValueChange={setNewPassword}
+                  label={t('resetPassword.newPassword')}
                   placeholder={t('resetPassword.newPasswordPlaceholder')}
+                  type="password"
                   required
-                  className="bg-gray-50"
                 />
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="confirm-password">
-                  {t('resetPassword.confirmPassword')}
-                </FieldLabel>
-                <Input
+                <FieldInput
                   id="confirm-password"
-                  type="password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onValueChange={setConfirmPassword}
+                  label={t('resetPassword.confirmPassword')}
                   placeholder={t('resetPassword.confirmPasswordPlaceholder')}
+                  type="password"
                   required
-                  className="bg-gray-50"
                 />
                 {confirmPassword && newPassword !== confirmPassword && (
                   <FieldDescription className="text-destructive">

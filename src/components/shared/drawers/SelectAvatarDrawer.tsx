@@ -161,7 +161,7 @@ export function SelectAvatarDrawer({
           className="relative h-auto cursor-pointer p-0 hover:bg-transparent"
           aria-label={triggerAriaLabel}
         >
-          <Avatar className="size-24 rounded-full border border-border/60 bg-card shadow-sm">
+          <Avatar className="size-24 overflow-hidden rounded-full border border-border/60 bg-card shadow-sm">
             <AvatarImage
               src={triggerImageSrc}
               alt={displayName || drawerTitle}

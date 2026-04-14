@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
-import * as SeparatorPrimitive from '@radix-ui/react-separator'
+import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 type StepperOrientation = 'horizontal' | 'vertical'
@@ -87,7 +87,7 @@ export function Stepper({
         onValueChange={handleValueChange}
         className={cn(
           'flex gap-2',
-          orientation === 'vertical' ? 'flex-col' : 'flex-row',
+          orientation === 'vertical' ? 'flex-col' : 'flex-row items-center justify-center',
           className,
         )}
         {...props}
@@ -148,8 +148,8 @@ export const StepperTrigger = React.forwardRef<
       value={String(step)}
       disabled={isDisabled}
       className={cn(
-        'p-2 flex flex-col items-center text-center gap-2 rounded-md',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'flex flex-col items-center gap-2 rounded-2xl p-2 text-center',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         'disabled:opacity-50 disabled:pointer-events-none',
         className,
       )}
@@ -175,10 +175,10 @@ export const StepperIndicator = React.forwardRef<HTMLDivElement, StepperIndicato
         ref={ref}
         data-slot="stepper-indicator"
         className={cn(
-          'inline-flex items-center justify-center rounded-full text-muted-foreground/50 w-10 h-10 border-2 border-muted',
-          'group-data-disabled:text-muted-foreground group-data-disabled:opacity-50',
-          'group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground group-data-[state=active]:border-primary',
-          'group-data-[state=completed]:bg-accent group-data-[state=completed]:text-accent-foreground group-data-[state=completed]:border-accent',
+          'inline-flex size-10 items-center justify-center rounded-full border-2 border-border/70 bg-card text-muted-foreground/70 shadow-sm transition-colors',
+          'group-data-disabled:opacity-50',
+          'group-data-[state=active]:border-primary group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground',
+          'group-data-[state=completed]:border-accent group-data-[state=completed]:bg-accent group-data-[state=completed]:text-accent-foreground',
           className,
         )}
         {...props}
@@ -198,7 +198,7 @@ export const StepperTitle = React.forwardRef<HTMLHeadingElement, StepperTitlePro
       <h3
         ref={ref}
         data-slot="stepper-title"
-        className={cn('text-md font-semibold whitespace-nowrap', className)}
+        className={cn('whitespace-nowrap text-base font-semibold text-foreground', className)}
         {...props}
       >
         {children}
@@ -227,30 +227,30 @@ export const StepperDescription = React.forwardRef<HTMLParagraphElement, Stepper
 StepperDescription.displayName = 'StepperDescription'
 
 export type StepperSeparatorProps = Omit<
-  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof Separator>,
   'orientation'
 >
 
-export const StepperSeparator = React.forwardRef<
-  React.ElementRef<typeof SeparatorPrimitive.Root>,
-  StepperSeparatorProps
->(({ className, decorative = true, ...props }, ref) => {
+export function StepperSeparator({
+  className,
+  decorative = true,
+  ...props
+}: StepperSeparatorProps) {
   const { orientation } = useStepperContext()
 
   return (
-    <SeparatorPrimitive.Root
-      ref={ref}
+    <Separator
       data-slot="stepper-separator"
       decorative={decorative}
       orientation={orientation}
       className={cn(
-        'bg-muted flex-1',
-        orientation === 'horizontal' ? 'h-0.5 min-w-10' : 'w-0.5 min-h-10',
+        'flex-1 self-center bg-border/70',
+        orientation === 'horizontal' ? 'h-px min-w-10' : 'min-h-10 w-px',
         'group-data-[state=completed]:bg-primary',
         className,
       )}
       {...props}
     />
   )
-})
+}
 StepperSeparator.displayName = 'StepperSeparator'

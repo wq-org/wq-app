@@ -5,11 +5,6 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
 
-const LANGUAGE_FLAGS: Record<'de' | 'en', string> = {
-  de: '🇩🇪',
-  en: '🇺🇸',
-}
-
 const SUPPORTED_LANGUAGES = [{ code: 'de' as const }, { code: 'en' as const }] as const
 
 type LanguageSwitcherVariant = 'default' | 'auth'
@@ -47,12 +42,12 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
         <Button
           type="button"
           variant={isAuthVariant ? 'outline' : 'ghost'}
-          size="icon"
+          size={isAuthVariant ? 'default' : 'sm'}
           className={cn(
-            'h-10 w-10 rounded-full gap-1',
+            'min-w-10 shrink-0 gap-1 px-2 font-medium tabular-nums',
             isAuthVariant
-              ? 'flex shrink-0 items-center justify-center border-border bg-card p-0 text-foreground shadow-sm hover:bg-accent'
-              : 'hover:bg-accent',
+              ? 'h-10 rounded-full border-border bg-card text-foreground shadow-sm hover:bg-accent'
+              : 'h-10 w-auto rounded-full hover:bg-accent',
           )}
           aria-label={t('triggerLabel', {
             language: t(`languages.${currentLanguage.code}.name`),
@@ -62,9 +57,9 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
           <Text
             as="span"
             variant="small"
-            className={cn(isAuthVariant ? 'text-sm' : 'text-base')}
+            className={cn('uppercase', isAuthVariant ? 'text-sm' : 'text-xs')}
           >
-            {LANGUAGE_FLAGS[currentLanguage.code]}
+            {currentLanguage.code}
           </Text>
         </Button>
       </PopoverTrigger>
@@ -97,13 +92,6 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
                     : undefined,
               )}
             >
-              <Text
-                as="span"
-                variant="small"
-                className={cn(isAuthVariant && 'text-sm')}
-              >
-                {LANGUAGE_FLAGS[lang.code]}
-              </Text>
               <Text
                 as="span"
                 variant="small"

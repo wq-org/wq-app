@@ -1,5 +1,31 @@
+import { FunctionsHttpError } from '@supabase/supabase-js'
+
 import { supabase } from '@/lib/supabase'
-import type { InstitutionFormData, InstitutionRow } from '@/features/admin/types/institution.types'
+import type {
+  BootstrapInstitutionFromWizardResult,
+  Institution,
+  InstitutionFormData,
+  InstitutionRow,
+  InstitutionUpdateValues,
+  NewInstitutionWizardValues,
+} from '../types/institution.types'
+
+const INSTITUTION_COLUMNS =
+  'id, name, slug, type, status, email, description, image_url, created_at' as const
+
+function toInstitution(row: InstitutionRow): Institution {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    type: row.type,
+    status: row.status as Institution['status'],
+    email: row.email,
+    description: row.description,
+    imageUrl: row.image_url,
+    createdAt: new Date(row.created_at),
+  }
+}
 
 function toOptionalText(value?: string) {
   const normalized = value?.trim()
@@ -11,31 +37,25 @@ function toOptionalPositiveInteger(value?: number) {
 }
 
 /** Fetch all institutions ordered by creation date (newest first). */
-export async function fetchInstitutions() {
+export async function fetchInstitutions(): Promise<Institution[]> {
   const { data, error } = await supabase
     .from('institutions')
-    .select('id, name, slug, type, status, email, image_url, created_at')
+    .select(INSTITUTION_COLUMNS)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching institutions:', error)
-    throw error
-  }
-
-  return data as InstitutionRow[]
+  if (error) throw new Error(error.message)
+  return (data as InstitutionRow[]).map(toInstitution)
 }
 
 /**
  * Create a new institution in the database.
  * Maps form data to the institutions schema (address and social_links as JSONB).
  */
-export async function createInstitution(data: InstitutionFormData) {
+export async function createInstitution(data: InstitutionFormData): Promise<Institution> {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) {
-    throw new Error('Not authenticated')
-  }
+  if (!user) throw new Error('Not authenticated')
 
   const hasAddress = Object.values(data.address || {}).some((v) => (v ?? '').trim().length > 0)
   const hasSocialLinks =
@@ -82,13 +102,228 @@ export async function createInstitution(data: InstitutionFormData) {
       image_url: toOptionalText(data.imageUrl),
       created_by_admin_id: user.id,
     })
-    .select()
+    .select(INSTITUTION_COLUMNS)
     .single()
 
-  if (error) {
-    console.error('Error creating institution:', error)
-    throw error
+  if (error) throw new Error(error.message)
+  return toInstitution(institution as InstitutionRow)
+}
+
+export async function updateInstitution(
+  institutionId: string,
+  values: InstitutionUpdateValues,
+): Promise<Institution> {
+  const { data, error } = await supabase
+    .from('institutions')
+    .update({
+      name: values.name.trim(),
+      type: toOptionalText(values.type),
+      status: values.status,
+      email: toOptionalText(values.email),
+      description: toOptionalText(values.description),
+    })
+    .eq('id', institutionId)
+    .select(INSTITUTION_COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+  return toInstitution(data as InstitutionRow)
+}
+
+type InstitutionWizardBootstrapRpcRow = {
+  institution_id: string
+  invite_token: string
+}
+
+/**
+ * Wizard flow:
+ * 1) call bootstrap RPC (institution + settings + quotas + trial + invite token)
+ * 2) patch institution metadata
+ * 3) optionally scaffold faculty/programme
+ */
+export async function bootstrapInstitutionFromWizard(
+  values: NewInstitutionWizardValues,
+): Promise<BootstrapInstitutionFromWizardResult> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: rpcData, error: rpcError } = await supabase.rpc(
+    'create_institution_with_admin_email_invite',
+    {
+      p_name: values.name.trim(),
+      p_admin_email: values.adminEmail.trim(),
+    },
+  )
+  if (rpcError) throw new Error(rpcError.message)
+
+  const row = (Array.isArray(rpcData) ? rpcData[0] : rpcData) as
+    | InstitutionWizardBootstrapRpcRow
+    | null
+    | undefined
+
+  if (!row?.institution_id || !row?.invite_token) {
+    throw new Error('Institution bootstrap returned no data')
   }
 
-  return institution
+  const { data: institution, error: institutionError } = await supabase
+    .from('institutions')
+    .update({
+      slug: toOptionalText(values.slug),
+      type: values.type || null,
+      legal_name: toOptionalText(values.legalName),
+      billing_email: toOptionalText(values.billingEmail),
+      email: toOptionalText(values.billingEmail || values.adminEmail),
+      address: { country: values.country.trim() },
+      status: 'pending',
+    })
+    .eq('id', row.institution_id)
+    .select(INSTITUTION_COLUMNS)
+    .single()
+  if (institutionError) throw new Error(institutionError.message)
+
+  if (values.createInitialStructure && values.facultyName.trim()) {
+    const { data: faculty, error: facultyError } = await supabase
+      .from('faculties')
+      .insert({
+        institution_id: row.institution_id,
+        name: values.facultyName.trim(),
+        sort_order: 0,
+      })
+      .select('id')
+      .single()
+    if (facultyError) throw new Error(facultyError.message)
+
+    if (values.programmeName.trim()) {
+      const { error: programmeError } = await supabase.from('programmes').insert({
+        institution_id: row.institution_id,
+        faculty_id: faculty.id,
+        name: values.programmeName.trim(),
+        progression_type: 'year_group',
+        sort_order: 0,
+      })
+      if (programmeError) throw new Error(programmeError.message)
+    }
+  }
+
+  return {
+    institution: toInstitution(institution as InstitutionRow),
+    inviteToken: row.invite_token,
+  }
+}
+
+type SendInstitutionAdminInviteEmailParams = {
+  inviteToken: string
+  adminEmail: string
+  institutionName?: string
+}
+
+type SendInstitutionAdminInviteEmailResponse = {
+  ok?: boolean
+  error?: string
+}
+
+/** Calls Edge Function that sends Brevo transactional email (API key server-side only). */
+export async function sendInstitutionAdminInviteEmail(
+  params: SendInstitutionAdminInviteEmailParams,
+): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase.functions.invoke<SendInstitutionAdminInviteEmailResponse>(
+    'send-institution-admin-invite-email',
+    {
+      body: {
+        inviteToken: params.inviteToken,
+        adminEmail: params.adminEmail.trim(),
+        institutionName: params.institutionName?.trim(),
+      },
+    },
+  )
+
+  if (error) {
+    if (error instanceof FunctionsHttpError) {
+      let message = error.message
+      try {
+        const ctx: unknown = await error.context.json()
+        if (
+          ctx &&
+          typeof ctx === 'object' &&
+          'error' in ctx &&
+          typeof (ctx as { error: unknown }).error === 'string'
+        ) {
+          message = (ctx as { error: string }).error
+        }
+      } catch {
+        /* keep message */
+      }
+      throw new Error(message)
+    }
+    throw new Error(error.message)
+  }
+
+  if (!data?.ok) {
+    throw new Error(data?.error ?? 'Failed to send invite email')
+  }
+}
+
+/**
+ * Resend the institution admin invite email for a pending institution.
+ * Finds the latest pending invite, creates a fresh one if expired, then sends via Brevo.
+ */
+export async function resendInstitutionAdminInviteEmail(institutionId: string): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Find the latest pending institution_admin invite for this institution
+  const { data: invite, error: inviteError } = await supabase
+    .from('institution_invites')
+    .select('token, email, expires_at')
+    .eq('institution_id', institutionId)
+    .eq('membership_role', 'institution_admin')
+    .is('accepted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (inviteError) throw new Error(inviteError.message)
+  if (!invite) throw new Error('No pending invite found for this institution')
+
+  let token = invite.token as string
+  const adminEmail = invite.email as string
+
+  // If invite is expired, create a fresh one
+  const expiresAt = new Date(invite.expires_at as string)
+  if (expiresAt.getTime() < Date.now()) {
+    const { data: newToken, error: rpcError } = await supabase.rpc(
+      'create_institution_invite_by_email',
+      {
+        p_institution_id: institutionId,
+        p_email: adminEmail,
+        p_role: 'institution_admin',
+      },
+    )
+    if (rpcError) throw new Error(rpcError.message)
+    if (!newToken) throw new Error('Failed to create new invite')
+    token = newToken as string
+  }
+
+  // Get institution name for the email
+  const { data: institution } = await supabase
+    .from('institutions')
+    .select('name')
+    .eq('id', institutionId)
+    .maybeSingle()
+
+  // Send via Brevo edge function
+  await sendInstitutionAdminInviteEmail({
+    inviteToken: token,
+    adminEmail,
+    institutionName: institution?.name ?? undefined,
+  })
 }

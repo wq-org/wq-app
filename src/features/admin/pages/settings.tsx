@@ -1,5 +1,16 @@
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { SettingsPage } from '@/features/settings'
+import { USER_ROLES } from '@/features/auth'
 
-export function AdminSettings() {
-  return <AdminWorkspaceShell>Settings</AdminWorkspaceShell>
+const AdminSettings = () => {
+  return (
+    <AdminWorkspaceShell role={USER_ROLES.SUPER_ADMIN}>
+      <SettingsPage
+        role={USER_ROLES.SUPER_ADMIN}
+        embedded
+      />
+    </AdminWorkspaceShell>
+  )
 }
+
+export { AdminSettings }

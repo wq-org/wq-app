@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldSeparator } from '@/components/ui/field'
-import { GraduationCap, Presentation, Building2, Check } from 'lucide-react'
+import { GraduationCap, Presentation, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '@/features/auth'
@@ -17,12 +17,12 @@ import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
+import { logRoleDebug } from '../utils/roleDebugLog'
 import { Label } from '@/components/ui/label'
 
 const roleTabs: TabItem[] = [
   { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
   { id: USER_ROLES.TEACHER, icon: Presentation, title: 'Teacher' },
-  { id: USER_ROLES.INSTITUTION_ADMIN, icon: Building2, title: 'Institution' },
 ]
 
 export const SignUpPage = () => {
@@ -46,6 +46,7 @@ export const SignUpPage = () => {
   const handleRoleChange = (tabId: string) => {
     setSelectedRole(tabId)
     setPendingRole(tabId)
+    logRoleDebug('signUp: role tab changed', { selectedRole: tabId, pendingRoleUpdated: true })
   }
 
   const handleEmailChange = (value: string) => {
@@ -77,14 +78,17 @@ export const SignUpPage = () => {
     try {
       // Persist the chosen role before auth/signup so onboarding can continue in first session.
       setPendingRole(selectedRole)
+      logRoleDebug('signUp: submit', { selectedRole, pendingRoleSet: selectedRole })
       const responseData = await signUpUser({ email, password, role: selectedRole })
 
       if (responseData.success) {
+        logRoleDebug('signUp: success → navigate /onboarding', { selectedRole })
         toast.success('Account Created!', {
           description: "Welcome to WQ Health. Let's complete your profile.",
         })
         navigate('/onboarding')
       } else {
+        logRoleDebug('signUp: failed', { error: responseData.error })
         console.error('Signup failed:', responseData.error)
         toast.error('Sign Up Failed', {
           description: responseData.error || 'Unable to create account. Please try again.',

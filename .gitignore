@@ -68,3 +68,5 @@ env/
 *.so
 pip-log.txt
 pip-delete-this-directory.txt
+
+src/assets/data

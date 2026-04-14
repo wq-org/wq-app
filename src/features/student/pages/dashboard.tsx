@@ -14,7 +14,7 @@ import { EmptyGamesView, EmptyFollowsView } from '@/features/student'
 import { useUser } from '@/contexts/user'
 import type { FileListItem } from '@/components/shared'
 import { fetchFilesByRole } from '@/components/shared'
-import { getFollowedTeacherIds, ProfileCourseCardList } from '@/features/profiles'
+import { getFollowedTeacherIds, ProfileCourseCardList } from '@/features/profile'
 import {
   CourseToolBar,
   COURSE_SEARCH_FIELDS,

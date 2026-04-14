@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WQ Health — Student (design mock)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      :root {
+        --radius: 0.625rem;
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.145 0 0);
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.145 0 0);
+        --primary: oklch(0.205 0 0);
+        --primary-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.97 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --destructive: oklch(0.577 0.245 27.325);
+        --border: oklch(0.922 0 0);
+        --input: oklch(0.922 0 0);
+        --ring: oklch(0.708 0 0);
+        --sidebar: oklch(0.985 0 0);
+        --sidebar-foreground: oklch(0.145 0 0);
+        --sidebar-accent: oklch(0.97 0 0);
+        --sidebar-accent-foreground: oklch(0.205 0 0);
+        --sidebar-border: oklch(0.922 0 0);
+        --sidebar-ring: oklch(0.708 0 0);
+        --oklch-green: 0.8 0.16 150;
+        --oklch-orange: 0.82 0.17 55;
+        --oklch-blue: 0.78 0.14 245;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+    </style>
+    <style type="text/tailwindcss">
+      @import "tailwindcss";
+      @theme {
+        --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-destructive: var(--destructive);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-sidebar: var(--sidebar);
+        --color-sidebar-foreground: var(--sidebar-foreground);
+        --color-sidebar-accent: var(--sidebar-accent);
+        --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+        --color-sidebar-border: var(--sidebar-border);
+        --color-sidebar-ring: var(--sidebar-ring);
+      }
+    </style>
+  </head>
+  <body class="bg-muted/30 font-sans text-foreground antialiased">
+    <div class="mx-auto my-4 flex max-h-[min(100vh-2rem,900px)] min-h-[620px] max-w-[1400px] overflow-hidden rounded-xl border border-border shadow-sm">
+      <aside id="s-sidebar" class="flex h-auto w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground" aria-label="Student navigation">
+        <div class="flex flex-col gap-1 border-b border-sidebar-border p-3">
+          <div class="truncate text-sm font-medium">Lena Fischer</div>
+          <div class="text-xs text-muted-foreground">Student · <code class="rounded bg-muted px-1 text-[10px]">student</code> · PG 3A</div>
+        </div>
+        <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2 text-sm" role="navigation">
+          <button type="button" data-nav data-page="overview" data-active="true" aria-current="page" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Overview</button>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Learning</p>
+          <button type="button" data-nav data-page="classrooms" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">My classrooms</button>
+          <button type="button" data-nav data-page="tasks" data-active="false" aria-current="false" class="flex w-full items-center justify-between gap-2 rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"><span>My tasks</span><span class="rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-medium text-white">2</span></button>
+          <button type="button" data-nav data-page="play" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Play games</button>
+          <p class="px-2 pt-3 pb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Personal</p>
+          <button type="button" data-nav data-page="rewards" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">My rewards</button>
+          <button type="button" data-nav data-page="notes" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">My notes</button>
+          <button type="button" data-nav data-page="messages" data-active="false" aria-current="false" class="flex w-full items-center rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground">Messages</button>
+          <button type="button" data-nav data-page="notif" data-active="false" aria-current="false" class="flex w-full items-center justify-between gap-2 rounded-md p-2 text-left outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"><span>Notifications</span><span class="rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-medium text-white">3</span></button>
+        </nav>
+      </aside>
+
+      <main class="relative flex min-h-0 flex-1 flex-col overflow-auto bg-background p-6">
+        <section id="pg-overview" class="space-y-5" aria-labelledby="st-o">
+          <header>
+            <h1 id="st-o" class="text-base font-semibold tracking-tight">Good morning, Lena</h1>
+            <p class="text-sm text-muted-foreground">classroom_members · course_deliveries visible via student_can_access_course_delivery()</p>
+          </header>
+          <div class="rounded-lg border border-[oklch(var(--oklch-blue)_/_0.35)] bg-card px-4 py-3 text-sm" role="status">
+            <p class="text-muted-foreground">Task <strong class="text-foreground">Fallstudie Dekubitus</strong> due tomorrow. <button type="button" data-go-page="tasks" class="font-medium text-primary underline-offset-4 hover:underline">Open tasks →</button></p>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-[10px] font-medium uppercase text-muted-foreground">Overall progress</p><p class="font-variant-numeric tabular-nums text-2xl font-semibold">92%</p><p class="text-xs text-muted-foreground">lesson_progress</p><div class="mt-2 h-1.5 rounded-full bg-muted"><div class="h-full w-[92%] rounded-full bg-[oklch(var(--oklch-green))]"></div></div></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-[10px] font-medium uppercase text-muted-foreground">My points</p><p class="font-variant-numeric tabular-nums text-2xl font-semibold">1 240</p><p class="text-xs text-muted-foreground">point_ledger · level derived</p></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-[10px] font-medium uppercase text-muted-foreground">Streak</p><p class="font-variant-numeric tabular-nums text-2xl font-semibold">12</p><p class="text-xs text-muted-foreground">days</p></div>
+          </div>
+          <div>
+            <h2 class="mb-2 text-sm font-medium">Continue learning</h2>
+            <div class="mb-2 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-[oklch(var(--oklch-blue)_/_0.12)] text-sm" aria-hidden="true">📖</span>
+              <div class="min-w-0 flex-1"><p class="font-medium">Wundmanagement Grundlagen</p><p class="text-xs text-muted-foreground">PG 3A · lesson 4/6 · course_delivery</p><div class="mt-1 h-1 max-w-xs rounded-full bg-muted"><div class="h-full w-[67%] rounded-full bg-[oklch(var(--oklch-green))]"></div></div></div>
+              <span class="shrink-0 text-xs font-medium text-muted-foreground tabular-nums">67%</span>
+            </div>
+            <div class="mb-2 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-[oklch(var(--oklch-green)_/_0.12)] text-sm" aria-hidden="true">🎮</span>
+              <div class="min-w-0 flex-1"><p class="font-medium">Wundklassifikation Quiz</p><p class="text-xs text-muted-foreground">game_delivery · image pin · not started</p></div>
+              <span class="shrink-0 text-xs text-muted-foreground">New</span>
+            </div>
+            <div class="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-[oklch(var(--oklch-orange)_/_0.12)] text-sm" aria-hidden="true">📋</span>
+              <div class="min-w-0 flex-1"><p class="font-medium">Fallstudie Dekubitus</p><p class="text-xs text-muted-foreground">task_delivery · due tomorrow</p></div>
+              <span class="shrink-0 text-xs font-medium text-destructive">Due soon</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="pg-classrooms" class="hidden space-y-4" hidden aria-labelledby="st-c">
+          <header><h1 id="st-c" class="text-base font-semibold">My classrooms</h1><p class="text-sm text-muted-foreground">classroom_members (withdrawn_at IS NULL) · deliveries per classroom</p></header>
+          <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <p class="font-medium">PG 3A — Generalistische Pflege</p>
+            <p class="text-xs text-muted-foreground">K. Hoffmann · 24 students</p>
+            <p class="mt-2 text-xs text-muted-foreground">course_deliveries <span class="font-medium text-foreground">3</span> · games (institution + deliveries) <span class="font-medium text-foreground">2</span> · task_deliveries <span class="font-medium text-foreground">4</span> · my lesson_progress <span class="tabular-nums font-medium text-foreground">92%</span></p>
+            <div class="mt-3 flex flex-wrap gap-2"><button type="button" class="text-xs font-medium text-primary">Courses &amp; lessons</button><button type="button" class="text-xs font-medium text-primary">Games</button><button type="button" data-go-page="tasks" class="text-xs font-medium text-primary">Tasks</button><button type="button" data-go-page="rewards" class="text-xs font-medium text-primary">Rewards</button></div>
+          </div>
+        </section>
+
+        <section id="pg-tasks" class="hidden space-y-4" hidden aria-labelledby="st-t">
+          <header><h1 id="st-t" class="text-base font-semibold">My tasks</h1><p class="text-sm text-muted-foreground">task_deliveries · task_groups · task_submissions</p></header>
+          <div class="overflow-x-auto rounded-xl border border-border">
+            <table class="w-full text-sm">
+              <thead class="border-b border-border"><tr><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Task</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Classroom</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Due</th><th class="h-10 px-2 text-left text-xs font-medium text-muted-foreground">Status</th></tr></thead>
+              <tbody>
+                <tr class="border-b border-border hover:bg-muted/50"><td class="p-2">Fallstudie Dekubitus</td><td class="p-2">PG 3A</td><td class="p-2 font-variant-numeric tabular-nums">Tomorrow</td><td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-orange)_/_0.12)] px-2 py-0.5 text-xs">in progress</span></td></tr>
+                <tr class="border-b border-border hover:bg-muted/50"><td class="p-2">Verbandswechsel Protokoll</td><td class="p-2">PG 3A</td><td class="p-2">—</td><td class="p-2"><span class="rounded-full bg-[oklch(var(--oklch-green)_/_0.12)] px-2 py-0.5 text-xs">returned</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="pg-play" class="hidden space-y-4" hidden aria-labelledby="st-p">
+          <header><h1 id="st-p" class="text-base font-semibold">Play games</h1><p class="text-sm text-muted-foreground">Solo / class: published games + game_deliveries · game_runs / stats scoped</p></header>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><h2 class="text-sm font-medium">My stats (mock)</h2><p class="mt-2 text-sm text-muted-foreground">Games played <span class="font-variant-numeric tabular-nums font-medium text-foreground">14</span> · avg score <span class="tabular-nums">74%</span></p></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><h2 class="text-sm font-medium">Available</h2><p class="mt-2 text-xs text-muted-foreground">Includes institution-published titles and assigned game_deliveries.</p></div>
+          </div>
+        </section>
+
+        <section id="pg-rewards" class="hidden space-y-4" hidden aria-labelledby="st-r">
+          <header><h1 id="st-r" class="text-base font-semibold">My rewards</h1><p class="text-sm text-muted-foreground">point_ledger · joker balances · classroom leaderboard</p></header>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs uppercase text-muted-foreground">Points</p><p class="mt-1 font-variant-numeric tabular-nums text-xl font-semibold">1 240</p></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs uppercase text-muted-foreground">Level</p><p class="mt-1 text-xl font-semibold">4</p></div>
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm"><p class="text-xs uppercase text-muted-foreground">Rank</p><p class="mt-1 font-variant-numeric tabular-nums text-xl font-semibold">#3</p></div>
+          </div>
+          <p class="text-xs text-muted-foreground">Joker types: request flow into teacher approval; ledger rows are auditable.</p>
+        </section>
+
+        <section id="pg-notes" class="hidden space-y-4" hidden aria-labelledby="st-n"><header><h1 id="st-n" class="text-base font-semibold">My notes</h1><p class="text-sm text-muted-foreground">Personal notes · soft-delete · not shared with teacher</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Notes table — link optional lesson_id; student-only read/write within institution.</div></section>
+        <section id="pg-messages" class="hidden space-y-4" hidden aria-labelledby="st-m"><header><h1 id="st-m" class="text-base font-semibold">Messages</h1><p class="text-sm text-muted-foreground">Teacher-initiated threads only · student can reply</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Safeguarding: student cannot open new thread to teacher; conversation list + read cursor.</div></section>
+        <section id="pg-notif" class="hidden space-y-4" hidden aria-labelledby="st-nt"><header><h1 id="st-nt" class="text-base font-semibold">Notifications</h1><p class="text-sm text-muted-foreground">notification_deliveries · institution_id required</p></header><div class="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">Task returned, delivery published, joker approved — preference toggles in settings.</div></section>
+      </main>
+    </div>
+
+    <script>
+      ;(function () {
+        var PAGES = ['overview', 'classrooms', 'tasks', 'play', 'rewards', 'notes', 'messages', 'notif']
+        function showPage(page) {
+          PAGES.forEach(function (p) {
+            var el = document.getElementById('pg-' + p)
+            if (!el) return
+            var on = p === page
+            el.classList.toggle('hidden', !on)
+            el.hidden = !on
+          })
+        }
+        function navBtn(page) {
+          return document.querySelector('#s-sidebar button[data-nav][data-page="' + page + '"]')
+        }
+        function setNavActive(pageId) {
+          document.querySelectorAll('#s-sidebar button[data-nav][data-page]').forEach(function (btn) {
+            var active = btn.getAttribute('data-page') === pageId
+            btn.dataset.active = active ? 'true' : 'false'
+            btn.setAttribute('aria-current', active ? 'page' : 'false')
+          })
+        }
+        function goPage(page, navEl) {
+          showPage(page)
+          if (navEl && navEl.hasAttribute('data-nav')) {
+            setNavActive(navEl.getAttribute('data-page'))
+          } else {
+            setNavActive(page)
+          }
+        }
+        document.getElementById('s-sidebar').addEventListener('click', function (e) {
+          var btn = e.target.closest('button[data-nav][data-page]')
+          if (!btn) return
+          goPage(btn.getAttribute('data-page'), btn)
+        })
+        document.querySelector('main').addEventListener('click', function (e) {
+          var t = e.target.closest('[data-go-page]')
+          if (!t) return
+          var p = t.getAttribute('data-go-page')
+          goPage(p, navBtn(p))
+        })
+        showPage('overview')
+        setNavActive('overview')
+      })()
+    </script>
+  </body>
+</html>

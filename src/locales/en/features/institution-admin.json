@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "groupLabel": "Institution",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "faculties": "Faculties",
+    "classrooms": "Classrooms",
+    "licenseUsage": "Usage",
+    "gdprRequest": "GDPR requests",
+    "billing": "Billing",
+    "analytics": "Analytics",
+    "cloudStorage": "Cloud storage",
+    "auditLogs": "Audit logs"
+  },
+  "shell": {
+    "settings": "Settings",
+    "logout": "Log out",
+    "logoutSuccess": "Signed out successfully",
+    "logoutError": "Could not sign out. Please try again.",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "dashboard": {
+    "title": "Institution overview",
+    "subtitle": "Key metrics for your organization at a glance.",
+    "stats": {
+      "viewMore": "View more",
+      "students": {
+        "label": "Students"
+      },
+      "teachers": {
+        "label": "Teachers"
+      },
+      "classrooms": {
+        "label": "Classrooms"
+      },
+      "storage": {
+        "label": "Storage"
+      }
+    },
+    "usage": {
+      "title": "Usage & quotas",
+      "subtitle": "Cloud storage and transfer relative to your plan limits (sample data).",
+      "storage": {
+        "title": "Cloud storage",
+        "status": "Within plan limits.",
+        "action": "Open cloud storage"
+      },
+      "bandwidth": {
+        "title": "Data transfer",
+        "warning": "Approaching the monthly transfer allowance.",
+        "action": "View usage details"
+      }
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage students, teachers, and staff in your institution."
+  },
+  "faculties": {
+    "title": "Faculties",
+    "subtitle": "Organize departments and academic units."
+  },
+  "classrooms": {
+    "title": "Classrooms",
+    "subtitle": "View and manage classrooms linked to your institution."
+  },
+  "licenses": {
+    "title": "Licenses",
+    "subtitle": "What plan you have and which features are included.",
+    "loadError": "Failed to load licenses",
+    "empty": "No subscription found for this institution.",
+    "noFeatures": "No features configured on this plan.",
+    "summary": {
+      "plan": "Plan",
+      "billingStatus": "Billing status",
+      "effectiveFrom": "Effective from",
+      "renewalAt": "Renews on"
+    },
+    "source": {
+      "override": "Override",
+      "plan": "Plan",
+      "default": "Default"
+    }
+  },
+  "licenseUsage": {
+    "title": "Usage",
+    "subtitle": "Monitor seat usage and entitlements.",
+    "loadError": "Failed to load usage",
+    "empty": "No usage data available yet.",
+    "metrics": {
+      "unlimited": "Unlimited",
+      "upgrade": "Upgrade",
+      "seats": {
+        "title": "Seats",
+        "ok": "Within plan limits.",
+        "warning": "Approaching the seat limit."
+      },
+      "students": {
+        "title": "Students"
+      },
+      "teachers": {
+        "title": "Teachers"
+      },
+      "storage": {
+        "title": "Storage",
+        "using": "Using Storage",
+        "used": "Used",
+        "ok": "Within plan limits.",
+        "warning": "Approaching the storage limit."
+      }
+    },
+    "details": {
+      "title": "Usage details",
+      "plan": "Plan",
+      "updatedAt": "Updated"
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Subscription term, renewal and payment details.",
+    "noInstitution": "No institution associated with your account.",
+    "invoices": {
+      "title": "Invoices",
+      "description": "View and download your invoice history.",
+      "searchPlaceholder": "Search by invoice number or description...",
+      "statusFilterPlaceholder": "Filter by status",
+      "count_one": "{{count}} invoice",
+      "count_other": "{{count}} invoices",
+      "status": {
+        "all": "All statuses",
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded",
+        "void": "Void"
+      },
+      "view": "View",
+      "emptyFiltered": "No invoices match your filters.",
+      "empty": "No invoices found.",
+      "page": "Page",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "paymentMethod": {
+      "title": "Payment method",
+      "empty": "No payment method on file."
+    }
+  },
+  "gdprRequest": {
+    "title": "GDPR requests",
+    "subtitle": "Handle data subject requests and compliance tasks."
+  },
+  "cloudStorage": {
+    "title": "Cloud storage",
+    "subtitle": "Files and folders for your institution."
+  },
+  "auditLogs": {
+    "title": "Audit logs",
+    "subtitle": "Review important actions across your institution."
+  }
+}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { ProfileListItem } from '@/features/profiles'
+import { ProfileListItem } from '@/features/profile'
 import { getCourseMembers, type CourseMember } from '@/features/course'
 
 import { ScrollArea } from '@/components/ui/scroll-area'

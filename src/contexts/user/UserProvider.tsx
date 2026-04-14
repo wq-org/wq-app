@@ -16,13 +16,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   })
 
   // Fetch complete profile data from profiles table (includes all fields)
-  const fetchProfile = useCallback(async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
       const data = await getCompleteProfile(userId)
-      setProfile(data as Profile | null)
+      const prof = data as Profile | null
+      setProfile(prof)
+      return prof
     } catch (error) {
       console.error('Error fetching profile:', error)
       setProfile(null)
+      return null
     }
   }, [])
 
@@ -68,7 +71,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     sessionStorage.removeItem(PENDING_ROLE_KEY)
   }, [])
 
-  // Keep pendingRole aligned with profile state so onboarding can continue without relogin.
+  // When pendingRole is empty, copy profile.role so onboarding can continue after refresh.
+  // Do not overwrite a non-empty pendingRole (e.g. invite/signup intent) with profile during hydration.
   useEffect(() => {
     const profileRole = profile?.role ?? null
 
@@ -79,15 +83,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    if (profileRole && pendingRole !== profileRole) {
+    const pendingEmpty = pendingRole == null || pendingRole.trim() === ''
+    if (profileRole && pendingEmpty) {
       setPendingRole(profileRole)
     }
   }, [profile?.role, profile?.is_onboarded, pendingRole, clearPendingRole, setPendingRole])
 
-  const refreshProfile = async () => {
+  const refreshProfile = async (): Promise<Profile | null> => {
     if (session?.user) {
-      await fetchProfile(session.user.id)
+      return fetchProfile(session.user.id)
     }
+    return null
   }
 
   const getUserId = () => {

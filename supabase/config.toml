@@ -369,6 +369,10 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+[functions.send-institution-admin-invite-email]
+# Gateway JWT verify fails on local Deno 2 / edge-runtime (jose ES256 expects CryptoKey). Auth is enforced in the handler (Bearer + getUser + super_admin).
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

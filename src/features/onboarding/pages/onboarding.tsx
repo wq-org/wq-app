@@ -9,32 +9,26 @@ import {
   StepperSeparator,
 } from '@/components/ui/stepper'
 import { CheckIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
+import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
 import { StepAccount } from '../components/StepAccount'
 import { StepAvatar } from '../components/StepAvatar'
-import { StepInstitution } from '../components/StepInstitution'
 import { StepFinish } from '../components/StepFinish'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
-import type {
-  AccountData,
-  AccountDetailsData,
-  AvatarOption,
-  Institution,
-} from '../types/onboarding.types'
+import type { AccountData, AccountDetailsData, AvatarOption } from '../types/onboarding.types'
 import { AppNavigation } from '@/components/layout'
 import { useTranslation } from 'react-i18next'
 
 const Onboarding = () => {
   const navigate = useNavigate()
-  const { pendingRole, profile } = useUser()
+  const { profile } = useUser()
   const { t } = useTranslation('features.onboarding')
   const [step, setStep] = useState(1)
   const [accountDetails, setAccountDetails] = useState<AccountDetailsData | null>(null)
   const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(null)
-  const [institutions, setInstitutions] = useState<Institution[]>([])
 
   const accountData = useMemo<AccountData | null>(() => {
     if (!accountDetails || !selectedAvatar) {
@@ -46,6 +40,14 @@ const Onboarding = () => {
       avatar: selectedAvatar,
     }
   }, [accountDetails, selectedAvatar])
+
+  useEffect(() => {
+    logRoleDebug('onboarding snapshot', {
+      step,
+      profileRole: profile?.role ?? null,
+      is_onboarded: profile?.is_onboarded ?? null,
+    })
+  }, [step, profile?.role, profile?.is_onboarded])
 
   const handleStepChange = (nextStep: number) => {
     setStep((prev) => (nextStep <= prev ? nextStep : prev))
@@ -61,13 +63,12 @@ const Onboarding = () => {
     setStep(3)
   }
 
-  const handleInstitutionNext = (selectedInstitutions: Institution[]) => {
-    setInstitutions(selectedInstitutions)
-    setStep(4)
-  }
-
   const handleFinish = () => {
-    const role = profile?.role || pendingRole
+    const role = profile?.role?.trim() ?? ''
+    logRoleDebug('onboarding handleFinish (SuccessPage onClick fallback)', {
+      profileRole: role || '(none)',
+      navigateTo: role ? getDashboardPathForRole(role as UserRole) : null,
+    })
     if (!role) {
       toast.error('Something went wrong', {
         description:
@@ -136,32 +137,11 @@ const Onboarding = () => {
           <StepperItem step={3}>
             <StepperTrigger onClick={() => step > 3 && setStep(3)}>
               <StepperIndicator>
-                {step > 3 ? (
-                  <CheckIcon className="w-5 h-5" />
-                ) : (
-                  <Text
-                    as="span"
-                    variant="small"
-                  >
-                    3
-                  </Text>
-                )}
-              </StepperIndicator>
-              <div>
-                <StepperTitle>{t('steps.institution.title')}</StepperTitle>
-                <StepperDescription>{t('steps.institution.description')}</StepperDescription>
-              </div>
-            </StepperTrigger>
-          </StepperItem>
-          <StepperSeparator />
-          <StepperItem step={4}>
-            <StepperTrigger onClick={() => step > 4 && setStep(4)}>
-              <StepperIndicator>
                 <Text
                   as="span"
                   variant="small"
                 >
-                  4
+                  3
                 </Text>
               </StepperIndicator>
               <div>
@@ -185,18 +165,11 @@ const Onboarding = () => {
               initialAvatarSrc={selectedAvatar?.src}
             />
           )}
-          {step === 3 && (
-            <StepInstitution
-              onNext={handleInstitutionNext}
-              onBack={() => setStep(2)}
-            />
-          )}
-          {step === 4 && accountData && (
+          {step === 3 && accountData && (
             <StepFinish
-              onBack={() => setStep(3)}
+              onBack={() => setStep(2)}
               onFinish={handleFinish}
               accountData={accountData}
-              institutions={institutions}
             />
           )}
         </div>

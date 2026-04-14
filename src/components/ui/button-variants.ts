@@ -27,6 +27,10 @@ export const buttonVariants = cva(
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+        info: 'bg-info text-info-foreground hover:bg-info/90',
+        success: 'bg-success text-success-foreground hover:bg-success/90',
+        warning: 'bg-warning text-warning-foreground hover:bg-warning/90',
+        invert: 'bg-invert text-invert-foreground hover:bg-invert/90',
         outline:
           'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
@@ -57,12 +61,16 @@ export const buttonVariants = cva(
         pink: `border-0 bg-transparent text-[oklch(var(--oklch-pink))] hover:opacity-80 hover:bg-[oklch(var(--oklch-pink)/0.12)] hover:text-[oklch(var(--oklch-pink))] transition-all duration-200 active:animate-in active:zoom-in-95 ${inheritPinkContent}`,
       },
       size: {
-        default: 'h-9 px-4 py-2 has-[>svg]:px-3',
+        xs: 'h-7 gap-1.5 rounded-md px-2.5 text-xs has-[>svg]:px-2 [&_svg:not([class*="size-"])]:size-3.5',
         sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
+        default: 'h-9 px-4 py-2 has-[>svg]:px-3',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        xl: 'h-12 gap-2 rounded-md px-8 text-base has-[>svg]:px-6 [&_svg:not([class*="size-"])]:size-5',
         icon: 'size-9',
+        'icon-xs': 'size-7',
         'icon-sm': 'size-8',
         'icon-lg': 'size-10',
+        'icon-xl': 'size-12',
       },
     },
     defaultVariants: {

@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "groupLabel": "Institution",
+    "dashboard": "Dashboard",
+    "users": "Benutzer",
+    "faculties": "Fakultäten",
+    "classrooms": "Klassenräume",
+    "licenseUsage": "Lizenznutzung",
+    "gdprRequest": "DSGVO-Anfragen",
+    "billing": "Abrechnung",
+    "analytics": "Analysen",
+    "cloudStorage": "Cloud-Speicher",
+    "auditLogs": "Audit-Logs"
+  },
+  "shell": {
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "logoutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen.",
+    "lightMode": "Helles Design",
+    "darkMode": "Dunkles Design"
+  },
+  "dashboard": {
+    "title": "Institutionsübersicht",
+    "subtitle": "Wichtige Kennzahlen Ihrer Organisation auf einen Blick.",
+    "stats": {
+      "viewMore": "Mehr anzeigen",
+      "students": {
+        "label": "Lernende"
+      },
+      "teachers": {
+        "label": "Lehrkräfte"
+      },
+      "classrooms": {
+        "label": "Klassenräume"
+      },
+      "storage": {
+        "label": "Speicher"
+      }
+    },
+    "usage": {
+      "title": "Nutzung & Kontingente",
+      "subtitle": "Cloud-Speicher und Datentransfer im Verhältnis zu Ihren Tarifgrenzen (Beispieldaten).",
+      "storage": {
+        "title": "Cloud-Speicher",
+        "status": "Innerhalb der Tarifgrenzen.",
+        "action": "Cloud-Speicher öffnen"
+      },
+      "bandwidth": {
+        "title": "Datentransfer",
+        "warning": "Sie nähern sich dem monatlichen Transfer-Kontingent.",
+        "action": "Nutzungsdetails anzeigen"
+      }
+    }
+  },
+  "users": {
+    "title": "Benutzer",
+    "subtitle": "Verwalten Sie Lernende, Lehrkräfte und Mitarbeitende Ihrer Institution."
+  },
+  "faculties": {
+    "title": "Fakultäten",
+    "subtitle": "Organisieren Sie Bereiche und akademische Einheiten."
+  },
+  "classrooms": {
+    "title": "Klassenräume",
+    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten."
+  },
+  "licenses": {
+    "title": "Lizenzen",
+    "subtitle": "Ihr aktueller Tarif und die enthaltenen Funktionen.",
+    "loadError": "Lizenzen konnten nicht geladen werden",
+    "empty": "Für diese Institution wurde kein Abonnement gefunden.",
+    "noFeatures": "In diesem Tarif sind keine Funktionen konfiguriert.",
+    "summary": {
+      "plan": "Tarif",
+      "billingStatus": "Abrechnungsstatus",
+      "effectiveFrom": "Gültig ab",
+      "renewalAt": "Verlängerung am"
+    },
+    "source": {
+      "override": "Sonderregel",
+      "plan": "Tarif",
+      "default": "Standard"
+    }
+  },
+  "licenseUsage": {
+    "title": "Lizenznutzung",
+    "subtitle": "Plätze und Berechtigungen im Blick behalten.",
+    "loadError": "Nutzung konnte nicht geladen werden",
+    "empty": "Noch keine Nutzungsdaten vorhanden.",
+    "metrics": {
+      "unlimited": "Unbegrenzt",
+      "upgrade": "Upgrade",
+      "seats": {
+        "title": "Plätze",
+        "ok": "Innerhalb der Tarifgrenzen.",
+        "warning": "Sie nähern sich dem Platzlimit."
+      },
+      "students": {
+        "title": "Lernende"
+      },
+      "teachers": {
+        "title": "Lehrkräfte"
+      },
+      "storage": {
+        "title": "Speicher",
+        "using": "Speichernutzung",
+        "used": "Verwendet",
+        "ok": "Innerhalb der Tarifgrenzen.",
+        "warning": "Sie nähern sich dem Speicherlimit."
+      }
+    },
+    "details": {
+      "title": "Nutzungsdetails",
+      "plan": "Tarif",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Laufzeit, Verlängerung und Zahlungsdetails Ihres Abonnements.",
+    "noInstitution": "Ihrem Konto ist keine Institution zugeordnet.",
+    "invoices": {
+      "title": "Rechnungen",
+      "description": "Sehen Sie Ihre Rechnungshistorie ein und laden Sie Rechnungen herunter.",
+      "searchPlaceholder": "Nach Rechnungsnummer oder Beschreibung suchen...",
+      "statusFilterPlaceholder": "Nach Status filtern",
+      "count_one": "{{count}} Rechnung",
+      "count_other": "{{count}} Rechnungen",
+      "status": {
+        "all": "Alle Status",
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen",
+        "refunded": "Erstattet",
+        "void": "Storniert"
+      },
+      "view": "Anzeigen",
+      "emptyFiltered": "Keine Rechnungen entsprechen den Filtern.",
+      "empty": "Keine Rechnungen gefunden.",
+      "page": "Seite",
+      "previous": "Zurück",
+      "next": "Weiter"
+    },
+    "paymentMethod": {
+      "title": "Zahlungsmethode",
+      "empty": "Keine Zahlungsmethode hinterlegt."
+    }
+  },
+  "gdprRequest": {
+    "title": "DSGVO-Anfragen",
+    "subtitle": "Anfragen betroffener Personen und Compliance-Aufgaben bearbeiten."
+  },
+  "cloudStorage": {
+    "title": "Cloud-Speicher",
+    "subtitle": "Dateien und Ordner für Ihre Institution."
+  },
+  "auditLogs": {
+    "title": "Audit-Logs",
+    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen."
+  }
+}

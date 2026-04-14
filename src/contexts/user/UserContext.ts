@@ -29,7 +29,7 @@ export interface UserContextValue {
   pendingRole: string | null
   setPendingRole: (role: string) => void
   clearPendingRole: () => void
-  refreshProfile: () => Promise<void>
+  refreshProfile: () => Promise<Profile | null>
   getUserId: () => string | null
   getRole: () => UserRole | null
   getUserInstitutionId: () => string | null
@@ -43,7 +43,7 @@ export const UserContext = createContext<UserContextValue>({
   pendingRole: null,
   setPendingRole: () => {},
   clearPendingRole: () => {},
-  refreshProfile: async () => {},
+  refreshProfile: async () => null,
   getUserId: () => null,
   getRole: () => null,
   getUserInstitutionId: () => null,

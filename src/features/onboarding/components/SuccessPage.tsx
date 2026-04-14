@@ -12,9 +12,12 @@ import {
 } from '@/components/ui/dialog'
 import { useUser } from '@/contexts/user'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
+import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
 
 interface SuccessPageProps {
   isOpen: boolean
+  /** Role chosen when onboarding finished; wins over context so navigation matches what was saved. */
+  dashboardRole?: string | null
   title?: string
   description?: string
   onClickHandler?: () => void
@@ -22,12 +25,13 @@ interface SuccessPageProps {
 
 export function SuccessPage({
   isOpen,
+  dashboardRole = null,
   title = 'Welcome to WQ Health!',
   description = 'Your account has been set up successfully. You are now ready to start your journey with us.',
   onClickHandler,
 }: SuccessPageProps) {
   const navigate = useNavigate()
-  const { profile, pendingRole } = useUser()
+  const { profile } = useUser()
 
   // Trigger confetti on open
   useEffect(() => {
@@ -41,14 +45,20 @@ export function SuccessPage({
   }, [isOpen])
 
   const handleDone = () => {
-    // Navigate to role-specific dashboard
-    // Use profile.role first (from refreshed profile), then fallback to pendingRole
-    const role = profile?.role || pendingRole
+    const trimmedDashboard = dashboardRole?.trim() ?? ''
+    const trimmedProfile = profile?.role?.trim() ?? ''
+    const role = trimmedDashboard || trimmedProfile
+
+    logRoleDebug('SuccessPage Done click', {
+      dashboardRole: trimmedDashboard || '(empty)',
+      profileRole: trimmedProfile || '(empty)',
+      resolvedRole: role || '(none)',
+      navigateTo: role ? getDashboardPathForRole(role as UserRole) : 'onClickHandler or /',
+    })
 
     if (role) {
       navigate(getDashboardPathForRole(role as UserRole))
     } else if (onClickHandler) {
-      // Fallback to onClickHandler if no role is available
       onClickHandler()
     } else {
       navigate('/')

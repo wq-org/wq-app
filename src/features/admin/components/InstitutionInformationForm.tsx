@@ -1,4 +1,5 @@
-import { useState, useCallback, type FormEvent } from 'react'
+import { useState, useCallback, useMemo, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -12,46 +13,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from '@/components/ui/combobox'
+import {
+  COUNTRY_OPTIONS,
+  getCountryLabel,
+  findCountryByValue,
+  getCountryDisplayValue,
+  countryItemMatchesSearchQuery,
+} from '../config/countryOptions'
 import type {
   InstitutionType,
   InstitutionStatus,
   InstitutionFormData,
   AddressJsonb,
   InvoiceLanguage,
-} from '@/features/admin/types/institution.types'
+} from '../types/institution.types'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
+import { slugifyInstitutionName } from '../utils/institutionSlug'
 
-const INSTITUTION_TYPES: { value: InstitutionType; label: string }[] = [
-  { value: 'school', label: 'School' },
-  { value: 'university', label: 'University' },
-  { value: 'college', label: 'College' },
-  { value: 'organization', label: 'Organization' },
-  { value: 'hospital', label: 'Hospital' },
-  { value: 'other', label: 'Other' },
+const INSTITUTION_TYPE_VALUES: InstitutionType[] = [
+  'school',
+  'university',
+  'college',
+  'organization',
+  'hospital',
+  'other',
 ]
 
-const INSTITUTION_STATUSES: { value: InstitutionStatus; label: string }[] = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'suspended', label: 'Suspended' },
-  { value: 'pending', label: 'Pending' },
+const INSTITUTION_STATUS_VALUES: InstitutionStatus[] = [
+  'active',
+  'inactive',
+  'suspended',
+  'pending',
 ]
 
-const LEGAL_FORMS = [
-  { value: 'gmbh', label: 'GmbH' },
-  { value: 'ggmbh', label: 'gGmbH (gemeinnutzig)' },
-  { value: 'ag', label: 'AG' },
-  { value: 'ev', label: 'e.V.' },
-  { value: 'kg', label: 'KG' },
-  { value: 'other', label: 'Other' },
-]
+const LEGAL_FORM_VALUES = ['gmbh', 'ggmbh', 'ag', 'ev', 'kg', 'other'] as const
 
-const INVOICE_LANGUAGES: { value: InvoiceLanguage; label: string }[] = [
-  { value: 'de', label: 'German (DE)' },
-  { value: 'en', label: 'English (EN)' },
-]
+const INVOICE_LANGUAGE_VALUES: InvoiceLanguage[] = ['de', 'en']
 
-interface InstitutionFormProps {
+type InstitutionFormProps = {
   onSubmit?: (data: InstitutionFormData) => void
   onCancel?: () => void
 }
@@ -79,7 +86,7 @@ const initialFormData: InstitutionFormData = {
   primaryContactRole: '',
   invoiceLanguage: 'de',
   paymentTerms: 30,
-  address: { country: 'Germany' },
+  address: { country: '' },
   institutionNumber: '',
   numberOfBeds: undefined,
   departments: [],
@@ -88,21 +95,64 @@ const initialFormData: InstitutionFormData = {
   imageUrl: DEFAULT_INSTITUTION_IMAGE,
 }
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
 function parseOptionalNumber(value: string): number | undefined {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+type CountryComboboxProps = {
+  value: string
+  onValueChange: (country: string) => void
+  placeholder?: string
+  disabled?: boolean
+}
+
+function CountryCombobox({ value, onValueChange, placeholder, disabled }: CountryComboboxProps) {
+  const { i18n, t } = useTranslation('features.admin')
+  const lang = i18n.language
+
+  const selectedOption = useMemo(() => (value ? findCountryByValue(value) : undefined), [value])
+
+  const countryItems = useMemo(() => COUNTRY_OPTIONS.map((c) => getCountryLabel(c, lang)), [lang])
+
+  return (
+    <Combobox
+      value={selectedOption ? getCountryDisplayValue(selectedOption.code, lang) : value}
+      onValueChange={(v) => onValueChange(getCountryDisplayValue((v as string) ?? '', lang))}
+      items={countryItems}
+      itemToStringLabel={(item) => {
+        const country = findCountryByValue(String(item))
+        return country ? getCountryLabel(country, lang) : String(item)
+      }}
+      filter={(item, query) => countryItemMatchesSearchQuery(String(item), query)}
+      autoHighlight
+    >
+      <ComboboxInput
+        placeholder={selectedOption ? getCountryLabel(selectedOption, lang) : placeholder}
+        disabled={disabled}
+      />
+      <ComboboxContent>
+        <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
+        <ComboboxList>
+          {(item: string) => {
+            const country = findCountryByValue(item)
+            return (
+              <ComboboxItem
+                key={country?.code ?? item}
+                value={item}
+              >
+                {item}
+              </ComboboxItem>
+            )
+          }}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
+}
+
 export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
+  const { t, i18n } = useTranslation('features.admin')
   const [formData, setFormData] = useState<InstitutionFormData>(initialFormData)
   const [isSlugTouched, setIsSlugTouched] = useState(false)
 
@@ -111,7 +161,7 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
       setFormData((prev) => ({
         ...prev,
         name,
-        slug: isSlugTouched ? prev.slug : slugify(name),
+        slug: isSlugTouched ? prev.slug : slugifyInstitutionName(name),
       }))
     },
     [isSlugTouched],
@@ -147,9 +197,8 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
   const handleDepartmentsChange = (value: string) => {
     const departments = value
       .split(',')
-      .map((department) => department.trim())
-      .filter((department) => department.length > 0)
-
+      .map((d) => d.trim())
+      .filter((d) => d.length > 0)
     setFormData((prev) => ({ ...prev, departments }))
   }
 
@@ -175,6 +224,16 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
     (formData.socialLinks.linkedin ?? '').trim().length > 0 &&
     (formData.socialLinks.instagram ?? '').trim().length > 0
 
+  const req = (
+    <Text
+      as="span"
+      variant="small"
+      className="text-red-500"
+    >
+      *
+    </Text>
+  )
+
   return (
     <Card className="border max-w-3xl w-full shadow-sm">
       <form
@@ -182,34 +241,28 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
         onSubmit={handleSubmit}
       >
         <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-semibold text-gray-900">Basic Information</CardTitle>
+          <CardTitle className="text-2xl font-semibold">{t('form.title')}</CardTitle>
           <Text
             as="p"
             variant="body"
-            className="text-sm text-gray-500 mt-2 font-normal"
+            className="text-sm mt-2 font-normal"
           >
-            Add the basic details for your institution. Fields marked with * are required.
+            {t('form.subtitle')}
           </Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-6">
+          {/* Name */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-name"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Institution Name{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.name')} {req}
             </Label>
             <Input
               id="institution-name"
-              placeholder="e.g., Kreiskliniken Reutlingen"
+              placeholder={t('form.fields.namePlaceholder')}
               value={formData.name}
               onChange={(e) => handleNameChange(e.target.value)}
               required
@@ -217,23 +270,17 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             />
           </div>
 
+          {/* Slug */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-slug"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Slug{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.slug')} {req}
             </Label>
             <Input
               id="institution-slug"
-              placeholder="kreiskliniken-reutlingen"
+              placeholder={t('form.fields.slugPlaceholder')}
               value={formData.slug}
               onChange={(e) => {
                 setIsSlugTouched(true)
@@ -244,26 +291,20 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             <Text
               as="p"
               variant="body"
-              className="text-xs text-gray-400"
+              className="text-xs"
             >
-              URL-friendly identifier. Auto-generated from name unless manually edited.
+              {t('form.fields.slugHint')}
             </Text>
           </div>
 
+          {/* Type + Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-type"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Type{' '}
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-red-500"
-                >
-                  *
-                </Text>
+                {t('form.fields.type')} {req}
               </Label>
               <Select
                 value={formData.type || '__none__'}
@@ -278,16 +319,16 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                   id="institution-type"
                   className="w-full justify-between"
                 >
-                  <SelectValue placeholder="Select institution type" />
+                  <SelectValue placeholder={t('form.fields.typePlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none__">Select institution type</SelectItem>
-                  {INSTITUTION_TYPES.map(({ value, label }) => (
+                  <SelectItem value="__none__">{t('form.fields.typePlaceholder')}</SelectItem>
+                  {INSTITUTION_TYPE_VALUES.map((value) => (
                     <SelectItem
                       key={value}
                       value={value}
                     >
-                      {label}
+                      {t(`form.types.${value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -297,9 +338,9 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-status"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Status
+                {t('form.fields.status')}
               </Label>
               <Select
                 value={formData.status}
@@ -314,12 +355,12 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {INSTITUTION_STATUSES.map(({ value, label }) => (
+                  {INSTITUTION_STATUS_VALUES.map((value) => (
                     <SelectItem
                       key={value}
                       value={value}
                     >
-                      {label}
+                      {t(`form.statuses.${value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -327,23 +368,17 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           </div>
 
+          {/* Description */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-description"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Description{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.description')} {req}
             </Label>
             <Textarea
               id="institution-description"
-              placeholder="Enter a brief description of the institution..."
+              placeholder={t('form.fields.descriptionPlaceholder')}
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               rows={4}
@@ -351,25 +386,19 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             />
           </div>
 
+          {/* Email + Phone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-email"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Email{' '}
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-red-500"
-                >
-                  *
-                </Text>
+                {t('form.fields.email')} {req}
               </Label>
               <Input
                 id="institution-email"
                 type="email"
-                placeholder="contact@institution.de"
+                placeholder={t('form.fields.emailPlaceholder')}
                 value={formData.email}
                 onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                 className="text-base py-2 px-3 w-full"
@@ -379,21 +408,14 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-phone"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Phone{' '}
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-red-500"
-                >
-                  *
-                </Text>
+                {t('form.fields.phone')} {req}
               </Label>
               <Input
                 id="institution-phone"
                 type="tel"
-                placeholder="+49 7121 200-0"
+                placeholder={t('form.fields.phonePlaceholder')}
                 value={formData.phone}
                 onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                 className="text-base py-2 px-3 w-full"
@@ -401,44 +423,38 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           </div>
 
+          {/* Website */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-website"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Website{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.website')} {req}
             </Label>
             <Input
               id="institution-website"
               type="url"
-              placeholder="https://www.institution.de"
+              placeholder={t('form.fields.websitePlaceholder')}
               value={formData.website}
               onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
               className="text-base py-2 px-3 w-full"
             />
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-semibold text-gray-700">Legal Information</Label>
-
+          {/* Legal Information */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.legal.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-legal-name"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Legal Name *
+                  {t('form.legal.legalName')} *
                 </Label>
                 <Input
                   id="institution-legal-name"
-                  placeholder="Kreiskliniken Reutlingen gGmbH"
+                  placeholder={t('form.legal.legalNamePlaceholder')}
                   value={formData.legalName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, legalName: e.target.value }))}
                   className="text-base py-2 px-3 w-full"
@@ -448,9 +464,9 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-legal-form"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Legal Form *
+                  {t('form.legal.legalForm')} *
                 </Label>
                 <Select
                   value={formData.legalForm || '__none__'}
@@ -462,16 +478,16 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                     id="institution-legal-form"
                     className="w-full justify-between"
                   >
-                    <SelectValue placeholder="Select legal form" />
+                    <SelectValue placeholder={t('form.legal.legalFormPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="__none__">Select legal form</SelectItem>
-                    {LEGAL_FORMS.map(({ value, label }) => (
+                    <SelectItem value="__none__">{t('form.legal.legalFormPlaceholder')}</SelectItem>
+                    {LEGAL_FORM_VALUES.map((value) => (
                       <SelectItem
                         key={value}
                         value={value}
                       >
-                        {label}
+                        {t(`form.legalForms.${value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -481,13 +497,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-vat-id"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  VAT ID (USt-ID) *
+                  {t('form.legal.vatId')} *
                 </Label>
                 <Input
                   id="institution-vat-id"
-                  placeholder="DE123456789"
+                  placeholder={t('form.legal.vatIdPlaceholder')}
                   value={formData.vatId}
                   onChange={(e) => setFormData((prev) => ({ ...prev, vatId: e.target.value }))}
                   className="text-base py-2 px-3 w-full"
@@ -497,13 +513,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-registration-number"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Handelsregister (HRB)
+                  {t('form.legal.registrationNumber')}
                 </Label>
                 <Input
                   id="institution-registration-number"
-                  placeholder="HRB 12345"
+                  placeholder={t('form.legal.registrationNumberPlaceholder')}
                   value={formData.registrationNumber}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, registrationNumber: e.target.value }))
@@ -515,13 +531,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-tax-id"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Steuernummer
+                  {t('form.legal.taxId')}
                 </Label>
                 <Input
                   id="institution-tax-id"
-                  placeholder="12/345/67890"
+                  placeholder={t('form.legal.taxIdPlaceholder')}
                   value={formData.taxId}
                   onChange={(e) => setFormData((prev) => ({ ...prev, taxId: e.target.value }))}
                   className="text-base py-2 px-3 w-full"
@@ -530,20 +546,20 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-semibold text-gray-700">Primary Contact</Label>
-
+          {/* Primary Contact */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.primaryContact.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-name"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Contact Name *
+                  {t('form.primaryContact.contactName')} *
                 </Label>
                 <Input
                   id="institution-primary-contact-name"
-                  placeholder="Astrid"
+                  placeholder={t('form.primaryContact.contactNamePlaceholder')}
                   value={formData.primaryContactName}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, primaryContactName: e.target.value }))
@@ -555,13 +571,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-role"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Role / Title
+                  {t('form.primaryContact.contactRole')}
                 </Label>
                 <Input
                   id="institution-primary-contact-role"
-                  placeholder="Pflegedirektion"
+                  placeholder={t('form.primaryContact.contactRolePlaceholder')}
                   value={formData.primaryContactRole}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, primaryContactRole: e.target.value }))
@@ -573,14 +589,14 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-email"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Contact Email *
+                  {t('form.primaryContact.contactEmail')} *
                 </Label>
                 <Input
                   id="institution-primary-contact-email"
                   type="email"
-                  placeholder="m.schmidt@example.de"
+                  placeholder={t('form.primaryContact.contactEmailPlaceholder')}
                   value={formData.primaryContactEmail}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, primaryContactEmail: e.target.value }))
@@ -592,14 +608,14 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-phone"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Contact Phone
+                  {t('form.primaryContact.contactPhone')}
                 </Label>
                 <Input
                   id="institution-primary-contact-phone"
                   type="tel"
-                  placeholder="+49 7121 200-1234"
+                  placeholder={t('form.primaryContact.contactPhonePlaceholder')}
                   value={formData.primaryContactPhone}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, primaryContactPhone: e.target.value }))
@@ -610,21 +626,21 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-blue-50">
-            <Label className="font-semibold text-gray-700">Billing Information</Label>
-
+          {/* Billing Information */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.billing.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-billing-email"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Billing Email *
+                  {t('form.billing.billingEmail')} *
                 </Label>
                 <Input
                   id="institution-billing-email"
                   type="email"
-                  placeholder="billing@institution.de"
+                  placeholder={t('form.billing.billingEmailPlaceholder')}
                   value={formData.billingEmail}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, billingEmail: e.target.value }))
@@ -636,13 +652,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-billing-contact-name"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Billing Contact Name
+                  {t('form.billing.billingContactName')}
                 </Label>
                 <Input
                   id="institution-billing-contact-name"
-                  placeholder="Buchhaltung"
+                  placeholder={t('form.billing.billingContactNamePlaceholder')}
                   value={formData.billingContactName}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, billingContactName: e.target.value }))
@@ -654,14 +670,14 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-billing-contact-phone"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Billing Contact Phone
+                  {t('form.billing.billingContactPhone')}
                 </Label>
                 <Input
                   id="institution-billing-contact-phone"
                   type="tel"
-                  placeholder="+49 7121 200-900"
+                  placeholder={t('form.billing.billingContactPhonePlaceholder')}
                   value={formData.billingContactPhone}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, billingContactPhone: e.target.value }))
@@ -673,9 +689,9 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-invoice-language"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Invoice Language
+                  {t('form.billing.invoiceLanguage')}
                 </Label>
                 <Select
                   value={formData.invoiceLanguage}
@@ -690,12 +706,12 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {INVOICE_LANGUAGES.map(({ value, label }) => (
+                    {INVOICE_LANGUAGE_VALUES.map((value) => (
                       <SelectItem
                         key={value}
                         value={value}
                       >
-                        {label}
+                        {t(`form.invoiceLanguages.${value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -705,15 +721,15 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-payment-terms"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Payment Terms (days)
+                  {t('form.billing.paymentTerms')}
                 </Label>
                 <Input
                   id="institution-payment-terms"
                   type="number"
                   min={1}
-                  placeholder="30"
+                  placeholder={t('form.billing.paymentTermsPlaceholder')}
                   value={formData.paymentTerms}
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -727,19 +743,20 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-semibold text-gray-700">Address</Label>
+          {/* Address */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.address.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-street"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Street & Number *
+                  {t('form.address.street')} *
                 </Label>
                 <Input
                   id="institution-street"
-                  placeholder="Am Steinenberg 70"
+                  placeholder={t('form.address.streetPlaceholder')}
                   value={formData.address.street || ''}
                   onChange={(e) => handleAddressChange('street', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -749,13 +766,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-address-line-2"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Additional Address (Building, Floor)
+                  {t('form.address.addressLine2')}
                 </Label>
                 <Input
                   id="institution-address-line-2"
-                  placeholder="Gebaude A, 2. OG"
+                  placeholder={t('form.address.addressLine2Placeholder')}
                   value={formData.address.addressLine2 || ''}
                   onChange={(e) => handleAddressChange('addressLine2', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -765,13 +782,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-postal-code"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Postal Code (PLZ) *
+                  {t('form.address.postalCode')} *
                 </Label>
                 <Input
                   id="institution-postal-code"
-                  placeholder="72764"
+                  placeholder={t('form.address.postalCodePlaceholder')}
                   maxLength={5}
                   value={formData.address.postalCode || ''}
                   onChange={(e) => handleAddressChange('postalCode', e.target.value)}
@@ -782,13 +799,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-city"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  City *
+                  {t('form.address.city')} *
                 </Label>
                 <Input
                   id="institution-city"
-                  placeholder="Reutlingen"
+                  placeholder={t('form.address.cityPlaceholder')}
                   value={formData.address.city || ''}
                   onChange={(e) => handleAddressChange('city', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -798,13 +815,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-state"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Bundesland (optional)
+                  {t('form.address.state')}
                 </Label>
                 <Input
                   id="institution-state"
-                  placeholder="Baden-Wurttemberg"
+                  placeholder={t('form.address.statePlaceholder')}
                   value={formData.address.state || ''}
                   onChange={(e) => handleAddressChange('state', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -814,36 +831,36 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-country"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Country *
+                  {t('form.address.country')} *
                 </Label>
-                <Input
-                  id="institution-country"
-                  placeholder="Germany"
+                <CountryCombobox
                   value={formData.address.country || ''}
-                  onChange={(e) => handleAddressChange('country', e.target.value)}
-                  className="text-base py-2 px-3 w-full"
+                  onValueChange={(country) =>
+                    handleAddressChange('country', getCountryDisplayValue(country, i18n.language))
+                  }
+                  placeholder={t('form.address.countryPlaceholder')}
                 />
               </div>
             </div>
           </div>
 
+          {/* Hospital Details */}
           {formData.type === 'hospital' && (
-            <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-              <Label className="font-semibold text-gray-700">Hospital Details</Label>
-
+            <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+              <Label className="font-semibold">{t('form.hospital.sectionTitle')}</Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-2">
                   <Label
                     htmlFor="institution-number"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    IK-Nummer (Institutionskennzeichen)
+                    {t('form.hospital.institutionNumber')}
                   </Label>
                   <Input
                     id="institution-number"
-                    placeholder="123456789"
+                    placeholder={t('form.hospital.institutionNumberPlaceholder')}
                     value={formData.institutionNumber}
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, institutionNumber: e.target.value }))
@@ -855,15 +872,15 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                 <div className="flex flex-col gap-2">
                   <Label
                     htmlFor="institution-number-of-beds"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    Number of Beds
+                    {t('form.hospital.numberOfBeds')}
                   </Label>
                   <Input
                     id="institution-number-of-beds"
                     type="number"
                     min={0}
-                    placeholder="500"
+                    placeholder={t('form.hospital.numberOfBedsPlaceholder')}
                     value={formData.numberOfBeds ?? ''}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -878,13 +895,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <Label
                     htmlFor="institution-departments"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    Departments (comma-separated)
+                    {t('form.hospital.departments')}
                   </Label>
                   <Input
                     id="institution-departments"
-                    placeholder="Intensivpflege, Wundmanagement, Notaufnahme"
+                    placeholder={t('form.hospital.departmentsPlaceholder')}
                     value={formData.departments.join(', ')}
                     onChange={(e) => handleDepartmentsChange(e.target.value)}
                     className="text-base py-2 px-3 w-full"
@@ -894,13 +911,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <Label
                     htmlFor="institution-accreditation"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    Accreditation
+                    {t('form.hospital.accreditation')}
                   </Label>
                   <Input
                     id="institution-accreditation"
-                    placeholder="ISO 9001"
+                    placeholder={t('form.hospital.accreditationPlaceholder')}
                     value={formData.accreditation}
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, accreditation: e.target.value }))
@@ -912,29 +929,23 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           )}
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-normal text-gray-700">
-              Social Links{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+          {/* Social Links */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-normal">
+              {t('form.socialLinks.sectionTitle')} {req}
             </Label>
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-linkedin"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  LinkedIn *
+                  {t('form.socialLinks.linkedin')} *
                 </Label>
                 <Input
                   id="institution-linkedin"
                   type="url"
-                  placeholder="https://www.linkedin.com/company/institution"
+                  placeholder={t('form.socialLinks.linkedinPlaceholder')}
                   value={formData.socialLinks.linkedin || ''}
                   onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -943,14 +954,14 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-instagram"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Instagram *
+                  {t('form.socialLinks.instagram')} *
                 </Label>
                 <Input
                   id="institution-instagram"
                   type="url"
-                  placeholder="https://www.instagram.com/institution"
+                  placeholder={t('form.socialLinks.instagramPlaceholder')}
                   value={formData.socialLinks.instagram || ''}
                   onChange={(e) => handleSocialLinkChange('instagram', e.target.value)}
                   className="text-base py-2 px-3 w-full"
@@ -959,17 +970,18 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             </div>
           </div>
 
+          {/* Image URL */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-image-url"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Image URL
+              {t('form.fields.imageUrl')}
             </Label>
             <Input
               id="institution-image-url"
               type="url"
-              placeholder="https://example.com/image.png"
+              placeholder={t('form.fields.imageUrlPlaceholder')}
               value={formData.imageUrl}
               onChange={(e) => setFormData((prev) => ({ ...prev, imageUrl: e.target.value }))}
               className="text-base py-2 px-3 w-full"
@@ -977,9 +989,9 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             <Text
               as="p"
               variant="body"
-              className="text-xs text-gray-400 mt-1"
+              className="text-xs mt-1"
             >
-              Enter a direct URL to the institution image.
+              {t('form.fields.imageUrlHint')}
             </Text>
           </div>
         </CardContent>
@@ -990,14 +1002,14 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             type="button"
             onClick={handleCancel}
           >
-            Cancel
+            {t('form.actions.cancel')}
           </Button>
           <Button
             type="submit"
-            variant="default"
+            variant="darkblue"
             disabled={!isFormValid}
           >
-            Create Institution
+            {t('form.actions.create')}
           </Button>
         </CardFooter>
       </form>

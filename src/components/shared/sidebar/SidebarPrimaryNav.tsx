@@ -13,8 +13,9 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useUser } from '@/contexts/user/UserContext'
+import { useMemo, useState } from 'react'
 
 type SidebarPrimaryNavSubItem = {
   title: string
@@ -32,10 +33,17 @@ type SidebarPrimaryNavItem = {
 type SidebarPrimaryNavProps = {
   items: readonly SidebarPrimaryNavItem[]
   routePrefix?: string
+  /** Sidebar section label (e.g. translated "Platform"). */
+  groupLabel?: string
 }
 
-export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps) {
+export function SidebarPrimaryNav({
+  items,
+  routePrefix,
+  groupLabel = 'Platform',
+}: SidebarPrimaryNavProps) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { getRole } = useUser()
 
   const role = getRole()
@@ -57,15 +65,40 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
     navigateTo(concatPath)
   }
 
+  const currentPath = location.pathname
+
+  const activeStatesByUrl = useMemo(() => {
+    return Object.fromEntries(
+      items.map((item) => {
+        const fullItemPath = `${routePrefix ?? `/${role ?? ''}`}${item.url}`
+        const hasActiveSubItem =
+          item.items?.some((subItem) => currentPath === `${fullItemPath}${subItem.url}`) ?? false
+        const isItemPathActive =
+          currentPath === fullItemPath || currentPath.startsWith(`${fullItemPath}/`)
+
+        return [item.url, isItemPathActive || hasActiveSubItem]
+      }),
+    )
+  }, [currentPath, items, role, routePrefix])
+
+  const [manualOpenByUrl, setManualOpenByUrl] = useState<Record<string, boolean>>({})
+
+  function handleOpenChange(itemUrl: string, isOpen: boolean) {
+    setManualOpenByUrl((prev) => ({ ...prev, [itemUrl]: isOpen }))
+  }
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
-            key={item.title}
+            key={item.url}
             asChild
-            defaultOpen={item.isActive}
+            open={
+              activeStatesByUrl[item.url] || manualOpenByUrl[item.url] || item.isActive || false
+            }
+            onOpenChange={(isOpen) => handleOpenChange(item.url, isOpen)}
             className="group/collapsible"
           >
             <SidebarMenuItem>
@@ -74,30 +107,34 @@ export function SidebarPrimaryNav({ items, routePrefix }: SidebarPrimaryNavProps
                   {item.icon ? <item.icon /> : null}
                   <span>{item.title}</span>
                 </SidebarMenuButton>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    className="cursor-pointer"
-                    variant="ghost"
-                    size="icon"
-                  >
-                    <ChevronRight className=" transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </Button>
-                </CollapsibleTrigger>
+                {item.items && item.items.length > 0 && (
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      className="cursor-pointer"
+                      variant="ghost"
+                      size="icon"
+                    >
+                      <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </Button>
+                  </CollapsibleTrigger>
+                )}
               </div>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        className="cursor-pointer"
-                        onClick={() => navigateToSubPath(item.url, subItem.url)}
-                      >
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+              {item.items && item.items.length > 0 ? (
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items.map((subItem) => (
+                      <SidebarMenuSubItem key={`${item.url}:${subItem.url}`}>
+                        <SidebarMenuSubButton
+                          className="cursor-pointer"
+                          onClick={() => navigateToSubPath(item.url, subItem.url)}
+                        >
+                          <span>{subItem.title}</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              ) : null}
             </SidebarMenuItem>
           </Collapsible>
         ))}

@@ -15,7 +15,7 @@ export function Logo({ className, showText = true, ...props }: LogoProps) {
     >
       <img
         src={DEFAULT_INSTITUTION_IMAGE}
-        alt="WQ Health"
+        alt="WQ"
         className={cn('h-5 w-5', !showText && 'h-full w-full')}
       />
       {showText && <span className="text-sm font-bold">WQ</span>}
