@@ -1,7 +1,18 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-const data = [
+export type StatsTrendingItem = {
+  name: string
+  value: string
+  change: string
+  changeType: 'positive' | 'negative'
+}
+
+export type StatsTrendingProps = {
+  items?: readonly StatsTrendingItem[]
+}
+
+const DEFAULT_ITEMS: StatsTrendingItem[] = [
   {
     name: 'Profit',
     value: '$287,654.00',
@@ -28,17 +39,17 @@ const data = [
   },
 ]
 
-export default function StatsTrending() {
+export default function StatsTrending({ items = DEFAULT_ITEMS }: StatsTrendingProps) {
   return (
     <div className="flex items-center justify-center p-10">
       <div className="mx-auto grid grid-cols-1 gap-px rounded-xl bg-border sm:grid-cols-2 lg:grid-cols-4">
-        {data.map((stat, index) => (
+        {items.map((stat, index) => (
           <Card
             key={stat.name}
             className={cn(
               'rounded-none border-0 shadow-none py-0',
               index === 0 && 'rounded-l-xl',
-              index === data.length - 1 && 'rounded-r-xl',
+              index === items.length - 1 && 'rounded-r-xl',
             )}
           >
             <CardContent className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 p-4 sm:p-6">

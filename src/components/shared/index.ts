@@ -71,6 +71,15 @@ export { StatsValueBreakdown } from './StatsValueBreakdown'
 export { SelectTabs } from './tabs'
 export type { SelectTabsProps, TabItem } from './tabs'
 export { ThemeModeToggle } from './ThemeModeToggle'
+export { PricingComparator } from './PricingComparator'
+export type {
+  PricingColumn,
+  PricingComparatorProps,
+  PricingRow,
+  PricingSection,
+} from './PricingComparator'
+export { SwitchListCardIcons } from './SwitchListCardIcons'
+export type { SwitchListCardIconsItem, SwitchListCardIconsProps } from './SwitchListCardIcons'
 export { showUnsavedChangesToast } from './toasts'
 export {
   deleteFile,

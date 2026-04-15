@@ -1,6 +1,17 @@
 import { cn } from '@/lib/utils'
 
-const data = [
+export type StatsValueBreakdownItem = {
+  label: string
+  value: string
+  percentage: string
+}
+
+export type StatsValueBreakdownProps = {
+  title?: string
+  items?: StatsValueBreakdownItem[]
+}
+
+const DEFAULT_ITEMS: StatsValueBreakdownItem[] = [
   {
     label: 'After 1 year',
     value: '$2,400',
@@ -18,17 +29,18 @@ const data = [
   },
 ]
 
-export function StatsValueBreakdown() {
+export function StatsValueBreakdown({
+  title = 'Investment growth projection',
+  items = DEFAULT_ITEMS,
+}: StatsValueBreakdownProps) {
   return (
     <div className="w-full max-w-2xs">
-      <h3 className="text-balance text-sm font-medium text-foreground">
-        Investment growth projection
-      </h3>
+      <h3 className="text-balance text-sm font-medium text-foreground">{title}</h3>
       <ul
         role="list"
         className="mt-2 divide-y divide-border text-sm"
       >
-        {data.map((item, index) => (
+        {items.map((item, index) => (
           <li
             key={index}
             className="flex items-center justify-between py-3"

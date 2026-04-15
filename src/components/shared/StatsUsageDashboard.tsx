@@ -13,7 +13,14 @@ interface UsageItem {
   href?: string
 }
 
-const usageData: UsageItem[] = [
+export type StatsUsageDashboardProps = {
+  title?: string
+  subtitle?: string
+  upgradeLabel?: string
+  usageItems?: readonly UsageItem[]
+}
+
+const DEFAULT_USAGE_DATA: UsageItem[] = [
   { name: 'ISR Reads', current: '358K', limit: '1M', percentage: 35.8 },
   { name: 'Edge Requests', current: '317K', limit: '1M', percentage: 31.7 },
   {
@@ -133,29 +140,32 @@ function DonutChart({ percentage }: { percentage: number }) {
   )
 }
 
-export default function StatsUsageDashboard() {
+export default function StatsUsageDashboard({
+  title = 'Last 30 days',
+  subtitle = 'Updated just now',
+  upgradeLabel = 'Upgrade',
+  usageItems = DEFAULT_USAGE_DATA,
+}: StatsUsageDashboardProps) {
   return (
     <Card className="w-full max-w-md gap-3 py-5 shadow-2xs">
       <CardHeader className="px-5">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <h3 className="text-balance text-sm font-medium">Last 30 days</h3>
-            <p className="text-pretty text-xs text-muted-foreground font-medium">
-              Updated just now
-            </p>
+            <h3 className="text-balance text-sm font-medium">{title}</h3>
+            <p className="text-pretty text-xs text-muted-foreground font-medium">{subtitle}</p>
           </div>
           <Button
             size="sm"
             className="h-6 text-xs font-medium"
           >
-            Upgrade
+            {upgradeLabel}
           </Button>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0 px-3">
         <div className="space-y-0">
-          {usageData.map((item, index) => (
+          {usageItems.map((item, index) => (
             <div
               key={item.name}
               className={`flex items-center gap-3 p-2 rounded-sm transition-colors hover:bg-muted/50 ${

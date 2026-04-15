@@ -134,7 +134,7 @@ const AdminLicenses = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[240px] items-center justify-center">
+          <div className="flex min-h-60 items-center justify-center">
             <Spinner
               variant="gray"
               size="sm"

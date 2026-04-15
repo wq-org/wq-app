@@ -1,7 +1,23 @@
 import { useMemo, useState } from 'react'
-import { Box, Edit } from 'lucide-react'
-
+import { BookOpen, Box, Edit, LockIcon, SparklesIcon } from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
+
+import {
+  AccentPicker,
+  GridIconBackground,
+  IconPreviewCardSquare,
+  IconPreviewCardWide,
+  PricingComparator,
+  StatsDashboardProgressBars,
+  type StatsDashboardProgressBarsMetric,
+  type SwitchListCardIconsItem,
+  StatsLinks,
+  StatsTrending,
+  StatsUsageBreakdown,
+  StatsUsageDashboard,
+  StatsValueBreakdown,
+  SwitchListCardIcons,
+} from '@/components/shared'
 import {
   CompactSettingsTableSwitches,
   type SwitchItem,
@@ -11,6 +27,10 @@ import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
 import { BasicScrollArea, BasicScrollspy } from '@/components/shared/scrollspys'
 import { RatingWithEditable, RatingWithReviewSummary } from '@/components/shared/ratings'
+import StatsProgress, { type StatsProgressItem } from '@/components/shared/StatsProgress'
+import StatsSegmentedProgress, {
+  type StatsSegmentedProgressSegment,
+} from '@/components/shared/StatsSegmentedProgress'
 import {
   PaginationWithCircleButtons,
   PaginationWithPageInfoOnCenter,
@@ -28,14 +48,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  StatsDashboardProgressBars,
-  type StatsDashboardProgressBarsMetric,
-  StatsTrending,
-  StatsUsageDashboard,
-} from '@/components/shared'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
-import { SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
 
 const paginationPages = [1, 2, 3, 4]
 
@@ -59,6 +72,80 @@ const reviewSummaryDistribution = [
   { stars: 3, count: 40, percentage: 10 },
   { stars: 2, count: 20, percentage: 5 },
   { stars: 1, count: 10, percentage: 2.5 },
+]
+
+const statsLinksItems = [
+  { name: 'Net Revenue', value: '$24,300', change: '+4.2%', changeType: 'positive', to: '#' },
+  { name: 'Refunds', value: '$1,120', change: '-1.6%', changeType: 'negative', to: '#' },
+  { name: 'Open Tickets', value: '18', changeType: 'neutral', to: '#', viewMoreLabel: 'Open list' },
+] as const
+
+const statsProgressItems: StatsProgressItem[] = [
+  { name: 'Seats Used', stat: '42', limit: '100', percentage: 42 },
+  { name: 'Storage', stat: '72GB', limit: '200GB', percentage: 36 },
+  { name: 'API Calls', stat: '8.2K', limit: '10K', percentage: 82 },
+  { name: 'Projects', stat: '14', limit: '25', percentage: 56 },
+]
+
+const segmentedProgressItems: StatsSegmentedProgressSegment[] = [
+  { label: 'Video', value: 2800, color: 'bg-blue-500' },
+  { label: 'Docs', value: 1900, color: 'bg-emerald-500' },
+  { label: 'Audio', value: 700, color: 'bg-amber-500' },
+]
+
+const trendingItems = [
+  { name: 'MRR', value: '$82,150', change: '+6.1%', changeType: 'positive' },
+  { name: 'Churn', value: '2.1%', change: '-0.4%', changeType: 'negative' },
+  { name: 'CAC', value: '$143', change: '-3.8%', changeType: 'negative' },
+  { name: 'ARU', value: '$48.7', change: '+2.3%', changeType: 'positive' },
+] as const
+
+const usageBreakdownItems = [
+  { label: 'Compute', amount: 520, percentage: 57, color: 'emerald' },
+  { label: 'Storage', amount: 260, percentage: 28.5, color: 'amber' },
+  { label: 'Bandwidth', amount: 132, percentage: 14.5, color: 'rose' },
+] as const
+
+const usageDashboardItems = [
+  { name: 'Edge Requests', current: '420K', limit: '1M', percentage: 42 },
+  { name: 'Fast Origin Transfer', current: '4.1 GB', limit: '10 GB', percentage: 41 },
+  { name: 'Function Invocations', current: '22K', limit: '1M', percentage: 2.2 },
+] as const
+
+const valueBreakdownItems = [
+  { label: 'After 1 year', value: '$3,250', percentage: '+9.2%' },
+  { label: 'After 3 years', value: '$9,780', percentage: '+19.8%' },
+  { label: 'After 7 years', value: '$24,310', percentage: '+41.1%' },
+]
+
+const pricingColumns = [
+  { name: 'Starter', cta: { text: 'Choose Starter', href: '#', variant: 'outline' as const } },
+  { name: 'Pro', cta: { text: 'Choose Pro', href: '#', variant: 'default' as const } },
+]
+
+const pricingSections = [
+  {
+    heading: 'Core',
+    icon: <SparklesIcon className="size-4" />,
+    rows: [
+      { feature: 'Unlimited projects', values: [true, true] },
+      { feature: 'Analytics', values: ['Basic', 'Advanced'] },
+    ],
+  },
+  {
+    heading: 'Security',
+    icon: <LockIcon className="size-4" />,
+    rows: [
+      { feature: 'SSO', values: [false, true] },
+      { feature: 'Audit logs', values: [false, true] },
+    ],
+  },
+]
+
+const switchCardItems: SwitchListCardIconsItem[] = [
+  { id: 'push', label: 'Push notifications', icon: BookOpen, checked: true },
+  { id: 'email', label: 'Email notifications', icon: SparklesIcon, checked: false },
+  { id: 'sms', label: 'SMS notifications', icon: LockIcon, checked: false },
 ]
 
 const demoSwitchItems: SwitchItem[] = [
@@ -243,6 +330,46 @@ export default function Test() {
         />
       </Section>
 
+      <Section title="AccentPicker">
+        <AccentPicker />
+      </Section>
+
+      <Section title="GridIconBackground">
+        <GridIconBackground
+          className="h-48 rounded-xl border"
+          icons={[
+            {
+              icon: BookOpen,
+              color: 'text-blue-500',
+              bgColor: 'bg-blue-500/10',
+              borderColor: 'border-blue-500/20',
+            },
+          ]}
+        />
+      </Section>
+
+      <Section title="IconPreviewCard">
+        <div className="w-72">
+          <IconPreviewCardWide
+            icon={BookOpen}
+            backgroundColor="var(--muted)"
+          />
+        </div>
+        <div className="h-32 w-32">
+          <IconPreviewCardSquare
+            icon={SparklesIcon}
+            backgroundColor="var(--accent)"
+          />
+        </div>
+      </Section>
+
+      <Section title="PricingComparator">
+        <PricingComparator
+          columns={pricingColumns}
+          sections={pricingSections}
+        />
+      </Section>
+
       <Section title="PaginationWithoutLabels">
         <PaginationWithoutLabels
           pages={paginationPages}
@@ -287,6 +414,25 @@ export default function Test() {
           maxRating={5}
           showValue
           toastTitle="Updated rating to {rating}"
+        />
+      </Section>
+
+      <Section title="StatsLinks">
+        <StatsLinks items={statsLinksItems} />
+      </Section>
+
+      <Section title="StatsProgress">
+        <StatsProgress items={statsProgressItems} />
+      </Section>
+
+      <Section title="StatsSegmentedProgress">
+        <StatsSegmentedProgress
+          title="Storage usage"
+          used={5400}
+          total={10}
+          usedLabel="MB"
+          totalLabel="GB"
+          segments={segmentedProgressItems}
         />
       </Section>
 
@@ -341,7 +487,7 @@ export default function Test() {
       </Section>
 
       <Section title="StatsTrending">
-        <StatsTrending />
+        <StatsTrending items={trendingItems} />
       </Section>
 
       <Section title="StatsDashboardProgressBars">
@@ -349,7 +495,31 @@ export default function Test() {
       </Section>
 
       <Section title="StatsUsageDashboard">
-        <StatsUsageDashboard />
+        <StatsUsageDashboard
+          title="Current cycle"
+          subtitle="Updated 2 minutes ago"
+          upgradeLabel="Upgrade plan"
+          usageItems={usageDashboardItems}
+        />
+      </Section>
+
+      <Section title="StatsUsageBreakdown">
+        <StatsUsageBreakdown
+          title="Resources"
+          total="$912"
+          totalSuffix="current month"
+          trendLabel="+9.8%"
+          items={usageBreakdownItems}
+          settingsHref="#settings"
+          settingsLabel="Open resource settings"
+        />
+      </Section>
+
+      <Section title="StatsValueBreakdown">
+        <StatsValueBreakdown
+          title="Revenue projection"
+          items={valueBreakdownItems}
+        />
       </Section>
 
       <Section title="StatusSummaryCard">
@@ -366,7 +536,7 @@ export default function Test() {
       </Section>
 
       <Section title="SwitchListCardIcons">
-        <SwitchListCardIcons />
+        <SwitchListCardIcons items={switchCardItems} />
       </Section>
     </div>
   )
