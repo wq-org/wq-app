@@ -68,6 +68,13 @@ export { default as StatsTrending } from './StatsTrending'
 export { StatsUsageBreakdown } from './StatsUsageBreakdown'
 export { default as StatsUsageDashboard } from './StatsUsageDashboard'
 export { StatsValueBreakdown } from './StatsValueBreakdown'
+export {
+  RatingSliderEmojiFeedback,
+  SliderDynamicTooltipIndicator,
+  SliderReferenceLabels,
+  SliderSyncedNumberInput,
+  SliderTickMarks,
+} from './sliders'
 export { SelectTabs } from './tabs'
 export type { SelectTabsProps, TabItem } from './tabs'
 export {

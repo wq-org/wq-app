@@ -8,6 +8,7 @@ import {
   IconPreviewCardSquare,
   IconPreviewCardWide,
   PricingComparator,
+  RatingSliderEmojiFeedback,
   SkeletonLoaderAvatarsUserInfo,
   SkeletonLoaderCard,
   SkeletonLoaderChatMessages,
@@ -15,6 +16,10 @@ import {
   SkeletonLoaderDataTable,
   SkeletonLoaderForActions,
   SkeletonLoaderTextParagraphs,
+  SliderDynamicTooltipIndicator,
+  SliderReferenceLabels,
+  SliderSyncedNumberInput,
+  SliderTickMarks,
   StatsDashboardProgressBars,
   type StatsDashboardProgressBarsMetric,
   type SwitchListCardIconsItem,
@@ -171,6 +176,9 @@ const demoSwitchItems: SwitchItem[] = [
   },
 ]
 
+const ratingSliderEmojis = ['😡', '🙁', '😐', '🙂', '😍'] as const
+const ratingSliderLabels = ['Awful', 'Poor', 'Okay', 'Good', 'Amazing'] as const
+
 function CompactSettingsDemo() {
   const [items, setItems] = useState(demoSwitchItems)
   return (
@@ -315,9 +323,93 @@ function StatsDashboardProgressBarsDemo() {
 }
 
 export default function Test() {
+  const [durationMonths, setDurationMonths] = useState(5)
+  const [storageQuota, setStorageQuota] = useState(15)
+  const [volumePercent, setVolumePercent] = useState(50)
+  const [opacityPercent, setOpacityPercent] = useState(50)
+  const [experienceRating, setExperienceRating] = useState(3)
+
+  const handleDurationMonthsChange = (value: number) => {
+    setDurationMonths(value)
+  }
+
+  const handleStorageQuotaChange = (value: number) => {
+    setStorageQuota(value)
+  }
+
+  const handleVolumePercentChange = (value: number) => {
+    setVolumePercent(value)
+  }
+
+  const handleOpacityPercentChange = (value: number) => {
+    setOpacityPercent(value)
+  }
+
+  const handleExperienceRatingChange = (value: number) => {
+    setExperienceRating(value)
+  }
+
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Sliders">
+        <SliderTickMarks
+          label="Duration (months)"
+          value={durationMonths}
+          onValueChange={handleDurationMonthsChange}
+          min={0}
+          max={12}
+          step={1}
+          skipInterval={2}
+        />
+      </Section>
+      <Section title="Sliders">
+        <SliderReferenceLabels
+          label="Storage"
+          value={storageQuota}
+          onValueChange={handleStorageQuotaChange}
+          min={5}
+          max={35}
+          step={1}
+          referenceLabels={['5 GB', '20 GB', '35 GB']}
+        />
+      </Section>
+      <Section title="Sliders">
+        <SliderDynamicTooltipIndicator
+          label="Volume"
+          value={volumePercent}
+          onValueChange={handleVolumePercentChange}
+          min={0}
+          max={100}
+          step={1}
+          formatTooltipValue={(value) => `${value}%`}
+        />
+      </Section>
+      <Section title="Sliders">
+        <SliderSyncedNumberInput
+          label="Opacity"
+          inputId="test-page-opacity-slider"
+          value={opacityPercent}
+          onValueChange={handleOpacityPercentChange}
+          min={0}
+          max={100}
+          step={1}
+          suffix="%"
+        />
+      </Section>
+      <Section title="Sliders">
+        <RatingSliderEmojiFeedback
+          label="Rate your experience"
+          value={experienceRating}
+          onValueChange={handleExperienceRatingChange}
+          min={1}
+          max={5}
+          step={1}
+          emojis={ratingSliderEmojis}
+          ratingLabels={ratingSliderLabels}
+        />
+      </Section>
 
       <Section title="Skeletons">
         <SkeletonLoaderAvatarsUserInfo />
