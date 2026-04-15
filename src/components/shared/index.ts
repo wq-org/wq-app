@@ -26,7 +26,14 @@ export {
   TwitterIcon,
 } from './icons'
 export { IconPreviewCardSquare, IconPreviewCardWide } from './IconPreviewCard'
-export { ClearableInput, QuantityStepper } from './inputs'
+export {
+  AdvancedPasswordStrengthIndicatorProgress,
+  ClearableInput,
+  InputBottomBorderOnly,
+  InputPulsedBackgroundAnimation,
+  MinimalInputWithoutBordersBackground,
+  QuantityStepper,
+} from './inputs'
 export { LanguageSwitcher } from './LanguageSwitcher'
 export { ImageCarousel, PdfPreview, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'

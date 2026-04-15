@@ -4,9 +4,13 @@ import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHov
 
 import {
   AccentPicker,
+  AdvancedPasswordStrengthIndicatorProgress,
   GridIconBackground,
   IconPreviewCardSquare,
   IconPreviewCardWide,
+  InputBottomBorderOnly,
+  InputPulsedBackgroundAnimation,
+  MinimalInputWithoutBordersBackground,
   PricingComparator,
   RatingSliderEmojiFeedback,
   BasicStepper,
@@ -767,6 +771,23 @@ export default function Test() {
           validationMax={150}
         />
       </Section>
+
+      <Section title="InputBottomBorderOnly.tsx InputBottomBorderOnly">
+        <InputBottomBorderOnly />
+      </Section>
+
+      <Section title="InputPulsedBackgroundAnimation.tsx InputPulsedBackgroundAnimation">
+        <InputPulsedBackgroundAnimation />
+      </Section>
+
+      <Section title="MinimalInputWithoutBordersBackground.tsx MinimalInputWithoutBordersBackground">
+        <MinimalInputWithoutBordersBackground />
+      </Section>
+
+      <Section title="AdvancedPasswordStrengthIndicatorProgress.tsx AdvancedPasswordStrengthIndicatorProgress">
+        <AdvancedPasswordStrengthIndicatorProgress />
+      </Section>
+
       <Section title="CardImageScaleHoverEffect">
         <CardImageScaleHoverEffect />
       </Section>
