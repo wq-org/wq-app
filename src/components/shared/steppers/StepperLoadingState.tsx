@@ -12,6 +12,11 @@ import {
 } from '@/components/ui/stepper'
 import { cn } from '@/lib/utils'
 import { CheckIcon, LoaderCircleIcon } from 'lucide-react'
+import {
+  stepperIndicatorColorVariants,
+  stepperSeparatorColorVariants,
+  type StepperColorVariant,
+} from './stepper-color-variants'
 
 const defaultSteps = [1, 2, 3] as const
 
@@ -22,6 +27,7 @@ export type StepperLoadingStateProps = {
   onValueChange?: (value: number) => void
   loadingStep?: number
   className?: string
+  colorVariant?: StepperColorVariant
   renderContent?: (step: number) => React.ReactNode
 }
 
@@ -32,6 +38,7 @@ export function StepperLoadingState({
   onValueChange,
   loadingStep = 2,
   className,
+  colorVariant = 'default',
   renderContent = (step) => `Step ${step} content`,
 }: StepperLoadingStateProps) {
   return (
@@ -53,12 +60,17 @@ export function StepperLoadingState({
             loading={step === loadingStep}
           >
             <StepperTrigger>
-              <StepperIndicator className="data-[state=active]:text-primary-foreground data-[state=active]:bg-primary data-[state=active]:border-primary data-[state=inactive]:border-muted size-5 border-2 data-[state=completed]:border-green-500 data-[state=completed]:bg-green-500 data-[state=completed]:text-white">
-                <span className="bg-primary-foreground hidden size-1.5 rounded-full group-data-[state=active]/step:block"></span>
+              <StepperIndicator
+                className={cn(
+                  'size-5 border-2 data-[state=inactive]:border-muted',
+                  stepperIndicatorColorVariants({ colorVariant }),
+                )}
+              >
+                <span className="hidden size-1.5 rounded-full bg-current group-data-[state=active]/step:block"></span>
               </StepperIndicator>
             </StepperTrigger>
             {steps.length > step && (
-              <StepperSeparator className="group-data-[state=completed]/step:bg-green-500" />
+              <StepperSeparator className={stepperSeparatorColorVariants({ colorVariant })} />
             )}
           </StepperItem>
         ))}

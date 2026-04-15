@@ -17,6 +17,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { BookUserIcon, CheckIcon, CreditCardIcon, LoaderCircleIcon, LockIcon } from 'lucide-react'
+import {
+  stepperIndicatorColorVariants,
+  stepperSeparatorColorVariants,
+  stepperStatusBadgeVariants,
+  type StepperColorVariant,
+} from './stepper-color-variants'
 
 const defaultSteps = [
   {
@@ -44,6 +50,7 @@ export type StepperIconsBadgesProps = {
   defaultValue?: number
   onValueChange?: (value: number) => void
   className?: string
+  colorVariant?: StepperColorVariant
   renderContent?: (step: StepperIconsBadgesItem, index: number) => React.ReactNode
 }
 
@@ -53,6 +60,7 @@ export function StepperIconsBadges({
   defaultValue = 2,
   onValueChange,
   className,
+  colorVariant = 'default',
   renderContent = (step) => `${step.title} content`,
 }: StepperIconsBadgesProps) {
   const [internalStep, setInternalStep] = useState(defaultValue)
@@ -86,7 +94,12 @@ export function StepperIconsBadges({
               className="flex grow flex-col items-start justify-center gap-2.5"
               asChild
             >
-              <StepperIndicator className="data-[state=inactive]:border-border data-[state=inactive]:text-muted-foreground data-[state=completed]:bg-success size-8 border-2 data-[state=completed]:text-white data-[state=inactive]:bg-transparent">
+              <StepperIndicator
+                className={cn(
+                  'size-8 border-2 data-[state=inactive]:border-border data-[state=inactive]:bg-transparent',
+                  stepperIndicatorColorVariants({ colorVariant }),
+                )}
+              >
                 {step.icon}
               </StepperIndicator>
               <div className="flex flex-col items-start gap-1">
@@ -99,8 +112,11 @@ export function StepperIconsBadges({
                 <div>
                   <Badge
                     size="sm"
-                    variant="primary-light"
-                    className="hidden group-data-[state=active]/step:inline-flex"
+                    variant="secondary"
+                    className={cn(
+                      'hidden group-data-[state=active]/step:inline-flex',
+                      stepperStatusBadgeVariants({ colorVariant }),
+                    )}
                   >
                     In Progress
                   </Badge>
@@ -123,7 +139,12 @@ export function StepperIconsBadges({
             </StepperTrigger>
 
             {steps.length > index + 1 && (
-              <StepperSeparator className="group-data-[state=completed]/step:bg-success absolute inset-x-0 start-9 top-4 m-0 group-data-[orientation=horizontal]/stepper-nav:w-[calc(100%-2rem)] group-data-[orientation=horizontal]/stepper-nav:flex-none" />
+              <StepperSeparator
+                className={cn(
+                  'absolute inset-x-0 start-9 top-4 m-0 group-data-[orientation=horizontal]/stepper-nav:w-[calc(100%-2rem)] group-data-[orientation=horizontal]/stepper-nav:flex-none',
+                  stepperSeparatorColorVariants({ colorVariant }),
+                )}
+              />
             )}
           </StepperItem>
         ))}

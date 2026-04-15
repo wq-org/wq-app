@@ -11,6 +11,11 @@ import {
   StepperTrigger,
 } from '@/components/ui/stepper'
 import { cn } from '@/lib/utils'
+import {
+  stepperIndicatorColorVariants,
+  stepperSeparatorColorVariants,
+  type StepperColorVariant,
+} from './stepper-color-variants'
 
 const defaultSteps = [1, 2, 3, 4] as const
 
@@ -20,6 +25,7 @@ export type StepperCompletedStateProps = {
   defaultValue?: number
   onValueChange?: (value: number) => void
   className?: string
+  colorVariant?: StepperColorVariant
   renderContent?: (step: number) => React.ReactNode
 }
 
@@ -29,6 +35,7 @@ export function StepperCompletedState({
   defaultValue = 2,
   onValueChange,
   className,
+  colorVariant = 'default',
   renderContent = (step) => `Step ${step} content`,
 }: StepperCompletedStateProps) {
   return (
@@ -45,12 +52,12 @@ export function StepperCompletedState({
             step={step}
           >
             <StepperTrigger>
-              <StepperIndicator className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=completed]:bg-green-500 data-[state=completed]:text-white data-[state=inactive]:text-gray-500">
+              <StepperIndicator className={stepperIndicatorColorVariants({ colorVariant })}>
                 {step}
               </StepperIndicator>
             </StepperTrigger>
             {steps.length > step && (
-              <StepperSeparator className="group-data-[state=completed]/step:bg-green-500" />
+              <StepperSeparator className={stepperSeparatorColorVariants({ colorVariant })} />
             )}
           </StepperItem>
         ))}

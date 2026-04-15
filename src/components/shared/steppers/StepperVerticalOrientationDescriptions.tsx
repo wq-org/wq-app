@@ -12,6 +12,11 @@ import {
 } from '@/components/ui/stepper'
 import { cn } from '@/lib/utils'
 import { CheckIcon, LoaderCircleIcon } from 'lucide-react'
+import {
+  stepperIndicatorColorVariants,
+  stepperSeparatorColorVariants,
+  type StepperColorVariant,
+} from './stepper-color-variants'
 
 const defaultSteps = [
   { title: 'Account', description: 'Create your account' },
@@ -30,6 +35,7 @@ export type StepperVerticalOrientationDescriptionsProps = {
   defaultValue?: number
   onValueChange?: (value: number) => void
   className?: string
+  colorVariant?: StepperColorVariant
   renderContent?: (
     step: StepperVerticalOrientationDescriptionsItem,
     index: number,
@@ -42,6 +48,7 @@ export function StepperVerticalOrientationDescriptions({
   defaultValue = 2,
   onValueChange,
   className,
+  colorVariant = 'default',
   renderContent = (step) => `${step.title} content`,
 }: StepperVerticalOrientationDescriptionsProps) {
   return (
@@ -65,7 +72,7 @@ export function StepperVerticalOrientationDescriptions({
               className="relative items-start not-last:flex-1"
             >
               <StepperTrigger className="items-start gap-2.5 pb-12 last:pb-0">
-                <StepperIndicator className="data-[state=completed]:bg-success data-[state=completed]:text-white">
+                <StepperIndicator className={stepperIndicatorColorVariants({ colorVariant })}>
                   {index + 1}
                 </StepperIndicator>
                 <div className="mt-0.5 text-left">
@@ -74,7 +81,12 @@ export function StepperVerticalOrientationDescriptions({
                 </div>
               </StepperTrigger>
               {index < steps.length - 1 && (
-                <StepperSeparator className="group-data-[state=completed]/step:bg-success absolute inset-y-0 top-7 left-3 -order-1 m-0 -translate-x-1/2 group-data-[orientation=vertical]/stepper-nav:h-[calc(100%-2rem)]" />
+                <StepperSeparator
+                  className={cn(
+                    'absolute inset-y-0 top-7 left-3 -order-1 m-0 -translate-x-1/2 group-data-[orientation=vertical]/stepper-nav:h-[calc(100%-2rem)]',
+                    stepperSeparatorColorVariants({ colorVariant }),
+                  )}
+                />
               )}
             </StepperItem>
           ))}

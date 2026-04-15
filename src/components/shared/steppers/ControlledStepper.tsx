@@ -14,6 +14,11 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import {
+  stepperIndicatorColorVariants,
+  stepperSeparatorColorVariants,
+  type StepperColorVariant,
+} from './stepper-color-variants'
 
 const defaultSteps = [1, 2, 3, 4] as const
 
@@ -23,6 +28,7 @@ export type ControlledStepperProps = {
   defaultValue?: number
   onValueChange?: (value: number) => void
   className?: string
+  colorVariant?: StepperColorVariant
   renderContent?: (step: number) => React.ReactNode
 }
 
@@ -32,6 +38,7 @@ export function ControlledStepper({
   defaultValue = 2,
   onValueChange,
   className,
+  colorVariant = 'default',
   renderContent = (step) => `Step ${step} content`,
 }: ControlledStepperProps) {
   const [internalStep, setInternalStep] = useState(defaultValue)
@@ -57,12 +64,12 @@ export function ControlledStepper({
             step={step}
           >
             <StepperTrigger asChild>
-              <StepperIndicator className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=completed]:bg-green-500 data-[state=completed]:text-white data-[state=inactive]:text-gray-500">
+              <StepperIndicator className={stepperIndicatorColorVariants({ colorVariant })}>
                 {step}
               </StepperIndicator>
             </StepperTrigger>
             {steps.length > step && (
-              <StepperSeparator className="group-data-[state=completed]/step:bg-green-500" />
+              <StepperSeparator className={stepperSeparatorColorVariants({ colorVariant })} />
             )}
           </StepperItem>
         ))}
