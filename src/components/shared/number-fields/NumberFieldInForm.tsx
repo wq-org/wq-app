@@ -81,7 +81,7 @@ export function NumberFieldInForm() {
                       max={100}
                     >
                       <NumberFieldGroup
-                        className="rounded-xl"
+                        className="rounded-lg"
                         aria-invalid={!!form.formState.errors.amount}
                       >
                         <NumberFieldDecrement />

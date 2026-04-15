@@ -16,7 +16,7 @@ export function NumberFieldButtonsRight() {
         max={100}
       >
         <NumberFieldScrubArea label="Amount" />
-        <NumberFieldGroup className="rounded-xl">
+        <NumberFieldGroup className="rounded-lg">
           <NumberFieldInput className="text-left" />
           <NumberFieldDecrement />
           <NumberFieldIncrement />

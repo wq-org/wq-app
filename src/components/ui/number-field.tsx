@@ -78,7 +78,7 @@ function NumberFieldDecrement({
     <NumberFieldPrimitive.Decrement
       className={cn(
         numberFieldButtonVariants({ size }),
-        'style-vega:rounded-s-xl style-maia:rounded-s-xl style-nova:rounded-s-xl style-lyra:rounded-s-xl style-mira:rounded-s-xl border-e-0',
+        'style-vega:rounded-s-lg style-maia:rounded-s-lg style-nova:rounded-s-lg style-lyra:rounded-s-lg style-mira:rounded-s-lg hover:rounded-full data-pressed:rounded-full focus-visible:rounded-full border-e-0',
         className,
       )}
       data-slot="number-field-decrement"
@@ -108,7 +108,7 @@ function NumberFieldIncrement({
     <NumberFieldPrimitive.Increment
       className={cn(
         numberFieldButtonVariants({ size }),
-        'style-vega:rounded-e-xl style-maia:rounded-e-xl style-nova:rounded-e-xl style-lyra:rounded-e-xl style-mira:rounded-e-xl border-s-0',
+        'style-vega:rounded-e-lg style-maia:rounded-e-lg style-nova:rounded-e-lg style-lyra:rounded-e-lg style-mira:rounded-e-lg hover:rounded-full data-pressed:rounded-full focus-visible:rounded-full border-s-0',
         className,
       )}
       data-slot="number-field-increment"
