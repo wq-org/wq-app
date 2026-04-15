@@ -9,7 +9,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { InvoiceList, type InvoiceListItem } from '@/components/shared'
 import { useUser } from '@/contexts/user'
-import { InstitutionSubscriptionDetails } from '@/features/institution/components/InstitutionSubscriptionDetails'
+import { InstitutionSubscriptionDetails } from '../components/InstitutionSubscriptionDetails'
 import { getFeatureDefinitionIcon } from '@/features/admin/config/featureDefinitionIcons'
 import type {
   EffectiveFeature,

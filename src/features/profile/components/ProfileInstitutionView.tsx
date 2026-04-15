@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Presentation, Users2, Globe, Twitter, Facebook, Instagram } from 'lucide-react'
-import { EmptyTeachersView } from '@/features/institution'
+import { EmptyTeachersView } from '@/features/institution-admin'
 import { EmptyStudentView } from '@/features/student'
 import { Text } from '@/components/ui/text'
 

@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select'
 import type { VariantProps } from 'class-variance-authority'
 import { badgeVariants } from '@/components/ui/badge-variants'
-import { InstitutionSubscriptionDetails } from '@/features/institution'
+import { InstitutionSubscriptionDetails } from '@/features/institution-admin'
 import type {
   Institution,
   InstitutionEditFormValues,

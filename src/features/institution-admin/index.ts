@@ -1,4 +1,6 @@
 export { InstitutionAdminWorkspaceShell } from './components/InstitutionAdminWorkspaceShell'
+export { InstitutionSubscriptionDetails } from './components/InstitutionSubscriptionDetails'
+export { EmptyTeachersView } from './components/EmptyTeachersView'
 export { InstitutionDashboard as InstitutionAdminDashboardPage } from './pages/dashboard'
 export { InstitutionTeachers as InstitutionAdminTeachersPage } from './pages/teacher'
 export { InstitutionStudents as InstitutionAdminStudentsPage } from './pages/students'

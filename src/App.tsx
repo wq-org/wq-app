@@ -14,7 +14,6 @@ import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
 import ChangelogPage from './user/pages/changelog'
-import { Institution, InstitutionViewPage } from '@/features/institution'
 import {
   StudentDashboard,
   StudentSettingsPage,
@@ -639,16 +638,6 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="institution"
-                  element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <Institution />
-                      </RequireOnboarding>
-                    </RequireAuth>
-                  }
-                />
-                <Route
                   path="view/:id"
                   element={
                     <RequireAuth>
@@ -702,16 +691,6 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="institution"
-                  element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <Institution />
-                      </RequireOnboarding>
-                    </RequireAuth>
-                  }
-                />
-                <Route
                   path="view/:id"
                   element={
                     <RequireAuth>
@@ -752,18 +731,6 @@ const App = () => {
                   }
                 />
               </Route>
-
-              {/* Institution Routes (require auth + onboarding) */}
-              <Route
-                path="/institution/:id"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <InstitutionViewPage />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
 
               {/* Centralized Profile Routes (require auth + onboarding) */}
               <Route

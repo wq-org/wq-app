@@ -4,11 +4,11 @@ import { useUser } from '@/contexts/user'
 import {
   fetchLatestInstitutionSubscription,
   type InstitutionSubscriptionWithPlan,
-} from '@/features/institution/api/institutionSubscriptionApi'
+  resolvePlanCode,
+} from '../api/institutionSubscriptionApi'
 
 import { fetchEffectiveEntitlements } from '../api/institutionEntitlementsApi'
 import { fetchInstitutionQuotasUsage } from '../api/institutionQuotasApi'
-import { resolvePlanCode } from '@/features/institution/api/institutionSubscriptionApi'
 import type { EffectiveFeature, InstitutionQuotasUsage } from '../types/licensing.types'
 
 type State = {

@@ -14,7 +14,7 @@ import {
   type SwitchItem,
 } from '@/components/shared/CompactSettingsTableSwitches'
 import { StatusSummaryCard, type StatusSummaryRow } from '@/components/shared'
-import type { BillingStatus } from '@/features/institution/api/institutionSubscriptionApi'
+import type { BillingStatus } from '../api/institutionSubscriptionApi'
 
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
