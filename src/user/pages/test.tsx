@@ -9,6 +9,7 @@ import {
 import { ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillingUsageCard'
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
+import { NumberFieldButtonsRight } from '@/components/shared/number-fields/NumberFieldButtonsRight'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -28,6 +29,7 @@ import {
 } from '@/components/shared'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
 import { SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
+import { NumberFieldInForm } from '@/components/shared/number-fields'
 
 const demoSwitchItems: SwitchItem[] = [
   { id: 'auto-save', label: 'Auto-save', description: 'Save changes automatically', checked: true },
@@ -193,6 +195,12 @@ export default function Test() {
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
+      <Section title="NumberFieldButtonsRight">
+        <NumberFieldButtonsRight />
+      </Section>
+      <Section title="NumberFieldInForm">
+        <NumberFieldInForm />
+      </Section>
       <Section title="CardImageScaleHoverEffect">
         <CardImageScaleHoverEffect />
       </Section>
