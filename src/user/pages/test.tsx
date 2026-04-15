@@ -10,6 +10,12 @@ import { ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillin
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
 import { NumberFieldButtonsRight } from '@/components/shared/number-fields/NumberFieldButtonsRight'
+import { RatingWithEditable, RatingWithReviewSummary } from '@/components/shared/ratings'
+import {
+  PaginationWithCircleButtons,
+  PaginationWithPageInfoOnCenter,
+  PaginationWithoutLabels,
+} from '@/components/shared/paginations'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -194,6 +200,26 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="PaginationWithoutLabels">
+        <PaginationWithoutLabels />
+      </Section>
+
+      <Section title="PaginationWithCircleButtons">
+        <PaginationWithCircleButtons />
+      </Section>
+
+      <Section title="PaginationWithPageInfoOnCenter">
+        <PaginationWithPageInfoOnCenter />
+      </Section>
+
+      <Section title="RatingWithReviewSummary">
+        <RatingWithReviewSummary />
+      </Section>
+
+      <Section title="RatingWithEditable">
+        <RatingWithEditable />
+      </Section>
 
       <Section title="NumberFieldButtonsRight">
         <NumberFieldButtonsRight />

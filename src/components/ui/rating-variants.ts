@@ -31,9 +31,9 @@ export const starWrapVariants = cva('relative inline-flex items-center justify-c
 export const starIconVariants = cva('', {
   variants: {
     size: {
-      sm: 'h-4 w-4',
-      default: 'h-5 w-5',
-      lg: 'h-6 w-6',
+      sm: 'w-4 h-4',
+      default: 'w-5 h-5',
+      lg: 'w-6 h-6',
     },
   },
   defaultVariants: {
@@ -41,7 +41,7 @@ export const starIconVariants = cva('', {
   },
 })
 
-export const valueVariants = cva('w-8 tabular-nums text-muted-foreground', {
+export const valueVariants = cva('text-muted-foreground w-5 tabular-nums', {
   variants: {
     size: {
       sm: 'text-xs',

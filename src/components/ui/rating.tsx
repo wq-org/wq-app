@@ -13,13 +13,40 @@ import {
 
 export type RatingProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'onChange'> &
   VariantProps<typeof ratingVariants> & {
+    /**
+     * Current rating value (supports decimal values for partial stars)
+     */
+    rating?: number
+    /**
+     * Compatibility alias for `rating`
+     */
     value?: number
+    /**
+     * Compatibility uncontrolled alias for `defaultRating`
+     */
     defaultValue?: number
+    /**
+     * Default uncontrolled rating value
+     */
+    defaultRating?: number
+    /**
+     * Callback function called when rating changes
+     */
+    onRatingChange?: (rating: number) => void
+    /**
+     * Compatibility alias for `onRatingChange`
+     */
     onValueChange?: (value: number) => void
     maxRating?: number
     showValue?: boolean
     editable?: boolean
+    /**
+     * Class name for stars
+     */
     starClassName?: string
+    /**
+     * Class name for value span
+     */
     valueClassName?: string
   }
 
@@ -35,8 +62,11 @@ function getRatingLabel(value: number, maxRating: number) {
 export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
   (
     {
+      rating,
       value,
+      defaultRating = 0,
       defaultValue = 0,
+      onRatingChange,
       onValueChange,
       maxRating = 5,
       size,
@@ -50,19 +80,22 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
     ref,
   ) => {
     const [hoveredRating, setHoveredRating] = React.useState<number | null>(null)
-    const [internalValue, setInternalValue] = React.useState<number>(defaultValue)
-    const isControlled = value !== undefined
-    const selected = isControlled ? value : internalValue
-    const safeRating = clampRating(selected ?? 0, maxRating)
+    const resolvedDefaultRating = defaultValue ?? defaultRating
+    const [internalRating, setInternalRating] = React.useState<number>(resolvedDefaultRating)
+    const controlledRating = rating ?? value
+    const isControlled = controlledRating !== undefined
+    const selectedRating = isControlled ? controlledRating : internalRating
+    const safeRating = clampRating(selectedRating ?? 0, maxRating)
     const displayRating = editable && hoveredRating !== null ? hoveredRating : safeRating
 
     const handleStarClick = (nextRating: number) => {
       if (!editable) return
 
       if (!isControlled) {
-        setInternalValue(nextRating)
+        setInternalRating(nextRating)
       }
 
+      onRatingChange?.(nextRating)
       onValueChange?.(nextRating)
     }
 
@@ -91,13 +124,13 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       >
         <div className="flex items-center gap-1">
           {Array.from({ length: maxRating }, (_, index) => {
-            const starValue = index + 1
-            const filled = displayRating >= starValue
-            const partiallyFilled = displayRating > index && displayRating < starValue
+            const starRating = index + 1
+            const filled = displayRating >= starRating
+            const partiallyFilled = displayRating > index && displayRating < starRating
             const fillPercentage = partiallyFilled ? (displayRating - index) * 100 : 0
 
             const starContent = (
-              <span className={cn(starWrapVariants({ size }))}>
+              <span className={cn(starWrapVariants({ size }), editable && 'cursor-pointer')}>
                 <StarIcon
                   aria-hidden="true"
                   className={cn(
@@ -127,7 +160,7 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
             if (!editable) {
               return (
                 <span
-                  key={starValue}
+                  key={starRating}
                   className="inline-flex"
                 >
                   {starContent}
@@ -137,14 +170,14 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
 
             return (
               <button
-                key={starValue}
+                key={starRating}
                 type="button"
                 role="radio"
-                aria-checked={displayRating >= starValue}
-                aria-label={getRatingLabel(starValue, maxRating)}
+                aria-checked={displayRating >= starRating}
+                aria-label={getRatingLabel(starRating, maxRating)}
                 className="cursor-pointer rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                onClick={() => handleStarClick(starValue)}
-                onMouseEnter={() => handleMouseEnter(starValue)}
+                onClick={() => handleStarClick(starRating)}
+                onMouseEnter={() => handleMouseEnter(starRating)}
                 onMouseLeave={handleMouseLeave}
               >
                 {starContent}
