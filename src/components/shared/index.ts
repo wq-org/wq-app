@@ -87,6 +87,19 @@ export {
   StepperVerticalOrientationDescriptions,
   StepperWithProgressBarIndicator,
 } from './steppers'
+export {
+  SocialMediaReactionToggles,
+  ToggleIconSwapOnPress,
+  ToggleNotificationCountBadge,
+} from './toggles'
+export type {
+  SocialMediaReactionCount,
+  SocialMediaReactionCounts,
+  SocialMediaReactionTogglesProps,
+  SocialMediaReactionValues,
+  ToggleIconSwapOnPressProps,
+  ToggleNotificationCountBadgeProps,
+} from './toggles'
 export { SelectTabs } from './tabs'
 export type { SelectTabsProps, TabItem } from './tabs'
 export {

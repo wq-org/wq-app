@@ -26,6 +26,9 @@ import {
   StepperSegmentedProgressBar,
   StepperVerticalOrientationDescriptions,
   StepperWithProgressBarIndicator,
+  SocialMediaReactionToggles,
+  ToggleIconSwapOnPress,
+  ToggleNotificationCountBadge,
   SliderDynamicTooltipIndicator,
   SliderReferenceLabels,
   SliderSyncedNumberInput,
@@ -139,6 +142,19 @@ const valueBreakdownItems = [
   { label: 'After 3 years', value: '$9,780', percentage: '+19.8%' },
   { label: 'After 7 years', value: '$24,310', percentage: '+41.1%' },
 ]
+
+const toggleIconSwapColorVariants = [
+  'darkblue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+] as const
 
 const pricingColumns = [
   { name: 'Starter', cta: { text: 'Choose Starter', href: '#', variant: 'outline' as const } },
@@ -374,71 +390,99 @@ export default function Test() {
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
-      <Section title="Steppers">
+      <Section title="SocialMediaReactionToggles">
+        <SocialMediaReactionToggles />
+      </Section>
+      <Section title="ToggleIconSwapOnPress">
+        <ToggleIconSwapOnPress />
+      </Section>
+      <Section title="ToggleIconSwapOnPress Colors">
+        <div className="flex flex-wrap items-center gap-2">
+          {toggleIconSwapColorVariants.map((colorVariant) => (
+            <ToggleIconSwapOnPress
+              key={colorVariant}
+              ariaLabel={`Toggle favorite ${colorVariant}`}
+              colorVariant={colorVariant}
+            />
+          ))}
+        </div>
+      </Section>
+      <Section title="ToggleNotificationCountBadge">
+        <ToggleNotificationCountBadge />
+      </Section>
+
+      <Section title="BasicStepper">
         <BasicStepper
           value={basicStepperValue}
           onValueChange={setBasicStepperValue}
+          colorVariant="darkblue"
           renderContent={(step) => `Basic step ${step}`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="ControlledStepper">
         <ControlledStepper
           value={controlledStepperValue}
           onValueChange={setControlledStepperValue}
+          colorVariant="violet"
           renderContent={(step) => `Controlled step ${step}`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperCompletedState">
         <StepperCompletedState
           value={completedStepperValue}
           onValueChange={setCompletedStepperValue}
+          colorVariant="green"
           renderContent={(step) => `Completed state step ${step}`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperContentEachStep">
         <StepperContentEachStep
           value={contentStepperValue}
           onValueChange={setContentStepperValue}
           renderContent={(step) => `${step.title} details`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperIconsBadges">
         <StepperIconsBadges
           value={iconsStepperValue}
           onValueChange={setIconsStepperValue}
+          colorVariant="success-light"
           renderContent={(step) => `${step.title} status`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperLoadingState">
         <StepperLoadingState
           value={loadingStepperValue}
           onValueChange={setLoadingStepperValue}
+          colorVariant="indigo"
           loadingStep={2}
           renderContent={(step) => `Loading state step ${step}`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperProgressBarTitles">
         <StepperProgressBarTitles
           value={progressTitlesStepperValue}
           onValueChange={setProgressTitlesStepperValue}
+          colorVariant="orange"
           renderContent={(step) => `${step.title} review`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperSegmentedProgressBar">
         <StepperSegmentedProgressBar
           value={segmentedStepperValue}
           onValueChange={setSegmentedStepperValue}
           renderContent={(step) => `Segmented progress step ${step}`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperVerticalOrientationDescriptions">
         <StepperVerticalOrientationDescriptions
           value={verticalStepperValue}
           onValueChange={setVerticalStepperValue}
+          colorVariant="teal"
           renderContent={(step) => `${step.title} summary`}
         />
       </Section>
-      <Section title="Steppers">
+      <Section title="StepperWithProgressBarIndicator">
         <StepperWithProgressBarIndicator
           value={progressIndicatorStepperValue}
           onValueChange={setProgressIndicatorStepperValue}
@@ -446,7 +490,7 @@ export default function Test() {
         />
       </Section>
 
-      <Section title="Sliders">
+      <Section title="SliderTickMarks">
         <SliderTickMarks
           label="Duration (months)"
           value={durationMonths}
@@ -457,7 +501,7 @@ export default function Test() {
           skipInterval={2}
         />
       </Section>
-      <Section title="Sliders">
+      <Section title="SliderReferenceLabels">
         <SliderReferenceLabels
           label="Storage"
           value={storageQuota}
@@ -468,7 +512,7 @@ export default function Test() {
           referenceLabels={['5 GB', '20 GB', '35 GB']}
         />
       </Section>
-      <Section title="Sliders">
+      <Section title="SliderDynamicTooltipIndicator">
         <SliderDynamicTooltipIndicator
           label="Volume"
           value={volumePercent}
@@ -479,7 +523,7 @@ export default function Test() {
           formatTooltipValue={(value) => `${value}%`}
         />
       </Section>
-      <Section title="Sliders">
+      <Section title="SliderSyncedNumberInput">
         <SliderSyncedNumberInput
           label="Opacity"
           inputId="test-page-opacity-slider"
@@ -491,7 +535,7 @@ export default function Test() {
           suffix="%"
         />
       </Section>
-      <Section title="Sliders">
+      <Section title="RatingSliderEmojiFeedback">
         <RatingSliderEmojiFeedback
           label="Rate your experience"
           value={experienceRating}
@@ -504,25 +548,25 @@ export default function Test() {
         />
       </Section>
 
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderAvatarsUserInfo">
         <SkeletonLoaderAvatarsUserInfo />
       </Section>
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderCard">
         <SkeletonLoaderCard />
       </Section>
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderTextParagraphs">
         <SkeletonLoaderTextParagraphs />
       </Section>
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderChatMessages">
         <SkeletonLoaderChatMessages />
       </Section>
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderDashboardStatsRow">
         <SkeletonLoaderDashboardStatsRow />
       </Section>
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderForActions">
         <SkeletonLoaderForActions />
       </Section>
-      <Section title="Skeletons">
+      <Section title="SkeletonLoaderDataTable">
         <SkeletonLoaderDataTable />
       </Section>
 
