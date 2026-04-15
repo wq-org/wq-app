@@ -3,7 +3,20 @@ import { Rating } from '@/components/ui/rating'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 
-const distribution = [
+type RatingDistributionItem = {
+  stars: number
+  count: number
+  percentage: number
+}
+
+type RatingWithReviewSummaryProps = {
+  rating?: number
+  reviewCount?: number
+  maxRating?: number
+  distribution?: RatingDistributionItem[]
+}
+
+const DEFAULT_DISTRIBUTION: RatingDistributionItem[] = [
   { stars: 5, count: 124, percentage: 62 },
   { stars: 4, count: 45, percentage: 22 },
   { stars: 3, count: 18, percentage: 9 },
@@ -11,16 +24,22 @@ const distribution = [
   { stars: 1, count: 5, percentage: 3 },
 ]
 
-export function RatingWithReviewSummary() {
+export function RatingWithReviewSummary({
+  rating = 4.6,
+  reviewCount = 200,
+  maxRating = 5,
+  distribution = DEFAULT_DISTRIBUTION,
+}: RatingWithReviewSummaryProps) {
   return (
     <div className="mx-auto w-full max-w-xs space-y-4">
       <div className="flex flex-col items-center gap-2">
-        <span className="text-3xl font-semibold">4.6</span>
+        <span className="text-3xl font-semibold">{rating.toFixed(1)}</span>
         <Rating
-          rating={4.6}
+          rating={rating}
+          maxRating={maxRating}
           size="sm"
         />
-        <span className="text-muted-foreground text-xs">Based on 200 reviews</span>
+        <span className="text-muted-foreground text-xs">Based on {reviewCount} reviews</span>
       </div>
       <Separator />
       <div className="space-y-2">

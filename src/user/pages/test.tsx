@@ -9,7 +9,6 @@ import {
 import { ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillingUsageCard'
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
-import { NumberFieldButtonsRight } from '@/components/shared/number-fields/NumberFieldButtonsRight'
 import { BasicScrollArea, BasicScrollspy } from '@/components/shared/scrollspys'
 import { RatingWithEditable, RatingWithReviewSummary } from '@/components/shared/ratings'
 import {
@@ -17,6 +16,7 @@ import {
   PaginationWithPageInfoOnCenter,
   PaginationWithoutLabels,
 } from '@/components/shared/paginations'
+import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -36,7 +36,30 @@ import {
 } from '@/components/shared'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
 import { SwitchListCardIcons } from '@/components/shared/SwitchListCardIcons'
-import { NumberFieldInForm } from '@/components/shared/number-fields'
+
+const paginationPages = [1, 2, 3, 4]
+
+const basicScrollAreaItems = [
+  { id: 'demo-area-1', label: 'Overview' },
+  { id: 'demo-area-2', label: 'Usage' },
+  { id: 'demo-area-3', label: 'Billing' },
+  { id: 'demo-area-4', label: 'Settings' },
+]
+
+const basicScrollspyItems = [
+  { id: 'demo-spy-1', label: 'Section A' },
+  { id: 'demo-spy-2', label: 'Section B' },
+  { id: 'demo-spy-3', label: 'Section C' },
+  { id: 'demo-spy-4', label: 'Section D' },
+]
+
+const reviewSummaryDistribution = [
+  { stars: 5, count: 240, percentage: 60 },
+  { stars: 4, count: 90, percentage: 22.5 },
+  { stars: 3, count: 40, percentage: 10 },
+  { stars: 2, count: 20, percentage: 5 },
+  { stars: 1, count: 10, percentage: 2.5 },
+]
 
 const demoSwitchItems: SwitchItem[] = [
   { id: 'auto-save', label: 'Auto-save', description: 'Save changes automatically', checked: true },
@@ -203,38 +226,87 @@ export default function Test() {
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
       <Section title="BasicScrollArea">
-        <BasicScrollArea />
+        <BasicScrollArea
+          items={basicScrollAreaItems}
+          offset={40}
+          viewportClassName="h-[320px] grow"
+          sectionHeightClassName="bg-muted rounded-lg h-[220px]"
+        />
       </Section>
 
       <Section title="BasicScrollspy">
-        <BasicScrollspy />
+        <BasicScrollspy
+          items={basicScrollspyItems}
+          offset={40}
+          viewportClassName="-me-5 h-[360px] grow pe-5"
+          sectionHeightClassName="bg-muted rounded-lg h-[260px]"
+        />
       </Section>
 
       <Section title="PaginationWithoutLabels">
-        <PaginationWithoutLabels />
+        <PaginationWithoutLabels
+          pages={paginationPages}
+          activePage={3}
+          previousHref="#page-2"
+          nextHref="#page-4"
+          getPageHref={(page) => `#page-${page}`}
+        />
       </Section>
 
       <Section title="PaginationWithCircleButtons">
-        <PaginationWithCircleButtons />
+        <PaginationWithCircleButtons
+          pages={paginationPages}
+          activePage={2}
+          previousHref="#page-1"
+          nextHref="#page-3"
+          getPageHref={(page) => `#page-${page}`}
+        />
       </Section>
 
       <Section title="PaginationWithPageInfoOnCenter">
-        <PaginationWithPageInfoOnCenter />
+        <PaginationWithPageInfoOnCenter
+          currentPage={3}
+          totalPages={12}
+          previousHref="#page-2"
+          nextHref="#page-4"
+        />
       </Section>
 
       <Section title="RatingWithReviewSummary">
-        <RatingWithReviewSummary />
+        <RatingWithReviewSummary
+          rating={4.4}
+          reviewCount={400}
+          maxRating={5}
+          distribution={reviewSummaryDistribution}
+        />
       </Section>
 
       <Section title="RatingWithEditable">
-        <RatingWithEditable />
+        <RatingWithEditable
+          initialRating={2}
+          maxRating={5}
+          showValue
+          toastTitle="Updated rating to {rating}"
+        />
       </Section>
 
       <Section title="NumberFieldButtonsRight">
-        <NumberFieldButtonsRight />
+        <NumberFieldButtonsRight
+          defaultValue={12}
+          min={0}
+          max={50}
+          label="Seats"
+        />
       </Section>
       <Section title="NumberFieldInForm">
-        <NumberFieldInForm />
+        <NumberFieldInForm
+          label="Monthly quota"
+          defaultAmount={15}
+          inputMin={0}
+          inputMax={200}
+          validationMin={10}
+          validationMax={150}
+        />
       </Section>
       <Section title="CardImageScaleHoverEffect">
         <CardImageScaleHoverEffect />

@@ -24,29 +24,49 @@ import {
 } from '@/components/ui/field'
 import { CircleAlertIcon } from 'lucide-react'
 
-const FormSchema = z.object({
-  amount: z
-    .number({
-      message: 'Amount must be a number.',
-    })
-    .min(10, {
-      message: 'Amount must be at least 10.',
-    })
-    .max(100, {
-      message: 'Amount must be at most 100.',
-    }),
-})
+type NumberFieldInFormProps = {
+  label?: string
+  defaultAmount?: number
+  inputMin?: number
+  inputMax?: number
+  validationMin?: number
+  validationMax?: number
+}
 
-export function NumberFieldInForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+function buildFormSchema(validationMin: number, validationMax: number) {
+  return z.object({
+    amount: z
+      .number({
+        message: 'Amount must be a number.',
+      })
+      .min(validationMin, {
+        message: `Amount must be at least ${validationMin}.`,
+      })
+      .max(validationMax, {
+        message: `Amount must be at most ${validationMax}.`,
+      }),
+  })
+}
+
+export function NumberFieldInForm({
+  label = 'Amount',
+  defaultAmount = 5,
+  inputMin = 0,
+  inputMax = 100,
+  validationMin = 10,
+  validationMax = 100,
+}: NumberFieldInFormProps) {
+  const formSchema = buildFormSchema(validationMin, validationMax)
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: 5,
+      amount: defaultAmount,
     },
     mode: 'onChange',
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(data: z.infer<typeof formSchema>) {
     toast.success('Form submitted', {
       description: (
         <Alert variant="default">
@@ -72,13 +92,13 @@ export function NumberFieldInForm() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="number-field-amount">Amount</FieldLabel>
+                    <FieldLabel htmlFor="number-field-amount">{label}</FieldLabel>
                     <NumberField
                       id="number-field-amount"
                       value={field.value}
                       onValueChange={(value) => field.onChange(value)}
-                      min={0}
-                      max={100}
+                      min={inputMin}
+                      max={inputMax}
                     >
                       <NumberFieldGroup
                         className="rounded-lg"
@@ -89,7 +109,9 @@ export function NumberFieldInForm() {
                         <NumberFieldIncrement />
                       </NumberFieldGroup>
                     </NumberField>
-                    <FieldDescription>Enter an amount between 10 and 100.</FieldDescription>
+                    <FieldDescription>
+                      Enter an amount between {validationMin} and {validationMax}.
+                    </FieldDescription>
                     {fieldState.error && <FieldError>{fieldState.error?.message}</FieldError>}
                   </Field>
                 )}

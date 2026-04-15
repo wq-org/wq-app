@@ -6,13 +6,25 @@ import {
 } from '@/components/ui/pagination'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
-export function PaginationWithPageInfoOnCenter() {
+type PaginationWithPageInfoOnCenterProps = {
+  currentPage?: number
+  totalPages?: number
+  previousHref?: string
+  nextHref?: string
+}
+
+export function PaginationWithPageInfoOnCenter({
+  currentPage = 1,
+  totalPages = 10,
+  previousHref = '#',
+  nextHref = '#',
+}: PaginationWithPageInfoOnCenterProps) {
   return (
     <Pagination className="w-full max-w-xs">
       <PaginationContent className="w-full justify-between">
         <PaginationItem>
           <PaginationLink
-            href="#"
+            href={previousHref}
             size="icon"
             aria-label="Go to previous page"
           >
@@ -21,13 +33,13 @@ export function PaginationWithPageInfoOnCenter() {
         </PaginationItem>
         <PaginationItem>
           <span className="text-muted-foreground text-sm">
-            Page <span className="text-foreground font-medium">1</span> of{' '}
-            <span className="text-foreground font-medium">10</span>
+            Page <span className="text-foreground font-medium">{currentPage}</span> of{' '}
+            <span className="text-foreground font-medium">{totalPages}</span>
           </span>
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
-            href="#"
+            href={nextHref}
             size="icon"
             aria-label="Go to next page"
           >

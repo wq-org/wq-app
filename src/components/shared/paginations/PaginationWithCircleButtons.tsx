@@ -8,44 +8,44 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 
-export function PaginationWithCircleButtons() {
+type PaginationWithCircleButtonsProps = {
+  pages?: number[]
+  activePage?: number
+  previousHref?: string
+  nextHref?: string
+  getPageHref?: (page: number) => string
+}
+
+export function PaginationWithCircleButtons({
+  pages = [1, 2, 3],
+  activePage = 2,
+  previousHref = '#',
+  nextHref = '#',
+  getPageHref,
+}: PaginationWithCircleButtonsProps) {
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href="#"
+            href={previousHref}
             className="rounded-full"
           />
         </PaginationItem>
-        <PaginationItem>
-          <PaginationLink
-            href="#"
-            className="rounded-full"
-          >
-            1
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink
-            href="#"
-            isActive
-            className={cn('rounded-full')}
-          >
-            2
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink
-            href="#"
-            className="rounded-full"
-          >
-            3
-          </PaginationLink>
-        </PaginationItem>
+        {pages.map((page) => (
+          <PaginationItem key={page}>
+            <PaginationLink
+              href={getPageHref ? getPageHref(page) : '#'}
+              isActive={page === activePage}
+              className={cn('rounded-full')}
+            >
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
         <PaginationItem>
           <PaginationNext
-            href="#"
+            href={nextHref}
             className="rounded-full"
           />
         </PaginationItem>
