@@ -31,6 +31,8 @@ type NumberFieldInFormProps = {
   inputMax?: number
   validationMin?: number
   validationMax?: number
+  submitToastTitle?: string
+  submitToastDescription?: string | ((amount: number) => string)
 }
 
 function buildFormSchema(validationMin: number, validationMax: number) {
@@ -55,6 +57,9 @@ export function NumberFieldInForm({
   inputMax = 100,
   validationMin = 10,
   validationMax = 100,
+  submitToastTitle = 'Form submitted',
+  submitToastDescription = (amount: number) =>
+    `Your form has successfully submitted with amount: ${amount}`,
 }: NumberFieldInFormProps) {
   const formSchema = buildFormSchema(validationMin, validationMax)
 
@@ -67,13 +72,16 @@ export function NumberFieldInForm({
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    toast.success('Form submitted', {
+    const descriptionText =
+      typeof submitToastDescription === 'function'
+        ? submitToastDescription(data.amount)
+        : submitToastDescription
+
+    toast.success(submitToastTitle, {
       description: (
         <Alert variant="default">
           <CircleAlertIcon />
-          <AlertDescription>
-            Your form has successfully submitted with amount: {data.amount}
-          </AlertDescription>
+          <AlertDescription>{descriptionText}</AlertDescription>
         </Alert>
       ),
     })
