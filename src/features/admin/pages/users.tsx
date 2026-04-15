@@ -140,7 +140,7 @@ const AdminUsers = () => {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
+      <div className="flex flex-col gap-6 py-10 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
           <h1 className="text-2xl font-semibold text-gray-900">{t('users.pageTitle')}</h1>
         </div>

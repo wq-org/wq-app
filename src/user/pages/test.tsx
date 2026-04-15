@@ -74,6 +74,19 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
+import {
+  BasicTree,
+  FileExplorerTreeTypeIcons,
+  TreeCustomIndent,
+  TreeCustomIndentSemanticColors,
+  TreeIndentedLines,
+  crmTreeSampleInitialExpandedItemIds,
+  crmTreeSampleItems,
+  crmTreeSampleRootItemId,
+  fileExplorerTreeSampleInitialExpandedItemIds,
+  fileExplorerTreeSampleItems,
+  fileExplorerTreeSampleRootItemId,
+} from '@/components/shared/trees'
 
 const paginationPages = [1, 2, 3, 4]
 
@@ -585,6 +598,48 @@ export default function Test() {
           offset={40}
           viewportClassName="-me-5 h-[360px] grow pe-5"
           sectionHeightClassName="bg-muted rounded-lg h-[260px]"
+        />
+      </Section>
+
+      <Section title="BasicTree.tsx BasicTree">
+        <BasicTree
+          items={crmTreeSampleItems}
+          rootItemId={crmTreeSampleRootItemId}
+          initialExpandedItemIds={crmTreeSampleInitialExpandedItemIds}
+        />
+      </Section>
+
+      <Section title="TreeIndentedLines.tsx TreeIndentedLines">
+        <TreeIndentedLines
+          items={crmTreeSampleItems}
+          rootItemId={crmTreeSampleRootItemId}
+          initialExpandedItemIds={crmTreeSampleInitialExpandedItemIds}
+        />
+      </Section>
+
+      <Section title="TreeCustomIndent.tsx TreeCustomIndent">
+        <TreeCustomIndent
+          items={crmTreeSampleItems}
+          rootItemId={crmTreeSampleRootItemId}
+          initialExpandedItemIds={crmTreeSampleInitialExpandedItemIds}
+        />
+      </Section>
+
+      <Section title="TreeCustomIndentSemanticColors.tsx TreeCustomIndentSemanticColors">
+        <TreeCustomIndentSemanticColors
+          items={crmTreeSampleItems}
+          rootItemId={crmTreeSampleRootItemId}
+          initialExpandedItemIds={crmTreeSampleInitialExpandedItemIds}
+          folderColor="orange"
+          fileColor="cyan"
+        />
+      </Section>
+
+      <Section title="FileExplorerTreeTypeIcons.tsx FileExplorerTreeTypeIcons">
+        <FileExplorerTreeTypeIcons
+          items={fileExplorerTreeSampleItems}
+          rootItemId={fileExplorerTreeSampleRootItemId}
+          initialExpandedItemIds={fileExplorerTreeSampleInitialExpandedItemIds}
         />
       </Section>
 

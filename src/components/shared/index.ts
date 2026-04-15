@@ -112,6 +112,31 @@ export {
   SkeletonLoaderTextParagraphs,
 } from './skeletons'
 export { ThemeModeToggle } from './ThemeModeToggle'
+export {
+  BasicTree,
+  FileExplorerTreeTypeIcons,
+  TreeCustomIndent,
+  TreeCustomIndentSemanticColors,
+  TreeIndentedLines,
+  crmTreeIndentGuideClassName,
+  crmTreeSampleInitialExpandedItemIds,
+  crmTreeSampleItems,
+  crmTreeSampleRootItemId,
+  fileExplorerTreeSampleInitialExpandedItemIds,
+  fileExplorerTreeSampleItems,
+  fileExplorerTreeSampleRootItemId,
+} from './trees'
+export type {
+  BasicTreeProps,
+  CrmHeadlessTreeLayoutProps,
+  CrmTreeNode,
+  FileExplorerNodeKind,
+  FileExplorerTreeNode,
+  FileExplorerTreeTypeIconsProps,
+  TreeCustomIndentProps,
+  TreeCustomIndentSemanticColorsProps,
+  TreeIndentedLinesProps,
+} from './trees'
 export { PaymentMethodRadioCards } from './PaymentMethodRadioCards'
 export type {
   PaymentMethodRadioCardOption,

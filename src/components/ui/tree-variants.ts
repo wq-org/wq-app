@@ -1,6 +1,46 @@
 'use client'
 
-import { cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
+
+/** Icon text colors aligned with `button-variants` semantic ghost-style tokens (violet, indigo, …). */
+const treeSemanticIconColorClasses = {
+  default: 'text-muted-foreground',
+  darkblue: 'text-blue-500',
+  violet: 'text-[oklch(var(--oklch-violet))]',
+  indigo: 'text-[oklch(var(--oklch-indigo))]',
+  blue: 'text-[oklch(var(--oklch-blue))]',
+  cyan: 'text-[oklch(var(--oklch-cyan))]',
+  teal: 'text-[oklch(var(--oklch-teal))]',
+  green: 'text-[oklch(var(--oklch-green))]',
+  lime: 'text-[oklch(var(--oklch-lime))]',
+  orange: 'text-[oklch(var(--oklch-orange))]',
+  pink: 'text-[oklch(var(--oklch-pink))]',
+} as const
+
+export const treeFolderIconColorVariants = cva('', {
+  variants: {
+    folderColor: treeSemanticIconColorClasses,
+  },
+  defaultVariants: {
+    folderColor: 'default',
+  },
+})
+
+export const treeFileIconColorVariants = cva('', {
+  variants: {
+    fileColor: treeSemanticIconColorClasses,
+  },
+  defaultVariants: {
+    fileColor: 'default',
+  },
+})
+
+export type TreeFolderIconColor = NonNullable<
+  VariantProps<typeof treeFolderIconColorVariants>['folderColor']
+>
+export type TreeFileIconColor = NonNullable<
+  VariantProps<typeof treeFileIconColorVariants>['fileColor']
+>
 
 export const treeVariants = cva('w-full rounded-3xl border border-border bg-background', {
   variants: {
