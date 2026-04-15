@@ -36,6 +36,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  SkeletonLoaderAvatarsUserInfo,
+  SkeletonLoaderCard,
+  SkeletonLoaderTextParagraphs,
+} from '@/components/shared'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { useAdminUsers } from '../hooks/useAdminUsers'
@@ -141,12 +146,19 @@ const AdminUsers = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center min-h-[300px]">
-            <Spinner
-              variant="gray"
-              size="sm"
-              speed={1750}
-            />
+          <div className="min-h-[300px] animate-in fade-in-0 slide-in-from-bottom-2 rounded-lg border p-6">
+            <div className="grid gap-6 md:grid-cols-3">
+              <SkeletonLoaderAvatarsUserInfo />
+              <SkeletonLoaderCard />
+              <SkeletonLoaderTextParagraphs />
+            </div>
+            <div className="mt-6 flex items-center justify-center">
+              <Spinner
+                variant="gray"
+                size="sm"
+                speed={1750}
+              />
+            </div>
           </div>
         ) : users.length === 0 ? (
           <Empty>

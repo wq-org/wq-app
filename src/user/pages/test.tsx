@@ -8,6 +8,13 @@ import {
   IconPreviewCardSquare,
   IconPreviewCardWide,
   PricingComparator,
+  SkeletonLoaderAvatarsUserInfo,
+  SkeletonLoaderCard,
+  SkeletonLoaderChatMessages,
+  SkeletonLoaderDashboardStatsRow,
+  SkeletonLoaderDataTable,
+  SkeletonLoaderForActions,
+  SkeletonLoaderTextParagraphs,
   StatsDashboardProgressBars,
   type StatsDashboardProgressBarsMetric,
   type SwitchListCardIconsItem,
@@ -311,6 +318,28 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Skeletons">
+        <SkeletonLoaderAvatarsUserInfo />
+      </Section>
+      <Section title="Skeletons">
+        <SkeletonLoaderCard />
+      </Section>
+      <Section title="Skeletons">
+        <SkeletonLoaderTextParagraphs />
+      </Section>
+      <Section title="Skeletons">
+        <SkeletonLoaderChatMessages />
+      </Section>
+      <Section title="Skeletons">
+        <SkeletonLoaderDashboardStatsRow />
+      </Section>
+      <Section title="Skeletons">
+        <SkeletonLoaderForActions />
+      </Section>
+      <Section title="Skeletons">
+        <SkeletonLoaderDataTable />
+      </Section>
 
       <Section title="BasicScrollArea">
         <BasicScrollArea

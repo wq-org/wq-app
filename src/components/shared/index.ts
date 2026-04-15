@@ -70,6 +70,15 @@ export { default as StatsUsageDashboard } from './StatsUsageDashboard'
 export { StatsValueBreakdown } from './StatsValueBreakdown'
 export { SelectTabs } from './tabs'
 export type { SelectTabsProps, TabItem } from './tabs'
+export {
+  SkeletonLoaderAvatarsUserInfo,
+  SkeletonLoaderCard,
+  SkeletonLoaderChatMessages,
+  SkeletonLoaderDashboardStatsRow,
+  SkeletonLoaderDataTable,
+  SkeletonLoaderForActions,
+  SkeletonLoaderTextParagraphs,
+} from './skeletons'
 export { ThemeModeToggle } from './ThemeModeToggle'
 export { PricingComparator } from './PricingComparator'
 export type {
