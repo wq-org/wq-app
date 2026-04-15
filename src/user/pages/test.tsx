@@ -10,6 +10,7 @@ import { ExpandableBillingUsageCard } from '@/components/shared/ExpandableBillin
 import FormLayout04 from '@/components/shared/FormLayout-04'
 import FormLayout05 from '@/components/shared/FormLayout-05'
 import { NumberFieldButtonsRight } from '@/components/shared/number-fields/NumberFieldButtonsRight'
+import { BasicScrollArea, BasicScrollspy } from '@/components/shared/scrollspys'
 import { RatingWithEditable, RatingWithReviewSummary } from '@/components/shared/ratings'
 import {
   PaginationWithCircleButtons,
@@ -200,6 +201,14 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="BasicScrollArea">
+        <BasicScrollArea />
+      </Section>
+
+      <Section title="BasicScrollspy">
+        <BasicScrollspy />
+      </Section>
 
       <Section title="PaginationWithoutLabels">
         <PaginationWithoutLabels />
