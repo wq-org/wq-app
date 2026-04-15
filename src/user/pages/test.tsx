@@ -9,6 +9,8 @@ import {
   IconPreviewCardWide,
   PricingComparator,
   RatingSliderEmojiFeedback,
+  BasicStepper,
+  ControlledStepper,
   SkeletonLoaderAvatarsUserInfo,
   SkeletonLoaderCard,
   SkeletonLoaderChatMessages,
@@ -16,6 +18,14 @@ import {
   SkeletonLoaderDataTable,
   SkeletonLoaderForActions,
   SkeletonLoaderTextParagraphs,
+  StepperCompletedState,
+  StepperContentEachStep,
+  StepperIconsBadges,
+  StepperLoadingState,
+  StepperProgressBarTitles,
+  StepperSegmentedProgressBar,
+  StepperVerticalOrientationDescriptions,
+  StepperWithProgressBarIndicator,
   SliderDynamicTooltipIndicator,
   SliderReferenceLabels,
   SliderSyncedNumberInput,
@@ -323,6 +333,17 @@ function StatsDashboardProgressBarsDemo() {
 }
 
 export default function Test() {
+  const [basicStepperValue, setBasicStepperValue] = useState(2)
+  const [controlledStepperValue, setControlledStepperValue] = useState(2)
+  const [completedStepperValue, setCompletedStepperValue] = useState(2)
+  const [contentStepperValue, setContentStepperValue] = useState(2)
+  const [iconsStepperValue, setIconsStepperValue] = useState(2)
+  const [loadingStepperValue, setLoadingStepperValue] = useState(2)
+  const [progressTitlesStepperValue, setProgressTitlesStepperValue] = useState(2)
+  const [segmentedStepperValue, setSegmentedStepperValue] = useState(1)
+  const [verticalStepperValue, setVerticalStepperValue] = useState(2)
+  const [progressIndicatorStepperValue, setProgressIndicatorStepperValue] = useState(2)
+
   const [durationMonths, setDurationMonths] = useState(5)
   const [storageQuota, setStorageQuota] = useState(15)
   const [volumePercent, setVolumePercent] = useState(50)
@@ -352,6 +373,78 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Steppers">
+        <BasicStepper
+          value={basicStepperValue}
+          onValueChange={setBasicStepperValue}
+          renderContent={(step) => `Basic step ${step}`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <ControlledStepper
+          value={controlledStepperValue}
+          onValueChange={setControlledStepperValue}
+          renderContent={(step) => `Controlled step ${step}`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperCompletedState
+          value={completedStepperValue}
+          onValueChange={setCompletedStepperValue}
+          renderContent={(step) => `Completed state step ${step}`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperContentEachStep
+          value={contentStepperValue}
+          onValueChange={setContentStepperValue}
+          renderContent={(step) => `${step.title} details`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperIconsBadges
+          value={iconsStepperValue}
+          onValueChange={setIconsStepperValue}
+          renderContent={(step) => `${step.title} status`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperLoadingState
+          value={loadingStepperValue}
+          onValueChange={setLoadingStepperValue}
+          loadingStep={2}
+          renderContent={(step) => `Loading state step ${step}`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperProgressBarTitles
+          value={progressTitlesStepperValue}
+          onValueChange={setProgressTitlesStepperValue}
+          renderContent={(step) => `${step.title} review`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperSegmentedProgressBar
+          value={segmentedStepperValue}
+          onValueChange={setSegmentedStepperValue}
+          renderContent={(step) => `Segmented progress step ${step}`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperVerticalOrientationDescriptions
+          value={verticalStepperValue}
+          onValueChange={setVerticalStepperValue}
+          renderContent={(step) => `${step.title} summary`}
+        />
+      </Section>
+      <Section title="Steppers">
+        <StepperWithProgressBarIndicator
+          value={progressIndicatorStepperValue}
+          onValueChange={setProgressIndicatorStepperValue}
+          renderContent={(step) => `${step.title} checkpoint`}
+        />
+      </Section>
 
       <Section title="Sliders">
         <SliderTickMarks

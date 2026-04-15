@@ -75,6 +75,18 @@ export {
   SliderSyncedNumberInput,
   SliderTickMarks,
 } from './sliders'
+export {
+  BasicStepper,
+  ControlledStepper,
+  StepperCompletedState,
+  StepperContentEachStep,
+  StepperIconsBadges,
+  StepperLoadingState,
+  StepperProgressBarTitles,
+  StepperSegmentedProgressBar,
+  StepperVerticalOrientationDescriptions,
+  StepperWithProgressBarIndicator,
+} from './steppers'
 export { SelectTabs } from './tabs'
 export type { SelectTabsProps, TabItem } from './tabs'
 export {
