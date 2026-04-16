@@ -47,7 +47,7 @@ function PlanCatalogSettingsForm({
   t,
   i18nLanguage,
 }: PlanCatalogSettingsFormProps) {
-  const [billingOpen, handleSelectBillingOpen] = useState(false)
+  const [billingOpen, setBillingOpen] = useState(false)
 
   const billingLabel = useMemo(() => {
     if (draft.billingInterval === PLAN_BILLING_MONTHLY) {
@@ -64,7 +64,7 @@ function PlanCatalogSettingsForm({
 
   const handleSelectBilling = (value: string) => {
     updateDraft({ billingInterval: value })
-    handleSelectBillingOpen(false)
+    setBillingOpen(false)
   }
 
   return (
@@ -136,7 +136,7 @@ function PlanCatalogSettingsForm({
         </Label>
         <Popover
           open={billingOpen}
-          onOpenChange={handleSelectBillingOpen}
+          onOpenChange={setBillingOpen}
         >
           <PopoverTrigger asChild>
             <Button

@@ -36,19 +36,8 @@ import {
   createFormValuesFromInstitution,
   type Institution,
   type InstitutionEditFormValues,
-  type InstitutionStatus,
 } from '../types/institution.types'
-import type { VariantProps } from 'class-variance-authority'
-import { badgeVariants } from '@/components/ui/badge-variants'
-
-type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
-
-const STATUS_VARIANT: Record<InstitutionStatus, BadgeVariant> = {
-  active: 'outline',
-  pending: 'blue',
-  inactive: 'secondary',
-  suspended: 'destructive',
-}
+import { STATUS_VARIANT } from '../config/institutionFormOptions'
 
 const AdminInstitution = () => {
   const navigate = useNavigate()
@@ -81,6 +70,8 @@ const AdminInstitution = () => {
   })
 
   const role = getRole()
+
+  const handleNavigateToNewInstitution = () => navigate(`/${role}/institution/new-institution`)
 
   useEffect(() => {
     if (error) {
@@ -123,7 +114,7 @@ const AdminInstitution = () => {
           <h1 className="text-2xl font-semibold text-gray-900">{t('institutions.pageTitle')}</h1>
           <Button
             variant="darkblue"
-            onClick={() => navigate(`/${role}/institution/new-institution`)}
+            onClick={handleNavigateToNewInstitution}
             className="active:animate-in active:zoom-in-95"
           >
             <Plus className="size-4" />
@@ -151,7 +142,7 @@ const AdminInstitution = () => {
             <EmptyContent>
               <Button
                 variant="outline"
-                onClick={() => navigate(`/${role}/institution/new-institution`)}
+                onClick={handleNavigateToNewInstitution}
                 className="active:animate-in active:zoom-in-95"
               >
                 {t('institutions.empty.action')}
@@ -221,7 +212,7 @@ const AdminInstitution = () => {
                         </TooltipContent>
                       </Tooltip>
                     </TableCell>
-                    <TableCell className="capitalize">{inst.type ?? '—'}</TableCell>
+                    <TableCell>{inst.type ? t(`form.types.${inst.type}`) : '—'}</TableCell>
                     <TableCell>{inst.email ?? '—'}</TableCell>
                     <TableCell>
                       {inst.status ? (

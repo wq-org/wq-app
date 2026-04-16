@@ -165,6 +165,13 @@ const AdminFeatureDefinitionEditor = () => {
     }
   }
 
+  const handleOpenDeleteDialog = () => {
+    setConfirmKey('')
+    setDeleteOpen(true)
+  }
+
+  const handleCloseDeleteDialog = () => setDeleteOpen(false)
+
   const pageTitle = isNew
     ? t('featureDefinitions.editor.pageTitleNew')
     : t('featureDefinitions.editor.pageTitleEdit')
@@ -250,10 +257,7 @@ const AdminFeatureDefinitionEditor = () => {
                 <div className="mt-4">
                   <HoldToDeleteButton
                     variant="outline"
-                    onDelete={() => {
-                      setConfirmKey('')
-                      setDeleteOpen(true)
-                    }}
+                    onDelete={handleOpenDeleteDialog}
                   >
                     {t('featureDefinitions.editor.holdToDelete')}
                   </HoldToDeleteButton>
@@ -266,7 +270,7 @@ const AdminFeatureDefinitionEditor = () => {
 
       <Dialog
         open={deleteOpen}
-        onOpenChange={setDeleteOpen}
+        onOpenChange={handleCloseDeleteDialog}
       >
         <DialogContent>
           <DialogHeader>
@@ -303,7 +307,7 @@ const AdminFeatureDefinitionEditor = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setDeleteOpen(false)}
+              onClick={handleCloseDeleteDialog}
               disabled={deleting}
             >
               {t('featureDefinitions.deleteDialog.cancel')}

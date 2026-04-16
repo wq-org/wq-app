@@ -130,6 +130,9 @@ const AdminUsers = () => {
     }
   }
 
+  const handleConfirmUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setConfirmUsername(e.target.value)
+
   async function handleToggleAccess() {
     if (!accessUser) return
 
@@ -142,8 +145,8 @@ const AdminUsers = () => {
         result.is_active ? t('users.toasts.activateSuccess') : t('users.toasts.deactivateSuccess'),
         {
           description: result.is_active
-            ? t('users.toasts.activateDescription', { username: accessUser.username ?? 'User' })
-            : t('users.toasts.deactivateDescription', { username: accessUser.username ?? 'User' }),
+            ? t('users.toasts.activateDescription', { username: accessUser.username ?? '—' })
+            : t('users.toasts.deactivateDescription', { username: accessUser.username ?? '—' }),
         },
       )
     } catch (error) {
@@ -346,7 +349,7 @@ const AdminUsers = () => {
             </p>
             <Input
               value={confirmUsername}
-              onChange={(e) => setConfirmUsername(e.target.value)}
+              onChange={handleConfirmUsernameChange}
               placeholder={t('users.deleteDialog.confirmPlaceholder')}
               aria-label={t('users.deleteDialog.confirmPlaceholder')}
             />
@@ -355,7 +358,7 @@ const AdminUsers = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setDialogOpen(false)}
+              onClick={() => handleDeleteDialogOpenChange(false)}
               disabled={deleting}
             >
               {t('users.deleteDialog.cancelButton')}
@@ -393,7 +396,7 @@ const AdminUsers = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setAccessDialogOpen(false)}
+              onClick={() => handleAccessDialogOpenChange(false)}
               disabled={accessLoading}
             >
               {t('users.accessDialog.cancelButton')}

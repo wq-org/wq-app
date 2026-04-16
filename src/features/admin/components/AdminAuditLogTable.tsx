@@ -154,7 +154,7 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
               <TableHead className="min-w-[180px] bg-background">
                 {t('auditLogs.table.actor')}
               </TableHead>
-              <TableHead className="min-w-[160px] bg-background">
+              <TableHead className="min-w-40 bg-background">
                 {t('auditLogs.table.eventType')}
               </TableHead>
               <TableHead className="min-w-[120px] bg-background">
@@ -197,7 +197,7 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
                   <TableCell className="align-top">
                     <Badge
                       variant={badgeVariantForEventType(row.event_type)}
-                      className="max-w-[240px] whitespace-normal font-normal"
+                      className="max-w-60 whitespace-normal font-normal"
                     >
                       {row.event_type}
                     </Badge>
@@ -219,7 +219,7 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
                       readOnly
                       rows={4}
                       hideSeparator
-                      className="[&_.relative]:my-0 [&_textarea]:min-h-[5rem] [&_textarea]:cursor-default [&_textarea]:text-xs"
+                      className="[&_.relative]:my-0 [&_textarea]:min-h-20 [&_textarea]:cursor-default [&_textarea]:text-xs"
                     />
                   </TableCell>
                   <TableCell className="max-w-[320px] whitespace-normal align-top p-2">
@@ -230,7 +230,7 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
                       readOnly
                       rows={4}
                       hideSeparator
-                      className="[&_.relative]:my-0 [&_textarea]:min-h-[5rem] [&_textarea]:cursor-default [&_textarea]:text-xs"
+                      className="[&_.relative]:my-0 [&_textarea]:min-h-20 [&_textarea]:cursor-default [&_textarea]:text-xs"
                     />
                   </TableCell>
                 </TableRow>

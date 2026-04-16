@@ -25,34 +25,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { VariantProps } from 'class-variance-authority'
-import { badgeVariants } from '@/components/ui/badge-variants'
 import { InstitutionSubscriptionDetails } from '@/features/institution-admin'
 import type {
   Institution,
   InstitutionEditFormValues,
-  InstitutionStatus,
   InvoiceLanguage,
 } from '../types/institution.types'
 import {
   INSTITUTION_TYPE_OPTIONS,
   INVOICE_LANGUAGE_VALUES,
   LEGAL_FORM_VALUES,
+  STATUS_VARIANT,
 } from '../config/institutionFormOptions'
-
-type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
-
-const STATUS_VARIANT: Record<InstitutionStatus, BadgeVariant> = {
-  active: 'outline',
-  pending: 'blue',
-  inactive: 'secondary',
-  suspended: 'destructive',
-}
-
-function formatInstitutionTypeLabel(value: string): string {
-  if (!value) return '—'
-  return value.charAt(0).toUpperCase() + value.slice(1)
-}
 
 type InstitutionDetailsDrawerProps = {
   open: boolean
@@ -75,6 +59,8 @@ export function InstitutionDetailsDrawer({
   const [isSaving, setIsSaving] = useState(false)
 
   const canSave = useMemo(() => formValues.name.trim().length > 0, [formValues.name])
+
+  const handleClose = () => onOpenChange(false)
 
   const handleSave = async () => {
     if (!institution || !canSave) return
@@ -153,7 +139,7 @@ export function InstitutionDetailsDrawer({
                       disabled={isSaving}
                     >
                       {formValues.type
-                        ? formatInstitutionTypeLabel(formValues.type)
+                        ? t(`form.types.${formValues.type}`)
                         : t('institutions.editDrawer.selectType')}
                     </Button>
                   </PopoverTrigger>
@@ -170,7 +156,7 @@ export function InstitutionDetailsDrawer({
                           className="justify-start"
                           onClick={() => updateField('type', option)}
                         >
-                          {formatInstitutionTypeLabel(option)}
+                          {t(`form.types.${option}`)}
                         </Button>
                       ))}
                     </div>
@@ -459,7 +445,7 @@ export function InstitutionDetailsDrawer({
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
             disabled={isSaving}
           >
             {t('institutions.editDrawer.cancel')}
