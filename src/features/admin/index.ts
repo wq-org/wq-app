@@ -19,7 +19,6 @@ export type {
   InstitutionRow,
   Institution,
 } from './types/institution.types'
-export { createDefaultNewInstitutionWizardValues } from './types/institution.types'
 export {
   fetchInstitutions,
   createInstitution,

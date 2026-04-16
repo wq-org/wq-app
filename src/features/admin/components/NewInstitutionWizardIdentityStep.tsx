@@ -1,8 +1,8 @@
 import { useState } from 'react'
+import { Controller } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
-
 import {
   Select,
   SelectContent,
@@ -10,27 +10,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { InstitutionType, NewInstitutionWizardValues } from '../types/institution.types'
-import { slugifyInstitutionName } from '../utils/institutionSlug'
 import { Text } from '@/components/ui/text'
+import type { Control, FieldErrors, UseFormSetValue } from 'react-hook-form'
+import type { NewInstitutionWizardFormValues } from '../schemas/institution.schema'
+import { slugifyInstitutionName } from '../utils/institutionSlug'
 
-const INSTITUTION_TYPES: InstitutionType[] = [
+const INSTITUTION_TYPES = [
   'school',
   'university',
   'college',
   'organization',
   'hospital',
   'other',
-]
+] as const
 
 type NewInstitutionWizardIdentityStepProps = {
-  values: NewInstitutionWizardValues
-  onChange: (patch: Partial<NewInstitutionWizardValues>) => void
+  control: Control<NewInstitutionWizardFormValues>
+  errors: FieldErrors<NewInstitutionWizardFormValues>
+  setValue: UseFormSetValue<NewInstitutionWizardFormValues>
 }
 
 function NewInstitutionWizardIdentityStep({
-  values,
-  onChange,
+  control,
+  errors,
+  setValue,
 }: NewInstitutionWizardIdentityStepProps) {
   const { t } = useTranslation('features.admin')
   const [isSlugTouched, setIsSlugTouched] = useState(false)
@@ -39,66 +42,126 @@ function NewInstitutionWizardIdentityStep({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="new-inst-name">{t('wizard.identity.name')}</Label>
-        <FieldInput
-          id="new-inst-name"
-          label={t('wizard.identity.name')}
-          value={values.name}
-          onValueChange={(name) => {
-            onChange({
-              name,
-              ...(isSlugTouched ? {} : { slug: slugifyInstitutionName(name) }),
-            })
-          }}
-          placeholder={t('form.fields.namePlaceholder')}
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <FieldInput
+              id="new-inst-name"
+              label={t('wizard.identity.name')}
+              value={field.value}
+              onValueChange={(name) => {
+                field.onChange(name)
+                if (!isSlugTouched) {
+                  setValue('slug', slugifyInstitutionName(name))
+                }
+              }}
+              placeholder={t('form.fields.namePlaceholder')}
+            />
+          )}
         />
+        {errors.name ? (
+          <p
+            id="new-inst-name-error"
+            className="text-sm text-destructive"
+            role="alert"
+          >
+            {errors.name.message}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-slug">{t('wizard.identity.slug')}</Label>
-        <FieldInput
-          id="new-inst-slug"
-          label={t('wizard.identity.slug')}
-          value={values.slug}
-          onValueChange={(slug) => {
-            setIsSlugTouched(true)
-            onChange({ slug })
-          }}
-          placeholder={t('form.fields.slugPlaceholder')}
+        <Controller
+          name="slug"
+          control={control}
+          render={({ field }) => (
+            <FieldInput
+              id="new-inst-slug"
+              label={t('wizard.identity.slug')}
+              value={field.value}
+              onValueChange={(slug) => {
+                setIsSlugTouched(true)
+                field.onChange(slug)
+              }}
+              placeholder={t('form.fields.slugPlaceholder')}
+            />
+          )}
         />
+        {errors.slug ? (
+          <p
+            id="new-inst-slug-error"
+            className="text-sm text-destructive"
+            role="alert"
+          >
+            {errors.slug.message}
+          </p>
+        ) : null}
       </div>
 
       <div className="my-5 space-y-3">
         <Label>{t('wizard.identity.type')}</Label>
-        <Select
-          value={values.type || undefined}
-          onValueChange={(type) => onChange({ type: type as InstitutionType })}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder={t('form.fields.typePlaceholder')} />
-          </SelectTrigger>
-          <SelectContent>
-            {INSTITUTION_TYPES.map((type) => (
-              <SelectItem
-                key={type}
-                value={type}
-              >
-                {t(`form.types.${type}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Controller
+          name="type"
+          control={control}
+          render={({ field }) => (
+            <Select
+              value={field.value || undefined}
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t('form.fields.typePlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {INSTITUTION_TYPES.map((type) => (
+                  <SelectItem
+                    key={type}
+                    value={type}
+                  >
+                    {t(`form.types.${type}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.type ? (
+          <p
+            id="new-inst-type-error"
+            className="text-sm text-destructive"
+            role="alert"
+          >
+            {errors.type.message}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-admin-email">{t('wizard.identity.adminEmail')}</Label>
-        <FieldInput
-          id="new-inst-admin-email"
-          label={t('wizard.identity.adminEmail')}
-          type="email"
-          value={values.adminEmail}
-          onValueChange={(adminEmail) => onChange({ adminEmail })}
-          placeholder={t('wizard.identity.adminEmailPlaceholder')}
+        <Controller
+          name="adminEmail"
+          control={control}
+          render={({ field }) => (
+            <FieldInput
+              id="new-inst-admin-email"
+              label={t('wizard.identity.adminEmail')}
+              type="email"
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder={t('wizard.identity.adminEmailPlaceholder')}
+            />
+          )}
         />
+        {errors.adminEmail ? (
+          <p
+            id="new-inst-admin-email-error"
+            className="text-sm text-destructive"
+            role="alert"
+          >
+            {errors.adminEmail.message}
+          </p>
+        ) : null}
         <Text
           className="text-muted-foreground"
           size="xxs"

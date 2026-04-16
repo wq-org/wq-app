@@ -39,23 +39,6 @@ export type NewInstitutionWizardValues = {
   programmeName: string
 }
 
-export const createDefaultNewInstitutionWizardValues = (): NewInstitutionWizardValues => ({
-  name: '',
-  slug: '',
-  type: '',
-  adminEmail: '',
-  legalName: '',
-  billingEmail: '',
-  street: '',
-  streetNumber: '',
-  postalCode: '',
-  city: '',
-  country: '',
-  createInitialStructure: false,
-  facultyName: '',
-  programmeName: '',
-})
-
 export type BootstrapInstitutionFromWizardResult = {
   institution: Institution
   inviteToken: string

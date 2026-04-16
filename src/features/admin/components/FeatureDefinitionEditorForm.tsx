@@ -1,4 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -18,35 +20,17 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import { Switch } from '@/components/ui/switch'
 
-import type {
-  FeatureDefinitionEditorFormProps,
-  FeatureDefinitionEditorFormValues,
-} from '../types/featureDefinitions.types'
-import { ENTITLEMENT_VALUE_TYPES, FEATURE_KEY_PATTERN } from '../types/featureDefinitions.types'
+import type { FeatureDefinitionEditorFormProps } from '../types/featureDefinitions.types'
+import { ENTITLEMENT_VALUE_TYPES } from '../types/featureDefinitions.types'
 import {
   NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM,
-  isReservedFeatureDefinitionCategorySlug,
   normalizeFeatureDefinitionCategorySlug,
 } from '../config/featureDefinitionCategories'
-
-function normalizeFeatureKey(raw: string): string {
-  return raw
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .replace(/_+/g, '_')
-    .replace(/^[^a-z]+/, '')
-}
-
-const emptyForm: FeatureDefinitionEditorFormValues = {
-  key: '',
-  name: '',
-  description: '',
-  category: '',
-  valueType: 'boolean',
-  defaultEnabled: false,
-}
+import { normalizeFeatureKey } from '../utils/featureDefinitionKey'
+import {
+  buildFeatureDefinitionSchema,
+  type FeatureDefinitionSchemaValues,
+} from '../schemas/featureDefinition.schema'
 
 export function FeatureDefinitionEditorForm({
   mode,
@@ -58,64 +42,58 @@ export function FeatureDefinitionEditorForm({
   dbCategories = [],
 }: FeatureDefinitionEditorFormProps) {
   const { t } = useTranslation('features.admin')
-  const [values, setValues] = useState<FeatureDefinitionEditorFormValues>(() =>
-    mode === 'edit' && initial
-      ? {
-          key: initial.key,
-          name: initial.name ?? '',
-          description: initial.description ?? '',
-          category: initial.category ?? '',
-          valueType: initial.valueType,
-          defaultEnabled: initial.defaultEnabled,
-        }
-      : emptyForm,
-  )
-  const [keyError, setKeyError] = useState<string | null>(null)
-  const [customCategoryName, setCustomCategoryName] = useState('')
   const didFocusCategoryRef = useRef(false)
 
-  const keyInputId = useId()
-  const nameInputId = useId()
-  const categoryInputId = useId()
-  const customCategoryInputId = useId()
-  const descriptionInputId = useId()
-  const valueTypeTriggerId = useId()
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FeatureDefinitionSchemaValues>({
+    resolver: zodResolver(buildFeatureDefinitionSchema(mode)),
+    defaultValues:
+      mode === 'edit' && initial
+        ? {
+            key: initial.key,
+            name: initial.name ?? '',
+            description: initial.description ?? '',
+            category: initial.category ?? '',
+            customCategoryName: '',
+            valueType: initial.valueType,
+            defaultEnabled: initial.defaultEnabled,
+          }
+        : {
+            key: '',
+            name: '',
+            description: '',
+            category: '',
+            customCategoryName: '',
+            valueType: 'boolean',
+            defaultEnabled: false,
+          },
+  })
+
+  const categoryValue = watch('category')
+  const keyValue = watch('key')
+  const valueType = watch('valueType')
 
   useEffect(() => {
     if (!focusCategoryField || mode !== 'create' || didFocusCategoryRef.current) return
     didFocusCategoryRef.current = true
-    const id = categoryInputId
     const handle = window.setTimeout(() => {
-      document.getElementById(id)?.focus()
+      document.getElementById('fd-editor-category')?.focus()
     }, 0)
     return () => window.clearTimeout(handle)
-  }, [focusCategoryField, mode, categoryInputId])
+  }, [focusCategoryField, mode])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (mode === 'create') {
-      const normalized = normalizeFeatureKey(values.key)
-      if (!normalized || !FEATURE_KEY_PATTERN.test(normalized)) {
-        setKeyError(t('featureDefinitions.validation.keyInvalid'))
-        return
-      }
-      setKeyError(null)
-    }
+  const isNewCategoryFlow = categoryValue.trim() === NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM
+  const normalizedKey = normalizeFeatureKey(keyValue)
+  const isBoolean = valueType === 'boolean'
 
-    if (!values.name.trim()) {
-      return
-    }
-
-    const categoryTrimmed = values.category.trim()
-    const isNewCategoryFlow = categoryTrimmed === NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM
-    const normalizedCustom = normalizeFeatureDefinitionCategorySlug(customCategoryName)
-    if (isNewCategoryFlow) {
-      if (!normalizedCustom || isReservedFeatureDefinitionCategorySlug(normalizedCustom)) {
-        return
-      }
-    }
-
-    const categoryForSave = isNewCategoryFlow ? normalizedCustom : values.category.trim()
+  const handleFormSubmit = async (values: FeatureDefinitionSchemaValues) => {
+    const categoryForSave = isNewCategoryFlow
+      ? normalizeFeatureDefinitionCategorySlug(values.customCategoryName)
+      : values.category.trim()
 
     await onSubmit({
       key: mode === 'create' ? normalizeFeatureKey(values.key) : values.key.trim(),
@@ -127,56 +105,52 @@ export function FeatureDefinitionEditorForm({
     })
   }
 
-  const isBoolean = values.valueType === 'boolean'
-  const normalizedKey = normalizeFeatureKey(values.key)
-
   const keyLabel = t('featureDefinitions.form.key')
   const nameLabel = t('featureDefinitions.form.name')
   const categoryLabel = t('featureDefinitions.form.category')
   const descriptionLabel = t('featureDefinitions.form.descriptionField')
   const valueTypeLabel = t('featureDefinitions.form.valueType')
 
-  const isNewCategoryFlow = values.category.trim() === NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM
-  const normalizedCustomCategory = normalizeFeatureDefinitionCategorySlug(customCategoryName)
-  const customCategoryMessage = isNewCategoryFlow
-    ? !normalizedCustomCategory
-      ? t('featureDefinitions.validation.categoryCustomRequired')
-      : isReservedFeatureDefinitionCategorySlug(normalizedCustomCategory)
-        ? t('featureDefinitions.validation.categoryReservedSlug')
-        : null
-    : null
-  const customCategoryBlocksSave =
-    isNewCategoryFlow &&
-    (!normalizedCustomCategory || isReservedFeatureDefinitionCategorySlug(normalizedCustomCategory))
-
   return (
     <form
       className="flex flex-col gap-6"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(handleFormSubmit)}
     >
       <FieldCard className="py-5">
         <div className="flex flex-col gap-6">
+          {/* Key */}
           <div className="flex flex-col gap-2">
             <Label
-              htmlFor={keyInputId}
+              htmlFor="fd-editor-key"
               className="text-sm font-medium leading-none"
             >
               {keyLabel}
             </Label>
-            <FieldInput
-              id={keyInputId}
-              label={keyLabel}
-              placeholder={t('featureDefinitions.form.keyPlaceholder')}
-              value={values.key}
-              onValueChange={(next) => {
-                setValues((v) => ({ ...v, key: next }))
-                setKeyError(null)
-              }}
-              disabled={mode === 'edit' || saving}
-              autoComplete="off"
-              required={mode === 'create'}
+            <Controller
+              name="key"
+              control={control}
+              render={({ field }) => (
+                <FieldInput
+                  id="fd-editor-key"
+                  label={keyLabel}
+                  placeholder={t('featureDefinitions.form.keyPlaceholder')}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={mode === 'edit' || saving}
+                  autoComplete="off"
+                  required={mode === 'create'}
+                />
+              )}
             />
-            {keyError ? <p className="text-sm text-destructive">{keyError}</p> : null}
+            {errors.key ? (
+              <p
+                id="fd-editor-key-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.key.message}
+              </p>
+            ) : null}
             {mode === 'create' && normalizedKey ? (
               <Text
                 as="p"
@@ -195,122 +169,171 @@ export function FeatureDefinitionEditorForm({
             ) : null}
           </div>
 
+          {/* Name */}
           <div className="flex flex-col gap-2">
             <Label
-              htmlFor={nameInputId}
+              htmlFor="fd-editor-name"
               className="text-sm font-medium leading-none"
             >
               {nameLabel}
             </Label>
-            <FieldInput
-              id={nameInputId}
-              label={nameLabel}
-              placeholder={t('featureDefinitions.form.namePlaceholder')}
-              value={values.name}
-              onValueChange={(next) => setValues((v) => ({ ...v, name: next }))}
-              disabled={saving}
-              required
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <FieldInput
+                  id="fd-editor-name"
+                  label={nameLabel}
+                  placeholder={t('featureDefinitions.form.namePlaceholder')}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={saving}
+                  required
+                />
+              )}
             />
+            {errors.name ? (
+              <p
+                id="fd-editor-name-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.name.message}
+              </p>
+            ) : null}
           </div>
 
+          {/* Category */}
           <div className="flex flex-col gap-2">
             <Label
-              htmlFor={categoryInputId}
+              htmlFor="fd-editor-category"
               className="text-sm font-medium leading-none"
             >
               {categoryLabel}
             </Label>
-            <FeatureDefinitionCategoryPopover
-              id={categoryInputId}
-              value={values.category}
-              onValueChange={(next) => {
-                setValues((v) => ({ ...v, category: next }))
-                if (next.trim() !== NEW_FEATURE_DEFINITION_CATEGORY_CUSTOM) {
-                  setCustomCategoryName('')
-                }
-              }}
-              disabled={saving}
-              dbCategories={dbCategories}
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <FeatureDefinitionCategoryPopover
+                  id="fd-editor-category"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={saving}
+                  dbCategories={dbCategories}
+                />
+              )}
             />
+            {errors.category ? (
+              <p
+                id="fd-editor-category-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.category.message}
+              </p>
+            ) : null}
             {isNewCategoryFlow ? (
               <div className="flex flex-col gap-2 pt-1">
-                <FieldInput
-                  id={customCategoryInputId}
-                  label={t('featureDefinitions.form.customCategoryLabel')}
-                  placeholder={t('featureDefinitions.form.customCategoryPlaceholder')}
-                  value={customCategoryName}
-                  onValueChange={setCustomCategoryName}
-                  disabled={saving}
-                  autoComplete="off"
-                  required
+                <Controller
+                  name="customCategoryName"
+                  control={control}
+                  render={({ field }) => (
+                    <FieldInput
+                      id="fd-editor-custom-category"
+                      label={t('featureDefinitions.form.customCategoryLabel')}
+                      placeholder={t('featureDefinitions.form.customCategoryPlaceholder')}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={saving}
+                      autoComplete="off"
+                      required
+                    />
+                  )}
                 />
-                {customCategoryMessage ? (
-                  <p className="text-sm text-destructive">{customCategoryMessage}</p>
+                {errors.customCategoryName ? (
+                  <p
+                    id="fd-editor-custom-category-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.customCategoryName.message}
+                  </p>
                 ) : null}
               </div>
             ) : null}
           </div>
 
+          {/* Description */}
           <div className="flex flex-col gap-2">
             <Label
-              htmlFor={descriptionInputId}
+              htmlFor="fd-editor-description"
               className="text-sm font-medium leading-none"
             >
               {descriptionLabel}
             </Label>
-            <FieldTextarea
-              id={descriptionInputId}
-              label={descriptionLabel}
-              placeholder={t('featureDefinitions.form.descriptionPlaceholder')}
-              value={values.description}
-              onValueChange={(next) => setValues((v) => ({ ...v, description: next }))}
-              rows={3}
-              hideSeparator={false}
-              disabled={saving}
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <FieldTextarea
+                  id="fd-editor-description"
+                  label={descriptionLabel}
+                  placeholder={t('featureDefinitions.form.descriptionPlaceholder')}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  rows={3}
+                  hideSeparator={false}
+                  disabled={saving}
+                />
+              )}
             />
           </div>
 
+          {/* Value Type */}
           <div className="flex flex-col gap-2">
             <Label
-              htmlFor={valueTypeTriggerId}
+              htmlFor="fd-editor-value-type"
               className="text-sm font-medium leading-none"
             >
               {valueTypeLabel}
             </Label>
-            <Select
-              value={values.valueType}
-              onValueChange={(v) => {
-                const next = v as (typeof ENTITLEMENT_VALUE_TYPES)[number]
-                setValues((prev) => ({
-                  ...prev,
-                  valueType: next,
-                  defaultEnabled: next === 'boolean' ? prev.defaultEnabled : true,
-                }))
-              }}
-              disabled={saving}
-            >
-              <SelectTrigger
-                id={valueTypeTriggerId}
-                className="w-full"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ENTITLEMENT_VALUE_TYPES.map((vt) => (
-                  <SelectItem
-                    key={vt}
-                    value={vt}
+            <Controller
+              name="valueType"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(v) => {
+                    field.onChange(v)
+                  }}
+                  disabled={saving}
+                >
+                  <SelectTrigger
+                    id="fd-editor-value-type"
+                    className="w-full"
                   >
-                    {t(`featureDefinitions.valueTypes.${vt}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ENTITLEMENT_VALUE_TYPES.map((vt) => (
+                      <SelectItem
+                        key={vt}
+                        value={vt}
+                      >
+                        {t(`featureDefinitions.valueTypes.${vt}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             <p className="text-xs text-muted-foreground">
-              {t(`featureDefinitions.form.valueTypeHints.${values.valueType}`)}
+              {t(`featureDefinitions.form.valueTypeHints.${valueType}`)}
             </p>
           </div>
 
+          {/* Default Enabled (boolean only) */}
           <div className="flex items-center justify-between gap-4 border-t border-border pt-4">
             {isBoolean ? (
               <>
@@ -338,12 +361,16 @@ export function FeatureDefinitionEditorForm({
                     />
                   </div>
                 ) : (
-                  <Switch
-                    id="fd-editor-default"
-                    checked={values.defaultEnabled}
-                    onCheckedChange={(checked) =>
-                      setValues((v) => ({ ...v, defaultEnabled: checked }))
-                    }
+                  <Controller
+                    name="defaultEnabled"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch
+                        id="fd-editor-default"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
                   />
                 )}
               </>
@@ -368,7 +395,7 @@ export function FeatureDefinitionEditorForm({
         <Button
           type="submit"
           variant="darkblue"
-          disabled={saving || !values.name.trim() || customCategoryBlocksSave}
+          disabled={saving}
           className="gap-2"
         >
           {saving ? (
