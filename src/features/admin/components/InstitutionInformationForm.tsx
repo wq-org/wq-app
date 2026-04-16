@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
@@ -78,13 +78,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
     reset,
     formState: { errors },
   } = useForm<InstitutionFormValues>({
-    resolver: zodResolver(institutionSchema),
+    resolver: zodResolver(institutionSchema) as Resolver<InstitutionFormValues>,
     defaultValues: DEFAULT_VALUES,
   })
 
   const typeValue = watch('type')
 
-  const onFormSubmit = (values: InstitutionFormValues) => {
+  const onFormSubmit: SubmitHandler<InstitutionFormValues> = (values) => {
     const departments = values.departments
       .split(',')
       .map((d) => d.trim())

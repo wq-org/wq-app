@@ -5,7 +5,6 @@ export { getSuperAdminNavigation } from './config/adminWorkspaceNavigation'
 export type {
   AdminWorkspaceNavigation,
   AdminWorkspaceNavigationItem,
-  AdminWorkspaceTeam,
 } from './config/adminWorkspaceNavigation'
 export type {
   InstitutionType,
