@@ -5,7 +5,7 @@ import type {
   PlanEntitlementEditorGroup,
   PlanEntitlementEditorValue,
 } from '../types/planEntitlements.types'
-import { toPlanEntitlementEditorValue } from '../types/planEntitlements.types'
+import { toPlanEntitlementEditorValue } from '../utils/planEntitlementEditorValue'
 
 type UsePlanPreviewResult = {
   groups: PlanEntitlementEditorGroup[]

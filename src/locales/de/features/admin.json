@@ -53,6 +53,7 @@
     "errorTitle": "Audit-Log konnte nicht geladen werden",
     "errorDescription": "{{message}}",
     "refresh": "Aktualisieren",
+    "paginationRange": "Zeige {{from}}-{{to}} von {{total}}",
     "table": {
       "occurredAt": "Zeitpunkt",
       "actor": "Ausführend",
@@ -125,7 +126,9 @@
       "expiresAt": "Läuft ab am",
       "invitedBy": "Eingeladen von",
       "accepted": "Angenommen",
-      "acceptedUserId": "Angenommen (Benutzer-ID)"
+      "acceptedUserId": "Angenommen (Benutzer-ID)",
+      "resend": "Erneut senden",
+      "sending": "Wird gesendet..."
     },
     "sheet": {
       "title": "Einladungsdetails",
@@ -340,6 +343,7 @@
       "key": "Schlüssel",
       "keyPlaceholder": "z. B. custom_reports",
       "keyReadOnlyHint": "Der Schlüssel bleibt fest, damit bestehende Planzeilen stabil referenzieren können.",
+      "storedKey": "Gespeicherter Schlüssel:",
       "name": "Anzeigename",
       "namePlaceholder": "Menschenlesbare Bezeichnung",
       "category": "Kategorie",

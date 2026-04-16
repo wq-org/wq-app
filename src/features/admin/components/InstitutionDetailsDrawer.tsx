@@ -32,9 +32,13 @@ import type {
   Institution,
   InstitutionEditFormValues,
   InstitutionStatus,
-  InstitutionType,
   InvoiceLanguage,
 } from '../types/institution.types'
+import {
+  INSTITUTION_TYPE_OPTIONS,
+  INVOICE_LANGUAGE_VALUES,
+  LEGAL_FORM_VALUES,
+} from '../config/institutionFormOptions'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
@@ -44,19 +48,6 @@ const STATUS_VARIANT: Record<InstitutionStatus, BadgeVariant> = {
   inactive: 'secondary',
   suspended: 'destructive',
 }
-
-const INSTITUTION_TYPE_OPTIONS = [
-  'school',
-  'university',
-  'college',
-  'organization',
-  'hospital',
-  'other',
-] as const satisfies readonly InstitutionType[]
-
-const LEGAL_FORM_VALUES = ['gmbh', 'ggmbh', 'ag', 'ev', 'kg', 'other'] as const
-
-const INVOICE_LANGUAGE_VALUES: InvoiceLanguage[] = ['de', 'en']
 
 function formatInstitutionTypeLabel(value: string): string {
   if (!value) return '—'

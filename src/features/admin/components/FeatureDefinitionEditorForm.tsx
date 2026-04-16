@@ -58,7 +58,18 @@ export function FeatureDefinitionEditorForm({
   dbCategories = [],
 }: FeatureDefinitionEditorFormProps) {
   const { t } = useTranslation('features.admin')
-  const [values, setValues] = useState(emptyForm)
+  const [values, setValues] = useState<FeatureDefinitionEditorFormValues>(() =>
+    mode === 'edit' && initial
+      ? {
+          key: initial.key,
+          name: initial.name ?? '',
+          description: initial.description ?? '',
+          category: initial.category ?? '',
+          valueType: initial.valueType,
+          defaultEnabled: initial.defaultEnabled,
+        }
+      : emptyForm,
+  )
   const [keyError, setKeyError] = useState<string | null>(null)
   const [customCategoryName, setCustomCategoryName] = useState('')
   const didFocusCategoryRef = useRef(false)
@@ -79,23 +90,6 @@ export function FeatureDefinitionEditorForm({
     }, 0)
     return () => window.clearTimeout(handle)
   }, [focusCategoryField, mode, categoryInputId])
-
-  useEffect(() => {
-    if (mode === 'edit' && initial) {
-      setValues({
-        key: initial.key,
-        name: initial.name ?? '',
-        description: initial.description ?? '',
-        category: initial.category ?? '',
-        valueType: initial.valueType,
-        defaultEnabled: initial.defaultEnabled,
-      })
-    } else {
-      setValues(emptyForm)
-    }
-    setKeyError(null)
-    setCustomCategoryName('')
-  }, [mode, initial])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -190,7 +184,8 @@ export function FeatureDefinitionEditorForm({
                 color="muted"
                 className="text-xs"
               >
-                Stored key: <span className="font-mono">{normalizedKey}</span>
+                {t('featureDefinitions.form.storedKey')}{' '}
+                <span className="font-mono">{normalizedKey}</span>
               </Text>
             ) : null}
             {mode === 'edit' ? (

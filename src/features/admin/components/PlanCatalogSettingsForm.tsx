@@ -47,7 +47,7 @@ function PlanCatalogSettingsForm({
   t,
   i18nLanguage,
 }: PlanCatalogSettingsFormProps) {
-  const [billingOpen, setBillingOpen] = useState(false)
+  const [billingOpen, handleSelectBillingOpen] = useState(false)
 
   const billingLabel = useMemo(() => {
     if (draft.billingInterval === PLAN_BILLING_MONTHLY) {
@@ -62,9 +62,9 @@ function PlanCatalogSettingsForm({
   const updatedAtDisplay = formatDateTime(plan.updatedAt, i18nLanguage)
   const deletedAtDisplay = formatDateTime(plan.deletedAt, i18nLanguage)
 
-  const setBilling = (value: string) => {
+  const handleSelectBilling = (value: string) => {
     updateDraft({ billingInterval: value })
-    setBillingOpen(false)
+    handleSelectBillingOpen(false)
   }
 
   return (
@@ -136,7 +136,7 @@ function PlanCatalogSettingsForm({
         </Label>
         <Popover
           open={billingOpen}
-          onOpenChange={setBillingOpen}
+          onOpenChange={handleSelectBillingOpen}
         >
           <PopoverTrigger asChild>
             <Button
@@ -158,7 +158,7 @@ function PlanCatalogSettingsForm({
                 type="button"
                 variant="ghost"
                 className="justify-start font-normal"
-                onClick={() => setBilling(PLAN_BILLING_NONE)}
+                onClick={() => handleSelectBilling(PLAN_BILLING_NONE)}
               >
                 {t('planCatalog.editor.settings.billing.none')}
               </Button>
@@ -166,7 +166,7 @@ function PlanCatalogSettingsForm({
                 type="button"
                 variant="ghost"
                 className="justify-start font-normal"
-                onClick={() => setBilling(PLAN_BILLING_MONTHLY)}
+                onClick={() => handleSelectBilling(PLAN_BILLING_MONTHLY)}
               >
                 {t('planCatalog.editor.settings.billing.monthly')}
               </Button>
@@ -174,7 +174,7 @@ function PlanCatalogSettingsForm({
                 type="button"
                 variant="ghost"
                 className="justify-start font-normal"
-                onClick={() => setBilling(PLAN_BILLING_YEARLY)}
+                onClick={() => handleSelectBilling(PLAN_BILLING_YEARLY)}
               >
                 {t('planCatalog.editor.settings.billing.yearly')}
               </Button>

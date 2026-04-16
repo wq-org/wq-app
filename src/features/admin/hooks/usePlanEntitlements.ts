@@ -7,7 +7,7 @@ import type {
   PlanEntitlementEditorValue,
   PlanEntitlementUpsertPayload,
 } from '../types/planEntitlements.types'
-import { toPlanEntitlementEditorValue } from '../types/planEntitlements.types'
+import { toPlanEntitlementEditorValue } from '../utils/planEntitlementEditorValue'
 
 type UsePlanEntitlementsResult = {
   plan: PlanCatalogEditorPlan | null

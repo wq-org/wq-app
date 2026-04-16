@@ -7,20 +7,14 @@ import { Empty, EmptyContent, EmptyHeader, EmptyMedia } from '@/components/ui/em
 import { FieldInput } from '@/components/ui/field-input'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { PlanCatalogCardList } from '../components/PlanCatalogCardList'
 import { PlanCatalogPreviewDrawer } from '../components/PlanCatalogPreviewDrawer'
 import { usePlanCatalog } from '../hooks/usePlanCatalog'
+import { usePlanCatalogBasePath } from '../hooks/usePlanCatalogBasePath'
 import type { PlanCatalog } from '../types/planEntitlements.types'
-
-function usePlanCatalogBasePath() {
-  const { getRole } = useUser()
-  const role = getRole() ?? 'super_admin'
-  return `/${role}/plan-catalog`
-}
 
 const AdminPlanCatalog = () => {
   const navigate = useNavigate()
@@ -51,6 +45,10 @@ const AdminPlanCatalog = () => {
 
   const handlePreview = useCallback((plan: PlanCatalog) => {
     setPreviewPlan(plan)
+  }, [])
+
+  const handlePreviewOpenChange = useCallback((open: boolean) => {
+    if (!open) setPreviewPlan(null)
   }, [])
 
   return (
@@ -150,9 +148,7 @@ const AdminPlanCatalog = () => {
       <PlanCatalogPreviewDrawer
         plan={previewPlan}
         open={previewPlan !== null}
-        onOpenChange={(open) => {
-          if (!open) setPreviewPlan(null)
-        }}
+        onOpenChange={handlePreviewOpenChange}
       />
     </AdminWorkspaceShell>
   )

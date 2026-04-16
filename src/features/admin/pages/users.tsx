@@ -70,12 +70,12 @@ const AdminUsers = () => {
   const [userActionsPopoverId, setUserActionsPopoverId] = useState<string | null>(null)
 
   const canDeleteUsers = getRole() === 'super_admin'
-  const canToggleAccess = (user: AdminUserRow) =>
+  const getCanToggleAccess = (user: AdminUserRow) =>
     ['teacher', 'student', 'institution_admin'].includes(user.role ?? '')
   const expectedUsername = selectedUser?.username ?? ''
   const isConfirmMatch = confirmUsername === expectedUsername
 
-  function openDeleteDialog(user: AdminUserRow) {
+  function handleOpenDeleteDialog(user: AdminUserRow) {
     if (!user.username) {
       toast.error(t('users.toasts.noUsernameError'))
       return
@@ -108,9 +108,26 @@ const AdminUsers = () => {
     }
   }
 
-  function openAccessDialog(user: AdminUserRow) {
+  function handleOpenAccessDialog(user: AdminUserRow) {
     setAccessUser(user)
     setAccessDialogOpen(true)
+  }
+
+  const handleDeleteDialogOpenChange = (open: boolean) => {
+    if (!deleting) {
+      setDialogOpen(open)
+      if (!open) {
+        setSelectedUser(null)
+        setConfirmUsername('')
+      }
+    }
+  }
+
+  const handleAccessDialogOpenChange = (open: boolean) => {
+    if (!accessLoading) {
+      setAccessDialogOpen(open)
+      if (!open) setAccessUser(null)
+    }
   }
 
   async function handleToggleAccess() {
@@ -247,7 +264,7 @@ const AdminUsers = () => {
                             className="w-52 p-2"
                           >
                             <div className="flex flex-col gap-1">
-                              {canToggleAccess(user) && user.is_active && (
+                              {getCanToggleAccess(user) && user.is_active && (
                                 <Button
                                   type="button"
                                   variant="ghost"
@@ -255,7 +272,7 @@ const AdminUsers = () => {
                                   className="w-full justify-start font-normal"
                                   onClick={() => {
                                     setUserActionsPopoverId(null)
-                                    openAccessDialog(user)
+                                    handleOpenAccessDialog(user)
                                   }}
                                 >
                                   <UserLock
@@ -265,7 +282,7 @@ const AdminUsers = () => {
                                   {t('users.actions.deactivate')}
                                 </Button>
                               )}
-                              {canToggleAccess(user) && !user.is_active && (
+                              {getCanToggleAccess(user) && !user.is_active && (
                                 <Button
                                   type="button"
                                   variant="ghost"
@@ -273,7 +290,7 @@ const AdminUsers = () => {
                                   className="w-full justify-start font-normal"
                                   onClick={() => {
                                     setUserActionsPopoverId(null)
-                                    openAccessDialog(user)
+                                    handleOpenAccessDialog(user)
                                   }}
                                 >
                                   <UserRoundCheck
@@ -291,7 +308,7 @@ const AdminUsers = () => {
                                 disabled={!user.username}
                                 onClick={() => {
                                   setUserActionsPopoverId(null)
-                                  openDeleteDialog(user)
+                                  handleOpenDeleteDialog(user)
                                 }}
                               >
                                 <Trash
@@ -315,15 +332,7 @@ const AdminUsers = () => {
 
       <Dialog
         open={dialogOpen}
-        onOpenChange={(open) => {
-          if (!deleting) {
-            setDialogOpen(open)
-            if (!open) {
-              setSelectedUser(null)
-              setConfirmUsername('')
-            }
-          }
-        }}
+        onOpenChange={handleDeleteDialogOpenChange}
       >
         <DialogContent>
           <DialogHeader>
@@ -366,12 +375,7 @@ const AdminUsers = () => {
 
       <Dialog
         open={accessDialogOpen}
-        onOpenChange={(open) => {
-          if (!accessLoading) {
-            setAccessDialogOpen(open)
-            if (!open) setAccessUser(null)
-          }
-        }}
+        onOpenChange={handleAccessDialogOpenChange}
       >
         <DialogContent>
           <DialogHeader>

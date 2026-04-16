@@ -14,27 +14,13 @@ import {
   type SwitchItem,
 } from '@/components/shared/CompactSettingsTableSwitches'
 import { StatusSummaryCard, type StatusSummaryRow } from '@/components/shared'
-import type { BillingStatus } from '../api/institutionSubscriptionApi'
-
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
-import type {
-  EffectiveFeature,
-  EffectiveFeatureGroup,
-  EffectiveFeatureSource,
-} from '../types/licensing.types'
+import type { EffectiveFeature, EffectiveFeatureSource } from '../types/licensing.types'
+import { BILLING_STATUS_VARIANT } from '../config/billingStatus'
+import { groupByCategory } from '../utils/licenseUtils'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
-
-const BILLING_STATUS_VARIANT: Partial<Record<BillingStatus, BadgeVariant>> = {
-  active: 'green',
-  trialing: 'blue',
-  past_due: 'orange',
-  grace: 'warning',
-  suspended: 'destructive',
-  expired: 'secondary',
-  cancelled: 'secondary',
-}
 
 const SOURCE_VARIANT: Record<EffectiveFeatureSource, BadgeVariant> = {
   override: 'violet',
@@ -47,16 +33,6 @@ function formatDate(iso: string | null | undefined, locale: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return '—'
   return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(d)
-}
-
-function groupByCategory(features: EffectiveFeature[]): EffectiveFeatureGroup[] {
-  const groups = new Map<string, EffectiveFeature[]>()
-  for (const f of features) {
-    const list = groups.get(f.category) ?? []
-    list.push(f)
-    groups.set(f.category, list)
-  }
-  return [...groups.entries()].map(([category, list]) => ({ category, features: list }))
 }
 
 function renderFeatureValue(feature: EffectiveFeature): string {

@@ -11,14 +11,11 @@ import { InvoiceList, type InvoiceListItem } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { InstitutionSubscriptionDetails } from '../components/InstitutionSubscriptionDetails'
 import { getFeatureDefinitionIcon } from '@/features/admin/config/featureDefinitionIcons'
-import type {
-  EffectiveFeature,
-  EffectiveFeatureGroup,
-  EffectiveFeatureSource,
-} from '../types/licensing.types'
+import type { EffectiveFeature, EffectiveFeatureSource } from '../types/licensing.types'
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
 
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
+import { groupByCategory } from '../utils/licenseUtils'
 
 type BadgeVariant = 'violet' | 'blue' | 'secondary'
 
@@ -26,16 +23,6 @@ const SOURCE_VARIANT: Record<EffectiveFeatureSource, BadgeVariant> = {
   override: 'violet',
   plan: 'blue',
   default: 'secondary',
-}
-
-function groupByCategory(features: EffectiveFeature[]): EffectiveFeatureGroup[] {
-  const groups = new Map<string, EffectiveFeature[]>()
-  for (const f of features) {
-    const list = groups.get(f.category) ?? []
-    list.push(f)
-    groups.set(f.category, list)
-  }
-  return [...groups.entries()].map(([category, list]) => ({ category, features: list }))
 }
 
 function formatFeatureValue(feature: EffectiveFeature): string {
@@ -131,9 +118,9 @@ function PlanFeaturesCard({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-baseline justify-between">
-          <span>What's included in your plan</span>
+          <span>{t('planFeatures.title')}</span>
           <span className="text-sm font-normal text-muted-foreground">
-            {planCode ?? '—'} · {features.length} features
+            {planCode ?? '—'} · {t('planFeatures.featureCount', { count: features.length })}
           </span>
         </CardTitle>
       </CardHeader>
@@ -181,12 +168,12 @@ function PlanFeaturesCard({
                           isEnabled ? (
                             <Check
                               className="size-4 text-foreground"
-                              aria-label="Enabled"
+                              aria-label={t('planFeatures.enabled')}
                             />
                           ) : (
                             <Minus
                               className="size-4 text-muted-foreground"
-                              aria-label="Disabled"
+                              aria-label={t('planFeatures.disabled')}
                             />
                           )
                         ) : (
@@ -270,7 +257,7 @@ const mockInvoices: InvoiceListItem[] = [
 const AdminBilling = () => {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
-  const { features, planCode, isLoading, error } = useInstitutionLicensing()
+  const { features, planCode, subscription, isLoading, error } = useInstitutionLicensing()
   const institutionId = getUserInstitutionId()
 
   const invoiceListLabels = {
@@ -326,8 +313,8 @@ const AdminBilling = () => {
           </Text>
         </div>
 
-        {institutionId ? (
-          <InstitutionSubscriptionDetails institutionId={institutionId} />
+        {institutionId !== null ? (
+          <InstitutionSubscriptionDetails subscription={subscription ?? null} />
         ) : (
           <Text
             as="p"

@@ -1,6 +1,5 @@
 import {
   BarChart3,
-  Building2,
   ChartSpline,
   ClipboardList,
   Cloud,
@@ -74,22 +73,6 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
   },
 ] as const
 
-export type InstitutionAdminTeam = {
-  name: string
-  logo: LucideIcon
-  plan: string
-}
-
-const INSTITUTION_ADMIN_TEAM: InstitutionAdminTeam = {
-  name: 'Institution',
-  logo: Building2,
-  plan: 'Admin',
-}
-
 export function getInstitutionAdminNavItems(): readonly InstitutionAdminNavItem[] {
   return INSTITUTION_ADMIN_NAV_ITEMS
-}
-
-export function getInstitutionAdminTeam(): InstitutionAdminTeam {
-  return INSTITUTION_ADMIN_TEAM
 }

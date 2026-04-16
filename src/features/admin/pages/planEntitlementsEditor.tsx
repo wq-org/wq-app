@@ -14,8 +14,6 @@ import { Text } from '@/components/ui/text'
 import { CompactSettingsTableSwitches } from '@/components/shared/CompactSettingsTableSwitches'
 import { getFeatureDefinitionIcon } from '../config/featureDefinitionIcons'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
-import { useUser } from '@/contexts/user'
-
 import { updatePlanCatalogSettings } from '../api/planEntitlementsApi'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { PlanCatalogSettingsForm } from '../components/PlanCatalogSettingsForm'
@@ -26,13 +24,8 @@ import {
   type PlanSettingsDraft,
 } from '../utils/planCatalogSettingsDraft'
 import { usePlanEntitlements } from '../hooks/usePlanEntitlements'
+import { usePlanCatalogBasePath } from '../hooks/usePlanCatalogBasePath'
 import type { PlanEntitlementEditorValue } from '../types/planEntitlements.types'
-
-function usePlanCatalogBasePath() {
-  const { getRole } = useUser()
-  const role = getRole() ?? 'super_admin'
-  return `/${role}/plan-catalog`
-}
 
 function getCategoryLabel(
   category: string,
@@ -82,13 +75,12 @@ const AdminPlanEntitlementsEditor = () => {
     setSettingsDraft(null)
   }, [planId])
 
-  useEffect(() => {
-    if (isLoading || !plan) return
-    setSettingsDraft((prev) => prev ?? planToSettingsDraft(plan))
-  }, [isLoading, plan])
+  // Derive: use the explicitly-set draft when present; otherwise fall back to the plan's values once loaded.
+  const effectiveSettingsDraft =
+    settingsDraft ?? (plan && !isLoading ? planToSettingsDraft(plan) : null)
 
   const hasSettingsChanges = Boolean(
-    plan && settingsDraft && !settingsDraftEqualsPlan(settingsDraft, plan),
+    plan && effectiveSettingsDraft && !settingsDraftEqualsPlan(effectiveSettingsDraft, plan),
   )
 
   const updateSettingsDraft = useCallback(
@@ -127,8 +119,8 @@ const AdminPlanEntitlementsEditor = () => {
   }, [plan])
 
   const handleSaveSettings = useCallback(async () => {
-    if (!planId || !plan || !settingsDraft) return
-    const parsed = parseSettingsDraftToPatch(settingsDraft)
+    if (!planId || !plan || !effectiveSettingsDraft) return
+    const parsed = parseSettingsDraftToPatch(effectiveSettingsDraft)
     if (!parsed.ok) {
       toast.error(t(parsed.messageKey))
       return
@@ -146,7 +138,7 @@ const AdminPlanEntitlementsEditor = () => {
     } finally {
       setIsSavingSettings(false)
     }
-  }, [plan, planId, reset, settingsDraft, t])
+  }, [plan, planId, reset, effectiveSettingsDraft, t])
 
   const showEntitlementsBar = activeTabId === 'editor' && hasChanges
   const showSettingsBar = activeTabId === 'settings' && hasSettingsChanges
@@ -193,7 +185,7 @@ const AdminPlanEntitlementsEditor = () => {
         ) : null}
 
         {isLoading ? (
-          <div className="flex min-h-[320px] items-center justify-center">
+          <div className="flex min-h-80 items-center justify-center">
             <Spinner
               variant="gray"
               size="sm"
@@ -362,11 +354,11 @@ const AdminPlanEntitlementsEditor = () => {
                   )
                 })}
               </div>
-            ) : settingsDraft ? (
+            ) : effectiveSettingsDraft ? (
               <FieldCard className="px-5 py-4">
                 <PlanCatalogSettingsForm
                   plan={plan}
-                  draft={settingsDraft}
+                  draft={effectiveSettingsDraft}
                   updateDraft={updateSettingsDraft}
                   disabled={isSavingSettings}
                   t={t}

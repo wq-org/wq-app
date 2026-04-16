@@ -1,4 +1,4 @@
-import type { EntitlementValueType, FeatureDefinition } from './featureDefinitions.types'
+import type { EntitlementValueType } from './featureDefinitions.types'
 
 export type PlanCatalogRow = {
   id: string
@@ -106,23 +106,4 @@ export type PlanEntitlementUpsertPayload = {
   integer_value: number | null
   bigint_value: string | null
   text_value: string | null
-}
-
-export function toPlanEntitlementEditorValue(
-  feature: FeatureDefinition,
-  entitlement?: PlanEntitlement,
-): PlanEntitlementEditorValue {
-  return {
-    featureId: feature.id,
-    valueType: feature.valueType,
-    key: feature.key,
-    name: feature.name || feature.key,
-    description: feature.description ?? '',
-    category: feature.category ?? '',
-    defaultEnabled: feature.defaultEnabled,
-    booleanValue: entitlement?.booleanValue ?? feature.defaultEnabled,
-    integerValue: entitlement?.integerValue != null ? String(entitlement.integerValue) : '',
-    bigintValue: entitlement?.bigintValue != null ? String(entitlement.bigintValue) : '',
-    textValue: entitlement?.textValue ?? '',
-  }
 }

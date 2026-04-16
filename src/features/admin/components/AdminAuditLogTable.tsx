@@ -110,6 +110,21 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
     setCurrentPage(Math.min(Math.max(nextPage, 1), totalPages))
   }
 
+  const handlePreviousPage = (event: React.MouseEvent) => {
+    event.preventDefault()
+    handlePageChange(currentPage - 1)
+  }
+
+  const handleNextPage = (event: React.MouseEvent) => {
+    event.preventDefault()
+    handlePageChange(currentPage + 1)
+  }
+
+  const handlePageLink = (page: number) => (event: React.MouseEvent) => {
+    event.preventDefault()
+    handlePageChange(page)
+  }
+
   if (events.length === 0) {
     return (
       <Empty className="border border-dashed">
@@ -228,18 +243,18 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
       {events.length > PAGE_SIZE ? (
         <div className="flex flex-col gap-2">
           <div className="text-muted-foreground text-sm">
-            Showing {(currentPage - 1) * PAGE_SIZE + 1}-
-            {Math.min(currentPage * PAGE_SIZE, events.length)} of {events.length}
+            {t('auditLogs.paginationRange', {
+              from: (currentPage - 1) * PAGE_SIZE + 1,
+              to: Math.min(currentPage * PAGE_SIZE, events.length),
+              total: events.length,
+            })}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
                   href="#"
-                  onClick={(event) => {
-                    event.preventDefault()
-                    handlePageChange(currentPage - 1)
-                  }}
+                  onClick={handlePreviousPage}
                   aria-disabled={currentPage === 1}
                   className={currentPage === 1 ? 'pointer-events-none opacity-50' : undefined}
                 />
@@ -254,10 +269,7 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
                     <PaginationLink
                       href="#"
                       isActive={item === currentPage}
-                      onClick={(event) => {
-                        event.preventDefault()
-                        handlePageChange(item)
-                      }}
+                      onClick={handlePageLink(item)}
                     >
                       {item}
                     </PaginationLink>
@@ -267,10 +279,7 @@ function AdminAuditLogTable({ events, actorEmailByUserId }: AdminAuditLogTablePr
               <PaginationItem>
                 <PaginationNext
                   href="#"
-                  onClick={(event) => {
-                    event.preventDefault()
-                    handlePageChange(currentPage + 1)
-                  }}
+                  onClick={handleNextPage}
                   aria-disabled={currentPage === totalPages}
                   className={
                     currentPage === totalPages ? 'pointer-events-none opacity-50' : undefined

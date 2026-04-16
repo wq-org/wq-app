@@ -53,6 +53,7 @@
     "errorTitle": "Could not load audit log",
     "errorDescription": "{{message}}",
     "refresh": "Refresh",
+    "paginationRange": "Showing {{from}}-{{to}} of {{total}}",
     "table": {
       "occurredAt": "Occurred at",
       "actor": "Actor",
@@ -125,7 +126,9 @@
       "expiresAt": "Expires at",
       "invitedBy": "Invited by",
       "accepted": "Accepted",
-      "acceptedUserId": "Accepted user ID"
+      "acceptedUserId": "Accepted user ID",
+      "resend": "Resend",
+      "sending": "Sending..."
     },
     "sheet": {
       "title": "Invite details",
@@ -340,6 +343,7 @@
       "key": "Key",
       "keyPlaceholder": "e.g. custom_reports",
       "keyReadOnlyHint": "The key is fixed so existing plan rows keep a stable reference.",
+      "storedKey": "Stored key:",
       "name": "Display name",
       "namePlaceholder": "Human-readable label",
       "category": "Category",

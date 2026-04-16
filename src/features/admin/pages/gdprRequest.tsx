@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next'
+
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
 const AdminGdprRequest = () => {
-  return <AdminWorkspaceShell>GDPR Request (DSGVO)</AdminWorkspaceShell>
+  const { t } = useTranslation('features.admin')
+  return <AdminWorkspaceShell>{t('nav.gdprRequest')}</AdminWorkspaceShell>
 }
 
 export { AdminGdprRequest }

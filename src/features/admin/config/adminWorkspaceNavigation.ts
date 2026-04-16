@@ -2,7 +2,6 @@ import {
   Building2,
   ClipboardList,
   FileStack,
-  GalleryVerticalEnd,
   Home,
   Blocks,
   ShieldCheck,
@@ -22,25 +21,11 @@ export type AdminWorkspaceNavigationItem = {
   }[]
 }
 
-export type AdminWorkspaceTeam = {
-  name: string
-  logo: LucideIcon
-  plan: string
-}
-
 export type AdminWorkspaceNavigation = {
-  teams: readonly AdminWorkspaceTeam[]
   navItems: readonly AdminWorkspaceNavigationItem[]
 }
 
 const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
-  teams: [
-    {
-      name: 'WQ',
-      logo: GalleryVerticalEnd,
-      plan: 'Education',
-    },
-  ],
   navItems: [
     {
       titleKey: 'nav.dashboard',

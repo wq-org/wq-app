@@ -55,14 +55,7 @@ export type FeatureDefinitionFormValues = {
   defaultEnabled: boolean
 }
 
-export type FeatureDefinitionEditorFormValues = {
-  key: string
-  name: string
-  description: string
-  category: string
-  valueType: EntitlementValueType
-  defaultEnabled: boolean
-}
+export type FeatureDefinitionEditorFormValues = FeatureDefinitionFormValues
 
 export type FeatureDefinitionEditorFormProps = {
   mode: 'create' | 'edit'

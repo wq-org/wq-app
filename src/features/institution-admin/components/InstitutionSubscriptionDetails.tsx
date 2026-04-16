@@ -5,27 +5,13 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import { Spinner } from '@/components/ui/spinner'
-import type { VariantProps } from 'class-variance-authority'
-import { badgeVariants } from '@/components/ui/badge-variants'
 
 import {
   fetchLatestInstitutionSubscription,
   resolvePlanCode,
-  type BillingStatus,
   type InstitutionSubscriptionWithPlan,
 } from '../api/institutionSubscriptionApi'
-
-type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
-
-const BILLING_STATUS_VARIANT: Partial<Record<BillingStatus, BadgeVariant>> = {
-  active: 'green',
-  trialing: 'blue',
-  past_due: 'orange',
-  grace: 'warning',
-  suspended: 'destructive',
-  expired: 'secondary',
-  cancelled: 'secondary',
-}
+import { BILLING_STATUS_VARIANT } from '../config/billingStatus'
 
 function formatDateTime(iso: string | null | undefined, locale: string): string {
   if (!iso) return '—'
@@ -230,13 +216,29 @@ function SubscriptionBody({
   )
 }
 
-export function InstitutionSubscriptionDetails({ institutionId }: { institutionId: string }) {
+type InstitutionSubscriptionDetailsProps =
+  | { institutionId: string; subscription?: undefined }
+  | { institutionId?: undefined; subscription: InstitutionSubscriptionWithPlan | null }
+
+export function InstitutionSubscriptionDetails({
+  institutionId,
+  subscription: propSubscription,
+}: InstitutionSubscriptionDetailsProps) {
   const { t, i18n } = useTranslation('features.institution')
-  const [sub, setSub] = useState<InstitutionSubscriptionWithPlan | null | undefined>(undefined)
+  const isPropControlled = propSubscription !== undefined
+
+  const [sub, setSub] = useState<InstitutionSubscriptionWithPlan | null | undefined>(
+    isPropControlled ? propSubscription : undefined,
+  )
   const [resolvedPlanCode, setResolvedPlanCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (isPropControlled) {
+      setSub(propSubscription)
+      return
+    }
+    if (!institutionId) return
     let cancelled = false
     setSub(undefined)
     setResolvedPlanCode(null)
@@ -259,7 +261,7 @@ export function InstitutionSubscriptionDetails({ institutionId }: { institutionI
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, isPropControlled, propSubscription])
 
   const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
 

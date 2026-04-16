@@ -154,7 +154,9 @@ export function InstitutionInvitesTable({
                         disabled={resendingId === row.institutionId}
                       >
                         <MailPlus className="size-4" />
-                        {resendingId === row.institutionId ? 'Sending...' : 'Resend'}
+                        {resendingId === row.institutionId
+                          ? t('institutionInvites.table.sending')
+                          : t('institutionInvites.table.resend')}
                       </Button>
                     )}
                     <Button

@@ -70,7 +70,7 @@ export function FeatureDefinitionCategoryPopover({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[var(--radix-popover-trigger-width)] p-1"
+        className="w-(--radix-popover-trigger-width) p-1"
         align="start"
       >
         <div
@@ -79,6 +79,10 @@ export function FeatureDefinitionCategoryPopover({
         >
           {menuIds.map((slug) => {
             const selected = slug === '' ? selectedTrimmed === '' : selectedTrimmed === slug
+            const handleSelect = () => {
+              onValueChange(slug)
+              setOpen(false)
+            }
             return (
               <button
                 key={slug === '' ? '__none__' : slug}
@@ -90,10 +94,7 @@ export function FeatureDefinitionCategoryPopover({
                   'hover:bg-accent hover:text-accent-foreground',
                   selected && 'bg-accent/60',
                 )}
-                onClick={() => {
-                  onValueChange(slug)
-                  setOpen(false)
-                }}
+                onClick={handleSelect}
               >
                 <Check className={cn('size-4 shrink-0', selected ? 'opacity-100' : 'opacity-0')} />
                 <span className="truncate">{categoryRowLabel(slug, t)}</span>

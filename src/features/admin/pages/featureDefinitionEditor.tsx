@@ -19,9 +19,9 @@ import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { useUser } from '@/contexts/user'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { FeatureDefinitionEditorForm } from '../components/FeatureDefinitionEditorForm'
+import { useFeatureDefinitionsBasePath } from '../hooks/useFeatureDefinitionsBasePath'
 import {
   createFeatureDefinition,
   deleteFeatureDefinition,
@@ -30,12 +30,6 @@ import {
 } from '../api/featureDefinitionsApi'
 import { useFeatureDefinitionCategories } from '../hooks/useFeatureDefinitionCategories'
 import type { FeatureDefinition } from '../types/featureDefinitions.types'
-
-function useFeatureDefinitionsBasePath() {
-  const { getRole } = useUser()
-  const role = getRole() ?? 'super_admin'
-  return `/${role}/feature-definitions`
-}
 
 const AdminFeatureDefinitionEditor = () => {
   const { featureId } = useParams<{ featureId: string }>()
@@ -226,6 +220,7 @@ const AdminFeatureDefinitionEditor = () => {
         ) : (
           <>
             <FeatureDefinitionEditorForm
+              key={feature?.id ?? 'new'}
               mode={isNew ? 'create' : 'edit'}
               initial={feature}
               saving={saving}

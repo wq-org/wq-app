@@ -60,7 +60,7 @@ const CATEGORY_ICONS: Record<string, ReactNode> = {
   collaboration: <HeartHandshake className="size-4" />,
   core: <Cuboid className="size-4" />,
   engagement: <HandHeart className="size-4" />,
-  gameStudio: <SplinePointer className="size-4" />,
+  game_studio: <SplinePointer className="size-4" />,
   games: <Gamepad2 className="size-4" />,
   infrastructure: <SlidersHorizontal className="size-4" />,
   integrations: <Workflow className="size-4" />,
@@ -96,6 +96,8 @@ function PlanCatalogPreviewDrawer({ plan, open, onOpenChange }: PlanCatalogPrevi
   const columns = useMemo<PricingColumn[]>(() => (plan ? [{ name: plan.name }] : []), [plan])
   const sections = useMemo(() => buildSections(groups, t), [groups, t])
 
+  const handleClose = () => onOpenChange(false)
+
   return (
     <Drawer
       open={open}
@@ -114,7 +116,7 @@ function PlanCatalogPreviewDrawer({ plan, open, onOpenChange }: PlanCatalogPrevi
             variant="ghost"
             size="icon"
             className="shrink-0 rounded-full"
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
           >
             <X className="size-4" />
             <span className="sr-only">{t('planCatalog.preview.close')}</span>

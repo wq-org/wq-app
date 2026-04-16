@@ -15,6 +15,9 @@ type PlanCatalogCardProps = {
 function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
   const { t } = useTranslation('features.admin')
 
+  const handlePreview = () => onPreview(plan)
+  const handleEdit = () => onEdit(plan.id)
+
   return (
     <Card className="gap-0 py-3">
       <CardHeader className="flex flex-row items-start justify-between px-4 pb-2 pt-0">
@@ -24,7 +27,7 @@ function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
           variant="ghost"
           size="icon"
           className="shrink-0 rounded-full"
-          onClick={() => onPreview(plan)}
+          onClick={handlePreview}
         >
           <Eye className="size-4" />
           <span className="sr-only">{t('planCatalog.preview.title')}</span>
@@ -45,7 +48,7 @@ function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
           type="button"
           variant="darkblue"
           size="sm"
-          onClick={() => onEdit(plan.id)}
+          onClick={handleEdit}
         >
           <Settings2 className="size-4" />
           {t('planCatalog.actions.editEntitlements')}

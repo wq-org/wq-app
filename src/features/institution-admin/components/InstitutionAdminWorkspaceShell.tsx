@@ -101,7 +101,7 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                 <button
                   type="button"
                   className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring w-full"
-                  aria-label="Account menu"
+                  aria-label={t('planFeatures.accountMenu')}
                 >
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage

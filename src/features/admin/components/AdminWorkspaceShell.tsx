@@ -73,6 +73,7 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
 
   const handleToggleLanguage = () => i18n.changeLanguage(nextLang)
   const handleToggleMode = () => setMode(isDark ? 'light' : 'dark')
+  const handleNavigateToSettings = () => navigate(settingsPath)
 
   const handleLogout = async () => {
     try {
@@ -172,7 +173,7 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
               <SidebarMenuButton
                 isActive={isSettingsActive}
                 tooltip={t('nav.settings')}
-                onClick={() => navigate(settingsPath)}
+                onClick={handleNavigateToSettings}
               >
                 <Settings />
                 <span>{t('nav.settings')}</span>

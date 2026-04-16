@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { listAuditEvents, type AuditEventRow } from '../api/auditLogsApi'
 import { listAdminUsers } from '../api/userApi'
@@ -43,11 +43,9 @@ export function useAuditEvents(): UseAuditEventsResult {
     void load()
   }, [load])
 
-  const readonlyMap = useMemo(() => actorEmailByUserId, [actorEmailByUserId])
-
   return {
     events,
-    actorEmailByUserId: readonlyMap,
+    actorEmailByUserId: actorEmailByUserId as ReadonlyMap<string, string>,
     isLoading,
     error,
     refresh: load,

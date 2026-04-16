@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   fetchEmailsForUserIds,
@@ -46,15 +46,13 @@ export function useInstitutionInvites(): UseInstitutionInvitesResult {
     void load()
   }, [load])
 
-  const readonlyMap = useMemo(() => inviterEmailByUserId, [inviterEmailByUserId])
-
   const resend = useCallback(async (institutionId: string): Promise<void> => {
     await resendInviteEmail(institutionId)
   }, [])
 
   return {
     invites,
-    inviterEmailByUserId: readonlyMap,
+    inviterEmailByUserId: inviterEmailByUserId as ReadonlyMap<string, string>,
     isLoading,
     error,
     refresh: load,

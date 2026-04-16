@@ -39,6 +39,8 @@ export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDe
   const isCoreCategory = categoryRaw.toLowerCase() === 'core'
   const displayName = feature.name?.trim() || feature.key
 
+  const handleEdit = () => onEdit(feature.id)
+
   useEffect(() => {
     const element = titleRef.current
     if (!element) return
@@ -121,7 +123,7 @@ export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDe
             type="button"
             variant="darkblue"
             size="sm"
-            onClick={() => onEdit(feature.id)}
+            onClick={handleEdit}
           >
             <Text
               as="span"

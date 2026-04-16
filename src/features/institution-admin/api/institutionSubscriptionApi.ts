@@ -1,30 +1,7 @@
 import { supabase } from '@/lib/supabase'
+import type { BillingStatus, InstitutionSubscriptionWithPlan } from '../types/licensing.types'
 
-export type BillingStatus =
-  | 'active'
-  | 'trialing'
-  | 'past_due'
-  | 'grace'
-  | 'suspended'
-  | 'expired'
-  | 'cancelled'
-
-export type InstitutionSubscriptionWithPlan = {
-  id: string
-  institution_id: string
-  plan_id: string
-  effective_from: string
-  effective_to: string | null
-  billing_status: BillingStatus
-  renewal_at: string | null
-  updated_at: string
-  current_period_start: string | null
-  current_period_end: string | null
-  cancel_at_period_end: boolean
-  canceled_at: string | null
-  trial_ends_at: string | null
-  plan_catalog: { code: string; name: string } | null
-}
+export type { BillingStatus, InstitutionSubscriptionWithPlan }
 
 type SubscriptionSelectRow = Omit<InstitutionSubscriptionWithPlan, 'plan_catalog'> & {
   plan_catalog: { code: string; name: string } | { code: string; name: string }[] | null

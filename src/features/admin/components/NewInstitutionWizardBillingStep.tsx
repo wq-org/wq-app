@@ -1,23 +1,9 @@
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxContent,
-  ComboboxList,
-  ComboboxItem,
-  ComboboxEmpty,
-} from '@/components/ui/combobox'
 import type { NewInstitutionWizardValues } from '../types/institution.types'
-import {
-  COUNTRY_OPTIONS,
-  getCountryLabel,
-  findCountryByValue,
-  getCountryDisplayValue,
-  countryItemMatchesSearchQuery,
-} from '../config/countryOptions'
+import { getCountryDisplayValue } from '../config/countryOptions'
+import { CountryCombobox } from './CountryCombobox'
 
 type NewInstitutionWizardBillingStepProps = {
   values: NewInstitutionWizardValues
@@ -29,14 +15,6 @@ function NewInstitutionWizardBillingStep({
   onChange,
 }: NewInstitutionWizardBillingStepProps) {
   const { t, i18n } = useTranslation('features.admin')
-  const lang = i18n.language
-
-  const selectedCountry = useMemo(
-    () => (values.country ? findCountryByValue(values.country) : undefined),
-    [values.country],
-  )
-
-  const countryItems = useMemo(() => COUNTRY_OPTIONS.map((c) => getCountryLabel(c, lang)), [lang])
 
   return (
     <div className="space-y-4">
@@ -114,43 +92,13 @@ function NewInstitutionWizardBillingStep({
 
       <div className="space-y-2">
         <Label htmlFor="new-inst-country">{t('wizard.billing.country')}</Label>
-        <Combobox
-          value={selectedCountry ? getCountryDisplayValue(values.country, lang) : values.country}
-          onValueChange={(v) =>
-            onChange({ country: getCountryDisplayValue((v as string) ?? '', lang) })
+        <CountryCombobox
+          value={values.country}
+          onValueChange={(country) =>
+            onChange({ country: getCountryDisplayValue(country, i18n.language) })
           }
-          items={countryItems}
-          itemToStringLabel={(item) => {
-            const country = findCountryByValue(String(item))
-            return country ? getCountryLabel(country, lang) : String(item)
-          }}
-          filter={(item, query) => countryItemMatchesSearchQuery(String(item), query)}
-          autoHighlight
-        >
-          <ComboboxInput
-            placeholder={
-              selectedCountry
-                ? getCountryLabel(selectedCountry, lang)
-                : t('form.address.countryPlaceholder')
-            }
-          />
-          <ComboboxContent>
-            <ComboboxEmpty>{t('form.address.countryNoResults')}</ComboboxEmpty>
-            <ComboboxList>
-              {(item: string) => {
-                const country = findCountryByValue(item)
-                return (
-                  <ComboboxItem
-                    key={country?.code ?? item}
-                    value={item}
-                  >
-                    {item}
-                  </ComboboxItem>
-                )
-              }}
-            </ComboboxList>
-          </ComboboxContent>
-        </Combobox>
+          placeholder={t('form.address.countryPlaceholder')}
+        />
       </div>
     </div>
   )

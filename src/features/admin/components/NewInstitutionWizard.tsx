@@ -30,7 +30,7 @@ import { NewInstitutionWizardBillingStep } from './NewInstitutionWizardBillingSt
 import { NewInstitutionWizardIdentityStep } from './NewInstitutionWizardIdentityStep'
 import { NewInstitutionWizardReviewStep } from './NewInstitutionWizardReviewStep'
 import { sendInstitutionAdminInviteEmail } from '../api/institutionApi'
-import { validateNewInstitutionWizardStep } from './NewInstitutionWizardValidation'
+import { validateNewInstitutionWizardStep } from '../utils/newInstitutionWizardValidation'
 
 const STEP_COUNT = 3
 
@@ -144,7 +144,7 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
                     className="flex-col gap-1 py-1 sm:flex-row sm:gap-2"
                   >
                     <StepperIndicator className="size-8 text-xs sm:size-10 sm:text-sm" />
-                    <StepperTitle className="max-w-[4.25rem] text-center text-[10px] font-medium leading-tight sm:max-w-none sm:inline sm:text-xs">
+                    <StepperTitle className="max-w-17 text-center text-[10px] font-medium leading-tight sm:max-w-none sm:inline sm:text-xs">
                       {t(
                         currentStep === 1
                           ? 'wizard.steps.identity'
@@ -156,7 +156,7 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
                     <StepperDescription className="sr-only">{currentStep}</StepperDescription>
                   </StepperTrigger>
                   {currentStep < 3 ? (
-                    <StepperSeparator className="mx-0.5 min-h-px min-w-[0.75rem] max-w-6 flex-1 self-center sm:mx-0 sm:min-w-6" />
+                    <StepperSeparator className="mx-0.5 min-h-px min-w-3 max-w-6 flex-1 self-center sm:mx-0 sm:min-w-6" />
                   ) : null}
                 </StepperItem>
               ))}

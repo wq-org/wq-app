@@ -15,18 +15,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { FeatureDefinitionCardList } from '../components/FeatureDefinitionCardList'
 import { useFeatureDefinitions } from '../hooks/useFeatureDefinitions'
-
-function useFeatureDefinitionsBasePath() {
-  const { getRole } = useUser()
-  const role = getRole() ?? 'super_admin'
-  return `/${role}/feature-definitions`
-}
+import { useFeatureDefinitionsBasePath } from '../hooks/useFeatureDefinitionsBasePath'
 
 const AdminFeatureDefinitions = () => {
   const navigate = useNavigate()

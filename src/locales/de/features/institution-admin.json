@@ -10,7 +10,10 @@
     "billing": "Abrechnung",
     "analytics": "Analysen",
     "cloudStorage": "Cloud-Speicher",
-    "auditLogs": "Audit-Logs"
+    "auditLogs": "Audit-Logs",
+    "teachers": "Lehrkräfte",
+    "students": "Studierende",
+    "courses": "Kurse"
   },
   "shell": {
     "settings": "Einstellungen",
@@ -146,6 +149,13 @@
       "title": "Zahlungsmethode",
       "empty": "Keine Zahlungsmethode hinterlegt."
     }
+  },
+  "planFeatures": {
+    "title": "Was in Ihrem Plan enthalten ist",
+    "featureCount": "{{count}} Funktionen",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "accountMenu": "Kontomenü"
   },
   "gdprRequest": {
     "title": "DSGVO-Anfragen",
