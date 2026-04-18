@@ -60,7 +60,38 @@
   },
   "inviteUsers": {
     "pageTitle": "Benutzer einladen",
-    "subtitle": "Senden Sie eine Einladungs-E-Mail, um Lehrkräfte oder Schülerinnen und Schüler zur Institution hinzuzufügen. Sie erhalten einen Link zum Beitreten.",
+    "subtitle": "Wählen Sie, wie Sie Lehrkräfte oder Schülerinnen und Schüler in Ihre Institution holen möchten. Sie können dies später ändern.",
+    "continueButton": "Weiter",
+    "continueDisabledHint": "Wählen Sie die Einladung per E-Mail, um fortzufahren.",
+    "emailWizard": {
+      "steps": {
+        "enterAddresses": "E-Mail-Adressen",
+        "reviewRecipients": "Empfänger prüfen"
+      },
+      "sectionTitle": "E-Mail-Adressen hinzufügen",
+      "separatorHint": "Fügen Sie beliebig viele E-Mail-Adressen ein oder tippen Sie sie ein — eine pro Zeile, durch Leerzeichen oder Kommas getrennt. Wir kümmern uns um den Rest und melden uns, falls etwas nicht stimmt.",
+      "textareaLabel": "Einzuladende E-Mail-Adressen",
+      "textareaPlaceholder": "lehrkraft@schule.example schueler@schule.example",
+      "nextButton": "Weiter",
+      "backButton": "Zurück",
+      "changeMethod": "Einladungsart ändern",
+      "reviewCardTitle": "Empfänger",
+      "sendButton": "Einladungen senden"
+    },
+    "methods": {
+      "email": {
+        "title": "Einladung per E-Mail",
+        "description": "Geben Sie eine oder mehrere Adressen ein und senden Sie einen sicheren Beitrittslink per E-Mail."
+      },
+      "file": {
+        "title": "Datei importieren",
+        "description": "Laden Sie eine CSV- oder Tabellendatei hoch, um alle in einem Schritt einzuladen oder anzulegen."
+      },
+      "qr": {
+        "title": "QR-Code",
+        "description": "Zeigen Sie einen QR-Code bei Veranstaltungen oder im Klassenzimmer, damit sich Personen direkt anmelden können."
+      }
+    },
     "emailLabel": "E-Mail-Adresse",
     "emailPlaceholder": "name@schule.example",
     "submitButton": "Einladung senden"

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import {
   Stepper,
   StepperContent,
@@ -32,7 +33,7 @@ export type StepperProgressBarTitlesProps = {
   onValueChange?: (value: number) => void
   className?: string
   colorVariant?: StepperColorVariant
-  renderContent?: (step: StepperProgressBarTitlesItem, index: number) => React.ReactNode
+  renderContent?: (step: StepperProgressBarTitlesItem, index: number) => ReactNode
 }
 
 export function StepperProgressBarTitles({

@@ -60,7 +60,38 @@
   },
   "inviteUsers": {
     "pageTitle": "Invite users",
-    "subtitle": "Send an email invitation to add teachers or students to your institution. They will receive a link to join.",
+    "subtitle": "Choose how you want to bring teachers or students into your institution. You can change this later.",
+    "continueButton": "Continue",
+    "continueDisabledHint": "Choose the email invitation option to continue.",
+    "emailWizard": {
+      "steps": {
+        "enterAddresses": "Email addresses",
+        "reviewRecipients": "Review recipients"
+      },
+      "sectionTitle": "Add email addresses",
+      "separatorHint": "Paste or type as many email addresses as you like — one per line, separated by spaces, or with commas. We'll take care of the rest and let you know if anything looks off.",
+      "textareaLabel": "Email addresses to invite",
+      "textareaPlaceholder": "teacher@school.example, student@school.example",
+      "nextButton": "Next",
+      "backButton": "Back",
+      "changeMethod": "Change invite method",
+      "reviewCardTitle": "Recipients",
+      "sendButton": "Send invites"
+    },
+    "methods": {
+      "email": {
+        "title": "Email invitation",
+        "description": "Enter one or more addresses and send a secure join link by email."
+      },
+      "file": {
+        "title": "Import file",
+        "description": "Upload a CSV or spreadsheet so everyone is invited or provisioned in one batch."
+      },
+      "qr": {
+        "title": "QR code",
+        "description": "Show a QR code at events or in the classroom so people can join on the spot."
+      }
+    },
     "emailLabel": "Email address",
     "emailPlaceholder": "name@school.example",
     "submitButton": "Send invite"

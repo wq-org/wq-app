@@ -10,7 +10,7 @@ import { Text } from '@/components/ui/text'
 import { InvoiceList, type InvoiceListItem } from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { InstitutionSubscriptionDetails } from '../components/InstitutionSubscriptionDetails'
-import { getFeatureDefinitionIcon } from '@/features/admin/config/featureDefinitionIcons'
+import { getFeatureDefinitionIcon } from '@/features/admin'
 import type { EffectiveFeature, EffectiveFeatureSource } from '../types/licensing.types'
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
 
