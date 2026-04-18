@@ -5,6 +5,9 @@
     "users": "Users",
     "inviteUsers": "Invite users",
     "faculties": "Faculties",
+    "facultyProgrammes": "Programmes",
+    "facultyCohorts": "Cohorts",
+    "facultyClassGroups": "Class groups",
     "classrooms": "Classrooms",
     "licenseUsage": "Usage",
     "gdprRequest": "GDPR requests",
@@ -200,12 +203,32 @@
     "card": {
       "untitled": "Untitled faculty",
       "noDescription": "No description",
-      "open": "Open"
+      "open": "Open",
+      "badge": "Faculty"
+    },
+    "pages": {
+      "programmes": {
+        "title": "Programmes",
+        "subtitle": "Study programmes attached to faculties in your institution.",
+        "empty": "Programme management UI is coming soon."
+      },
+      "cohorts": {
+        "title": "Cohorts",
+        "subtitle": "Intakes and year groups within programmes.",
+        "empty": "Cohort management UI is coming soon."
+      },
+      "classGroups": {
+        "title": "Class groups",
+        "subtitle": "Operational learner groups within cohorts.",
+        "empty": "Class group management UI is coming soon."
+      }
     },
     "wizard": {
       "backToList": "Back to faculties",
       "steps": {
-        "details": "Faculty details"
+        "faculty": "Faculty",
+        "programme": "Programme",
+        "programmeOffering": "Offering"
       },
       "actions": {
         "previous": "Previous",
@@ -218,6 +241,33 @@
         "descriptionHint": "Describe what this faculty covers and how it fits your institution—programmes, focus areas, or who it is for.",
         "descriptionLabel": "Description (optional)",
         "descriptionPlaceholder": "e.g. Undergraduate and graduate programmes in nursing, public health, and allied health professions."
+      },
+      "programme": {
+        "nameLabel": "Programme name",
+        "namePlaceholder": "e.g. Nursing Assistant (EQF 4)",
+        "descriptionLabel": "Programme description",
+        "descriptionPlaceholder": "What learners achieve, duration notes, entry requirements.",
+        "durationLabel": "Programme length (years)",
+        "durationValue_one": "{{count}} year",
+        "durationValue_other": "{{count}} years",
+        "progressionLabel": "Progression",
+        "progression": {
+          "year_group": "Year group",
+          "stage": "Stage"
+        },
+        "placeholderName": "Untitled programme"
+      },
+      "offering": {
+        "intro": "Define one or more programme offerings (academic year / term window). Values are saved when API wiring is ready.",
+        "academicYearLabel": "Academic year",
+        "termCodeLabel": "Term code",
+        "termCodePlaceholder": "e.g. 2026S1",
+        "statusActive": "Active",
+        "statusDraft": "Draft",
+        "dateRangeLabel": "Starts / ends",
+        "dateRangePlaceholder": "Pick dates",
+        "addAnother": "Add offering",
+        "remove": "Remove"
       }
     },
     "hierarchy": {

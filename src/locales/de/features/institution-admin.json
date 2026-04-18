@@ -5,6 +5,9 @@
     "users": "Benutzer",
     "inviteUsers": "Benutzer einladen",
     "faculties": "Fakultäten",
+    "facultyProgrammes": "Studiengänge",
+    "facultyCohorts": "Kohorten",
+    "facultyClassGroups": "Klassengruppen",
     "classrooms": "Klassenräume",
     "licenseUsage": "Lizenznutzung",
     "gdprRequest": "DSGVO-Anfragen",
@@ -200,12 +203,32 @@
     "card": {
       "untitled": "Fakultät ohne Titel",
       "noDescription": "Keine Beschreibung",
-      "open": "Öffnen"
+      "open": "Öffnen",
+      "badge": "Fakultät"
+    },
+    "pages": {
+      "programmes": {
+        "title": "Studiengänge",
+        "subtitle": "Studiengänge und Programme an Ihren Fakultäten.",
+        "empty": "Die Verwaltung der Studiengänge folgt in Kürze."
+      },
+      "cohorts": {
+        "title": "Kohorten",
+        "subtitle": "Aufnahmen und Jahrgänge innerhalb von Programmen.",
+        "empty": "Die Verwaltung von Kohorten folgt in Kürze."
+      },
+      "classGroups": {
+        "title": "Klassengruppen",
+        "subtitle": "Operative Lerngruppen innerhalb von Kohorten.",
+        "empty": "Die Verwaltung von Klassengruppen folgt in Kürze."
+      }
     },
     "wizard": {
       "backToList": "Zurück zu Fakultäten",
       "steps": {
-        "details": "Angaben zur Fakultät"
+        "faculty": "Fakultät",
+        "programme": "Programm",
+        "programmeOffering": "Angebot"
       },
       "actions": {
         "previous": "Zurück",
@@ -218,6 +241,33 @@
         "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Studiengänge, Schwerpunkte oder Zielgruppen.",
         "descriptionLabel": "Beschreibung (optional)",
         "descriptionPlaceholder": "z. B. Bachelor- und Masterprogramme in Pflege, Public Health und verwandten Gesundheitsberufen."
+      },
+      "programme": {
+        "nameLabel": "Programmname",
+        "namePlaceholder": "z. B. Pflegeassistenz (EQF 4)",
+        "descriptionLabel": "Programmbeschreibung",
+        "descriptionPlaceholder": "Was Lernende erreichen, Dauer, Zugangsvoraussetzungen.",
+        "durationLabel": "Regelstudienzeit (Jahre)",
+        "durationValue_one": "{{count}} Jahr",
+        "durationValue_other": "{{count}} Jahre",
+        "progressionLabel": "Fortschreibung",
+        "progression": {
+          "year_group": "Jahrgang",
+          "stage": "Phase"
+        },
+        "placeholderName": "Programm ohne Titel"
+      },
+      "offering": {
+        "intro": "Legen Sie ein oder mehrere Programmangebote (Studienjahr / Terminfenster) fest. Die Speicherung folgt mit der API.",
+        "academicYearLabel": "Studienjahr",
+        "termCodeLabel": "Termin-Code",
+        "termCodePlaceholder": "z. B. 2026S1",
+        "statusActive": "Aktiv",
+        "statusDraft": "Entwurf",
+        "dateRangeLabel": "Beginn / Ende",
+        "dateRangePlaceholder": "Daten wählen",
+        "addAnother": "Weiteres Angebot",
+        "remove": "Entfernen"
       }
     },
     "hierarchy": {

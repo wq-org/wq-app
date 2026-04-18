@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Text } from '@/components/ui/text'
@@ -24,7 +25,7 @@ export function FacultyCard({ name, description, onOpen }: FacultyCardProps) {
           ratio={16 / 9}
           className="w-full"
         >
-          <div className="flex h-full w-full items-center justify-center rounded-t-3xl rounded-b-none bg-gradient-to-br from-[oklch(var(--oklch-blue))] to-[oklch(var(--oklch-blue))]/75">
+          <div className="flex h-full w-full items-center justify-center rounded-t-3xl rounded-b-none bg-linear-to-br from-[oklch(var(--oklch-indigo))] to-[oklch(var(--oklch-indigo))]/75">
             <Text
               as="span"
               variant="h1"
@@ -37,6 +38,13 @@ export function FacultyCard({ name, description, onOpen }: FacultyCardProps) {
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
+          <Badge
+            variant="indigo"
+            size="sm"
+            className="font-normal"
+          >
+            {t('faculties.card.badge')}
+          </Badge>
           <Tooltip>
             <TooltipTrigger asChild>
               <CardTitle className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">

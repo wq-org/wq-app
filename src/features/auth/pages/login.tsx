@@ -17,7 +17,6 @@ import { useUser } from '@/contexts/user'
 import { logRoleDebug } from '../utils/roleDebugLog'
 import { AUTH_GRID_ICONS } from '../constants'
 import { Check } from 'lucide-react'
-import { Label } from '@/components/ui/label'
 
 export const LoginPage = () => {
   const navigate = useNavigate()
@@ -174,7 +173,6 @@ export const LoginPage = () => {
           className="flex flex-col gap-4"
         >
           <div className="flex justify-between">
-            <Label>{t('login.email')}</Label>
             {emailError && <p className="px-1 text-xs text-destructive">{emailError}</p>}
           </div>
           <FieldInput
@@ -192,8 +190,7 @@ export const LoginPage = () => {
             }
           />
 
-          <div className="flex items-center justify-between px-1 pt-2">
-            <Label>{t('login.password')}</Label>
+          <div className="flex items-center justify-end px-1 pt-2">
             <Link
               to="/auth/forgot-password"
               className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"

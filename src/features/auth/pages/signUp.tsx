@@ -18,7 +18,6 @@ import type { TabItem } from '@/components/shared'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
 import { logRoleDebug } from '../utils/roleDebugLog'
-import { Label } from '@/components/ui/label'
 
 const roleTabs: TabItem[] = [
   { id: USER_ROLES.STUDENT, icon: GraduationCap, title: 'Student' },
@@ -146,8 +145,6 @@ export const SignUpPage = () => {
           onSubmit={handleOnSubmitSignUp}
           className="flex flex-col gap-4"
         >
-          <Label>{t('signUp.email')}</Label>
-
           <FieldInput
             id="email"
             type="email"
@@ -162,9 +159,6 @@ export const SignUpPage = () => {
             }
           />
           {emailError && <p className="px-1 text-xs text-destructive">{emailError}</p>}
-
-          <Label>{t('signUp.password')}</Label>
-
           <FieldInput
             id="password"
             type="password"
@@ -176,9 +170,6 @@ export const SignUpPage = () => {
             autoComplete="new-password"
             required
           />
-
-          <Label>{t('signUp.repeatPassword')}</Label>
-
           <FieldInput
             id="repeat-password"
             type="password"

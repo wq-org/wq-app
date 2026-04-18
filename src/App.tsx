@@ -68,6 +68,9 @@ import {
   InstitutionAdminInviteUsersPage,
   InstitutionAdminFacultiesPage,
   InstitutionAdminFacultiesCreatePage,
+  InstitutionAdminFacultiesProgrammesPage,
+  InstitutionAdminFacultiesCohortsPage,
+  InstitutionAdminFacultiesClassGroupsPage,
   InstitutionAdminClassroomsPage,
   InstitutionAdminLicensesPage,
   InstitutionAdminUsagePage,
@@ -475,18 +478,42 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="faculties"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultiesPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
                   path="faculties/create"
                   element={
                     <RequireAuth>
                       <InstitutionAdminFacultiesCreatePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/programmes"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesProgrammesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/cohorts"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesCohortsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/class-groups"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesClassGroupsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesPage />
                     </RequireAuth>
                   }
                 />
