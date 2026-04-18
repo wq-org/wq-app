@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { upsertProfile, updateProfile } from '@/features/auth'
+import { upsertProfile } from '@/features/auth'
 import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
@@ -12,9 +12,11 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { BlurredImage } from '@/components/ui/blurred-image'
+import { Spinner } from '@/components/ui/spinner'
+import { Check } from 'lucide-react'
 
 export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
-  const { session, profile, refreshProfile } = useUser()
+  const { session, profile, pendingRole, refreshProfile } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [completedRole, setCompletedRole] = useState<string | null>(null)
@@ -29,44 +31,41 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
       return
     }
 
-    setIsSubmitting(true)
+    // Capture role from already-loaded context BEFORE any async operations.
+    // profile.role is set by handle_new_user (student/teacher) or redeem_institution_invite.
+    // pendingRole is the sessionStorage backup captured at invite/signup time.
+    const role = pendingRole ?? profile?.role ?? null
 
     logRoleDebug('StepFinish handleFinish start', {
       profileRole: profile?.role ?? '(none)',
-      note: 'role comes from DB (handle_new_user or redeem_institution_invite), not written by frontend',
+      pendingRole: pendingRole ?? '(none)',
+      resolvedRole: role ?? '(none)',
     })
 
+    if (!role) {
+      toast.error(t('finish.errors.missingRole'))
+      return
+    }
+
+    setIsSubmitting(true)
+
     try {
-      // Persist profile data and mark onboarding as complete.
-      // Do NOT write `role` — the DB already has the correct role set by
-      // handle_new_user (student/teacher) or redeem_institution_invite (institution_admin).
+      // Single upsert: all profile data + role + is_onboarded: true atomically.
       await upsertProfile(session.user.id, {
         email: session.user.email,
         username: accountData.username,
         description: accountData.description,
         display_name: accountData.displayName,
         avatar_url: accountData.avatar.src,
-        is_onboarded: false,
+        role,
+        is_onboarded: true,
       })
 
-      await updateProfile(session.user.id, { is_onboarded: true })
+      // Refresh profile so RequireOnboarding sees is_onboarded: true and doesn't
+      // redirect the user back to /onboarding when they reach the dashboard.
+      await refreshProfile()
 
-      // Refresh profile to get updated is_onboarded and the authoritative role from DB
-      const freshProfile = await refreshProfile()
-      const freshRole = freshProfile?.role ?? profile?.role ?? null
-
-      logRoleDebug('StepFinish after upsert + is_onboarded + refreshProfile', {
-        freshRole: freshRole ?? '(none)',
-        note: 'role read from DB, not from pendingRole',
-      })
-
-      if (!freshRole) {
-        setIsSubmitting(false)
-        toast.error(t('finish.errors.missingRole'))
-        return
-      }
-
-      setCompletedRole(freshRole)
+      setCompletedRole(role)
       setShowSuccess(true)
     } catch (error) {
       logRoleDebug('StepFinish completion error', {
@@ -112,11 +111,13 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
         <Card className="rounded-4xl shadow-lg">
           <CardHeader>
             <div className="flex items-center gap-4">
-              <div className="size-20 overflow-hidden rounded-3xl">
+              <div className="size-20 shrink-0 overflow-hidden rounded-3xl">
                 <BlurredImage
                   src={signedAvatarUrl || accountData.avatar.src}
                   alt={accountData.avatar.name}
-                  className="h-full w-full object-cover"
+                  isBlurred
+                  className="h-full w-full rounded-3xl object-cover"
+                  containerClassName="h-full w-full overflow-hidden rounded-3xl"
                 />
               </div>
               <div className="flex-1">
@@ -222,8 +223,9 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
             type="button"
             variant="ghost"
             onClick={onBack}
+            disabled={isSubmitting}
           >
-            Back
+            {t('finish.actions.back')}
           </Button>
           <Button
             type="button"
@@ -232,7 +234,15 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
             className="gap-2"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Saving...' : 'Finish Setup 🎉'}
+            {isSubmitting ? (
+              <Spinner
+                variant="white"
+                size="xs"
+              />
+            ) : (
+              <Check />
+            )}
+            {t('finish.actions.finish')}
           </Button>
         </div>
       </div>

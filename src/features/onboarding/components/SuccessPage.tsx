@@ -47,7 +47,7 @@ export function SuccessPage({
   const handleDone = () => {
     const trimmedDashboard = dashboardRole?.trim() ?? ''
     const trimmedProfile = profile?.role?.trim() ?? ''
-    const role = trimmedDashboard || trimmedProfile
+    const role = trimmedDashboard
 
     logRoleDebug('SuccessPage Done click', {
       dashboardRole: trimmedDashboard || '(empty)',
