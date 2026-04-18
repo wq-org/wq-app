@@ -5,6 +5,7 @@ export { InstitutionDashboard as InstitutionAdminDashboardPage } from './pages/d
 export { InstitutionTeachers as InstitutionAdminTeachersPage } from './pages/teacher'
 export { InstitutionStudents as InstitutionAdminStudentsPage } from './pages/students'
 export { InstitutionUsers as InstitutionAdminUsersPage } from './pages/users'
+export { InstitutionInviteUsers as InstitutionAdminInviteUsersPage } from './pages/invite-users'
 export { InstitutionFaculties as InstitutionAdminFacultiesPage } from './pages/faculties'
 export { InstitutionClassrooms as InstitutionAdminClassroomsPage } from './pages/classrooms'
 export { AdminLicenses as InstitutionAdminLicensesPage } from './pages/licenses'

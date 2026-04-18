@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Trash, UserLock, UserRoundCheck, Users } from 'lucide-react'
+import { Trash, Ban, UserRoundCheck, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { useUser } from '@/contexts/user'
@@ -278,7 +278,7 @@ const AdminUsers = () => {
                                     handleOpenAccessDialog(user)
                                   }}
                                 >
-                                  <UserLock
+                                  <Ban
                                     className="size-4 shrink-0"
                                     aria-hidden
                                   />

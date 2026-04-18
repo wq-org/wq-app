@@ -65,6 +65,7 @@ import {
   InstitutionAdminTeachersPage,
   InstitutionAdminStudentsPage,
   InstitutionAdminUsersPage,
+  InstitutionAdminInviteUsersPage,
   InstitutionAdminFacultiesPage,
   InstitutionAdminClassroomsPage,
   InstitutionAdminLicensesPage,
@@ -461,6 +462,14 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <InstitutionAdminUsersPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="users/invite-users"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminInviteUsersPage />
                     </RequireAuth>
                   }
                 />

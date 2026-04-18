@@ -54,6 +54,10 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
         url: item.url,
         icon: item.icon,
         isActive: item.isActive,
+        items: item.items?.map((sub) => ({
+          title: t(sub.titleKey),
+          url: sub.url,
+        })),
       })),
     [navItems, t],
   )

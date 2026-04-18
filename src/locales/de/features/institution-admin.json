@@ -3,6 +3,7 @@
     "groupLabel": "Institution",
     "dashboard": "Dashboard",
     "users": "Benutzer",
+    "inviteUsers": "Benutzer einladen",
     "faculties": "Fakultäten",
     "classrooms": "Klassenräume",
     "licenseUsage": "Lizenznutzung",
@@ -24,12 +25,13 @@
     "darkMode": "Dunkles Design"
   },
   "dashboard": {
-    "title": "Institutionsübersicht",
+    "greeting": "Hallo {{name}}",
+    "greetingAnonymous": "Hallo",
     "subtitle": "Wichtige Kennzahlen Ihrer Organisation auf einen Blick.",
     "stats": {
       "viewMore": "Mehr anzeigen",
       "students": {
-        "label": "Lernende"
+        "label": "Schüler"
       },
       "teachers": {
         "label": "Lehrkräfte"
@@ -56,9 +58,81 @@
       }
     }
   },
+  "inviteUsers": {
+    "pageTitle": "Benutzer einladen",
+    "subtitle": "Senden Sie eine Einladungs-E-Mail, um Lehrkräfte oder Schülerinnen und Schüler zur Institution hinzuzufügen. Sie erhalten einen Link zum Beitreten.",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "name@schule.example",
+    "submitButton": "Einladung senden"
+  },
   "users": {
-    "title": "Benutzer",
-    "subtitle": "Verwalten Sie Lernende, Lehrkräfte und Mitarbeitende Ihrer Institution."
+    "pageTitle": "Benutzer",
+    "subtitle": "Verwalten Sie Schüler, Lehrkräfte und Mitarbeitende Ihrer Institution.",
+    "inviteUsersCta": "Benutzer einladen",
+    "totalHeading": "Benutzer gesamt (diese Ansicht)",
+    "totalOfInstitution": "von {{total}} in Ihrer Institution",
+    "roleFilterNotice": "Gefiltert nach Rolle: {{role}}",
+    "table": {
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "username": "Benutzername",
+      "role": "Rolle",
+      "access": "Zugang",
+      "actions": "Aktionen"
+    },
+    "access": {
+      "active": "Aktiv",
+      "deactivated": "Deaktiviert"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "assignClassGroup": "Klassengruppe zuweisen",
+      "withdrawFromClass": "Aus Klasse zurückziehen",
+      "removeFromInstitution": "Aus Institution entfernen"
+    },
+    "assignClassGroupDialog": {
+      "title": "Klassengruppe zuweisen",
+      "description": "",
+      "cancelButton": "Abbrechen",
+      "confirmButton": "Bestätigen"
+    },
+    "withdrawFromClassDialog": {
+      "title": "Aus Klasse zurückziehen",
+      "roleStudent": "Schüler",
+      "roleTeacherCoTeacher": "Lehrkraft / Co-Lehrkraft",
+      "bodyStudent": "Der Schüler wird aus diesem Kurs entfernt. Er verliert den Zugriff auf alle Inhalte, Aufgaben und Spiele dieses Kurses. Sein Account und alle anderen Kurse bleiben unberührt.",
+      "bodyTeacherCoTeacher": "Die Lehrkraft wird als Co-Teacher aus diesem Kurs entfernt. Sie kann keine Inhalte mehr einsehen oder verwalten. Eigene Kurse und andere Klassenzuweisungen bleiben bestehen.",
+      "cancelButton": "Abbrechen",
+      "confirmButton": "Bestätigen"
+    },
+    "removeFromInstitutionDialog": {
+      "title": "Aus Institution entfernen?",
+      "roleStudent": "Schüler",
+      "roleTeacher": "Lehrkraft",
+      "roleCoTeacher": "Co-Lehrkraft",
+      "roleUnknown": "Mitglied",
+      "bodyStudent": "Der Schüler verlässt die Schule vollständig. Er verliert den Zugriff auf alle Kurse, Klassen, Spiele und Daten dieser Institution. Sein Account bleibt erhalten, ist aber für diese Schule gesperrt.",
+      "bodyTeacher": "Die Lehrkraft verlässt die Schule vollständig. Alle von ihr erstellten Kurse und Spiele verbleiben in der Institution. Ihr Account bleibt erhalten, sie hat jedoch keinen Zugriff mehr auf diese Schule.",
+      "bodyCoTeacher": "Die Co-Lehrkraft verlässt die Schule vollständig. Alle Klassenzuweisungen werden aufgehoben. Ihr Account bleibt erhalten, aber der Zugriff auf diese Institution wird vollständig gesperrt.",
+      "bodyUnknown": "Diese Person verliert nach Bestätigung den Zugriff auf diese Institution.",
+      "cancelButton": "Abbrechen",
+      "holdButton": "Zum Entfernen halten",
+      "confirmingButton": "Wird entfernt …"
+    },
+    "roles": {
+      "student": "Schüler",
+      "teacher": "Lehrkraft",
+      "institution_admin": "Institutions-Administration",
+      "unknown": "Sonstige"
+    },
+    "empty": {
+      "title": "Keine Benutzer in dieser Ansicht",
+      "description": "Filter zurücksetzen oder Mitglieder zu Ihrer Institution einladen."
+    },
+    "toasts": {
+      "removeFromInstitutionSuccess": "Entfernung erfasst",
+      "removeFromInstitutionSuccessDescription": "{{name}} verliert den Zugriff auf diese Institution, sobald die Mitgliedschafts-API left_institution_at bestätigt."
+    }
   },
   "faculties": {
     "title": "Fakultäten",
@@ -100,7 +174,7 @@
         "warning": "Sie nähern sich dem Platzlimit."
       },
       "students": {
-        "title": "Lernende"
+        "title": "Schüler"
       },
       "teachers": {
         "title": "Lehrkräfte"

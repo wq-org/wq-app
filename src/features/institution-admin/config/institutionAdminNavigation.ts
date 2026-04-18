@@ -12,11 +12,17 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
+export type InstitutionAdminNavSubItem = {
+  titleKey: string
+  url: string
+}
+
 export type InstitutionAdminNavItem = {
   titleKey: string
   url: string
   icon: LucideIcon
   isActive?: boolean
+  items?: readonly InstitutionAdminNavSubItem[]
 }
 
 const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
@@ -30,6 +36,12 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
     titleKey: 'nav.users',
     url: '/users',
     icon: Users,
+    items: [
+      {
+        titleKey: 'nav.inviteUsers',
+        url: '/invite-users',
+      },
+    ],
   },
   {
     titleKey: 'nav.faculties',

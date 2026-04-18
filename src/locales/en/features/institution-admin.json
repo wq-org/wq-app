@@ -3,6 +3,7 @@
     "groupLabel": "Institution",
     "dashboard": "Dashboard",
     "users": "Users",
+    "inviteUsers": "Invite users",
     "faculties": "Faculties",
     "classrooms": "Classrooms",
     "licenseUsage": "Usage",
@@ -24,7 +25,8 @@
     "darkMode": "Dark mode"
   },
   "dashboard": {
-    "title": "Institution overview",
+    "greeting": "Hello {{name}}",
+    "greetingAnonymous": "Hello",
     "subtitle": "Key metrics for your organization at a glance.",
     "stats": {
       "viewMore": "View more",
@@ -56,9 +58,81 @@
       }
     }
   },
+  "inviteUsers": {
+    "pageTitle": "Invite users",
+    "subtitle": "Send an email invitation to add teachers or students to your institution. They will receive a link to join.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@school.example",
+    "submitButton": "Send invite"
+  },
   "users": {
-    "title": "Users",
-    "subtitle": "Manage students, teachers, and staff in your institution."
+    "pageTitle": "Users",
+    "subtitle": "Manage students, teachers, and staff in your institution.",
+    "inviteUsersCta": "Invite users",
+    "totalHeading": "Total users (this view)",
+    "totalOfInstitution": "of {{total}} in your institution",
+    "roleFilterNotice": "Filtered by role: {{role}}",
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "username": "Username",
+      "role": "Role",
+      "access": "Access",
+      "actions": "Actions"
+    },
+    "access": {
+      "active": "Active",
+      "deactivated": "Deactivated"
+    },
+    "actions": {
+      "edit": "Edit",
+      "assignClassGroup": "Assign to class group",
+      "withdrawFromClass": "Withdraw from class",
+      "removeFromInstitution": "Remove from institution"
+    },
+    "assignClassGroupDialog": {
+      "title": "Assign to class group",
+      "description": "",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    },
+    "withdrawFromClassDialog": {
+      "title": "Withdraw from class",
+      "roleStudent": "Student",
+      "roleTeacherCoTeacher": "Teacher / Co-Teacher",
+      "bodyStudent": "The student is removed from this classroom. They lose access to all content, tasks, and games in this classroom. Their account and all other classrooms remain unaffected.",
+      "bodyTeacherCoTeacher": "The teacher is removed as co-teacher from this classroom. They can no longer view or manage its content. Their own courses and other classroom assignments remain unaffected.",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    },
+    "removeFromInstitutionDialog": {
+      "title": "Remove from institution?",
+      "roleStudent": "Student",
+      "roleTeacher": "Teacher",
+      "roleCoTeacher": "Co-Teacher",
+      "roleUnknown": "Member",
+      "bodyStudent": "The student leaves the institution entirely. They lose access to all classrooms, courses, games, and data of this institution. Their account remains active but is locked out of this school.",
+      "bodyTeacher": "The teacher leaves the institution entirely. All courses and games they created remain within the institution. Their account stays active but they no longer have access to this school.",
+      "bodyCoTeacher": "The co-teacher leaves the institution entirely. All classroom assignments are revoked. Their account remains active but access to this institution is fully blocked.",
+      "bodyUnknown": "This person will lose access to this institution once removal is confirmed.",
+      "cancelButton": "Cancel",
+      "holdButton": "Hold to remove from institution",
+      "confirmingButton": "Removing…"
+    },
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "institution_admin": "Institution admin",
+      "unknown": "Other"
+    },
+    "empty": {
+      "title": "No users in this view",
+      "description": "Try clearing the role filter or invite members to your institution."
+    },
+    "toasts": {
+      "removeFromInstitutionSuccess": "Removal recorded",
+      "removeFromInstitutionSuccessDescription": "{{name}} will lose access to this institution once the membership API confirms left_institution_at."
+    }
   },
   "faculties": {
     "title": "Faculties",

@@ -4,13 +4,9 @@ import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHov
 
 import {
   AccentPicker,
-  AdvancedPasswordStrengthIndicatorProgress,
   GridIconBackground,
   IconPreviewCardSquare,
   IconPreviewCardWide,
-  InputBottomBorderOnly,
-  InputPulsedBackgroundAnimation,
-  MinimalInputWithoutBordersBackground,
   PricingComparator,
   RatingSliderEmojiFeedback,
   BasicStepper,
@@ -78,6 +74,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
+import {
+  AdvancedPasswordStrengthIndicatorProgress,
+  ClearableInput,
+  InputBottomBorderOnly,
+  InputPulsedBackgroundAnimation,
+  MinimalInputWithoutBordersBackground,
+  QuantityStepper,
+} from '@/components/shared/inputs'
 import {
   BasicTree,
   FileExplorerTreeTypeIcons,
@@ -240,6 +244,77 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="text-lg font-semibold border-b pb-2">{title}</h2>
       <div className="flex flex-wrap gap-6 items-start">{children}</div>
     </section>
+  )
+}
+
+function SharedInputsGallery() {
+  const [clearableValue, setClearableValue] = useState('')
+  const [quantity, setQuantity] = useState(3)
+
+  return (
+    <Section title="Shared inputs (@/components/shared/inputs)">
+      <div className="flex w-full max-w-4xl flex-col gap-10">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            ClearableInput
+          </p>
+          <ClearableInput
+            value={clearableValue}
+            onValueChange={setClearableValue}
+            placeholder="Search…"
+            label="Demo search"
+          />
+          <ClearableInput
+            defaultValue="prefilled"
+            placeholder="With search icon"
+            label="Demo with icon"
+            showSearchIcon
+          />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            QuantityStepper
+          </p>
+          <QuantityStepper
+            value={quantity}
+            min={0}
+            max={20}
+            step={1}
+            onChange={setQuantity}
+            label="Demo quantity"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            InputBottomBorderOnly
+          </p>
+          <InputBottomBorderOnly />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            InputPulsedBackgroundAnimation
+          </p>
+          <InputPulsedBackgroundAnimation />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            MinimalInputWithoutBordersBackground
+          </p>
+          <MinimalInputWithoutBordersBackground />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            AdvancedPasswordStrengthIndicatorProgress
+          </p>
+          <AdvancedPasswordStrengthIndicatorProgress />
+        </div>
+      </div>
+    </Section>
   )
 }
 
@@ -406,6 +481,8 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <SharedInputsGallery />
 
       <Section title="SocialMediaReactionToggles">
         <SocialMediaReactionToggles />
@@ -770,22 +847,6 @@ export default function Test() {
           validationMin={10}
           validationMax={150}
         />
-      </Section>
-
-      <Section title="InputBottomBorderOnly.tsx InputBottomBorderOnly">
-        <InputBottomBorderOnly />
-      </Section>
-
-      <Section title="InputPulsedBackgroundAnimation.tsx InputPulsedBackgroundAnimation">
-        <InputPulsedBackgroundAnimation />
-      </Section>
-
-      <Section title="MinimalInputWithoutBordersBackground.tsx MinimalInputWithoutBordersBackground">
-        <MinimalInputWithoutBordersBackground />
-      </Section>
-
-      <Section title="AdvancedPasswordStrengthIndicatorProgress.tsx AdvancedPasswordStrengthIndicatorProgress">
-        <AdvancedPasswordStrengthIndicatorProgress />
       </Section>
 
       <Section title="CardImageScaleHoverEffect">

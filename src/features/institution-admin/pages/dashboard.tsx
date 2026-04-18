@@ -1,11 +1,15 @@
 import { useTranslation } from 'react-i18next'
 
 import { StatsLinks, type StatsLinksItem } from '@/components/shared'
+import { useUser } from '@/contexts/user'
 
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 
 const InstitutionDashboard = () => {
   const { t } = useTranslation('features.institution-admin')
+  const { profile } = useUser()
+
+  const greetingName = profile?.display_name?.trim() || profile?.username?.trim()
 
   // Mock data — replace with actual data from API
   const stats: readonly StatsLinksItem[] = [
@@ -47,7 +51,11 @@ const InstitutionDashboard = () => {
     <InstitutionAdminWorkspaceShell>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {greetingName
+              ? t('dashboard.greeting', { name: greetingName })
+              : t('dashboard.greetingAnonymous')}
+          </h1>
           <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
         <StatsLinks items={stats} />

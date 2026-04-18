@@ -15,7 +15,7 @@ import type { EffectiveFeature, EffectiveFeatureSource } from '../types/licensin
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
 
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import { groupByCategory } from '../utils/licenseUtils'
+import { groupByCategory } from '../utils'
 
 type BadgeVariant = 'violet' | 'blue' | 'secondary'
 

@@ -18,7 +18,7 @@ import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWo
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
 import type { EffectiveFeature, EffectiveFeatureSource } from '../types/licensing.types'
 import { BILLING_STATUS_VARIANT } from '../config/billingStatus'
-import { groupByCategory } from '../utils/licenseUtils'
+import { groupByCategory } from '../utils'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
