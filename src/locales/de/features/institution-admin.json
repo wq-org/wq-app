@@ -133,7 +133,8 @@
       "assignClassGroup": "Klassengruppe zuweisen",
       "withdrawFromClass": "Aus Klasse zurückziehen",
       "removeFromInstitution": "Aus Institution entfernen",
-      "resendInvitation": "Einladung erneut senden"
+      "resendInvitation": "Einladung erneut senden",
+      "disabledPeerInstitutionAdmin": "Das Verwalten anderer Institutions-Admins ist aus Sicherheitsgründen eingeschränkt. Bitte einen Plattform-Administrator kontaktieren."
     },
     "assignClassGroupDialog": {
       "title": "Klassengruppe zuweisen",
@@ -192,7 +193,55 @@
   },
   "faculties": {
     "title": "Fakultäten",
-    "subtitle": "Organisieren Sie Bereiche und akademische Einheiten."
+    "subtitle": "Organisieren Sie Bereiche und akademische Einheiten.",
+    "create": "Fakultät anlegen",
+    "createSubtitle": "Richten Sie eine neue oberste Organisationseinheit in wenigen Schritten ein.",
+    "empty": "Noch keine Fakultäten. Legen Sie eine an, um zu starten.",
+    "card": {
+      "untitled": "Fakultät ohne Titel",
+      "noDescription": "Keine Beschreibung",
+      "open": "Öffnen"
+    },
+    "wizard": {
+      "backToList": "Zurück zu Fakultäten",
+      "steps": {
+        "details": "Angaben zur Fakultät"
+      },
+      "actions": {
+        "previous": "Zurück",
+        "next": "Weiter",
+        "finish": "Fakultät anlegen"
+      },
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "z. B. Gesundheitswissenschaften",
+        "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Studiengänge, Schwerpunkte oder Zielgruppen.",
+        "descriptionLabel": "Beschreibung (optional)",
+        "descriptionPlaceholder": "z. B. Bachelor- und Masterprogramme in Pflege, Public Health und verwandten Gesundheitsberufen."
+      }
+    },
+    "hierarchy": {
+      "faculty": {
+        "title": "Fakultät",
+        "description": "Ein übergeordneter Bereich der Institution, der verwandte Programme bündelt (zum Beispiel Pflege oder Berufsausbildung)."
+      },
+      "programme": {
+        "title": "Studiengang / Programm",
+        "description": "Ein Ausbildungsgang innerhalb einer Fakultät, der festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
+      },
+      "cohort": {
+        "title": "Kohorte / Jahrgang",
+        "description": "Eine Aufnahme- oder Jahrgangsgruppe innerhalb eines Programms (zum Beispiel „Kohorte 2026“), die nach Abschluss meist archiviert wird."
+      },
+      "classGroup": {
+        "title": "Klassengruppe",
+        "description": "Eine konkrete Klasse innerhalb einer Kohorte, die die reale Lerngruppe abbildet (zum Beispiel „WIB2-A“)."
+      },
+      "classroom": {
+        "title": "Kursraum / Classroom",
+        "description": "Der Unterrichtsraum auf der Plattform, in dem Lektionen, Spiele und Aufgaben zugewiesen werden. Er verbindet Lehrkraft, Klassengruppe und Fach (zum Beispiel „Chemie WIB2-A“)."
+      }
+    }
   },
   "classrooms": {
     "title": "Klassenräume",

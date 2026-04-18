@@ -133,7 +133,8 @@
       "assignClassGroup": "Assign to class group",
       "withdrawFromClass": "Withdraw from class",
       "removeFromInstitution": "Remove from institution",
-      "resendInvitation": "Resend invitation"
+      "resendInvitation": "Resend invitation",
+      "disabledPeerInstitutionAdmin": "Managing other institution admins is restricted for security. Use a platform administrator if needed."
     },
     "assignClassGroupDialog": {
       "title": "Assign to class group",
@@ -192,7 +193,55 @@
   },
   "faculties": {
     "title": "Faculties",
-    "subtitle": "Organize departments and academic units."
+    "subtitle": "Organize departments and academic units.",
+    "create": "Create faculty",
+    "createSubtitle": "Set up a new top-level department in a few steps.",
+    "empty": "No faculties yet. Create one to get started.",
+    "card": {
+      "untitled": "Untitled faculty",
+      "noDescription": "No description",
+      "open": "Open"
+    },
+    "wizard": {
+      "backToList": "Back to faculties",
+      "steps": {
+        "details": "Faculty details"
+      },
+      "actions": {
+        "previous": "Previous",
+        "next": "Next",
+        "finish": "Create faculty"
+      },
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Health Sciences",
+        "descriptionHint": "Describe what this faculty covers and how it fits your institution—programmes, focus areas, or who it is for.",
+        "descriptionLabel": "Description (optional)",
+        "descriptionPlaceholder": "e.g. Undergraduate and graduate programmes in nursing, public health, and allied health professions."
+      }
+    },
+    "hierarchy": {
+      "faculty": {
+        "title": "Faculty",
+        "description": "A top-level department in the institution that groups related programmes (for example, Nursing or Vocational Training)."
+      },
+      "programme": {
+        "title": "Programme",
+        "description": "A course of study within a faculty that defines what learners train for and how long it takes (for example, “Nursing Assistant”)."
+      },
+      "cohort": {
+        "title": "Cohort",
+        "description": "An intake or year group within a programme (for example, “Cohort 2026”) that is typically archived after graduation."
+      },
+      "classGroup": {
+        "title": "Class group",
+        "description": "A concrete class within a cohort that represents the real-world group of learners (for example, “WIB2-A”)."
+      },
+      "classroom": {
+        "title": "Classroom",
+        "description": "The teaching space on the platform where lessons, games, and tasks are assigned, linking a teacher, a class group, and a subject (for example, “Chemistry WIB2-A”)."
+      }
+    }
   },
   "classrooms": {
     "title": "Classrooms",

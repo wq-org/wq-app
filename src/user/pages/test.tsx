@@ -484,7 +484,7 @@ export default function Test() {
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
       <Section title="Onboarding (@/features/onboarding)">
-        <div className="w-full basis-full rounded-lg border bg-muted/40 shadow-sm">
+        <div className="w-full basis-full rounded-lg border bg-muted/40 shadow-sm [&_[data-slot=stepper-panel]]:min-h-0">
           <Onboarding />
         </div>
       </Section>

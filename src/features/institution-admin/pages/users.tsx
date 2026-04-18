@@ -18,12 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  SkeletonLoaderAvatarsUserInfo,
-  SkeletonLoaderCard,
-  SkeletonLoaderTextParagraphs,
-} from '@/components/shared'
-
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useUser } from '@/contexts/user'
 
 import {
@@ -38,21 +33,33 @@ import { WithdrawFromClassDialog } from '../components/WithdrawFromClassDialog'
 import type {
   InstitutionDirectoryRow,
   InstitutionInviteDirectoryRow,
+  InstitutionMemberDirectoryRow,
   InstitutionUsersDialogState,
   InstitutionUserRow,
   MembershipStatusDb,
 } from '../types/institution-users.types'
 import { directoryMemberToUserRow } from '../types/institution-users.types'
+
 import { buildInitialsFromDisplayName, institutionUserRoleTranslationKey } from '../utils'
 
 function membershipStatusTranslationKey(status: MembershipStatusDb): string {
   return `users.membershipStatus.${status}`
 }
 
+/** Institution admins must not manage peer admins from this UI; super_admin bypasses for ops. */
+function areMemberRowActionsDisabled(
+  row: InstitutionMemberDirectoryRow,
+  viewerRole: string | null,
+): boolean {
+  if (viewerRole === 'super_admin') return false
+  return row.membership_role === 'institution_admin'
+}
+
 const InstitutionUsers = () => {
   const { t } = useTranslation('features.institution-admin')
   const navigate = useNavigate()
-  const { profile } = useUser()
+  const { profile, getRole } = useUser()
+  const viewerRole = getRole()
   const institutionId = profile?.institution?.id ?? null
   const institutionName = profile?.institution?.name ?? null
 
@@ -213,11 +220,6 @@ const InstitutionUsers = () => {
           <p className="text-sm text-muted-foreground">{t('users.missingInstitutionContext')}</p>
         ) : isLoading ? (
           <div className="min-h-[300px] animate-in fade-in-0 slide-in-from-bottom-2 rounded-lg border p-6">
-            <div className="grid gap-6 md:grid-cols-3">
-              <SkeletonLoaderAvatarsUserInfo />
-              <SkeletonLoaderCard />
-              <SkeletonLoaderTextParagraphs />
-            </div>
             <div className="mt-6 flex items-center justify-center">
               <Spinner
                 variant="gray"
@@ -342,72 +344,21 @@ const InstitutionUsers = () => {
                           </PopoverContent>
                         </Popover>
                       ) : (
-                        <Popover
-                          open={userActionsPopoverId === row.user_id}
-                          onOpenChange={(open) =>
+                        <MemberRowActions
+                          row={row}
+                          viewerRole={viewerRole}
+                          popoverOpen={userActionsPopoverId === row.user_id}
+                          onPopoverOpenChange={(open) =>
                             setUserActionsPopoverId(open ? row.user_id : null)
                           }
-                        >
-                          <PopoverTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="darkblue"
-                              size="sm"
-                            >
-                              {t('users.actions.edit')}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            align="end"
-                            className="w-64 p-2"
-                          >
-                            <div className="flex flex-col gap-1">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="w-full justify-start font-normal"
-                                onClick={() => openAssignDialog(directoryMemberToUserRow(row))}
-                              >
-                                <UsersRound
-                                  className="size-4 shrink-0"
-                                  aria-hidden
-                                />
-                                {t('users.actions.assignClassGroup')}
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="w-full justify-start font-normal"
-                                onClick={() =>
-                                  openWithdrawFromClassDialog(directoryMemberToUserRow(row))
-                                }
-                              >
-                                <DoorOpen
-                                  className="size-4 shrink-0"
-                                  aria-hidden
-                                />
-                                {t('users.actions.withdrawFromClass')}
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="delete"
-                                size="sm"
-                                className="w-full justify-start font-normal"
-                                onClick={() =>
-                                  openRemoveFromInstitutionDialog(directoryMemberToUserRow(row))
-                                }
-                              >
-                                <UserMinus
-                                  className="size-4 shrink-0"
-                                  aria-hidden
-                                />
-                                {t('users.actions.removeFromInstitution')}
-                              </Button>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
+                          onAssign={() => openAssignDialog(directoryMemberToUserRow(row))}
+                          onWithdraw={() =>
+                            openWithdrawFromClassDialog(directoryMemberToUserRow(row))
+                          }
+                          onRemove={() =>
+                            openRemoveFromInstitutionDialog(directoryMemberToUserRow(row))
+                          }
+                        />
                       )}
                     </TableCell>
                   </TableRow>
@@ -439,6 +390,114 @@ const InstitutionUsers = () => {
         onConfirmRemove={handleConfirmRemoveFromInstitution}
       />
     </InstitutionAdminWorkspaceShell>
+  )
+}
+
+type MemberRowActionsProps = {
+  row: InstitutionMemberDirectoryRow
+  viewerRole: string | null
+  popoverOpen: boolean
+  onPopoverOpenChange: (open: boolean) => void
+  onAssign: () => void
+  onWithdraw: () => void
+  onRemove: () => void
+}
+
+function MemberRowActions({
+  row,
+  viewerRole,
+  popoverOpen,
+  onPopoverOpenChange,
+  onAssign,
+  onWithdraw,
+  onRemove,
+}: MemberRowActionsProps) {
+  const { t } = useTranslation('features.institution-admin')
+  const peerActionsLocked = areMemberRowActionsDisabled(row, viewerRole)
+
+  if (peerActionsLocked) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="inline-flex cursor-not-allowed">
+            <Button
+              type="button"
+              variant="darkblue"
+              size="sm"
+              disabled
+            >
+              {t('users.actions.edit')}
+            </Button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="left">
+          {t('users.actions.disabledPeerInstitutionAdmin')}
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
+
+  return (
+    <Popover
+      open={popoverOpen}
+      onOpenChange={onPopoverOpenChange}
+    >
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="darkblue"
+          size="sm"
+        >
+          {t('users.actions.edit')}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        className="w-64 p-2"
+      >
+        <div className="flex flex-col gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start font-normal"
+            onClick={onAssign}
+          >
+            <UsersRound
+              className="size-4 shrink-0"
+              aria-hidden
+            />
+            {t('users.actions.assignClassGroup')}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start font-normal"
+            onClick={onWithdraw}
+          >
+            <DoorOpen
+              className="size-4 shrink-0"
+              aria-hidden
+            />
+            {t('users.actions.withdrawFromClass')}
+          </Button>
+          <Button
+            type="button"
+            variant="delete"
+            size="sm"
+            className="w-full justify-start font-normal"
+            onClick={onRemove}
+          >
+            <UserMinus
+              className="size-4 shrink-0"
+              aria-hidden
+            />
+            {t('users.actions.removeFromInstitution')}
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
 

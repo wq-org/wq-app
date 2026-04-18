@@ -51,6 +51,7 @@ export const FieldInput = ({
         onValueChange={onValueChange}
         placeholder={placeholder}
         label={label}
+        labelVisibility="visible"
         name={name}
         type={type}
         inputMode={inputMode}

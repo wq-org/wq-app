@@ -27,6 +27,8 @@ interface ClearableInputProps {
   hideSeparator?: boolean
   showSearchIcon?: boolean
   showClearButton?: boolean
+  /** Use `visible` for form fields (matches `FieldTextarea`). Search bars keep `sr-only`. */
+  labelVisibility?: 'sr-only' | 'visible'
 }
 
 export const ClearableInput = ({
@@ -50,6 +52,7 @@ export const ClearableInput = ({
   hideSeparator = false,
   showSearchIcon = false,
   showClearButton = true,
+  labelVisibility = 'sr-only',
 }: ClearableInputProps) => {
   const generatedId = useId()
   const inputId = id ?? generatedId
@@ -77,52 +80,55 @@ export const ClearableInput = ({
     <div className={cn('relative pb-2', className)}>
       <Label
         htmlFor={inputId}
-        className="sr-only"
+        className={cn(labelVisibility === 'sr-only' && 'sr-only')}
       >
         {label}
       </Label>
 
-      {showSearchIcon ? (
-        <Search
-          className="pointer-events-none absolute top-6 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden
+      <div className={cn('relative w-full', labelVisibility === 'visible' && 'mt-4')}>
+        {showSearchIcon ? (
+          <Search
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+        ) : null}
+
+        <input
+          id={inputId}
+          name={name}
+          type={type}
+          placeholder={placeholder}
+          value={inputValue}
+          onChange={handleInputChange}
+          className={cn(
+            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full  py-2 min-h-16 pr-10',
+            showSearchIcon && `px-10`,
+            inputClassName,
+          )}
+          autoFocus={autoFocus}
+          autoComplete={autoComplete}
+          required={required}
+          disabled={disabled}
+          maxLength={maxLength}
+          inputMode={inputMode}
         />
-      ) : null}
 
-      <input
-        id={inputId}
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        value={inputValue}
-        onChange={handleInputChange}
-        className={cn(
-          'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full  py-2 min-h-16 pr-10',
-          showSearchIcon && `px-10`,
-          inputClassName,
+        {showClearButton && !disabled && inputValue.trim() && type !== 'password' && (
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="absolute right-2 top-1/2 rounded-full p-1 -translate-y-1/2 hover:bg-accent"
+            onClick={handleClear}
+            aria-label={clearButtonLabel}
+            disabled={disabled || inputValue.length === 0}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         )}
-        autoFocus={autoFocus}
-        autoComplete={autoComplete}
-        required={required}
-        disabled={disabled}
-        maxLength={maxLength}
-        inputMode={inputMode}
-      />
-      {!hideSeparator ? <Separator /> : null}
+      </div>
 
-      {showClearButton && !disabled && inputValue.trim() && type !== 'password' && (
-        <Button
-          type="button"
-          size="icon"
-          variant="ghost"
-          className="absolute right-2 top-1/2 rounded-full p-1 -translate-y-1/2 hover:bg-accent"
-          onClick={handleClear}
-          aria-label={clearButtonLabel}
-          disabled={disabled || inputValue.length === 0}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      )}
+      {!hideSeparator ? <Separator /> : null}
     </div>
   )
 }

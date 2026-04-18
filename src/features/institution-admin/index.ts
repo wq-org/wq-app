@@ -7,6 +7,7 @@ export { InstitutionStudents as InstitutionAdminStudentsPage } from './pages/stu
 export { InstitutionUsers as InstitutionAdminUsersPage } from './pages/users'
 export { InstitutionInviteUsers as InstitutionAdminInviteUsersPage } from './pages/invite-users'
 export { InstitutionFaculties as InstitutionAdminFacultiesPage } from './pages/faculties'
+export { InstitutionFacultiesCreate as InstitutionAdminFacultiesCreatePage } from './pages/faculties-create'
 export { InstitutionClassrooms as InstitutionAdminClassroomsPage } from './pages/classrooms'
 export { AdminLicenses as InstitutionAdminLicensesPage } from './pages/licenses'
 export { InstitutionUsage as InstitutionAdminUsagePage } from './pages/usage'
@@ -17,3 +18,5 @@ export { AdminAnalytics as InstitutionAdminAnalyticsPage } from './pages/analyti
 export { InstitutionCloudStorage as InstitutionAdminCloudStoragePage } from './pages/cloud-storage'
 export { InstitutionAuditLogs as InstitutionAdminAuditLogsPage } from './pages/audit-logs'
 export { AdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
+export { FacultyCard } from './components/FacultyCard'
+export { FacultyList } from './components/FacultyList'
