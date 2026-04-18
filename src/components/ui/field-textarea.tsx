@@ -111,12 +111,7 @@ export const FieldTextarea = ({
 
   return (
     <div className={cn('w-full pb-2', className)}>
-      <Label
-        htmlFor={resolvedId}
-        className="sr-only"
-      >
-        {label}
-      </Label>
+      <Label htmlFor={resolvedId}>{label}</Label>
 
       <div className="relative my-4 w-full">
         {useHighlightOverlay ? (

@@ -1,14 +1,21 @@
 import { useMemo, useState } from 'react'
-import { MoveLeft, Send } from 'lucide-react'
+import { GraduationCap, MoveLeft, Send, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { StepperProgressBarTitles } from '@/components/shared'
+import { SelectTabs, StepperProgressBarTitles, type TabItem } from '@/components/shared'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 
 import { parseBulkEmailTokens } from '../utils'
+
+type InviteEmailRoleTabId = 'teacher' | 'student'
+
+function isInviteEmailRoleTabId(tabId: string): tabId is InviteEmailRoleTabId {
+  return tabId === 'teacher' || tabId === 'student'
+}
 
 export type InvitePerEmailStepperProps = {
   onExit: () => void
@@ -17,9 +24,18 @@ export type InvitePerEmailStepperProps = {
 export function InvitePerEmailStepper({ onExit }: InvitePerEmailStepperProps) {
   const { t } = useTranslation('features.institution-admin')
   const [activeStep, setActiveStep] = useState(1)
-  const [emailBulkText, setEmailBulkText] = useState('')
+  const [inviteRoleTabId, setInviteRoleTabId] = useState<InviteEmailRoleTabId>('teacher')
+  const [teacherEmailBulkText, setTeacherEmailBulkText] = useState('')
+  const [studentEmailBulkText, setStudentEmailBulkText] = useState('')
 
-  const detectedEmails = useMemo(() => parseBulkEmailTokens(emailBulkText), [emailBulkText])
+  const teacherEmails = useMemo(
+    () => parseBulkEmailTokens(teacherEmailBulkText),
+    [teacherEmailBulkText],
+  )
+  const studentEmails = useMemo(
+    () => parseBulkEmailTokens(studentEmailBulkText),
+    [studentEmailBulkText],
+  )
 
   const wizardSteps = useMemo(
     () => [
@@ -28,6 +44,18 @@ export function InvitePerEmailStepper({ onExit }: InvitePerEmailStepperProps) {
     ],
     [t],
   )
+
+  const inviteRoleTabs = useMemo(
+    (): readonly TabItem[] => [
+      { id: 'teacher', icon: GraduationCap, title: t('users.roles.teacher') },
+      { id: 'student', icon: Users, title: t('users.roles.student') },
+    ],
+    [t],
+  )
+
+  function handleInviteRoleTabChange(tabId: string) {
+    if (isInviteEmailRoleTabId(tabId)) setInviteRoleTabId(tabId)
+  }
 
   function handleGoToReviewStep() {
     setActiveStep(2)
@@ -54,11 +82,11 @@ export function InvitePerEmailStepper({ onExit }: InvitePerEmailStepperProps) {
         value={activeStep}
         defaultValue={1}
         onValueChange={setActiveStep}
-        colorVariant="orange"
+        colorVariant="default"
         className="max-w-3xl space-y-8"
         renderContent={(_, index) => {
           if (index === 0) {
-            const hasEmails = detectedEmails.length > 0
+            const hasAnyEmails = teacherEmails.length > 0 || studentEmails.length > 0
 
             return (
               <div className="flex w-full flex-col gap-6">
@@ -78,20 +106,39 @@ export function InvitePerEmailStepper({ onExit }: InvitePerEmailStepperProps) {
                   </Text>
                 </div>
 
-                <FieldTextarea
-                  label={t('inviteUsers.emailWizard.textareaLabel')}
-                  placeholder={t('inviteUsers.emailWizard.textareaPlaceholder')}
-                  value={emailBulkText}
-                  onValueChange={setEmailBulkText}
-                  rows={8}
-                  className="pb-0"
+                <SelectTabs
+                  tabs={inviteRoleTabs}
+                  activeTabId={inviteRoleTabId}
+                  onTabChange={handleInviteRoleTabChange}
                 />
+
+                {inviteRoleTabId === 'teacher' ? (
+                  <FieldTextarea
+                    key="invite-teacher-emails"
+                    label={t('inviteUsers.emailWizard.teachersEmailsLabel')}
+                    placeholder={t('inviteUsers.emailWizard.teachersPlaceholder')}
+                    value={teacherEmailBulkText}
+                    onValueChange={setTeacherEmailBulkText}
+                    rows={8}
+                    className="pb-0"
+                  />
+                ) : (
+                  <FieldTextarea
+                    key="invite-student-emails"
+                    label={t('inviteUsers.emailWizard.studentsEmailsLabel')}
+                    placeholder={t('inviteUsers.emailWizard.studentsPlaceholder')}
+                    value={studentEmailBulkText}
+                    onValueChange={setStudentEmailBulkText}
+                    rows={8}
+                    className="pb-0"
+                  />
+                )}
 
                 <div className="flex justify-end border-t border-border pt-4">
                   <Button
                     type="button"
                     variant="darkblue"
-                    disabled={!hasEmails}
+                    disabled={!hasAnyEmails}
                     onClick={handleGoToReviewStep}
                   >
                     {t('inviteUsers.emailWizard.nextButton')}
@@ -110,14 +157,43 @@ export function InvitePerEmailStepper({ onExit }: InvitePerEmailStepperProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 px-6 pb-6">
-                  {detectedEmails.map((email) => (
-                    <Text
-                      key={email}
-                      variant="body"
-                      className="break-all text-foreground"
+                  {teacherEmails.map((email) => (
+                    <div
+                      key={`teacher:${email}`}
+                      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2"
                     >
-                      {email}
-                    </Text>
+                      <Text
+                        variant="body"
+                        className="min-w-0 flex-1 break-all text-foreground"
+                      >
+                        {email}
+                      </Text>
+                      <Badge
+                        variant="secondary"
+                        className="shrink-0"
+                      >
+                        {t('users.roles.teacher')}
+                      </Badge>
+                    </div>
+                  ))}
+                  {studentEmails.map((email) => (
+                    <div
+                      key={`student:${email}`}
+                      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2"
+                    >
+                      <Text
+                        variant="body"
+                        className="min-w-0 flex-1 break-all text-foreground"
+                      >
+                        {email}
+                      </Text>
+                      <Badge
+                        variant="secondary"
+                        className="shrink-0"
+                      >
+                        {t('users.roles.student')}
+                      </Badge>
+                    </div>
                   ))}
                 </CardContent>
               </Card>
