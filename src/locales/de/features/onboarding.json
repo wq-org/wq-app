@@ -41,6 +41,10 @@
     "about": {
       "title": "Über dich"
     },
+    "actions": {
+      "back": "Zurück",
+      "finish": "Einrichtung abschließen"
+    },
     "errors": {
       "missingRole": "Bitte melde dich ab und erneut an. Du musst eine Rolle (Lehrkraft oder Studierende:r) auswählen, um das Onboarding abzuschließen.",
       "completionTitle": "Onboarding konnte nicht abgeschlossen werden",

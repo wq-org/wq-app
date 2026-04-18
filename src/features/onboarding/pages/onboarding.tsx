@@ -1,26 +1,18 @@
-import { Text } from '@/components/ui/text'
-import {
-  Stepper,
-  StepperItem,
-  StepperTrigger,
-  StepperIndicator,
-  StepperTitle,
-  StepperDescription,
-  StepperSeparator,
-} from '@/components/ui/stepper'
-import { CheckIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+
+import { StepperContentEachStep } from '@/components/shared'
+import { AppNavigation } from '@/components/layout'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
 import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
+import { useUser } from '@/contexts/user'
+import { toast } from 'sonner'
+
 import { StepAccount } from '../components/StepAccount'
 import { StepAvatar } from '../components/StepAvatar'
 import { StepFinish } from '../components/StepFinish'
-import { useUser } from '@/contexts/user'
-import { toast } from 'sonner'
 import type { AccountData, AccountDetailsData, AvatarOption } from '../types/onboarding.types'
-import { AppNavigation } from '@/components/layout'
-import { useTranslation } from 'react-i18next'
 
 const Onboarding = () => {
   const navigate = useNavigate()
@@ -40,6 +32,24 @@ const Onboarding = () => {
       avatar: selectedAvatar,
     }
   }, [accountDetails, selectedAvatar])
+
+  const stepperSteps = useMemo(
+    () => [
+      {
+        title: t('steps.account.title'),
+        description: t('steps.account.description'),
+      },
+      {
+        title: t('steps.avatar.title'),
+        description: t('steps.avatar.description'),
+      },
+      {
+        title: t('steps.finish.title'),
+        description: t('steps.finish.description'),
+      },
+    ],
+    [t],
+  )
 
   useEffect(() => {
     logRoleDebug('onboarding snapshot', {
@@ -86,93 +96,38 @@ const Onboarding = () => {
   return (
     <div>
       <AppNavigation />
-      <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
-        <Stepper
+      <div className="flex min-h-screen flex-col px-4 py-12">
+        <StepperContentEachStep
+          steps={stepperSteps}
           value={step}
+          defaultValue={1}
           onValueChange={handleStepChange}
-          className="w-full max-w-2xl mb-8"
-        >
-          <StepperItem step={1}>
-            <StepperTrigger onClick={() => step > 1 && setStep(1)}>
-              <StepperIndicator>
-                {step > 1 ? (
-                  <CheckIcon className="w-5 h-5" />
-                ) : (
-                  <Text
-                    as="span"
-                    variant="small"
-                  >
-                    1
-                  </Text>
-                )}
-              </StepperIndicator>
-              <div>
-                <StepperTitle>{t('steps.account.title')}</StepperTitle>
-                <StepperDescription>{t('steps.account.description')}</StepperDescription>
-              </div>
-            </StepperTrigger>
-          </StepperItem>
-          <StepperSeparator />
-          <StepperItem step={2}>
-            <StepperTrigger onClick={() => step > 2 && setStep(2)}>
-              <StepperIndicator>
-                {step > 2 ? (
-                  <CheckIcon className="w-5 h-5" />
-                ) : (
-                  <Text
-                    as="span"
-                    variant="small"
-                  >
-                    2
-                  </Text>
-                )}
-              </StepperIndicator>
-              <div>
-                <StepperTitle>{t('steps.avatar.title')}</StepperTitle>
-                <StepperDescription>{t('steps.avatar.description')}</StepperDescription>
-              </div>
-            </StepperTrigger>
-          </StepperItem>
-          <StepperSeparator />
-          <StepperItem step={3}>
-            <StepperTrigger onClick={() => step > 3 && setStep(3)}>
-              <StepperIndicator>
-                <Text
-                  as="span"
-                  variant="small"
-                >
-                  3
-                </Text>
-              </StepperIndicator>
-              <div>
-                <StepperTitle>{t('steps.finish.title')}</StepperTitle>
-                <StepperDescription>{t('steps.finish.description')}</StepperDescription>
-              </div>
-            </StepperTrigger>
-          </StepperItem>
-        </Stepper>
-        <div className="mt-8 w-full max-w-xl">
-          {step === 1 && (
-            <StepAccount
-              onNext={handleAccountNext}
-              initialData={accountDetails || undefined}
-            />
+          className="mx-auto w-full max-w-2xl space-y-10"
+          renderContent={(_, index) => (
+            <div className="w-full pt-2">
+              {index === 0 ? (
+                <StepAccount
+                  onNext={handleAccountNext}
+                  initialData={accountDetails || undefined}
+                />
+              ) : null}
+              {index === 1 ? (
+                <StepAvatar
+                  onNext={handleAvatarNext}
+                  onBack={() => setStep(1)}
+                  initialAvatarSrc={selectedAvatar?.src}
+                />
+              ) : null}
+              {index === 2 && accountData ? (
+                <StepFinish
+                  onBack={() => setStep(2)}
+                  onFinish={handleFinish}
+                  accountData={accountData}
+                />
+              ) : null}
+            </div>
           )}
-          {step === 2 && (
-            <StepAvatar
-              onNext={handleAvatarNext}
-              onBack={() => setStep(1)}
-              initialAvatarSrc={selectedAvatar?.src}
-            />
-          )}
-          {step === 3 && accountData && (
-            <StepFinish
-              onBack={() => setStep(2)}
-              onFinish={handleFinish}
-              accountData={accountData}
-            />
-          )}
-        </div>
+        />
       </div>
     </div>
   )

@@ -373,6 +373,10 @@ deno_version = 2
 # Gateway JWT verify fails on local Deno 2 / edge-runtime (jose ES256 expects CryptoKey). Auth is enforced in the handler (Bearer + getUser + super_admin).
 verify_jwt = false
 
+[functions.send-institution-user-invite-email]
+# Same as admin invite: verify_jwt disabled; handler validates Bearer + institution admin or super_admin.
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

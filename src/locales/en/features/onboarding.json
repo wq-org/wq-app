@@ -41,6 +41,10 @@
     "about": {
       "title": "About"
     },
+    "actions": {
+      "back": "Back",
+      "finish": "Finish Setup"
+    },
     "errors": {
       "missingRole": "Please log out and log in again. You must select a role (teacher or student) to finish onboarding.",
       "completionTitle": "Failed to complete onboarding",

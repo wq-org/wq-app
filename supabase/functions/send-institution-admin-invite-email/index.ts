@@ -1,7 +1,9 @@
 /**
  * Sends the institution-admin invite email via Brevo transactional API.
  *
- * Required Supabase Edge secrets (Dashboard → Edge Functions → Secrets, or `supabase secrets set`):
+ * Local dev: put the same keys in `supabase/.env.local`, then run `npm run supabase:functions:serve`.
+ *
+ * Required Supabase Edge secrets (Dashboard → Edge Functions → Secrets, or `npm run supabase:secrets:push`):
  * - INSTITUTION_ADMIN_INVITE_KEY — Brevo API key (sent as `api-key` header; see Brevo sendTransacEmail docs).
  * - BREVO_SENDER_EMAIL — Verified sender address in Brevo.
  * - BREVO_SENDER_NAME — Display name for the From header.

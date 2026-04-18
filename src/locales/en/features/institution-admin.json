@@ -66,7 +66,8 @@
     "emailWizard": {
       "steps": {
         "enterAddresses": "Email addresses",
-        "reviewRecipients": "Review recipients"
+        "reviewRecipients": "Review recipients",
+        "success": "Done"
       },
       "sectionTitle": "Add email addresses",
       "separatorHint": "Paste or type as many email addresses as you like — one per line, separated by spaces, or with commas. We'll take care of the rest and let you know if anything looks off.",
@@ -80,7 +81,14 @@
       "backButton": "Back",
       "changeMethod": "Change invite method",
       "reviewCardTitle": "Recipients",
-      "sendButton": "Send invites"
+      "sendButton": "Send invites",
+      "successTitle": "Invitations sent",
+      "successDescription": "Recipients will get an email with a link to join your institution.",
+      "viewUsersButton": "View users list",
+      "errorTitle": "Some invitations could not be sent",
+      "errorDescription": "Review the addresses below and try again. Duplicate or invalid invites may be rejected.",
+      "retryFailedButton": "Retry failed",
+      "missingInstitution": "Your account is not linked to an institution. Refresh or contact support."
     },
     "methods": {
       "email": {
@@ -113,7 +121,8 @@
       "username": "Username",
       "role": "Role",
       "access": "Access",
-      "actions": "Actions"
+      "actions": "Actions",
+      "status": "Status"
     },
     "access": {
       "active": "Active",
@@ -123,7 +132,8 @@
       "edit": "Edit",
       "assignClassGroup": "Assign to class group",
       "withdrawFromClass": "Withdraw from class",
-      "removeFromInstitution": "Remove from institution"
+      "removeFromInstitution": "Remove from institution",
+      "resendInvitation": "Resend invitation"
     },
     "assignClassGroupDialog": {
       "title": "Assign to class group",
@@ -166,7 +176,18 @@
     },
     "toasts": {
       "removeFromInstitutionSuccess": "Removal recorded",
-      "removeFromInstitutionSuccessDescription": "{{name}} will lose access to this institution once the membership API confirms left_institution_at."
+      "removeFromInstitutionSuccessDescription": "{{name}} will lose access to this institution once the membership API confirms left_institution_at.",
+      "resendInviteSuccess": "Invitation email sent",
+      "resendInviteError": "Could not resend invitation"
+    },
+    "missingInstitutionContext": "No institution context loaded for your account.",
+    "membershipStatus": {
+      "invited": "Invited",
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "inviteStatus": {
+      "pendingEmail": "Invite pending"
     }
   },
   "faculties": {

@@ -65,8 +65,9 @@
     "continueDisabledHint": "Wählen Sie die Einladung per E-Mail, um fortzufahren.",
     "emailWizard": {
       "steps": {
-        "enterAddresses": "E-Mail-Adressen",
-        "reviewRecipients": "Empfänger prüfen"
+        "enterAddresses": "E-Mail-Adressen hinzufügen",
+        "reviewRecipients": "Empfänger prüfen",
+        "success": "Fertig"
       },
       "sectionTitle": "E-Mail-Adressen hinzufügen",
       "separatorHint": "Fügen Sie beliebig viele E-Mail-Adressen ein oder tippen Sie sie ein — eine pro Zeile, durch Leerzeichen oder Kommas getrennt. Wir kümmern uns um den Rest und melden uns, falls etwas nicht stimmt.",
@@ -80,7 +81,14 @@
       "backButton": "Zurück",
       "changeMethod": "Einladungsart ändern",
       "reviewCardTitle": "Empfänger",
-      "sendButton": "Einladungen senden"
+      "sendButton": "Einladungen senden",
+      "successTitle": "Einladungen gesendet",
+      "successDescription": "Empfänger erhalten eine E-Mail mit einem Link zur Anmeldung bei Ihrer Institution.",
+      "viewUsersButton": "Benutzerliste anzeigen",
+      "errorTitle": "Einige Einladungen konnten nicht gesendet werden",
+      "errorDescription": "Prüfen Sie die folgenden Adressen und versuchen Sie es erneut. Doppelte oder ungültige Einladungen können abgelehnt werden.",
+      "retryFailedButton": "Fehlgeschlagene erneut senden",
+      "missingInstitution": "Ihr Konto ist keiner Institution zugeordnet. Aktualisieren Sie die Seite oder wenden Sie sich an den Support."
     },
     "methods": {
       "email": {
@@ -113,7 +121,8 @@
       "username": "Benutzername",
       "role": "Rolle",
       "access": "Zugang",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "status": "Status"
     },
     "access": {
       "active": "Aktiv",
@@ -123,7 +132,8 @@
       "edit": "Bearbeiten",
       "assignClassGroup": "Klassengruppe zuweisen",
       "withdrawFromClass": "Aus Klasse zurückziehen",
-      "removeFromInstitution": "Aus Institution entfernen"
+      "removeFromInstitution": "Aus Institution entfernen",
+      "resendInvitation": "Einladung erneut senden"
     },
     "assignClassGroupDialog": {
       "title": "Klassengruppe zuweisen",
@@ -166,7 +176,18 @@
     },
     "toasts": {
       "removeFromInstitutionSuccess": "Entfernung erfasst",
-      "removeFromInstitutionSuccessDescription": "{{name}} verliert den Zugriff auf diese Institution, sobald die Mitgliedschafts-API left_institution_at bestätigt."
+      "removeFromInstitutionSuccessDescription": "{{name}} verliert den Zugriff auf diese Institution, sobald die Mitgliedschafts-API left_institution_at bestätigt.",
+      "resendInviteSuccess": "Einladungs-E-Mail gesendet",
+      "resendInviteError": "Einladung konnte nicht erneut gesendet werden"
+    },
+    "missingInstitutionContext": "Für Ihr Konto konnte keine Institution geladen werden.",
+    "membershipStatus": {
+      "invited": "Eingeladen",
+      "active": "Aktiv",
+      "suspended": "Gesperrt"
+    },
+    "inviteStatus": {
+      "pendingEmail": "Einladung ausstehend"
     }
   },
   "faculties": {

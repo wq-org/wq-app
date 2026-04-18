@@ -12,6 +12,11 @@ import {
 } from '@/components/ui/stepper'
 import { cn } from '@/lib/utils'
 import { CheckIcon, LoaderCircleIcon } from 'lucide-react'
+import {
+  stepperIndicatorColorVariants,
+  stepperSeparatorColorVariants,
+  type StepperColorVariant,
+} from './stepper-color-variants'
 
 const defaultSteps = [
   { title: 'Step 1', description: 'Description' },
@@ -30,6 +35,7 @@ export type StepperContentEachStepProps = {
   defaultValue?: number
   onValueChange?: (value: number) => void
   className?: string
+  colorVariant?: StepperColorVariant
   renderContent?: (step: StepperContentEachStepItem, index: number) => React.ReactNode
 }
 
@@ -39,6 +45,7 @@ export function StepperContentEachStep({
   defaultValue = 2,
   onValueChange,
   className,
+  colorVariant = 'default',
   renderContent = (step) => `${step.title} content`,
 }: StepperContentEachStepProps) {
   return (
@@ -60,14 +67,20 @@ export function StepperContentEachStep({
             className="relative"
           >
             <StepperTrigger className="flex justify-start gap-1.5">
-              <StepperIndicator>{index + 1}</StepperIndicator>
+              <StepperIndicator className={stepperIndicatorColorVariants({ colorVariant })}>
+                {index + 1}
+              </StepperIndicator>
               <div className="flex flex-col items-start gap-0.5">
                 <StepperTitle>{step.title}</StepperTitle>
                 <StepperDescription>{step.description}</StepperDescription>
               </div>
             </StepperTrigger>
 
-            {steps.length > index + 1 && <StepperSeparator className="md:mx-2.5" />}
+            {steps.length > index + 1 && (
+              <StepperSeparator
+                className={cn('md:mx-2.5', stepperSeparatorColorVariants({ colorVariant }))}
+              />
+            )}
           </StepperItem>
         ))}
       </StepperNav>

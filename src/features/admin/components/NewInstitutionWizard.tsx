@@ -13,15 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Stepper,
-  StepperDescription,
-  StepperIndicator,
-  StepperItem,
-  StepperSeparator,
-  StepperTitle,
-  StepperTrigger,
-} from '@/components/ui/stepper'
+import { StepperProgressBarTitles } from '@/components/shared'
 import { useState } from 'react'
 import type {
   BootstrapInstitutionFromWizardResult,
@@ -137,6 +129,12 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
     }
   }
 
+  const wizardSteps = [
+    { title: t('wizard.steps.identity') },
+    { title: t('wizard.steps.billing') },
+    { title: t('wizard.steps.review') },
+  ] as const
+
   return (
     <>
       <FieldCard className="w-full max-w-2xl rounded-xl border-border px-0 py-0 shadow-sm">
@@ -146,40 +144,14 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
             {t('wizard.subtitle')}
           </p>
 
-          <div className="mt-4 w-full min-w-0 overflow-x-auto">
-            <Stepper
+          <div className="mt-4 w-full min-w-0">
+            <StepperProgressBarTitles
+              steps={wizardSteps}
               value={step}
-              className="mx-auto flex w-max min-w-full max-w-full flex-nowrap items-center justify-between gap-1 px-0.5 sm:w-full sm:justify-center sm:gap-2"
-              orientation="horizontal"
-            >
-              {[1, 2, 3].map((currentStep) => (
-                <StepperItem
-                  key={currentStep}
-                  step={currentStep}
-                  className="shrink-0"
-                >
-                  <StepperTrigger
-                    disabled
-                    className="flex-col gap-1 py-1 sm:flex-row sm:gap-2"
-                  >
-                    <StepperIndicator className="size-8 text-xs sm:size-10 sm:text-sm" />
-                    <StepperTitle className="max-w-17 text-center text-[10px] font-medium leading-tight sm:max-w-none sm:inline sm:text-xs">
-                      {t(
-                        currentStep === 1
-                          ? 'wizard.steps.identity'
-                          : currentStep === 2
-                            ? 'wizard.steps.billing'
-                            : 'wizard.steps.review',
-                      )}
-                    </StepperTitle>
-                    <StepperDescription className="sr-only">{currentStep}</StepperDescription>
-                  </StepperTrigger>
-                  {currentStep < 3 ? (
-                    <StepperSeparator className="mx-0.5 min-h-px min-w-3 max-w-6 flex-1 self-center sm:mx-0 sm:min-w-6" />
-                  ) : null}
-                </StepperItem>
-              ))}
-            </Stepper>
+              defaultValue={1}
+              renderContent={() => null}
+              className="mx-auto max-w-none space-y-0 [&_[data-slot=stepper-panel]]:hidden [&_[data-slot=stepper-nav]]:mb-0"
+            />
           </div>
         </div>
 

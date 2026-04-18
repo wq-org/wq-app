@@ -732,3 +732,48 @@ user_roles
 > If a new developer or AI cannot understand the purpose of a table, index, or trigger **within 3 seconds**, the name is wrong.
 
 ---
+
+## Pre-implementation checklist — RLS recursion and “helper” traps (mandatory before migrations)
+
+Use this checklist **every time** you add or change Row Level Security policies, `SECURITY DEFINER` functions, RPCs that touch tenant tables, or triggers that read tenant-scoped data. Goal: **never introduce recursive database evaluation** (PostgreSQL error `54001`, _stack depth limit exceeded_, often surfaced as HTTP 500 from PostgREST).
+
+### Why recursion happens
+
+- An RLS policy on table **T** calls a SQL function or subquery that reads table **U**.
+- Policies on **U** (or functions they call) read **T** again, **or** read **U** under RLS that calls the **same** helper used to guard **T**.
+- PostgreSQL keeps nesting policy checks until the stack limit is hit. **Raising `max_stack_depth` is not a fix** — it hides the bug.
+
+Typical pattern that broke in production: policies on `institution_memberships` referenced `app.admin_institution_ids()`, while those helpers scanned `institution_memberships` **as the invoker**, so RLS re-entered itself.
+
+### Design rules (preferred order)
+
+1. **Prefer non-recursive policies** — express tenant checks with direct predicates (`auth.uid()`, explicit joins) when cheap and clear.
+2. **Shared “who are my tenants?” logic** belongs in **small `SECURITY DEFINER` helpers** with:
+   - fixed **`SET search_path`** (empty `''` with fully qualified `public.` names, or an explicit safe path per project convention);
+   - **`SET row_security = off`** only for the **trusted** scan inside the helper, and **always** filter by **`(SELECT auth.uid())`** or parameters — never trust client-supplied tenant ids alone;
+   - **`COMMENT ON FUNCTION`** stating that the function bypasses RLS **only** for that bounded read.
+3. **Never** assume `SECURITY INVOKER` helpers used inside policies are safe if they query tables protected by policies that reference those same helpers.
+
+### Implementation checker (answer before merging SQL)
+
+Answer **yes/no** and fix **no** items before shipping:
+
+| Check                      | Question                                                                                                                                                  |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cycle**                  | Does any policy on table **A** indirectly read **A** again (same statement’s policy chain)?                                                               |
+| **Helper reuse**           | Does a helper used in `USING` / `WITH CHECK` scan a table whose policies call **that same helper**?                                                       |
+| **DEFINER scope**          | If using `SECURITY DEFINER`, is `search_path` pinned and is every table/schema reference explicit?                                                        |
+| **Bypass scope**           | If `row_security = off` is used, is the result set **strictly** limited to the current user / explicit parameters?                                        |
+| **Grants**                 | After `SECURITY DEFINER`, are `REVOKE ... FROM PUBLIC` / `GRANT ... TO authenticated` (or intended roles) correct?                                        |
+| **Profiles / super_admin** | Does `app.is_super_admin()` (or similar) read `profiles` under policies that could loop? (Usually safe if `profiles` SELECT is permissive; still verify.) |
+| **Triggers**               | Does a trigger on **T** update **U** such that **U**’s triggers or constraints read **T** again?                                                          |
+
+### Quick mental model
+
+Draw a directed graph: **policy → function → table → policy → …**. If you can walk from a node back to itself, **stop** and refactor (split policies, definer helper with bounded bypass, or restructure predicates).
+
+### Related project helpers
+
+Membership tenant lists (`app.member_institution_ids`, `app.admin_institution_ids`, `app.is_institution_member`, `app.is_institution_admin`) are implemented as **`SECURITY DEFINER`** with **`row_security = off`** for the inner scan **only** to avoid self-recursion on `institution_memberships`. New policies must not reintroduce cycles by adding policies on `institution_memberships` that query other tables whose policies call these helpers in a loop without the same care.
+
+---

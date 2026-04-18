@@ -72,16 +72,16 @@ export function AuthInvitePage() {
     setIsLoading(true)
 
     try {
-      setPendingRole('institution_admin')
+      setPendingRole(inviteState.membershipRole)
       logRoleDebug('invite: submit start', {
-        setPendingRole: 'institution_admin',
-        inviteMembershipRole: inviteState.status === 'valid' ? inviteState.membershipRole : null,
+        setPendingRole: inviteState.membershipRole,
+        inviteMembershipRole: inviteState.membershipRole,
       })
 
       const response = await signUpUser({
         email: inviteState.email,
         password,
-        role: 'institution_admin',
+        role: inviteState.membershipRole,
       })
 
       if (!response.success) {
@@ -210,7 +210,11 @@ export function AuthInvitePage() {
             variant="h1"
             className="text-2xl font-semibold"
           >
-            Institution Admin Invite
+            {inviteState.membershipRole === 'teacher'
+              ? 'Teacher Invite'
+              : inviteState.membershipRole === 'student'
+                ? 'Student Invite'
+                : 'Institution Admin Invite'}
           </Text>
           <Text
             as="p"

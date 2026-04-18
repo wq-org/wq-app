@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { DoorOpen, UserMinus, UsersRound } from 'lucide-react'
+import { DoorOpen, Mail, UserMinus, UsersRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -24,38 +24,79 @@ import {
   SkeletonLoaderTextParagraphs,
 } from '@/components/shared'
 
+import { useUser } from '@/contexts/user'
+
+import {
+  fetchInstitutionUserDirectory,
+  resendTeacherStudentInviteEmail,
+} from '../api/institutionUserInvitesApi'
 import { AssignClassGroupDialog } from '../components/AssignClassGroupDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { InstitutionUsersEmptyState } from '../components/InstitutionUsersEmptyState'
 import { RemoveFromInstitutionDialog } from '../components/RemoveFromInstitutionDialog'
 import { WithdrawFromClassDialog } from '../components/WithdrawFromClassDialog'
 import type {
-  InstitutionUserRow,
+  InstitutionDirectoryRow,
+  InstitutionInviteDirectoryRow,
   InstitutionUsersDialogState,
+  InstitutionUserRow,
+  MembershipStatusDb,
 } from '../types/institution-users.types'
+import { directoryMemberToUserRow } from '../types/institution-users.types'
 import { buildInitialsFromDisplayName, institutionUserRoleTranslationKey } from '../utils'
 
-/** Replace with institution user list from the API when wired. */
-const INSTITUTION_USER_ROWS: readonly InstitutionUserRow[] = []
+function membershipStatusTranslationKey(status: MembershipStatusDb): string {
+  return `users.membershipStatus.${status}`
+}
 
 const InstitutionUsers = () => {
   const { t } = useTranslation('features.institution-admin')
   const navigate = useNavigate()
+  const { profile } = useUser()
+  const institutionId = profile?.institution?.id ?? null
+  const institutionName = profile?.institution?.name ?? null
+
   const [searchParams] = useSearchParams()
   const roleFilter = searchParams.get('role')
   const [userActionsPopoverId, setUserActionsPopoverId] = useState<string | null>(null)
   const [dialog, setDialog] = useState<InstitutionUsersDialogState>(null)
   const [removeLoading, setRemoveLoading] = useState(false)
 
-  const isLoading = false
+  const [directory, setDirectory] = useState<InstitutionDirectoryRow[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [resendToken, setResendToken] = useState<string | null>(null)
 
-  const users = useMemo(() => {
-    if (!roleFilter) return INSTITUTION_USER_ROWS
-    return INSTITUTION_USER_ROWS.filter((u) => u.role === roleFilter)
-  }, [roleFilter])
+  const refreshDirectory = useCallback(async () => {
+    if (!institutionId) {
+      setDirectory([])
+      setIsLoading(false)
+      return
+    }
+    setLoadError(null)
+    setIsLoading(true)
+    try {
+      const rows = await fetchInstitutionUserDirectory(institutionId)
+      setDirectory(rows)
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : 'Failed to load users')
+      setDirectory([])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [institutionId])
 
-  const totalUsers = users.length
-  const totalAll = INSTITUTION_USER_ROWS.length
+  useEffect(() => {
+    void refreshDirectory()
+  }, [refreshDirectory])
+
+  const filteredDirectory = useMemo(() => {
+    if (!roleFilter) return directory
+    return directory.filter((r) => r.membership_role === roleFilter)
+  }, [directory, roleFilter])
+
+  const totalUsers = filteredDirectory.length
+  const totalAll = directory.length
 
   const assignDialogOpen = dialog?.mode === 'assignClass'
   const withdrawDialogOpen = dialog?.mode === 'withdrawFromClass'
@@ -101,7 +142,6 @@ const InstitutionUsers = () => {
 
     setRemoveLoading(true)
     try {
-      // TODO: call membership API — set left_institution_at for this institution
       await new Promise((r) => setTimeout(r, 350))
       toast.success(t('users.toasts.removeFromInstitutionSuccess'), {
         description: t('users.toasts.removeFromInstitutionSuccessDescription', {
@@ -112,6 +152,35 @@ const InstitutionUsers = () => {
     } finally {
       setRemoveLoading(false)
     }
+  }
+
+  async function handleResendInvite(row: InstitutionInviteDirectoryRow) {
+    setResendToken(row.invite_token)
+    try {
+      await resendTeacherStudentInviteEmail({
+        inviteToken: row.invite_token,
+        recipientEmail: row.email,
+        institutionName,
+      })
+      toast.success(t('users.toasts.resendInviteSuccess'))
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : t('users.toasts.resendInviteError'))
+    } finally {
+      setResendToken(null)
+    }
+  }
+
+  function renderStatusCell(row: InstitutionDirectoryRow) {
+    if (row.rowKind === 'invite') {
+      return <Badge variant="secondary">{t('users.inviteStatus.pendingEmail')}</Badge>
+    }
+    return (
+      <Badge variant="outline">{t(membershipStatusTranslationKey(row.membership_status))}</Badge>
+    )
+  }
+
+  function rowKey(row: InstitutionDirectoryRow): string {
+    return row.rowKind === 'member' ? `m:${row.user_id}` : `i:${row.invite_token}`
   }
 
   return (
@@ -128,6 +197,7 @@ const InstitutionUsers = () => {
                 })}
               </p>
             ) : null}
+            {loadError ? <p className="mt-2 text-sm text-destructive">{loadError}</p> : null}
           </div>
           <Button
             type="button"
@@ -139,7 +209,9 @@ const InstitutionUsers = () => {
           </Button>
         </div>
 
-        {isLoading ? (
+        {!institutionId ? (
+          <p className="text-sm text-muted-foreground">{t('users.missingInstitutionContext')}</p>
+        ) : isLoading ? (
           <div className="min-h-[300px] animate-in fade-in-0 slide-in-from-bottom-2 rounded-lg border p-6">
             <div className="grid gap-6 md:grid-cols-3">
               <SkeletonLoaderAvatarsUserInfo />
@@ -154,7 +226,7 @@ const InstitutionUsers = () => {
               />
             </div>
           </div>
-        ) : users.length === 0 ? (
+        ) : filteredDirectory.length === 0 ? (
           <InstitutionUsersEmptyState />
         ) : (
           <div className="overflow-hidden rounded-lg border animate-in fade-in-0 slide-in-from-bottom-4">
@@ -180,108 +252,163 @@ const InstitutionUsers = () => {
                   <TableHead>{t('users.table.email')}</TableHead>
                   <TableHead>{t('users.table.username')}</TableHead>
                   <TableHead>{t('users.table.role')}</TableHead>
-                  <TableHead>{t('users.table.access')}</TableHead>
+                  <TableHead>{t('users.table.status')}</TableHead>
                   <TableHead className="text-right">{t('users.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {filteredDirectory.map((row) => (
                   <TableRow
-                    key={user.user_id}
+                    key={rowKey(row)}
                     className="animate-in fade-in-0 slide-in-from-bottom-2"
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={user.avatar_url || undefined}
-                            alt={user.display_name || user.username || 'User avatar'}
-                          />
-                          <AvatarFallback className="text-xs">
-                            {user.avatar_url ? (
-                              buildInitialsFromDisplayName(user.display_name, user.username)
-                            ) : (
-                              <Logo
-                                showText={false}
-                                className="h-4 w-4"
+                          {row.rowKind === 'member' ? (
+                            <>
+                              <AvatarImage
+                                src={row.avatar_url || undefined}
+                                alt={row.display_name || row.username || 'User avatar'}
                               />
-                            )}
-                          </AvatarFallback>
+                              <AvatarFallback className="text-xs">
+                                {row.avatar_url ? (
+                                  buildInitialsFromDisplayName(row.display_name, row.username)
+                                ) : (
+                                  <Logo
+                                    showText={false}
+                                    className="h-4 w-4"
+                                  />
+                                )}
+                              </AvatarFallback>
+                            </>
+                          ) : (
+                            <AvatarFallback className="text-xs">
+                              <Mail
+                                className="size-4"
+                                aria-hidden
+                              />
+                            </AvatarFallback>
+                          )}
                         </Avatar>
-                        <span className="font-medium">{user.display_name || '—'}</span>
+                        <span className="font-medium">
+                          {row.rowKind === 'member' ? row.display_name || '—' : '—'}
+                        </span>
                       </div>
                     </TableCell>
-                    <TableCell>{user.email || '—'}</TableCell>
-                    <TableCell className="max-w-[180px] truncate">{user.username || '—'}</TableCell>
-                    <TableCell>{t(institutionUserRoleTranslationKey(user.role))}</TableCell>
-                    <TableCell>
-                      {user.is_active ? (
-                        <Badge variant="outline">{t('users.access.active')}</Badge>
-                      ) : (
-                        <Badge variant="orange">{t('users.access.deactivated')}</Badge>
-                      )}
+                    <TableCell>{row.email || '—'}</TableCell>
+                    <TableCell className="max-w-[180px] truncate">
+                      {row.rowKind === 'member' ? row.username || '—' : '—'}
                     </TableCell>
+                    <TableCell>
+                      {t(institutionUserRoleTranslationKey(row.membership_role))}
+                    </TableCell>
+                    <TableCell>{renderStatusCell(row)}</TableCell>
                     <TableCell className="text-right">
-                      <Popover
-                        open={userActionsPopoverId === user.user_id}
-                        onOpenChange={(open) => setUserActionsPopoverId(open ? user.user_id : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="darkblue"
-                            size="sm"
-                          >
-                            {t('users.actions.edit')}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          align="end"
-                          className="w-64 p-2"
+                      {row.rowKind === 'invite' ? (
+                        <Popover
+                          open={userActionsPopoverId === row.invite_token}
+                          onOpenChange={(open) =>
+                            setUserActionsPopoverId(open ? row.invite_token : null)
+                          }
                         >
-                          <div className="flex flex-col gap-1">
+                          <PopoverTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="darkblue"
+                              size="sm"
+                            >
+                              {t('users.actions.edit')}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            align="end"
+                            className="w-64 p-2"
+                          >
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               className="w-full justify-start font-normal"
-                              onClick={() => openAssignDialog(user)}
+                              disabled={resendToken === row.invite_token}
+                              onClick={() => void handleResendInvite(row)}
                             >
-                              <UsersRound
+                              <Mail
                                 className="size-4 shrink-0"
                                 aria-hidden
                               />
-                              {t('users.actions.assignClassGroup')}
+                              {t('users.actions.resendInvitation')}
                             </Button>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <Popover
+                          open={userActionsPopoverId === row.user_id}
+                          onOpenChange={(open) =>
+                            setUserActionsPopoverId(open ? row.user_id : null)
+                          }
+                        >
+                          <PopoverTrigger asChild>
                             <Button
                               type="button"
-                              variant="ghost"
+                              variant="darkblue"
                               size="sm"
-                              className="w-full justify-start font-normal"
-                              onClick={() => openWithdrawFromClassDialog(user)}
                             >
-                              <DoorOpen
-                                className="size-4 shrink-0"
-                                aria-hidden
-                              />
-                              {t('users.actions.withdrawFromClass')}
+                              {t('users.actions.edit')}
                             </Button>
-                            <Button
-                              type="button"
-                              variant="delete"
-                              size="sm"
-                              className="w-full justify-start font-normal"
-                              onClick={() => openRemoveFromInstitutionDialog(user)}
-                            >
-                              <UserMinus
-                                className="size-4 shrink-0"
-                                aria-hidden
-                              />
-                              {t('users.actions.removeFromInstitution')}
-                            </Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            align="end"
+                            className="w-64 p-2"
+                          >
+                            <div className="flex flex-col gap-1">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                onClick={() => openAssignDialog(directoryMemberToUserRow(row))}
+                              >
+                                <UsersRound
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {t('users.actions.assignClassGroup')}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                onClick={() =>
+                                  openWithdrawFromClassDialog(directoryMemberToUserRow(row))
+                                }
+                              >
+                                <DoorOpen
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {t('users.actions.withdrawFromClass')}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="delete"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                onClick={() =>
+                                  openRemoveFromInstitutionDialog(directoryMemberToUserRow(row))
+                                }
+                              >
+                                <UserMinus
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {t('users.actions.removeFromInstitution')}
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

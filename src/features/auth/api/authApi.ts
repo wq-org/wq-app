@@ -350,18 +350,21 @@ export async function getCompleteProfile(userId: string) {
       .maybeSingle()
 
     if (institutionError) {
-      console.error('Error fetching institution data:', institutionError)
-      throw institutionError
+      console.error(
+        'Error fetching institution data (profile returned without institution):',
+        institutionError,
+      )
+      // Degrade gracefully — return profile without institution rather than discarding the whole profile
+    } else {
+      institution = institutionData
+        ? {
+            id: institutionData.id,
+            name: institutionData.name,
+            slug: institutionData.slug,
+            email: institutionData.email,
+          }
+        : null
     }
-
-    institution = institutionData
-      ? {
-          id: institutionData.id,
-          name: institutionData.name,
-          slug: institutionData.slug,
-          email: institutionData.email,
-        }
-      : null
   }
 
   const response = {

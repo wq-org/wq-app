@@ -62,6 +62,7 @@ import {
   PaginationWithoutLabels,
 } from '@/components/shared/paginations'
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
+import { Onboarding } from '@/features/onboarding'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -481,6 +482,12 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Onboarding (@/features/onboarding)">
+        <div className="w-full basis-full rounded-lg border bg-muted/40 shadow-sm">
+          <Onboarding />
+        </div>
+      </Section>
 
       <SharedInputsGallery />
 
