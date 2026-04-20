@@ -49,6 +49,10 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
     icon: GraduationCap,
     items: [
       {
+        titleKey: 'nav.facultyCreate',
+        url: '/create',
+      },
+      {
         titleKey: 'nav.facultyProgrammes',
         url: '/programmes',
       },

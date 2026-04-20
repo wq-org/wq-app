@@ -20,6 +20,16 @@ import { ClassGroupStep } from '../components/ClassGroupStep'
 import { ClassGroupOfferingStep } from '../components/ClassGroupOfferingStep'
 import { suggestTermCode } from '../utils/termCode'
 
+type BaseOfferingDraft = {
+  id: string
+  status: ProgrammeOfferingStatus
+  dateRange: DateRange | undefined
+}
+
+function createBaseOffering(): BaseOfferingDraft {
+  return { id: crypto.randomUUID(), status: 'draft', dateRange: undefined }
+}
+
 const WIZARD_STEP_COUNT = 7
 
 type OfferingDraft = {
@@ -56,8 +66,17 @@ export function InstitutionFacultiesCreate() {
 
   const [offerings, setOfferings] = useState<OfferingDraft[]>(() => [createEmptyOffering()])
 
-  const [cohortName] = useState('')
-  const [classGroupName] = useState('')
+  const [cohortName, setCohortName] = useState('')
+  const [cohortAcademicYear, setCohortAcademicYear] = useState<number>(new Date().getFullYear())
+  const [cohortOfferings, setCohortOfferings] = useState<BaseOfferingDraft[]>(() => [
+    createBaseOffering(),
+  ])
+
+  const [classGroupName, setClassGroupName] = useState('')
+  const [classGroupDescription, setClassGroupDescription] = useState('')
+  const [classGroupOfferings, setClassGroupOfferings] = useState<BaseOfferingDraft[]>(() => [
+    createBaseOffering(),
+  ])
 
   const progressionOptions = useMemo(
     (): readonly ProgrammeProgressionType[] => ['year_group', 'stage'],
@@ -115,6 +134,30 @@ export function InstitutionFacultiesCreate() {
     setOfferings((rows) => (rows.length <= 1 ? rows : rows.filter((r) => r.id !== id)))
   }
 
+  function updateCohortOffering(id: string, patch: Partial<BaseOfferingDraft>) {
+    setCohortOfferings((rows) => rows.map((r) => (r.id === id ? { ...r, ...patch } : r)))
+  }
+
+  function addCohortOffering() {
+    setCohortOfferings((rows) => [...rows, createBaseOffering()])
+  }
+
+  function removeCohortOffering(id: string) {
+    setCohortOfferings((rows) => (rows.length <= 1 ? rows : rows.filter((r) => r.id !== id)))
+  }
+
+  function updateClassGroupOffering(id: string, patch: Partial<BaseOfferingDraft>) {
+    setClassGroupOfferings((rows) => rows.map((r) => (r.id === id ? { ...r, ...patch } : r)))
+  }
+
+  function addClassGroupOffering() {
+    setClassGroupOfferings((rows) => [...rows, createBaseOffering()])
+  }
+
+  function removeClassGroupOffering(id: string) {
+    setClassGroupOfferings((rows) => (rows.length <= 1 ? rows : rows.filter((r) => r.id !== id)))
+  }
+
   const breadcrumbChain = useMemo(
     () => [facultyName, programmeName, cohortName, classGroupName],
     [facultyName, programmeName, cohortName, classGroupName],
@@ -168,19 +211,47 @@ export function InstitutionFacultiesCreate() {
         break
 
       case 3:
-        stepContent = <CohortStep />
+        stepContent = (
+          <CohortStep
+            name={cohortName}
+            onNameChange={setCohortName}
+            academicYear={cohortAcademicYear}
+            onAcademicYearChange={setCohortAcademicYear}
+          />
+        )
         break
 
       case 4:
-        stepContent = <CohortOfferingStep />
+        stepContent = (
+          <CohortOfferingStep
+            offerings={cohortOfferings}
+            onUpdateOffering={updateCohortOffering}
+            onAddOffering={addCohortOffering}
+            onRemoveOffering={removeCohortOffering}
+          />
+        )
         break
 
       case 5:
-        stepContent = <ClassGroupStep />
+        stepContent = (
+          <ClassGroupStep
+            name={classGroupName}
+            onNameChange={setClassGroupName}
+            description={classGroupDescription}
+            onDescriptionChange={setClassGroupDescription}
+          />
+        )
         break
 
       case 6:
-        stepContent = <ClassGroupOfferingStep />
+        stepContent = (
+          <ClassGroupOfferingStep
+            offerings={classGroupOfferings}
+            onUpdateOffering={updateClassGroupOffering}
+            onAddOffering={addClassGroupOffering}
+            onRemoveOffering={removeClassGroupOffering}
+          />
+        )
         break
 
       default:

@@ -70,7 +70,7 @@ export function ProgrammeOfferingStep({
             </div>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.offering.academicYearLabel')}</Label>
               <YearSelectPopover
@@ -87,7 +87,6 @@ export function ProgrammeOfferingStep({
               placeholder={t('faculties.wizard.offering.termCodePlaceholder')}
               value={row.termCode}
               onValueChange={(termCode) => onUpdateOffering(row.id, { termCode })}
-              hideSeparator
             />
           </div>
 
@@ -164,7 +163,7 @@ export function ProgrammeOfferingStep({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-end">
             <Switch
               checked={row.status === 'active'}
               onCheckedChange={(on) =>

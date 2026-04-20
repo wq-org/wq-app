@@ -5,6 +5,7 @@
     "users": "Users",
     "inviteUsers": "Invite users",
     "faculties": "Faculties",
+    "facultyCreate": "Create faculty",
     "facultyProgrammes": "Programmes",
     "facultyCohorts": "Cohorts",
     "facultyClassGroups": "Class groups",
@@ -275,6 +276,39 @@
         "dateRangePlaceholder": "Pick dates",
         "addAnother": "Add offering",
         "remove": "Remove"
+      },
+      "cohort": {
+        "intro": "Name the intake or year group within this programme.",
+        "nameLabel": "Cohort name",
+        "namePlaceholder": "e.g. Cohort 2026",
+        "academicYearLabel": "Academic year"
+      },
+      "cohortOffering": {
+        "intro": "Define the calendar window for this cohort.",
+        "addAnother": "Add offering",
+        "remove": "Remove",
+        "startsAtLabel": "Starts",
+        "endsAtLabel": "Ends",
+        "datePlaceholder": "Pick a date",
+        "statusActive": "Active",
+        "statusDraft": "Draft"
+      },
+      "classGroup": {
+        "intro": "Name the class that learners will be assigned to.",
+        "nameLabel": "Class group name",
+        "namePlaceholder": "e.g. ML-3A",
+        "descriptionLabel": "Description (optional)",
+        "descriptionPlaceholder": "e.g. Morning group, 28 learners."
+      },
+      "classGroupOffering": {
+        "intro": "Define the calendar window for this class group.",
+        "addAnother": "Add offering",
+        "remove": "Remove",
+        "startsAtLabel": "Starts",
+        "endsAtLabel": "Ends",
+        "datePlaceholder": "Pick a date",
+        "statusActive": "Active",
+        "statusDraft": "Draft"
       }
     },
     "hierarchy": {

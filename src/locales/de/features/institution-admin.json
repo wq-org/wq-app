@@ -5,6 +5,7 @@
     "users": "Benutzer",
     "inviteUsers": "Benutzer einladen",
     "faculties": "Fakultäten",
+    "facultyCreate": "Fakultät anlegen",
     "facultyProgrammes": "Studiengänge",
     "facultyCohorts": "Kohorten",
     "facultyClassGroups": "Klassengruppen",
@@ -275,6 +276,39 @@
         "dateRangePlaceholder": "Daten wählen",
         "addAnother": "Weiteres Angebot",
         "remove": "Entfernen"
+      },
+      "cohort": {
+        "intro": "Benennen Sie die Aufnahme- oder Jahrgangsgruppe innerhalb dieses Programms.",
+        "nameLabel": "Kohortenname",
+        "namePlaceholder": "z. B. Kohorte 2026",
+        "academicYearLabel": "Studienjahr"
+      },
+      "cohortOffering": {
+        "intro": "Legen Sie das Kalenderfenster für diese Kohorte fest.",
+        "addAnother": "Weiteres Angebot",
+        "remove": "Entfernen",
+        "startsAtLabel": "Beginn",
+        "endsAtLabel": "Ende",
+        "datePlaceholder": "Datum wählen",
+        "statusActive": "Aktiv",
+        "statusDraft": "Entwurf"
+      },
+      "classGroup": {
+        "intro": "Benennen Sie die Klasse, der Lernende zugewiesen werden.",
+        "nameLabel": "Name der Klassengruppe",
+        "namePlaceholder": "z. B. ML-3A",
+        "descriptionLabel": "Beschreibung (optional)",
+        "descriptionPlaceholder": "z. B. Morgengruppe, 28 Lernende."
+      },
+      "classGroupOffering": {
+        "intro": "Legen Sie das Kalenderfenster für diese Klassengruppe fest.",
+        "addAnother": "Weiteres Angebot",
+        "remove": "Entfernen",
+        "startsAtLabel": "Beginn",
+        "endsAtLabel": "Ende",
+        "datePlaceholder": "Datum wählen",
+        "statusActive": "Aktiv",
+        "statusDraft": "Entwurf"
       }
     },
     "hierarchy": {

@@ -153,14 +153,14 @@ export function CalendarWithPresets({ value, onChange, className }: CalendarWith
       />
 
       {/* Presets */}
-      <div className="flex flex-wrap gap-1.5 border-t pt-3 mt-1 px-2 pb-2">
+      <div className="flex flex-wrap w-65 gap-1.5 border-t pt-3 mt-1 px-2 pb-2">
         {PRESETS.map((preset) => (
           <Button
             key={preset.days}
             type="button"
             variant="outline"
             size="sm"
-            className="flex-1 text-xs"
+            className="text-xs"
             onClick={() => goToDate(addDays(new Date(), preset.days))}
           >
             {preset.label}
