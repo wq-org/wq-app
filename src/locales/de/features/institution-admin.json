@@ -228,7 +228,11 @@
       "steps": {
         "faculty": "Fakultät",
         "programme": "Programm",
-        "programmeOffering": "Angebot"
+        "programmeOffering": "Programm Angebot",
+        "cohort": "Kohorte",
+        "cohortOffering": "Kohortenangebot",
+        "classGroup": "Klassengruppe",
+        "classGroupOffering": "Klassengruppenangebot"
       },
       "actions": {
         "previous": "Zurück",
@@ -264,6 +268,9 @@
         "termCodePlaceholder": "z. B. 2026S1",
         "statusActive": "Aktiv",
         "statusDraft": "Entwurf",
+        "startsAtLabel": "Beginn",
+        "endsAtLabel": "Ende",
+        "datePlaceholder": "Datum wählen",
         "dateRangeLabel": "Beginn / Ende",
         "dateRangePlaceholder": "Daten wählen",
         "addAnother": "Weiteres Angebot",

@@ -101,7 +101,7 @@ export const ClearableInput = ({
           value={inputValue}
           onChange={handleInputChange}
           className={cn(
-            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full  py-2 min-h-16 pr-10',
+            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full py-2 min-h-16 pr-10 input-focus-border',
             showSearchIcon && `px-10`,
             inputClassName,
           )}

@@ -77,7 +77,12 @@ const InstitutionFaculties = () => {
               <EmptyDescription>Create or reset the filter to see faculties</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button variant="outline">{t('faculties.create')}</Button>
+              <Button
+                variant="outline"
+                onClick={handleCreateFaculty}
+              >
+                {t('faculties.create')}
+              </Button>
             </EmptyContent>
           </Empty>
         ) : (

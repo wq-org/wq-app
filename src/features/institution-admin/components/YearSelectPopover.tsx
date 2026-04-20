@@ -11,7 +11,7 @@ type YearSelectPopoverProps = {
   value: number
   years: readonly number[]
   onChange: (year: number) => void
-  triggerClassName?: string
+  className?: string
   disabled?: boolean
 }
 
@@ -20,7 +20,7 @@ export function YearSelectPopover({
   value,
   years,
   onChange,
-  triggerClassName,
+  className,
   disabled = false,
 }: YearSelectPopoverProps) {
   const [open, setOpen] = useState(false)
@@ -35,7 +35,7 @@ export function YearSelectPopover({
           type="button"
           variant="outline"
           disabled={disabled}
-          className={cn('justify-between font-normal', triggerClassName)}
+          className={cn('justify-between font-normal', className)}
           aria-label={label}
         >
           <span className="truncate">{value}</span>

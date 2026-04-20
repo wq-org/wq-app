@@ -32,7 +32,7 @@ type FieldTextareaProps = {
    * Pass explicitly to override.
    */
   showCounter?: boolean
-  /** Hide the bottom separator line. Defaults to true since textareas are typically inside cards or bordered containers. */
+  /** Hide the bottom separator line. Defaults to true since textarea are typically inside cards or bordered containers. */
   hideSeparator?: boolean
   disabled?: boolean
   /** When true, the textarea is not editable and stays visually normal (unlike `disabled`). */
@@ -59,7 +59,7 @@ export const FieldTextarea = ({
   rows = 4,
   maxLength: maxLengthProp,
   showCounter: showCounterProp,
-  hideSeparator = true,
+  hideSeparator = false,
   disabled = false,
   readOnly = false,
   className,
@@ -105,7 +105,7 @@ export const FieldTextarea = ({
 
   const textareaShared = cn(
     TEXTAREA_BODY,
-    'bg-transparent',
+    'bg-transparent input-focus-border',
     useHighlightOverlay && 'text-transparent caret-foreground [text-shadow:none]',
   )
 

@@ -1,6 +1,6 @@
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
-export { DateRangePicker } from './calendar'
+export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
 export type { DateRangePickerProps } from './calendar'
 export { DocumentEditor, DocumentEditor as Editor } from './editors'
 export { DocumentSlashMenuPlugin } from './editors'

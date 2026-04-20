@@ -298,6 +298,9 @@ body {
   .font-eb-garamond {
     font-family: var(--font-family-eb-garamond);
   }
+  .input-focus-border {
+    @apply border-b-2 border-b-transparent transition-colors duration-200 hover:border-b-gray-300 focus:border-b-black;
+  }
 }
 
 @layer components {
