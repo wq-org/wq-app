@@ -7,7 +7,6 @@ import {
   BookOpen,
   Calendar,
   CalendarRange,
-  ClipboardPen,
   Gauge,
   Cloud,
   GraduationCap,
@@ -20,6 +19,7 @@ import {
   UserStar,
   UsersRound,
   Workflow,
+  LampDesk,
 } from 'lucide-react'
 
 /**
@@ -29,7 +29,7 @@ const FEATURE_ICON_BY_KEY: Readonly<Record<string, LucideIcon>> = {
   institution: University,
   student: BellElectric,
   teacher: GraduationCap,
-  classroom: ClipboardPen,
+  classroom: LampDesk,
   reward_system: UserStar,
   course: BookOpen,
   game_studio: SplinePointer,

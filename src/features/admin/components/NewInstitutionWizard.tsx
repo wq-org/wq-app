@@ -150,7 +150,7 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
               value={step}
               defaultValue={1}
               renderContent={() => null}
-              className="mx-auto max-w-none space-y-0 [&_[data-slot=stepper-panel]]:hidden [&_[data-slot=stepper-nav]]:mb-0"
+              className="mx-auto max-w-none space-y-0 **:data-[slot=stepper-panel]:hidden **:data-[slot=stepper-nav]:mb-0"
             />
           </div>
         </div>

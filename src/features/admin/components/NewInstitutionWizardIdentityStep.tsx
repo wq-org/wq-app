@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Controller } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { FieldInput } from '@/components/ui/field-input'
-import { Label } from '@/components/ui/label'
+
 import {
   Select,
   SelectContent,
@@ -41,7 +41,6 @@ function NewInstitutionWizardIdentityStep({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="new-inst-name">{t('wizard.identity.name')}</Label>
         <Controller
           name="name"
           control={control}
@@ -72,7 +71,6 @@ function NewInstitutionWizardIdentityStep({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="new-inst-slug">{t('wizard.identity.slug')}</Label>
         <Controller
           name="slug"
           control={control}
@@ -101,7 +99,6 @@ function NewInstitutionWizardIdentityStep({
       </div>
 
       <div className="my-5 space-y-3">
-        <Label>{t('wizard.identity.type')}</Label>
         <Controller
           name="type"
           control={control}
@@ -138,7 +135,6 @@ function NewInstitutionWizardIdentityStep({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="new-inst-admin-email">{t('wizard.identity.adminEmail')}</Label>
         <Controller
           name="adminEmail"
           control={control}

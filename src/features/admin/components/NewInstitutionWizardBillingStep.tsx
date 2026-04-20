@@ -1,7 +1,6 @@
 import { Controller } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { FieldInput } from '@/components/ui/field-input'
-import { Label } from '@/components/ui/label'
 import { CountryCombobox } from './CountryCombobox'
 import { getCountryDisplayValue } from '../config/countryOptions'
 import type { Control, FieldErrors } from 'react-hook-form'
@@ -21,7 +20,6 @@ function NewInstitutionWizardBillingStep({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="new-inst-legal-name">{t('wizard.billing.legalName')}</Label>
         <Controller
           name="legalName"
           control={control}
@@ -46,7 +44,6 @@ function NewInstitutionWizardBillingStep({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="new-inst-billing-email">{t('wizard.billing.billingEmail')}</Label>
         <Controller
           name="billingEmail"
           control={control}
@@ -73,7 +70,6 @@ function NewInstitutionWizardBillingStep({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto]">
         <div className="space-y-2">
-          <Label htmlFor="new-inst-street">{t('wizard.billing.street')}</Label>
           <Controller
             name="street"
             control={control}
@@ -90,7 +86,6 @@ function NewInstitutionWizardBillingStep({
         </div>
 
         <div className="space-y-2 sm:w-28">
-          <Label htmlFor="new-inst-street-number">{t('wizard.billing.streetNumber')}</Label>
           <Controller
             name="streetNumber"
             control={control}
@@ -109,7 +104,6 @@ function NewInstitutionWizardBillingStep({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-[auto_1fr]">
         <div className="space-y-2 sm:w-32">
-          <Label htmlFor="new-inst-postal-code">{t('wizard.billing.postalCode')}</Label>
           <Controller
             name="postalCode"
             control={control}
@@ -127,7 +121,6 @@ function NewInstitutionWizardBillingStep({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="new-inst-city">{t('wizard.billing.city')}</Label>
           <Controller
             name="city"
             control={control}
@@ -145,7 +138,6 @@ function NewInstitutionWizardBillingStep({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="new-inst-country">{t('wizard.billing.country')}</Label>
         <Controller
           name="country"
           control={control}
