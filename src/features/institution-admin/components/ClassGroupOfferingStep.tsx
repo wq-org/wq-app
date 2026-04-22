@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { CalendarWithPresets } from '@/components/shared'
+import { HelpPopover } from './HelpPopover'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 
 type ClassGroupOfferingDraft = {
@@ -42,6 +43,24 @@ export function ClassGroupOfferingStep({
       >
         {t('faculties.wizard.classGroupOffering.intro')}
       </Text>
+
+      <div className="flex justify-end">
+        <HelpPopover
+          title={t('faculties.wizard.help.classGroupOffering.title')}
+          sectionDefinitionLabel={t('faculties.wizard.help.sectionLabels.definition')}
+          sectionExampleLabel={t('faculties.wizard.help.sectionLabels.example')}
+          sectionExampleValuesLabel={t('faculties.wizard.help.sectionLabels.exampleValues')}
+          sectionReasonLabel={t('faculties.wizard.help.sectionLabels.reason')}
+          definition={t('faculties.wizard.help.classGroupOffering.definition')}
+          exampleTitle={t('faculties.wizard.help.classGroupOffering.exampleTitle')}
+          exampleValues={
+            t('faculties.wizard.help.classGroupOffering.exampleValues', {
+              returnObjects: true,
+            }) as string[]
+          }
+          reason={t('faculties.wizard.help.classGroupOffering.reason')}
+        />
+      </div>
 
       {offerings.map((row) => (
         <FieldCard

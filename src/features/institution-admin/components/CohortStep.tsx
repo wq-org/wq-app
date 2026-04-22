@@ -5,6 +5,7 @@ import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
+import { HelpPopover } from './HelpPopover'
 import { YearSelectPopover } from './YearSelectPopover'
 import { yearRangeInclusive } from '../utils/termCode'
 
@@ -33,6 +34,23 @@ export function CohortStep({
       >
         {t('faculties.wizard.cohort.intro')}
       </Text>
+
+      <div className="flex justify-end">
+        <HelpPopover
+          title={t('faculties.wizard.help.cohort.title')}
+          sectionDefinitionLabel={t('faculties.wizard.help.sectionLabels.definition')}
+          sectionExampleLabel={t('faculties.wizard.help.sectionLabels.example')}
+          sectionExampleValuesLabel={t('faculties.wizard.help.sectionLabels.exampleValues')}
+          sectionReasonLabel={t('faculties.wizard.help.sectionLabels.reason')}
+          definition={t('faculties.wizard.help.cohort.definition')}
+          exampleTitle={t('faculties.wizard.help.cohort.exampleTitle')}
+          exampleValues={
+            t('faculties.wizard.help.cohort.exampleValues', {
+              returnObjects: true,
+            }) as string[]
+          }
+        />
+      </div>
 
       <FieldCard className="flex flex-col gap-6">
         <FieldInput

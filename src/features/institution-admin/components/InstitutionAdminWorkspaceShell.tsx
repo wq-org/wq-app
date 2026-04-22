@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { LogOut, Moon, Sun, Languages, ChevronsUpDown, Settings } from 'lucide-react'
+import { LogOut, Moon, Sun, Languages, ChevronDown, Settings } from 'lucide-react'
 
 import {
   Sidebar,
@@ -137,7 +137,7 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                       {profile?.email?.trim() || '—'}
                     </Text>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground shrink-0" />
+                  <ChevronDown className="ml-auto size-4 text-muted-foreground shrink-0" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

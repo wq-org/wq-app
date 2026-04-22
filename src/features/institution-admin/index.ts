@@ -22,4 +22,4 @@ export { InstitutionCloudStorage as InstitutionAdminCloudStoragePage } from './p
 export { InstitutionAuditLogs as InstitutionAdminAuditLogsPage } from './pages/audit-logs'
 export { AdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
 export { FacultyCard } from './components/FacultyCard'
-export { FacultyList } from './components/FacultyList'
+export { FacultyCardList } from './components/FacultyCardList'

@@ -64,6 +64,8 @@ import {
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Onboarding } from '@/features/onboarding'
 import { Button } from '@/components/ui/button'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Divider } from '@/components/ui/divider'
 import {
   Dialog,
   DialogContent,
@@ -96,6 +98,7 @@ import {
   fileExplorerTreeSampleItems,
   fileExplorerTreeSampleRootItemId,
 } from '@/components/shared/trees'
+import { CalendarHeatmap } from '@/components/shared/calendar'
 
 const paginationPages = [1, 2, 3, 4]
 
@@ -482,6 +485,99 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Calendar Heatmap">
+        <CalendarHeatmap
+          month={4}
+          year={2026}
+        />
+
+        <CalendarHeatmap
+          month={2}
+          year={2024}
+          size="md"
+        />
+
+        <CalendarHeatmap
+          month={12}
+          year={2026}
+          size="sm"
+          color="green"
+        />
+      </Section>
+
+      <Section title="Divider (@/components/ui/devider)">
+        <div className="w-full space-y-6">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Horizontal
+            </p>
+            <Divider
+              color="black"
+              thickness={1}
+              lengthClassName="w-24"
+            />
+            <Divider
+              color="teal"
+              thickness={2}
+              lengthClassName="w-40"
+            />
+            <Divider
+              color="orange"
+              thickness={3}
+              lengthClassName="w-56"
+            />
+            <Divider
+              color="pink"
+              thickness={5}
+              lengthClassName="w-72"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Vertical
+            </p>
+            <div className="flex h-28 items-end gap-6">
+              <Divider
+                orientation="vertical"
+                color="black"
+                thickness={1}
+                lengthClassName="h-12"
+              />
+              <Divider
+                orientation="vertical"
+                color="teal"
+                thickness={2}
+                lengthClassName="h-16"
+              />
+              <Divider
+                orientation="vertical"
+                color="orange"
+                thickness={3}
+                lengthClassName="h-20"
+              />
+              <Divider
+                orientation="vertical"
+                color="pink"
+                thickness={5}
+                lengthClassName="h-24"
+              />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="AspectRatio">
+        <div className="w-full max-w-md">
+          <AspectRatio
+            ratio={1 / 1}
+            className="overflow-hidden rounded-lg"
+          >
+            <div className="h-full w-full bg-black" />
+          </AspectRatio>
+        </div>
+      </Section>
 
       <Section title="Onboarding (@/features/onboarding)">
         <div className="w-full basis-full rounded-lg border bg-muted/40 shadow-sm **:data-[slot=stepper-panel]:min-h-0">

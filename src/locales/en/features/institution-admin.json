@@ -226,6 +226,75 @@
     },
     "wizard": {
       "backToList": "Back to faculties",
+      "help": {
+        "sectionLabels": {
+          "definition": "Definition",
+          "example": "Example",
+          "exampleValues": "Example values",
+          "reason": "Reason"
+        },
+        "faculty": {
+          "title": "Faculty",
+          "definition": "The top-level organizational unit of your institution. A faculty groups related training programs.",
+          "exampleTitle": "Nursing & Health",
+          "exampleValues": [
+            "Name: Nursing & Health",
+            "Description: All nursing and medical training tracks of the district hospital group"
+          ]
+        },
+        "programme": {
+          "title": "Programme",
+          "definition": "A specific training track inside a faculty. It defines what is taught, independent from when it runs or who attends.",
+          "exampleTitle": "Nursing Specialist Training",
+          "exampleValues": [
+            "Description: General nursing training aligned with legal standards",
+            "Duration: 3 years",
+            "Progression: Yearly",
+            "Other examples: OTA training, sterile processing, nursing assistant training"
+          ]
+        },
+        "programmeOffering": {
+          "title": "Programme offering",
+          "definition": "A concrete time-bound run of a programme. Here you define when this programme run starts and ends.",
+          "exampleTitle": "PF-2025",
+          "exampleValues": [
+            "Academic year: 2025",
+            "Term code: PF-2025",
+            "Start date: 01.09.2025",
+            "End date: 30.06.2028",
+            "Status: Active"
+          ]
+        },
+        "cohort": {
+          "title": "Year group",
+          "definition": "A concrete group of trainees starting together. This is the human group that moves through the programme together.",
+          "exampleTitle": "Year group 2025",
+          "exampleValues": ["Name: Year group 2025", "Academic year: 2025"]
+        },
+        "cohortOffering": {
+          "title": "Year group offering",
+          "definition": "The time-bound assignment of a year group to a programme offering. It defines how long this group is active in this run.",
+          "exampleTitle": "Year group 2025 in PF-2025",
+          "exampleValues": ["Start date: 01.09.2025", "End date: 30.06.2028", "Status: Active"],
+          "reason": "Separate from programme offering because a year group can start later or run on a different timeline."
+        },
+        "classGroup": {
+          "title": "Class group",
+          "definition": "The operational unit inside a year group - usually one class of about 15 to 25 trainees.",
+          "exampleTitle": "PF-A 2025",
+          "exampleValues": [
+            "Description: First class of year group 2025 at Reutlingen campus",
+            "If there are 40 trainees: PF-A 2025 and PF-B 2025"
+          ]
+        },
+        "classGroupOffering": {
+          "title": "Class group offering",
+          "definition": "The active period in which this class group is actually taught. Timetables, rooms and teachers connect here later.",
+          "exampleTitle": "PF-A 2025 in training year 1",
+          "exampleValues": ["Start date: 01.09.2025", "End date: 31.08.2026", "Status: Active"],
+          "reason": "In training year 2, create a new class group offering with a new period, for example 01.09.2026 to 31.08.2027."
+        }
+      },
       "steps": {
         "faculty": "Faculty",
         "programme": "Programme",

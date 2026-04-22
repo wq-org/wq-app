@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { format } from 'date-fns'
+import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
 
@@ -10,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { CalendarWithPresets } from '@/components/shared'
+import { HelpPopover } from './HelpPopover'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 
 type CohortOfferingDraft = {
@@ -25,6 +27,33 @@ type CohortOfferingStepProps = {
   onRemoveOffering: (id: string) => void
 }
 
+const END_DATE_PRESET_OFFSETS = [
+  { kind: 'days' as const, value: 0 },
+  { kind: 'days' as const, value: 1 },
+  { kind: 'days' as const, value: 3 },
+  { kind: 'days' as const, value: 7 },
+  { kind: 'days' as const, value: 14 },
+  { kind: 'months' as const, value: 3 },
+  { kind: 'months' as const, value: 6 },
+]
+
+const getDateWithOffset = (baseDate: Date, offset: (typeof END_DATE_PRESET_OFFSETS)[number]) =>
+  offset.kind === 'days' ? addDays(baseDate, offset.value) : addMonths(baseDate, offset.value)
+
+const mapEndDatePresetToStartDate = (
+  selectedDate: Date | undefined,
+  startDate: Date | undefined,
+) => {
+  if (!selectedDate || !startDate) return selectedDate
+
+  const today = new Date()
+  const matchedOffset = END_DATE_PRESET_OFFSETS.find((offset) =>
+    isSameDay(selectedDate, getDateWithOffset(today, offset)),
+  )
+
+  return matchedOffset ? getDateWithOffset(startDate, matchedOffset) : selectedDate
+}
+
 export function CohortOfferingStep({
   offerings,
   onUpdateOffering,
@@ -32,6 +61,7 @@ export function CohortOfferingStep({
   onRemoveOffering,
 }: CohortOfferingStepProps) {
   const { t } = useTranslation('features.institution-admin')
+  const [openPopover, setOpenPopover] = useState<string | null>(null)
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -42,6 +72,24 @@ export function CohortOfferingStep({
       >
         {t('faculties.wizard.cohortOffering.intro')}
       </Text>
+
+      <div className="flex justify-end">
+        <HelpPopover
+          title={t('faculties.wizard.help.cohortOffering.title')}
+          sectionDefinitionLabel={t('faculties.wizard.help.sectionLabels.definition')}
+          sectionExampleLabel={t('faculties.wizard.help.sectionLabels.example')}
+          sectionExampleValuesLabel={t('faculties.wizard.help.sectionLabels.exampleValues')}
+          sectionReasonLabel={t('faculties.wizard.help.sectionLabels.reason')}
+          definition={t('faculties.wizard.help.cohortOffering.definition')}
+          exampleTitle={t('faculties.wizard.help.cohortOffering.exampleTitle')}
+          exampleValues={
+            t('faculties.wizard.help.cohortOffering.exampleValues', {
+              returnObjects: true,
+            }) as string[]
+          }
+          reason={t('faculties.wizard.help.cohortOffering.reason')}
+        />
+      </div>
 
       {offerings.map((row) => (
         <FieldCard
@@ -65,7 +113,10 @@ export function CohortOfferingStep({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.cohortOffering.startsAtLabel')}</Label>
-              <Popover>
+              <Popover
+                open={openPopover === `${row.id}-from`}
+                onOpenChange={(open) => setOpenPopover(open ? `${row.id}-from` : null)}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -88,7 +139,7 @@ export function CohortOfferingStep({
                 >
                   <CalendarWithPresets
                     value={row.dateRange?.from}
-                    onChange={(date) =>
+                    onChange={(date) => {
                       onUpdateOffering(row.id, {
                         dateRange: {
                           from: date,
@@ -98,7 +149,8 @@ export function CohortOfferingStep({
                               : row.dateRange?.to,
                         },
                       })
-                    }
+                      setOpenPopover(null)
+                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -106,7 +158,10 @@ export function CohortOfferingStep({
 
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.cohortOffering.endsAtLabel')}</Label>
-              <Popover>
+              <Popover
+                open={openPopover === `${row.id}-to`}
+                onOpenChange={(open) => setOpenPopover(open ? `${row.id}-to` : null)}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -128,13 +183,15 @@ export function CohortOfferingStep({
                   align="start"
                 >
                   <CalendarWithPresets
-                    value={row.dateRange?.to}
+                    value={row.dateRange?.to ?? row.dateRange?.from ?? new Date()}
                     disabled={row.dateRange?.from ? { before: row.dateRange.from } : undefined}
-                    onChange={(date) =>
+                    onChange={(date) => {
+                      const resolvedEndDate = mapEndDatePresetToStartDate(date, row.dateRange?.from)
                       onUpdateOffering(row.id, {
-                        dateRange: { from: row.dateRange?.from, to: date },
+                        dateRange: { from: row.dateRange?.from, to: resolvedEndDate },
                       })
-                    }
+                      setOpenPopover(null)
+                    }}
                   />
                 </PopoverContent>
               </Popover>

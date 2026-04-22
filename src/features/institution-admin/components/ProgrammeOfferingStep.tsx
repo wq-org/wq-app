@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { CalendarWithPresets } from '@/components/shared'
 import { YearSelectPopover } from './YearSelectPopover'
+import { HelpPopover } from './HelpPopover'
 import { yearRangeInclusive } from '../utils/termCode'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 
@@ -79,6 +80,23 @@ export function ProgrammeOfferingStep({
       >
         {t('faculties.wizard.offering.intro')}
       </Text>
+
+      <div className="flex justify-end">
+        <HelpPopover
+          title={t('faculties.wizard.help.programmeOffering.title')}
+          sectionDefinitionLabel={t('faculties.wizard.help.sectionLabels.definition')}
+          sectionExampleLabel={t('faculties.wizard.help.sectionLabels.example')}
+          sectionExampleValuesLabel={t('faculties.wizard.help.sectionLabels.exampleValues')}
+          sectionReasonLabel={t('faculties.wizard.help.sectionLabels.reason')}
+          definition={t('faculties.wizard.help.programmeOffering.definition')}
+          exampleTitle={t('faculties.wizard.help.programmeOffering.exampleTitle')}
+          exampleValues={
+            t('faculties.wizard.help.programmeOffering.exampleValues', {
+              returnObjects: true,
+            }) as string[]
+          }
+        />
+      </div>
 
       {offerings.map((row) => (
         <FieldCard

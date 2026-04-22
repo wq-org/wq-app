@@ -226,6 +226,75 @@
     },
     "wizard": {
       "backToList": "Zurück zu Fakultäten",
+      "help": {
+        "sectionLabels": {
+          "definition": "Definition",
+          "example": "Beispiel",
+          "exampleValues": "Beispielwerte",
+          "reason": "Grund"
+        },
+        "faculty": {
+          "title": "Fakultät",
+          "definition": "Die übergeordnete Organisationseinheit deiner Bildungseinrichtung. Eine Fakultät fasst thematisch verwandte Ausbildungsgänge zusammen.",
+          "exampleTitle": "Pflege & Gesundheit",
+          "exampleValues": [
+            "Name: Pflege & Gesundheit",
+            "Beschreibung: Alle pflegerischen und medizinischen Ausbildungsgänge der Kreiskliniken Reutlingen"
+          ]
+        },
+        "programme": {
+          "title": "Programm",
+          "definition": "Ein konkreter Ausbildungsgang innerhalb der Fakultät. Das Programm beschreibt was ausgebildet wird - unabhängig davon wann oder wer.",
+          "exampleTitle": "Ausbildung zur Pflegefachkraft",
+          "exampleValues": [
+            "Beschreibung: Generalistische Pflegeausbildung nach Pflegeberufegesetz (PflBG)",
+            "Dauer: 3 Jahre",
+            "Progression: Jährlich",
+            "Weitere Beispiele: OTA-Ausbildung, Medizinprodukteaufbereitung (ZSVA), Gesundheits- und Krankenpflegehilfe"
+          ]
+        },
+        "programmeOffering": {
+          "title": "Programmangebot",
+          "definition": "Eine konkrete zeitliche Durchführung des Programms - also der Starttermin eines Ausbildungsjahrgangs. Hier legst du fest, von wann bis wann dieses Programm in diesem Jahr angeboten wird.",
+          "exampleTitle": "PF-2025",
+          "exampleValues": [
+            "Akademisches Jahr: 2025",
+            "Term-Code: PF-2025",
+            "Startdatum: 01.09.2025",
+            "Enddatum: 30.06.2028",
+            "Status: Aktiv"
+          ]
+        },
+        "cohort": {
+          "title": "Jahrgang",
+          "definition": "Eine konkrete Gruppe von Auszubildenden, die gemeinsam starten. Der Jahrgang ist der menschliche Anker - die Gruppe, die zusammen ausgebildet wird.",
+          "exampleTitle": "Jahrgang 2025",
+          "exampleValues": ["Name: Jahrgang 2025", "Akademisches Jahr: 2025"]
+        },
+        "cohortOffering": {
+          "title": "Jahrgangsangebot",
+          "definition": "Die zeitliche Bindung des Jahrgangs an das Programmangebot. Hier wird festgelegt, wie lange dieser Jahrgang aktiv in diesem Programm läuft.",
+          "exampleTitle": "Jahrgang 2025 im Programm PF-2025",
+          "exampleValues": ["Startdatum: 01.09.2025", "Enddatum: 30.06.2028", "Status: Aktiv"],
+          "reason": "Getrennt vom Programmangebot, weil ein Jahrgang leicht verzögert starten kann oder ein Nachrückjahrgang andere Zeiträume haben kann."
+        },
+        "classGroup": {
+          "title": "Klassengruppe",
+          "definition": "Die operative Einheit innerhalb eines Jahrgangs - eine Klasse mit etwa 15 bis 25 Auszubildenden, die gemeinsam Unterricht haben.",
+          "exampleTitle": "PF-A 2025",
+          "exampleValues": [
+            "Beschreibung: Erste Klasse des Pflegejahrgangs 2025, Theorieblock Standort Reutlingen",
+            "Bei 40 Auszubildenden: PF-A 2025 und PF-B 2025"
+          ]
+        },
+        "classGroupOffering": {
+          "title": "Klassengruppenangebot",
+          "definition": "Der aktive Zeitraum, in dem diese Klassengruppe konkret unterrichtet wird. Hier hängen später Stundenpläne, Räume und Lehrkräfte dran.",
+          "exampleTitle": "PF-A 2025 im ersten Ausbildungsjahr",
+          "exampleValues": ["Startdatum: 01.09.2025", "Enddatum: 31.08.2026", "Status: Aktiv"],
+          "reason": "Im zweiten Ausbildungsjahr wird ein neues Klassengruppenangebot mit neuem Zeitraum angelegt, zum Beispiel 01.09.2026 bis 31.08.2027."
+        }
+      },
       "steps": {
         "faculty": "Fakultät",
         "programme": "Programm",

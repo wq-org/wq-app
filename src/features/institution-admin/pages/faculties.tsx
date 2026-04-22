@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, University } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -13,18 +13,21 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { FacultyList } from '../components/FacultyList'
+import { Spinner } from '@/components/ui/spinner'
+import { useUser } from '@/contexts/user'
+import { FacultyCardList } from '../components/FacultyCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import type { FacultySummary } from '../types/faculty.types'
-
-const MOCK_FACULTIES: readonly FacultySummary[] = []
+import { listFacultiesByInstitution } from '../api/facultiesApi'
 
 const InstitutionFaculties = () => {
   const { t } = useTranslation('features.institution-admin')
-
+  const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
-
-  const faculties = useMemo(() => MOCK_FACULTIES, [])
+  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const institutionId = getUserInstitutionId()
 
   const handleCreateFaculty = () => {
     navigate('/institution_admin/faculties/create')
@@ -34,6 +37,42 @@ const InstitutionFaculties = () => {
     void facultyId
     /* Placeholder until faculty detail route exists */
   }
+
+  useEffect(() => {
+    if (!institutionId) {
+      setFaculties([])
+      return
+    }
+
+    let isCancelled = false
+
+    const loadFaculties = async () => {
+      setIsLoading(true)
+      setLoadError(null)
+
+      try {
+        const rows = await listFacultiesByInstitution(institutionId)
+        if (!isCancelled) {
+          setFaculties(rows)
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          setLoadError(error instanceof Error ? error.message : 'Failed to load faculties')
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadFaculties()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [institutionId])
+
   return (
     <InstitutionAdminWorkspaceShell>
       <div className="flex flex-col gap-8">
@@ -67,7 +106,24 @@ const InstitutionFaculties = () => {
             </Button>
           </div>
         </div>
-        {faculties.length === 0 ? (
+
+        {isLoading ? (
+          <div className="flex min-h-40 items-center justify-center">
+            <Spinner
+              variant="gray"
+              size="sm"
+              speed={1750}
+            />
+          </div>
+        ) : loadError ? (
+          <Text
+            as="p"
+            variant="small"
+            color="danger"
+          >
+            {loadError}
+          </Text>
+        ) : faculties.length === 0 ? (
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
@@ -86,7 +142,7 @@ const InstitutionFaculties = () => {
             </EmptyContent>
           </Empty>
         ) : (
-          <FacultyList
+          <FacultyCardList
             faculties={faculties}
             onOpenFaculty={handleOpenFaculty}
           />

@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ProgrammeProgressionType } from '../types/programme.types'
 import { ChevronDown } from 'lucide-react'
+import { HelpPopover } from './HelpPopover'
 
 const DURATION_OPTIONS = [
   0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10,
@@ -45,6 +46,22 @@ export function ProgrammeStep({
   return (
     <div className="w-full">
       <FieldCard className="flex flex-col gap-6">
+        <div className="flex justify-end">
+          <HelpPopover
+            title={t('faculties.wizard.help.programme.title')}
+            sectionDefinitionLabel={t('faculties.wizard.help.sectionLabels.definition')}
+            sectionExampleLabel={t('faculties.wizard.help.sectionLabels.example')}
+            sectionExampleValuesLabel={t('faculties.wizard.help.sectionLabels.exampleValues')}
+            sectionReasonLabel={t('faculties.wizard.help.sectionLabels.reason')}
+            definition={t('faculties.wizard.help.programme.definition')}
+            exampleTitle={t('faculties.wizard.help.programme.exampleTitle')}
+            exampleValues={
+              t('faculties.wizard.help.programme.exampleValues', {
+                returnObjects: true,
+              }) as string[]
+            }
+          />
+        </div>
         <FieldInput
           label={t('faculties.wizard.programme.nameLabel')}
           placeholder={t('faculties.wizard.programme.namePlaceholder')}

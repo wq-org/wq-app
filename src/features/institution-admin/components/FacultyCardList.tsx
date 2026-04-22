@@ -1,13 +1,13 @@
-import type { FacultySummary } from '../types/faculty.types.ts'
+import type { FacultySummary } from '../types/faculty.types'
 
 import { FacultyCard } from './FacultyCard'
 
-type FacultyListProps = {
+type FacultyCardProps = {
   faculties: readonly FacultySummary[]
   onOpenFaculty?: (facultyId: string) => void
 }
 
-export function FacultyList({ faculties, onOpenFaculty }: FacultyListProps) {
+export function FacultyCardList({ faculties, onOpenFaculty }: FacultyCardProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {faculties.map((faculty) => (
