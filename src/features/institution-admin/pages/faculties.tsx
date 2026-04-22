@@ -4,6 +4,7 @@ import { Plus, University } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
 import {
   Empty,
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/empty'
 import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { FacultyCardList } from '../components/FacultyCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import type { FacultySummary } from '../types/faculty.types'
@@ -25,9 +27,25 @@ const InstitutionFaculties = () => {
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const institutionId = getUserInstitutionId()
+
+  const searchableFaculties = faculties.map((faculty) => ({
+    ...faculty,
+    searchName: faculty.name ?? '',
+    searchDescription: faculty.description ?? '',
+  }))
+
+  const filteredFaculties = useSearchFilter(searchableFaculties, searchQuery, [
+    'searchName',
+    'searchDescription',
+  ]).map((faculty) => ({
+    id: faculty.id,
+    name: faculty.name,
+    description: faculty.description,
+  }))
 
   const handleCreateFaculty = () => {
     navigate('/institution_admin/faculties/create')
@@ -107,6 +125,14 @@ const InstitutionFaculties = () => {
           </div>
         </div>
 
+        <FieldInput
+          label="Search faculties"
+          placeholder="Search by name or description..."
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+          className="max-w-xl"
+        />
+
         {isLoading ? (
           <div className="flex min-h-40 items-center justify-center">
             <Spinner
@@ -123,7 +149,7 @@ const InstitutionFaculties = () => {
           >
             {loadError}
           </Text>
-        ) : faculties.length === 0 ? (
+        ) : filteredFaculties.length === 0 ? (
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
@@ -143,7 +169,7 @@ const InstitutionFaculties = () => {
           </Empty>
         ) : (
           <FacultyCardList
-            faculties={faculties}
+            faculties={filteredFaculties}
             onOpenFaculty={handleOpenFaculty}
           />
         )}
