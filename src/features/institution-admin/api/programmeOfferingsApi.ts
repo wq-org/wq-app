@@ -1,15 +1,40 @@
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
+import { supabase } from '@/lib/supabase'
 
 export async function listProgrammeOfferings(
-  _programmeId: string,
+  programmeId: string,
 ): Promise<readonly ProgrammeOfferingRecord[]> {
-  void _programmeId
-  return Promise.resolve([])
+  const { data, error } = await supabase
+    .from('programme_offerings')
+    .select('*')
+    .eq('programme_id', programmeId)
+    .is('deleted_at', null)
+    .order('academic_year', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (error) throw new Error(error.message)
+
+  return (data ?? []) as ProgrammeOfferingRecord[]
 }
 
 export async function createProgrammeOffering(
-  _input: Omit<ProgrammeOfferingRecord, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>,
+  input: Omit<ProgrammeOfferingRecord, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>,
 ): Promise<ProgrammeOfferingRecord> {
-  void _input
-  throw new Error('createProgrammeOffering: not implemented')
+  const { data, error } = await supabase
+    .from('programme_offerings')
+    .insert({
+      institution_id: input.institution_id,
+      programme_id: input.programme_id,
+      academic_year: input.academic_year,
+      term_code: input.term_code,
+      status: input.status,
+      starts_at: input.starts_at,
+      ends_at: input.ends_at,
+    })
+    .select('*')
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return data as ProgrammeOfferingRecord
 }

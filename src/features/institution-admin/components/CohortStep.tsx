@@ -44,6 +44,7 @@ export function CohortStep({
 
         <div className="flex flex-col gap-2">
           <Label>{t('faculties.wizard.cohort.academicYearLabel')}</Label>
+
           <YearSelectPopover
             label={t('faculties.wizard.cohort.academicYearLabel')}
             value={academicYear}

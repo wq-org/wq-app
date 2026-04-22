@@ -36,5 +36,11 @@
     "student": "Student",
     "admin": "Admin",
     "institution": "Institution"
+  },
+  "calendar": {
+    "weekdays": {
+      "short": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "compact": ["M", "T", "W", "T", "F", "S", "S"]
+    }
   }
 }

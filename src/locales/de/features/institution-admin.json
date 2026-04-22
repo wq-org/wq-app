@@ -7,7 +7,7 @@
     "faculties": "Fakultäten",
     "facultyCreate": "Fakultät anlegen",
     "facultyProgrammes": "Studiengänge",
-    "facultyCohorts": "Kohorten",
+    "facultyCohorts": "Jahrgänge",
     "facultyClassGroups": "Klassengruppen",
     "classrooms": "Klassenräume",
     "licenseUsage": "Lizenznutzung",
@@ -214,13 +214,13 @@
         "empty": "Die Verwaltung der Studiengänge folgt in Kürze."
       },
       "cohorts": {
-        "title": "Kohorten",
+        "title": "Jahrgänge",
         "subtitle": "Aufnahmen und Jahrgänge innerhalb von Programmen.",
-        "empty": "Die Verwaltung von Kohorten folgt in Kürze."
+        "empty": "Die Verwaltung von Jahrgängen folgt in Kürze."
       },
       "classGroups": {
         "title": "Klassengruppen",
-        "subtitle": "Operative Lerngruppen innerhalb von Kohorten.",
+        "subtitle": "Operative Lerngruppen innerhalb von Jahrgängen.",
         "empty": "Die Verwaltung von Klassengruppen folgt in Kürze."
       }
     },
@@ -230,15 +230,17 @@
         "faculty": "Fakultät",
         "programme": "Programm",
         "programmeOffering": "Programm Angebot",
-        "cohort": "Kohorte",
-        "cohortOffering": "Kohortenangebot",
+        "cohort": "Jahrgang",
+        "cohortOffering": "Jahrgang Angebot",
         "classGroup": "Klassengruppe",
-        "classGroupOffering": "Klassengruppenangebot"
+        "classGroupOffering": "Klassengruppenangebot",
+        "summary": "Zusammenfassung"
       },
       "actions": {
         "previous": "Zurück",
         "next": "Weiter",
-        "finish": "Fakultät anlegen"
+        "finish": "Fakultät anlegen",
+        "finishing": "Wird angelegt..."
       },
       "fields": {
         "nameLabel": "Name",
@@ -269,6 +271,7 @@
         "termCodePlaceholder": "z. B. 2026S1",
         "statusActive": "Aktiv",
         "statusDraft": "Entwurf",
+        "statusArchived": "Archiviert",
         "startsAtLabel": "Beginn",
         "endsAtLabel": "Ende",
         "datePlaceholder": "Datum wählen",
@@ -279,12 +282,12 @@
       },
       "cohort": {
         "intro": "Benennen Sie die Aufnahme- oder Jahrgangsgruppe innerhalb dieses Programms.",
-        "nameLabel": "Kohortenname",
-        "namePlaceholder": "z. B. Kohorte 2026",
+        "nameLabel": "Jahrgangsname",
+        "namePlaceholder": "z. B. Jahrgang 2026",
         "academicYearLabel": "Studienjahr"
       },
       "cohortOffering": {
-        "intro": "Legen Sie das Kalenderfenster für diese Kohorte fest.",
+        "intro": "Legen Sie das Kalenderfenster für diesen Jahrgang fest.",
         "addAnother": "Weiteres Angebot",
         "remove": "Entfernen",
         "startsAtLabel": "Beginn",
@@ -292,6 +295,39 @@
         "datePlaceholder": "Datum wählen",
         "statusActive": "Aktiv",
         "statusDraft": "Entwurf"
+      },
+      "summary": {
+        "intro": "Prüfen Sie alle Angaben, bevor die Fakultätsstruktur angelegt wird.",
+        "rows": {
+          "faculty": "Fakultät",
+          "programme": "Programm",
+          "programmeDuration": "Programmdauer",
+          "progression": "Fortschreibung",
+          "cohort": "Jahrgang",
+          "cohortAcademicYear": "Jahrgang Studienjahr",
+          "classGroup": "Klassengruppe"
+        },
+        "columns": {
+          "index": "#",
+          "label": "Bezeichnung",
+          "status": "Status",
+          "startsAt": "Beginn",
+          "endsAt": "Ende"
+        },
+        "sections": {
+          "programmeOfferings": "Programmangebote",
+          "cohortOfferings": "Jahrgangsangebote",
+          "classGroupOfferings": "Klassengruppenangebote"
+        },
+        "labels": {
+          "offeringNumber": "Angebot {{count}}"
+        }
+      },
+      "submit": {
+        "missingInstitution": "Für Ihr Konto konnte keine Institution geladen werden.",
+        "successTitle": "Fakultät angelegt",
+        "successDescription": "{{facultyName}} und die zugehörige Struktur wurden erfolgreich angelegt.",
+        "errorFallback": "Fakultätsstruktur konnte nicht angelegt werden"
       },
       "classGroup": {
         "intro": "Benennen Sie die Klasse, der Lernende zugewiesen werden.",
@@ -321,12 +357,12 @@
         "description": "Ein Ausbildungsgang innerhalb einer Fakultät, der festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
       },
       "cohort": {
-        "title": "Kohorte / Jahrgang",
-        "description": "Eine Aufnahme- oder Jahrgangsgruppe innerhalb eines Programms (zum Beispiel „Kohorte 2026“), die nach Abschluss meist archiviert wird."
+        "title": "Jahrgang",
+        "description": "Eine Aufnahme- oder Jahrgangsgruppe innerhalb eines Programms (zum Beispiel „Jahrgang 2026“), die nach Abschluss meist archiviert wird."
       },
       "classGroup": {
         "title": "Klassengruppe",
-        "description": "Eine konkrete Klasse innerhalb einer Kohorte, die die reale Lerngruppe abbildet (zum Beispiel „WIB2-A“)."
+        "description": "Eine konkrete Klasse innerhalb eines Jahrgangs, die die reale Lerngruppe abbildet (zum Beispiel „WIB2-A“)."
       },
       "classroom": {
         "title": "Kursraum / Classroom",

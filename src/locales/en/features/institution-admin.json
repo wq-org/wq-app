@@ -233,12 +233,14 @@
         "cohort": "Cohort",
         "cohortOffering": "Cohort Offering",
         "classGroup": "Class Group",
-        "classGroupOffering": "Class Group Offering"
+        "classGroupOffering": "Class Group Offering",
+        "summary": "Summary"
       },
       "actions": {
         "previous": "Previous",
         "next": "Next",
-        "finish": "Create faculty"
+        "finish": "Create faculty",
+        "finishing": "Creating..."
       },
       "fields": {
         "nameLabel": "Name",
@@ -269,6 +271,7 @@
         "termCodePlaceholder": "e.g. 2026S1",
         "statusActive": "Active",
         "statusDraft": "Draft",
+        "statusArchived": "Archived",
         "startsAtLabel": "Starts",
         "endsAtLabel": "Ends",
         "datePlaceholder": "Pick a date",
@@ -292,6 +295,39 @@
         "datePlaceholder": "Pick a date",
         "statusActive": "Active",
         "statusDraft": "Draft"
+      },
+      "summary": {
+        "intro": "Review all configured entries before creating this faculty structure.",
+        "rows": {
+          "faculty": "Faculty",
+          "programme": "Programme",
+          "programmeDuration": "Programme duration",
+          "progression": "Progression",
+          "cohort": "Cohort",
+          "cohortAcademicYear": "Cohort academic year",
+          "classGroup": "Class group"
+        },
+        "columns": {
+          "index": "#",
+          "label": "Label",
+          "status": "Status",
+          "startsAt": "Start",
+          "endsAt": "End"
+        },
+        "sections": {
+          "programmeOfferings": "Programme offerings",
+          "cohortOfferings": "Cohort offerings",
+          "classGroupOfferings": "Class group offerings"
+        },
+        "labels": {
+          "offeringNumber": "Offering {{count}}"
+        }
+      },
+      "submit": {
+        "missingInstitution": "No institution context loaded for your account.",
+        "successTitle": "Faculty created",
+        "successDescription": "{{facultyName}} and its structure were created successfully.",
+        "errorFallback": "Could not create faculty structure"
       },
       "classGroup": {
         "intro": "Name the class that learners will be assigned to.",

@@ -102,13 +102,15 @@ export function ProgrammeOfferingStep({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.offering.academicYearLabel')}</Label>
-              <YearSelectPopover
-                label={t('faculties.wizard.offering.academicYearLabel')}
-                value={row.academicYear}
-                years={academicYearsOffering}
-                onChange={(y) => onUpdateOffering(row.id, { academicYear: y })}
-                className="w-full"
-              />
+              <div className="self-start">
+                <YearSelectPopover
+                  label={t('faculties.wizard.offering.academicYearLabel')}
+                  value={row.academicYear}
+                  years={academicYearsOffering}
+                  onChange={(y) => onUpdateOffering(row.id, { academicYear: y })}
+                  className="w-auto"
+                />
+              </div>
             </div>
 
             <FieldInput

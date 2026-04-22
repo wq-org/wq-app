@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
 import { useTranslation } from 'react-i18next'
+import { format } from 'date-fns'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { StepperProgressBarTitles } from '@/components/shared'
+import { useUser } from '@/contexts/user'
 import type { ProgrammeProgressionType } from '../types/programme.types'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
@@ -18,6 +21,8 @@ import { CohortStep } from '../components/CohortStep'
 import { CohortOfferingStep } from '../components/CohortOfferingStep'
 import { ClassGroupStep } from '../components/ClassGroupStep'
 import { ClassGroupOfferingStep } from '../components/ClassGroupOfferingStep'
+import { FacultyStructureSummaryStep } from '../components/FacultyStructureSummaryStep'
+import { createFacultyStructure } from '../api/facultyStructureApi'
 import { suggestTermCode } from '../utils/termCode'
 
 type BaseOfferingDraft = {
@@ -30,7 +35,7 @@ function createBaseOffering(): BaseOfferingDraft {
   return { id: crypto.randomUUID(), status: 'draft', dateRange: undefined }
 }
 
-const WIZARD_STEP_COUNT = 7
+const WIZARD_STEP_COUNT = 8
 
 type OfferingDraft = {
   id: string
@@ -53,8 +58,10 @@ function createEmptyOffering(): OfferingDraft {
 
 export function InstitutionFacultiesCreate() {
   const { t } = useTranslation('features.institution-admin')
+  const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const [wizardStep, setWizardStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [facultyName, setFacultyName] = useState('')
   const [facultyDescription, setFacultyDescription] = useState('')
@@ -93,6 +100,7 @@ export function InstitutionFacultiesCreate() {
         { title: t('faculties.wizard.steps.cohortOffering') },
         { title: t('faculties.wizard.steps.classGroup') },
         { title: t('faculties.wizard.steps.classGroupOffering') },
+        { title: t('faculties.wizard.steps.summary') },
       ] as const,
     [t],
   )
@@ -109,8 +117,97 @@ export function InstitutionFacultiesCreate() {
     setWizardStep((prev) => Math.min(WIZARD_STEP_COUNT, prev + 1))
   }
 
-  function handleFinish() {
-    // Submit / API wiring later
+  function formatDateRangeLabel(dateRange: DateRange | undefined): string {
+    const from = dateRange?.from ? format(dateRange.from, 'MMM d, yyyy') : '—'
+    const to = dateRange?.to ? format(dateRange.to, 'MMM d, yyyy') : '—'
+    return `${from} - ${to}`
+  }
+
+  function formatStatusLabel(status: ProgrammeOfferingStatus): string {
+    if (status === 'active') return t('faculties.wizard.offering.statusActive')
+    if (status === 'draft') return t('faculties.wizard.offering.statusDraft')
+    return t('faculties.wizard.offering.statusArchived')
+  }
+
+  const programmeOfferingBreadcrumb = useMemo(() => {
+    const first = offerings[0]
+    if (!first) return ''
+    const code = first.termCode?.trim() || String(first.academicYear)
+    return `${code} · ${formatDateRangeLabel(first.dateRange)}`
+  }, [offerings])
+
+  const cohortOfferingBreadcrumb = useMemo(() => {
+    const first = cohortOfferings[0]
+    if (!first) return ''
+    return formatDateRangeLabel(first.dateRange)
+  }, [cohortOfferings])
+
+  const classGroupOfferingBreadcrumb = useMemo(() => {
+    const first = classGroupOfferings[0]
+    if (!first) return ''
+    return formatDateRangeLabel(first.dateRange)
+  }, [classGroupOfferings])
+
+  async function handleFinish() {
+    const institutionId = getUserInstitutionId()
+
+    if (!institutionId) {
+      toast.error(t('faculties.wizard.submit.missingInstitution'))
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      await createFacultyStructure({
+        institutionId,
+        faculty: {
+          name: facultyName,
+          description: facultyDescription.trim() || null,
+        },
+        programme: {
+          name: programmeName,
+          description: programmeDescription.trim() || null,
+          durationYears,
+          progressionType,
+        },
+        programmeOfferings: offerings.map((offering) => ({
+          academicYear: offering.academicYear,
+          termCode: offering.termCode.trim() || null,
+          status: offering.status,
+          dateRange: offering.dateRange,
+        })),
+        cohort: {
+          name: cohortName,
+          description: null,
+          academicYear: cohortAcademicYear,
+        },
+        cohortOfferings: cohortOfferings.map((offering) => ({
+          status: offering.status,
+          dateRange: offering.dateRange,
+        })),
+        classGroup: {
+          name: classGroupName,
+          description: classGroupDescription.trim() || null,
+        },
+        classGroupOfferings: classGroupOfferings.map((offering) => ({
+          status: offering.status,
+          dateRange: offering.dateRange,
+        })),
+      })
+
+      toast.success(t('faculties.wizard.submit.successTitle'), {
+        description: t('faculties.wizard.submit.successDescription', {
+          facultyName: facultyName.trim() || t('faculties.card.untitled'),
+        }),
+      })
+      navigate('/institution_admin/faculties')
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t('faculties.wizard.submit.errorFallback'),
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   function updateOffering(id: string, patch: Partial<OfferingDraft>) {
@@ -158,14 +255,31 @@ export function InstitutionFacultiesCreate() {
     setClassGroupOfferings((rows) => (rows.length <= 1 ? rows : rows.filter((r) => r.id !== id)))
   }
 
-  const breadcrumbChain = useMemo(
-    () => [facultyName, programmeName, cohortName, classGroupName],
-    [facultyName, programmeName, cohortName, classGroupName],
+  const breadcrumbValues = useMemo(
+    () => [
+      facultyName.trim(),
+      programmeName.trim(),
+      programmeOfferingBreadcrumb,
+      cohortName.trim(),
+      cohortOfferingBreadcrumb,
+      classGroupName.trim(),
+      classGroupOfferingBreadcrumb,
+      t('faculties.wizard.steps.summary'),
+    ],
+    [
+      facultyName,
+      programmeName,
+      programmeOfferingBreadcrumb,
+      cohortName,
+      cohortOfferingBreadcrumb,
+      classGroupName,
+      classGroupOfferingBreadcrumb,
+      t,
+    ],
   )
 
   const renderWizardStep = (_step: { title: string }, index: number) => {
-    // Show the chain of names defined in prior steps (skip empty values)
-    const priorItems = breadcrumbChain.slice(0, index).filter(Boolean)
+    const priorItems = breadcrumbValues.slice(0, index).filter(Boolean)
 
     let stepContent: ReactNode
 
@@ -254,6 +368,75 @@ export function InstitutionFacultiesCreate() {
         )
         break
 
+      case 7:
+        stepContent = (
+          <FacultyStructureSummaryStep
+            intro={t('faculties.wizard.summary.intro')}
+            rows={[
+              { label: t('faculties.wizard.summary.rows.faculty'), value: facultyName || '—' },
+              { label: t('faculties.wizard.summary.rows.programme'), value: programmeName || '—' },
+              {
+                label: t('faculties.wizard.summary.rows.programmeDuration'),
+                value: t('faculties.wizard.programme.durationValue', { count: durationYears }),
+              },
+              {
+                label: t('faculties.wizard.summary.rows.progression'),
+                value: t(`faculties.wizard.programme.progression.${progressionType}`),
+              },
+              { label: t('faculties.wizard.summary.rows.cohort'), value: cohortName || '—' },
+              {
+                label: t('faculties.wizard.summary.rows.cohortAcademicYear'),
+                value: String(cohortAcademicYear),
+              },
+              {
+                label: t('faculties.wizard.summary.rows.classGroup'),
+                value: classGroupName || '—',
+              },
+            ]}
+            columns={{
+              index: t('faculties.wizard.summary.columns.index'),
+              label: t('faculties.wizard.summary.columns.label'),
+              status: t('faculties.wizard.summary.columns.status'),
+              startsAt: t('faculties.wizard.summary.columns.startsAt'),
+              endsAt: t('faculties.wizard.summary.columns.endsAt'),
+            }}
+            sectionTitles={{
+              programmeOfferings: t('faculties.wizard.summary.sections.programmeOfferings'),
+              cohortOfferings: t('faculties.wizard.summary.sections.cohortOfferings'),
+              classGroupOfferings: t('faculties.wizard.summary.sections.classGroupOfferings'),
+            }}
+            programmeOfferings={offerings.map((offering) => ({
+              label: offering.termCode || String(offering.academicYear),
+              status: formatStatusLabel(offering.status),
+              startsAt: offering.dateRange?.from
+                ? format(offering.dateRange.from, 'MMM d, yyyy')
+                : '—',
+              endsAt: offering.dateRange?.to ? format(offering.dateRange.to, 'MMM d, yyyy') : '—',
+            }))}
+            cohortOfferings={cohortOfferings.map((offering, offeringIndex) => ({
+              label: t('faculties.wizard.summary.labels.offeringNumber', {
+                count: offeringIndex + 1,
+              }),
+              status: formatStatusLabel(offering.status),
+              startsAt: offering.dateRange?.from
+                ? format(offering.dateRange.from, 'MMM d, yyyy')
+                : '—',
+              endsAt: offering.dateRange?.to ? format(offering.dateRange.to, 'MMM d, yyyy') : '—',
+            }))}
+            classGroupOfferings={classGroupOfferings.map((offering, offeringIndex) => ({
+              label: t('faculties.wizard.summary.labels.offeringNumber', {
+                count: offeringIndex + 1,
+              }),
+              status: formatStatusLabel(offering.status),
+              startsAt: offering.dateRange?.from
+                ? format(offering.dateRange.from, 'MMM d, yyyy')
+                : '—',
+              endsAt: offering.dateRange?.to ? format(offering.dateRange.to, 'MMM d, yyyy') : '—',
+            }))}
+          />
+        )
+        break
+
       default:
         return null
     }
@@ -330,8 +513,11 @@ export function InstitutionFacultiesCreate() {
                 type="button"
                 variant="darkblue"
                 onClick={handleFinish}
+                disabled={isSubmitting}
               >
-                {t('faculties.wizard.actions.finish')}
+                {isSubmitting
+                  ? t('faculties.wizard.actions.finishing')
+                  : t('faculties.wizard.actions.finish')}
               </Button>
             )}
           </div>
