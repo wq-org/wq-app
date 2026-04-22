@@ -14,6 +14,7 @@ import { USER_ROLES, type UserRole } from '@/features/auth'
 import type { AvatarOption } from '@/features/onboarding'
 import { SettingsAvatarSection } from './SettingsAvatarSection'
 import { SettingsReadonlyFields } from './SettingsReadonlyFields'
+import { SettingsAppearanceSection } from './SettingsAppearanceSection'
 
 type SettingsProfileFormProps = {
   role: UserRole
@@ -158,6 +159,8 @@ export function SettingsProfileForm({
           className="w-full md:min-w-[280px] md:flex-1"
         />
       </div>
+
+      <SettingsAppearanceSection />
 
       {showAccentPicker ? (
         <FieldCard className="w-full">

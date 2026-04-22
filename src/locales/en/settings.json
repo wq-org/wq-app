@@ -1,6 +1,13 @@
 {
   "appearance": {
-    "accentColor": "Accent color"
+    "accentColor": "Accent color",
+    "modeTitle": "Appearance",
+    "modeHint": "Choose how the interface looks. System follows your OS setting.",
+    "mode": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
   },
   "profile": {
     "roles": {

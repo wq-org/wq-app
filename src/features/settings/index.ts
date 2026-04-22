@@ -1,3 +1,4 @@
+export { SettingsAppearanceSection } from './components/SettingsAppearanceSection'
 export { SettingsAvatarSection } from './components/SettingsAvatarSection'
 export { SettingsLoadingState } from './components/SettingsLoadingState'
 export { SettingsProfileForm } from './components/SettingsProfileForm'

@@ -1,6 +1,13 @@
 {
   "appearance": {
-    "accentColor": "Akzentfarbe"
+    "accentColor": "Akzentfarbe",
+    "modeTitle": "Darstellung",
+    "modeHint": "Lege fest, wie die Oberfläche aussieht. System übernimmt die Einstellung deines Betriebssystems.",
+    "mode": {
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    }
   },
   "profile": {
     "roles": {

@@ -1,7 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react'
 import { isAccentId, type AccentId } from '@/lib/themes'
 
-export type ColorMode = 'light' | 'dark'
+export type ColorMode = 'light' | 'dark' | 'system'
 export type ThemeAccent = AccentId | 'default'
 type ThemeScope = 'app' | 'public'
 
@@ -26,7 +26,16 @@ let themeSnapshot: ThemeSnapshot = {
 }
 
 function isColorMode(value: string | null): value is ColorMode {
-  return value === 'light' || value === 'dark'
+  return value === 'light' || value === 'dark' || value === 'system'
+}
+
+function resolveIsDark(mode: ColorMode): boolean {
+  if (mode === 'dark') return true
+  if (mode === 'light') return false
+  // system: honour OS preference
+  return typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+    : false
 }
 
 function readStoredAccent(): ThemeAccent {
@@ -75,7 +84,7 @@ function applyThemeToDocument(snapshot: ThemeSnapshot) {
     root.dataset.accent = appliedAccent
   }
 
-  root.classList.toggle('dark', snapshot.mode === 'dark')
+  root.classList.toggle('dark', resolveIsDark(snapshot.mode))
 }
 
 function emitThemeChange() {
@@ -116,6 +125,16 @@ if (typeof window !== 'undefined') {
     mode: readStoredMode(),
     scope: DEFAULT_SCOPE,
   }
+  // Apply stored theme immediately so it is in sync with the inline script in index.html
+  applyThemeToDocument(themeSnapshot)
+
+  // Keep dark class in sync when OS preference changes and user chose "system"
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (themeSnapshot.mode === 'system') {
+      applyThemeToDocument(themeSnapshot)
+      emitThemeChange()
+    }
+  })
 }
 
 export function useTheme() {

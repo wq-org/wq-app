@@ -21,6 +21,18 @@
         <meta name="theme-color" content="#000000" />
 
         <title>WQ Teach and learn the way you imagine it</title>
+    <!-- Runs before React to prevent dark-mode flash on reload -->
+    <script>
+      (function () {
+        try {
+          var mode = localStorage.getItem('wq:mode')
+          var isDark =
+            mode === 'dark' ||
+            (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          if (isDark) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
     </head>
     <body>
         <div id="root"></div>
