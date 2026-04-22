@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { addDays, format } from 'date-fns'
+import { type ComponentProps, useState } from 'react'
+import { addDays, addMonths, format } from 'date-fns'
 import { ChevronDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -24,11 +24,13 @@ const MONTHS = [
 ]
 
 const PRESETS = [
-  { label: 'Today', days: 0 },
-  { label: 'Tomorrow', days: 1 },
-  { label: 'In 3 days', days: 3 },
-  { label: 'In a week', days: 7 },
-  { label: 'In 2 weeks', days: 14 },
+  { label: 'Today', getDate: () => addDays(new Date(), 0) },
+  { label: 'Tomorrow', getDate: () => addDays(new Date(), 1) },
+  { label: 'In 3 days', getDate: () => addDays(new Date(), 3) },
+  { label: 'In a week', getDate: () => addDays(new Date(), 7) },
+  { label: 'In 2 weeks', getDate: () => addDays(new Date(), 14) },
+  { label: 'In 3 months', getDate: () => addMonths(new Date(), 3) },
+  { label: 'In 6 months', getDate: () => addMonths(new Date(), 6) },
 ]
 
 const currentYear = new Date().getFullYear()
@@ -37,10 +39,16 @@ const YEARS = Array.from({ length: 21 }, (_, i) => currentYear - 5 + i)
 type CalendarWithPresetsProps = {
   value: Date | undefined
   onChange: (date: Date | undefined) => void
+  disabled?: ComponentProps<typeof Calendar>['disabled']
   className?: string
 }
 
-export function CalendarWithPresets({ value, onChange, className }: CalendarWithPresetsProps) {
+export function CalendarWithPresets({
+  value,
+  onChange,
+  disabled,
+  className,
+}: CalendarWithPresetsProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(
     value ?? new Date(currentYear, new Date().getMonth(), 1),
   )
@@ -145,6 +153,7 @@ export function CalendarWithPresets({ value, onChange, className }: CalendarWith
         mode="single"
         selected={value}
         onSelect={onChange}
+        disabled={disabled}
         month={currentMonth}
         onMonthChange={setCurrentMonth}
         fixedWeeks
@@ -156,12 +165,12 @@ export function CalendarWithPresets({ value, onChange, className }: CalendarWith
       <div className="flex flex-wrap w-65 gap-1.5 border-t pt-3 mt-1 px-2 pb-2">
         {PRESETS.map((preset) => (
           <Button
-            key={preset.days}
+            key={preset.label}
             type="button"
             variant="outline"
             size="sm"
             className="text-xs"
-            onClick={() => goToDate(addDays(new Date(), preset.days))}
+            onClick={() => goToDate(preset.getDate())}
           >
             {preset.label}
           </Button>

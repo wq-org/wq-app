@@ -90,7 +90,13 @@ export function CohortOfferingStep({
                     value={row.dateRange?.from}
                     onChange={(date) =>
                       onUpdateOffering(row.id, {
-                        dateRange: { from: date, to: row.dateRange?.to },
+                        dateRange: {
+                          from: date,
+                          to:
+                            date && row.dateRange?.to && row.dateRange.to < date
+                              ? undefined
+                              : row.dateRange?.to,
+                        },
                       })
                     }
                   />
@@ -123,6 +129,7 @@ export function CohortOfferingStep({
                 >
                   <CalendarWithPresets
                     value={row.dateRange?.to}
+                    disabled={row.dateRange?.from ? { before: row.dateRange.from } : undefined}
                     onChange={(date) =>
                       onUpdateOffering(row.id, {
                         dateRange: { from: row.dateRange?.from, to: date },

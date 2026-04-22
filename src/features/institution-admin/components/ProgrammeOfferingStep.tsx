@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { format } from 'date-fns'
+import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
 
@@ -32,6 +33,33 @@ type ProgrammeOfferingStepProps = {
   durationYears?: number
 }
 
+const END_DATE_PRESET_OFFSETS = [
+  { kind: 'days' as const, value: 0 },
+  { kind: 'days' as const, value: 1 },
+  { kind: 'days' as const, value: 3 },
+  { kind: 'days' as const, value: 7 },
+  { kind: 'days' as const, value: 14 },
+  { kind: 'months' as const, value: 3 },
+  { kind: 'months' as const, value: 6 },
+]
+
+const getDateWithOffset = (baseDate: Date, offset: (typeof END_DATE_PRESET_OFFSETS)[number]) =>
+  offset.kind === 'days' ? addDays(baseDate, offset.value) : addMonths(baseDate, offset.value)
+
+const mapEndDatePresetToStartDate = (
+  selectedDate: Date | undefined,
+  startDate: Date | undefined,
+) => {
+  if (!selectedDate || !startDate) return selectedDate
+
+  const today = new Date()
+  const matchedOffset = END_DATE_PRESET_OFFSETS.find((offset) =>
+    isSameDay(selectedDate, getDateWithOffset(today, offset)),
+  )
+
+  return matchedOffset ? getDateWithOffset(startDate, matchedOffset) : selectedDate
+}
+
 export function ProgrammeOfferingStep({
   offerings,
   onUpdateOffering,
@@ -40,6 +68,7 @@ export function ProgrammeOfferingStep({
 }: ProgrammeOfferingStepProps) {
   const { t } = useTranslation('features.institution-admin')
   const academicYearsOffering = yearRangeInclusive(1990, 2060)
+  const [openPopover, setOpenPopover] = useState<string | null>(null)
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -94,7 +123,10 @@ export function ProgrammeOfferingStep({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.offering.startsAtLabel')}</Label>
-              <Popover>
+              <Popover
+                open={openPopover === `${row.id}-from`}
+                onOpenChange={(open) => setOpenPopover(open ? `${row.id}-from` : null)}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -117,11 +149,18 @@ export function ProgrammeOfferingStep({
                 >
                   <CalendarWithPresets
                     value={row.dateRange?.from}
-                    onChange={(date) =>
+                    onChange={(date) => {
                       onUpdateOffering(row.id, {
-                        dateRange: { from: date, to: row.dateRange?.to },
+                        dateRange: {
+                          from: date,
+                          to:
+                            date && row.dateRange?.to && row.dateRange.to < date
+                              ? undefined
+                              : row.dateRange?.to,
+                        },
                       })
-                    }
+                      setOpenPopover(null)
+                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -129,7 +168,10 @@ export function ProgrammeOfferingStep({
 
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.offering.endsAtLabel')}</Label>
-              <Popover>
+              <Popover
+                open={openPopover === `${row.id}-to`}
+                onOpenChange={(open) => setOpenPopover(open ? `${row.id}-to` : null)}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -151,12 +193,15 @@ export function ProgrammeOfferingStep({
                   align="start"
                 >
                   <CalendarWithPresets
-                    value={row.dateRange?.to}
-                    onChange={(date) =>
+                    value={row.dateRange?.to ?? row.dateRange?.from ?? new Date()}
+                    disabled={row.dateRange?.from ? { before: row.dateRange.from } : undefined}
+                    onChange={(date) => {
+                      const resolvedEndDate = mapEndDatePresetToStartDate(date, row.dateRange?.from)
                       onUpdateOffering(row.id, {
-                        dateRange: { from: row.dateRange?.from, to: date },
+                        dateRange: { from: row.dateRange?.from, to: resolvedEndDate },
                       })
-                    }
+                      setOpenPopover(null)
+                    }}
                   />
                 </PopoverContent>
               </Popover>
