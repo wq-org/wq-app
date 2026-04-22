@@ -1,6 +1,21 @@
 import type { ProgrammeRecord } from '../types/programme.types'
 import { supabase } from '@/lib/supabase'
 
+export async function listProgrammesByInstitution(
+  institutionId: string,
+): Promise<readonly ProgrammeRecord[]> {
+  const { data, error } = await supabase
+    .from('programmes')
+    .select('*')
+    .eq('institution_id', institutionId)
+    .is('deleted_at', null)
+    .order('sort_order', { ascending: true })
+
+  if (error) throw new Error(error.message)
+
+  return (data ?? []) as ProgrammeRecord[]
+}
+
 export async function listProgrammesByFaculty(
   facultyId: string,
 ): Promise<readonly ProgrammeRecord[]> {

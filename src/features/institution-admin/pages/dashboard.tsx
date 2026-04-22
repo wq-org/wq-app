@@ -49,8 +49,8 @@ const InstitutionDashboard = () => {
 
   return (
     <InstitutionAdminWorkspaceShell>
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4">
+        <div className="flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-3">
           <h1 className="text-3xl font-bold tracking-tight">
             {greetingName
               ? t('dashboard.greeting', { name: greetingName })
@@ -58,7 +58,9 @@ const InstitutionDashboard = () => {
           </h1>
           <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
-        <StatsLinks items={stats} />
+        <div className="animate-in fade-in-0 slide-in-from-bottom-2">
+          <StatsLinks items={stats} />
+        </div>
       </div>
     </InstitutionAdminWorkspaceShell>
   )

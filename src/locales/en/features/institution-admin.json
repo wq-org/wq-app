@@ -211,7 +211,31 @@
       "programmes": {
         "title": "Programmes",
         "subtitle": "Study programmes attached to faculties in your institution.",
-        "empty": "Programme management UI is coming soon."
+        "searchLabel": "Search programmes",
+        "searchPlaceholder": "Search by programme name, description, or faculty…",
+        "loadError": "Could not load programmes.",
+        "emptyTitle": "No programmes yet",
+        "emptyDescription": "Create a faculty with a programme, or add a programme from a faculty page.",
+        "noSearchResults": "No programmes match your search.",
+        "card": {
+          "unknownFaculty": "Unknown faculty",
+          "untitledProgramme": "Untitled programme",
+          "noDescription": "No description",
+          "durationUnknown": "Duration not set",
+          "open": "Open"
+        }
+      },
+      "facultyProgrammes": {
+        "noFacultyDescription": "No description provided for this faculty.",
+        "missingFacultyId": "Missing faculty identifier.",
+        "facultyNotFound": "This faculty could not be found.",
+        "loadError": "Could not load faculty programmes.",
+        "emptyTitle": "No programmes in this faculty yet",
+        "emptyDescription": "Add a programme to start building cohorts and class groups.",
+        "addProgramme": "Add programme",
+        "searchLabel": "Search programmes",
+        "searchPlaceholder": "Search by programme name or description…",
+        "noSearchResults": "No programmes match your search."
       },
       "cohorts": {
         "title": "Cohorts",
@@ -396,7 +420,13 @@
         "missingInstitution": "No institution context loaded for your account.",
         "successTitle": "Faculty created",
         "successDescription": "{{facultyName}} and its structure were created successfully.",
+        "successAppendTitle": "Programme structure created",
+        "successAppendDescription": "New programme and related structure were added for {{facultyName}}.",
         "errorFallback": "Could not create faculty structure"
+      },
+      "prefill": {
+        "facultyNotFound": "That faculty does not exist or you cannot access it.",
+        "loadFailed": "Could not load faculty details."
       },
       "classGroup": {
         "intro": "Name the class that learners will be assigned to.",

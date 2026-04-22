@@ -9,6 +9,7 @@ export { InstitutionInviteUsers as InstitutionAdminInviteUsersPage } from './pag
 export { InstitutionFaculties as InstitutionAdminFacultiesPage } from './pages/faculties'
 export { InstitutionFacultiesCreate as InstitutionAdminFacultiesCreatePage } from './pages/faculties-create'
 export { InstitutionFacultiesProgrammes as InstitutionAdminFacultiesProgrammesPage } from './pages/faculties-programmes'
+export { InstitutionFacultyProgrammes as InstitutionAdminFacultyProgrammesPage } from './pages/faculty-programmes'
 export { InstitutionFacultiesCohorts as InstitutionAdminFacultiesCohortsPage } from './pages/faculties-cohorts'
 export { InstitutionFacultiesClassGroups as InstitutionAdminFacultiesClassGroupsPage } from './pages/faculties-class-groups'
 export { InstitutionClassrooms as InstitutionAdminClassroomsPage } from './pages/classrooms'
@@ -23,3 +24,5 @@ export { InstitutionAuditLogs as InstitutionAdminAuditLogsPage } from './pages/a
 export { AdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
 export { FacultyCard } from './components/FacultyCard'
 export { FacultyCardList } from './components/FacultyCardList'
+export { FacultyProgrammeCard } from './components/FacultyProgrammeCard'
+export { FacultyProgrammeCardList } from './components/FacultyProgrammeCardList'

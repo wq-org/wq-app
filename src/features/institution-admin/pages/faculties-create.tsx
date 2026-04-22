@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +22,11 @@ import { CohortOfferingStep } from '../components/CohortOfferingStep'
 import { ClassGroupStep } from '../components/ClassGroupStep'
 import { ClassGroupOfferingStep } from '../components/ClassGroupOfferingStep'
 import { FacultyStructureSummaryStep } from '../components/FacultyStructureSummaryStep'
-import { createFacultyStructure } from '../api/facultyStructureApi'
+import {
+  appendProgrammeStructureToExistingFaculty,
+  createFacultyStructure,
+} from '../api/facultyStructureApi'
+import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { suggestTermCode } from '../utils/termCode'
 
 type BaseOfferingDraft = {
@@ -60,8 +64,10 @@ export function InstitutionFacultiesCreate() {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [wizardStep, setWizardStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [existingFacultyId, setExistingFacultyId] = useState<string | null>(null)
 
   const [facultyName, setFacultyName] = useState('')
   const [facultyDescription, setFacultyDescription] = useState('')
@@ -105,11 +111,52 @@ export function InstitutionFacultiesCreate() {
     [t],
   )
 
+  useEffect(() => {
+    const facultyIdParam = searchParams.get('facultyId')
+    const institutionId = getUserInstitutionId()
+    if (!facultyIdParam || !institutionId) {
+      return
+    }
+
+    let cancelled = false
+
+    void (async () => {
+      try {
+        const faculties = await listFacultiesByInstitution(institutionId)
+        const match = faculties.find((f) => f.id === facultyIdParam)
+        if (cancelled) {
+          return
+        }
+        if (!match) {
+          toast.error(t('faculties.wizard.prefill.facultyNotFound'))
+          navigate('/institution_admin/faculties')
+          return
+        }
+        setExistingFacultyId(match.id)
+        setFacultyName(match.name ?? '')
+        setFacultyDescription(match.description ?? '')
+        setWizardStep(2)
+      } catch {
+        if (!cancelled) {
+          toast.error(t('faculties.wizard.prefill.loadFailed'))
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [searchParams, getUserInstitutionId, navigate, t])
+
   const handleBackToFaculties = () => {
     navigate('/institution_admin/faculties')
   }
 
   function handleWizardPrevious() {
+    if (existingFacultyId && wizardStep === 2) {
+      navigate(`/institution_admin/faculties/${existingFacultyId}/programmes`)
+      return
+    }
     setWizardStep((prev) => Math.max(1, prev - 1))
   }
 
@@ -156,51 +203,68 @@ export function InstitutionFacultiesCreate() {
       return
     }
 
+    const sharedPayload = {
+      programme: {
+        name: programmeName,
+        description: programmeDescription.trim() || null,
+        durationYears,
+        progressionType,
+      },
+      programmeOfferings: offerings.map((offering) => ({
+        academicYear: offering.academicYear,
+        termCode: offering.termCode.trim() || null,
+        status: offering.status,
+        dateRange: offering.dateRange,
+      })),
+      cohort: {
+        name: cohortName,
+        description: null,
+        academicYear: cohortAcademicYear,
+      },
+      cohortOfferings: cohortOfferings.map((offering) => ({
+        status: offering.status,
+        dateRange: offering.dateRange,
+      })),
+      classGroup: {
+        name: classGroupName,
+        description: classGroupDescription.trim() || null,
+      },
+      classGroupOfferings: classGroupOfferings.map((offering) => ({
+        status: offering.status,
+        dateRange: offering.dateRange,
+      })),
+    }
+
     setIsSubmitting(true)
     try {
-      await createFacultyStructure({
-        institutionId,
-        faculty: {
-          name: facultyName,
-          description: facultyDescription.trim() || null,
-        },
-        programme: {
-          name: programmeName,
-          description: programmeDescription.trim() || null,
-          durationYears,
-          progressionType,
-        },
-        programmeOfferings: offerings.map((offering) => ({
-          academicYear: offering.academicYear,
-          termCode: offering.termCode.trim() || null,
-          status: offering.status,
-          dateRange: offering.dateRange,
-        })),
-        cohort: {
-          name: cohortName,
-          description: null,
-          academicYear: cohortAcademicYear,
-        },
-        cohortOfferings: cohortOfferings.map((offering) => ({
-          status: offering.status,
-          dateRange: offering.dateRange,
-        })),
-        classGroup: {
-          name: classGroupName,
-          description: classGroupDescription.trim() || null,
-        },
-        classGroupOfferings: classGroupOfferings.map((offering) => ({
-          status: offering.status,
-          dateRange: offering.dateRange,
-        })),
-      })
-
-      toast.success(t('faculties.wizard.submit.successTitle'), {
-        description: t('faculties.wizard.submit.successDescription', {
-          facultyName: facultyName.trim() || t('faculties.card.untitled'),
-        }),
-      })
-      navigate('/institution_admin/faculties')
+      if (existingFacultyId) {
+        await appendProgrammeStructureToExistingFaculty({
+          institutionId,
+          facultyId: existingFacultyId,
+          ...sharedPayload,
+        })
+        toast.success(t('faculties.wizard.submit.successAppendTitle'), {
+          description: t('faculties.wizard.submit.successAppendDescription', {
+            facultyName: facultyName.trim() || t('faculties.card.untitled'),
+          }),
+        })
+        navigate(`/institution_admin/faculties/${existingFacultyId}/programmes`)
+      } else {
+        await createFacultyStructure({
+          institutionId,
+          faculty: {
+            name: facultyName,
+            description: facultyDescription.trim() || null,
+          },
+          ...sharedPayload,
+        })
+        toast.success(t('faculties.wizard.submit.successTitle'), {
+          description: t('faculties.wizard.submit.successDescription', {
+            facultyName: facultyName.trim() || t('faculties.card.untitled'),
+          }),
+        })
+        navigate('/institution_admin/faculties')
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : t('faculties.wizard.submit.errorFallback'),
@@ -291,6 +355,7 @@ export function InstitutionFacultiesCreate() {
             onNameChange={setFacultyName}
             description={facultyDescription}
             onDescriptionChange={setFacultyDescription}
+            readOnly={Boolean(existingFacultyId)}
           />
         )
         break

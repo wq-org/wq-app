@@ -6,7 +6,7 @@
     "inviteUsers": "Benutzer einladen",
     "faculties": "Fakultäten",
     "facultyCreate": "Fakultät anlegen",
-    "facultyProgrammes": "Studiengänge",
+    "facultyProgrammes": "Programme",
     "facultyCohorts": "Jahrgänge",
     "facultyClassGroups": "Klassengruppen",
     "classrooms": "Klassenräume",
@@ -209,9 +209,33 @@
     },
     "pages": {
       "programmes": {
-        "title": "Studiengänge",
-        "subtitle": "Studiengänge und Programme an Ihren Fakultäten.",
-        "empty": "Die Verwaltung der Studiengänge folgt in Kürze."
+        "title": "Programme",
+        "subtitle": "Programme an den Fakultäten Ihrer Institution.",
+        "searchLabel": "Programme durchsuchen",
+        "searchPlaceholder": "Suche nach Name, Beschreibung oder Fakultät…",
+        "loadError": "Programme konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Programme",
+        "emptyDescription": "Erstellen Sie eine Fakultät mit Programm oder fügen Sie über die Fakultät ein Programm hinzu.",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "card": {
+          "unknownFaculty": "Unbekannte Fakultät",
+          "untitledProgramme": "Programm ohne Titel",
+          "noDescription": "Keine Beschreibung",
+          "durationUnknown": "Dauer nicht angegeben",
+          "open": "Öffnen"
+        }
+      },
+      "facultyProgrammes": {
+        "noFacultyDescription": "Für diese Fakultät liegt keine Beschreibung vor.",
+        "missingFacultyId": "Fakultätskennung fehlt.",
+        "facultyNotFound": "Diese Fakultät wurde nicht gefunden.",
+        "loadError": "Programme der Fakultät konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Programme in dieser Fakultät",
+        "emptyDescription": "Fügen Sie ein Programm hinzu, um Jahrgänge und Klassengruppen aufzubauen.",
+        "addProgramme": "Programm hinzufügen",
+        "searchLabel": "Programme durchsuchen",
+        "searchPlaceholder": "Suche nach Name oder Beschreibung…",
+        "noSearchResults": "Keine Treffer für diese Suche."
       },
       "cohorts": {
         "title": "Jahrgänge",
@@ -314,7 +338,7 @@
       "fields": {
         "nameLabel": "Name",
         "namePlaceholder": "z. B. Gesundheitswissenschaften",
-        "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Studiengänge, Schwerpunkte oder Zielgruppen.",
+        "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Programme, Schwerpunkte oder Zielgruppen.",
         "descriptionLabel": "Beschreibung (optional)",
         "descriptionPlaceholder": "z. B. Bachelor- und Masterprogramme in Pflege, Public Health und verwandten Gesundheitsberufen."
       },
@@ -396,7 +420,13 @@
         "missingInstitution": "Für Ihr Konto konnte keine Institution geladen werden.",
         "successTitle": "Fakultät angelegt",
         "successDescription": "{{facultyName}} und die zugehörige Struktur wurden erfolgreich angelegt.",
+        "successAppendTitle": "Programmstruktur erstellt",
+        "successAppendDescription": "Neues Programm und zugehörige Struktur wurden für {{facultyName}} hinzugefügt.",
         "errorFallback": "Fakultätsstruktur konnte nicht angelegt werden"
+      },
+      "prefill": {
+        "facultyNotFound": "Diese Fakultät existiert nicht oder ist nicht zugänglich.",
+        "loadFailed": "Fakultätsdetails konnten nicht geladen werden."
       },
       "classGroup": {
         "intro": "Benennen Sie die Klasse, der Lernende zugewiesen werden.",
@@ -422,8 +452,8 @@
         "description": "Ein übergeordneter Bereich der Institution, der verwandte Programme bündelt (zum Beispiel Pflege oder Berufsausbildung)."
       },
       "programme": {
-        "title": "Studiengang / Programm",
-        "description": "Ein Ausbildungsgang innerhalb einer Fakultät, der festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
+        "title": "Programm",
+        "description": "Ein Programm innerhalb einer Fakultät, das festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
       },
       "cohort": {
         "title": "Jahrgang",

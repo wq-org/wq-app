@@ -10,6 +10,7 @@ type FacultyStepProps = {
   onNameChange: (value: string) => void
   description: string
   onDescriptionChange: (value: string) => void
+  readOnly?: boolean
 }
 
 export function FacultyStep({
@@ -17,6 +18,7 @@ export function FacultyStep({
   onNameChange,
   description,
   onDescriptionChange,
+  readOnly = false,
 }: FacultyStepProps) {
   const { t } = useTranslation('features.institution-admin')
 
@@ -44,6 +46,7 @@ export function FacultyStep({
           placeholder={t('faculties.wizard.fields.namePlaceholder')}
           value={name}
           onValueChange={onNameChange}
+          disabled={readOnly}
         />
         <FieldTextarea
           label={t('faculties.wizard.fields.descriptionLabel')}
@@ -51,6 +54,7 @@ export function FacultyStep({
           value={description}
           onValueChange={onDescriptionChange}
           rows={3}
+          readOnly={readOnly}
         />
       </FieldCard>
     </div>

@@ -52,8 +52,7 @@ const InstitutionFaculties = () => {
   }
 
   const handleOpenFaculty = (facultyId: string) => {
-    void facultyId
-    /* Placeholder until faculty detail route exists */
+    navigate(`/institution_admin/faculties/${facultyId}/programmes`)
   }
 
   useEffect(() => {
