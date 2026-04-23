@@ -5,7 +5,7 @@
     "users": "Benutzer",
     "inviteUsers": "Benutzer einladen",
     "faculties": "Fakultäten",
-    "facultyCreate": "Fakultät anlegen",
+    "facultyCreate": "Struktur anlegen",
     "facultyProgrammes": "Programme",
     "facultyCohorts": "Jahrgänge",
     "facultyClassGroups": "Klassengruppen",
@@ -198,8 +198,8 @@
   "faculties": {
     "title": "Fakultäten",
     "subtitle": "Organisieren Sie Bereiche und akademische Einheiten.",
-    "create": "Fakultät anlegen",
-    "createSubtitle": "Richten Sie eine neue oberste Organisationseinheit in wenigen Schritten ein.",
+    "create": "Struktur anlegen",
+    "createSubtitle": "Legen Sie Fakultät, Programme, Jahrgänge und Klassengruppen in wenigen Schritten an.",
     "empty": "Noch keine Fakultäten. Legen Sie eine an, um zu starten.",
     "card": {
       "untitled": "Fakultät ohne Titel",
@@ -332,7 +332,7 @@
       "actions": {
         "previous": "Zurück",
         "next": "Weiter",
-        "finish": "Fakultät anlegen",
+        "finish": "Struktur anlegen",
         "finishing": "Wird angelegt..."
       },
       "fields": {
@@ -360,8 +360,9 @@
       "offering": {
         "intro": "Legen Sie ein oder mehrere Programmangebote (Studienjahr / Terminfenster) fest. Die Speicherung folgt mit der API.",
         "academicYearLabel": "Studienjahr",
-        "termCodeLabel": "Termin-Code",
-        "termCodePlaceholder": "z. B. 2026S1",
+        "termCodeLabel": "Term-Code",
+        "termCodePlaceholder": "z. B. GVM-2026",
+        "termCodeHint": "Format: 1–6 Großbuchstaben, Bindestrich, 4-stellige Jahreszahl (z. B. GVM-2026)",
         "statusActive": "Aktiv",
         "statusDraft": "Entwurf",
         "statusArchived": "Archiviert",
@@ -418,7 +419,7 @@
       },
       "submit": {
         "missingInstitution": "Für Ihr Konto konnte keine Institution geladen werden.",
-        "successTitle": "Fakultät angelegt",
+        "successTitle": "Struktur angelegt",
         "successDescription": "{{facultyName}} und die zugehörige Struktur wurden erfolgreich angelegt.",
         "successAppendTitle": "Programmstruktur erstellt",
         "successAppendDescription": "Neues Programm und zugehörige Struktur wurden für {{facultyName}} hinzugefügt.",
@@ -430,6 +431,9 @@
       },
       "classGroup": {
         "intro": "Benennen Sie die Klasse, der Lernende zugewiesen werden.",
+        "suggestionsLabel": "Vorschläge basierend auf Ihrem Programm – klicken Sie zur Auswahl oder geben Sie unten einen eigenen Namen ein.",
+        "showMore": "Jahrgangsstufen 3 & 4 anzeigen",
+        "showLess": "Weniger anzeigen",
         "nameLabel": "Name der Klassengruppe",
         "namePlaceholder": "z. B. ML-3A",
         "descriptionLabel": "Beschreibung (optional)",

@@ -20,7 +20,8 @@
     "type-check": "tsc --noEmit",
     "db:psql": "psql \"postgresql://postgres:postgres@127.0.0.1:54322/postgres\"",
     "sb:f:s": "supabase functions serve --env-file supabase/.env.local",
-    "supabase:secrets:push": "supabase secrets set --env-file supabase/.env.local"
+    "supabase:secrets:push": "supabase secrets set --env-file supabase/.env.local",
+    "git:branch-origin": "node -e \"const { execSync } = require('node:child_process'); const run = (cmd) => execSync(cmd, { encoding: 'utf8' }).trim(); const exists = (ref) => { try { execSync('git rev-parse --verify ' + ref, { stdio: 'ignore' }); return true; } catch { return false; } }; const current = run('git branch --show-current'); const candidates = ['develop', 'development']; const dev = candidates.find((name) => exists(name) || exists('origin/' + name)); const devRef = dev ? (exists(dev) ? dev : 'origin/' + dev) : null; const mainRef = exists('main') ? 'main' : (exists('origin/main') ? 'origin/main' : null); if (!mainRef || !devRef) { console.log('Current branch: ' + current); console.log('Could not resolve both base branches (main and develop/development).'); process.exit(1); } const mbMain = run('git merge-base ' + current + ' ' + mainRef); const mbDev = run('git merge-base ' + current + ' ' + devRef); const tsMain = Number(run('git show -s --format=%ct ' + mbMain)); const tsDev = Number(run('git show -s --format=%ct ' + mbDev)); const source = tsDev >= tsMain ? devRef : mainRef; console.log('Current branch: ' + current); console.log('Likely based on: ' + source); console.log('merge-base(' + mainRef + '): ' + mbMain); console.log('merge-base(' + devRef + '): ' + mbDev);\""
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

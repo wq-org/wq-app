@@ -5,7 +5,7 @@
     "users": "Users",
     "inviteUsers": "Invite users",
     "faculties": "Faculties",
-    "facultyCreate": "Create faculty",
+    "facultyCreate": "Create structure",
     "facultyProgrammes": "Programmes",
     "facultyCohorts": "Cohorts",
     "facultyClassGroups": "Class groups",
@@ -198,8 +198,8 @@
   "faculties": {
     "title": "Faculties",
     "subtitle": "Organize departments and academic units.",
-    "create": "Create faculty",
-    "createSubtitle": "Set up a new top-level department in a few steps.",
+    "create": "Create structure",
+    "createSubtitle": "Set up faculty, programmes, cohorts, and class groups in a few guided steps.",
     "empty": "No faculties yet. Create one to get started.",
     "card": {
       "untitled": "Untitled faculty",
@@ -332,7 +332,7 @@
       "actions": {
         "previous": "Previous",
         "next": "Next",
-        "finish": "Create faculty",
+        "finish": "Create structure",
         "finishing": "Creating..."
       },
       "fields": {
@@ -361,7 +361,8 @@
         "intro": "Define one or more programme offerings (academic year / term window). Values are saved when API wiring is ready.",
         "academicYearLabel": "Academic year",
         "termCodeLabel": "Term code",
-        "termCodePlaceholder": "e.g. 2026S1",
+        "termCodePlaceholder": "e.g. GVM-2026",
+        "termCodeHint": "Format: 1–6 uppercase letters, dash, 4-digit year (e.g. GVM-2026)",
         "statusActive": "Active",
         "statusDraft": "Draft",
         "statusArchived": "Archived",
@@ -418,7 +419,7 @@
       },
       "submit": {
         "missingInstitution": "No institution context loaded for your account.",
-        "successTitle": "Faculty created",
+        "successTitle": "Structure created",
         "successDescription": "{{facultyName}} and its structure were created successfully.",
         "successAppendTitle": "Programme structure created",
         "successAppendDescription": "New programme and related structure were added for {{facultyName}}.",
@@ -430,6 +431,9 @@
       },
       "classGroup": {
         "intro": "Name the class that learners will be assigned to.",
+        "suggestionsLabel": "Suggestions based on your programme — click to select or type a custom name below.",
+        "showMore": "Show year groups 3 & 4",
+        "showLess": "Show less",
         "nameLabel": "Class group name",
         "namePlaceholder": "e.g. ML-3A",
         "descriptionLabel": "Description (optional)",

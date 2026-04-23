@@ -69,6 +69,8 @@ export const FieldTextarea = ({
   const generatedId = useId()
   const resolvedId = id ?? generatedId
   const [scrollTop, setScrollTop] = useState(0)
+  const [isTextareaHovered, setIsTextareaHovered] = useState(false)
+  const [isTextareaFocused, setIsTextareaFocused] = useState(false)
 
   const hasLimit = maxLengthProp !== undefined && maxLengthProp > 0
   const maxLength = hasLimit ? maxLengthProp! : 0
@@ -105,8 +107,13 @@ export const FieldTextarea = ({
 
   const textareaShared = cn(
     TEXTAREA_BODY,
-    'bg-transparent input-focus-border',
+    'bg-transparent',
     useHighlightOverlay && 'text-transparent caret-foreground [text-shadow:none]',
+  )
+
+  const separatorClassName = cn(
+    'transition-colors duration-200',
+    isTextareaFocused ? 'bg-black' : isTextareaHovered ? 'bg-gray-300' : undefined,
   )
 
   return (
@@ -147,6 +154,10 @@ export const FieldTextarea = ({
           value={value}
           onChange={readOnly ? undefined : handleChange}
           onScroll={useHighlightOverlay ? handleScroll : undefined}
+          onMouseEnter={() => setIsTextareaHovered(true)}
+          onMouseLeave={() => setIsTextareaHovered(false)}
+          onFocus={() => setIsTextareaFocused(true)}
+          onBlur={() => setIsTextareaFocused(false)}
           disabled={disabled && !readOnly}
           readOnly={readOnly}
         />
@@ -157,6 +168,7 @@ export const FieldTextarea = ({
           <Separator
             orientation="horizontal"
             decorative
+            className={separatorClassName}
           />
         ) : null}
         {showCounter && hasLimit ? (

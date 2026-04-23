@@ -56,6 +56,8 @@ export const ClearableInput = ({
 }: ClearableInputProps) => {
   const generatedId = useId()
   const inputId = id ?? generatedId
+  const [isInputHovered, setIsInputHovered] = useState(false)
+  const [isInputFocused, setIsInputFocused] = useState(false)
 
   const [internalValue, setInternalValue] = useState(defaultValue)
   const isControlled = value !== undefined
@@ -75,6 +77,11 @@ export const ClearableInput = ({
   const handleClear = () => {
     handleValueChange('')
   }
+
+  const separatorClassName = cn(
+    'transition-colors duration-200',
+    isInputFocused ? 'bg-black' : isInputHovered ? 'bg-gray-300' : undefined,
+  )
 
   return (
     <div className={cn('relative pb-2', className)}>
@@ -101,7 +108,7 @@ export const ClearableInput = ({
           value={inputValue}
           onChange={handleInputChange}
           className={cn(
-            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full py-2 min-h-16 pr-10 input-focus-border',
+            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full py-2 min-h-16 pr-10',
             showSearchIcon && `px-10`,
             inputClassName,
           )}
@@ -111,6 +118,10 @@ export const ClearableInput = ({
           disabled={disabled}
           maxLength={maxLength}
           inputMode={inputMode}
+          onMouseEnter={() => setIsInputHovered(true)}
+          onMouseLeave={() => setIsInputHovered(false)}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={() => setIsInputFocused(false)}
         />
 
         {showClearButton && !disabled && inputValue.trim() && type !== 'password' && (
@@ -128,7 +139,7 @@ export const ClearableInput = ({
         )}
       </div>
 
-      {!hideSeparator ? <Separator /> : null}
+      {!hideSeparator ? <Separator className={separatorClassName} /> : null}
     </div>
   )
 }

@@ -11,10 +11,11 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 import { CalendarWithPresets } from '@/components/shared'
 import { YearSelectPopover } from './YearSelectPopover'
 import { HelpPopover } from './HelpPopover'
-import { yearRangeInclusive } from '../utils/termCode'
+import { isValidTermCode, normalizeTermCode, yearRangeInclusive } from '../utils/termCode'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 
 type OfferingDraft = {
@@ -131,12 +132,27 @@ export function ProgrammeOfferingStep({
               </div>
             </div>
 
-            <FieldInput
-              label={t('faculties.wizard.offering.termCodeLabel')}
-              placeholder={t('faculties.wizard.offering.termCodePlaceholder')}
-              value={row.termCode}
-              onValueChange={(termCode) => onUpdateOffering(row.id, { termCode })}
-            />
+            <div className="flex flex-col gap-1">
+              <FieldInput
+                label={t('faculties.wizard.offering.termCodeLabel')}
+                placeholder={t('faculties.wizard.offering.termCodePlaceholder')}
+                value={row.termCode}
+                onValueChange={(raw) =>
+                  onUpdateOffering(row.id, { termCode: normalizeTermCode(raw) })
+                }
+              />
+              {/* Show format hint only when the code exists but doesn't match the pattern */}
+              <p
+                className={cn(
+                  'text-xs transition-opacity duration-150',
+                  row.termCode && !isValidTermCode(row.termCode)
+                    ? 'text-muted-foreground opacity-100'
+                    : 'opacity-0 pointer-events-none select-none',
+                )}
+              >
+                {t('faculties.wizard.offering.termCodeHint')}
+              </p>
+            </div>
           </div>
 
           {/* Start / end date pickers */}
