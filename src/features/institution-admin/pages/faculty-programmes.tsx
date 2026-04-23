@@ -73,7 +73,10 @@ export function InstitutionFacultyProgrammes() {
   }
 
   const handleOpenProgramme = (programmeId: string) => {
-    void programmeId
+    if (!facultyIdParam) return
+    navigate(
+      `/institution_admin/faculties/${encodeURIComponent(facultyIdParam)}/programmes/${encodeURIComponent(programmeId)}`,
+    )
   }
 
   useEffect(() => {
@@ -102,6 +105,7 @@ export function InstitutionFacultyProgrammes() {
         }
 
         const programmeRows = await listProgrammesByFaculty(facultyIdParam)
+
         if (!cancelled) {
           setFaculty(match)
           setProgrammes([...programmeRows])

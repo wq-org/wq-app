@@ -573,8 +573,8 @@ export function InstitutionFacultiesCreate() {
 
   return (
     <InstitutionAdminWorkspaceShell>
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-2 pb-12 pt-4">
-        <div className="flex flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-2 pb-12 pt-4 animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300">
+        <div className="flex flex-col gap-4 animate-in fade-in-0 slide-in-from-bottom-3 motion-safe:duration-300">
           <Button
             variant="ghost"
             type="button"
@@ -602,7 +602,7 @@ export function InstitutionFacultiesCreate() {
           </div>
         </div>
 
-        <div className="flex w-full flex-col gap-6">
+        <div className="flex w-full flex-col gap-6 animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300">
           <StepperProgressBarTitles
             steps={wizardSteps}
             value={wizardStep}
@@ -612,7 +612,7 @@ export function InstitutionFacultiesCreate() {
             renderContent={renderWizardStep}
           />
 
-          <div className="mx-auto flex w-full max-w-4xl flex-wrap justify-between gap-3 border-t border-border pt-6">
+          <div className="mx-auto flex w-full max-w-4xl flex-wrap justify-between gap-3 border-t border-border pt-6 animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300">
             <Button
               type="button"
               variant="outline"

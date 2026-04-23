@@ -221,7 +221,11 @@
           "unknownFaculty": "Unknown faculty",
           "untitledProgramme": "Untitled programme",
           "noDescription": "No description",
+          "durationYears_one": "{{count}} year",
+          "durationYears_other": "{{count}} years",
           "durationUnknown": "Duration not set",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
           "open": "Open"
         }
       },
@@ -236,6 +240,34 @@
         "searchLabel": "Search programmes",
         "searchPlaceholder": "Search by programme name or description…",
         "noSearchResults": "No programmes match your search."
+      },
+      "programmeOfferings": {
+        "titleFallback": "Programme offerings",
+        "subtitle": "Time-bound runs for this programme with their current status.",
+        "addOffering": "Add offering",
+        "loadError": "Could not load programme offerings.",
+        "programmeNotFound": "This programme could not be found in the selected faculty.",
+        "empty": "No offerings exist for this programme yet.",
+        "emptyFiltered": "No offerings match your current filter.",
+        "filterLabel": "Filter offerings",
+        "filterPlaceholder": "Filter by year, term code, or status…",
+        "filterButton": "Apply filter",
+        "tabs": {
+          "timeline": "Timeline",
+          "settings": "Settings",
+          "settingsPlaceholder": "Programme settings are coming soon."
+        },
+        "offering": {
+          "programme": "Programme",
+          "dateRange": "Date range",
+          "academicYear": "Academic year",
+          "termCode": "Term code",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "notSet": "Not set"
+        }
       },
       "cohorts": {
         "title": "Cohorts",

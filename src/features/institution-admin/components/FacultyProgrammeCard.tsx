@@ -28,7 +28,7 @@ export function FacultyProgrammeCard({
     programmeDescription?.trim() || t('faculties.pages.programmes.card.noDescription')
   const durationLabel =
     durationYears != null
-      ? t('faculties.wizard.programme.durationValue', { count: durationYears })
+      ? t('faculties.pages.programmes.card.durationYears', { count: durationYears })
       : t('faculties.pages.programmes.card.durationUnknown')
 
   return (
@@ -44,7 +44,7 @@ export function FacultyProgrammeCard({
               {resolvedFaculty}
             </Badge>
             <Badge
-              variant="indigo"
+              variant="blue"
               size="sm"
               className="font-normal"
             >

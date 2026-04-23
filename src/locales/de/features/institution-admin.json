@@ -221,7 +221,11 @@
           "unknownFaculty": "Unbekannte Fakultät",
           "untitledProgramme": "Programm ohne Titel",
           "noDescription": "Keine Beschreibung",
+          "durationYears_one": "{{count}} Jahr",
+          "durationYears_other": "{{count}} Jahre",
           "durationUnknown": "Dauer nicht angegeben",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
           "open": "Öffnen"
         }
       },
@@ -236,6 +240,34 @@
         "searchLabel": "Programme durchsuchen",
         "searchPlaceholder": "Suche nach Name oder Beschreibung…",
         "noSearchResults": "Keine Treffer für diese Suche."
+      },
+      "programmeOfferings": {
+        "titleFallback": "Programmangebote",
+        "subtitle": "Zeitgebundene Durchläufe dieses Programms mit aktuellem Status.",
+        "addOffering": "Angebot hinzufügen",
+        "loadError": "Programmangebote konnten nicht geladen werden.",
+        "programmeNotFound": "Dieses Programm wurde in der ausgewählten Fakultät nicht gefunden.",
+        "empty": "Für dieses Programm gibt es noch keine Angebote.",
+        "emptyFiltered": "Keine Angebote passen zu Ihrem aktuellen Filter.",
+        "filterLabel": "Angebote filtern",
+        "filterPlaceholder": "Nach Jahr, Term-Code oder Status filtern…",
+        "filterButton": "Filter anwenden",
+        "tabs": {
+          "timeline": "Zeitplan",
+          "settings": "Einstellungen",
+          "settingsPlaceholder": "Programmeinstellungen folgen in Kürze."
+        },
+        "offering": {
+          "programme": "Programm",
+          "dateRange": "Zeitraum",
+          "academicYear": "Akademisches Jahr",
+          "termCode": "Term-Code",
+          "startsAt": "Start",
+          "endsAt": "Ende",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "notSet": "Nicht gesetzt"
+        }
       },
       "cohorts": {
         "title": "Jahrgänge",

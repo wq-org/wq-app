@@ -10,6 +10,7 @@ export { InstitutionFaculties as InstitutionAdminFacultiesPage } from './pages/f
 export { InstitutionFacultiesCreate as InstitutionAdminFacultiesCreatePage } from './pages/faculties-create'
 export { InstitutionFacultiesProgrammes as InstitutionAdminFacultiesProgrammesPage } from './pages/faculties-programmes'
 export { InstitutionFacultyProgrammes as InstitutionAdminFacultyProgrammesPage } from './pages/faculty-programmes'
+export { InstitutionProgrammeOfferings as InstitutionAdminProgrammeOfferingsPage } from './pages/programme-offerings'
 export { InstitutionFacultiesCohorts as InstitutionAdminFacultiesCohortsPage } from './pages/faculties-cohorts'
 export { InstitutionFacultiesClassGroups as InstitutionAdminFacultiesClassGroupsPage } from './pages/faculties-class-groups'
 export { InstitutionClassrooms as InstitutionAdminClassroomsPage } from './pages/classrooms'

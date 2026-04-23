@@ -38,3 +38,17 @@ export async function createProgrammeOffering(
 
   return data as ProgrammeOfferingRecord
 }
+
+export async function listProgrammeOfferingsByInstitution(
+  institutionId: string,
+): Promise<readonly Pick<ProgrammeOfferingRecord, 'programme_id' | 'status'>[]> {
+  const { data, error } = await supabase
+    .from('programme_offerings')
+    .select('programme_id, status')
+    .eq('institution_id', institutionId)
+    .is('deleted_at', null)
+
+  if (error) throw new Error(error.message)
+
+  return (data ?? []) as Pick<ProgrammeOfferingRecord, 'programme_id' | 'status'>[]
+}
