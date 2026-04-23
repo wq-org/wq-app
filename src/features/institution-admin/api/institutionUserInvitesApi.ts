@@ -134,12 +134,34 @@ type MembershipRowDb = {
   user_id: string
   membership_role: string
   status: MembershipStatusDb
-  profiles: {
-    email: string | null
-    display_name: string | null
-    username: string | null
-    avatar_url: string | null
-  } | null
+  profiles:
+    | {
+        email: string | null
+        display_name: string | null
+        username: string | null
+        avatar_url: string | null
+      }
+    | {
+        email: string | null
+        display_name: string | null
+        username: string | null
+        avatar_url: string | null
+      }[]
+    | null
+}
+
+type MembershipProfileDb = {
+  email: string | null
+  display_name: string | null
+  username: string | null
+  avatar_url: string | null
+}
+
+function pickMembershipProfile(
+  profileOrProfiles: MembershipRowDb['profiles'],
+): MembershipProfileDb | null {
+  if (Array.isArray(profileOrProfiles)) return profileOrProfiles[0] ?? null
+  return profileOrProfiles
 }
 
 type InviteRowDb = {
@@ -186,7 +208,7 @@ export async function fetchInstitutionUserDirectory(
   const members: InstitutionDirectoryRow[] = []
 
   for (const row of (membershipRows ?? []) as MembershipRowDb[]) {
-    const prof = row.profiles
+    const prof = pickMembershipProfile(row.profiles)
     const emailLower = prof?.email?.toLowerCase().trim() ?? ''
     if (emailLower) memberEmails.add(emailLower)
 
