@@ -253,9 +253,25 @@
         "filterPlaceholder": "Filter by year, term code, or status…",
         "filterButton": "Apply filter",
         "tabs": {
-          "timeline": "Timeline",
-          "settings": "Settings",
-          "settingsPlaceholder": "Programme settings are coming soon."
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saveSuccess": "Programme settings saved",
+          "saveError": "Could not save programme settings.",
+          "fields": {
+            "nameLabel": "Programme name",
+            "namePlaceholder": "Enter programme name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter programme description"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
         },
         "offering": {
           "programme": "Programme",

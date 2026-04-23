@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ChartNoAxesGantt, Plus, Settings } from 'lucide-react'
+import { LayoutGrid, Plus, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
-import { SelectTabs } from '@/components/shared'
+import { SelectTabs, showUnsavedChangesToast } from '@/components/shared'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,14 +22,15 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
-import { listProgrammesByFaculty } from '../api/programmesApi'
+import { listProgrammesByFaculty, updateProgramme } from '../api/programmesApi'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { ProgrammeOfferingCardList } from '../components/ProgrammeOfferingCardList'
+import { ProgrammeSettings } from '../components/ProgrammeSettings'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 import type { ProgrammeRecord } from '../types/programme.types'
 
 const OFFERING_TABS = [
-  { id: 'timeline', title: 'Timeline', icon: ChartNoAxesGantt },
+  { id: 'overview', title: 'Overview', icon: LayoutGrid },
   { id: 'settings', title: 'Settings', icon: Settings },
 ] as const
 
@@ -47,12 +49,15 @@ export function InstitutionProgrammeOfferings() {
     programmeId: string
   }>()
 
-  const [activeTabId, setActiveTabId] = useState<OfferingTabId>('timeline')
+  const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
   const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
   const [facultyName, setFacultyName] = useState<string>('')
   const [offerings, setOfferings] = useState<readonly ProgrammeOfferingRecord[]>([])
   const [filterQuery, setFilterQuery] = useState('')
+  const [draftProgrammeName, setDraftProgrammeName] = useState('')
+  const [draftProgrammeDescription, setDraftProgrammeDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
 
   const selectedProgramme = useMemo(
@@ -68,6 +73,11 @@ export function InstitutionProgrammeOfferings() {
       })),
     [t],
   )
+
+  const hasUnsavedSettingsChanges =
+    selectedProgramme !== null &&
+    (draftProgrammeName !== selectedProgramme.name ||
+      draftProgrammeDescription !== (selectedProgramme.description ?? ''))
 
   const searchableOfferings = useMemo(
     () =>
@@ -91,6 +101,46 @@ export function InstitutionProgrammeOfferings() {
 
   const handleAddOffering = () => {
     // Placeholder: real add-offering flow will be wired in a follow-up.
+  }
+
+  const handleSaveProgrammeSettings = async () => {
+    if (!selectedProgramme) return
+    setIsSaving(true)
+    try {
+      const updatedProgramme = await updateProgramme({
+        programmeId: selectedProgramme.id,
+        name: draftProgrammeName,
+        description: draftProgrammeDescription.trim() || null,
+      })
+      setProgrammes((rows) =>
+        rows.map((row) => (row.id === updatedProgramme.id ? updatedProgramme : row)),
+      )
+      toast.success(t('faculties.pages.programmeOfferings.settings.saveSuccess'))
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('faculties.pages.programmeOfferings.settings.saveError'),
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleTopTabChange = (nextTabId: string) => {
+    const resolvedTab = nextTabId as OfferingTabId
+    if (resolvedTab === activeTabId) return
+
+    if (activeTabId === 'settings' && hasUnsavedSettingsChanges) {
+      showUnsavedChangesToast({
+        t: (key) => t(`faculties.pages.programmeOfferings.${key}`),
+        onStay: () => {},
+        onContinue: () => setActiveTabId(resolvedTab),
+      })
+      return
+    }
+
+    setActiveTabId(resolvedTab)
   }
 
   useEffect(() => {
@@ -141,6 +191,17 @@ export function InstitutionProgrammeOfferings() {
       cancelled = true
     }
   }, [institutionId, facultyIdParam, programmeIdParam, t])
+
+  useEffect(() => {
+    if (!selectedProgramme) {
+      setDraftProgrammeName('')
+      setDraftProgrammeDescription('')
+      return
+    }
+
+    setDraftProgrammeName(selectedProgramme.name)
+    setDraftProgrammeDescription(selectedProgramme.description ?? '')
+  }, [selectedProgramme])
 
   const timelineContent = (() => {
     if (isLoading) {
@@ -220,11 +281,15 @@ export function InstitutionProgrammeOfferings() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <Text
-            as="div"
-            className="flex flex-col gap-2"
-          >
+        <SelectTabs
+          tabs={tabs}
+          activeTabId={activeTabId}
+          onTabChange={handleTopTabChange}
+          className="mb-1"
+        />
+
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <Text
               as="h1"
               variant="h1"
@@ -239,46 +304,50 @@ export function InstitutionProgrammeOfferings() {
             >
               {t('faculties.pages.programmeOfferings.subtitle')}
             </Text>
-          </Text>
-          <Button
-            type="button"
-            variant="darkblue"
-            className="shrink-0 gap-2 self-start"
-            onClick={handleAddOffering}
-          >
-            <Plus className="size-4" />
-            <Text as="span">{t('faculties.pages.programmeOfferings.addOffering')}</Text>
-          </Button>
-        </div>
-
-        <FieldInput
-          label={t('faculties.pages.programmeOfferings.filterLabel')}
-          placeholder={t('faculties.pages.programmeOfferings.filterPlaceholder')}
-          value={filterQuery}
-          onValueChange={setFilterQuery}
-          className="w-full max-w-xl"
-          disabled={isLoading}
-        />
-
-        <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
-          <SelectTabs
-            tabs={tabs}
-            activeTabId={activeTabId}
-            onTabChange={(tabId) => setActiveTabId(tabId as OfferingTabId)}
-            className="mb-5"
-          />
-          {activeTabId === 'timeline' ? (
-            timelineContent
-          ) : (
-            <Text
-              as="p"
-              variant="body"
-              color="muted"
+          </div>
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="darkblue"
+              className="gap-2"
+              onClick={handleAddOffering}
             >
-              {t('faculties.pages.programmeOfferings.tabs.settingsPlaceholder')}
-            </Text>
-          )}
+              <Plus className="size-4" />
+              <Text as="span">{t('faculties.pages.programmeOfferings.addOffering')}</Text>
+            </Button>
+          </div>
         </div>
+
+        {activeTabId === 'overview' ? (
+          <>
+            <FieldInput
+              label={t('faculties.pages.programmeOfferings.filterLabel')}
+              placeholder={t('faculties.pages.programmeOfferings.filterPlaceholder')}
+              value={filterQuery}
+              onValueChange={setFilterQuery}
+              className="w-full max-w-xl"
+              disabled={isLoading}
+            />
+            <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
+              {timelineContent}
+            </div>
+          </>
+        ) : (
+          <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
+            <ProgrammeSettings
+              isLoading={isLoading}
+              isSaving={isSaving}
+              loadError={loadError}
+              selectedProgramme={selectedProgramme}
+              draftProgrammeName={draftProgrammeName}
+              draftProgrammeDescription={draftProgrammeDescription}
+              hasUnsavedSettingsChanges={hasUnsavedSettingsChanges}
+              onProgrammeNameChange={setDraftProgrammeName}
+              onProgrammeDescriptionChange={setDraftProgrammeDescription}
+              onSaveChanges={handleSaveProgrammeSettings}
+            />
+          </div>
+        )}
       </div>
     </InstitutionAdminWorkspaceShell>
   )

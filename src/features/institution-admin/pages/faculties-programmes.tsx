@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { GraduationCap } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { GraduationCap, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui/button'
 import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
@@ -18,6 +20,7 @@ import type { ProgrammeRecord } from '../types/programme.types'
 export function InstitutionFacultiesProgrammes() {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
+  const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
 
   const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
@@ -51,6 +54,16 @@ export function InstitutionFacultiesProgrammes() {
     'searchProgrammeDescription',
     'searchFacultyName',
   ]).map(({ programme, facultyName }) => ({ programme, facultyName }))
+
+  const handleOpenProgramme = (facultyId: string, programmeId: string) => {
+    navigate(
+      `/institution_admin/faculties/${encodeURIComponent(facultyId)}/programmes/${encodeURIComponent(programmeId)}`,
+    )
+  }
+
+  const handleCreateStructure = () => {
+    navigate('/institution_admin/faculties/create')
+  }
 
   useEffect(() => {
     if (!institutionId) {
@@ -103,21 +116,34 @@ export function InstitutionFacultiesProgrammes() {
   return (
     <InstitutionAdminWorkspaceShell>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-2 pb-12 pt-4 animate-in fade-in-0 slide-in-from-bottom-4">
-        <div className="animate-in fade-in-0 slide-in-from-bottom-3 flex flex-col gap-2">
-          <Text
-            as="h1"
-            variant="h1"
-            className="text-2xl font-bold"
-          >
-            {t('faculties.pages.programmes.title')}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            color="muted"
-          >
-            {t('faculties.pages.programmes.subtitle')}
-          </Text>
+        <div className="animate-in fade-in-0 slide-in-from-bottom-3 flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-2xl font-bold"
+            >
+              {t('faculties.pages.programmes.title')}
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              color="muted"
+            >
+              {t('faculties.pages.programmes.subtitle')}
+            </Text>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="darkblue"
+              className="gap-2"
+              onClick={handleCreateStructure}
+            >
+              <Plus className="size-4" />
+              <Text as="span">{t('faculties.create')}</Text>
+            </Button>
+          </div>
         </div>
 
         <FieldInput
@@ -169,7 +195,14 @@ export function InstitutionFacultiesProgrammes() {
           </Empty>
         ) : (
           <div className="animate-in fade-in-0 slide-in-from-bottom-2">
-            <FacultyProgrammeCardList items={filteredItems} />
+            <FacultyProgrammeCardList
+              items={filteredItems}
+              onOpenProgramme={(programmeId) => {
+                const selected = filteredItems.find((item) => item.programme.id === programmeId)
+                if (!selected) return
+                handleOpenProgramme(selected.programme.faculty_id, programmeId)
+              }}
+            />
           </div>
         )}
       </div>

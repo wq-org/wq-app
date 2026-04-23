@@ -54,3 +54,29 @@ export async function createProgramme(
 
   return data as ProgrammeRecord
 }
+
+type UpdateProgrammeInput = {
+  programmeId: string
+  name: string
+  description: string | null
+}
+
+export async function updateProgramme({
+  programmeId,
+  name,
+  description,
+}: UpdateProgrammeInput): Promise<ProgrammeRecord> {
+  const { data, error } = await supabase
+    .from('programmes')
+    .update({
+      name,
+      description,
+    })
+    .eq('id', programmeId)
+    .select('*')
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return data as ProgrammeRecord
+}

@@ -238,7 +238,7 @@ export function InstitutionFacultyProgrammes() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="flex animate-in fade-in-0 slide-in-from-bottom-3 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex animate-in fade-in-0 slide-in-from-bottom-3 flex-col gap-4">
           <div className="flex max-w-2xl flex-col gap-2">
             <Text
               as="h1"
@@ -255,16 +255,18 @@ export function InstitutionFacultyProgrammes() {
               {facultyDescription}
             </Text>
           </div>
-          <Button
-            variant="darkblue"
-            type="button"
-            className="shrink-0 gap-2 self-start"
-            onClick={handleAddProgramme}
-            disabled={!faculty}
-          >
-            <Plus className="size-4" />
-            <Text as="span">{t('faculties.pages.facultyProgrammes.addProgramme')}</Text>
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              variant="darkblue"
+              type="button"
+              className="gap-2"
+              onClick={handleAddProgramme}
+              disabled={!faculty}
+            >
+              <Plus className="size-4" />
+              <Text as="span">{t('faculties.pages.facultyProgrammes.addProgramme')}</Text>
+            </Button>
+          </div>
         </div>
 
         <FieldInput

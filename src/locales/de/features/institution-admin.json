@@ -253,9 +253,25 @@
         "filterPlaceholder": "Nach Jahr, Term-Code oder Status filtern…",
         "filterButton": "Filter anwenden",
         "tabs": {
-          "timeline": "Zeitplan",
-          "settings": "Einstellungen",
-          "settingsPlaceholder": "Programmeinstellungen folgen in Kürze."
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saveSuccess": "Programmeinstellungen gespeichert",
+          "saveError": "Programmeinstellungen konnten nicht gespeichert werden.",
+          "fields": {
+            "nameLabel": "Programmname",
+            "namePlaceholder": "Programmname eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Programmbeschreibung eingeben"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
         },
         "offering": {
           "programme": "Programm",
