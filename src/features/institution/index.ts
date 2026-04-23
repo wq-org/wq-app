@@ -1,5 +1,0 @@
-export { EmptyTeachersView } from './components/EmptyTeachersView'
-export { InstitutionProfileView } from './components/InstitutionProfileView'
-export { InstitutionView } from './components/InstitutionView'
-export { Institution } from './pages/institution'
-export { InstitutionViewPage } from './pages/view'

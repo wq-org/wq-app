@@ -1,0 +1,401 @@
+{
+  "nav": {
+    "groupLabel": "Institution",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "inviteUsers": "Invite users",
+    "faculties": "Faculties",
+    "facultyProgrammes": "Programmes",
+    "facultyCohorts": "Cohorts",
+    "facultyClassGroups": "Class groups",
+    "classrooms": "Classrooms",
+    "licenseUsage": "Usage",
+    "gdprRequest": "GDPR requests",
+    "billing": "Billing",
+    "analytics": "Analytics",
+    "cloudStorage": "Cloud storage",
+    "auditLogs": "Audit logs",
+    "teachers": "Teachers",
+    "students": "Students",
+    "courses": "Courses"
+  },
+  "shell": {
+    "settings": "Settings",
+    "logout": "Log out",
+    "logoutSuccess": "Signed out successfully",
+    "logoutError": "Could not sign out. Please try again.",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "dashboard": {
+    "greeting": "Hello {{name}}",
+    "greetingAnonymous": "Hello",
+    "subtitle": "Key metrics for your organization at a glance.",
+    "stats": {
+      "viewMore": "View more",
+      "students": {
+        "label": "Students"
+      },
+      "teachers": {
+        "label": "Teachers"
+      },
+      "classrooms": {
+        "label": "Classrooms"
+      },
+      "storage": {
+        "label": "Storage"
+      }
+    },
+    "usage": {
+      "title": "Usage & quotas",
+      "subtitle": "Cloud storage and transfer relative to your plan limits (sample data).",
+      "storage": {
+        "title": "Cloud storage",
+        "status": "Within plan limits.",
+        "action": "Open cloud storage"
+      },
+      "bandwidth": {
+        "title": "Data transfer",
+        "warning": "Approaching the monthly transfer allowance.",
+        "action": "View usage details"
+      }
+    }
+  },
+  "inviteUsers": {
+    "pageTitle": "Invite users",
+    "subtitle": "Choose how you want to bring teachers or students into your institution. You can change this later.",
+    "continueButton": "Continue",
+    "continueDisabledHint": "Choose the email invitation option to continue.",
+    "emailWizard": {
+      "steps": {
+        "enterAddresses": "Email addresses",
+        "reviewRecipients": "Review recipients",
+        "success": "Done"
+      },
+      "sectionTitle": "Add email addresses",
+      "separatorHint": "Paste or type as many email addresses as you like — one per line, separated by spaces, or with commas. We'll take care of the rest and let you know if anything looks off.",
+      "textareaLabel": "Email addresses to invite",
+      "textareaPlaceholder": "teacher@school.example, student@school.example",
+      "teachersEmailsLabel": "Teacher email addresses",
+      "studentsEmailsLabel": "Student email addresses",
+      "teachersPlaceholder": "teacher1@school.example, teacher2@school.example",
+      "studentsPlaceholder": "student1@school.example, student2@school.example",
+      "nextButton": "Next",
+      "backButton": "Back",
+      "changeMethod": "Change invite method",
+      "reviewCardTitle": "Recipients",
+      "sendButton": "Send invites",
+      "successTitle": "Invitations sent",
+      "successDescription": "Recipients will get an email with a link to join your institution.",
+      "viewUsersButton": "View users list",
+      "errorTitle": "Some invitations could not be sent",
+      "errorDescription": "Review the addresses below and try again. Duplicate or invalid invites may be rejected.",
+      "retryFailedButton": "Retry failed",
+      "missingInstitution": "Your account is not linked to an institution. Refresh or contact support."
+    },
+    "methods": {
+      "email": {
+        "title": "Email invitation",
+        "description": "Enter one or more addresses and send a secure join link by email."
+      },
+      "file": {
+        "title": "Import file",
+        "description": "Upload a CSV or spreadsheet so everyone is invited or provisioned in one batch."
+      },
+      "qr": {
+        "title": "QR code",
+        "description": "Show a QR code at events or in the classroom so people can join on the spot."
+      }
+    },
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@school.example",
+    "submitButton": "Send invite"
+  },
+  "users": {
+    "pageTitle": "Users",
+    "subtitle": "Manage students, teachers, and staff in your institution.",
+    "inviteUsersCta": "Invite users",
+    "totalHeading": "Total users (this view)",
+    "totalOfInstitution": "of {{total}} in your institution",
+    "roleFilterNotice": "Filtered by role: {{role}}",
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "username": "Username",
+      "role": "Role",
+      "access": "Access",
+      "actions": "Actions",
+      "status": "Status"
+    },
+    "access": {
+      "active": "Active",
+      "deactivated": "Deactivated"
+    },
+    "actions": {
+      "edit": "Edit",
+      "assignClassGroup": "Assign to class group",
+      "withdrawFromClass": "Withdraw from class",
+      "removeFromInstitution": "Remove from institution",
+      "resendInvitation": "Resend invitation",
+      "disabledPeerInstitutionAdmin": "Managing other institution admins is restricted for security. Use a platform administrator if needed."
+    },
+    "assignClassGroupDialog": {
+      "title": "Assign to class group",
+      "description": "",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    },
+    "withdrawFromClassDialog": {
+      "title": "Withdraw from class",
+      "roleStudent": "Student",
+      "roleTeacherCoTeacher": "Teacher / Co-Teacher",
+      "bodyStudent": "The student is removed from this classroom. They lose access to all content, tasks, and games in this classroom. Their account and all other classrooms remain unaffected.",
+      "bodyTeacherCoTeacher": "The teacher is removed as co-teacher from this classroom. They can no longer view or manage its content. Their own courses and other classroom assignments remain unaffected.",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    },
+    "removeFromInstitutionDialog": {
+      "title": "Remove from institution?",
+      "roleStudent": "Student",
+      "roleTeacher": "Teacher",
+      "roleCoTeacher": "Co-Teacher",
+      "roleUnknown": "Member",
+      "bodyStudent": "The student leaves the institution entirely. They lose access to all classrooms, courses, games, and data of this institution. Their account remains active but is locked out of this school.",
+      "bodyTeacher": "The teacher leaves the institution entirely. All courses and games they created remain within the institution. Their account stays active but they no longer have access to this school.",
+      "bodyCoTeacher": "The co-teacher leaves the institution entirely. All classroom assignments are revoked. Their account remains active but access to this institution is fully blocked.",
+      "bodyUnknown": "This person will lose access to this institution once removal is confirmed.",
+      "cancelButton": "Cancel",
+      "holdButton": "Hold to remove from institution",
+      "confirmingButton": "Removing…"
+    },
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "institution_admin": "Institution admin",
+      "unknown": "Other"
+    },
+    "empty": {
+      "title": "No users in this view",
+      "description": "Try clearing the role filter or invite members to your institution."
+    },
+    "toasts": {
+      "removeFromInstitutionSuccess": "Removal recorded",
+      "removeFromInstitutionSuccessDescription": "{{name}} will lose access to this institution once the membership API confirms left_institution_at.",
+      "resendInviteSuccess": "Invitation email sent",
+      "resendInviteError": "Could not resend invitation"
+    },
+    "missingInstitutionContext": "No institution context loaded for your account.",
+    "membershipStatus": {
+      "invited": "Invited",
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "inviteStatus": {
+      "pendingEmail": "Invite pending"
+    }
+  },
+  "faculties": {
+    "title": "Faculties",
+    "subtitle": "Organize departments and academic units.",
+    "create": "Create faculty",
+    "createSubtitle": "Set up a new top-level department in a few steps.",
+    "empty": "No faculties yet. Create one to get started.",
+    "card": {
+      "untitled": "Untitled faculty",
+      "noDescription": "No description",
+      "open": "Open",
+      "badge": "Faculty"
+    },
+    "pages": {
+      "programmes": {
+        "title": "Programmes",
+        "subtitle": "Study programmes attached to faculties in your institution.",
+        "empty": "Programme management UI is coming soon."
+      },
+      "cohorts": {
+        "title": "Cohorts",
+        "subtitle": "Intakes and year groups within programmes.",
+        "empty": "Cohort management UI is coming soon."
+      },
+      "classGroups": {
+        "title": "Class groups",
+        "subtitle": "Operational learner groups within cohorts.",
+        "empty": "Class group management UI is coming soon."
+      }
+    },
+    "wizard": {
+      "backToList": "Back to faculties",
+      "steps": {
+        "faculty": "Faculty",
+        "programme": "Programme",
+        "programmeOffering": "Offering"
+      },
+      "actions": {
+        "previous": "Previous",
+        "next": "Next",
+        "finish": "Create faculty"
+      },
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Health Sciences",
+        "descriptionHint": "Describe what this faculty covers and how it fits your institution—programmes, focus areas, or who it is for.",
+        "descriptionLabel": "Description (optional)",
+        "descriptionPlaceholder": "e.g. Undergraduate and graduate programmes in nursing, public health, and allied health professions."
+      },
+      "programme": {
+        "nameLabel": "Programme name",
+        "namePlaceholder": "e.g. Nursing Assistant (EQF 4)",
+        "descriptionLabel": "Programme description",
+        "descriptionPlaceholder": "What learners achieve, duration notes, entry requirements.",
+        "durationLabel": "Programme length (years)",
+        "durationValue_one": "{{count}} year",
+        "durationValue_other": "{{count}} years",
+        "progressionLabel": "Progression",
+        "progression": {
+          "year_group": "Year group",
+          "stage": "Stage"
+        },
+        "placeholderName": "Untitled programme"
+      },
+      "offering": {
+        "intro": "Define one or more programme offerings (academic year / term window). Values are saved when API wiring is ready.",
+        "academicYearLabel": "Academic year",
+        "termCodeLabel": "Term code",
+        "termCodePlaceholder": "e.g. 2026S1",
+        "statusActive": "Active",
+        "statusDraft": "Draft",
+        "dateRangeLabel": "Starts / ends",
+        "dateRangePlaceholder": "Pick dates",
+        "addAnother": "Add offering",
+        "remove": "Remove"
+      }
+    },
+    "hierarchy": {
+      "faculty": {
+        "title": "Faculty",
+        "description": "A top-level department in the institution that groups related programmes (for example, Nursing or Vocational Training)."
+      },
+      "programme": {
+        "title": "Programme",
+        "description": "A course of study within a faculty that defines what learners train for and how long it takes (for example, “Nursing Assistant”)."
+      },
+      "cohort": {
+        "title": "Cohort",
+        "description": "An intake or year group within a programme (for example, “Cohort 2026”) that is typically archived after graduation."
+      },
+      "classGroup": {
+        "title": "Class group",
+        "description": "A concrete class within a cohort that represents the real-world group of learners (for example, “WIB2-A”)."
+      },
+      "classroom": {
+        "title": "Classroom",
+        "description": "The teaching space on the platform where lessons, games, and tasks are assigned, linking a teacher, a class group, and a subject (for example, “Chemistry WIB2-A”)."
+      }
+    }
+  },
+  "classrooms": {
+    "title": "Classrooms",
+    "subtitle": "View and manage classrooms linked to your institution."
+  },
+  "licenses": {
+    "title": "Licenses",
+    "subtitle": "What plan you have and which features are included.",
+    "loadError": "Failed to load licenses",
+    "empty": "No subscription found for this institution.",
+    "noFeatures": "No features configured on this plan.",
+    "summary": {
+      "plan": "Plan",
+      "billingStatus": "Billing status",
+      "effectiveFrom": "Effective from",
+      "renewalAt": "Renews on"
+    },
+    "source": {
+      "override": "Override",
+      "plan": "Plan",
+      "default": "Default"
+    }
+  },
+  "licenseUsage": {
+    "title": "Usage",
+    "subtitle": "Monitor seat usage and entitlements.",
+    "loadError": "Failed to load usage",
+    "empty": "No usage data available yet.",
+    "metrics": {
+      "unlimited": "Unlimited",
+      "upgrade": "Upgrade",
+      "seats": {
+        "title": "Seats",
+        "ok": "Within plan limits.",
+        "warning": "Approaching the seat limit."
+      },
+      "students": {
+        "title": "Students"
+      },
+      "teachers": {
+        "title": "Teachers"
+      },
+      "storage": {
+        "title": "Storage",
+        "using": "Using Storage",
+        "used": "Used",
+        "ok": "Within plan limits.",
+        "warning": "Approaching the storage limit."
+      }
+    },
+    "details": {
+      "title": "Usage details",
+      "plan": "Plan",
+      "updatedAt": "Updated"
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Subscription term, renewal and payment details.",
+    "noInstitution": "No institution associated with your account.",
+    "invoices": {
+      "title": "Invoices",
+      "description": "View and download your invoice history.",
+      "searchPlaceholder": "Search by invoice number or description...",
+      "statusFilterPlaceholder": "Filter by status",
+      "count_one": "{{count}} invoice",
+      "count_other": "{{count}} invoices",
+      "status": {
+        "all": "All statuses",
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded",
+        "void": "Void"
+      },
+      "view": "View",
+      "emptyFiltered": "No invoices match your filters.",
+      "empty": "No invoices found.",
+      "page": "Page",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "paymentMethod": {
+      "title": "Payment method",
+      "empty": "No payment method on file."
+    }
+  },
+  "planFeatures": {
+    "title": "What's included in your plan",
+    "featureCount": "{{count}} features",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "accountMenu": "Account menu"
+  },
+  "gdprRequest": {
+    "title": "GDPR requests",
+    "subtitle": "Handle data subject requests and compliance tasks."
+  },
+  "cloudStorage": {
+    "title": "Cloud storage",
+    "subtitle": "Files and folders for your institution."
+  },
+  "auditLogs": {
+    "title": "Audit logs",
+    "subtitle": "Review important actions across your institution."
+  }
+}

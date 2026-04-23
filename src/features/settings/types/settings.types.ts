@@ -18,4 +18,6 @@ export type SettingsCapabilities = {
 
 export type SettingsPageProps = {
   role: UserRole
+  /** Omit standalone page chrome (min-h-screen + nested container). Use inside admin workspace shell. */
+  embedded?: boolean
 }

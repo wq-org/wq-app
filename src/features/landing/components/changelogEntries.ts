@@ -20,6 +20,39 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-04-14-admin-institution-dashboard-db-redesign',
+    date: '14 April 2026',
+    title: 'Launch admin and institution dashboards with complete database redesign',
+    summary:
+      'Major platform update bringing comprehensive administrative tools and institution management features with a fully redesigned database schema for better scalability and data integrity.',
+    bullets: [
+      'admin dashboard now provides system-wide oversight with audit logs, institution management, and entitlements configuration',
+      'institution admin dashboard enables schools to manage subscriptions, billing, licenses, usage quotas, and GDPR compliance',
+      'database schema fully redesigned with type-safe migrations, including super_admin, institution_admin, and lms domains with complete RLS policies',
+      'new document editor with slash commands, color formatting, and rich-text support for course content creation',
+      'enhanced institution invite system with email-based invitations, token redemption, and role-based access control',
+      'subscription and plan entitlements system allows configurable features per institution with override capabilities',
+      'cloud storage management with quota enforcement, file versioning, and asset tracking across institutions',
+      'GDPR data subject requests now supported with full erasure and portability workflows',
+      'game version publish model refactored to use pointer-based truth with preservation of historical run data',
+    ],
+    badges: ['feature', 'change', 'improvement', 'breaking'],
+  },
+  {
+    id: '2026-03-27-feature-folder-standardization',
+    date: '27 March 2026',
+    title: 'Standardize feature folder naming conventions',
+    summary:
+      'Refactored feature folder structure to follow consistent naming conventions, improving code organization and reducing import friction across the codebase.',
+    bullets: [
+      'renamed institutionAdmin to institution-admin for kebab-case consistency across multi-word feature folders',
+      'renamed profiles to profile to reflect singular domain naming convention',
+      'updated all cross-feature imports to use stable barrel paths at feature boundaries',
+      'aligned ESLint restricted-feature configuration with actual folder names for predictable boundary enforcement',
+    ],
+    badges: ['change', 'improvement'],
+  },
+  {
     id: '2026-03-14-auth-reset-flow-refresh',
     date: '14 March 2026',
     title: 'Improve password recovery and auth screen flow',

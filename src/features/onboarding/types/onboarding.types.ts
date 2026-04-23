@@ -14,15 +14,6 @@ export interface AccountDetailsData {
   description: string
 }
 
-export interface Institution {
-  id: string
-  name: string
-  description: string | null
-  email: string | null
-  address: Record<string, string> | null
-  website: string | null
-}
-
 export interface AccountData extends AccountDetailsData {
   avatar: AvatarOption
 }
@@ -38,15 +29,8 @@ export interface StepAvatarProps {
   initialAvatarSrc?: string
 }
 
-export interface StepInstitutionProps {
-  onNext: (selectedInstitutions: Institution[]) => void
-  onBack: () => void
-  initialData?: string[]
-}
-
 export interface StepFinishProps {
   onBack: () => void
   onFinish: () => void
   accountData: AccountData
-  institutions: Institution[]
 }

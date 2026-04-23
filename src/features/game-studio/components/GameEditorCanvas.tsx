@@ -16,7 +16,7 @@ import type {
   EdgeChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Settings, Play, DoorOpen } from 'lucide-react'
+import { Settings2, Play, DoorOpen, EllipsisVertical, Save, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { GameStartNode } from './GameStartNode'
@@ -31,11 +31,11 @@ import { IfElseGameDialog } from './IfElseGameDialog'
 import { EndGameDialog } from './EndGameDialog'
 import { GameSidebar } from './GameSidebar'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useGameStudioContext } from '@/contexts/game-studio'
-import { SettingsDrawer } from './SettingsDrawer'
-import { PreviewDrawer } from './PreviewDrawer'
-import { PublishDrawer } from './PublishDrawer'
+import { GameSettingsDrawer } from './GameSettingsDrawer'
+import { GamePreviewDrawer } from './GamePreviewDrawer'
+import { GamePublishDrawer } from './GamePublishDrawer'
 import { MAX_END_NODE_INCOMING_CONNECTIONS } from '../constants'
 import type { GameNodeData } from '../types/game-studio.types'
 import { useUser } from '@/contexts/user'
@@ -115,7 +115,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   // ========== Refs ==========
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const titleRef = useRef<HTMLDivElement>(null)
   const isDroppingRef = useRef(false) // Prevent duplicate drop notifications
   const isSyncingRef = useRef(false)
   const setContextNodesRef = useRef(setContextNodes)
@@ -245,6 +244,8 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       } else if (actionId === 'select') {
         setInteractionMode('select')
         toast.success('Select mode activated')
+      } else if (actionId === 'home') {
+        navigate('/teacher/game-studio')
       }
     }
 
@@ -252,7 +253,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     return () => {
       window.removeEventListener('command-action', handleCommandAction)
     }
-  }, [])
+  }, [navigate])
 
   // Sync context nodes with React Flow nodes
   useEffect(() => {
@@ -1083,13 +1084,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }
 
-  // Sync contentEditable element with gameTitle state
-  useEffect(() => {
-    if (titleRef.current && titleRef.current.textContent !== gameTitle) {
-      titleRef.current.textContent = gameTitle
-    }
-  }, [gameTitle])
-
   // Measure container dimensions for React Flow
   useEffect(() => {
     const updateDimensions = () => {
@@ -1184,69 +1178,69 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           onDragOver={onDragOver}
           onDrop={onDrop}
         >
-          {/* Top Center Badge */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 max-w-60 w-full min-w-0">
-            <Badge
-              variant="outline"
-              className="px-4 py-2 text-sm cursor-text bg-white w-full min-w-0 max-w-full"
-              asChild
-            >
-              <div
-                ref={titleRef}
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) => {
-                  const newTitle = e.currentTarget.textContent?.trim() || fallbackTitle
-                  setGameTitle(newTitle)
-                  if (newTitle === '') {
-                    e.currentTarget.textContent = fallbackTitle
-                    setGameTitle(fallbackTitle)
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    e.currentTarget.blur()
-                  }
-                }}
-                className="outline-none focus:ring-2 focus:ring-ring rounded-full truncate min-w-0 block"
+          {/* Top Right Controls */}
+          <div className="absolute top-4 right-4 z-20 flex items-center gap-2 rounded-full bg-white/70 p-1.5 backdrop-blur-sm pointer-events-auto dark:bg-zinc-900/80 dark:ring-1 dark:ring-white/10">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                >
+                  <EllipsisVertical className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-48 rounded-2xl p-2 dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-100"
               >
-                {gameTitle}
-              </div>
-            </Badge>
-          </div>
-
-          {/* Top Right Controls - z-20 above React Flow pane so buttons stay clickable */}
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-auto">
-            <Button
-              variant="outline"
-              onClick={handleSave}
-            >
-              {t('editorCanvas.actions.save')}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setIsPreviewDrawerOpen(true)}
-            >
-              <Play className="h-4 w-4 mr-2" />
-              {t('editorCanvas.actions.preview')}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleLeaveProject}
-            >
-              <DoorOpen className="h-4 w-4 mr-2" />
-              {t('editorCanvas.actions.leave')}
-            </Button>
-            <Button onClick={() => setIsPublishDrawerOpen(true)}>
-              {t('editorCanvas.actions.publish')}
-            </Button>
+                <div className="flex flex-col gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-2 rounded-lg dark:hover:bg-zinc-800"
+                    onClick={handleSave}
+                  >
+                    <Save className="h-4 w-4" />
+                    {t('editorCanvas.actions.save')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-2 rounded-lg dark:hover:bg-zinc-800"
+                    onClick={() => setIsPreviewDrawerOpen(true)}
+                  >
+                    <Play className="h-4 w-4" />
+                    {t('editorCanvas.actions.preview')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-2 rounded-lg dark:hover:bg-zinc-800"
+                    onClick={handleLeaveProject}
+                  >
+                    <DoorOpen className="h-4 w-4" />
+                    {t('editorCanvas.actions.leave')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-2 rounded-lg dark:hover:bg-zinc-800"
+                    onClick={() => setIsPublishDrawerOpen(true)}
+                  >
+                    <Upload className="h-4 w-4" />
+                    {t('editorCanvas.actions.publish')}
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
             <Button
               variant="ghost"
               size="icon"
+              className="rounded-full"
               onClick={() => setIsSettingsDrawerOpen(true)}
             >
-              <Settings className="h-5 w-5" />
+              <Settings2 className="h-5 w-5" />
             </Button>
           </div>
 
@@ -1278,7 +1272,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           )}
         </div>
       </div>
-      <SettingsDrawer
+      <GameSettingsDrawer
         open={isSettingsDrawerOpen}
         onOpenChange={setIsSettingsDrawerOpen}
         projectId={projectId}
@@ -1296,13 +1290,13 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         isPublished={isPublished}
         onUnpublish={handleUnpublish}
       />
-      <PreviewDrawer
+      <GamePreviewDrawer
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
         nodes={nodes}
         edges={edges}
       />
-      <PublishDrawer
+      <GamePublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
         nodes={nodes}

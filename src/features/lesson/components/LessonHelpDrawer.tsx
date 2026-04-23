@@ -31,24 +31,9 @@ export function LessonHelpDrawer({
 
   const items: FaqItem[] = [
     {
-      id: 'structure',
-      question: t('page.help.sections.structure.title'),
-      answer: t('page.help.sections.structure.body'),
-    },
-    {
-      id: 'headings',
-      question: t('page.help.sections.headings.title'),
-      answer: t('page.help.sections.headings.body'),
-    },
-    {
-      id: 'media',
-      question: t('page.help.sections.media.title'),
-      answer: t('page.help.sections.media.body'),
-    },
-    {
-      id: 'pages',
-      question: t('page.help.sections.pages.title'),
-      answer: t('page.help.sections.pages.body'),
+      id: 'editor-basics',
+      question: t('page.help.editorBasics.title'),
+      answer: t('page.help.editorBasics.body'),
     },
   ]
 

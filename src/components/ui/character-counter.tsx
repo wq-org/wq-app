@@ -37,29 +37,73 @@ export function CharacterCounter({
   size = 20,
   color: colorOverride,
 }: CharacterCounterProps) {
-  const isWarning = count <= WARN_AT
+  const isWarning = count <= WARN_AT && count >= 0
   const color = getColor(count, colorOverride)
 
   const strokeWidth = size * 0.12
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
 
+  const safeMax = max > 0 ? max : 1
+
   const dashOffset = React.useMemo(() => {
-    const used = Math.min(max, max - count)
-    const percentage = Math.min(1, Math.max(0, used / max))
+    const used = Math.min(safeMax, safeMax - count)
+    const percentage = Math.min(1, Math.max(0, used / safeMax))
     return circumference * (1 - percentage)
-  }, [count, circumference, max])
+  }, [count, circumference, safeMax])
 
   const fontSize = Math.max(9, size * 0.55)
+
+  if (count < 0) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label={`${Math.abs(count)} characters over limit`}
+        className="relative inline-flex shrink-0 items-center justify-center"
+        style={{
+          width: size,
+          height: size,
+        }}
+      >
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          className="absolute inset-0 overflow-visible"
+          aria-hidden="true"
+        >
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="hsl(var(--destructive))"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+          />
+        </svg>
+
+        <span
+          className="relative z-10 font-medium tabular-nums text-destructive"
+          style={{
+            fontSize: `${fontSize}px`,
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif",
+            lineHeight: 1,
+          }}
+        >
+          {count}
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div
       role="meter"
       aria-valuenow={count}
       aria-valuemax={max}
-      aria-label={
-        count >= 0 ? `${count} characters remaining` : `${Math.abs(count)} characters over limit`
-      }
+      aria-label={`${count} characters remaining`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

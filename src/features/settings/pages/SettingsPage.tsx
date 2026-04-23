@@ -10,7 +10,7 @@ import type { SettingsPageProps, SettingsSaveValues } from '../types/settings.ty
 import { SettingsProfileForm } from '../components/SettingsProfileForm'
 import { SettingsLoadingState } from '../components/SettingsLoadingState'
 
-const SettingsPage = ({ role }: SettingsPageProps) => {
+const SettingsPage = ({ role, embedded }: SettingsPageProps) => {
   const { t } = useTranslation('settings')
   const { profile, loading, getUserId, refreshProfile } = useUser()
   const [avatarOptions, setAvatarOptions] = useState<AvatarOption[]>([])
@@ -109,9 +109,15 @@ const SettingsPage = ({ role }: SettingsPageProps) => {
   }
 
   return (
-    <div className="w-full min-h-screen">
+    <div className={embedded ? 'w-full' : 'w-full min-h-screen'}>
       <section className="animate-in fade-in-0 slide-in-from-bottom-4">
-        <div className="container flex w-full flex-wrap items-start justify-center gap-6 py-6 md:py-10">
+        <div
+          className={
+            embedded
+              ? 'flex w-full flex-wrap items-start justify-center gap-6 py-0 md:py-2'
+              : 'container flex w-full flex-wrap items-start justify-center gap-6 py-6 md:py-10'
+          }
+        >
           {loading ? <SettingsLoadingState /> : null}
 
           {!loading && !profile ? (

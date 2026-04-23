@@ -1,61 +1,46 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
-import { InstitutionInformationForm } from '../components/InstitutionInformationForm'
-import { createInstitution } from '../api/institutionApi'
+import { useTranslation } from 'react-i18next'
+
 import { useUser } from '@/contexts/user'
-import { Spinner } from '@/components/ui/spinner'
-import type { InstitutionFormData } from '../types/institution.types'
+import type { NewInstitutionWizardValues } from '../types/institution.types'
+import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { NewInstitutionWizard } from '../components/NewInstitutionWizard'
+import { useInstitutions } from '../hooks/useInstitutions'
 
 const NewInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
-  const [loading, setLoading] = useState(false)
+  const { t } = useTranslation('features.admin')
+  const { addInstitutionFromWizard } = useInstitutions()
 
   const role = getRole()
 
-  const handleSubmit = async (data: InstitutionFormData) => {
-    setLoading(true)
+  const handleCreate = async (values: NewInstitutionWizardValues) => {
     try {
-      await createInstitution(data)
-      toast.success('Institution Created', {
-        description: 'The institution has been created successfully.',
+      const result = await addInstitutionFromWizard(values)
+      toast.success(t('institutions.toasts.createSuccess'), {
+        description: t('institutions.toasts.createSuccessDescription'),
       })
-      navigate(`/${role}/institution`)
+      return result
     } catch (err) {
-      toast.error('Failed to Create Institution', {
-        description: err instanceof Error ? err.message : 'An unexpected error occurred.',
+      toast.error(t('institutions.toasts.createError'), {
+        description: err instanceof Error ? err.message : t('institutions.toasts.unexpectedError'),
       })
-    } finally {
-      setLoading(false)
+      throw err
     }
   }
 
-  const handleCancel = () => {
-    navigate(`/${role}/institution`)
-  }
-
-  if (loading) {
-    return (
-      <AdminWorkspaceShell>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Spinner
-            variant="gray"
-            size="sm"
-            speed={1750}
-          />
-        </div>
-      </AdminWorkspaceShell>
-    )
-  }
+  const handleCancel = () => navigate(`/${role}/institution`)
+  const handleFinished = () => navigate(`/${role}/institution`)
 
   return (
     <AdminWorkspaceShell>
       <div className="flex flex-col items-center gap-4 py-8">
-        <InstitutionInformationForm
-          onSubmit={handleSubmit}
+        <NewInstitutionWizard
+          onCreate={handleCreate}
           onCancel={handleCancel}
+          onFinished={handleFinished}
         />
       </div>
     </AdminWorkspaceShell>

@@ -153,11 +153,16 @@ CREATE TABLE IF NOT EXISTS public.lessons (
   title TEXT NOT NULL,
   topic_id UUID NOT NULL REFERENCES public.topics(id) ON DELETE CASCADE,
   content JSONB NOT NULL,
+  pages JSONB NOT NULL DEFAULT '[]'::jsonb,
   order_index INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   description TEXT
 );
+
+-- Idempotent when baseline is re-applied against an older lessons table (no pages column).
+ALTER TABLE public.lessons
+  ADD COLUMN IF NOT EXISTS pages JSONB NOT NULL DEFAULT '[]'::jsonb;
 
 -- 9. GAMES
 CREATE TABLE IF NOT EXISTS public.games (
@@ -178,6 +183,14 @@ CREATE TABLE IF NOT EXISTS public.games (
   published_at TIMESTAMPTZ
 );
 
+-- Idempotent for DBs created before theme_id existed (folded from 20260227000001_add_theme_id_to_courses_and_games.sql).
+ALTER TABLE public.courses
+  ADD COLUMN IF NOT EXISTS theme_id TEXT NOT NULL DEFAULT 'blue';
+
+ALTER TABLE public.games
+  ADD COLUMN IF NOT EXISTS theme_id TEXT NOT NULL DEFAULT 'blue';
+
+-- theme_id CHECK constraints (folded from 20260227000001_add_theme_id_to_courses_and_games.sql).
 ALTER TABLE public.courses
 DROP CONSTRAINT IF EXISTS courses_theme_id_check;
 
@@ -191,6 +204,31 @@ DROP CONSTRAINT IF EXISTS games_theme_id_check;
 ALTER TABLE public.games
 ADD CONSTRAINT games_theme_id_check
 CHECK (theme_id IN ('violet', 'indigo', 'blue', 'cyan', 'teal', 'green', 'lime', 'orange', 'pink', 'darkblue'));
+
+-- =============================================================================
+-- LESSON PAGES — backfill from legacy single `content` column
+-- Folded from: 20260317000001_add_lesson_pages.sql,
+--              20260317000002_repair_lesson_pages_backfill.sql
+-- =============================================================================
+UPDATE public.lessons
+SET pages = jsonb_build_array(
+  jsonb_build_object(
+    'id', uuid_generate_v4()::text,
+    'order', 0,
+    'content', content
+  )
+)
+WHERE jsonb_typeof(pages) IS DISTINCT FROM 'array'
+   OR (
+     jsonb_typeof(pages) = 'array'
+     AND (
+       jsonb_array_length(pages) = 0
+       OR jsonb_typeof(pages -> 0) IS DISTINCT FROM 'object'
+       OR NOT ((pages -> 0) ? 'content')
+       OR pages -> 0 -> 'content' IS NULL
+       OR pages -> 0 -> 'content' = 'null'::jsonb
+     )
+   );
 
 -- =============================================================================
 -- INDEXES
@@ -313,6 +351,43 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.follow_teacher(uuid) TO authenticated;
 COMMENT ON FUNCTION public.follow_teacher(uuid) IS 'Follow a teacher (same institution). Unfollow via direct DELETE.';
+
+-- Same-institution profile search for command palette (folded from 20260226000001_command_search_same_institution.sql).
+DROP FUNCTION IF EXISTS public.list_searchable_profiles_in_my_institutions();
+
+CREATE OR REPLACE FUNCTION public.list_searchable_profiles_in_my_institutions()
+RETURNS TABLE (
+  user_id uuid,
+  username text,
+  display_name text,
+  email text,
+  avatar_url text,
+  role text
+)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT DISTINCT
+    p.user_id,
+    p.username,
+    p.display_name,
+    p.email,
+    p.avatar_url,
+    p.role
+  FROM public.profiles AS p
+  INNER JOIN public.user_institutions AS ui_target
+    ON ui_target.user_id = p.user_id
+  INNER JOIN public.user_institutions AS ui_me
+    ON ui_me.institution_id = ui_target.institution_id
+  WHERE ui_me.user_id = auth.uid()
+    AND p.role IN ('student', 'teacher', 'institution_admin', 'super_admin')
+  ORDER BY p.display_name NULLS LAST, p.username NULLS LAST, p.email NULLS LAST;
+$$;
+
+REVOKE ALL ON FUNCTION public.list_searchable_profiles_in_my_institutions() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.list_searchable_profiles_in_my_institutions() TO authenticated;
 
 -- =============================================================================
 -- RLS — PROFILES
@@ -482,9 +557,17 @@ CREATE POLICY "Students can read published games of followed teachers" ON public
 
 -- =============================================================================
 -- STORAGE — buckets + RLS (path: {institution_id}/{role}/{user_id}/filename)
+-- Folded from 20260312000001_storage_bucket_files_to_cloud.sql (migration removed).
+-- Canonical app bucket is `cloud` (replaces legacy `files` bucket name in app code).
+-- NOTE: Supabase blocks direct DELETE from storage.objects in SQL migrations;
+-- moving objects from `files` → `cloud` must be done via Storage API (service role).
 -- =============================================================================
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('files', 'files', false), ('avatars', 'avatars', false), ('backgrounds', 'backgrounds', false)
+VALUES ('cloud', 'cloud', false)
+ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', false), ('backgrounds', 'backgrounds', false)
 ON CONFLICT (id) DO NOTHING;
 
 -- RLS on storage.objects is already enabled by Supabase; we only add policies here.
@@ -504,7 +587,7 @@ DROP POLICY IF EXISTS "Users manage own files" ON storage.objects;
 CREATE POLICY "Users upload to own institution folder" ON storage.objects
 FOR INSERT TO authenticated
 WITH CHECK (
-  bucket_id = 'files'
+  bucket_id = 'cloud'
   AND (storage.foldername(name))[1] IS NOT NULL
   AND EXISTS (
     SELECT 1
@@ -520,7 +603,7 @@ WITH CHECK (
 CREATE POLICY "Users read files from own institution" ON storage.objects
 FOR SELECT TO authenticated
 USING (
-  bucket_id = 'files'
+  bucket_id = 'cloud'
   AND (storage.foldername(name))[1] IS NOT NULL
   AND EXISTS (
     SELECT 1
@@ -534,7 +617,7 @@ USING (
 CREATE POLICY "Users manage own files" ON storage.objects
 FOR ALL TO authenticated
 USING (
-  bucket_id = 'files'
+  bucket_id = 'cloud'
   AND (storage.foldername(name))[1] IS NOT NULL
   AND EXISTS (
     SELECT 1
@@ -545,7 +628,7 @@ USING (
   AND (storage.foldername(name))[3] = auth.uid()::text
 )
 WITH CHECK (
-  bucket_id = 'files'
+  bucket_id = 'cloud'
   AND (storage.foldername(name))[1] IS NOT NULL
   AND EXISTS (
     SELECT 1

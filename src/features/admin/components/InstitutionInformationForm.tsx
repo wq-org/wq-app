@@ -1,4 +1,7 @@
-import { useState, useCallback, type FormEvent } from 'react'
+import { useState } from 'react'
+import { useForm, Controller, type Resolver, type SubmitHandler } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -12,51 +15,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type {
-  InstitutionType,
-  InstitutionStatus,
-  InstitutionFormData,
-  AddressJsonb,
-  InvoiceLanguage,
-} from '@/features/admin/types/institution.types'
+import { CountryCombobox } from './CountryCombobox'
+import { getCountryDisplayValue } from '../config/countryOptions'
+import type { InstitutionFormData } from '../types/institution.types'
+import {
+  INSTITUTION_TYPE_OPTIONS,
+  INSTITUTION_STATUS_VALUES,
+  INVOICE_LANGUAGE_VALUES,
+  LEGAL_FORM_VALUES,
+} from '../config/institutionFormOptions'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
+import { slugifyInstitutionName } from '../utils/institutionSlug'
+import { institutionSchema, type InstitutionFormValues } from '../schemas/institution.schema'
 
-const INSTITUTION_TYPES: { value: InstitutionType; label: string }[] = [
-  { value: 'school', label: 'School' },
-  { value: 'university', label: 'University' },
-  { value: 'college', label: 'College' },
-  { value: 'organization', label: 'Organization' },
-  { value: 'hospital', label: 'Hospital' },
-  { value: 'other', label: 'Other' },
-]
-
-const INSTITUTION_STATUSES: { value: InstitutionStatus; label: string }[] = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'suspended', label: 'Suspended' },
-  { value: 'pending', label: 'Pending' },
-]
-
-const LEGAL_FORMS = [
-  { value: 'gmbh', label: 'GmbH' },
-  { value: 'ggmbh', label: 'gGmbH (gemeinnutzig)' },
-  { value: 'ag', label: 'AG' },
-  { value: 'ev', label: 'e.V.' },
-  { value: 'kg', label: 'KG' },
-  { value: 'other', label: 'Other' },
-]
-
-const INVOICE_LANGUAGES: { value: InvoiceLanguage; label: string }[] = [
-  { value: 'de', label: 'German (DE)' },
-  { value: 'en', label: 'English (EN)' },
-]
-
-interface InstitutionFormProps {
+type InstitutionFormProps = {
   onSubmit?: (data: InstitutionFormData) => void
   onCancel?: () => void
 }
 
-const initialFormData: InstitutionFormData = {
+const DEFAULT_VALUES: InstitutionFormValues = {
   name: '',
   slug: '',
   type: '',
@@ -79,907 +56,1011 @@ const initialFormData: InstitutionFormData = {
   primaryContactRole: '',
   invoiceLanguage: 'de',
   paymentTerms: 30,
-  address: { country: 'Germany' },
+  address: { street: '', addressLine2: '', city: '', state: '', country: '', postalCode: '' },
   institutionNumber: '',
   numberOfBeds: undefined,
-  departments: [],
+  departments: '',
   accreditation: '',
   socialLinks: { linkedin: '', instagram: '' },
   imageUrl: DEFAULT_INSTITUTION_IMAGE,
 }
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function parseOptionalNumber(value: string): number | undefined {
-  const parsed = Number.parseInt(value, 10)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
 export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFormProps) {
-  const [formData, setFormData] = useState<InstitutionFormData>(initialFormData)
+  const { t, i18n } = useTranslation('features.admin')
   const [isSlugTouched, setIsSlugTouched] = useState(false)
 
-  const handleNameChange = useCallback(
-    (name: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        name,
-        slug: isSlugTouched ? prev.slug : slugify(name),
-      }))
-    },
-    [isSlugTouched],
-  )
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<InstitutionFormValues>({
+    resolver: zodResolver(institutionSchema) as Resolver<InstitutionFormValues>,
+    defaultValues: DEFAULT_VALUES,
+  })
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    onSubmit?.(formData)
-    setFormData(initialFormData)
+  const typeValue = watch('type')
+
+  const onFormSubmit: SubmitHandler<InstitutionFormValues> = (values) => {
+    const departments = values.departments
+      .split(',')
+      .map((d) => d.trim())
+      .filter(Boolean)
+    onSubmit?.({ ...values, departments } as InstitutionFormData)
+    reset(DEFAULT_VALUES)
     setIsSlugTouched(false)
   }
 
   const handleCancel = () => {
-    setFormData(initialFormData)
+    reset(DEFAULT_VALUES)
     setIsSlugTouched(false)
     onCancel?.()
   }
 
-  const handleAddressChange = (field: keyof AddressJsonb, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      address: { ...prev.address, [field]: value || undefined },
-    }))
-  }
-
-  const handleSocialLinkChange = (platform: 'linkedin' | 'instagram', value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      socialLinks: { ...prev.socialLinks, [platform]: value },
-    }))
-  }
-
-  const handleDepartmentsChange = (value: string) => {
-    const departments = value
-      .split(',')
-      .map((department) => department.trim())
-      .filter((department) => department.length > 0)
-
-    setFormData((prev) => ({ ...prev, departments }))
-  }
-
-  const isFormValid =
-    formData.name.trim().length > 0 &&
-    formData.slug.trim().length > 0 &&
-    formData.type !== '' &&
-    formData.description.trim().length > 0 &&
-    formData.email.trim().length > 0 &&
-    formData.website.trim().length > 0 &&
-    formData.phone.trim().length > 0 &&
-    formData.legalName.trim().length > 0 &&
-    formData.legalForm.trim().length > 0 &&
-    formData.vatId.trim().length > 0 &&
-    formData.primaryContactName.trim().length > 0 &&
-    formData.primaryContactEmail.trim().length > 0 &&
-    formData.billingEmail.trim().length > 0 &&
-    (formData.address.street ?? '').trim().length > 0 &&
-    (formData.address.city ?? '').trim().length > 0 &&
-    (formData.address.postalCode ?? '').trim().length > 0 &&
-    (formData.address.country ?? '').trim().length > 0 &&
-    formData.paymentTerms > 0 &&
-    (formData.socialLinks.linkedin ?? '').trim().length > 0 &&
-    (formData.socialLinks.instagram ?? '').trim().length > 0
+  const req = (
+    <Text
+      as="span"
+      variant="small"
+      className="text-red-500"
+    >
+      *
+    </Text>
+  )
 
   return (
     <Card className="border max-w-3xl w-full shadow-sm">
       <form
         className="flex flex-col gap-5"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onFormSubmit)}
       >
         <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-semibold text-gray-900">Basic Information</CardTitle>
+          <CardTitle className="text-2xl font-semibold">{t('form.title')}</CardTitle>
           <Text
             as="p"
             variant="body"
-            className="text-sm text-gray-500 mt-2 font-normal"
+            className="text-sm mt-2 font-normal"
           >
-            Add the basic details for your institution. Fields marked with * are required.
+            {t('form.subtitle')}
           </Text>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-6">
+          {/* Name */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-name"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Institution Name{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.name')} {req}
             </Label>
             <Input
               id="institution-name"
-              placeholder="e.g., Kreiskliniken Reutlingen"
-              value={formData.name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              required
+              placeholder={t('form.fields.namePlaceholder')}
+              aria-describedby={errors.name ? 'institution-name-error' : undefined}
               className="text-base py-2 px-3 w-full"
+              {...register('name', {
+                onChange: (e) => {
+                  if (!isSlugTouched) {
+                    setValue('slug', slugifyInstitutionName(e.target.value))
+                  }
+                },
+              })}
             />
+            {errors.name ? (
+              <span
+                id="institution-name-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.name.message}
+              </span>
+            ) : null}
           </div>
 
+          {/* Slug */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-slug"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Slug{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.slug')} {req}
             </Label>
             <Input
               id="institution-slug"
-              placeholder="kreiskliniken-reutlingen"
-              value={formData.slug}
-              onChange={(e) => {
-                setIsSlugTouched(true)
-                setFormData((prev) => ({ ...prev, slug: e.target.value }))
-              }}
+              placeholder={t('form.fields.slugPlaceholder')}
+              aria-describedby={errors.slug ? 'institution-slug-error' : undefined}
               className="text-base py-2 px-3 w-full"
+              {...register('slug', {
+                onChange: () => setIsSlugTouched(true),
+              })}
             />
+            {errors.slug ? (
+              <span
+                id="institution-slug-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.slug.message}
+              </span>
+            ) : null}
             <Text
               as="p"
               variant="body"
-              className="text-xs text-gray-400"
+              className="text-xs"
             >
-              URL-friendly identifier. Auto-generated from name unless manually edited.
+              {t('form.fields.slugHint')}
             </Text>
           </div>
 
+          {/* Type + Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-type"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Type{' '}
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-red-500"
-                >
-                  *
-                </Text>
+                {t('form.fields.type')} {req}
               </Label>
-              <Select
-                value={formData.type || '__none__'}
-                onValueChange={(v) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    type: v === '__none__' ? '' : (v as InstitutionType),
-                  }))
-                }
-              >
-                <SelectTrigger
-                  id="institution-type"
-                  className="w-full justify-between"
-                >
-                  <SelectValue placeholder="Select institution type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Select institution type</SelectItem>
-                  {INSTITUTION_TYPES.map(({ value, label }) => (
-                    <SelectItem
-                      key={value}
-                      value={value}
+              <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value || '__none__'}
+                    onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)}
+                  >
+                    <SelectTrigger
+                      id="institution-type"
+                      className="w-full justify-between"
+                      aria-describedby={errors.type ? 'institution-type-error' : undefined}
                     >
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                      <SelectValue placeholder={t('form.fields.typePlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">{t('form.fields.typePlaceholder')}</SelectItem>
+                      {INSTITUTION_TYPE_OPTIONS.map((value) => (
+                        <SelectItem
+                          key={value}
+                          value={value}
+                        >
+                          {t(`form.types.${value}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.type ? (
+                <span
+                  id="institution-type-error"
+                  className="text-sm text-destructive"
+                  role="alert"
+                >
+                  {errors.type.message}
+                </span>
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-status"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Status
+                {t('form.fields.status')}
               </Label>
-              <Select
-                value={formData.status}
-                onValueChange={(v) =>
-                  setFormData((prev) => ({ ...prev, status: v as InstitutionStatus }))
-                }
-              >
-                <SelectTrigger
-                  id="institution-status"
-                  className="w-full justify-between"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {INSTITUTION_STATUSES.map(({ value, label }) => (
-                    <SelectItem
-                      key={value}
-                      value={value}
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      id="institution-status"
+                      className="w-full justify-between"
                     >
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INSTITUTION_STATUS_VALUES.map((value) => (
+                        <SelectItem
+                          key={value}
+                          value={value}
+                        >
+                          {t(`form.statuses.${value}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           </div>
 
+          {/* Description */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-description"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Description{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.description')} {req}
             </Label>
             <Textarea
               id="institution-description"
-              placeholder="Enter a brief description of the institution..."
-              value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              placeholder={t('form.fields.descriptionPlaceholder')}
               rows={4}
+              aria-describedby={errors.description ? 'institution-description-error' : undefined}
               className="resize-none w-full"
+              {...register('description')}
             />
+            {errors.description ? (
+              <span
+                id="institution-description-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.description.message}
+              </span>
+            ) : null}
           </div>
 
+          {/* Email + Phone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-email"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Email{' '}
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-red-500"
-                >
-                  *
-                </Text>
+                {t('form.fields.email')} {req}
               </Label>
               <Input
                 id="institution-email"
                 type="email"
-                placeholder="contact@institution.de"
-                value={formData.email}
-                onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                placeholder={t('form.fields.emailPlaceholder')}
+                aria-describedby={errors.email ? 'institution-email-error' : undefined}
                 className="text-base py-2 px-3 w-full"
+                {...register('email')}
               />
+              {errors.email ? (
+                <span
+                  id="institution-email-error"
+                  className="text-sm text-destructive"
+                  role="alert"
+                >
+                  {errors.email.message}
+                </span>
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="institution-phone"
-                className="font-normal text-gray-700"
+                className="font-normal"
               >
-                Phone{' '}
-                <Text
-                  as="span"
-                  variant="small"
-                  className="text-red-500"
-                >
-                  *
-                </Text>
+                {t('form.fields.phone')} {req}
               </Label>
               <Input
                 id="institution-phone"
                 type="tel"
-                placeholder="+49 7121 200-0"
-                value={formData.phone}
-                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                placeholder={t('form.fields.phonePlaceholder')}
+                aria-describedby={errors.phone ? 'institution-phone-error' : undefined}
                 className="text-base py-2 px-3 w-full"
+                {...register('phone')}
               />
+              {errors.phone ? (
+                <span
+                  id="institution-phone-error"
+                  className="text-sm text-destructive"
+                  role="alert"
+                >
+                  {errors.phone.message}
+                </span>
+              ) : null}
             </div>
           </div>
 
+          {/* Website */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-website"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Website{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+              {t('form.fields.website')} {req}
             </Label>
             <Input
               id="institution-website"
               type="url"
-              placeholder="https://www.institution.de"
-              value={formData.website}
-              onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
+              placeholder={t('form.fields.websitePlaceholder')}
+              aria-describedby={errors.website ? 'institution-website-error' : undefined}
               className="text-base py-2 px-3 w-full"
+              {...register('website')}
             />
+            {errors.website ? (
+              <span
+                id="institution-website-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.website.message}
+              </span>
+            ) : null}
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-semibold text-gray-700">Legal Information</Label>
-
+          {/* Legal Information */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.legal.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-legal-name"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Legal Name *
+                  {t('form.legal.legalName')} *
                 </Label>
                 <Input
                   id="institution-legal-name"
-                  placeholder="Kreiskliniken Reutlingen gGmbH"
-                  value={formData.legalName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, legalName: e.target.value }))}
+                  placeholder={t('form.legal.legalNamePlaceholder')}
+                  aria-describedby={errors.legalName ? 'institution-legal-name-error' : undefined}
                   className="text-base py-2 px-3 w-full"
+                  {...register('legalName')}
                 />
+                {errors.legalName ? (
+                  <span
+                    id="institution-legal-name-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.legalName.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-legal-form"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Legal Form *
+                  {t('form.legal.legalForm')} *
                 </Label>
-                <Select
-                  value={formData.legalForm || '__none__'}
-                  onValueChange={(v) =>
-                    setFormData((prev) => ({ ...prev, legalForm: v === '__none__' ? '' : v }))
-                  }
-                >
-                  <SelectTrigger
-                    id="institution-legal-form"
-                    className="w-full justify-between"
-                  >
-                    <SelectValue placeholder="Select legal form" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Select legal form</SelectItem>
-                    {LEGAL_FORMS.map(({ value, label }) => (
-                      <SelectItem
-                        key={value}
-                        value={value}
+                <Controller
+                  name="legalForm"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value || '__none__'}
+                      onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)}
+                    >
+                      <SelectTrigger
+                        id="institution-legal-form"
+                        className="w-full justify-between"
+                        aria-describedby={
+                          errors.legalForm ? 'institution-legal-form-error' : undefined
+                        }
                       >
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        <SelectValue placeholder={t('form.legal.legalFormPlaceholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">
+                          {t('form.legal.legalFormPlaceholder')}
+                        </SelectItem>
+                        {LEGAL_FORM_VALUES.map((value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}
+                          >
+                            {t(`form.legalForms.${value}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.legalForm ? (
+                  <span
+                    id="institution-legal-form-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.legalForm.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-vat-id"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  VAT ID (USt-ID) *
+                  {t('form.legal.vatId')} *
                 </Label>
                 <Input
                   id="institution-vat-id"
-                  placeholder="DE123456789"
-                  value={formData.vatId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, vatId: e.target.value }))}
+                  placeholder={t('form.legal.vatIdPlaceholder')}
+                  aria-describedby={errors.vatId ? 'institution-vat-id-error' : undefined}
                   className="text-base py-2 px-3 w-full"
+                  {...register('vatId')}
                 />
+                {errors.vatId ? (
+                  <span
+                    id="institution-vat-id-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.vatId.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-registration-number"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Handelsregister (HRB)
+                  {t('form.legal.registrationNumber')}
                 </Label>
                 <Input
                   id="institution-registration-number"
-                  placeholder="HRB 12345"
-                  value={formData.registrationNumber}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, registrationNumber: e.target.value }))
-                  }
+                  placeholder={t('form.legal.registrationNumberPlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('registrationNumber')}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-tax-id"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Steuernummer
+                  {t('form.legal.taxId')}
                 </Label>
                 <Input
                   id="institution-tax-id"
-                  placeholder="12/345/67890"
-                  value={formData.taxId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, taxId: e.target.value }))}
+                  placeholder={t('form.legal.taxIdPlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('taxId')}
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-semibold text-gray-700">Primary Contact</Label>
-
+          {/* Primary Contact */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.primaryContact.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-name"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Contact Name *
+                  {t('form.primaryContact.contactName')} *
                 </Label>
                 <Input
                   id="institution-primary-contact-name"
-                  placeholder="Astrid"
-                  value={formData.primaryContactName}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, primaryContactName: e.target.value }))
+                  placeholder={t('form.primaryContact.contactNamePlaceholder')}
+                  aria-describedby={
+                    errors.primaryContactName ? 'institution-primary-contact-name-error' : undefined
                   }
                   className="text-base py-2 px-3 w-full"
+                  {...register('primaryContactName')}
                 />
+                {errors.primaryContactName ? (
+                  <span
+                    id="institution-primary-contact-name-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.primaryContactName.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-role"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Role / Title
+                  {t('form.primaryContact.contactRole')}
                 </Label>
                 <Input
                   id="institution-primary-contact-role"
-                  placeholder="Pflegedirektion"
-                  value={formData.primaryContactRole}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, primaryContactRole: e.target.value }))
-                  }
+                  placeholder={t('form.primaryContact.contactRolePlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('primaryContactRole')}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-email"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Contact Email *
+                  {t('form.primaryContact.contactEmail')} *
                 </Label>
                 <Input
                   id="institution-primary-contact-email"
                   type="email"
-                  placeholder="m.schmidt@example.de"
-                  value={formData.primaryContactEmail}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, primaryContactEmail: e.target.value }))
+                  placeholder={t('form.primaryContact.contactEmailPlaceholder')}
+                  aria-describedby={
+                    errors.primaryContactEmail
+                      ? 'institution-primary-contact-email-error'
+                      : undefined
                   }
                   className="text-base py-2 px-3 w-full"
+                  {...register('primaryContactEmail')}
                 />
+                {errors.primaryContactEmail ? (
+                  <span
+                    id="institution-primary-contact-email-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.primaryContactEmail.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-primary-contact-phone"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Contact Phone
+                  {t('form.primaryContact.contactPhone')}
                 </Label>
                 <Input
                   id="institution-primary-contact-phone"
                   type="tel"
-                  placeholder="+49 7121 200-1234"
-                  value={formData.primaryContactPhone}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, primaryContactPhone: e.target.value }))
-                  }
+                  placeholder={t('form.primaryContact.contactPhonePlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('primaryContactPhone')}
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-blue-50">
-            <Label className="font-semibold text-gray-700">Billing Information</Label>
-
+          {/* Billing Information */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.billing.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-billing-email"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Billing Email *
+                  {t('form.billing.billingEmail')} *
                 </Label>
                 <Input
                   id="institution-billing-email"
                   type="email"
-                  placeholder="billing@institution.de"
-                  value={formData.billingEmail}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, billingEmail: e.target.value }))
+                  placeholder={t('form.billing.billingEmailPlaceholder')}
+                  aria-describedby={
+                    errors.billingEmail ? 'institution-billing-email-error' : undefined
                   }
                   className="text-base py-2 px-3 w-full"
+                  {...register('billingEmail')}
                 />
+                {errors.billingEmail ? (
+                  <span
+                    id="institution-billing-email-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.billingEmail.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-billing-contact-name"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Billing Contact Name
+                  {t('form.billing.billingContactName')}
                 </Label>
                 <Input
                   id="institution-billing-contact-name"
-                  placeholder="Buchhaltung"
-                  value={formData.billingContactName}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, billingContactName: e.target.value }))
-                  }
+                  placeholder={t('form.billing.billingContactNamePlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('billingContactName')}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-billing-contact-phone"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Billing Contact Phone
+                  {t('form.billing.billingContactPhone')}
                 </Label>
                 <Input
                   id="institution-billing-contact-phone"
                   type="tel"
-                  placeholder="+49 7121 200-900"
-                  value={formData.billingContactPhone}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, billingContactPhone: e.target.value }))
-                  }
+                  placeholder={t('form.billing.billingContactPhonePlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('billingContactPhone')}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-invoice-language"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Invoice Language
+                  {t('form.billing.invoiceLanguage')}
                 </Label>
-                <Select
-                  value={formData.invoiceLanguage}
-                  onValueChange={(v) =>
-                    setFormData((prev) => ({ ...prev, invoiceLanguage: v as InvoiceLanguage }))
-                  }
-                >
-                  <SelectTrigger
-                    id="institution-invoice-language"
-                    className="w-full justify-between"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INVOICE_LANGUAGES.map(({ value, label }) => (
-                      <SelectItem
-                        key={value}
-                        value={value}
+                <Controller
+                  name="invoiceLanguage"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger
+                        id="institution-invoice-language"
+                        className="w-full justify-between"
                       >
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INVOICE_LANGUAGE_VALUES.map((value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}
+                          >
+                            {t(`form.invoiceLanguages.${value}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-payment-terms"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Payment Terms (days)
+                  {t('form.billing.paymentTerms')}
                 </Label>
                 <Input
                   id="institution-payment-terms"
                   type="number"
                   min={1}
-                  placeholder="30"
-                  value={formData.paymentTerms}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      paymentTerms: parseOptionalNumber(e.target.value) ?? 0,
-                    }))
+                  placeholder={t('form.billing.paymentTermsPlaceholder')}
+                  aria-describedby={
+                    errors.paymentTerms ? 'institution-payment-terms-error' : undefined
                   }
                   className="text-base py-2 px-3 w-full"
+                  {...register('paymentTerms', { valueAsNumber: true })}
                 />
+                {errors.paymentTerms ? (
+                  <span
+                    id="institution-payment-terms-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.paymentTerms.message}
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-semibold text-gray-700">Address</Label>
+          {/* Address */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-semibold">{t('form.address.sectionTitle')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-street"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Street & Number *
+                  {t('form.address.street')} *
                 </Label>
                 <Input
                   id="institution-street"
-                  placeholder="Am Steinenberg 70"
-                  value={formData.address.street || ''}
-                  onChange={(e) => handleAddressChange('street', e.target.value)}
+                  placeholder={t('form.address.streetPlaceholder')}
+                  aria-describedby={errors.address?.street ? 'institution-street-error' : undefined}
                   className="text-base py-2 px-3 w-full"
+                  {...register('address.street')}
                 />
+                {errors.address?.street ? (
+                  <span
+                    id="institution-street-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.address.street.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label
                   htmlFor="institution-address-line-2"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Additional Address (Building, Floor)
+                  {t('form.address.addressLine2')}
                 </Label>
                 <Input
                   id="institution-address-line-2"
-                  placeholder="Gebaude A, 2. OG"
-                  value={formData.address.addressLine2 || ''}
-                  onChange={(e) => handleAddressChange('addressLine2', e.target.value)}
+                  placeholder={t('form.address.addressLine2Placeholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('address.addressLine2')}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-postal-code"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Postal Code (PLZ) *
+                  {t('form.address.postalCode')} *
                 </Label>
                 <Input
                   id="institution-postal-code"
-                  placeholder="72764"
+                  placeholder={t('form.address.postalCodePlaceholder')}
                   maxLength={5}
-                  value={formData.address.postalCode || ''}
-                  onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                  aria-describedby={
+                    errors.address?.postalCode ? 'institution-postal-code-error' : undefined
+                  }
                   className="text-base py-2 px-3 w-full"
+                  {...register('address.postalCode')}
                 />
+                {errors.address?.postalCode ? (
+                  <span
+                    id="institution-postal-code-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.address.postalCode.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-city"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  City *
+                  {t('form.address.city')} *
                 </Label>
                 <Input
                   id="institution-city"
-                  placeholder="Reutlingen"
-                  value={formData.address.city || ''}
-                  onChange={(e) => handleAddressChange('city', e.target.value)}
+                  placeholder={t('form.address.cityPlaceholder')}
+                  aria-describedby={errors.address?.city ? 'institution-city-error' : undefined}
                   className="text-base py-2 px-3 w-full"
+                  {...register('address.city')}
                 />
+                {errors.address?.city ? (
+                  <span
+                    id="institution-city-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.address.city.message}
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-state"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Bundesland (optional)
+                  {t('form.address.state')}
                 </Label>
                 <Input
                   id="institution-state"
-                  placeholder="Baden-Wurttemberg"
-                  value={formData.address.state || ''}
-                  onChange={(e) => handleAddressChange('state', e.target.value)}
+                  placeholder={t('form.address.statePlaceholder')}
                   className="text-base py-2 px-3 w-full"
+                  {...register('address.state')}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-country"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Country *
+                  {t('form.address.country')} *
                 </Label>
-                <Input
-                  id="institution-country"
-                  placeholder="Germany"
-                  value={formData.address.country || ''}
-                  onChange={(e) => handleAddressChange('country', e.target.value)}
-                  className="text-base py-2 px-3 w-full"
+                <Controller
+                  name="address.country"
+                  control={control}
+                  render={({ field }) => (
+                    <CountryCombobox
+                      value={field.value}
+                      onValueChange={(country) =>
+                        field.onChange(getCountryDisplayValue(country, i18n.language))
+                      }
+                      placeholder={t('form.address.countryPlaceholder')}
+                    />
+                  )}
                 />
+                {errors.address?.country ? (
+                  <span
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.address.country.message}
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>
 
-          {formData.type === 'hospital' && (
-            <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-              <Label className="font-semibold text-gray-700">Hospital Details</Label>
-
+          {/* Hospital Details */}
+          {typeValue === 'hospital' && (
+            <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+              <Label className="font-semibold">{t('form.hospital.sectionTitle')}</Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-2">
                   <Label
                     htmlFor="institution-number"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    IK-Nummer (Institutionskennzeichen)
+                    {t('form.hospital.institutionNumber')}
                   </Label>
                   <Input
                     id="institution-number"
-                    placeholder="123456789"
-                    value={formData.institutionNumber}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, institutionNumber: e.target.value }))
-                    }
+                    placeholder={t('form.hospital.institutionNumberPlaceholder')}
                     className="text-base py-2 px-3 w-full"
+                    {...register('institutionNumber')}
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <Label
                     htmlFor="institution-number-of-beds"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    Number of Beds
+                    {t('form.hospital.numberOfBeds')}
                   </Label>
                   <Input
                     id="institution-number-of-beds"
                     type="number"
                     min={0}
-                    placeholder="500"
-                    value={formData.numberOfBeds ?? ''}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        numberOfBeds: parseOptionalNumber(e.target.value),
-                      }))
+                    placeholder={t('form.hospital.numberOfBedsPlaceholder')}
+                    aria-describedby={
+                      errors.numberOfBeds ? 'institution-number-of-beds-error' : undefined
                     }
                     className="text-base py-2 px-3 w-full"
+                    {...register('numberOfBeds', { valueAsNumber: true })}
                   />
+                  {errors.numberOfBeds ? (
+                    <span
+                      id="institution-number-of-beds-error"
+                      className="text-sm text-destructive"
+                      role="alert"
+                    >
+                      {errors.numberOfBeds.message}
+                    </span>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <Label
                     htmlFor="institution-departments"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    Departments (comma-separated)
+                    {t('form.hospital.departments')}
                   </Label>
                   <Input
                     id="institution-departments"
-                    placeholder="Intensivpflege, Wundmanagement, Notaufnahme"
-                    value={formData.departments.join(', ')}
-                    onChange={(e) => handleDepartmentsChange(e.target.value)}
+                    placeholder={t('form.hospital.departmentsPlaceholder')}
                     className="text-base py-2 px-3 w-full"
+                    {...register('departments')}
                   />
                 </div>
 
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <Label
                     htmlFor="institution-accreditation"
-                    className="font-normal text-gray-600 text-sm"
+                    className="font-normal text-sm"
                   >
-                    Accreditation
+                    {t('form.hospital.accreditation')}
                   </Label>
                   <Input
                     id="institution-accreditation"
-                    placeholder="ISO 9001"
-                    value={formData.accreditation}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, accreditation: e.target.value }))
-                    }
+                    placeholder={t('form.hospital.accreditationPlaceholder')}
                     className="text-base py-2 px-3 w-full"
+                    {...register('accreditation')}
                   />
                 </div>
               </div>
             </div>
           )}
 
-          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-gray-50">
-            <Label className="font-normal text-gray-700">
-              Social Links{' '}
-              <Text
-                as="span"
-                variant="small"
-                className="text-red-500"
-              >
-                *
-              </Text>
+          {/* Social Links */}
+          <div className="flex flex-col gap-4 p-4 border rounded-lg bg-background">
+            <Label className="font-normal">
+              {t('form.socialLinks.sectionTitle')} {req}
             </Label>
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-linkedin"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  LinkedIn *
+                  {t('form.socialLinks.linkedin')} *
                 </Label>
                 <Input
                   id="institution-linkedin"
                   type="url"
-                  placeholder="https://www.linkedin.com/company/institution"
-                  value={formData.socialLinks.linkedin || ''}
-                  onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
+                  placeholder={t('form.socialLinks.linkedinPlaceholder')}
+                  aria-describedby={
+                    errors.socialLinks?.linkedin ? 'institution-linkedin-error' : undefined
+                  }
                   className="text-base py-2 px-3 w-full"
+                  {...register('socialLinks.linkedin')}
                 />
+                {errors.socialLinks?.linkedin ? (
+                  <span
+                    id="institution-linkedin-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.socialLinks.linkedin.message}
+                  </span>
+                ) : null}
               </div>
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="institution-instagram"
-                  className="font-normal text-gray-600 text-sm"
+                  className="font-normal text-sm"
                 >
-                  Instagram *
+                  {t('form.socialLinks.instagram')} *
                 </Label>
                 <Input
                   id="institution-instagram"
                   type="url"
-                  placeholder="https://www.instagram.com/institution"
-                  value={formData.socialLinks.instagram || ''}
-                  onChange={(e) => handleSocialLinkChange('instagram', e.target.value)}
+                  placeholder={t('form.socialLinks.instagramPlaceholder')}
+                  aria-describedby={
+                    errors.socialLinks?.instagram ? 'institution-instagram-error' : undefined
+                  }
                   className="text-base py-2 px-3 w-full"
+                  {...register('socialLinks.instagram')}
                 />
+                {errors.socialLinks?.instagram ? (
+                  <span
+                    id="institution-instagram-error"
+                    className="text-sm text-destructive"
+                    role="alert"
+                  >
+                    {errors.socialLinks.instagram.message}
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>
 
+          {/* Image URL */}
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="institution-image-url"
-              className="font-normal text-gray-700"
+              className="font-normal"
             >
-              Image URL
+              {t('form.fields.imageUrl')}
             </Label>
             <Input
               id="institution-image-url"
               type="url"
-              placeholder="https://example.com/image.png"
-              value={formData.imageUrl}
-              onChange={(e) => setFormData((prev) => ({ ...prev, imageUrl: e.target.value }))}
+              placeholder={t('form.fields.imageUrlPlaceholder')}
               className="text-base py-2 px-3 w-full"
+              {...register('imageUrl')}
             />
             <Text
               as="p"
               variant="body"
-              className="text-xs text-gray-400 mt-1"
+              className="text-xs mt-1"
             >
-              Enter a direct URL to the institution image.
+              {t('form.fields.imageUrlHint')}
             </Text>
           </div>
         </CardContent>
@@ -990,14 +1071,13 @@ export function InstitutionInformationForm({ onSubmit, onCancel }: InstitutionFo
             type="button"
             onClick={handleCancel}
           >
-            Cancel
+            {t('form.actions.cancel')}
           </Button>
           <Button
             type="submit"
-            variant="default"
-            disabled={!isFormValid}
+            variant="darkblue"
           >
-            Create Institution
+            {t('form.actions.create')}
           </Button>
         </CardFooter>
       </form>

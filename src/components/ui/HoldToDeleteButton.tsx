@@ -23,6 +23,10 @@ interface HoldToDeleteButtonProps extends Omit<React.ComponentProps<typeof Butto
 const progressFillClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
   default: 'bg-primary/30',
   destructive: 'bg-destructive/40',
+  info: 'bg-info/30',
+  success: 'bg-success/30',
+  warning: 'bg-warning/30',
+  invert: 'bg-invert/30',
   outline: 'bg-destructive/20',
   secondary: 'bg-destructive/20',
   ghost: 'bg-destructive/20',
@@ -46,6 +50,10 @@ const progressFillClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
 const contentHoldClass: Record<NonNullable<HoldToDeleteVariant>, string> = {
   default: 'text-primary-foreground',
   destructive: 'text-white',
+  info: 'text-info-foreground',
+  success: 'text-success-foreground',
+  warning: 'text-warning-foreground',
+  invert: 'text-invert-foreground',
   outline: 'text-destructive',
   secondary: 'text-destructive',
   ghost: 'text-destructive',

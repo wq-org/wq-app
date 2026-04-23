@@ -1,8 +1,0 @@
-export { InstitutionDashboard as InstitutionAdminDashboardPage } from './pages/dashboard'
-export { InstitutionTeachers as InstitutionAdminTeachersPage } from './pages/teacher'
-export { InstitutionStudents as InstitutionAdminStudentsPage } from './pages/students'
-export { AdminLicenses as InstitutionAdminLicensesPage } from './pages/licenses'
-export { AdminBilling as InstitutionAdminBillingPage } from './pages/billing'
-export { InstitutionCourses as InstitutionAdminCoursesPage } from './pages/courses'
-export { AdminAnalytics as InstitutionAdminAnalyticsPage } from './pages/analytics'
-export { AdminSettings as InstitutionAdminSettingsPage } from './pages/settings'

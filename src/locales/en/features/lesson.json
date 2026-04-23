@@ -38,7 +38,7 @@
     "addPage": "Add page",
     "notFound": "Lesson not found",
     "actions": {
-      "autoImport": "Auto Import",
+      "smartImport": "Smart Import",
       "help": "Help",
       "tableOfContents": "Show Menu"
     },
@@ -49,22 +49,12 @@
     },
     "drawers": {
       "closeLabel": "Close drawer",
-      "autoImport": {
-        "title": "Auto Import",
-        "description": "Import lesson content from a PDF page.",
-        "backToFiles": "Back to files",
-        "noPdfs": "No PDFs found in your cloud storage.",
-        "selectPdf": "Select",
-        "open": "Open",
-        "loadingPdf": "Loading PDF…",
-        "selectFileToPreview": "Select a file to preview",
-        "selectFileToPreviewHint": "Choose a PDF from the list to see a preview here.",
-        "pageLabel": "Page {{current}} of {{total}}",
-        "scanning": "Scanning page…",
-        "noBlocks": "No text blocks found on this page.",
-        "next": "Next page",
-        "finish": "Finish import",
-        "selectedCount": "{{count}} block(s) selected"
+      "smartImport": {
+        "title": "Smart Import",
+        "description": "Import lesson context from a PDF page.",
+        "placeholderTitle": "PDF import is coming soon",
+        "placeholderDescription": "This drawer is ready for the future import workflow, but file and page selection are not connected yet.",
+        "footerNote": "PDF page import will be connected here once the extraction workflow is ready."
       },
       "tableOfContents": {
         "title": "Table of contents",
@@ -77,7 +67,11 @@
     },
     "help": {
       "title": "Lesson Help",
-      "description": "Use these patterns to keep worksheets clear and easy to edit.",
+      "description": "Basic guide for using the lesson editor.",
+      "editorBasics": {
+        "title": "How to use the editor",
+        "body": "Type \"/\" to open slash commands and insert blocks like heading, list, image, video, file, or page break. Write directly in each block, then drag blocks to reorder. Use headings to keep content structured and easy to navigate. Use page breaks to split long content into clear pages. Attach cloud files for media and keep text short per block for readability."
+      },
       "sections": {
         "structure": {
           "title": "Start with structure",

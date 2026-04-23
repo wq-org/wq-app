@@ -287,7 +287,7 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
       <div className="flex justify-between gap-4 py-11">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           onClick={onBack}
         >
           {t('avatarStep.actions.back')}

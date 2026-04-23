@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FolderSync } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useLesson } from '@/contexts/lesson'
 import { showUnsavedChangesToast } from '@/components/shared'
@@ -59,7 +57,6 @@ const Lesson = () => {
   const [activeTab, setActiveTab] = useState<LessonTabId>(() =>
     normalizeLessonTab(initialTabFromNav),
   )
-  const [isAutoImportOpen, setIsAutoImportOpen] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTabRef = useRef<LessonTabId | null>(null)
 
@@ -259,8 +256,6 @@ const Lesson = () => {
     />
   )
 
-  const resolvedFirstPage = lessonPages[0] ?? null
-
   const lessonActions = (
     <>
       <TableOfContentDrawer
@@ -273,26 +268,15 @@ const Lesson = () => {
         closeLabel={t('page.drawers.closeLabel')}
         onHeadingSelect={scrollToLessonHeading}
       />
-      <Button
-        type="button"
-        variant="darkblue"
-        className="w-full justify-start bg-card/80 backdrop-blur sm:w-auto lg:w-full"
-        onClick={() => setIsAutoImportOpen(true)}
-      >
-        <FolderSync className="h-4 w-4" />
-        {t('page.actions.autoImport')}
-      </Button>
-      {resolvedFirstPage && (
-        <AutoImportDrawer
-          isOpen={isAutoImportOpen}
-          onClose={() => setIsAutoImportOpen(false)}
-          lessonId={lessonId}
-          pageId={resolvedFirstPage.id}
-          currentContent={resolvedFirstPage.content}
-          onPagesChange={handlePagesChange}
-          lessonPages={lessonPages}
-        />
-      )}
+      <AutoImportDrawer
+        triggerLabel={t('page.actions.smartImport')}
+        title={t('page.drawers.smartImport.title')}
+        description={t('page.drawers.smartImport.description')}
+        placeholderTitle={t('page.drawers.smartImport.placeholderTitle')}
+        placeholderDescription={t('page.drawers.smartImport.placeholderDescription')}
+        footerNote={t('page.drawers.smartImport.footerNote')}
+        closeLabel={t('page.drawers.closeLabel')}
+      />
       <LessonHelpDrawer
         triggerLabel={t('page.actions.help')}
         title={t('page.help.title')}

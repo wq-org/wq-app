@@ -19,6 +19,8 @@ export {
   updateCourse,
   deleteCourse,
   createInstitution,
+  redeemInstitutionInvite,
+  validateInviteToken,
 } from './api/authApi'
 export { RequireAuth } from './components/RequireAuth'
 export { RequireOnboarding } from './components/RequireOnboarding'
@@ -39,6 +41,7 @@ export type {
 
 export { LoginPage } from './pages/login'
 export { SignUpPage } from './pages/signUp'
+export { AuthInvitePage } from './pages/invite'
 
 export { VerifyEmailPage } from './pages/verify-email'
 export { ResetPasswordPage } from './pages/reset-password'

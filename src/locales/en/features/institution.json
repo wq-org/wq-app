@@ -18,5 +18,39 @@
   },
   "view": {
     "notFound": "Institution not found"
+  },
+  "subscription": {
+    "title": "Subscription",
+    "loading": "Loading subscription…",
+    "loadError": "Could not load subscription details.",
+    "empty": "No subscription on file, or you do not have access to this information.",
+    "sectionPlan": "Plan",
+    "sectionTerm": "Subscription term",
+    "sectionBilling": "Billing",
+    "sectionPeriod": "Current billing period",
+    "sectionCancellation": "Cancellation & trial",
+    "sectionRecord": "Record",
+    "plan": "Plan",
+    "effectiveFrom": "Effective from",
+    "effectiveTo": "Effective to",
+    "billingStatus": "Billing status",
+    "renewalAt": "Renewal",
+    "currentPeriodStart": "Current period start",
+    "currentPeriodEnd": "Current period end",
+    "cancelAtPeriodEnd": "Cancel at period end",
+    "canceledAt": "Canceled at",
+    "trialEndsAt": "Trial ends",
+    "updatedAt": "Updated",
+    "yes": "Yes",
+    "no": "No",
+    "billingStatuses": {
+      "active": "Active",
+      "trialing": "Trialing",
+      "past_due": "Past due",
+      "grace": "Grace",
+      "suspended": "Suspended",
+      "expired": "Expired",
+      "cancelled": "Cancelled"
+    }
   }
 }

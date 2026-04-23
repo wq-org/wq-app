@@ -1,1 +1,606 @@
-{}
+{
+  "nav": {
+    "platform": "Plattform",
+    "dashboard": "Dashboard",
+    "institutions": "Institutionen",
+    "createInstitution": "Institution erstellen",
+    "institutionInvites": "Einladungen",
+    "users": "Benutzer",
+    "planCatalog": "Plankatalog",
+    "featureDefinitions": "Funktionsdefinitionen",
+    "auditLogs": "Audit-Logs",
+    "gdprRequest": "DSGVO Anfragen",
+    "billing": "Abrechnung",
+    "licenses": "Lizenzen",
+    "features": "Funktionen",
+    "analytics": "Analysen",
+    "teachers": "Lehrkräfte",
+    "students": "Lernende",
+    "courses": "Kurse",
+    "settings": "Einstellungen"
+  },
+  "shell": {
+    "lightMode": "Helles Design",
+    "darkMode": "Dunkles Design",
+    "logout": "Abmelden",
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "logoutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen."
+  },
+  "workspace": {
+    "superAdmin": {
+      "name": "WQ",
+      "plan": "Bildung"
+    },
+    "institutionAdmin": {
+      "name": "Institution",
+      "plan": "Admin"
+    }
+  },
+  "dashboard": {
+    "stats": {
+      "institutions": "Institutionen",
+      "users": "Benutzer",
+      "requests": "Anfragen",
+      "viewMore": "Mehr anzeigen"
+    }
+  },
+  "auditLogs": {
+    "pageTitle": "Audit-Logs",
+    "pageDescription": "Nur-Lese-Sicherheits- und Compliance-Ereignisse aus audit.events (neueste zuerst). Die E-Mail des Ausführenden wird angezeigt, wenn der Benutzer in der Admin-Benutzerliste vorkommt.",
+    "loadError": "Audit-Ereignisse konnten nicht geladen werden",
+    "emptyTitle": "Noch keine Audit-Ereignisse",
+    "empty": "Sicherheits- und Compliance-Ereignisse erscheinen hier, sobald sie protokolliert werden.",
+    "errorTitle": "Audit-Log konnte nicht geladen werden",
+    "errorDescription": "{{message}}",
+    "refresh": "Aktualisieren",
+    "paginationRange": "Zeige {{from}}-{{to}} von {{total}}",
+    "table": {
+      "occurredAt": "Zeitpunkt",
+      "actor": "Ausführend",
+      "eventType": "Ereignistyp",
+      "subjectType": "Subjekttyp",
+      "subjectId": "Subjekt-ID",
+      "institutionId": "Institutions-ID",
+      "payload": "Payload",
+      "metadata": "Metadaten"
+    }
+  },
+  "institutions": {
+    "pageTitle": "Institutionen",
+    "newButton": "Institution hinzufügen",
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "type": "Typ",
+      "email": "E-Mail",
+      "status": "Status",
+      "action": "Aktion",
+      "viewDetails": "Details anzeigen"
+    },
+    "empty": {
+      "title": "Noch keine Institutionen",
+      "description": "Erstelle deine erste Institution, um loszulegen.",
+      "action": "Institution erstellen"
+    },
+    "toasts": {
+      "loadError": "Institutionen konnten nicht geladen werden",
+      "createSuccess": "Institution erstellt",
+      "createSuccessDescription": "Die Institution wurde erfolgreich erstellt.",
+      "updateSuccess": "Institution aktualisiert",
+      "updateError": "Institution konnte nicht aktualisiert werden",
+      "createError": "Institution konnte nicht erstellt werden",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "editDrawer": {
+      "title": "Institution bearbeiten",
+      "description": "Aktualisiere zentrale Institutionswerte. Änderungen werden sofort übernommen.",
+      "slugNote": "Der Slug ist schreibgeschützt und kann hier nicht bearbeitet werden.",
+      "selectType": "Institutionstyp auswählen",
+      "statusReadOnly": "Der Status ist hier schreibgeschützt und kann in diesem Drawer nicht geändert werden.",
+      "noteLabel": "Notiz",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert..."
+    }
+  },
+  "institutionInvites": {
+    "pageTitle": "Einladungen",
+    "pageDescription": "Ausstehende und eingelöste E-Mail-Einladungen aus institution_invites (neueste zuerst). Die E-Mail der einladenden Person wird über profiles aufgelöst, sofern verfügbar.",
+    "refresh": "Aktualisieren",
+    "loadError": "Einladungen konnten nicht geladen werden",
+    "errorTitle": "Einladungen konnten nicht geladen werden",
+    "errorDescription": "{{message}}",
+    "emptyTitle": "Noch keine Einladungen",
+    "emptyDescription": "Einladungen aus dem Institutions-Assistenten oder anderen Einladungsflows erscheinen hier.",
+    "copySuccess": "Token kopiert",
+    "copyFailed": "Token konnte nicht kopiert werden",
+    "copyTokenAria": "Einladungs-Token kopieren",
+    "acceptedYes": "Angenommen",
+    "acceptedNo": "Nicht angenommen",
+    "table": {
+      "email": "E-Mail",
+      "membershipRole": "Mitgliedsrolle",
+      "token": "Token",
+      "actions": "Aktionen",
+      "openDetails": "Details öffnen",
+      "expiresAt": "Läuft ab am",
+      "invitedBy": "Eingeladen von",
+      "accepted": "Angenommen",
+      "acceptedUserId": "Angenommen (Benutzer-ID)",
+      "resend": "Erneut senden",
+      "sending": "Wird gesendet..."
+    },
+    "sheet": {
+      "title": "Einladungsdetails",
+      "subtitle": "Ablauf, einladende Person und Annahme unten (nur lesen)."
+    }
+  },
+  "users": {
+    "pageTitle": "Benutzer",
+    "table": {
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "institution": "Institution",
+      "username": "Benutzername",
+      "role": "Rolle",
+      "access": "Zugang",
+      "actions": "Aktionen"
+    },
+    "empty": {
+      "title": "Keine Benutzer gefunden",
+      "description": "Benutzer erscheinen hier, sobald sie der Plattform beitreten."
+    },
+    "access": {
+      "active": "Aktiv",
+      "deactivated": "Deaktiviert"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "deactivate": "Deaktivieren",
+      "activate": "Aktivieren",
+      "delete": "Löschen"
+    },
+    "deleteDialog": {
+      "title": "Benutzer dauerhaft löschen?",
+      "description": "Diese Aktion kann nicht rückgängig gemacht werden. Der Benutzer wird dauerhaft aus den Profil- und auth.users-Tabellen gelöscht. Gespeicherte Dateien bleiben erhalten und können später manuell bereinigt werden.",
+      "confirmLabel": "Gib den Benutzernamen {{username}} zur Bestätigung ein.",
+      "confirmPlaceholder": "Gib den genauen Benutzernamen ein",
+      "holdButton": "Halten zum dauerhaften Löschen",
+      "deletingButton": "Löschen...",
+      "cancelButton": "Abbrechen"
+    },
+    "accessDialog": {
+      "deactivateTitle": "Diesen Benutzer deaktivieren?",
+      "activateTitle": "Diesen Benutzer aktivieren?",
+      "deactivateDescription": "Der Benutzer kann sich erst wieder anmelden, wenn er vom Super-Admin reaktiviert wird.",
+      "activateDescription": "Der Benutzer kann sich nach der Aktivierung wieder anmelden.",
+      "deactivateButton": "Benutzer deaktivieren",
+      "activateButton": "Benutzer aktivieren",
+      "savingButton": "Speichern...",
+      "cancelButton": "Abbrechen"
+    },
+    "toasts": {
+      "loadError": "Benutzer konnten nicht geladen werden",
+      "noUsernameError": "Benutzer ohne Benutzernamen kann nicht gelöscht werden",
+      "deleteSuccess": "Benutzer dauerhaft gelöscht",
+      "deleteSuccessDescription": "{{username}} wurde aus Auth- und Profiltabellen gelöscht.",
+      "deleteError": "Benutzer konnte nicht gelöscht werden",
+      "accessError": "Benutzerzugang konnte nicht geändert werden",
+      "activateSuccess": "Benutzer aktiviert",
+      "deactivateSuccess": "Benutzer deaktiviert",
+      "activateDescription": "{{username}} kann sich wieder anmelden.",
+      "deactivateDescription": "{{username}} kann sich nicht mehr anmelden.",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten."
+    }
+  },
+  "planCatalog": {
+    "pageTitle": "Plankatalog",
+    "pageDescription": "Verwalte kommerzielle Pläne und konfiguriere Entitlement-Werte pro Plan.",
+    "filterLabel": "Pläne durchsuchen",
+    "filterPlaceholder": "Nach Name oder Code filtern…",
+    "filterEmpty": "Keine Pläne passen zur Suche.",
+    "loadError": "Pläne konnten nicht geladen werden",
+    "noDescription": "Keine Beschreibung",
+    "actions": {
+      "editEntitlements": "Entitlements bearbeiten"
+    },
+    "preview": {
+      "title": "Vorschau",
+      "close": "Schließen"
+    },
+    "empty": {
+      "title": "Noch keine Pläne",
+      "description": "Lege zuerst Pläne an, bevor du Entitlement-Werte konfigurierst."
+    },
+    "editor": {
+      "back": "Zurück zu den Plänen",
+      "pageTitle": "Entitlements für {{plan}} bearbeiten",
+      "pageDescription": "Setze planbasierte Standardwerte pro Funktion. Leere Werte fallen auf globale Standards oder nachgelagerte Overrides zurück.",
+      "loadError": "Plan-Entitlements konnten nicht geladen werden",
+      "booleanHint": "Globaler Standard: {{defaultValue}}",
+      "placeholders": {
+        "integer": "Zahl eingeben",
+        "bigint": "Große Zahl eingeben",
+        "text": "Textwert eingeben"
+      },
+      "bigintPreview": "{{value}} = {{formatted}}",
+      "cancel": "Abbrechen",
+      "save": "Änderungen speichern",
+      "saving": "Speichern…",
+      "tabs": {
+        "editor": "Editor",
+        "settings": "Einstellungen"
+      },
+      "settings": {
+        "codeLabel": "Plan-Code",
+        "deletedBadge": "Gelöscht",
+        "seatCapDefault": "Sitzplatzlimit (Standard)",
+        "storageBytesCapDefault": "Speicherlimit in Bytes (Standard)",
+        "metadata": "Metadaten (JSON)",
+        "priceAmount": "Preis",
+        "currency": "Währung",
+        "billingInterval": "Abrechnungsintervall",
+        "isActive": "Plan aktiv",
+        "isActiveHint": "Wenn aus, ist der Plan für neue Zuweisungen ausgeblendet.",
+        "updatedAt": "Aktualisiert am",
+        "deletedAt": "Gelöscht am",
+        "placeholders": {
+          "seatCap": "z. B. 50 (leer = kein Limit)",
+          "storageBytes": "Bytes (nur Ziffern)",
+          "metadata": "{ }",
+          "priceAmount": "z. B. 99,00"
+        },
+        "billing": {
+          "none": "Standard (keines)",
+          "monthly": "Monatlich",
+          "yearly": "Jährlich"
+        },
+        "errors": {
+          "seatCap": "Gültiges nicht negatives Limit oder leer lassen.",
+          "metadataJson": "Metadaten müssen gültiges JSON sein.",
+          "priceAmount": "Gültigen Preis eingeben oder leer lassen.",
+          "billingInterval": "Abrechnungsintervall wählen."
+        }
+      },
+      "toasts": {
+        "saveSuccess": "Plan-Entitlements aktualisiert",
+        "saveError": "Plan-Entitlements konnten nicht gespeichert werden",
+        "unexpected": "Etwas ist schiefgelaufen.",
+        "settingsSaveSuccess": "Planeinstellungen aktualisiert",
+        "settingsSaveError": "Planeinstellungen konnten nicht gespeichert werden"
+      }
+    }
+  },
+  "featureDefinitions": {
+    "pageTitle": "Funktionsdefinitionen",
+    "pageDescription": "Dieser Katalog ist die Berechtigungsebene der Plattform: Jeder stabile Schlüssel kann in kommerziellen Plänen und institutionsbezogenen Overrides vorkommen. Die wirksame Berechtigung folgt dieser Reihenfolge—zuerst Institutions-Override, dann Planvorgaben, dann die hier gesetzten Standardwerte—bevor das Produkt Funktionen freigibt.",
+    "filterLabel": "Katalog durchsuchen",
+    "filterPlaceholder": "Nach Schlüssel oder Anzeigenamen filtern…",
+    "filterEmptyTitle": "Keine Ergebnisse",
+    "filterEmpty": "Keine Einträge passen zur Suche. Versuche einen anderen Schlüssel oder Namen.",
+    "addButton": "Funktion hinzufügen",
+    "addMenuTrigger": "Hinzufügen",
+    "addMenuFeature": "Funktion hinzufügen",
+    "addMenuCategory": "Kategorie hinzufügen",
+    "loadError": "Funktionsdefinitionen konnten nicht geladen werden",
+    "card": {
+      "coreBadge": "Kern",
+      "defaultOn": "Standard an",
+      "defaultOff": "Standard aus",
+      "edit": "Bearbeiten",
+      "updatedRecently": "Kürzlich aktualisiert",
+      "updatedRelative": "Aktualisiert {{relative}}",
+      "noCategory": "Keine Kategorie",
+      "globalDefault": "Globaler Standard:"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Speichern…"
+    },
+    "editor": {
+      "back": "Zurück zur Liste",
+      "pageTitleNew": "Neue Funktionsdefinition",
+      "pageTitleEdit": "Funktionsdefinition bearbeiten",
+      "notFound": "Diese Funktionsdefinition wurde nicht gefunden.",
+      "dangerZone": "Gefahrenbereich",
+      "deleteHint": "Beim Löschen wird der Katalogeintrag entfernt. Das schlägt fehl, wenn ein Plan oder Override noch darauf verweist.",
+      "holdToDelete": "Zum Löschen halten"
+    },
+    "empty": {
+      "title": "Noch keine Funktionen",
+      "description": "Lege eine Funktion im Katalog an, damit Pläne und Berechtigungs-Overrides darauf verweisen können.",
+      "hintKeys": "Jeder Schlüssel ist eindeutig und kann später nicht umbenannt werden.",
+      "hintPlans": "Kleinbuchstaben und snake_case verwenden (z. B. custom_reports)."
+    },
+    "table": {
+      "key": "Schlüssel",
+      "name": "Name",
+      "category": "Kategorie",
+      "valueType": "Werttyp",
+      "defaultEnabled": "Standard (Boolean)",
+      "updatedAt": "Aktualisiert",
+      "actions": "Aktionen"
+    },
+    "valueTypes": {
+      "boolean": "Boolean",
+      "integer": "Ganzzahl",
+      "bigint": "Große Ganzzahl",
+      "text": "Text"
+    },
+    "badges": {
+      "on": "An",
+      "off": "Aus"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "form": {
+      "createTitle": "Neue Funktionsdefinition",
+      "editTitle": "Funktionsdefinition bearbeiten",
+      "description": "Stabile Schlüssel identifizieren die Funktion in Plänen und Overrides. Der Schlüssel kann nach der Erstellung nicht geändert werden.",
+      "key": "Schlüssel",
+      "keyPlaceholder": "z. B. custom_reports",
+      "keyReadOnlyHint": "Der Schlüssel bleibt fest, damit bestehende Planzeilen stabil referenzieren können.",
+      "storedKey": "Gespeicherter Schlüssel:",
+      "name": "Anzeigename",
+      "namePlaceholder": "Menschenlesbare Bezeichnung",
+      "category": "Kategorie",
+      "categoryPlaceholder": "Kategorie auswählen",
+      "customCategoryLabel": "Eigener Kategorie-Slug",
+      "customCategoryPlaceholder": "z. B. billing_oder_integrationen",
+      "descriptionField": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Hinweise für Admins",
+      "valueType": "Werttyp",
+      "valueTypeHints": {
+        "boolean": "Pläne und Overrides speichern einen An/Aus-Schalter. Verwende dies für Feature-Flags wie chat_enabled.",
+        "integer": "Pläne und Overrides speichern eine ganze Zahl. Verwende dies für Limits wie max_students = 500.",
+        "bigint": "Pläne und Overrides speichern eine grosse Zahl. Verwende dies für Byte-Obergrenzen wie storage_bytes_cap (zum Beispiel: 10737418240 = 10 GB).",
+        "text": "Pläne und Overrides speichern einen Textwert. Verwende dies für konfigurierbare Zeichenketten wie Regionscodes."
+      },
+      "defaultEnabled": "Standardwert",
+      "defaultEnabledHint": "Globaler Fallback, wenn kein Plan- oder Institutions-Override gesetzt ist. Dies ist der plattformweite Standard für diesen Schalter.",
+      "nonBooleanHint": "Der tatsächliche Standardwert (Zahl oder Text) wird pro Plan unter Plan-Entitlements konfiguriert. Diese Definition registriert die Funktion nur im Katalog.",
+      "cancel": "Abbrechen",
+      "create": "Anlegen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert..."
+    },
+    "validation": {
+      "keyInvalid": "Nur Kleinbuchstaben und snake_case: mit Buchstabe beginnen, danach Buchstaben, Ziffern oder Unterstriche.",
+      "categoryCustomRequired": "Bitte einen Kategorie-Slug eingeben (Buchstaben, Ziffern, Unterstriche).",
+      "categoryReservedSlug": "Dieser Slug entspricht einer festen Kategorie oder ist reserviert. Bitte einen anderen Namen wählen."
+    },
+    "categories": {
+      "none": "Keine Kategorie",
+      "core": "Kern",
+      "collaboration": "Zusammenarbeit",
+      "engagement": "Engagement",
+      "infrastructure": "Infrastruktur",
+      "integrations": "Integrationen",
+      "learning": "Lernen",
+      "limits": "Limits",
+      "scheduling": "Planung",
+      "new_category": "Neue Kategorie"
+    },
+    "deleteDialog": {
+      "title": "Diese Funktion löschen?",
+      "description": "Das kann nicht rückgängig gemacht werden. Wenn ein Plan-Entitlement oder ein Override noch darauf verweist, schlägt das Löschen fehl.",
+      "confirmLabel": "Schlüssel {{key}} zum Bestätigen eingeben.",
+      "confirmFieldLabel": "Bestätigung",
+      "confirmInputAria": "Bestätigung Funktionsschlüssel",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen",
+      "deleting": "Wird gelöscht..."
+    },
+    "toasts": {
+      "createSuccess": "Funktion angelegt",
+      "updateSuccess": "Funktion aktualisiert",
+      "createError": "Funktion konnte nicht angelegt werden",
+      "updateError": "Funktion konnte nicht aktualisiert werden",
+      "deleteSuccess": "Funktion gelöscht",
+      "deleteError": "Funktion konnte nicht gelöscht werden",
+      "deleteBlockedByReferences": "Diese Funktion wird noch von einem Plan oder Override referenziert. Entferne diese Zeilen zuerst.",
+      "unexpected": "Etwas ist schiefgelaufen."
+    }
+  },
+  "form": {
+    "title": "Grundinformationen",
+    "subtitle": "Gib die grundlegenden Details deiner Institution ein. Mit * markierte Felder sind Pflichtfelder.",
+    "fields": {
+      "name": "Institutionsname",
+      "namePlaceholder": "z. B. Kreiskliniken Reutlingen",
+      "slug": "Slug",
+      "slugPlaceholder": "kreiskliniken-reutlingen",
+      "slugHint": "URL-freundlicher Bezeichner. Wird automatisch aus dem Namen generiert, sofern nicht manuell bearbeitet.",
+      "type": "Typ",
+      "typePlaceholder": "Institutionstyp auswählen",
+      "status": "Status",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Gib eine kurze Beschreibung der Institution ein...",
+      "email": "E-Mail",
+      "emailPlaceholder": "kontakt@institution.de",
+      "phone": "Telefon",
+      "phonePlaceholder": "+49 7121 200-0",
+      "website": "Webseite",
+      "websitePlaceholder": "https://www.institution.de",
+      "imageUrl": "Bild-URL",
+      "imageUrlPlaceholder": "https://example.com/bild.png",
+      "imageUrlHint": "Gib eine direkte URL zum Institutionsbild ein."
+    },
+    "types": {
+      "school": "Schule",
+      "university": "Universität",
+      "college": "Hochschule",
+      "organization": "Organisation",
+      "hospital": "Krankenhaus",
+      "other": "Sonstiges"
+    },
+    "statuses": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "suspended": "Gesperrt",
+      "pending": "Ausstehend"
+    },
+    "legal": {
+      "sectionTitle": "Rechtliche Informationen",
+      "legalName": "Rechtlicher Name",
+      "legalNamePlaceholder": "Kreiskliniken Reutlingen gGmbH",
+      "legalForm": "Rechtsform",
+      "legalFormPlaceholder": "Rechtsform auswählen",
+      "vatId": "USt-IdNr.",
+      "vatIdPlaceholder": "DE123456789",
+      "registrationNumber": "Handelsregister (HRB)",
+      "registrationNumberPlaceholder": "HRB 12345",
+      "taxId": "Steuernummer",
+      "taxIdPlaceholder": "12/345/67890"
+    },
+    "legalForms": {
+      "gmbh": "GmbH",
+      "ggmbh": "gGmbH (gemeinnützig)",
+      "ag": "AG",
+      "ev": "e.V.",
+      "kg": "KG",
+      "other": "Sonstiges"
+    },
+    "primaryContact": {
+      "sectionTitle": "Hauptkontakt",
+      "contactName": "Kontaktname",
+      "contactNamePlaceholder": "Astrid",
+      "contactRole": "Rolle / Titel",
+      "contactRolePlaceholder": "Pflegedirektion",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactEmailPlaceholder": "m.schmidt@example.de",
+      "contactPhone": "Kontakttelefon",
+      "contactPhonePlaceholder": "+49 7121 200-1234"
+    },
+    "billing": {
+      "sectionTitle": "Abrechnungsinformationen",
+      "billingEmail": "Abrechnungs-E-Mail",
+      "billingEmailPlaceholder": "abrechnung@institution.de",
+      "billingContactName": "Name Abrechnungskontakt",
+      "billingContactNamePlaceholder": "Buchhaltung",
+      "billingContactPhone": "Telefon Abrechnungskontakt",
+      "billingContactPhonePlaceholder": "+49 7121 200-900",
+      "invoiceLanguage": "Rechnungssprache",
+      "paymentTerms": "Zahlungsziel (Tage)",
+      "paymentTermsPlaceholder": "30"
+    },
+    "invoiceLanguages": {
+      "de": "Deutsch (DE)",
+      "en": "Englisch (EN)"
+    },
+    "address": {
+      "sectionTitle": "Adresse",
+      "street": "Straße & Hausnummer",
+      "streetPlaceholder": "Am Steinenberg 70",
+      "addressLine2": "Adresszusatz (Gebäude, Etage)",
+      "addressLine2Placeholder": "Gebäude A, 2. OG",
+      "postalCode": "Postleitzahl (PLZ)",
+      "postalCodePlaceholder": "72764",
+      "city": "Stadt",
+      "cityPlaceholder": "Reutlingen",
+      "state": "Bundesland (optional)",
+      "statePlaceholder": "Baden-Württemberg",
+      "country": "Land",
+      "countryPlaceholder": "Deutschland",
+      "countryNoResults": "Kein Land gefunden"
+    },
+    "hospital": {
+      "sectionTitle": "Krankenhausdetails",
+      "institutionNumber": "IK-Nummer (Institutionskennzeichen)",
+      "institutionNumberPlaceholder": "123456789",
+      "numberOfBeds": "Anzahl der Betten",
+      "numberOfBedsPlaceholder": "500",
+      "departments": "Abteilungen (kommagetrennt)",
+      "departmentsPlaceholder": "Intensivpflege, Wundmanagement, Notaufnahme",
+      "accreditation": "Akkreditierung",
+      "accreditationPlaceholder": "ISO 9001"
+    },
+    "socialLinks": {
+      "sectionTitle": "Social-Media-Links",
+      "linkedin": "LinkedIn",
+      "linkedinPlaceholder": "https://www.linkedin.com/company/institution",
+      "instagram": "Instagram",
+      "instagramPlaceholder": "https://www.instagram.com/institution"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "create": "Institution hinzufügen"
+    }
+  },
+  "wizard": {
+    "title": "Institution anlegen",
+    "subtitle": "Nur Stammdaten und Rechnungs-Seed. Abos und Kontingente kommen aus den System-Defaults. Die erste Admin-Person erhält eine E-Mail-Einladung.",
+    "steps": {
+      "identity": "Stammdaten",
+      "billing": "Abrechnung",
+      "structure": "Struktur",
+      "review": "Prüfen"
+    },
+    "identity": {
+      "name": "Institutionsname",
+      "slug": "Slug",
+      "type": "Typ",
+      "adminEmail": "E-Mail Institution-Admin",
+      "adminEmailPlaceholder": "admin@schule.example",
+      "adminEmailHint": "Das ist die E-Mail-Adresse des künftigen Institution-Admins. Mit genau dieser Adresse legt die Person ihr Konto an, nachdem sie die Einladung per E-Mail erhalten hat.",
+      "inviteAlertTitle": "Einladungs-E-Mail",
+      "inviteAlertDescription": "Nach der Erstellung wird ein Einladungslink an die angegebene E-Mail-Adresse gesendet. Der Link ist 30 Minuten gültig."
+    },
+    "billing": {
+      "legalName": "Rechtlicher Name",
+      "billingEmail": "Abrechnungs-E-Mail",
+      "street": "Straße",
+      "streetPlaceholder": "z. B. Am Steinenberg",
+      "streetNumber": "Nr.",
+      "streetNumberPlaceholder": "70",
+      "postalCode": "PLZ",
+      "postalCodePlaceholder": "72764",
+      "city": "Stadt",
+      "cityPlaceholder": "Reutlingen",
+      "country": "Land",
+      "address": "Adresse"
+    },
+    "structure": {
+      "toggleLabel": "Initiale Struktur anlegen",
+      "toggleHint": "Optional: eine Fakultät und optional ein Programm anlegen.",
+      "facultyName": "Fakultätsname",
+      "facultyPlaceholder": "z. B. Pflege",
+      "programmeName": "Programmname (optional)",
+      "programmePlaceholder": "z. B. Generalistische Pflege",
+      "programmeHint": "Leer lassen, um nur eine Fakultät anzulegen.",
+      "summaryLabel": "Initiale Struktur",
+      "skipped": "Übersprungen"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "create": "Institution erstellen",
+      "creating": "Wird erstellt..."
+    },
+    "validation": {
+      "nameRequired": "Institutionsname ist erforderlich.",
+      "slugRequired": "Slug ist erforderlich.",
+      "typeRequired": "Institutionstyp ist erforderlich.",
+      "adminEmailInvalid": "Gültige Admin-E-Mail eingeben.",
+      "legalNameRequired": "Rechtlicher Name ist erforderlich.",
+      "billingEmailInvalid": "Gültige Abrechnungs-E-Mail eingeben.",
+      "countryRequired": "Land ist erforderlich.",
+      "facultyRequired": "Fakultätsname ist erforderlich, wenn Struktur-Setup aktiv ist."
+    },
+    "success": {
+      "title": "Institution erstellt",
+      "description": "Eine ausstehende Einladung wurde für {{email}} erstellt.",
+      "emailSentTitle": "Einladungs-E-Mail gesendet",
+      "emailSentDescription": "Wir haben {{email}} einen Registrierungslink geschickt.",
+      "emailSendFailedTitle": "Einladungs-E-Mail nicht gesendet",
+      "copyToken": "Token kopieren",
+      "tokenCopied": "Einladungs-Token kopiert.",
+      "tokenCopyFailed": "Einladungs-Token konnte nicht kopiert werden.",
+      "done": "Fertig"
+    }
+  }
+}

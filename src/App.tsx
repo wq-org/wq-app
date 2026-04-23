@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import {
+  AuthInvitePage,
   LoginPage,
   SignUpPage,
   VerifyEmailPage,
@@ -13,7 +14,6 @@ import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
 import ChangelogPage from './user/pages/changelog'
-import { Institution, InstitutionViewPage } from '@/features/institution'
 import {
   StudentDashboard,
   StudentSettingsPage,
@@ -41,28 +41,47 @@ import { TopicProvider } from './contexts/topic'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
 import { GameEditorCanvas } from '@/features/game-studio'
-import { ProfileViewPage } from '@/features/profiles'
+import { ProfileViewPage } from '@/features/profile'
 import {
+  AdminAuditLogs,
   AdminAnalytics,
   AdminBilling,
   AdminDashboard,
+  AdminFeatureDefinitions,
+  AdminFeatureDefinitionEditor,
   AdminFeatures,
+  AdminGdprRequest,
   AdminInstitution,
+  AdminInstitutionInvites,
   AdminLicenses,
+  AdminPlanEntitlementsEditor,
   NewInstitution,
-  AdminSystem,
+  AdminPlanCatalog,
+  AdminSettings,
   AdminUsers,
 } from '@/features/admin'
 import {
   InstitutionAdminDashboardPage,
   InstitutionAdminTeachersPage,
   InstitutionAdminStudentsPage,
+  InstitutionAdminUsersPage,
+  InstitutionAdminInviteUsersPage,
+  InstitutionAdminFacultiesPage,
+  InstitutionAdminFacultiesCreatePage,
+  InstitutionAdminFacultiesProgrammesPage,
+  InstitutionAdminFacultiesCohortsPage,
+  InstitutionAdminFacultiesClassGroupsPage,
+  InstitutionAdminClassroomsPage,
   InstitutionAdminLicensesPage,
+  InstitutionAdminUsagePage,
+  InstitutionAdminGDPRRequestPage,
   InstitutionAdminBillingPage,
   InstitutionAdminCoursesPage,
   InstitutionAdminAnalyticsPage,
+  InstitutionAdminCloudStoragePage,
+  InstitutionAdminAuditLogsPage,
   InstitutionAdminSettingsPage,
-} from '@/features/institutionAdmin'
+} from '@/features/institution-admin'
 
 const GameEditorCanvasWithProjectId = () => {
   const { id } = useParams<{ id: string }>()
@@ -207,6 +226,10 @@ const App = () => {
                   element={<LoginPage />}
                 />
                 <Route
+                  path="invite"
+                  element={<AuthInvitePage />}
+                />
+                <Route
                   path="signup"
                   element={<SignUpPage />}
                 />
@@ -249,6 +272,14 @@ const App = () => {
                   element={<NewInstitution />}
                 />
                 <Route
+                  path="institution/institution-invites"
+                  element={
+                    <RequireAuth>
+                      <AdminInstitutionInvites />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="institution"
                   element={
                     <RequireAuth>
@@ -261,6 +292,54 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <AdminUsers />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="plan-catalog"
+                  element={
+                    <RequireAuth>
+                      <AdminPlanCatalog />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="plan-catalog/:planId/entitlements"
+                  element={
+                    <RequireAuth>
+                      <AdminPlanEntitlementsEditor />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="feature-definitions"
+                  element={
+                    <RequireAuth>
+                      <AdminFeatureDefinitions />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="feature-definitions/:featureId"
+                  element={
+                    <RequireAuth>
+                      <AdminFeatureDefinitionEditor />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="audit-logs"
+                  element={
+                    <RequireAuth>
+                      <AdminAuditLogs />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="gdpr-request"
+                  element={
+                    <RequireAuth>
+                      <AdminGdprRequest />
                     </RequireAuth>
                   }
                 />
@@ -297,11 +376,20 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="system"
+                  path="settings"
                   element={
                     <RequireAuth>
-                      <AdminSystem />
+                      <AdminSettings />
                     </RequireAuth>
+                  }
+                />
+                <Route
+                  path="system"
+                  element={
+                    <Navigate
+                      to="/super_admin/settings"
+                      replace
+                    />
                   }
                 />
               </Route>
@@ -370,6 +458,102 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <InstitutionAdminAnalyticsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="users"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminUsersPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="users/invite-users"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminInviteUsersPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/create"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesCreatePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/programmes"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesProgrammesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/cohorts"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesCohortsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/class-groups"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesClassGroupsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultiesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="classrooms"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminClassroomsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="usage"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminUsagePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="gdpr-request"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminGDPRRequestPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="cloud-storage"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCloudStoragePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="audit-logs"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminAuditLogsPage />
                     </RequireAuth>
                   }
                 />
@@ -477,7 +661,7 @@ const App = () => {
                           commandBarContext="game-studio"
                           className="flex flex-col h-screen"
                         >
-                          <div className="flex-1 w-full">
+                          <div className="flex-1 container">
                             <GameEditorCanvasWithProjectId />
                           </div>
                         </AppShell>
@@ -494,16 +678,6 @@ const App = () => {
                           to="/teacher/game-studio"
                           replace
                         />
-                      </RequireOnboarding>
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="institution"
-                  element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <Institution />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -562,16 +736,6 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="institution"
-                  element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <Institution />
-                      </RequireOnboarding>
-                    </RequireAuth>
-                  }
-                />
-                <Route
                   path="view/:id"
                   element={
                     <RequireAuth>
@@ -612,18 +776,6 @@ const App = () => {
                   }
                 />
               </Route>
-
-              {/* Institution Routes (require auth + onboarding) */}
-              <Route
-                path="/institution/:id"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <InstitutionViewPage />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
 
               {/* Centralized Profile Routes (require auth + onboarding) */}
               <Route

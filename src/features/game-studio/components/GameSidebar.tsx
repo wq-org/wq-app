@@ -72,9 +72,9 @@ export function GameSidebar() {
 
   return (
     <div className="absolute left-4 top-4 z-10">
-      <div className="flex flex-col w-full bg-white border border-border rounded-2xl shadow-lg">
+      <div className="flex w-full flex-col rounded-4xl border border-border bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900/95">
         {/* Search Bar */}
-        <div className="p-4 border-b border-border">
+        <div className="border-b border-border p-4 dark:border-white/10">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -82,7 +82,7 @@ export function GameSidebar() {
               placeholder={t('sidebar.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9"
+              className="h-9 pl-9 dark:border-white/10 dark:bg-zinc-950/80 dark:text-zinc-100 dark:placeholder:text-zinc-400"
             />
           </div>
         </div>
@@ -111,7 +111,7 @@ export function GameSidebar() {
                       onDragStart={(e) => onDragStart(e, item)}
                       className={cn(
                         'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
-                        'cursor-grab active:cursor-grabbing hover:bg-accent transition-colors',
+                        'cursor-grab active:cursor-grabbing transition-colors hover:bg-accent dark:hover:bg-zinc-800',
                         'flex items-center',
                       )}
                     >
@@ -119,8 +119,8 @@ export function GameSidebar() {
                         className={cn(
                           'flex items-center justify-center h-8 w-8 rounded-full border',
                           isEndNode
-                            ? 'text-gray-500 bg-gray-500/10 border-gray-500/20'
-                            : 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+                            ? 'border-gray-500/20 bg-gray-500/10 text-gray-500 dark:border-gray-400/30 dark:bg-gray-400/10 dark:text-gray-300'
+                            : 'border-blue-500/20 bg-blue-500/10 text-blue-500 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300',
                         )}
                       >
                         <Icon className="h-4 w-4 shrink-0" />
@@ -159,14 +159,14 @@ export function GameSidebar() {
                       onDragStart={(e) => onDragStart(e, item)}
                       className={cn(
                         'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
-                        'cursor-grab active:cursor-grabbing hover:bg-accent transition-colors',
+                        'cursor-grab active:cursor-grabbing transition-colors hover:bg-accent dark:hover:bg-zinc-800',
                         'flex items-center',
                       )}
                     >
                       <div
                         className={cn(
                           'flex items-center justify-center h-8 w-8 rounded-full border',
-                          'text-orange-500 bg-orange-500/10 border-orange-500/20',
+                          'border-orange-500/20 bg-orange-500/10 text-orange-500 dark:border-orange-400/30 dark:bg-orange-400/10 dark:text-orange-300',
                         )}
                       >
                         <Icon className="h-4 w-4 shrink-0" />

@@ -11,10 +11,13 @@ type FieldInputProps = {
   id?: string
   name?: string
   type?: React.HTMLInputTypeAttribute
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
   autoComplete?: string
   required?: boolean
   disabled?: boolean
+  maxLength?: number
   hideSeparator?: boolean
+  showClearButton?: boolean
   inputClassName?: string
   className?: string
 }
@@ -27,10 +30,13 @@ export const FieldInput = ({
   id,
   name,
   type = 'text',
+  inputMode,
   autoComplete,
   required = false,
   disabled = false,
+  maxLength,
   hideSeparator = false,
+  showClearButton = true,
   inputClassName,
   className,
 }: FieldInputProps) => {
@@ -45,12 +51,16 @@ export const FieldInput = ({
         onValueChange={onValueChange}
         placeholder={placeholder}
         label={label}
+        labelVisibility="visible"
         name={name}
         type={type}
+        inputMode={inputMode}
         autoComplete={autoComplete}
         required={required}
         hideSeparator={hideSeparator}
+        showClearButton={showClearButton}
         disabled={disabled}
+        maxLength={maxLength}
         inputClassName={inputClassName}
       />
     </div>

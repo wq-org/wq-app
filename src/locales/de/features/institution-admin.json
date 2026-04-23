@@ -1,0 +1,401 @@
+{
+  "nav": {
+    "groupLabel": "Institution",
+    "dashboard": "Dashboard",
+    "users": "Benutzer",
+    "inviteUsers": "Benutzer einladen",
+    "faculties": "Fakultäten",
+    "facultyProgrammes": "Studiengänge",
+    "facultyCohorts": "Kohorten",
+    "facultyClassGroups": "Klassengruppen",
+    "classrooms": "Klassenräume",
+    "licenseUsage": "Lizenznutzung",
+    "gdprRequest": "DSGVO-Anfragen",
+    "billing": "Abrechnung",
+    "analytics": "Analysen",
+    "cloudStorage": "Cloud-Speicher",
+    "auditLogs": "Audit-Logs",
+    "teachers": "Lehrkräfte",
+    "students": "Studierende",
+    "courses": "Kurse"
+  },
+  "shell": {
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "logoutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen.",
+    "lightMode": "Helles Design",
+    "darkMode": "Dunkles Design"
+  },
+  "dashboard": {
+    "greeting": "Hallo {{name}}",
+    "greetingAnonymous": "Hallo",
+    "subtitle": "Wichtige Kennzahlen Ihrer Organisation auf einen Blick.",
+    "stats": {
+      "viewMore": "Mehr anzeigen",
+      "students": {
+        "label": "Schüler"
+      },
+      "teachers": {
+        "label": "Lehrkräfte"
+      },
+      "classrooms": {
+        "label": "Klassenräume"
+      },
+      "storage": {
+        "label": "Speicher"
+      }
+    },
+    "usage": {
+      "title": "Nutzung & Kontingente",
+      "subtitle": "Cloud-Speicher und Datentransfer im Verhältnis zu Ihren Tarifgrenzen (Beispieldaten).",
+      "storage": {
+        "title": "Cloud-Speicher",
+        "status": "Innerhalb der Tarifgrenzen.",
+        "action": "Cloud-Speicher öffnen"
+      },
+      "bandwidth": {
+        "title": "Datentransfer",
+        "warning": "Sie nähern sich dem monatlichen Transfer-Kontingent.",
+        "action": "Nutzungsdetails anzeigen"
+      }
+    }
+  },
+  "inviteUsers": {
+    "pageTitle": "Benutzer einladen",
+    "subtitle": "Wählen Sie, wie Sie Lehrkräfte oder Schülerinnen und Schüler in Ihre Institution holen möchten. Sie können dies später ändern.",
+    "continueButton": "Weiter",
+    "continueDisabledHint": "Wählen Sie die Einladung per E-Mail, um fortzufahren.",
+    "emailWizard": {
+      "steps": {
+        "enterAddresses": "E-Mail-Adressen hinzufügen",
+        "reviewRecipients": "Empfänger prüfen",
+        "success": "Fertig"
+      },
+      "sectionTitle": "E-Mail-Adressen hinzufügen",
+      "separatorHint": "Fügen Sie beliebig viele E-Mail-Adressen ein oder tippen Sie sie ein — eine pro Zeile, durch Leerzeichen oder Kommas getrennt. Wir kümmern uns um den Rest und melden uns, falls etwas nicht stimmt.",
+      "textareaLabel": "Einzuladende E-Mail-Adressen",
+      "textareaPlaceholder": "lehrkraft@schule.example schueler@schule.example",
+      "teachersEmailsLabel": "E-Mail-Adressen der Lehrkräfte",
+      "studentsEmailsLabel": "E-Mail-Adressen der Schülerinnen und Schüler",
+      "teachersPlaceholder": "lehrkraft1@schule.example, lehrkraft2@schule.example",
+      "studentsPlaceholder": "schueler1@schule.example, schueler2@schule.example",
+      "nextButton": "Weiter",
+      "backButton": "Zurück",
+      "changeMethod": "Einladungsart ändern",
+      "reviewCardTitle": "Empfänger",
+      "sendButton": "Einladungen senden",
+      "successTitle": "Einladungen gesendet",
+      "successDescription": "Empfänger erhalten eine E-Mail mit einem Link zur Anmeldung bei Ihrer Institution.",
+      "viewUsersButton": "Benutzerliste anzeigen",
+      "errorTitle": "Einige Einladungen konnten nicht gesendet werden",
+      "errorDescription": "Prüfen Sie die folgenden Adressen und versuchen Sie es erneut. Doppelte oder ungültige Einladungen können abgelehnt werden.",
+      "retryFailedButton": "Fehlgeschlagene erneut senden",
+      "missingInstitution": "Ihr Konto ist keiner Institution zugeordnet. Aktualisieren Sie die Seite oder wenden Sie sich an den Support."
+    },
+    "methods": {
+      "email": {
+        "title": "Einladung per E-Mail",
+        "description": "Geben Sie eine oder mehrere Adressen ein und senden Sie einen sicheren Beitrittslink per E-Mail."
+      },
+      "file": {
+        "title": "Datei importieren",
+        "description": "Laden Sie eine CSV- oder Tabellendatei hoch, um alle in einem Schritt einzuladen oder anzulegen."
+      },
+      "qr": {
+        "title": "QR-Code",
+        "description": "Zeigen Sie einen QR-Code bei Veranstaltungen oder im Klassenzimmer, damit sich Personen direkt anmelden können."
+      }
+    },
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "name@schule.example",
+    "submitButton": "Einladung senden"
+  },
+  "users": {
+    "pageTitle": "Benutzer",
+    "subtitle": "Verwalten Sie Schüler, Lehrkräfte und Mitarbeitende Ihrer Institution.",
+    "inviteUsersCta": "Benutzer einladen",
+    "totalHeading": "Benutzer gesamt (diese Ansicht)",
+    "totalOfInstitution": "von {{total}} in Ihrer Institution",
+    "roleFilterNotice": "Gefiltert nach Rolle: {{role}}",
+    "table": {
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "username": "Benutzername",
+      "role": "Rolle",
+      "access": "Zugang",
+      "actions": "Aktionen",
+      "status": "Status"
+    },
+    "access": {
+      "active": "Aktiv",
+      "deactivated": "Deaktiviert"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "assignClassGroup": "Klassengruppe zuweisen",
+      "withdrawFromClass": "Aus Klasse zurückziehen",
+      "removeFromInstitution": "Aus Institution entfernen",
+      "resendInvitation": "Einladung erneut senden",
+      "disabledPeerInstitutionAdmin": "Das Verwalten anderer Institutions-Admins ist aus Sicherheitsgründen eingeschränkt. Bitte einen Plattform-Administrator kontaktieren."
+    },
+    "assignClassGroupDialog": {
+      "title": "Klassengruppe zuweisen",
+      "description": "",
+      "cancelButton": "Abbrechen",
+      "confirmButton": "Bestätigen"
+    },
+    "withdrawFromClassDialog": {
+      "title": "Aus Klasse zurückziehen",
+      "roleStudent": "Schüler",
+      "roleTeacherCoTeacher": "Lehrkraft / Co-Lehrkraft",
+      "bodyStudent": "Der Schüler wird aus diesem Kurs entfernt. Er verliert den Zugriff auf alle Inhalte, Aufgaben und Spiele dieses Kurses. Sein Account und alle anderen Kurse bleiben unberührt.",
+      "bodyTeacherCoTeacher": "Die Lehrkraft wird als Co-Teacher aus diesem Kurs entfernt. Sie kann keine Inhalte mehr einsehen oder verwalten. Eigene Kurse und andere Klassenzuweisungen bleiben bestehen.",
+      "cancelButton": "Abbrechen",
+      "confirmButton": "Bestätigen"
+    },
+    "removeFromInstitutionDialog": {
+      "title": "Aus Institution entfernen?",
+      "roleStudent": "Schüler",
+      "roleTeacher": "Lehrkraft",
+      "roleCoTeacher": "Co-Lehrkraft",
+      "roleUnknown": "Mitglied",
+      "bodyStudent": "Der Schüler verlässt die Schule vollständig. Er verliert den Zugriff auf alle Kurse, Klassen, Spiele und Daten dieser Institution. Sein Account bleibt erhalten, ist aber für diese Schule gesperrt.",
+      "bodyTeacher": "Die Lehrkraft verlässt die Schule vollständig. Alle von ihr erstellten Kurse und Spiele verbleiben in der Institution. Ihr Account bleibt erhalten, sie hat jedoch keinen Zugriff mehr auf diese Schule.",
+      "bodyCoTeacher": "Die Co-Lehrkraft verlässt die Schule vollständig. Alle Klassenzuweisungen werden aufgehoben. Ihr Account bleibt erhalten, aber der Zugriff auf diese Institution wird vollständig gesperrt.",
+      "bodyUnknown": "Diese Person verliert nach Bestätigung den Zugriff auf diese Institution.",
+      "cancelButton": "Abbrechen",
+      "holdButton": "Zum Entfernen halten",
+      "confirmingButton": "Wird entfernt …"
+    },
+    "roles": {
+      "student": "Schüler",
+      "teacher": "Lehrkraft",
+      "institution_admin": "Institutions-Administration",
+      "unknown": "Sonstige"
+    },
+    "empty": {
+      "title": "Keine Benutzer in dieser Ansicht",
+      "description": "Filter zurücksetzen oder Mitglieder zu Ihrer Institution einladen."
+    },
+    "toasts": {
+      "removeFromInstitutionSuccess": "Entfernung erfasst",
+      "removeFromInstitutionSuccessDescription": "{{name}} verliert den Zugriff auf diese Institution, sobald die Mitgliedschafts-API left_institution_at bestätigt.",
+      "resendInviteSuccess": "Einladungs-E-Mail gesendet",
+      "resendInviteError": "Einladung konnte nicht erneut gesendet werden"
+    },
+    "missingInstitutionContext": "Für Ihr Konto konnte keine Institution geladen werden.",
+    "membershipStatus": {
+      "invited": "Eingeladen",
+      "active": "Aktiv",
+      "suspended": "Gesperrt"
+    },
+    "inviteStatus": {
+      "pendingEmail": "Einladung ausstehend"
+    }
+  },
+  "faculties": {
+    "title": "Fakultäten",
+    "subtitle": "Organisieren Sie Bereiche und akademische Einheiten.",
+    "create": "Fakultät anlegen",
+    "createSubtitle": "Richten Sie eine neue oberste Organisationseinheit in wenigen Schritten ein.",
+    "empty": "Noch keine Fakultäten. Legen Sie eine an, um zu starten.",
+    "card": {
+      "untitled": "Fakultät ohne Titel",
+      "noDescription": "Keine Beschreibung",
+      "open": "Öffnen",
+      "badge": "Fakultät"
+    },
+    "pages": {
+      "programmes": {
+        "title": "Studiengänge",
+        "subtitle": "Studiengänge und Programme an Ihren Fakultäten.",
+        "empty": "Die Verwaltung der Studiengänge folgt in Kürze."
+      },
+      "cohorts": {
+        "title": "Kohorten",
+        "subtitle": "Aufnahmen und Jahrgänge innerhalb von Programmen.",
+        "empty": "Die Verwaltung von Kohorten folgt in Kürze."
+      },
+      "classGroups": {
+        "title": "Klassengruppen",
+        "subtitle": "Operative Lerngruppen innerhalb von Kohorten.",
+        "empty": "Die Verwaltung von Klassengruppen folgt in Kürze."
+      }
+    },
+    "wizard": {
+      "backToList": "Zurück zu Fakultäten",
+      "steps": {
+        "faculty": "Fakultät",
+        "programme": "Programm",
+        "programmeOffering": "Angebot"
+      },
+      "actions": {
+        "previous": "Zurück",
+        "next": "Weiter",
+        "finish": "Fakultät anlegen"
+      },
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "z. B. Gesundheitswissenschaften",
+        "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Studiengänge, Schwerpunkte oder Zielgruppen.",
+        "descriptionLabel": "Beschreibung (optional)",
+        "descriptionPlaceholder": "z. B. Bachelor- und Masterprogramme in Pflege, Public Health und verwandten Gesundheitsberufen."
+      },
+      "programme": {
+        "nameLabel": "Programmname",
+        "namePlaceholder": "z. B. Pflegeassistenz (EQF 4)",
+        "descriptionLabel": "Programmbeschreibung",
+        "descriptionPlaceholder": "Was Lernende erreichen, Dauer, Zugangsvoraussetzungen.",
+        "durationLabel": "Regelstudienzeit (Jahre)",
+        "durationValue_one": "{{count}} Jahr",
+        "durationValue_other": "{{count}} Jahre",
+        "progressionLabel": "Fortschreibung",
+        "progression": {
+          "year_group": "Jahrgang",
+          "stage": "Phase"
+        },
+        "placeholderName": "Programm ohne Titel"
+      },
+      "offering": {
+        "intro": "Legen Sie ein oder mehrere Programmangebote (Studienjahr / Terminfenster) fest. Die Speicherung folgt mit der API.",
+        "academicYearLabel": "Studienjahr",
+        "termCodeLabel": "Termin-Code",
+        "termCodePlaceholder": "z. B. 2026S1",
+        "statusActive": "Aktiv",
+        "statusDraft": "Entwurf",
+        "dateRangeLabel": "Beginn / Ende",
+        "dateRangePlaceholder": "Daten wählen",
+        "addAnother": "Weiteres Angebot",
+        "remove": "Entfernen"
+      }
+    },
+    "hierarchy": {
+      "faculty": {
+        "title": "Fakultät",
+        "description": "Ein übergeordneter Bereich der Institution, der verwandte Programme bündelt (zum Beispiel Pflege oder Berufsausbildung)."
+      },
+      "programme": {
+        "title": "Studiengang / Programm",
+        "description": "Ein Ausbildungsgang innerhalb einer Fakultät, der festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
+      },
+      "cohort": {
+        "title": "Kohorte / Jahrgang",
+        "description": "Eine Aufnahme- oder Jahrgangsgruppe innerhalb eines Programms (zum Beispiel „Kohorte 2026“), die nach Abschluss meist archiviert wird."
+      },
+      "classGroup": {
+        "title": "Klassengruppe",
+        "description": "Eine konkrete Klasse innerhalb einer Kohorte, die die reale Lerngruppe abbildet (zum Beispiel „WIB2-A“)."
+      },
+      "classroom": {
+        "title": "Kursraum / Classroom",
+        "description": "Der Unterrichtsraum auf der Plattform, in dem Lektionen, Spiele und Aufgaben zugewiesen werden. Er verbindet Lehrkraft, Klassengruppe und Fach (zum Beispiel „Chemie WIB2-A“)."
+      }
+    }
+  },
+  "classrooms": {
+    "title": "Klassenräume",
+    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten."
+  },
+  "licenses": {
+    "title": "Lizenzen",
+    "subtitle": "Ihr aktueller Tarif und die enthaltenen Funktionen.",
+    "loadError": "Lizenzen konnten nicht geladen werden",
+    "empty": "Für diese Institution wurde kein Abonnement gefunden.",
+    "noFeatures": "In diesem Tarif sind keine Funktionen konfiguriert.",
+    "summary": {
+      "plan": "Tarif",
+      "billingStatus": "Abrechnungsstatus",
+      "effectiveFrom": "Gültig ab",
+      "renewalAt": "Verlängerung am"
+    },
+    "source": {
+      "override": "Sonderregel",
+      "plan": "Tarif",
+      "default": "Standard"
+    }
+  },
+  "licenseUsage": {
+    "title": "Lizenznutzung",
+    "subtitle": "Plätze und Berechtigungen im Blick behalten.",
+    "loadError": "Nutzung konnte nicht geladen werden",
+    "empty": "Noch keine Nutzungsdaten vorhanden.",
+    "metrics": {
+      "unlimited": "Unbegrenzt",
+      "upgrade": "Upgrade",
+      "seats": {
+        "title": "Plätze",
+        "ok": "Innerhalb der Tarifgrenzen.",
+        "warning": "Sie nähern sich dem Platzlimit."
+      },
+      "students": {
+        "title": "Schüler"
+      },
+      "teachers": {
+        "title": "Lehrkräfte"
+      },
+      "storage": {
+        "title": "Speicher",
+        "using": "Speichernutzung",
+        "used": "Verwendet",
+        "ok": "Innerhalb der Tarifgrenzen.",
+        "warning": "Sie nähern sich dem Speicherlimit."
+      }
+    },
+    "details": {
+      "title": "Nutzungsdetails",
+      "plan": "Tarif",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Laufzeit, Verlängerung und Zahlungsdetails Ihres Abonnements.",
+    "noInstitution": "Ihrem Konto ist keine Institution zugeordnet.",
+    "invoices": {
+      "title": "Rechnungen",
+      "description": "Sehen Sie Ihre Rechnungshistorie ein und laden Sie Rechnungen herunter.",
+      "searchPlaceholder": "Nach Rechnungsnummer oder Beschreibung suchen...",
+      "statusFilterPlaceholder": "Nach Status filtern",
+      "count_one": "{{count}} Rechnung",
+      "count_other": "{{count}} Rechnungen",
+      "status": {
+        "all": "Alle Status",
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen",
+        "refunded": "Erstattet",
+        "void": "Storniert"
+      },
+      "view": "Anzeigen",
+      "emptyFiltered": "Keine Rechnungen entsprechen den Filtern.",
+      "empty": "Keine Rechnungen gefunden.",
+      "page": "Seite",
+      "previous": "Zurück",
+      "next": "Weiter"
+    },
+    "paymentMethod": {
+      "title": "Zahlungsmethode",
+      "empty": "Keine Zahlungsmethode hinterlegt."
+    }
+  },
+  "planFeatures": {
+    "title": "Was in Ihrem Plan enthalten ist",
+    "featureCount": "{{count}} Funktionen",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "accountMenu": "Kontomenü"
+  },
+  "gdprRequest": {
+    "title": "DSGVO-Anfragen",
+    "subtitle": "Anfragen betroffener Personen und Compliance-Aufgaben bearbeiten."
+  },
+  "cloudStorage": {
+    "title": "Cloud-Speicher",
+    "subtitle": "Dateien und Ordner für Ihre Institution."
+  },
+  "auditLogs": {
+    "title": "Audit-Logs",
+    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen."
+  }
+}

@@ -21,6 +21,7 @@ export type ActionId =
   | 'add'
   | 'pan'
   | 'select'
+  | 'home'
 
 /**
  * Single clickable element in the command bar.

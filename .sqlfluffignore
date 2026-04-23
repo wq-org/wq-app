@@ -1,0 +1,9 @@
+.supabase/
+node_modules/
+dist/
+# Ad-hoc seed SQL (not applied as migrations); lint `supabase/migrations/` only for repo SQL style.
+supabase/snippets/
+
+# Baseline + super-admin seeds: do not auto-format or lint (security-sensitive RLS/GRANT semantics; avoid accidental churn).
+supabase/migrations/20260209000001_baseline_schema.sql
+supabase/migrations/20260209000002_super_admin.sql

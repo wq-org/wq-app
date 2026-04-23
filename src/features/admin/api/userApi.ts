@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-export interface AdminUserRow {
+export type AdminUserRow = {
   user_id: string
   display_name: string | null
   email: string | null
@@ -11,13 +11,13 @@ export interface AdminUserRow {
   is_active: boolean
 }
 
-export interface AdminDeleteUserResult {
+export type AdminDeleteUserResult = {
   deleted_user_id: string
   deleted_username: string
   deleted_storage_objects: number
 }
 
-export interface AdminSetUserActiveResult {
+export type AdminSetUserActiveResult = {
   updated_user_id: string
   is_active: boolean
   banned_until: string | null

@@ -49,8 +49,8 @@ const RESTRICTED_FEATURES = [
   'student',
   'teacher',
   'institution',
-  'institutionAdmin',
-  'profiles',
+  'institution-admin',
+  'profile',
 ]
 
 export default defineConfig([
