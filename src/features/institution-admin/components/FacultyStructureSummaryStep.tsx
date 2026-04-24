@@ -90,6 +90,10 @@ export function FacultyStructureSummaryStep({
   cohortOfferings,
   classGroupOfferings,
 }: FacultyStructureSummaryStepProps) {
+  const hasProgrammeOfferings = programmeOfferings.length > 0
+  const hasCohortOfferings = cohortOfferings.length > 0
+  const hasClassGroupOfferings = classGroupOfferings.length > 0
+
   return (
     <div className="flex w-full flex-col gap-4">
       <Text
@@ -116,21 +120,27 @@ export function FacultyStructureSummaryStep({
         </table>
       </div>
 
-      <SummaryTable
-        title={sectionTitles.programmeOfferings}
-        columns={columns}
-        offerings={programmeOfferings}
-      />
-      <SummaryTable
-        title={sectionTitles.cohortOfferings}
-        columns={columns}
-        offerings={cohortOfferings}
-      />
-      <SummaryTable
-        title={sectionTitles.classGroupOfferings}
-        columns={columns}
-        offerings={classGroupOfferings}
-      />
+      {hasProgrammeOfferings ? (
+        <SummaryTable
+          title={sectionTitles.programmeOfferings}
+          columns={columns}
+          offerings={programmeOfferings}
+        />
+      ) : null}
+      {hasCohortOfferings ? (
+        <SummaryTable
+          title={sectionTitles.cohortOfferings}
+          columns={columns}
+          offerings={cohortOfferings}
+        />
+      ) : null}
+      {hasClassGroupOfferings ? (
+        <SummaryTable
+          title={sectionTitles.classGroupOfferings}
+          columns={columns}
+          offerings={classGroupOfferings}
+        />
+      ) : null}
     </div>
   )
 }

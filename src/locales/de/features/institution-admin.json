@@ -20,6 +20,17 @@
     "students": "Studierende",
     "courses": "Kurse"
   },
+  "assignUsersSheet": {
+    "title": "Nutzer zuweisen",
+    "description": "Wählen Sie Institutionsmitglieder für dieses Angebot aus.",
+    "searchLabel": "Nutzer suchen",
+    "searchPlaceholder": "Nach Name oder E-Mail suchen…",
+    "loadError": "Nutzer konnten nicht geladen werden.",
+    "empty": "Keine Nutzer gefunden.",
+    "roleTeacher": "Lehrkraft",
+    "roleStudent": "Lernende",
+    "roleMember": "Mitglied"
+  },
   "shell": {
     "settings": "Einstellungen",
     "logout": "Abmelden",
@@ -278,6 +289,7 @@
           "dateRange": "Zeitraum",
           "academicYear": "Akademisches Jahr",
           "termCode": "Term-Code",
+          "status": "Status",
           "startsAt": "Start",
           "endsAt": "Ende",
           "statusActive": "Aktiv",
@@ -288,12 +300,122 @@
       "cohorts": {
         "title": "Jahrgänge",
         "subtitle": "Aufnahmen und Jahrgänge innerhalb von Programmen.",
-        "empty": "Die Verwaltung von Jahrgängen folgt in Kürze."
+        "searchLabel": "Jahrgänge suchen",
+        "searchPlaceholder": "Suche nach Name, Beschreibung oder Programm…",
+        "loadError": "Jahrgänge konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Jahrgänge",
+        "emptyDescription": "Erstellen Sie eine Fakultät mit einem Jahrgang oder fügen Sie einen Jahrgang über die Programmseite hinzu.",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "card": {
+          "unknownProgramme": "Unbekanntes Programm",
+          "untitledCohort": "Jahrgang ohne Titel",
+          "noDescription": "Keine Beschreibung",
+          "academicYearUnknown": "Jahrgang nicht gesetzt",
+          "open": "Öffnen"
+        }
+      },
+      "cohortOfferings": {
+        "titleFallback": "Jahrgangangebote",
+        "subtitle": "Zeitgebundene Durchläufe dieses Jahrgangs mit aktuellem Status.",
+        "addOffering": "Angebot hinzufügen",
+        "loadError": "Jahrgangangebote konnten nicht geladen werden.",
+        "cohortNotFound": "Dieser Jahrgang wurde nicht gefunden.",
+        "programmeFallback": "Programm",
+        "empty": "Für diesen Jahrgang gibt es noch keine Angebote.",
+        "emptyFiltered": "Keine Angebote passen zu Ihrem aktuellen Filter.",
+        "filterLabel": "Angebote filtern",
+        "filterPlaceholder": "Nach Status oder Datum filtern…",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saveSuccess": "Jahrgangeinstellungen gespeichert",
+          "saveError": "Jahrgangeinstellungen konnten nicht gespeichert werden.",
+          "fields": {
+            "nameLabel": "Jahrgangname",
+            "namePlaceholder": "Jahrgangname eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Jahrgangbeschreibung eingeben"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        },
+        "offering": {
+          "dateRange": "Zeitraum",
+          "startsAt": "Start",
+          "endsAt": "Ende",
+          "status": "Status",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "notSet": "Nicht gesetzt",
+          "assignUsers": "Nutzer zuweisen"
+        }
       },
       "classGroups": {
         "title": "Klassengruppen",
         "subtitle": "Operative Lerngruppen innerhalb von Jahrgängen.",
-        "empty": "Die Verwaltung von Klassengruppen folgt in Kürze."
+        "searchLabel": "Klassengruppen suchen",
+        "searchPlaceholder": "Suche nach Name, Beschreibung oder Jahrgang…",
+        "loadError": "Klassengruppen konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Klassengruppen",
+        "emptyDescription": "Erstellen Sie einen Jahrgang mit einer Klassengruppe oder fügen Sie eine über die Jahrgangseite hinzu.",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "card": {
+          "unknownCohort": "Unbekannter Jahrgang",
+          "untitledClassGroup": "Klassengruppe ohne Titel",
+          "noDescription": "Keine Beschreibung",
+          "open": "Öffnen"
+        }
+      },
+      "classGroupOfferings": {
+        "titleFallback": "Klassengruppenangebote",
+        "subtitle": "Zeitgebundene Durchläufe dieser Klassengruppe mit aktuellem Status.",
+        "addOffering": "Angebot hinzufügen",
+        "loadError": "Klassengruppenangebote konnten nicht geladen werden.",
+        "classGroupNotFound": "Diese Klassengruppe wurde nicht gefunden.",
+        "programmeFallback": "Programm",
+        "cohortFallback": "Jahrgang",
+        "empty": "Für diese Klassengruppe gibt es noch keine Angebote.",
+        "emptyFiltered": "Keine Angebote passen zu Ihrem aktuellen Filter.",
+        "filterLabel": "Angebote filtern",
+        "filterPlaceholder": "Nach Status oder Datum filtern…",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saveSuccess": "Klassengruppeneinstellungen gespeichert",
+          "saveError": "Klassengruppeneinstellungen konnten nicht gespeichert werden.",
+          "fields": {
+            "nameLabel": "Klassengruppename",
+            "namePlaceholder": "Klassengruppename eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Klassengrupenbeschreibung eingeben"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        },
+        "offering": {
+          "dateRange": "Zeitraum",
+          "startsAt": "Start",
+          "endsAt": "Ende",
+          "status": "Status",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "notSet": "Nicht gesetzt",
+          "assignUsers": "Nutzer zuweisen"
+        }
       }
     },
     "wizard": {

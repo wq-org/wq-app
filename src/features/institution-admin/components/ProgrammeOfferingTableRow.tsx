@@ -1,14 +1,14 @@
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
-import { Text } from '@/components/ui/text'
+import { TableCell, TableRow } from '@/components/ui/table'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 
-type ProgrammeOfferingCardProps = {
+type ProgrammeOfferingTableRowProps = {
   offering: ProgrammeOfferingRecord
 }
 
-function toCardStatus(status: ProgrammeOfferingRecord['status']): 'active' | 'inactive' {
+function toRowStatus(status: ProgrammeOfferingRecord['status']): 'active' | 'inactive' {
   return status === 'active' ? 'active' : 'inactive'
 }
 
@@ -23,6 +23,7 @@ function formatDateRange(
     month: 'long',
     year: 'numeric',
   })
+
   const toLongDate = (value: string | null): string => {
     if (!value) return fallback
     const parts = formatter.formatToParts(new Date(value))
@@ -38,10 +39,10 @@ function formatDateRange(
   return `${startLabel} - ${endLabel}`
 }
 
-export function ProgrammeOfferingCard({ offering }: ProgrammeOfferingCardProps) {
+export function ProgrammeOfferingTableRow({ offering }: ProgrammeOfferingTableRowProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
 
-  const status = toCardStatus(offering.status)
+  const status = toRowStatus(offering.status)
   const statusLabel =
     status === 'active'
       ? t('faculties.pages.programmeOfferings.offering.statusActive')
@@ -57,41 +58,11 @@ export function ProgrammeOfferingCard({ offering }: ProgrammeOfferingCardProps) 
     offering.term_code?.trim() || t('faculties.pages.programmeOfferings.offering.notSet')
 
   return (
-    <div className="grid grid-cols-1 gap-3 p-4 md:grid-cols-4 md:items-center">
-      <div>
-        <Text
-          as="p"
-          variant="small"
-          color="muted"
-        >
-          {t('faculties.pages.programmeOfferings.offering.termCode')}
-        </Text>
-        <Text as="p">{resolvedTermCode}</Text>
-      </div>
-
-      <div>
-        <Text
-          as="p"
-          variant="small"
-          color="muted"
-        >
-          {t('faculties.pages.programmeOfferings.offering.academicYear')}
-        </Text>
-        <Text as="p">{String(offering.academic_year)}</Text>
-      </div>
-
-      <div>
-        <Text
-          as="p"
-          variant="small"
-          color="muted"
-        >
-          {t('faculties.pages.programmeOfferings.offering.dateRange')}
-        </Text>
-        <Text as="p">{dateRange}</Text>
-      </div>
-
-      <div className="md:justify-self-end">
+    <TableRow>
+      <TableCell>{resolvedTermCode}</TableCell>
+      <TableCell>{String(offering.academic_year)}</TableCell>
+      <TableCell>{dateRange}</TableCell>
+      <TableCell className="text-right">
         <Badge
           variant={statusVariant}
           size="sm"
@@ -99,7 +70,7 @@ export function ProgrammeOfferingCard({ offering }: ProgrammeOfferingCardProps) 
         >
           {statusLabel}
         </Badge>
-      </div>
-    </div>
+      </TableCell>
+    </TableRow>
   )
 }

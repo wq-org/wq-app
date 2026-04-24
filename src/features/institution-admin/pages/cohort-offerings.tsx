@@ -20,14 +20,15 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { listCohortsByProgramme, updateCohort } from '../api/cohortsApi'
+import { listCohortOfferings } from '../api/cohortOfferingsApi'
 import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
-import { listProgrammesByFaculty, updateProgramme } from '../api/programmesApi'
+import { listProgrammesByFaculty } from '../api/programmesApi'
+import { CohortOfferingTable } from '../components/CohortOfferingTable'
+import { CohortSettings } from '../components/CohortSettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import { ProgrammeOfferingTable } from '../components/ProgrammeOfferingTable'
-import { ProgrammeSettings } from '../components/ProgrammeSettings'
-import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
-import type { ProgrammeRecord } from '../types/programme.types'
+import type { CohortOfferingRecord } from '../types/cohort-offering.types'
+import type { CohortRecord } from '../types/cohort.types'
 
 const OFFERING_TABS = [
   { id: 'overview', title: 'Overview', icon: LayoutGrid },
@@ -36,91 +37,91 @@ const OFFERING_TABS = [
 
 type OfferingTabId = (typeof OFFERING_TABS)[number]['id']
 
-function toInactiveStatus(status: ProgrammeOfferingRecord['status']): 'active' | 'inactive' {
-  return status === 'active' ? 'active' : 'inactive'
-}
-
-export function InstitutionProgrammeOfferings() {
+export function InstitutionCohortOfferings() {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
-  const { facultyId: facultyIdParam, programmeId: programmeIdParam } = useParams<{
+  const {
+    facultyId: facultyIdParam,
+    programmeId: programmeIdParam,
+    cohortId: cohortIdParam,
+  } = useParams<{
     facultyId: string
     programmeId: string
+    cohortId: string
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
+  const [cohorts, setCohorts] = useState<readonly CohortRecord[]>([])
+  const [offerings, setOfferings] = useState<readonly CohortOfferingRecord[]>([])
   const [facultyName, setFacultyName] = useState<string>('')
-  const [offerings, setOfferings] = useState<readonly ProgrammeOfferingRecord[]>([])
+  const [programmeName, setProgrammeName] = useState<string>('')
   const [filterQuery, setFilterQuery] = useState('')
-  const [draftProgrammeName, setDraftProgrammeName] = useState('')
-  const [draftProgrammeDescription, setDraftProgrammeDescription] = useState('')
+  const [draftCohortName, setDraftCohortName] = useState('')
+  const [draftCohortDescription, setDraftCohortDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
 
-  const selectedProgramme = useMemo(
-    () => programmes.find((programme) => programme.id === programmeIdParam) ?? null,
-    [programmes, programmeIdParam],
+  const selectedCohort = useMemo(
+    () => cohorts.find((c) => c.id === cohortIdParam) ?? null,
+    [cohorts, cohortIdParam],
   )
 
   const tabs = useMemo(
     () =>
       OFFERING_TABS.map((tab) => ({
         ...tab,
-        title: t(`faculties.pages.programmeOfferings.tabs.${tab.id}`),
+        title: t(`faculties.pages.cohortOfferings.tabs.${tab.id}`),
       })),
     [t],
   )
 
   const hasUnsavedSettingsChanges =
-    selectedProgramme !== null &&
-    (draftProgrammeName !== selectedProgramme.name ||
-      draftProgrammeDescription !== (selectedProgramme.description ?? ''))
+    selectedCohort !== null &&
+    (draftCohortName !== selectedCohort.name ||
+      draftCohortDescription !== (selectedCohort.description ?? ''))
 
   const searchableOfferings = useMemo(
     () =>
       offerings.map((offering) => ({
         offering,
-        searchAcademicYear: String(offering.academic_year),
-        searchTermCode: offering.term_code ?? '',
         searchStatus:
-          toInactiveStatus(offering.status) === 'active'
-            ? t('faculties.pages.programmeOfferings.offering.statusActive')
-            : t('faculties.pages.programmeOfferings.offering.statusInactive'),
+          offering.status === 'active'
+            ? t('faculties.pages.cohortOfferings.offering.statusActive')
+            : t('faculties.pages.cohortOfferings.offering.statusInactive'),
+        searchStartsAt: offering.starts_at ?? '',
+        searchEndsAt: offering.ends_at ?? '',
       })),
     [offerings, t],
   )
 
   const filteredOfferings = useSearchFilter(searchableOfferings, filterQuery, [
-    'searchAcademicYear',
-    'searchTermCode',
     'searchStatus',
+    'searchStartsAt',
+    'searchEndsAt',
   ]).map((row) => row.offering)
 
   const handleAddOffering = () => {
-    // Placeholder: real add-offering flow will be wired in a follow-up.
+    // Placeholder: add-offering flow wired in a follow-up.
   }
 
-  const handleSaveProgrammeSettings = async () => {
-    if (!selectedProgramme) return
+  const handleSaveCohortSettings = async () => {
+    if (!selectedCohort) return
     setIsSaving(true)
     try {
-      const updatedProgramme = await updateProgramme({
-        programmeId: selectedProgramme.id,
-        name: draftProgrammeName,
-        description: draftProgrammeDescription.trim() || null,
+      const updated = await updateCohort({
+        cohortId: selectedCohort.id,
+        name: draftCohortName,
+        description: draftCohortDescription.trim() || null,
       })
-      setProgrammes((rows) =>
-        rows.map((row) => (row.id === updatedProgramme.id ? updatedProgramme : row)),
-      )
-      toast.success(t('faculties.pages.programmeOfferings.settings.saveSuccess'))
+      setCohorts((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
+      toast.success(t('faculties.pages.cohortOfferings.settings.saveSuccess'))
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('faculties.pages.programmeOfferings.settings.saveError'),
+          : t('faculties.pages.cohortOfferings.settings.saveError'),
       )
     } finally {
       setIsSaving(false)
@@ -133,7 +134,7 @@ export function InstitutionProgrammeOfferings() {
 
     if (activeTabId === 'settings' && hasUnsavedSettingsChanges) {
       showUnsavedChangesToast({
-        t: (key) => t(`faculties.pages.programmeOfferings.${key}`),
+        t: (key) => t(`faculties.pages.cohortOfferings.${key}`),
         onStay: () => {},
         onContinue: () => setActiveTabId(resolvedTab),
       })
@@ -144,10 +145,11 @@ export function InstitutionProgrammeOfferings() {
   }
 
   useEffect(() => {
-    if (!institutionId || !facultyIdParam || !programmeIdParam) {
-      setProgrammes([])
+    if (!institutionId || !facultyIdParam || !programmeIdParam || !cohortIdParam) {
+      setCohorts([])
       setOfferings([])
       setFacultyName('')
+      setProgrammeName('')
       return
     }
 
@@ -158,24 +160,29 @@ export function InstitutionProgrammeOfferings() {
       setLoadError(null)
 
       try {
-        const [faculties, programmeRows, offeringRows] = await Promise.all([
+        const [faculties, programmeRows, cohortRows, offeringRows] = await Promise.all([
           listFacultiesByInstitution(institutionId),
           listProgrammesByFaculty(facultyIdParam),
-          listProgrammeOfferings(programmeIdParam),
+          listCohortsByProgramme(programmeIdParam),
+          listCohortOfferings(cohortIdParam),
         ])
 
         if (cancelled) return
 
-        const matchedFaculty = faculties.find((faculty) => faculty.id === facultyIdParam)
+        const matchedFaculty = faculties.find((f) => f.id === facultyIdParam)
         setFacultyName(matchedFaculty?.name?.trim() || t('faculties.card.untitled'))
-        setProgrammes(programmeRows)
+
+        const matchedProgramme = programmeRows.find((p) => p.id === programmeIdParam)
+        setProgrammeName(
+          matchedProgramme?.name?.trim() || t('faculties.pages.cohortOfferings.programmeFallback'),
+        )
+
+        setCohorts(cohortRows)
         setOfferings(offeringRows)
       } catch (error) {
         if (!cancelled) {
           setLoadError(
-            error instanceof Error
-              ? error.message
-              : t('faculties.pages.programmeOfferings.loadError'),
+            error instanceof Error ? error.message : t('faculties.pages.cohortOfferings.loadError'),
           )
         }
       } finally {
@@ -190,18 +197,17 @@ export function InstitutionProgrammeOfferings() {
     return () => {
       cancelled = true
     }
-  }, [institutionId, facultyIdParam, programmeIdParam, t])
+  }, [institutionId, facultyIdParam, programmeIdParam, cohortIdParam, t])
 
   useEffect(() => {
-    if (!selectedProgramme) {
-      setDraftProgrammeName('')
-      setDraftProgrammeDescription('')
+    if (!selectedCohort) {
+      setDraftCohortName('')
+      setDraftCohortDescription('')
       return
     }
-
-    setDraftProgrammeName(selectedProgramme.name)
-    setDraftProgrammeDescription(selectedProgramme.description ?? '')
-  }, [selectedProgramme])
+    setDraftCohortName(selectedCohort.name)
+    setDraftCohortDescription(selectedCohort.description ?? '')
+  }, [selectedCohort])
 
   const timelineContent = (() => {
     if (isLoading) {
@@ -226,14 +232,14 @@ export function InstitutionProgrammeOfferings() {
         </Text>
       )
     }
-    if (!selectedProgramme) {
+    if (!selectedCohort) {
       return (
         <Text
           as="p"
           variant="body"
           color="muted"
         >
-          {t('faculties.pages.programmeOfferings.programmeNotFound')}
+          {t('faculties.pages.cohortOfferings.cohortNotFound')}
         </Text>
       )
     }
@@ -245,13 +251,18 @@ export function InstitutionProgrammeOfferings() {
           color="muted"
         >
           {filterQuery.trim()
-            ? t('faculties.pages.programmeOfferings.emptyFiltered')
-            : t('faculties.pages.programmeOfferings.empty')}
+            ? t('faculties.pages.cohortOfferings.emptyFiltered')
+            : t('faculties.pages.cohortOfferings.empty')}
         </Text>
       )
     }
 
-    return <ProgrammeOfferingTable offerings={filteredOfferings} />
+    return (
+      <CohortOfferingTable
+        offerings={filteredOfferings}
+        institutionId={institutionId ?? ''}
+      />
+    )
   })()
 
   return (
@@ -274,8 +285,18 @@ export function InstitutionProgrammeOfferings() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link
+                  to={`/institution_admin/faculties/${facultyIdParam}/programmes/${programmeIdParam}`}
+                >
+                  {programmeName}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
               <BreadcrumbPage>
-                {selectedProgramme?.name || t('faculties.pages.programmeOfferings.titleFallback')}
+                {selectedCohort?.name || t('faculties.pages.cohortOfferings.titleFallback')}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -295,14 +316,14 @@ export function InstitutionProgrammeOfferings() {
               variant="h1"
               className="text-2xl font-bold"
             >
-              {selectedProgramme?.name || t('faculties.pages.programmeOfferings.titleFallback')}
+              {selectedCohort?.name || t('faculties.pages.cohortOfferings.titleFallback')}
             </Text>
             <Text
               as="p"
               variant="body"
               color="muted"
             >
-              {t('faculties.pages.programmeOfferings.subtitle')}
+              {t('faculties.pages.cohortOfferings.subtitle')}
             </Text>
           </div>
           <div className="flex justify-end">
@@ -313,7 +334,7 @@ export function InstitutionProgrammeOfferings() {
               onClick={handleAddOffering}
             >
               <Plus className="size-4" />
-              <Text as="span">{t('faculties.pages.programmeOfferings.addOffering')}</Text>
+              <Text as="span">{t('faculties.pages.cohortOfferings.addOffering')}</Text>
             </Button>
           </div>
         </div>
@@ -321,8 +342,8 @@ export function InstitutionProgrammeOfferings() {
         {activeTabId === 'overview' ? (
           <>
             <FieldInput
-              label={t('faculties.pages.programmeOfferings.filterLabel')}
-              placeholder={t('faculties.pages.programmeOfferings.filterPlaceholder')}
+              label={t('faculties.pages.cohortOfferings.filterLabel')}
+              placeholder={t('faculties.pages.cohortOfferings.filterPlaceholder')}
               value={filterQuery}
               onValueChange={setFilterQuery}
               className="w-full max-w-xl"
@@ -334,17 +355,17 @@ export function InstitutionProgrammeOfferings() {
           </>
         ) : (
           <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
-            <ProgrammeSettings
+            <CohortSettings
               isLoading={isLoading}
               isSaving={isSaving}
               loadError={loadError}
-              selectedProgramme={selectedProgramme}
-              draftProgrammeName={draftProgrammeName}
-              draftProgrammeDescription={draftProgrammeDescription}
+              selectedCohort={selectedCohort}
+              draftCohortName={draftCohortName}
+              draftCohortDescription={draftCohortDescription}
               hasUnsavedSettingsChanges={hasUnsavedSettingsChanges}
-              onProgrammeNameChange={setDraftProgrammeName}
-              onProgrammeDescriptionChange={setDraftProgrammeDescription}
-              onSaveChanges={handleSaveProgrammeSettings}
+              onCohortNameChange={setDraftCohortName}
+              onCohortDescriptionChange={setDraftCohortDescription}
+              onSaveChanges={handleSaveCohortSettings}
             />
           </div>
         )}

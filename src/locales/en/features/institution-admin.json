@@ -20,6 +20,17 @@
     "students": "Students",
     "courses": "Courses"
   },
+  "assignUsersSheet": {
+    "title": "Assign users",
+    "description": "Select institution members to assign to this offering.",
+    "searchLabel": "Search users",
+    "searchPlaceholder": "Search by name or email…",
+    "loadError": "Could not load users.",
+    "empty": "No users found.",
+    "roleTeacher": "Teacher",
+    "roleStudent": "Student",
+    "roleMember": "Member"
+  },
   "shell": {
     "settings": "Settings",
     "logout": "Log out",
@@ -278,6 +289,7 @@
           "dateRange": "Date range",
           "academicYear": "Academic year",
           "termCode": "Term code",
+          "status": "Status",
           "startsAt": "Starts",
           "endsAt": "Ends",
           "statusActive": "Active",
@@ -288,12 +300,122 @@
       "cohorts": {
         "title": "Cohorts",
         "subtitle": "Intakes and year groups within programmes.",
-        "empty": "Cohort management UI is coming soon."
+        "searchLabel": "Search cohorts",
+        "searchPlaceholder": "Search by cohort name, description, or programme…",
+        "loadError": "Could not load cohorts.",
+        "emptyTitle": "No cohorts yet",
+        "emptyDescription": "Create a faculty with a cohort, or add a cohort from a programme page.",
+        "noSearchResults": "No cohorts match your search.",
+        "card": {
+          "unknownProgramme": "Unknown programme",
+          "untitledCohort": "Untitled cohort",
+          "noDescription": "No description",
+          "academicYearUnknown": "Year not set",
+          "open": "Open"
+        }
+      },
+      "cohortOfferings": {
+        "titleFallback": "Cohort offerings",
+        "subtitle": "Time-bound runs for this cohort with their current status.",
+        "addOffering": "Add offering",
+        "loadError": "Could not load cohort offerings.",
+        "cohortNotFound": "This cohort could not be found.",
+        "programmeFallback": "Programme",
+        "empty": "No offerings exist for this cohort yet.",
+        "emptyFiltered": "No offerings match your current filter.",
+        "filterLabel": "Filter offerings",
+        "filterPlaceholder": "Filter by status or date…",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saveSuccess": "Cohort settings saved",
+          "saveError": "Could not save cohort settings.",
+          "fields": {
+            "nameLabel": "Cohort name",
+            "namePlaceholder": "Enter cohort name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter cohort description"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        },
+        "offering": {
+          "dateRange": "Date range",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "status": "Status",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "notSet": "Not set",
+          "assignUsers": "Assign users"
+        }
       },
       "classGroups": {
         "title": "Class groups",
         "subtitle": "Operational learner groups within cohorts.",
-        "empty": "Class group management UI is coming soon."
+        "searchLabel": "Search class groups",
+        "searchPlaceholder": "Search by class group name, description, or cohort…",
+        "loadError": "Could not load class groups.",
+        "emptyTitle": "No class groups yet",
+        "emptyDescription": "Create a cohort with a class group, or add a class group from a cohort page.",
+        "noSearchResults": "No class groups match your search.",
+        "card": {
+          "unknownCohort": "Unknown cohort",
+          "untitledClassGroup": "Untitled class group",
+          "noDescription": "No description",
+          "open": "Open"
+        }
+      },
+      "classGroupOfferings": {
+        "titleFallback": "Class group offerings",
+        "subtitle": "Time-bound runs for this class group with their current status.",
+        "addOffering": "Add offering",
+        "loadError": "Could not load class group offerings.",
+        "classGroupNotFound": "This class group could not be found.",
+        "programmeFallback": "Programme",
+        "cohortFallback": "Cohort",
+        "empty": "No offerings exist for this class group yet.",
+        "emptyFiltered": "No offerings match your current filter.",
+        "filterLabel": "Filter offerings",
+        "filterPlaceholder": "Filter by status or date…",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saveSuccess": "Class group settings saved",
+          "saveError": "Could not save class group settings.",
+          "fields": {
+            "nameLabel": "Class group name",
+            "namePlaceholder": "Enter class group name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter class group description"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        },
+        "offering": {
+          "dateRange": "Date range",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "status": "Status",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "notSet": "Not set",
+          "assignUsers": "Assign users"
+        }
       }
     },
     "wizard": {

@@ -72,7 +72,9 @@ import {
   InstitutionAdminFacultyProgrammesPage,
   InstitutionAdminProgrammeOfferingsPage,
   InstitutionAdminFacultiesCohortsPage,
+  InstitutionAdminCohortOfferingsPage,
   InstitutionAdminFacultiesClassGroupsPage,
+  InstitutionAdminClassGroupOfferingsPage,
   InstitutionAdminClassroomsPage,
   InstitutionAdminLicensesPage,
   InstitutionAdminUsagePage,
@@ -520,10 +522,26 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="faculties/:facultyId/programmes/:programmeId/cohorts/:cohortId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCohortOfferingsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="faculties/class-groups"
                   element={
                     <RequireAuth>
                       <InstitutionAdminFacultiesClassGroupsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/:facultyId/programmes/:programmeId/cohorts/:cohortId/class-groups/:classGroupId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminClassGroupOfferingsPage />
                     </RequireAuth>
                   }
                 />

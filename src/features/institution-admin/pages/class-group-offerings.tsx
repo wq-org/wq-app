@@ -20,14 +20,16 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { listClassGroupsByCohort, updateClassGroup } from '../api/classGroupsApi'
+import { listClassGroupOfferings } from '../api/classGroupOfferingsApi'
+import { listCohortsByProgramme } from '../api/cohortsApi'
 import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
-import { listProgrammesByFaculty, updateProgramme } from '../api/programmesApi'
+import { listProgrammesByFaculty } from '../api/programmesApi'
+import { ClassGroupOfferingTable } from '../components/ClassGroupOfferingTable'
+import { ClassGroupSettings } from '../components/ClassGroupSettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import { ProgrammeOfferingTable } from '../components/ProgrammeOfferingTable'
-import { ProgrammeSettings } from '../components/ProgrammeSettings'
-import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
-import type { ProgrammeRecord } from '../types/programme.types'
+import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
+import type { ClassGroupRecord } from '../types/class-group.types'
 
 const OFFERING_TABS = [
   { id: 'overview', title: 'Overview', icon: LayoutGrid },
@@ -36,91 +38,94 @@ const OFFERING_TABS = [
 
 type OfferingTabId = (typeof OFFERING_TABS)[number]['id']
 
-function toInactiveStatus(status: ProgrammeOfferingRecord['status']): 'active' | 'inactive' {
-  return status === 'active' ? 'active' : 'inactive'
-}
-
-export function InstitutionProgrammeOfferings() {
+export function InstitutionClassGroupOfferings() {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
-  const { facultyId: facultyIdParam, programmeId: programmeIdParam } = useParams<{
+  const {
+    facultyId: facultyIdParam,
+    programmeId: programmeIdParam,
+    cohortId: cohortIdParam,
+    classGroupId: classGroupIdParam,
+  } = useParams<{
     facultyId: string
     programmeId: string
+    cohortId: string
+    classGroupId: string
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
+  const [classGroups, setClassGroups] = useState<readonly ClassGroupRecord[]>([])
+  const [offerings, setOfferings] = useState<readonly ClassGroupOfferingRecord[]>([])
   const [facultyName, setFacultyName] = useState<string>('')
-  const [offerings, setOfferings] = useState<readonly ProgrammeOfferingRecord[]>([])
+  const [programmeName, setProgrammeName] = useState<string>('')
+  const [cohortName, setCohortName] = useState<string>('')
   const [filterQuery, setFilterQuery] = useState('')
-  const [draftProgrammeName, setDraftProgrammeName] = useState('')
-  const [draftProgrammeDescription, setDraftProgrammeDescription] = useState('')
+  const [draftClassGroupName, setDraftClassGroupName] = useState('')
+  const [draftClassGroupDescription, setDraftClassGroupDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
 
-  const selectedProgramme = useMemo(
-    () => programmes.find((programme) => programme.id === programmeIdParam) ?? null,
-    [programmes, programmeIdParam],
+  const selectedClassGroup = useMemo(
+    () => classGroups.find((cg) => cg.id === classGroupIdParam) ?? null,
+    [classGroups, classGroupIdParam],
   )
 
   const tabs = useMemo(
     () =>
       OFFERING_TABS.map((tab) => ({
         ...tab,
-        title: t(`faculties.pages.programmeOfferings.tabs.${tab.id}`),
+        title: t(`faculties.pages.classGroupOfferings.tabs.${tab.id}`),
       })),
     [t],
   )
 
   const hasUnsavedSettingsChanges =
-    selectedProgramme !== null &&
-    (draftProgrammeName !== selectedProgramme.name ||
-      draftProgrammeDescription !== (selectedProgramme.description ?? ''))
+    selectedClassGroup !== null &&
+    (draftClassGroupName !== selectedClassGroup.name ||
+      draftClassGroupDescription !== (selectedClassGroup.description ?? ''))
 
   const searchableOfferings = useMemo(
     () =>
       offerings.map((offering) => ({
         offering,
-        searchAcademicYear: String(offering.academic_year),
-        searchTermCode: offering.term_code ?? '',
         searchStatus:
-          toInactiveStatus(offering.status) === 'active'
-            ? t('faculties.pages.programmeOfferings.offering.statusActive')
-            : t('faculties.pages.programmeOfferings.offering.statusInactive'),
+          offering.status === 'active'
+            ? t('faculties.pages.classGroupOfferings.offering.statusActive')
+            : t('faculties.pages.classGroupOfferings.offering.statusInactive'),
+        searchStartsAt: offering.starts_at ?? '',
+        searchEndsAt: offering.ends_at ?? '',
       })),
     [offerings, t],
   )
 
   const filteredOfferings = useSearchFilter(searchableOfferings, filterQuery, [
-    'searchAcademicYear',
-    'searchTermCode',
     'searchStatus',
+    'searchStartsAt',
+    'searchEndsAt',
   ]).map((row) => row.offering)
 
   const handleAddOffering = () => {
-    // Placeholder: real add-offering flow will be wired in a follow-up.
+    // Placeholder: add-offering flow wired in a follow-up.
   }
 
-  const handleSaveProgrammeSettings = async () => {
-    if (!selectedProgramme) return
+  const handleSaveClassGroupSettings = async () => {
+    if (!selectedClassGroup) return
     setIsSaving(true)
     try {
-      const updatedProgramme = await updateProgramme({
-        programmeId: selectedProgramme.id,
-        name: draftProgrammeName,
-        description: draftProgrammeDescription.trim() || null,
+      const updated = await updateClassGroup({
+        classGroupId: selectedClassGroup.id,
+        name: draftClassGroupName,
+        description: draftClassGroupDescription.trim() || null,
       })
-      setProgrammes((rows) =>
-        rows.map((row) => (row.id === updatedProgramme.id ? updatedProgramme : row)),
-      )
-      toast.success(t('faculties.pages.programmeOfferings.settings.saveSuccess'))
+      setClassGroups((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
+      toast.success(t('faculties.pages.classGroupOfferings.settings.saveSuccess'))
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('faculties.pages.programmeOfferings.settings.saveError'),
+          : t('faculties.pages.classGroupOfferings.settings.saveError'),
       )
     } finally {
       setIsSaving(false)
@@ -133,7 +138,7 @@ export function InstitutionProgrammeOfferings() {
 
     if (activeTabId === 'settings' && hasUnsavedSettingsChanges) {
       showUnsavedChangesToast({
-        t: (key) => t(`faculties.pages.programmeOfferings.${key}`),
+        t: (key) => t(`faculties.pages.classGroupOfferings.${key}`),
         onStay: () => {},
         onContinue: () => setActiveTabId(resolvedTab),
       })
@@ -144,10 +149,18 @@ export function InstitutionProgrammeOfferings() {
   }
 
   useEffect(() => {
-    if (!institutionId || !facultyIdParam || !programmeIdParam) {
-      setProgrammes([])
+    if (
+      !institutionId ||
+      !facultyIdParam ||
+      !programmeIdParam ||
+      !cohortIdParam ||
+      !classGroupIdParam
+    ) {
+      setClassGroups([])
       setOfferings([])
       setFacultyName('')
+      setProgrammeName('')
+      setCohortName('')
       return
     }
 
@@ -158,24 +171,39 @@ export function InstitutionProgrammeOfferings() {
       setLoadError(null)
 
       try {
-        const [faculties, programmeRows, offeringRows] = await Promise.all([
-          listFacultiesByInstitution(institutionId),
-          listProgrammesByFaculty(facultyIdParam),
-          listProgrammeOfferings(programmeIdParam),
-        ])
+        const [faculties, programmeRows, cohortRows, classGroupRows, offeringRows] =
+          await Promise.all([
+            listFacultiesByInstitution(institutionId),
+            listProgrammesByFaculty(facultyIdParam),
+            listCohortsByProgramme(programmeIdParam),
+            listClassGroupsByCohort(cohortIdParam),
+            listClassGroupOfferings(classGroupIdParam),
+          ])
 
         if (cancelled) return
 
-        const matchedFaculty = faculties.find((faculty) => faculty.id === facultyIdParam)
+        const matchedFaculty = faculties.find((f) => f.id === facultyIdParam)
         setFacultyName(matchedFaculty?.name?.trim() || t('faculties.card.untitled'))
-        setProgrammes(programmeRows)
+
+        const matchedProgramme = programmeRows.find((p) => p.id === programmeIdParam)
+        setProgrammeName(
+          matchedProgramme?.name?.trim() ||
+            t('faculties.pages.classGroupOfferings.programmeFallback'),
+        )
+
+        const matchedCohort = cohortRows.find((c) => c.id === cohortIdParam)
+        setCohortName(
+          matchedCohort?.name?.trim() || t('faculties.pages.classGroupOfferings.cohortFallback'),
+        )
+
+        setClassGroups(classGroupRows)
         setOfferings(offeringRows)
       } catch (error) {
         if (!cancelled) {
           setLoadError(
             error instanceof Error
               ? error.message
-              : t('faculties.pages.programmeOfferings.loadError'),
+              : t('faculties.pages.classGroupOfferings.loadError'),
           )
         }
       } finally {
@@ -190,18 +218,17 @@ export function InstitutionProgrammeOfferings() {
     return () => {
       cancelled = true
     }
-  }, [institutionId, facultyIdParam, programmeIdParam, t])
+  }, [institutionId, facultyIdParam, programmeIdParam, cohortIdParam, classGroupIdParam, t])
 
   useEffect(() => {
-    if (!selectedProgramme) {
-      setDraftProgrammeName('')
-      setDraftProgrammeDescription('')
+    if (!selectedClassGroup) {
+      setDraftClassGroupName('')
+      setDraftClassGroupDescription('')
       return
     }
-
-    setDraftProgrammeName(selectedProgramme.name)
-    setDraftProgrammeDescription(selectedProgramme.description ?? '')
-  }, [selectedProgramme])
+    setDraftClassGroupName(selectedClassGroup.name)
+    setDraftClassGroupDescription(selectedClassGroup.description ?? '')
+  }, [selectedClassGroup])
 
   const timelineContent = (() => {
     if (isLoading) {
@@ -226,14 +253,14 @@ export function InstitutionProgrammeOfferings() {
         </Text>
       )
     }
-    if (!selectedProgramme) {
+    if (!selectedClassGroup) {
       return (
         <Text
           as="p"
           variant="body"
           color="muted"
         >
-          {t('faculties.pages.programmeOfferings.programmeNotFound')}
+          {t('faculties.pages.classGroupOfferings.classGroupNotFound')}
         </Text>
       )
     }
@@ -245,13 +272,13 @@ export function InstitutionProgrammeOfferings() {
           color="muted"
         >
           {filterQuery.trim()
-            ? t('faculties.pages.programmeOfferings.emptyFiltered')
-            : t('faculties.pages.programmeOfferings.empty')}
+            ? t('faculties.pages.classGroupOfferings.emptyFiltered')
+            : t('faculties.pages.classGroupOfferings.empty')}
         </Text>
       )
     }
 
-    return <ProgrammeOfferingTable offerings={filteredOfferings} />
+    return <ClassGroupOfferingTable offerings={filteredOfferings} />
   })()
 
   return (
@@ -274,8 +301,28 @@ export function InstitutionProgrammeOfferings() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link
+                  to={`/institution_admin/faculties/${facultyIdParam}/programmes/${programmeIdParam}`}
+                >
+                  {programmeName}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link
+                  to={`/institution_admin/faculties/${facultyIdParam}/programmes/${programmeIdParam}/cohorts/${cohortIdParam}`}
+                >
+                  {cohortName}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
               <BreadcrumbPage>
-                {selectedProgramme?.name || t('faculties.pages.programmeOfferings.titleFallback')}
+                {selectedClassGroup?.name || t('faculties.pages.classGroupOfferings.titleFallback')}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -295,14 +342,14 @@ export function InstitutionProgrammeOfferings() {
               variant="h1"
               className="text-2xl font-bold"
             >
-              {selectedProgramme?.name || t('faculties.pages.programmeOfferings.titleFallback')}
+              {selectedClassGroup?.name || t('faculties.pages.classGroupOfferings.titleFallback')}
             </Text>
             <Text
               as="p"
               variant="body"
               color="muted"
             >
-              {t('faculties.pages.programmeOfferings.subtitle')}
+              {t('faculties.pages.classGroupOfferings.subtitle')}
             </Text>
           </div>
           <div className="flex justify-end">
@@ -313,7 +360,7 @@ export function InstitutionProgrammeOfferings() {
               onClick={handleAddOffering}
             >
               <Plus className="size-4" />
-              <Text as="span">{t('faculties.pages.programmeOfferings.addOffering')}</Text>
+              <Text as="span">{t('faculties.pages.classGroupOfferings.addOffering')}</Text>
             </Button>
           </div>
         </div>
@@ -321,8 +368,8 @@ export function InstitutionProgrammeOfferings() {
         {activeTabId === 'overview' ? (
           <>
             <FieldInput
-              label={t('faculties.pages.programmeOfferings.filterLabel')}
-              placeholder={t('faculties.pages.programmeOfferings.filterPlaceholder')}
+              label={t('faculties.pages.classGroupOfferings.filterLabel')}
+              placeholder={t('faculties.pages.classGroupOfferings.filterPlaceholder')}
               value={filterQuery}
               onValueChange={setFilterQuery}
               className="w-full max-w-xl"
@@ -334,17 +381,17 @@ export function InstitutionProgrammeOfferings() {
           </>
         ) : (
           <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
-            <ProgrammeSettings
+            <ClassGroupSettings
               isLoading={isLoading}
               isSaving={isSaving}
               loadError={loadError}
-              selectedProgramme={selectedProgramme}
-              draftProgrammeName={draftProgrammeName}
-              draftProgrammeDescription={draftProgrammeDescription}
+              selectedClassGroup={selectedClassGroup}
+              draftClassGroupName={draftClassGroupName}
+              draftClassGroupDescription={draftClassGroupDescription}
               hasUnsavedSettingsChanges={hasUnsavedSettingsChanges}
-              onProgrammeNameChange={setDraftProgrammeName}
-              onProgrammeDescriptionChange={setDraftProgrammeDescription}
-              onSaveChanges={handleSaveProgrammeSettings}
+              onClassGroupNameChange={setDraftClassGroupName}
+              onClassGroupDescriptionChange={setDraftClassGroupDescription}
+              onSaveChanges={handleSaveClassGroupSettings}
             />
           </div>
         )}
