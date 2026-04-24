@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { LayoutGrid, Plus, Settings } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { LayoutGrid, Plus, Search, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -14,21 +14,20 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { FieldInput } from '@/components/ui/field-input'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listCohortsByProgramme, updateCohort } from '../api/cohortsApi'
-import { listCohortOfferings } from '../api/cohortOfferingsApi'
-import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammesByFaculty } from '../api/programmesApi'
+import { updateCohort } from '../api/cohortsApi'
+import { ClassGroupCardList } from '../components/ClassGroupCardList'
 import { CohortOfferingTable } from '../components/CohortOfferingTable'
 import { CohortSettings } from '../components/CohortSettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { CohortOfferingRecord } from '../types/cohort-offering.types'
-import type { CohortRecord } from '../types/cohort.types'
+import { useCohortOfferings } from '../hooks/useCohortOfferings'
 
 const OFFERING_TABS = [
   { id: 'overview', title: 'Overview', icon: LayoutGrid },
@@ -37,8 +36,12 @@ const OFFERING_TABS = [
 
 type OfferingTabId = (typeof OFFERING_TABS)[number]['id']
 
+const overviewContentEnter =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
+
 export function InstitutionCohortOfferings() {
   const { t } = useTranslation('features.institution-admin')
+  const navigate = useNavigate()
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
   const {
@@ -52,16 +55,27 @@ export function InstitutionCohortOfferings() {
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [cohorts, setCohorts] = useState<readonly CohortRecord[]>([])
-  const [offerings, setOfferings] = useState<readonly CohortOfferingRecord[]>([])
-  const [facultyName, setFacultyName] = useState<string>('')
-  const [programmeName, setProgrammeName] = useState<string>('')
   const [filterQuery, setFilterQuery] = useState('')
+  const [classGroupFilterQuery, setClassGroupFilterQuery] = useState('')
   const [draftCohortName, setDraftCohortName] = useState('')
   const [draftCohortDescription, setDraftCohortDescription] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const {
+    cohorts,
+    offerings,
+    classGroups,
+    facultyName,
+    programmeName,
+    isLoading,
+    error: loadError,
+    updateCohortInList,
+  } = useCohortOfferings({
+    institutionId,
+    facultyId: facultyIdParam,
+    programmeId: programmeIdParam,
+    cohortId: cohortIdParam,
+  })
 
   const selectedCohort = useMemo(
     () => cohorts.find((c) => c.id === cohortIdParam) ?? null,
@@ -102,6 +116,37 @@ export function InstitutionCohortOfferings() {
     'searchEndsAt',
   ]).map((row) => row.offering)
 
+  const cohortDisplayName = selectedCohort?.name?.trim() ?? ''
+
+  const searchableClassGroups = useMemo(
+    () =>
+      classGroups.map((classGroup) => ({
+        classGroup,
+        searchName: classGroup.name ?? '',
+        searchDescription: classGroup.description ?? '',
+        searchCohortName: cohortDisplayName,
+      })),
+    [classGroups, cohortDisplayName],
+  )
+
+  const filteredClassGroups = useSearchFilter(searchableClassGroups, classGroupFilterQuery, [
+    'searchName',
+    'searchDescription',
+    'searchCohortName',
+  ]).map((row) => row.classGroup)
+
+  const classGroupCardItems = useMemo(() => {
+    const cohortName = selectedCohort?.name?.trim() ?? ''
+    return filteredClassGroups.map((classGroup) => ({ classGroup, cohortName }))
+  }, [filteredClassGroups, selectedCohort?.name])
+
+  const handleOpenClassGroup = (classGroupId: string) => {
+    if (!facultyIdParam || !programmeIdParam || !cohortIdParam) return
+    navigate(
+      `/institution_admin/faculties/${encodeURIComponent(facultyIdParam)}/programmes/${encodeURIComponent(programmeIdParam)}/cohorts/${encodeURIComponent(cohortIdParam)}/class-groups/${encodeURIComponent(classGroupId)}`,
+    )
+  }
+
   const handleAddOffering = () => {
     // Placeholder: add-offering flow wired in a follow-up.
   }
@@ -115,7 +160,7 @@ export function InstitutionCohortOfferings() {
         name: draftCohortName,
         description: draftCohortDescription.trim() || null,
       })
-      setCohorts((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
+      updateCohortInList(updated)
       toast.success(t('faculties.pages.cohortOfferings.settings.saveSuccess'))
     } catch (error) {
       toast.error(
@@ -143,61 +188,6 @@ export function InstitutionCohortOfferings() {
 
     setActiveTabId(resolvedTab)
   }
-
-  useEffect(() => {
-    if (!institutionId || !facultyIdParam || !programmeIdParam || !cohortIdParam) {
-      setCohorts([])
-      setOfferings([])
-      setFacultyName('')
-      setProgrammeName('')
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const [faculties, programmeRows, cohortRows, offeringRows] = await Promise.all([
-          listFacultiesByInstitution(institutionId),
-          listProgrammesByFaculty(facultyIdParam),
-          listCohortsByProgramme(programmeIdParam),
-          listCohortOfferings(cohortIdParam),
-        ])
-
-        if (cancelled) return
-
-        const matchedFaculty = faculties.find((f) => f.id === facultyIdParam)
-        setFacultyName(matchedFaculty?.name?.trim() || t('faculties.card.untitled'))
-
-        const matchedProgramme = programmeRows.find((p) => p.id === programmeIdParam)
-        setProgrammeName(
-          matchedProgramme?.name?.trim() || t('faculties.pages.cohortOfferings.programmeFallback'),
-        )
-
-        setCohorts(cohortRows)
-        setOfferings(offeringRows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error ? error.message : t('faculties.pages.cohortOfferings.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, facultyIdParam, programmeIdParam, cohortIdParam, t])
 
   useEffect(() => {
     if (!selectedCohort) {
@@ -257,13 +247,14 @@ export function InstitutionCohortOfferings() {
       )
     }
 
-    return (
-      <CohortOfferingTable
-        offerings={filteredOfferings}
-        institutionId={institutionId ?? ''}
-      />
-    )
+    return <CohortOfferingTable offerings={filteredOfferings} />
   })()
+
+  const showClassGroupsSection =
+    activeTabId === 'overview' &&
+    Boolean(cohortIdParam) &&
+    !loadError &&
+    (isLoading || selectedCohort)
 
   return (
     <InstitutionAdminWorkspaceShell>
@@ -346,12 +337,61 @@ export function InstitutionCohortOfferings() {
               placeholder={t('faculties.pages.cohortOfferings.filterPlaceholder')}
               value={filterQuery}
               onValueChange={setFilterQuery}
-              className="w-full max-w-xl"
+              className={`w-full max-w-xl ${overviewContentEnter}`}
               disabled={isLoading}
             />
-            <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
+            <div
+              className={`rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5 ${overviewContentEnter}`}
+            >
               {timelineContent}
             </div>
+            {showClassGroupsSection ? (
+              <div className={`flex flex-col gap-4 ${overviewContentEnter}`}>
+                <Separator />
+                <FieldInput
+                  label={t('faculties.pages.classGroups.searchLabel')}
+                  placeholder={t('faculties.pages.classGroups.searchPlaceholder')}
+                  value={classGroupFilterQuery}
+                  onValueChange={setClassGroupFilterQuery}
+                  className="w-full max-w-xl"
+                  disabled={isLoading}
+                />
+                {isLoading ? (
+                  <div className="flex min-h-24 items-center justify-center">
+                    <Spinner
+                      variant="gray"
+                      size="sm"
+                      speed={1750}
+                    />
+                  </div>
+                ) : filteredClassGroups.length === 0 ? (
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        {classGroupFilterQuery.trim() ? (
+                          <Search className="size-6" />
+                        ) : (
+                          <LayoutGrid className="size-6" />
+                        )}
+                      </EmptyMedia>
+                      <EmptyTitle>
+                        {t('faculties.pages.cohortOfferings.classGroupsSection.title')}
+                      </EmptyTitle>
+                      <EmptyDescription>
+                        {classGroupFilterQuery.trim()
+                          ? t('faculties.pages.classGroups.noSearchResults')
+                          : t('faculties.pages.cohortOfferings.classGroupsSection.empty')}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                ) : (
+                  <ClassGroupCardList
+                    items={classGroupCardItems}
+                    onOpenClassGroup={handleOpenClassGroup}
+                  />
+                )}
+              </div>
+            ) : null}
           </>
         ) : (
           <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">

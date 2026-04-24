@@ -1,12 +1,19 @@
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 import { supabase } from '@/lib/supabase'
 
+const COLUMNS =
+  'id, institution_id, programme_id, academic_year, term_code, status, starts_at, ends_at, created_at, updated_at, deleted_at'
+
+function toProgrammeOffering(row: ProgrammeOfferingRecord): ProgrammeOfferingRecord {
+  return row
+}
+
 export async function listProgrammeOfferings(
   programmeId: string,
 ): Promise<readonly ProgrammeOfferingRecord[]> {
   const { data, error } = await supabase
     .from('programme_offerings')
-    .select('*')
+    .select(COLUMNS)
     .eq('programme_id', programmeId)
     .is('deleted_at', null)
     .order('academic_year', { ascending: true })
@@ -14,7 +21,7 @@ export async function listProgrammeOfferings(
 
   if (error) throw new Error(error.message)
 
-  return (data ?? []) as ProgrammeOfferingRecord[]
+  return (data ?? []).map((row) => toProgrammeOffering(row as ProgrammeOfferingRecord))
 }
 
 export async function createProgrammeOffering(
@@ -31,12 +38,12 @@ export async function createProgrammeOffering(
       starts_at: input.starts_at,
       ends_at: input.ends_at,
     })
-    .select('*')
+    .select(COLUMNS)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return data as ProgrammeOfferingRecord
+  return toProgrammeOffering(data as ProgrammeOfferingRecord)
 }
 
 export async function listProgrammeOfferingsByInstitution(

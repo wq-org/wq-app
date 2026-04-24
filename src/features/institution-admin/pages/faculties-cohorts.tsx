@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Users, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -11,11 +11,9 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listCohortsByInstitution } from '../api/cohortsApi'
-import { listProgrammesByInstitution } from '../api/programmesApi'
 import { CohortCardList } from '../components/CohortCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { CohortRecord } from '../types/cohort.types'
+import { useFacultiesCohorts } from '../hooks/useFacultiesCohorts'
 import type { ProgrammeRecord } from '../types/programme.types'
 
 export function InstitutionFacultiesCohorts() {
@@ -23,12 +21,9 @@ export function InstitutionFacultiesCohorts() {
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
-
-  const [cohorts, setCohorts] = useState<readonly CohortRecord[]>([])
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const { cohorts, programmes, isLoading, error: loadError } = useFacultiesCohorts(institutionId)
 
   const programmeMap = useMemo(() => {
     const map = new Map<string, ProgrammeRecord>()
@@ -77,49 +72,6 @@ export function InstitutionFacultiesCohorts() {
   const handleCreateStructure = () => {
     navigate('/institution_admin/faculties/create')
   }
-
-  useEffect(() => {
-    if (!institutionId) {
-      setCohorts([])
-      setProgrammes([])
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const [cohortRows, programmeRows] = await Promise.all([
-          listCohortsByInstitution(institutionId),
-          listProgrammesByInstitution(institutionId),
-        ])
-
-        if (cancelled) return
-
-        setProgrammes(programmeRows)
-        setCohorts(cohortRows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error ? error.message : t('faculties.pages.cohorts.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, t])
 
   return (
     <InstitutionAdminWorkspaceShell>

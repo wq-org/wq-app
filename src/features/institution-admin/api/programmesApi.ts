@@ -1,19 +1,26 @@
 import type { ProgrammeRecord } from '../types/programme.types'
 import { supabase } from '@/lib/supabase'
 
+const COLUMNS =
+  'id, institution_id, faculty_id, name, description, duration_years, progression_type, sort_order, created_at, updated_at, deleted_at'
+
+function toProgramme(row: ProgrammeRecord): ProgrammeRecord {
+  return row
+}
+
 export async function listProgrammesByInstitution(
   institutionId: string,
 ): Promise<readonly ProgrammeRecord[]> {
   const { data, error } = await supabase
     .from('programmes')
-    .select('*')
+    .select(COLUMNS)
     .eq('institution_id', institutionId)
     .is('deleted_at', null)
     .order('sort_order', { ascending: true })
 
   if (error) throw new Error(error.message)
 
-  return (data ?? []) as ProgrammeRecord[]
+  return (data ?? []).map((row) => toProgramme(row as ProgrammeRecord))
 }
 
 export async function listProgrammesByFaculty(
@@ -21,14 +28,14 @@ export async function listProgrammesByFaculty(
 ): Promise<readonly ProgrammeRecord[]> {
   const { data, error } = await supabase
     .from('programmes')
-    .select('*')
+    .select(COLUMNS)
     .eq('faculty_id', facultyId)
     .is('deleted_at', null)
     .order('sort_order', { ascending: true })
 
   if (error) throw new Error(error.message)
 
-  return (data ?? []) as ProgrammeRecord[]
+  return (data ?? []).map((row) => toProgramme(row as ProgrammeRecord))
 }
 
 export async function createProgramme(
@@ -47,12 +54,12 @@ export async function createProgramme(
       progression_type: input.progression_type,
       sort_order: input.sort_order ?? 0,
     })
-    .select('*')
+    .select(COLUMNS)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return data as ProgrammeRecord
+  return toProgramme(data as ProgrammeRecord)
 }
 
 type UpdateProgrammeInput = {
@@ -68,15 +75,12 @@ export async function updateProgramme({
 }: UpdateProgrammeInput): Promise<ProgrammeRecord> {
   const { data, error } = await supabase
     .from('programmes')
-    .update({
-      name,
-      description,
-    })
+    .update({ name, description })
     .eq('id', programmeId)
-    .select('*')
+    .select(COLUMNS)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return data as ProgrammeRecord
+  return toProgramme(data as ProgrammeRecord)
 }

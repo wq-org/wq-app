@@ -9,6 +9,13 @@ type FacultyRecord = FacultySummary & {
   deleted_at: string | null
 }
 
+const COLUMNS =
+  'id, name, description, institution_id, sort_order, created_at, updated_at, deleted_at'
+
+function toFaculty(row: FacultyRecord): FacultyRecord {
+  return row
+}
+
 export async function listFacultiesByInstitution(
   institutionId: string,
 ): Promise<readonly FacultySummary[]> {
@@ -38,10 +45,10 @@ export async function createFaculty(input: {
       description: input.description,
       sort_order: input.sort_order ?? 0,
     })
-    .select('*')
+    .select(COLUMNS)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return data as FacultyRecord
+  return toFaculty(data as FacultyRecord)
 }

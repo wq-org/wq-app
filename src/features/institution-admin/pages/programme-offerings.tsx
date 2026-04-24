@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { LayoutGrid, Plus, Settings } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { LayoutGrid, Plus, Search, Settings, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -14,25 +14,30 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { FieldInput } from '@/components/ui/field-input'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
-import { listProgrammesByFaculty, updateProgramme } from '../api/programmesApi'
+import { updateProgramme } from '../api/programmesApi'
+import { CohortCardList } from '../components/CohortCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import { ProgrammeOfferingTable } from '../components/ProgrammeOfferingTable'
+import { ProgrammeOfferingsTimeline } from '../components/ProgrammeOfferingsTimeline'
 import { ProgrammeSettings } from '../components/ProgrammeSettings'
+import { useProgrammeOfferings } from '../hooks/useProgrammeOfferings'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
-import type { ProgrammeRecord } from '../types/programme.types'
 
 const OFFERING_TABS = [
   { id: 'overview', title: 'Overview', icon: LayoutGrid },
   { id: 'settings', title: 'Settings', icon: Settings },
 ] as const
+
+/** Matches `faculty-programmes` overview + `ProgrammeSettings` motion-safe duration. */
+const overviewContentEnter =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
 type OfferingTabId = (typeof OFFERING_TABS)[number]['id']
 
@@ -42,6 +47,7 @@ function toInactiveStatus(status: ProgrammeOfferingRecord['status']): 'active' |
 
 export function InstitutionProgrammeOfferings() {
   const { t } = useTranslation('features.institution-admin')
+  const navigate = useNavigate()
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
   const { facultyId: facultyIdParam, programmeId: programmeIdParam } = useParams<{
@@ -50,15 +56,25 @@ export function InstitutionProgrammeOfferings() {
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
-  const [facultyName, setFacultyName] = useState<string>('')
-  const [offerings, setOfferings] = useState<readonly ProgrammeOfferingRecord[]>([])
   const [filterQuery, setFilterQuery] = useState('')
+  const [cohortFilterQuery, setCohortFilterQuery] = useState('')
   const [draftProgrammeName, setDraftProgrammeName] = useState('')
   const [draftProgrammeDescription, setDraftProgrammeDescription] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const {
+    programmes,
+    facultyName,
+    offerings,
+    cohorts,
+    isLoading,
+    error: loadError,
+    updateProgrammeInList,
+  } = useProgrammeOfferings({
+    institutionId,
+    facultyId: facultyIdParam,
+    programmeId: programmeIdParam,
+  })
 
   const selectedProgramme = useMemo(
     () => programmes.find((programme) => programme.id === programmeIdParam) ?? null,
@@ -99,6 +115,35 @@ export function InstitutionProgrammeOfferings() {
     'searchStatus',
   ]).map((row) => row.offering)
 
+  const searchableCohorts = useMemo(
+    () =>
+      cohorts.map((cohort) => ({
+        cohort,
+        searchName: cohort.name ?? '',
+        searchDescription: cohort.description ?? '',
+        searchAcademicYear: cohort.academic_year != null ? String(cohort.academic_year) : '',
+      })),
+    [cohorts],
+  )
+
+  const filteredCohorts = useSearchFilter(searchableCohorts, cohortFilterQuery, [
+    'searchName',
+    'searchDescription',
+    'searchAcademicYear',
+  ]).map((row) => row.cohort)
+
+  const cohortCardItems = useMemo(() => {
+    const programmeName = selectedProgramme?.name?.trim() ?? ''
+    return filteredCohorts.map((cohort) => ({ cohort, programmeName }))
+  }, [filteredCohorts, selectedProgramme?.name])
+
+  const handleOpenCohort = (cohortId: string) => {
+    if (!facultyIdParam || !programmeIdParam) return
+    navigate(
+      `/institution_admin/faculties/${encodeURIComponent(facultyIdParam)}/programmes/${encodeURIComponent(programmeIdParam)}/cohorts/${encodeURIComponent(cohortId)}`,
+    )
+  }
+
   const handleAddOffering = () => {
     // Placeholder: real add-offering flow will be wired in a follow-up.
   }
@@ -112,9 +157,7 @@ export function InstitutionProgrammeOfferings() {
         name: draftProgrammeName,
         description: draftProgrammeDescription.trim() || null,
       })
-      setProgrammes((rows) =>
-        rows.map((row) => (row.id === updatedProgramme.id ? updatedProgramme : row)),
-      )
+      updateProgrammeInList(updatedProgramme)
       toast.success(t('faculties.pages.programmeOfferings.settings.saveSuccess'))
     } catch (error) {
       toast.error(
@@ -144,55 +187,6 @@ export function InstitutionProgrammeOfferings() {
   }
 
   useEffect(() => {
-    if (!institutionId || !facultyIdParam || !programmeIdParam) {
-      setProgrammes([])
-      setOfferings([])
-      setFacultyName('')
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const [faculties, programmeRows, offeringRows] = await Promise.all([
-          listFacultiesByInstitution(institutionId),
-          listProgrammesByFaculty(facultyIdParam),
-          listProgrammeOfferings(programmeIdParam),
-        ])
-
-        if (cancelled) return
-
-        const matchedFaculty = faculties.find((faculty) => faculty.id === facultyIdParam)
-        setFacultyName(matchedFaculty?.name?.trim() || t('faculties.card.untitled'))
-        setProgrammes(programmeRows)
-        setOfferings(offeringRows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error
-              ? error.message
-              : t('faculties.pages.programmeOfferings.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, facultyIdParam, programmeIdParam, t])
-
-  useEffect(() => {
     if (!selectedProgramme) {
       setDraftProgrammeName('')
       setDraftProgrammeDescription('')
@@ -203,56 +197,11 @@ export function InstitutionProgrammeOfferings() {
     setDraftProgrammeDescription(selectedProgramme.description ?? '')
   }, [selectedProgramme])
 
-  const timelineContent = (() => {
-    if (isLoading) {
-      return (
-        <div className="flex min-h-40 items-center justify-center">
-          <Spinner
-            variant="gray"
-            size="sm"
-            speed={1750}
-          />
-        </div>
-      )
-    }
-    if (loadError) {
-      return (
-        <Text
-          as="p"
-          variant="small"
-          color="danger"
-        >
-          {loadError}
-        </Text>
-      )
-    }
-    if (!selectedProgramme) {
-      return (
-        <Text
-          as="p"
-          variant="body"
-          color="muted"
-        >
-          {t('faculties.pages.programmeOfferings.programmeNotFound')}
-        </Text>
-      )
-    }
-    if (filteredOfferings.length === 0) {
-      return (
-        <Text
-          as="p"
-          variant="body"
-          color="muted"
-        >
-          {filterQuery.trim()
-            ? t('faculties.pages.programmeOfferings.emptyFiltered')
-            : t('faculties.pages.programmeOfferings.empty')}
-        </Text>
-      )
-    }
-
-    return <ProgrammeOfferingTable offerings={filteredOfferings} />
-  })()
+  const showCohortsSection =
+    activeTabId === 'overview' &&
+    Boolean(programmeIdParam) &&
+    !loadError &&
+    (isLoading || selectedProgramme)
 
   return (
     <InstitutionAdminWorkspaceShell>
@@ -325,12 +274,69 @@ export function InstitutionProgrammeOfferings() {
               placeholder={t('faculties.pages.programmeOfferings.filterPlaceholder')}
               value={filterQuery}
               onValueChange={setFilterQuery}
-              className="w-full max-w-xl"
+              className={`w-full max-w-xl ${overviewContentEnter}`}
               disabled={isLoading}
             />
-            <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
-              {timelineContent}
+            <div
+              className={`rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5 ${overviewContentEnter}`}
+            >
+              <ProgrammeOfferingsTimeline
+                offerings={filteredOfferings}
+                isLoading={isLoading}
+                loadError={loadError}
+                isProgrammeMissing={!selectedProgramme}
+                isFilteredEmpty={filteredOfferings.length === 0}
+                isFilterActive={Boolean(filterQuery.trim())}
+                t={t}
+              />
             </div>
+            {showCohortsSection ? (
+              <div className={`flex flex-col gap-4 ${overviewContentEnter}`}>
+                <Separator />
+                <FieldInput
+                  label={t('faculties.pages.cohorts.searchLabel')}
+                  placeholder={t('faculties.pages.cohorts.searchPlaceholder')}
+                  value={cohortFilterQuery}
+                  onValueChange={setCohortFilterQuery}
+                  className="w-full max-w-xl"
+                  disabled={isLoading}
+                />
+                {isLoading ? (
+                  <div className="flex min-h-24 items-center justify-center">
+                    <Spinner
+                      variant="gray"
+                      size="sm"
+                      speed={1750}
+                    />
+                  </div>
+                ) : filteredCohorts.length === 0 ? (
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        {cohortFilterQuery.trim() ? (
+                          <Search className="size-6" />
+                        ) : (
+                          <Users className="size-6" />
+                        )}
+                      </EmptyMedia>
+                      <EmptyTitle>
+                        {t('faculties.pages.programmeOfferings.cohortsSection.title')}
+                      </EmptyTitle>
+                      <EmptyDescription>
+                        {cohortFilterQuery.trim()
+                          ? t('faculties.pages.cohorts.noSearchResults')
+                          : t('faculties.pages.programmeOfferings.cohortsSection.empty')}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                ) : (
+                  <CohortCardList
+                    items={cohortCardItems}
+                    onOpenCohort={handleOpenCohort}
+                  />
+                )}
+              </div>
+            ) : null}
           </>
         ) : (
           <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">

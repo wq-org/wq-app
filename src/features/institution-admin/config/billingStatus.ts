@@ -1,6 +1,6 @@
 import type { VariantProps } from 'class-variance-authority'
 import { badgeVariants } from '@/components/ui/badge-variants'
-import type { BillingStatus } from '../api/institutionSubscriptionApi'
+import type { BillingStatus } from '../types/licensing.types'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 

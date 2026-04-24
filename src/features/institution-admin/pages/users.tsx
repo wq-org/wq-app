@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { DoorOpen, Mail, UserMinus, UsersRound } from 'lucide-react'
@@ -21,10 +21,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useUser } from '@/contexts/user'
 
-import {
-  fetchInstitutionUserDirectory,
-  resendTeacherStudentInviteEmail,
-} from '../api/institutionUserInvitesApi'
+import { resendTeacherStudentInviteEmail } from '../api/institutionUserInvitesApi'
+import { useInstitutionUsers } from '../hooks/useInstitutionUsers'
 import { AssignClassGroupDialog } from '../components/AssignClassGroupDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { InstitutionUsersEmptyState } from '../components/InstitutionUsersEmptyState'
@@ -68,34 +66,9 @@ const InstitutionUsers = () => {
   const [userActionsPopoverId, setUserActionsPopoverId] = useState<string | null>(null)
   const [dialog, setDialog] = useState<InstitutionUsersDialogState>(null)
   const [removeLoading, setRemoveLoading] = useState(false)
-
-  const [directory, setDirectory] = useState<InstitutionDirectoryRow[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
   const [resendToken, setResendToken] = useState<string | null>(null)
 
-  const refreshDirectory = useCallback(async () => {
-    if (!institutionId) {
-      setDirectory([])
-      setIsLoading(false)
-      return
-    }
-    setLoadError(null)
-    setIsLoading(true)
-    try {
-      const rows = await fetchInstitutionUserDirectory(institutionId)
-      setDirectory(rows)
-    } catch (e) {
-      setLoadError(e instanceof Error ? e.message : 'Failed to load users')
-      setDirectory([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [institutionId])
-
-  useEffect(() => {
-    void refreshDirectory()
-  }, [refreshDirectory])
+  const { users: directory, isLoading, error: loadError } = useInstitutionUsers(institutionId)
 
   const filteredDirectory = useMemo(() => {
     if (!roleFilter) return directory

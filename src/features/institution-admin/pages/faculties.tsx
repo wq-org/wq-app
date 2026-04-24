@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, University } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -19,18 +19,16 @@ import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { FacultyCardList } from '../components/FacultyCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { FacultySummary } from '../types/faculty.types'
-import { listFacultiesByInstitution } from '../api/facultiesApi'
+import { useFaculties } from '../hooks/useFaculties'
 
 const InstitutionFaculties = () => {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
-  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
   const institutionId = getUserInstitutionId()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const { faculties, isLoading, error: loadError } = useFaculties(institutionId)
 
   const searchableFaculties = faculties.map((faculty) => ({
     ...faculty,
@@ -54,41 +52,6 @@ const InstitutionFaculties = () => {
   const handleOpenFaculty = (facultyId: string) => {
     navigate(`/institution_admin/faculties/${facultyId}/programmes`)
   }
-
-  useEffect(() => {
-    if (!institutionId) {
-      setFaculties([])
-      return
-    }
-
-    let isCancelled = false
-
-    const loadFaculties = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const rows = await listFacultiesByInstitution(institutionId)
-        if (!isCancelled) {
-          setFaculties(rows)
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          setLoadError(error instanceof Error ? error.message : 'Failed to load faculties')
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void loadFaculties()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [institutionId])
 
   return (
     <InstitutionAdminWorkspaceShell>

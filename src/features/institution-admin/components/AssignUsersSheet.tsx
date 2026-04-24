@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -16,7 +16,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { fetchInstitutionUserDirectory } from '../api/institutionUserInvitesApi'
+import { useInstitutionUsers } from '../hooks/useInstitutionUsers'
 import type { InstitutionDirectoryRow } from '../types/institution-users.types'
 
 type AssignUsersSheetProps = {
@@ -41,38 +41,13 @@ function displayName(row: InstitutionDirectoryRow): string {
 
 export function AssignUsersSheet({ open, onOpenChange, institutionId }: AssignUsersSheetProps) {
   const { t } = useTranslation('features.institution-admin')
-  const [users, setUsers] = useState<InstitutionDirectoryRow[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
 
-  useEffect(() => {
-    if (!open || !institutionId) return
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const rows = await fetchInstitutionUserDirectory(institutionId)
-        if (!cancelled) setUsers(rows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(error instanceof Error ? error.message : t('assignUsersSheet.loadError'))
-        }
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [open, institutionId, t])
+  const {
+    users,
+    isLoading,
+    error: loadError,
+  } = useInstitutionUsers(institutionId, { enabled: open })
 
   const searchableUsers = users.map((row) => ({
     row,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -26,11 +26,9 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammesByFaculty } from '../api/programmesApi'
 import { FacultyProgrammeCardList } from '../components/FacultyProgrammeCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { FacultySummary } from '../types/faculty.types'
+import { useFacultyProgrammes } from '../hooks/useFacultyProgrammes'
 
 export function InstitutionFacultyProgrammes() {
   const { t } = useTranslation('features.institution-admin')
@@ -38,14 +36,14 @@ export function InstitutionFacultyProgrammes() {
   const navigate = useNavigate()
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
-
-  const [faculty, setFaculty] = useState<FacultySummary | null>(null)
-  const [programmes, setProgrammes] = useState<Awaited<ReturnType<typeof listProgrammesByFaculty>>>(
-    [],
-  )
   const [searchQuery, setSearchQuery] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const {
+    faculty,
+    programmes,
+    isLoading,
+    error: loadError,
+  } = useFacultyProgrammes(institutionId, facultyIdParam)
 
   const facultyDisplayName = faculty?.name?.trim() || t('faculties.card.untitled')
   const facultyDescription =
@@ -78,59 +76,6 @@ export function InstitutionFacultyProgrammes() {
       `/institution_admin/faculties/${encodeURIComponent(facultyIdParam)}/programmes/${encodeURIComponent(programmeId)}`,
     )
   }
-
-  useEffect(() => {
-    if (!institutionId || !facultyIdParam) {
-      setFaculty(null)
-      setProgrammes([])
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const faculties = await listFacultiesByInstitution(institutionId)
-        const match = faculties.find((f) => f.id === facultyIdParam) ?? null
-        if (!match) {
-          if (!cancelled) {
-            setFaculty(null)
-            setProgrammes([])
-            setLoadError(t('faculties.pages.facultyProgrammes.facultyNotFound'))
-          }
-          return
-        }
-
-        const programmeRows = await listProgrammesByFaculty(facultyIdParam)
-
-        if (!cancelled) {
-          setFaculty(match)
-          setProgrammes([...programmeRows])
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error
-              ? error.message
-              : t('faculties.pages.facultyProgrammes.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, facultyIdParam, t])
 
   const mainContent = (() => {
     if (!facultyIdParam) {

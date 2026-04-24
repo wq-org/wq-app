@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GraduationCap, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -11,23 +11,23 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammesByInstitution } from '../api/programmesApi'
 import { FacultyProgrammeCardList } from '../components/FacultyProgrammeCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { ProgrammeRecord } from '../types/programme.types'
+import { useFacultiesProgrammes } from '../hooks/useFacultiesProgrammes'
 
 export function InstitutionFacultiesProgrammes() {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
-
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
-  const [facultyNames, setFacultyNames] = useState<ReadonlyMap<string, string>>(new Map())
   const [searchQuery, setSearchQuery] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const {
+    programmes,
+    facultyNames,
+    isLoading,
+    error: loadError,
+  } = useFacultiesProgrammes(institutionId)
 
   const items = useMemo(() => {
     return programmes.map((programme) => ({
@@ -64,54 +64,6 @@ export function InstitutionFacultiesProgrammes() {
   const handleCreateStructure = () => {
     navigate('/institution_admin/faculties/create')
   }
-
-  useEffect(() => {
-    if (!institutionId) {
-      setProgrammes([])
-      setFacultyNames(new Map())
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const [facultyRows, programmeRows] = await Promise.all([
-          listFacultiesByInstitution(institutionId),
-          listProgrammesByInstitution(institutionId),
-        ])
-
-        if (cancelled) return
-
-        const map = new Map<string, string>()
-        for (const f of facultyRows) {
-          map.set(f.id, f.name?.trim() || t('faculties.card.untitled'))
-        }
-
-        setFacultyNames(map)
-        setProgrammes(programmeRows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error ? error.message : t('faculties.pages.programmes.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, t])
 
   return (
     <InstitutionAdminWorkspaceShell>

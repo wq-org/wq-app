@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -11,12 +11,9 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listClassGroupsByInstitution } from '../api/classGroupsApi'
-import { listCohortsByInstitution } from '../api/cohortsApi'
-import { listProgrammesByInstitution } from '../api/programmesApi'
 import { ClassGroupCardList } from '../components/ClassGroupCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { ClassGroupRecord } from '../types/class-group.types'
+import { useFacultiesClassGroups } from '../hooks/useFacultiesClassGroups'
 import type { CohortRecord } from '../types/cohort.types'
 import type { ProgrammeRecord } from '../types/programme.types'
 
@@ -25,13 +22,15 @@ export function InstitutionFacultiesClassGroups() {
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
-
-  const [classGroups, setClassGroups] = useState<readonly ClassGroupRecord[]>([])
-  const [cohorts, setCohorts] = useState<readonly CohortRecord[]>([])
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const {
+    classGroups,
+    cohorts,
+    programmes,
+    isLoading,
+    error: loadError,
+  } = useFacultiesClassGroups(institutionId)
 
   const cohortMap = useMemo(() => {
     const map = new Map<string, CohortRecord>()
@@ -88,52 +87,6 @@ export function InstitutionFacultiesClassGroups() {
   const handleCreateStructure = () => {
     navigate('/institution_admin/faculties/create')
   }
-
-  useEffect(() => {
-    if (!institutionId) {
-      setClassGroups([])
-      setCohorts([])
-      setProgrammes([])
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const [classGroupRows, cohortRows, programmeRows] = await Promise.all([
-          listClassGroupsByInstitution(institutionId),
-          listCohortsByInstitution(institutionId),
-          listProgrammesByInstitution(institutionId),
-        ])
-
-        if (cancelled) return
-
-        setClassGroups(classGroupRows)
-        setCohorts(cohortRows)
-        setProgrammes(programmeRows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error ? error.message : t('faculties.pages.classGroups.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, t])
 
   return (
     <InstitutionAdminWorkspaceShell>

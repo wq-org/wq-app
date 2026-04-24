@@ -1,7 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { BillingStatus, InstitutionSubscriptionWithPlan } from '../types/licensing.types'
-
-export type { BillingStatus, InstitutionSubscriptionWithPlan }
+import type { InstitutionSubscriptionWithPlan } from '../types/licensing.types'
 
 type SubscriptionSelectRow = Omit<InstitutionSubscriptionWithPlan, 'plan_catalog'> & {
   plan_catalog: { code: string; name: string } | { code: string; name: string }[] | null

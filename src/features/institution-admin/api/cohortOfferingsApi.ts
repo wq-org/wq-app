@@ -1,19 +1,26 @@
 import { supabase } from '@/lib/supabase'
 import type { CohortOfferingRecord } from '../types/cohort-offering.types'
 
+const COLUMNS =
+  'id, institution_id, programme_offering_id, cohort_id, status, starts_at, ends_at, created_at, updated_at, deleted_at'
+
+function toCohortOffering(row: CohortOfferingRecord): CohortOfferingRecord {
+  return row
+}
+
 export async function listCohortOfferings(
   cohortId: string,
 ): Promise<readonly CohortOfferingRecord[]> {
   const { data, error } = await supabase
     .from('cohort_offerings')
-    .select('*')
+    .select(COLUMNS)
     .eq('cohort_id', cohortId)
     .is('deleted_at', null)
     .order('created_at', { ascending: true })
 
   if (error) throw new Error(error.message)
 
-  return (data ?? []) as CohortOfferingRecord[]
+  return (data ?? []).map((row) => toCohortOffering(row as CohortOfferingRecord))
 }
 
 export async function createCohortOffering(
@@ -29,10 +36,10 @@ export async function createCohortOffering(
       starts_at: input.starts_at,
       ends_at: input.ends_at,
     })
-    .select('*')
+    .select(COLUMNS)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return data as CohortOfferingRecord
+  return toCohortOffering(data as CohortOfferingRecord)
 }

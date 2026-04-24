@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { LayoutGrid, Plus, Settings } from 'lucide-react'
+import { DoorOpen, LayoutGrid, Plus, Search, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -14,22 +14,20 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { FieldInput } from '@/components/ui/field-input'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listClassGroupsByCohort, updateClassGroup } from '../api/classGroupsApi'
-import { listClassGroupOfferings } from '../api/classGroupOfferingsApi'
-import { listCohortsByProgramme } from '../api/cohortsApi'
-import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammesByFaculty } from '../api/programmesApi'
+import { updateClassGroup } from '../api/classGroupsApi'
+import { ClassroomCardList } from '../components/ClassroomCardList'
 import { ClassGroupOfferingTable } from '../components/ClassGroupOfferingTable'
 import { ClassGroupSettings } from '../components/ClassGroupSettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
-import type { ClassGroupRecord } from '../types/class-group.types'
+import { useClassGroupOfferings } from '../hooks/useClassGroupOfferings'
 
 const OFFERING_TABS = [
   { id: 'overview', title: 'Overview', icon: LayoutGrid },
@@ -37,6 +35,9 @@ const OFFERING_TABS = [
 ] as const
 
 type OfferingTabId = (typeof OFFERING_TABS)[number]['id']
+
+const overviewContentEnter =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
 export function InstitutionClassGroupOfferings() {
   const { t } = useTranslation('features.institution-admin')
@@ -55,17 +56,29 @@ export function InstitutionClassGroupOfferings() {
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [classGroups, setClassGroups] = useState<readonly ClassGroupRecord[]>([])
-  const [offerings, setOfferings] = useState<readonly ClassGroupOfferingRecord[]>([])
-  const [facultyName, setFacultyName] = useState<string>('')
-  const [programmeName, setProgrammeName] = useState<string>('')
-  const [cohortName, setCohortName] = useState<string>('')
   const [filterQuery, setFilterQuery] = useState('')
+  const [classroomFilterQuery, setClassroomFilterQuery] = useState('')
   const [draftClassGroupName, setDraftClassGroupName] = useState('')
   const [draftClassGroupDescription, setDraftClassGroupDescription] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const {
+    classGroups,
+    offerings,
+    classrooms,
+    facultyName,
+    programmeName,
+    cohortName,
+    isLoading,
+    error: loadError,
+    updateClassGroupInList,
+  } = useClassGroupOfferings({
+    institutionId,
+    facultyId: facultyIdParam,
+    programmeId: programmeIdParam,
+    cohortId: cohortIdParam,
+    classGroupId: classGroupIdParam,
+  })
 
   const selectedClassGroup = useMemo(
     () => classGroups.find((cg) => cg.id === classGroupIdParam) ?? null,
@@ -106,6 +119,35 @@ export function InstitutionClassGroupOfferings() {
     'searchEndsAt',
   ]).map((row) => row.offering)
 
+  const classGroupDisplayName = selectedClassGroup?.name?.trim() ?? ''
+
+  const searchableClassrooms = useMemo(
+    () =>
+      classrooms.map((classroom) => ({
+        classroom,
+        classGroupName: classGroupDisplayName,
+        searchTitle: classroom.title ?? '',
+        searchGroup: classGroupDisplayName,
+        searchStatus:
+          classroom.status === 'active'
+            ? t('classrooms.card.statusActive')
+            : t('classrooms.card.statusInactive'),
+      })),
+    [classGroupDisplayName, classrooms, t],
+  )
+
+  const filteredClassroomItems = useSearchFilter(searchableClassrooms, classroomFilterQuery, [
+    'searchTitle',
+    'searchGroup',
+    'searchStatus',
+  ]).map(({ classroom, classGroupName }) => ({ classroom, classGroupName }))
+
+  const showClassroomsSection =
+    activeTabId === 'overview' &&
+    Boolean(classGroupIdParam) &&
+    !loadError &&
+    (isLoading || selectedClassGroup)
+
   const handleAddOffering = () => {
     // Placeholder: add-offering flow wired in a follow-up.
   }
@@ -119,7 +161,7 @@ export function InstitutionClassGroupOfferings() {
         name: draftClassGroupName,
         description: draftClassGroupDescription.trim() || null,
       })
-      setClassGroups((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
+      updateClassGroupInList(updated)
       toast.success(t('faculties.pages.classGroupOfferings.settings.saveSuccess'))
     } catch (error) {
       toast.error(
@@ -147,78 +189,6 @@ export function InstitutionClassGroupOfferings() {
 
     setActiveTabId(resolvedTab)
   }
-
-  useEffect(() => {
-    if (
-      !institutionId ||
-      !facultyIdParam ||
-      !programmeIdParam ||
-      !cohortIdParam ||
-      !classGroupIdParam
-    ) {
-      setClassGroups([])
-      setOfferings([])
-      setFacultyName('')
-      setProgrammeName('')
-      setCohortName('')
-      return
-    }
-
-    let cancelled = false
-
-    const load = async () => {
-      setIsLoading(true)
-      setLoadError(null)
-
-      try {
-        const [faculties, programmeRows, cohortRows, classGroupRows, offeringRows] =
-          await Promise.all([
-            listFacultiesByInstitution(institutionId),
-            listProgrammesByFaculty(facultyIdParam),
-            listCohortsByProgramme(programmeIdParam),
-            listClassGroupsByCohort(cohortIdParam),
-            listClassGroupOfferings(classGroupIdParam),
-          ])
-
-        if (cancelled) return
-
-        const matchedFaculty = faculties.find((f) => f.id === facultyIdParam)
-        setFacultyName(matchedFaculty?.name?.trim() || t('faculties.card.untitled'))
-
-        const matchedProgramme = programmeRows.find((p) => p.id === programmeIdParam)
-        setProgrammeName(
-          matchedProgramme?.name?.trim() ||
-            t('faculties.pages.classGroupOfferings.programmeFallback'),
-        )
-
-        const matchedCohort = cohortRows.find((c) => c.id === cohortIdParam)
-        setCohortName(
-          matchedCohort?.name?.trim() || t('faculties.pages.classGroupOfferings.cohortFallback'),
-        )
-
-        setClassGroups(classGroupRows)
-        setOfferings(offeringRows)
-      } catch (error) {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error
-              ? error.message
-              : t('faculties.pages.classGroupOfferings.loadError'),
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [institutionId, facultyIdParam, programmeIdParam, cohortIdParam, classGroupIdParam, t])
 
   useEffect(() => {
     if (!selectedClassGroup) {
@@ -372,12 +342,58 @@ export function InstitutionClassGroupOfferings() {
               placeholder={t('faculties.pages.classGroupOfferings.filterPlaceholder')}
               value={filterQuery}
               onValueChange={setFilterQuery}
-              className="w-full max-w-xl"
+              className={`w-full max-w-xl ${overviewContentEnter}`}
               disabled={isLoading}
             />
-            <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
+            <div
+              className={`rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5 ${overviewContentEnter}`}
+            >
               {timelineContent}
             </div>
+            {showClassroomsSection ? (
+              <div className={`flex flex-col gap-4 ${overviewContentEnter}`}>
+                <Separator />
+                <FieldInput
+                  label={t('classrooms.searchLabel')}
+                  placeholder={t('classrooms.searchPlaceholder')}
+                  value={classroomFilterQuery}
+                  onValueChange={setClassroomFilterQuery}
+                  className="w-full max-w-xl"
+                  disabled={isLoading}
+                />
+                {isLoading ? (
+                  <div className="flex min-h-24 items-center justify-center">
+                    <Spinner
+                      variant="gray"
+                      size="sm"
+                      speed={1750}
+                    />
+                  </div>
+                ) : filteredClassroomItems.length === 0 ? (
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        {classroomFilterQuery.trim() ? (
+                          <Search className="size-6" />
+                        ) : (
+                          <DoorOpen className="size-6" />
+                        )}
+                      </EmptyMedia>
+                      <EmptyTitle>
+                        {t('faculties.pages.classGroupOfferings.classroomsSection.title')}
+                      </EmptyTitle>
+                      <EmptyDescription>
+                        {classroomFilterQuery.trim()
+                          ? t('classrooms.noSearchResults')
+                          : t('faculties.pages.classGroupOfferings.classroomsSection.empty')}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                ) : (
+                  <ClassroomCardList items={filteredClassroomItems} />
+                )}
+              </div>
+            ) : null}
           </>
         ) : (
           <div className="rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5">
