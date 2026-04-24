@@ -351,6 +351,8 @@
           "continueAnyway": "Trotzdem fortfahren"
         },
         "offering": {
+          "name": "Name",
+          "programmeOfferingUnknown": "Unbekanntes Programmangebot",
           "dateRange": "Zeitraum",
           "startsAt": "Start",
           "endsAt": "Ende",

@@ -41,8 +41,20 @@ export function CohortOfferingTableRow({ offering }: CohortOfferingTableRowProps
   const endLabel = formatDate(offering.ends_at, i18n.language, notSet)
   const dateRange = `${startLabel} - ${endLabel}`
 
+  const po = offering.programme_offering
+  const programmeOfferingName = (() => {
+    if (!po) {
+      return t('faculties.pages.cohortOfferings.offering.programmeOfferingUnknown')
+    }
+    const term = po.term_code?.trim()
+    const year = String(po.academic_year)
+    if (term) return `${term} (${year})`
+    return year
+  })()
+
   return (
     <TableRow>
+      <TableCell className="font-medium">{programmeOfferingName}</TableCell>
       <TableCell>{dateRange}</TableCell>
       <TableCell className="text-right">
         <Badge

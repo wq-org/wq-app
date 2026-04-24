@@ -26,6 +26,7 @@ export function CohortOfferingTable({ offerings }: CohortOfferingTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>{t('faculties.pages.cohortOfferings.offering.name')}</TableHead>
               <TableHead>{t('faculties.pages.cohortOfferings.offering.dateRange')}</TableHead>
               <TableHead className="text-right">
                 {t('faculties.pages.cohortOfferings.offering.status')}

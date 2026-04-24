@@ -98,15 +98,21 @@ export function InstitutionCohortOfferings() {
 
   const searchableOfferings = useMemo(
     () =>
-      offerings.map((offering) => ({
-        offering,
-        searchStatus:
-          offering.status === 'active'
-            ? t('faculties.pages.cohortOfferings.offering.statusActive')
-            : t('faculties.pages.cohortOfferings.offering.statusInactive'),
-        searchStartsAt: offering.starts_at ?? '',
-        searchEndsAt: offering.ends_at ?? '',
-      })),
+      offerings.map((offering) => {
+        const po = offering.programme_offering
+        const term = po?.term_code?.trim() ?? ''
+        const year = po ? String(po.academic_year) : ''
+        return {
+          offering,
+          searchStatus:
+            offering.status === 'active'
+              ? t('faculties.pages.cohortOfferings.offering.statusActive')
+              : t('faculties.pages.cohortOfferings.offering.statusInactive'),
+          searchStartsAt: offering.starts_at ?? '',
+          searchEndsAt: offering.ends_at ?? '',
+          searchProgrammeOffering: [year, term].filter(Boolean).join(' '),
+        }
+      }),
     [offerings, t],
   )
 
@@ -114,6 +120,7 @@ export function InstitutionCohortOfferings() {
     'searchStatus',
     'searchStartsAt',
     'searchEndsAt',
+    'searchProgrammeOffering',
   ]).map((row) => row.offering)
 
   const cohortDisplayName = selectedCohort?.name?.trim() ?? ''
