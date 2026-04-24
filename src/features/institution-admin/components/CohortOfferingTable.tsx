@@ -10,10 +10,9 @@ const TIMELINE_TAB = [{ id: 'timeline', title: 'Timeline', icon: ChartNoAxesGant
 
 type CohortOfferingTableProps = {
   offerings: readonly CohortOfferingRecord[]
-  institutionId: string
 }
 
-export function CohortOfferingTable({ offerings, institutionId }: CohortOfferingTableProps) {
+export function CohortOfferingTable({ offerings }: CohortOfferingTableProps) {
   const { t } = useTranslation('features.institution-admin')
 
   return (
@@ -31,9 +30,6 @@ export function CohortOfferingTable({ offerings, institutionId }: CohortOffering
               <TableHead className="text-right">
                 {t('faculties.pages.cohortOfferings.offering.status')}
               </TableHead>
-              <TableHead className="text-right">
-                {t('faculties.pages.cohortOfferings.offering.assignUsers')}
-              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -41,7 +37,6 @@ export function CohortOfferingTable({ offerings, institutionId }: CohortOffering
               <CohortOfferingTableRow
                 key={offering.id}
                 offering={offering}
-                institutionId={institutionId}
               />
             ))}
           </TableBody>

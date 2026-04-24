@@ -1,16 +1,11 @@
-import { useState } from 'react'
-import { Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { TableCell, TableRow } from '@/components/ui/table'
 import type { CohortOfferingRecord } from '../types/cohort-offering.types'
-import { AssignUsersSheet } from './AssignUsersSheet'
 
 type CohortOfferingTableRowProps = {
   offering: CohortOfferingRecord
-  institutionId: string
 }
 
 function toRowStatus(status: CohortOfferingRecord['status']): 'active' | 'inactive' {
@@ -32,9 +27,8 @@ function formatDate(value: string | null, locale: string, fallback: string): str
   return `${day}. ${month} ${year}`
 }
 
-export function CohortOfferingTableRow({ offering, institutionId }: CohortOfferingTableRowProps) {
+export function CohortOfferingTableRow({ offering }: CohortOfferingTableRowProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
-  const [sheetOpen, setSheetOpen] = useState(false)
 
   const status = toRowStatus(offering.status)
   const statusLabel =
@@ -48,37 +42,17 @@ export function CohortOfferingTableRow({ offering, institutionId }: CohortOfferi
   const dateRange = `${startLabel} - ${endLabel}`
 
   return (
-    <>
-      <TableRow>
-        <TableCell>{dateRange}</TableCell>
-        <TableCell className="text-right">
-          <Badge
-            variant={statusVariant}
-            size="sm"
-            className="font-normal"
-          >
-            {statusLabel}
-          </Badge>
-        </TableCell>
-        <TableCell className="text-right">
-          <Button
-            type="button"
-            variant="darkblue"
-            size="sm"
-            className="gap-1.5"
-            onClick={() => setSheetOpen(true)}
-          >
-            <Users className="size-3.5" />
-            <span>{t('faculties.pages.cohortOfferings.offering.assignUsers')}</span>
-          </Button>
-        </TableCell>
-      </TableRow>
-
-      <AssignUsersSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        institutionId={institutionId}
-      />
-    </>
+    <TableRow>
+      <TableCell>{dateRange}</TableCell>
+      <TableCell className="text-right">
+        <Badge
+          variant={statusVariant}
+          size="sm"
+          className="font-normal"
+        >
+          {statusLabel}
+        </Badge>
+      </TableCell>
+    </TableRow>
   )
 }

@@ -295,6 +295,10 @@
           "statusActive": "Active",
           "statusInactive": "Inactive",
           "notSet": "Not set"
+        },
+        "cohortsSection": {
+          "title": "Cohorts",
+          "empty": "No cohorts exist for this programme yet."
         }
       },
       "cohorts": {
@@ -355,6 +359,10 @@
           "statusInactive": "Inactive",
           "notSet": "Not set",
           "assignUsers": "Assign users"
+        },
+        "classGroupsSection": {
+          "title": "Class groups",
+          "empty": "No class groups exist for this cohort yet."
         }
       },
       "classGroups": {
@@ -415,6 +423,10 @@
           "statusInactive": "Inactive",
           "notSet": "Not set",
           "assignUsers": "Assign users"
+        },
+        "classroomsSection": {
+          "title": "Classrooms",
+          "empty": "No classrooms for this class group yet."
         }
       }
     },
@@ -645,7 +657,23 @@
   },
   "classrooms": {
     "title": "Classrooms",
-    "subtitle": "View and manage classrooms linked to your institution."
+    "subtitle": "View and manage classrooms linked to your institution.",
+    "searchLabel": "Search classrooms",
+    "searchPlaceholder": "Search by title, class group, or status…",
+    "loadError": "Could not load classrooms.",
+    "emptyTitle": "No classrooms yet",
+    "emptyDescription": "Classrooms appear when they are created for a class group.",
+    "noSearchResults": "No classrooms match your search.",
+    "addClassroom": "Add classroom",
+    "card": {
+      "unknownClassGroup": "Unknown class group",
+      "untitledClassroom": "Untitled classroom",
+      "open": "Open",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "updatedAt": "Last updated {{date}}",
+      "deactivatedAt": "Deactivated {{date}}"
+    }
   },
   "licenses": {
     "title": "Licenses",

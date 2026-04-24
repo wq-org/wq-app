@@ -8,6 +8,9 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import type { ProgrammeRecord } from '../types/programme.types'
 
+const settingsEnterMotion =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
+
 type ProgrammeSettingsProps = {
   isLoading: boolean
   isSaving: boolean
@@ -48,7 +51,7 @@ export function ProgrammeSettings({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-40 items-center justify-center">
+      <div className={`flex min-h-40 items-center justify-center ${settingsEnterMotion}`}>
         <Spinner
           variant="gray"
           size="sm"
@@ -64,6 +67,7 @@ export function ProgrammeSettings({
         as="p"
         variant="small"
         color="danger"
+        className={settingsEnterMotion}
       >
         {loadError}
       </Text>
@@ -76,6 +80,7 @@ export function ProgrammeSettings({
         as="p"
         variant="body"
         color="muted"
+        className={settingsEnterMotion}
       >
         {t('faculties.pages.programmeOfferings.programmeNotFound')}
       </Text>
@@ -83,7 +88,7 @@ export function ProgrammeSettings({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className={`flex flex-col gap-6 ${settingsEnterMotion}`}>
       <div className="flex flex-col gap-4">
         <FieldInput
           label={t('faculties.pages.programmeOfferings.settings.fields.nameLabel')}

@@ -295,6 +295,10 @@
           "statusActive": "Aktiv",
           "statusInactive": "Inaktiv",
           "notSet": "Nicht gesetzt"
+        },
+        "cohortsSection": {
+          "title": "Jahrgänge",
+          "empty": "Für dieses Programm gibt es noch keine Jahrgänge."
         }
       },
       "cohorts": {
@@ -355,6 +359,10 @@
           "statusInactive": "Inaktiv",
           "notSet": "Nicht gesetzt",
           "assignUsers": "Nutzer zuweisen"
+        },
+        "classGroupsSection": {
+          "title": "Klassengruppen",
+          "empty": "Für diesen Jahrgang gibt es noch keine Klassengruppen."
         }
       },
       "classGroups": {
@@ -415,6 +423,10 @@
           "statusInactive": "Inaktiv",
           "notSet": "Nicht gesetzt",
           "assignUsers": "Nutzer zuweisen"
+        },
+        "classroomsSection": {
+          "title": "Klassenräume",
+          "empty": "Für diese Klassengruppe gibt es noch keine Klassenräume."
         }
       }
     },
@@ -645,7 +657,23 @@
   },
   "classrooms": {
     "title": "Klassenräume",
-    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten."
+    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten.",
+    "searchLabel": "Klassenräume durchsuchen",
+    "searchPlaceholder": "Nach Titel, Klassengruppe oder Status suchen…",
+    "loadError": "Klassenräume konnten nicht geladen werden.",
+    "emptyTitle": "Noch keine Klassenräume",
+    "emptyDescription": "Klassenräume erscheinen, sobald sie für eine Klassengruppe angelegt werden.",
+    "noSearchResults": "Keine Klassenräume passen zu Ihrer Suche.",
+    "addClassroom": "Klassenraum hinzufügen",
+    "card": {
+      "unknownClassGroup": "Unbekannte Klassengruppe",
+      "untitledClassroom": "Klassenraum ohne Titel",
+      "open": "Öffnen",
+      "statusActive": "Aktiv",
+      "statusInactive": "Inaktiv",
+      "updatedAt": "Zuletzt aktualisiert {{date}}",
+      "deactivatedAt": "Deaktiviert {{date}}"
+    }
   },
   "licenses": {
     "title": "Lizenzen",
