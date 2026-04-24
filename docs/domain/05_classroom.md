@@ -45,7 +45,7 @@ flowchart TD
 - Table: `classrooms`
 - Input: institution_id, class_group_id, class_group_offering_id, primary_teacher_id, title
 - Status defaults to active
-- Visible only to: institution_admin, primary teacher, co-teachers, enrolled students (`classrooms_scoped_read`)
+- Visible only to: super_admin and institution_admin (`classrooms_all_super_admin`, `classrooms_all_institution_admin`); members via primary teacher or active roster (`classrooms_select_member` — replaces the earlier informal name “classrooms scoped read”).
 
 **Deactivate classroom**
 
@@ -60,6 +60,10 @@ flowchart TD
 
 - Update: `classrooms.primary_teacher_id`
 - Old teacher loses primary_teacher RLS; update `classroom_members` co-teacher row as needed
+
+### Row level security (RLS)
+
+**Avoid policy cycles.** Do not implement mutual visibility by having a policy on `classrooms` scan `classroom_members` while policies on `classroom_members` subquery `classrooms`: PostgreSQL still evaluates every applicable **permissive** policy on `classrooms`, so institution admins who are also members hit both admin and member policies and trigger **infinite recursion** (SQLSTATE `42P17`). Break the cycle with small `app.*` functions (`SECURITY DEFINER`, fixed `search_path`, `row_security` off only inside the function body) scoped by `auth.uid()` — for example `app.auth_has_active_classroom_membership`, `app.auth_is_primary_teacher_of_classroom`, and `app.classroom_institution_id` — and call those from policies instead of cross-table subqueries. See `docs/architecture/db_principles.md`.
 
 ---
 
