@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DoorOpen, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
@@ -22,6 +23,7 @@ const contentEnter = 'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:du
 
 export function InstitutionClassrooms() {
   const { t } = useTranslation('features.institution-admin')
+  const navigate = useNavigate()
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
 
@@ -75,6 +77,10 @@ export function InstitutionClassrooms() {
     setClassrooms((previous) =>
       [...previous, createdClassroom].sort((a, b) => a.title.localeCompare(b.title)),
     )
+  }
+
+  const handleOpenClassroom = (classroomId: string) => {
+    navigate(`/institution_admin/classrooms/${classroomId}`)
   }
 
   useEffect(() => {
@@ -206,7 +212,10 @@ export function InstitutionClassrooms() {
           </Empty>
         ) : (
           <div className={contentEnter}>
-            <ClassroomCardList items={filteredItems} />
+            <ClassroomCardList
+              items={filteredItems}
+              onOpenClassroom={handleOpenClassroom}
+            />
           </div>
         )}
       </div>

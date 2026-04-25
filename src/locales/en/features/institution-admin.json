@@ -710,6 +710,34 @@
       "suggestions": {
         "label": "Suggestions:"
       }
+    },
+    "detail": {
+      "back": "Back to classrooms",
+      "notFound": "Classroom not found."
+    },
+    "members": {
+      "title": "Members",
+      "assignUser": "Assign user",
+      "empty": "No members in this classroom yet.",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role"
+      },
+      "roles": {
+        "student": "Student",
+        "co_teacher": "Co-teacher"
+      }
+    },
+    "assignDialog": {
+      "title": "Assign user to classroom",
+      "description": "Search institution users and assign them to this classroom.",
+      "searchPlaceholder": "Search users",
+      "empty": "No active users found.",
+      "emptyDescription": "Invite or activate users in your institution to assign them here.",
+      "cancel": "Cancel",
+      "assign": "Assign",
+      "assigning": "Assigning..."
     }
   },
   "licenses": {

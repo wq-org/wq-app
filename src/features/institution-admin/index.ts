@@ -16,6 +16,7 @@ export { InstitutionCohortOfferings as InstitutionAdminCohortOfferingsPage } fro
 export { InstitutionFacultiesClassGroups as InstitutionAdminFacultiesClassGroupsPage } from './pages/faculties-class-groups'
 export { InstitutionClassGroupOfferings as InstitutionAdminClassGroupOfferingsPage } from './pages/class-group-offerings'
 export { InstitutionClassrooms as InstitutionAdminClassroomsPage } from './pages/classrooms'
+export { ClassroomDetailPage as InstitutionAdminClassroomDetailPage } from './pages/classroom-detail'
 export { AdminLicenses as InstitutionAdminLicensesPage } from './pages/licenses'
 export { InstitutionUsage as InstitutionAdminUsagePage } from './pages/usage'
 export { InstitutionGDPRRequest as InstitutionAdminGDPRRequestPage } from './pages/gdpr-request'

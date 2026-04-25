@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { DoorOpen, LayoutGrid, Plus, Search, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -54,6 +54,7 @@ export function InstitutionClassGroupOfferings() {
     cohortId: string
     classGroupId: string
   }>()
+  const navigate = useNavigate()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
   const [classroomFilterQuery, setClassroomFilterQuery] = useState('')
@@ -129,6 +130,10 @@ export function InstitutionClassGroupOfferings() {
 
   const handleAddOffering = () => {
     // Placeholder: add-offering flow wired in a follow-up.
+  }
+
+  const handleOpenClassroom = (classroomId: string) => {
+    navigate(`/institution_admin/classrooms/${encodeURIComponent(classroomId)}`)
   }
 
   const handleSaveClassGroupSettings = async () => {
@@ -355,7 +360,10 @@ export function InstitutionClassGroupOfferings() {
                     </EmptyHeader>
                   </Empty>
                 ) : (
-                  <ClassroomCardList items={filteredClassroomItems} />
+                  <ClassroomCardList
+                    items={filteredClassroomItems}
+                    onOpenClassroom={handleOpenClassroom}
+                  />
                 )}
               </div>
             ) : null}

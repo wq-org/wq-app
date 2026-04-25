@@ -710,6 +710,34 @@
       "suggestions": {
         "label": "Vorschläge:"
       }
+    },
+    "detail": {
+      "back": "Zurück zu Klassenräumen",
+      "notFound": "Klassenraum nicht gefunden."
+    },
+    "members": {
+      "title": "Mitglieder",
+      "assignUser": "Nutzer zuweisen",
+      "empty": "Noch keine Mitglieder in diesem Klassenraum.",
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle"
+      },
+      "roles": {
+        "student": "Schüler",
+        "co_teacher": "Co-Lehrkraft"
+      }
+    },
+    "assignDialog": {
+      "title": "Nutzer dem Klassenraum zuweisen",
+      "description": "Suchen Sie Institutionsnutzer und weisen Sie sie diesem Klassenraum zu.",
+      "searchPlaceholder": "Nutzer suchen",
+      "empty": "Keine aktiven Nutzer gefunden.",
+      "emptyDescription": "Laden Sie Nutzer ein oder aktivieren Sie sie in der Institution, um sie hier zuzuweisen.",
+      "cancel": "Abbrechen",
+      "assign": "Zuweisen",
+      "assigning": "Wird zugewiesen..."
     }
   },
   "licenses": {

@@ -12,3 +12,28 @@ export type ClassroomRecord = {
   readonly created_at: string
   readonly updated_at: string
 }
+
+export type ClassroomMemberRole = 'student' | 'co_teacher'
+
+export type ClassroomMemberRow = {
+  readonly id: string
+  readonly classroom_id: string
+  readonly user_id: string
+  readonly membership_role: ClassroomMemberRole
+  readonly enrolled_at: string
+  readonly profiles: {
+    readonly display_name: string | null
+    readonly username: string | null
+    readonly email: string | null
+    readonly avatar_url: string | null
+  } | null
+}
+
+export type ClassroomMember = {
+  readonly id: string
+  readonly userId: string
+  readonly name: string
+  readonly email: string
+  readonly avatarUrl: string | null
+  readonly role: ClassroomMemberRole
+}

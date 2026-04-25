@@ -45,7 +45,7 @@ export function ClassroomCard({ classroom, classGroupName, onOpen }: ClassroomCa
   }, [classroom.deactivated_at, classroom.updated_at, i18n.language, isActive, t])
 
   return (
-    <div className="flex w-[350px] max-w-full animate-in fade-in-0 slide-in-from-bottom-4 flex-col overflow-hidden rounded-4xl border bg-card shadow-xl ring-1 ring-black/5 transition-all duration-200 hover:shadow-2xl">
+    <div className="flex w-[350px] max-w-full animate-in fade-in-0 slide-in-from-bottom-4 flex-col overflow-hidden rounded-3xl border bg-card shadow-xl ring-1 ring-black/5 transition-all duration-200 hover:shadow-2xl">
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="flex min-w-0 flex-col items-start gap-2">
           <div className="flex flex-wrap items-center gap-2">
