@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react'
 import type { VariantProps } from 'class-variance-authority'
 
+import { Slider } from '@/components/ui/slider'
 import { tickContentVariants } from '@/components/ui/tick-variants'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -91,6 +92,48 @@ function TickSeparator({ className, orientation = 'vertical', ...props }: TickSe
   )
 }
 
+type TickZoomProps = Omit<ComponentProps<'div'>, 'onChange'> & {
+  value: number
+  onValueChange: (value: number) => void
+  min?: number
+  max?: number
+  step?: number
+  label?: string
+}
+
+function TickZoom({
+  className,
+  value,
+  onValueChange,
+  min = 80,
+  max = 220,
+  step = 5,
+  label = 'Timeline zoom',
+  ...props
+}: TickZoomProps) {
+  const boundedValue = Math.min(Math.max(value, min), max)
+
+  return (
+    <div
+      data-slot="tick-zoom"
+      className={cn('flex w-full max-w-xs flex-col gap-2', className)}
+      {...props}
+    >
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>{label}</span>
+        <span>{boundedValue}%</span>
+      </div>
+      <Slider
+        min={min}
+        max={max}
+        step={step}
+        value={[boundedValue]}
+        onValueChange={(nextValues) => onValueChange(nextValues[0] ?? boundedValue)}
+      />
+    </div>
+  )
+}
+
 type TickProps = Omit<ComponentProps<'span'>, 'children'> & {
   children?: ComponentProps<'span'>['children']
   minor?: boolean
@@ -176,4 +219,14 @@ function TickContent({
   )
 }
 
-export { Tick, TickContent, TickContents, TickLabel, TickMark, TickSeparator, TickTrack, Ticks }
+export {
+  Tick,
+  TickContent,
+  TickContents,
+  TickLabel,
+  TickMark,
+  TickSeparator,
+  TickTrack,
+  TickZoom,
+  Ticks,
+}

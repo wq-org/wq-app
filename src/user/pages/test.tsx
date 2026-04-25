@@ -76,7 +76,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Tick, TickContent, TickContents, TickTrack, Ticks } from '@/components/ui/tick'
+import { Tick, TickContent, TickContents, TickTrack, TickZoom, Ticks } from '@/components/ui/tick'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
 import {
   AdvancedPasswordStrengthIndicatorProgress,
@@ -462,6 +462,7 @@ export default function Test() {
   const [volumePercent, setVolumePercent] = useState(50)
   const [opacityPercent, setOpacityPercent] = useState(50)
   const [experienceRating, setExperienceRating] = useState(3)
+  const [timelineZoomPercent, setTimelineZoomPercent] = useState(100)
 
   const handleDurationMonthsChange = (value: number) => {
     setDurationMonths(value)
@@ -522,7 +523,7 @@ export default function Test() {
         />
       </Section>
 
-      <Section title="Divider (@/components/ui/devider)">
+      <Section title="Divider (@/components/ui/divider)">
         <div className="w-full space-y-6">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -716,7 +717,15 @@ export default function Test() {
       </Section>
       <Section title="Tick atom (2020-2030)">
         <div className="w-full max-w-2xl p-4 relative">
-          <TickTrack>
+          <TickZoom
+            value={timelineZoomPercent}
+            onValueChange={setTimelineZoomPercent}
+            min={80}
+            max={220}
+            step={5}
+            className="mb-4"
+          />
+          <TickTrack style={{ minWidth: `${timelineZoomPercent}%` }}>
             <Ticks>
               {timelineTicks.map((tick) => {
                 const isMinorTick = (tick - timelineTickMin) % timelineSkipInterval !== 0

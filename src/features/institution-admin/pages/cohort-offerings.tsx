@@ -24,7 +24,7 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { updateCohort } from '../api/cohortsApi'
 import { ClassGroupCardList } from '../components/ClassGroupCardList'
-import { CohortOfferingTable } from '../components/CohortOfferingTable'
+import { CohortOfferingsTimeLine } from '../components/CohortOfferingsTimeLine'
 import { CohortSettings } from '../components/CohortSettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useCohortOfferings } from '../hooks/useCohortOfferings'
@@ -224,7 +224,7 @@ export function InstitutionCohortOfferings() {
       )
     }
 
-    return <CohortOfferingTable offerings={offerings} />
+    return <CohortOfferingsTimeLine offerings={offerings} />
   })()
 
   const showClassGroupsSection =

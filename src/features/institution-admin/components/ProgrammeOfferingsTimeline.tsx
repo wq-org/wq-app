@@ -1,12 +1,20 @@
-import { AlertCircle, ChartNoAxesGantt, GraduationCap } from 'lucide-react'
+import { useState } from 'react'
+import { AlertCircle, Archive, ChartNoAxesGantt, FileSliders, GraduationCap } from 'lucide-react'
 
 import { SelectTabs } from '@/components/shared'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Spinner } from '@/components/ui/spinner'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
-import { ProgrammeOfferingTable } from './ProgrammeOfferingTable'
+import { ProgrammeOfferingsTable } from './ProgrammeOfferingsTable'
+import { ProgrammeOfferingsTimelineCardList } from './ProgrammeOfferingsTimelineCardList'
 
-const TIMELINE_TAB = [{ id: 'timeline', title: 'Timeline', icon: ChartNoAxesGantt }] as const
+const TIMELINE_TAB = [
+  { id: 'timeline', title: 'Timeline', icon: ChartNoAxesGantt },
+  { id: 'drafts', title: 'Drafts', icon: FileSliders },
+  { id: 'archived', title: 'Archived', icon: Archive },
+] as const
+
+type TimelineTabId = (typeof TIMELINE_TAB)[number]['id']
 
 type ProgrammeOfferingsTimelineProps = {
   offerings: readonly ProgrammeOfferingRecord[]
@@ -25,6 +33,8 @@ export function ProgrammeOfferingsTimeline({
   isFilteredEmpty,
   t,
 }: ProgrammeOfferingsTimelineProps) {
+  const [activeTabId, setActiveTabId] = useState<TimelineTabId>('timeline')
+
   if (isLoading) {
     return (
       <div className="flex min-h-40 items-center justify-center">
@@ -81,14 +91,24 @@ export function ProgrammeOfferingsTimeline({
     )
   }
 
+  const activeOfferings = offerings.filter((offering) => offering.status === 'active')
+  const draftOfferings = offerings.filter((offering) => offering.status === 'draft')
+  const archivedOfferings = offerings.filter((offering) => offering.status === 'archived')
+
   return (
     <div className="flex flex-col gap-4">
       <SelectTabs
         tabs={TIMELINE_TAB}
-        activeTabId="timeline"
-        onTabChange={() => {}}
+        activeTabId={activeTabId}
+        onTabChange={(tabId) => setActiveTabId(tabId as TimelineTabId)}
       />
-      <ProgrammeOfferingTable offerings={offerings} />
+      {activeTabId === 'timeline' ? (
+        <ProgrammeOfferingsTable offerings={activeOfferings} />
+      ) : activeTabId === 'drafts' ? (
+        <ProgrammeOfferingsTimelineCardList offerings={draftOfferings} />
+      ) : (
+        <ProgrammeOfferingsTimelineCardList offerings={archivedOfferings} />
+      )}
     </div>
   )
 }

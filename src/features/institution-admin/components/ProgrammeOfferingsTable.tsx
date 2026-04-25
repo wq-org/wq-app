@@ -29,11 +29,11 @@ function getTimelineYear(value: string | null, fallback: number): number {
   return year
 }
 
-type ProgrammeOfferingTableProps = {
+type ProgrammeOfferingsTableProps = {
   offerings: readonly ProgrammeOfferingRecord[]
 }
 
-export function ProgrammeOfferingTable({ offerings }: ProgrammeOfferingTableProps) {
+export function ProgrammeOfferingsTable({ offerings }: ProgrammeOfferingsTableProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
 
   const ticks = Array.from(

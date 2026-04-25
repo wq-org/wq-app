@@ -19,19 +19,19 @@ type ClassGroupOfferingDraft = {
   dateRange: DateRange | undefined
 }
 
-type ClassGroupOfferingStepProps = {
+type ClassGroupOfferingsStepProps = {
   offerings: ClassGroupOfferingDraft[]
   onUpdateOffering: (id: string, patch: Partial<ClassGroupOfferingDraft>) => void
   onAddOffering: () => void
   onRemoveOffering: (id: string) => void
 }
 
-export function ClassGroupOfferingStep({
+export function ClassGroupOfferingsStep({
   offerings,
   onUpdateOffering,
   onAddOffering,
   onRemoveOffering,
-}: ClassGroupOfferingStepProps) {
+}: ClassGroupOfferingsStepProps) {
   const { t } = useTranslation('features.institution-admin')
 
   return (

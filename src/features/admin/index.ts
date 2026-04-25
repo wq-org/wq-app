@@ -29,6 +29,7 @@ export type { AdminUserRow, AdminDeleteUserResult, AdminSetUserActiveResult } fr
 export { useInstitutions } from './hooks/useInstitutions'
 export { useAdminUsers } from './hooks/useAdminUsers'
 export { useFeatureDefinitions } from './hooks/useFeatureDefinitions'
+export { useFeatureDefinitionEditor } from './hooks/useFeatureDefinitionEditor'
 export { usePlanCatalog } from './hooks/usePlanCatalog'
 export { usePlanEntitlements } from './hooks/usePlanEntitlements'
 export {

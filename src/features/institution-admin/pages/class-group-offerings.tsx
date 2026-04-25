@@ -24,7 +24,7 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { updateClassGroup } from '../api/classGroupsApi'
 import { ClassroomCardList } from '../components/ClassroomCardList'
-import { ClassGroupOfferingTable } from '../components/ClassGroupOfferingTable'
+import { ClassGroupOfferingsTimeLine } from '../components/ClassGroupOfferingsTimeLine'
 import { ClassGroupSettings } from '../components/ClassGroupSettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useClassGroupOfferings } from '../hooks/useClassGroupOfferings'
@@ -225,7 +225,7 @@ export function InstitutionClassGroupOfferings() {
       )
     }
 
-    return <ClassGroupOfferingTable offerings={offerings} />
+    return <ClassGroupOfferingsTimeLine offerings={offerings} />
   })()
 
   return (
