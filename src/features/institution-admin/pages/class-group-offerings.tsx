@@ -56,7 +56,6 @@ export function InstitutionClassGroupOfferings() {
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [filterQuery, setFilterQuery] = useState('')
   const [classroomFilterQuery, setClassroomFilterQuery] = useState('')
   const [draftClassGroupName, setDraftClassGroupName] = useState('')
   const [draftClassGroupDescription, setDraftClassGroupDescription] = useState('')
@@ -98,26 +97,6 @@ export function InstitutionClassGroupOfferings() {
     selectedClassGroup !== null &&
     (draftClassGroupName !== selectedClassGroup.name ||
       draftClassGroupDescription !== (selectedClassGroup.description ?? ''))
-
-  const searchableOfferings = useMemo(
-    () =>
-      offerings.map((offering) => ({
-        offering,
-        searchStatus:
-          offering.status === 'active'
-            ? t('faculties.pages.classGroupOfferings.offering.statusActive')
-            : t('faculties.pages.classGroupOfferings.offering.statusInactive'),
-        searchStartsAt: offering.starts_at ?? '',
-        searchEndsAt: offering.ends_at ?? '',
-      })),
-    [offerings, t],
-  )
-
-  const filteredOfferings = useSearchFilter(searchableOfferings, filterQuery, [
-    'searchStatus',
-    'searchStartsAt',
-    'searchEndsAt',
-  ]).map((row) => row.offering)
 
   const classGroupDisplayName = selectedClassGroup?.name?.trim() ?? ''
 
@@ -234,21 +213,19 @@ export function InstitutionClassGroupOfferings() {
         </Text>
       )
     }
-    if (filteredOfferings.length === 0) {
+    if (offerings.length === 0) {
       return (
         <Text
           as="p"
           variant="body"
           color="muted"
         >
-          {filterQuery.trim()
-            ? t('faculties.pages.classGroupOfferings.emptyFiltered')
-            : t('faculties.pages.classGroupOfferings.empty')}
+          {t('faculties.pages.classGroupOfferings.empty')}
         </Text>
       )
     }
 
-    return <ClassGroupOfferingTable offerings={filteredOfferings} />
+    return <ClassGroupOfferingTable offerings={offerings} />
   })()
 
   return (
@@ -337,19 +314,7 @@ export function InstitutionClassGroupOfferings() {
 
         {activeTabId === 'overview' ? (
           <>
-            <FieldInput
-              label={t('faculties.pages.classGroupOfferings.filterLabel')}
-              placeholder={t('faculties.pages.classGroupOfferings.filterPlaceholder')}
-              value={filterQuery}
-              onValueChange={setFilterQuery}
-              className={`w-full max-w-xl ${overviewContentEnter}`}
-              disabled={isLoading}
-            />
-            <div
-              className={`rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5 ${overviewContentEnter}`}
-            >
-              {timelineContent}
-            </div>
+            <div className={overviewContentEnter}>{timelineContent}</div>
             {showClassroomsSection ? (
               <div className={`flex flex-col gap-4 ${overviewContentEnter}`}>
                 <Separator />

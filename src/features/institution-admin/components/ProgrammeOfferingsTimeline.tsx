@@ -1,4 +1,4 @@
-import { AlertCircle, ChartNoAxesGantt, GraduationCap, Search } from 'lucide-react'
+import { AlertCircle, ChartNoAxesGantt, GraduationCap } from 'lucide-react'
 
 import { SelectTabs } from '@/components/shared'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
@@ -14,7 +14,6 @@ type ProgrammeOfferingsTimelineProps = {
   loadError: string | null
   isProgrammeMissing: boolean
   isFilteredEmpty: boolean
-  isFilterActive: boolean
   t: (key: string) => string
 }
 
@@ -24,7 +23,6 @@ export function ProgrammeOfferingsTimeline({
   loadError,
   isProgrammeMissing,
   isFilteredEmpty,
-  isFilterActive,
   t,
 }: ProgrammeOfferingsTimelineProps) {
   if (isLoading) {
@@ -74,18 +72,10 @@ export function ProgrammeOfferingsTimeline({
       <Empty>
         <EmptyHeader>
           <EmptyMedia variant="icon">
-            {isFilterActive ? (
-              <Search className="size-6" />
-            ) : (
-              <ChartNoAxesGantt className="size-6" />
-            )}
+            <ChartNoAxesGantt className="size-6" />
           </EmptyMedia>
           <EmptyTitle>{t('faculties.pages.programmeOfferings.titleFallback')}</EmptyTitle>
-          <EmptyDescription>
-            {isFilterActive
-              ? t('faculties.pages.programmeOfferings.emptyFiltered')
-              : t('faculties.pages.programmeOfferings.empty')}
-          </EmptyDescription>
+          <EmptyDescription>{t('faculties.pages.programmeOfferings.empty')}</EmptyDescription>
         </EmptyHeader>
       </Empty>
     )

@@ -28,7 +28,6 @@ import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWo
 import { ProgrammeOfferingsTimeline } from '../components/ProgrammeOfferingsTimeline'
 import { ProgrammeSettings } from '../components/ProgrammeSettings'
 import { useProgrammeOfferings } from '../hooks/useProgrammeOfferings'
-import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 
 const OFFERING_TABS = [
   { id: 'overview', title: 'Overview', icon: LayoutGrid },
@@ -41,10 +40,6 @@ const overviewContentEnter =
 
 type OfferingTabId = (typeof OFFERING_TABS)[number]['id']
 
-function toInactiveStatus(status: ProgrammeOfferingRecord['status']): 'active' | 'inactive' {
-  return status === 'active' ? 'active' : 'inactive'
-}
-
 export function InstitutionProgrammeOfferings() {
   const { t } = useTranslation('features.institution-admin')
   const navigate = useNavigate()
@@ -56,7 +51,6 @@ export function InstitutionProgrammeOfferings() {
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [filterQuery, setFilterQuery] = useState('')
   const [cohortFilterQuery, setCohortFilterQuery] = useState('')
   const [draftProgrammeName, setDraftProgrammeName] = useState('')
   const [draftProgrammeDescription, setDraftProgrammeDescription] = useState('')
@@ -94,26 +88,6 @@ export function InstitutionProgrammeOfferings() {
     selectedProgramme !== null &&
     (draftProgrammeName !== selectedProgramme.name ||
       draftProgrammeDescription !== (selectedProgramme.description ?? ''))
-
-  const searchableOfferings = useMemo(
-    () =>
-      offerings.map((offering) => ({
-        offering,
-        searchAcademicYear: String(offering.academic_year),
-        searchTermCode: offering.term_code ?? '',
-        searchStatus:
-          toInactiveStatus(offering.status) === 'active'
-            ? t('faculties.pages.programmeOfferings.offering.statusActive')
-            : t('faculties.pages.programmeOfferings.offering.statusInactive'),
-      })),
-    [offerings, t],
-  )
-
-  const filteredOfferings = useSearchFilter(searchableOfferings, filterQuery, [
-    'searchAcademicYear',
-    'searchTermCode',
-    'searchStatus',
-  ]).map((row) => row.offering)
 
   const searchableCohorts = useMemo(
     () =>
@@ -269,24 +243,13 @@ export function InstitutionProgrammeOfferings() {
 
         {activeTabId === 'overview' ? (
           <>
-            <FieldInput
-              label={t('faculties.pages.programmeOfferings.filterLabel')}
-              placeholder={t('faculties.pages.programmeOfferings.filterPlaceholder')}
-              value={filterQuery}
-              onValueChange={setFilterQuery}
-              className={`w-full max-w-xl ${overviewContentEnter}`}
-              disabled={isLoading}
-            />
-            <div
-              className={`rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5 ${overviewContentEnter}`}
-            >
+            <div className={overviewContentEnter}>
               <ProgrammeOfferingsTimeline
-                offerings={filteredOfferings}
+                offerings={offerings}
                 isLoading={isLoading}
                 loadError={loadError}
                 isProgrammeMissing={!selectedProgramme}
-                isFilteredEmpty={filteredOfferings.length === 0}
-                isFilterActive={Boolean(filterQuery.trim())}
+                isFilteredEmpty={offerings.length === 0}
                 t={t}
               />
             </div>

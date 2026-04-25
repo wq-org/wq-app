@@ -76,6 +76,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Tick, TickContent, TickContents, TickTrack, Ticks } from '@/components/ui/tick'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
 import {
   AdvancedPasswordStrengthIndicatorProgress,
@@ -244,7 +245,7 @@ function CompactSettingsDemo() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 py-4">
       <h2 className="text-lg font-semibold border-b pb-2">{title}</h2>
       <div className="flex flex-wrap gap-6 items-start">{children}</div>
     </section>
@@ -482,6 +483,21 @@ export default function Test() {
     setExperienceRating(value)
   }
 
+  const timelineTickMin = 2019
+  const timelineTickMax = 2030
+  const timelineSkipInterval = 2
+  const timelineTicks = Array.from(
+    { length: timelineTickMax - timelineTickMin + 1 },
+    (_, index) => timelineTickMin + index,
+  )
+  const colorTimelineTickMin = 2000
+  const colorTimelineTickMax = 2010
+  const colorTimelineSkipInterval = 2
+  const colorTimelineTicks = Array.from(
+    { length: colorTimelineTickMax - colorTimelineTickMin + 1 },
+    (_, index) => colorTimelineTickMin + index,
+  )
+
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
@@ -697,6 +713,113 @@ export default function Test() {
           step={1}
           skipInterval={2}
         />
+      </Section>
+      <Section title="Tick atom (2020-2030)">
+        <div className="w-full max-w-2xl p-4 relative">
+          <TickTrack>
+            <Ticks>
+              {timelineTicks.map((tick) => {
+                const isMinorTick = (tick - timelineTickMin) % timelineSkipInterval !== 0
+
+                return (
+                  <Tick
+                    key={tick}
+                    minor={isMinorTick}
+                    hideLabel={isMinorTick}
+                  >
+                    {tick}
+                  </Tick>
+                )
+              })}
+            </Ticks>
+            <TickContents>
+              <TickContent
+                start={2020}
+                end={2024}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2020–2024
+              </TickContent>
+              <TickContent
+                start={2021}
+                end={2026}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2021–2026 lets see if this works perfectly or not do i have what this box is for
+                example lets see if this works perfectly or not do i have what this box is for
+                example
+              </TickContent>
+              <TickContent
+                start={2025}
+                end={2029}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2025–2029
+              </TickContent>
+              <TickContent
+                start={2023}
+                end={2027}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2023–2027
+              </TickContent>
+            </TickContents>
+          </TickTrack>
+        </div>
+      </Section>
+      <Section title="Tick atom color variants (2000-2010)">
+        <div className="w-full max-w-2xl p-4 relative">
+          <TickTrack>
+            <Ticks>
+              {colorTimelineTicks.map((tick) => {
+                const isMinorTick = (tick - colorTimelineTickMin) % colorTimelineSkipInterval !== 0
+
+                return (
+                  <Tick
+                    key={tick}
+                    minor={isMinorTick}
+                    hideLabel={isMinorTick}
+                  >
+                    {tick}
+                  </Tick>
+                )
+              })}
+            </Ticks>
+            <TickContents>
+              <TickContent
+                start={2000}
+                end={2004}
+                min={colorTimelineTickMin}
+                max={colorTimelineTickMax}
+                variant="teal"
+              >
+                Teal: 2000-2004
+              </TickContent>
+              <TickContent
+                start={2003}
+                end={2007}
+                min={colorTimelineTickMin}
+                max={colorTimelineTickMax}
+                variant="indigo"
+              >
+                Indigo: 2003-2007
+              </TickContent>
+              <TickContent
+                start={2006}
+                end={2010}
+                min={colorTimelineTickMin}
+                max={colorTimelineTickMax}
+                variant="blue"
+              >
+                Blue: 2006-2010
+              </TickContent>
+            </TickContents>
+          </TickTrack>
+        </div>
       </Section>
       <Section title="SliderReferenceLabels">
         <SliderReferenceLabels

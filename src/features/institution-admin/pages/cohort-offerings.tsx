@@ -55,7 +55,6 @@ export function InstitutionCohortOfferings() {
   }>()
 
   const [activeTabId, setActiveTabId] = useState<OfferingTabId>('overview')
-  const [filterQuery, setFilterQuery] = useState('')
   const [classGroupFilterQuery, setClassGroupFilterQuery] = useState('')
   const [draftCohortName, setDraftCohortName] = useState('')
   const [draftCohortDescription, setDraftCohortDescription] = useState('')
@@ -95,33 +94,6 @@ export function InstitutionCohortOfferings() {
     selectedCohort !== null &&
     (draftCohortName !== selectedCohort.name ||
       draftCohortDescription !== (selectedCohort.description ?? ''))
-
-  const searchableOfferings = useMemo(
-    () =>
-      offerings.map((offering) => {
-        const po = offering.programme_offering
-        const term = po?.term_code?.trim() ?? ''
-        const year = po ? String(po.academic_year) : ''
-        return {
-          offering,
-          searchStatus:
-            offering.status === 'active'
-              ? t('faculties.pages.cohortOfferings.offering.statusActive')
-              : t('faculties.pages.cohortOfferings.offering.statusInactive'),
-          searchStartsAt: offering.starts_at ?? '',
-          searchEndsAt: offering.ends_at ?? '',
-          searchProgrammeOffering: [year, term].filter(Boolean).join(' '),
-        }
-      }),
-    [offerings, t],
-  )
-
-  const filteredOfferings = useSearchFilter(searchableOfferings, filterQuery, [
-    'searchStatus',
-    'searchStartsAt',
-    'searchEndsAt',
-    'searchProgrammeOffering',
-  ]).map((row) => row.offering)
 
   const cohortDisplayName = selectedCohort?.name?.trim() ?? ''
 
@@ -240,21 +212,19 @@ export function InstitutionCohortOfferings() {
         </Text>
       )
     }
-    if (filteredOfferings.length === 0) {
+    if (offerings.length === 0) {
       return (
         <Text
           as="p"
           variant="body"
           color="muted"
         >
-          {filterQuery.trim()
-            ? t('faculties.pages.cohortOfferings.emptyFiltered')
-            : t('faculties.pages.cohortOfferings.empty')}
+          {t('faculties.pages.cohortOfferings.empty')}
         </Text>
       )
     }
 
-    return <CohortOfferingTable offerings={filteredOfferings} />
+    return <CohortOfferingTable offerings={offerings} />
   })()
 
   const showClassGroupsSection =
@@ -339,19 +309,7 @@ export function InstitutionCohortOfferings() {
 
         {activeTabId === 'overview' ? (
           <>
-            <FieldInput
-              label={t('faculties.pages.cohortOfferings.filterLabel')}
-              placeholder={t('faculties.pages.cohortOfferings.filterPlaceholder')}
-              value={filterQuery}
-              onValueChange={setFilterQuery}
-              className={`w-full max-w-xl ${overviewContentEnter}`}
-              disabled={isLoading}
-            />
-            <div
-              className={`rounded-3xl border bg-card p-5 shadow-sm ring-1 ring-black/5 ${overviewContentEnter}`}
-            >
-              {timelineContent}
-            </div>
+            <div className={overviewContentEnter}>{timelineContent}</div>
             {showClassGroupsSection ? (
               <div className={`flex flex-col gap-4 ${overviewContentEnter}`}>
                 <Separator />
