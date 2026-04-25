@@ -13,6 +13,7 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { listClassGroupsByInstitution } from '../api/classGroupsApi'
 import { listClassroomsByInstitution } from '../api/classroomsApi'
 import { ClassroomCardList } from '../components/ClassroomCardList'
+import { CreateClassroomDialog } from '../components/CreateClassroomDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import type { ClassGroupRecord } from '../types/class-group.types'
 import type { ClassroomRecord } from '../types/classroom.types'
@@ -27,6 +28,7 @@ export function InstitutionClassrooms() {
   const [classrooms, setClassrooms] = useState<readonly ClassroomRecord[]>([])
   const [classGroups, setClassGroups] = useState<readonly ClassGroupRecord[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -66,7 +68,13 @@ export function InstitutionClassrooms() {
   ]).map(({ classroom, classGroupName }) => ({ classroom, classGroupName }))
 
   const handleAddClassroom = () => {
-    // Placeholder: create-classroom flow wired in a follow-up.
+    setIsCreateDialogOpen(true)
+  }
+
+  const handleClassroomCreated = (createdClassroom: ClassroomRecord) => {
+    setClassrooms((previous) =>
+      [...previous, createdClassroom].sort((a, b) => a.title.localeCompare(b.title)),
+    )
   }
 
   useEffect(() => {
@@ -115,6 +123,12 @@ export function InstitutionClassrooms() {
   return (
     <InstitutionAdminWorkspaceShell>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-2 pb-12 pt-4 animate-in fade-in-0 slide-in-from-bottom-4">
+        <CreateClassroomDialog
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          institutionId={institutionId}
+          onCreated={handleClassroomCreated}
+        />
         <div className="animate-in fade-in-0 slide-in-from-bottom-3 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Text

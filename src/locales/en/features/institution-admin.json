@@ -675,6 +675,41 @@
       "statusInactive": "Inactive",
       "updatedAt": "Last updated {{date}}",
       "deactivatedAt": "Deactivated {{date}}"
+    },
+    "createDialog": {
+      "title": "Add classroom",
+      "description": "Create a classroom with class group, offering, and a primary teacher.",
+      "cancel": "Cancel",
+      "create": "Create classroom",
+      "creating": "Creating...",
+      "fields": {
+        "titleLabel": "Classroom title",
+        "titlePlaceholder": "Enter classroom title",
+        "classGroupLabel": "Class group",
+        "classGroupPlaceholder": "Search class groups",
+        "offeringLabel": "Class group offering",
+        "teacherLabel": "Primary teacher",
+        "teacherPlaceholder": "Search teachers"
+      },
+      "classGroup": {
+        "empty": "No class groups found."
+      },
+      "offering": {
+        "empty": "No offerings available for this class group.",
+        "noneSelected": "Select an offering"
+      },
+      "teacher": {
+        "empty": "No active teachers found."
+      },
+      "validation": {
+        "titleRequired": "A classroom title is required.",
+        "classGroupRequired": "Please select a class group.",
+        "offeringRequired": "Please select a class group offering.",
+        "teacherRequired": "Please select one primary teacher."
+      },
+      "suggestions": {
+        "label": "Suggestions:"
+      }
     }
   },
   "licenses": {

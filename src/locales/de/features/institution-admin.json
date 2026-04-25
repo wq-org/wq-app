@@ -675,6 +675,41 @@
       "statusInactive": "Inaktiv",
       "updatedAt": "Zuletzt aktualisiert {{date}}",
       "deactivatedAt": "Deaktiviert {{date}}"
+    },
+    "createDialog": {
+      "title": "Klassenraum hinzufügen",
+      "description": "Erstellen Sie einen Klassenraum mit Klassengruppe, Angebot und Hauptlehrkraft.",
+      "cancel": "Abbrechen",
+      "create": "Klassenraum erstellen",
+      "creating": "Wird erstellt...",
+      "fields": {
+        "titleLabel": "Titel des Klassenraums",
+        "titlePlaceholder": "Titel eingeben",
+        "classGroupLabel": "Klassengruppe",
+        "classGroupPlaceholder": "Klassengruppen suchen",
+        "offeringLabel": "Klassengruppenangebot",
+        "teacherLabel": "Hauptlehrkraft",
+        "teacherPlaceholder": "Lehrkräfte suchen"
+      },
+      "classGroup": {
+        "empty": "Keine Klassengruppen gefunden."
+      },
+      "offering": {
+        "empty": "Keine Angebote für diese Klassengruppe verfügbar.",
+        "noneSelected": "Bitte Angebot wählen"
+      },
+      "teacher": {
+        "empty": "Keine aktiven Lehrkräfte gefunden."
+      },
+      "validation": {
+        "titleRequired": "Ein Klassenraumtitel ist erforderlich.",
+        "classGroupRequired": "Bitte wählen Sie eine Klassengruppe.",
+        "offeringRequired": "Bitte wählen Sie ein Klassengruppenangebot.",
+        "teacherRequired": "Bitte wählen Sie genau eine Hauptlehrkraft."
+      },
+      "suggestions": {
+        "label": "Vorschläge:"
+      }
     }
   },
   "licenses": {
