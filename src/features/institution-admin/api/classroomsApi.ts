@@ -1,6 +1,11 @@
 import { supabase } from '@/lib/supabase'
 
-import type { ClassroomMember, ClassroomMemberRow, ClassroomRecord } from '../types/classroom.types'
+import type {
+  ClassroomMember,
+  ClassroomMemberProfile,
+  ClassroomMemberRow,
+  ClassroomRecord,
+} from '../types/classroom.types'
 
 const COLUMNS =
   'id, institution_id, class_group_id, class_group_offering_id, primary_teacher_id, title, status, deactivated_at, created_at, updated_at'
@@ -89,8 +94,15 @@ export async function fetchClassroom(classroomId: string): Promise<ClassroomReco
 const MEMBER_COLUMNS =
   'id, classroom_id, user_id, membership_role, enrolled_at, profiles(display_name, username, email, avatar_url)'
 
+function resolveEmbeddedProfile(
+  profiles: ClassroomMemberRow['profiles'],
+): ClassroomMemberProfile | null {
+  if (profiles == null) return null
+  return Array.isArray(profiles) ? (profiles[0] ?? null) : profiles
+}
+
 function toClassroomMember(row: ClassroomMemberRow): ClassroomMember {
-  const profile = row.profiles
+  const profile = resolveEmbeddedProfile(row.profiles)
   const name =
     profile?.display_name?.trim() ||
     profile?.username?.trim() ||
@@ -123,7 +135,7 @@ export async function listClassroomMembers(
     throw new Error(error.message)
   }
 
-  return (data ?? []).map((row) => toClassroomMember(row as ClassroomMemberRow))
+  return (data ?? []).map((row) => toClassroomMember(row))
 }
 
 export async function createClassroomMember(input: CreateClassroomMemberInput): Promise<void> {

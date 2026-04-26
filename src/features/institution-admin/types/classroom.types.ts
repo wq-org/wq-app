@@ -15,18 +15,25 @@ export type ClassroomRecord = {
 
 export type ClassroomMemberRole = 'student' | 'co_teacher'
 
+/** Profile fields returned by `profiles(...)` on classroom_members queries. */
+export type ClassroomMemberProfile = {
+  readonly display_name: string | null
+  readonly username: string | null
+  readonly email: string | null
+  readonly avatar_url: string | null
+}
+
 export type ClassroomMemberRow = {
   readonly id: string
   readonly classroom_id: string
   readonly user_id: string
   readonly membership_role: ClassroomMemberRole
   readonly enrolled_at: string
-  readonly profiles: {
-    readonly display_name: string | null
-    readonly username: string | null
-    readonly email: string | null
-    readonly avatar_url: string | null
-  } | null
+  /**
+   * Embedded profile from PostgREST. Supabase client inference may use an object
+   * or a single-element array for this FK embed; normalize in the API mapper.
+   */
+  readonly profiles: ClassroomMemberProfile | readonly ClassroomMemberProfile[] | null
 }
 
 export type ClassroomMember = {
