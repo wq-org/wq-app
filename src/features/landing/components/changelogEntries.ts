@@ -20,6 +20,26 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-04-26-institution-admin-structure-and-offerings-refresh',
+    date: '26 April 2026',
+    title: 'Improve institution structure, offerings, and classroom management flows',
+    summary:
+      'This branch delivered a full institution-admin workflow refresh: cleaner faculty/programme/cohort/class-group creation, dedicated offering dialogs, stronger programme settings with archive controls, and classroom page improvements backed by RLS and UX fixes.',
+    bullets: [
+      'Features: added dedicated create dialogs for Programmes, Cohorts, and Class Groups with dependency linking (faculty -> programme -> cohort) and page-specific CTA labels',
+      'Features: added dedicated create dialogs and orchestration hooks for Programme Offerings, Cohort Offerings, and Class Group Offerings',
+      'Features: added year selection support in programme creation and programme settings via reusable year popover controls',
+      'Features: added programme archive flow in settings using hold-to-confirm UX with archive icon and soft-delete semantics',
+      'Features: added classroom list and classroom detail flows, plus classroom creation with suggestions and improved membership handling',
+      'Fixes: resolved combobox type/selection issues affecting dialog selection behavior and improved create form reliability',
+      'Fixes: addressed Supabase RLS recursion and membership policy issues for classrooms/classroom_members to stabilize data access',
+      'Improvements: refactored offerings views from table-heavy layouts to timeline-first UX and modularized timeline/table components',
+      'Improvements: aligned institution-admin feature structure with architecture rules (thinner pages, reusable dialog components, clearer hook orchestration)',
+      'Improvements: expanded English and German translation coverage for dialogs, offering flows, settings states, and validation messages',
+    ],
+    badges: ['feature', 'fix', 'change', 'improvement'],
+  },
+  {
     id: '2026-04-14-admin-institution-dashboard-db-redesign',
     date: '14 April 2026',
     title: 'Launch admin and institution dashboards with complete database redesign',
