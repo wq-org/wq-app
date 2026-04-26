@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { DoorOpen, Mail, UserMinus, UsersRound } from 'lucide-react'
+import { DoorOpen, Mail, UserMinus, UserRoundPlus, UsersRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -168,7 +168,7 @@ const InstitutionUsers = () => {
       <div className="flex flex-col gap-6 py-10 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex flex-col gap-3 animate-in fade-in-0 slide-in-from-bottom-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">{t('users.pageTitle')}</h1>
+            <h1 className="text-2xl font-semibold">{t('users.pageTitle')}</h1>
             <p className="text-sm text-muted-foreground">{t('users.subtitle')}</p>
             {roleFilter ? (
               <p className="mt-1 text-xs text-muted-foreground">
@@ -185,6 +185,7 @@ const InstitutionUsers = () => {
             className="shrink-0 self-start"
             onClick={() => navigate('/institution_admin/users/invite-users')}
           >
+            <UserRoundPlus />
             {t('users.inviteUsersCta')}
           </Button>
         </div>
@@ -210,9 +211,7 @@ const InstitutionUsers = () => {
                 {t('users.totalHeading')}
               </span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-semibold tabular-nums text-gray-900">
-                  {totalUsers}
-                </span>
+                <span className="text-2xl font-semibold tabular-nums">{totalUsers}</span>
                 {roleFilter && totalUsers !== totalAll ? (
                   <span className="text-xs text-muted-foreground">
                     {t('users.totalOfInstitution', { total: totalAll })}
