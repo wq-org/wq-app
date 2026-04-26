@@ -1,4 +1,6 @@
+import { useLayoutEffect } from 'react'
 import { FooterSection, Navigation } from '@/features/landing'
+import { useTheme } from '@/hooks/useTheme'
 import { LanguageSwitcher } from '@/components/shared'
 import {
   Changelog,
@@ -16,6 +18,12 @@ import {
 import { changelogEntries } from '@/features/landing'
 
 export default function ChangelogPage() {
+  const { applyPublicTheme } = useTheme()
+
+  useLayoutEffect(() => {
+    applyPublicTheme()
+  }, [applyPublicTheme])
+
   return (
     <div className="relative min-h-screen bg-background">
       <div className="fixed inset-x-0 top-0 z-50">

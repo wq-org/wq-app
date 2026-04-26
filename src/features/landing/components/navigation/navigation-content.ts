@@ -68,6 +68,14 @@ export const landingNavigationGroups: NavigationGroupConfig[] = [
 
 export const landingFooterGroups: NavigationGroupConfig[] = [
   {
+    key: 'pages',
+    sectionId: 'pages',
+    items: [
+      { key: 'home', href: '/' },
+      { key: 'changelog', href: '/changelog' },
+    ],
+  },
+  {
     key: 'platform',
     sectionId: 'platform',
     items: [
@@ -129,7 +137,20 @@ function uniquePages(groups: NavigationGroupConfig[]): LandingPageConfig[] {
   return pages
 }
 
-export const landingPages = [
-  ...uniquePages([...landingNavigationGroups, ...landingFooterGroups]),
-  ...landingStandalonePages,
-]
+function mergePagesByPath(...lists: LandingPageConfig[][]): LandingPageConfig[] {
+  const seen = new Set<string>()
+  const out: LandingPageConfig[] = []
+  for (const list of lists) {
+    for (const page of list) {
+      if (seen.has(page.path)) continue
+      seen.add(page.path)
+      out.push(page)
+    }
+  }
+  return out
+}
+
+export const landingPages = mergePagesByPath(
+  uniquePages([...landingNavigationGroups, ...landingFooterGroups]),
+  landingStandalonePages,
+)

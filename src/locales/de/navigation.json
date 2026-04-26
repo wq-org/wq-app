@@ -130,16 +130,27 @@
       "contact": {
         "title": "Kontakt",
         "description": "Nehmen Sie Kontakt mit dem WQ-Team auf."
+      },
+      "home": {
+        "title": "Startseite",
+        "description": "Zurück zur WQ-Health-Startseite."
+      },
+      "changelog": {
+        "title": "Produkt-Changelog",
+        "description": "Neueste Releases und Verbesserungen auf der Plattform."
       }
     },
     "footer": {
       "groups": {
+        "pages": "Seiten",
         "platform": "Plattform",
         "success": "Dein Erfolg",
         "science": "Wissenschaft",
         "trust": "Vertrauen & Recht"
       },
       "items": {
+        "home": "Startseite",
+        "changelog": "Changelog",
         "workspace": "Lern-Workspace",
         "gameStudio": "WQ Game Studio",
         "analytics": "Kompetenz-Analytics",
@@ -158,6 +169,14 @@
         "privacy": "Datenschutz (DSGVO)",
         "compliance": "Compliance",
         "licenses": "Lizenzen"
+      },
+      "appearance": {
+        "trigger": "Design",
+        "title": "Erscheinungsbild",
+        "hint": "Hell, dunkel oder wie in den Systemeinstellungen.",
+        "light": "Hell",
+        "dark": "Dunkel",
+        "system": "System"
       },
       "meta": {
         "rights": "© {{year}} WQ Health, Alle Rechte vorbehalten",

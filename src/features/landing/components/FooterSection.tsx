@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/ui/logo'
-import { landingFooterGroups } from '@/features/landing/components/navigation/navigation-content'
+import { landingFooterGroups } from './navigation/navigation-content'
+import { PublicThemeDialog } from './PublicThemeDialog'
 
 export function FooterSection() {
   const { t } = useTranslation('navigation')
@@ -20,7 +21,7 @@ export function FooterSection() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 md:col-span-3">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-5 md:col-span-3">
             {landingFooterGroups.map((group) => (
               <div
                 key={group.key}
@@ -47,7 +48,8 @@ export function FooterSection() {
             <span className="text-xs">{t('landing.footer.meta.attribution')}</span>
           </div>
 
-          <div className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
+          <div className="order-first flex flex-wrap items-center justify-center gap-6 text-sm md:order-last">
+            <PublicThemeDialog />
             <a
               href="#"
               target="_blank"
