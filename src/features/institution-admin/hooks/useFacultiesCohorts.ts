@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { listCohortsByInstitution } from '../api/cohortsApi'
 import { listProgrammesByInstitution } from '../api/programmesApi'
 import type { CohortRecord } from '../types/cohort.types'
@@ -9,6 +9,11 @@ export function useFacultiesCohorts(institutionId: string | null) {
   const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reloadToken, setReloadToken] = useState(0)
+
+  const reload = useCallback(() => {
+    setReloadToken((prev) => prev + 1)
+  }, [])
 
   useEffect(() => {
     if (!institutionId) {
@@ -40,7 +45,7 @@ export function useFacultiesCohorts(institutionId: string | null) {
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, reloadToken])
 
-  return { cohorts, programmes, isLoading, error }
+  return { cohorts, programmes, isLoading, error, reload }
 }

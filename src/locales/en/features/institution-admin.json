@@ -222,6 +222,7 @@
       "programmes": {
         "title": "Programmes",
         "subtitle": "Study programmes attached to faculties in your institution.",
+        "createCta": "Create Programm",
         "searchLabel": "Search programmes",
         "searchPlaceholder": "Search by programme name, description, or faculty…",
         "loadError": "Could not load programmes.",
@@ -238,6 +239,23 @@
           "statusActive": "Active",
           "statusInactive": "Inactive",
           "open": "Open"
+        },
+        "createDialog": {
+          "title": "Create programme",
+          "description": "Add a programme and link it to a faculty.",
+          "facultyLabel": "Faculty",
+          "facultyPlaceholder": "Select a faculty",
+          "titleLabel": "Title",
+          "titlePlaceholder": "e.g. Nursing Assistant",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Describe this programme",
+          "validation": {
+            "facultyRequired": "Please select a faculty.",
+            "titleRequired": "Programme title is required."
+          },
+          "cancel": "Cancel",
+          "create": "Create programme",
+          "creating": "Creating..."
         }
       },
       "facultyProgrammes": {
@@ -304,6 +322,7 @@
       "cohorts": {
         "title": "Cohorts",
         "subtitle": "Intakes and year groups within programmes.",
+        "createCta": "Create Cohort",
         "searchLabel": "Search cohorts",
         "searchPlaceholder": "Search by cohort name, description, or programme…",
         "loadError": "Could not load cohorts.",
@@ -316,6 +335,30 @@
           "noDescription": "No description",
           "academicYearUnknown": "Year not set",
           "open": "Open"
+        },
+        "createDialog": {
+          "title": "Create cohort",
+          "description": "Add a cohort and link it to a faculty and programme.",
+          "facultyLabel": "Faculty",
+          "facultyPlaceholder": "Select a faculty",
+          "programmeLabel": "Programme",
+          "programmePlaceholder": "Select a programme",
+          "titleLabel": "Title",
+          "titlePlaceholder": "e.g. Cohort 2027",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Describe this cohort",
+          "academicYearLabel": "Academic year",
+          "academicYearPlaceholder": "e.g. 2027",
+          "validation": {
+            "facultyRequired": "Please select a faculty.",
+            "programmeRequired": "Please select a programme.",
+            "titleRequired": "Cohort title is required.",
+            "academicYearRequired": "Academic year is required.",
+            "academicYearInvalid": "Academic year must be a valid year number."
+          },
+          "cancel": "Cancel",
+          "create": "Create cohort",
+          "creating": "Creating..."
         }
       },
       "cohortOfferings": {
@@ -370,6 +413,7 @@
       "classGroups": {
         "title": "Class groups",
         "subtitle": "Operational learner groups within cohorts.",
+        "createCta": "Create Class Group",
         "searchLabel": "Search class groups",
         "searchPlaceholder": "Search by class group name, description, or cohort…",
         "loadError": "Could not load class groups.",
@@ -381,6 +425,29 @@
           "untitledClassGroup": "Untitled class group",
           "noDescription": "No description",
           "open": "Open"
+        },
+        "createDialog": {
+          "title": "Create class group",
+          "description": "Add a class group and link it to faculty, programme, and cohort.",
+          "facultyLabel": "Faculty",
+          "facultyPlaceholder": "Select a faculty",
+          "programmeLabel": "Programme",
+          "programmePlaceholder": "Select a programme",
+          "cohortLabel": "Cohort",
+          "cohortPlaceholder": "Select a cohort",
+          "titleLabel": "Title",
+          "titlePlaceholder": "e.g. NS-1A",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Describe this class group",
+          "validation": {
+            "facultyRequired": "Please select a faculty.",
+            "programmeRequired": "Please select a programme.",
+            "cohortRequired": "Please select a cohort.",
+            "titleRequired": "Class group title is required."
+          },
+          "cancel": "Cancel",
+          "create": "Create class group",
+          "creating": "Creating..."
         }
       },
       "classGroupOfferings": {

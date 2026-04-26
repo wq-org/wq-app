@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { listProgrammesByInstitution } from '../api/programmesApi'
 import type { ProgrammeRecord } from '../types/programme.types'
@@ -8,6 +8,11 @@ export function useFacultiesProgrammes(institutionId: string | null) {
   const [facultyNames, setFacultyNames] = useState<ReadonlyMap<string, string>>(new Map())
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reloadToken, setReloadToken] = useState(0)
+
+  const reload = useCallback(() => {
+    setReloadToken((prev) => prev + 1)
+  }, [])
 
   useEffect(() => {
     if (!institutionId) {
@@ -41,7 +46,7 @@ export function useFacultiesProgrammes(institutionId: string | null) {
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, reloadToken])
 
-  return { programmes, facultyNames, isLoading, error }
+  return { programmes, facultyNames, isLoading, error, reload }
 }

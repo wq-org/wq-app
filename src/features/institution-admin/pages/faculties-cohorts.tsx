@@ -11,9 +11,13 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { createCohort } from '../api/cohortsApi'
+import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { CohortCardList } from '../components/CohortCardList'
+import { CreateCohortDialog } from '../components/CreateCohortDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useFacultiesCohorts } from '../hooks/useFacultiesCohorts'
+import type { FacultySummary } from '../types/faculty.types'
 import type { ProgrammeRecord } from '../types/programme.types'
 
 export function InstitutionFacultiesCohorts() {
@@ -22,8 +26,23 @@ export function InstitutionFacultiesCohorts() {
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
   const [searchQuery, setSearchQuery] = useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [createFacultyId, setCreateFacultyId] = useState('')
+  const [createProgrammeId, setCreateProgrammeId] = useState('')
+  const [createName, setCreateName] = useState('')
+  const [createDescription, setCreateDescription] = useState('')
+  const [createAcademicYear, setCreateAcademicYear] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
+  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
 
-  const { cohorts, programmes, isLoading, error: loadError } = useFacultiesCohorts(institutionId)
+  const {
+    cohorts,
+    programmes,
+    isLoading,
+    error: loadError,
+    reload,
+  } = useFacultiesCohorts(institutionId)
 
   const programmeMap = useMemo(() => {
     const map = new Map<string, ProgrammeRecord>()
@@ -69,8 +88,89 @@ export function InstitutionFacultiesCohorts() {
     )
   }
 
-  const handleCreateStructure = () => {
-    navigate('/institution_admin/faculties/create')
+  const facultyOptions = useMemo(() => {
+    return faculties.map((faculty) => ({
+      id: faculty.id,
+      name: faculty.name?.trim() || t('faculties.card.untitled'),
+    }))
+  }, [faculties, t])
+
+  const programmeOptions = useMemo(() => {
+    return programmes
+      .filter((programme) => programme.faculty_id === createFacultyId)
+      .map((programme) => ({
+        id: programme.id,
+        name: programme.name?.trim() || t('faculties.pages.programmes.card.untitledProgramme'),
+      }))
+  }, [createFacultyId, programmes, t])
+
+  const createValidationError = useMemo(() => {
+    if (!createFacultyId)
+      return t('faculties.pages.cohorts.createDialog.validation.facultyRequired')
+    if (!createProgrammeId)
+      return t('faculties.pages.cohorts.createDialog.validation.programmeRequired')
+    if (!createName.trim())
+      return t('faculties.pages.cohorts.createDialog.validation.titleRequired')
+    if (!createAcademicYear.trim())
+      return t('faculties.pages.cohorts.createDialog.validation.academicYearRequired')
+    const yearValue = Number(createAcademicYear)
+    if (!Number.isInteger(yearValue)) {
+      return t('faculties.pages.cohorts.createDialog.validation.academicYearInvalid')
+    }
+    return null
+  }, [createAcademicYear, createFacultyId, createName, createProgrammeId, t])
+
+  const resetCreateForm = () => {
+    setCreateFacultyId('')
+    setCreateProgrammeId('')
+    setCreateName('')
+    setCreateDescription('')
+    setCreateAcademicYear('')
+    setCreateError(null)
+    setIsSubmitting(false)
+  }
+
+  const handleCreateStructure = async () => {
+    setIsCreateDialogOpen(true)
+    setCreateError(null)
+    if (!institutionId) return
+    try {
+      const rows = await listFacultiesByInstitution(institutionId)
+      setFaculties(rows)
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : 'Failed to load faculties')
+    }
+  }
+
+  const handleFacultyChange = (facultyId: string) => {
+    setCreateFacultyId(facultyId)
+    setCreateProgrammeId('')
+  }
+
+  const handleCreateCohort = async () => {
+    if (!institutionId) {
+      setCreateError(t('faculties.wizard.submit.missingInstitution'))
+      return
+    }
+    if (createValidationError) return
+    setIsSubmitting(true)
+    setCreateError(null)
+    try {
+      await createCohort({
+        institution_id: institutionId,
+        programme_id: createProgrammeId,
+        name: createName.trim(),
+        description: createDescription.trim() || null,
+        academic_year: Number(createAcademicYear),
+      })
+      setIsCreateDialogOpen(false)
+      resetCreateForm()
+      reload()
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : 'Failed to create cohort')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -101,7 +201,7 @@ export function InstitutionFacultiesCohorts() {
               onClick={handleCreateStructure}
             >
               <Plus className="size-4" />
-              <Text as="span">{t('faculties.create')}</Text>
+              <Text as="span">{t('faculties.pages.cohorts.createCta')}</Text>
             </Button>
           </div>
         </div>
@@ -160,6 +260,29 @@ export function InstitutionFacultiesCohorts() {
           </div>
         )}
       </div>
+      <CreateCohortDialog
+        open={isCreateDialogOpen}
+        onOpenChange={(nextOpen) => {
+          setIsCreateDialogOpen(nextOpen)
+          if (!nextOpen) resetCreateForm()
+        }}
+        facultyOptions={facultyOptions}
+        programmeOptions={programmeOptions}
+        facultyId={createFacultyId}
+        onFacultyIdChange={handleFacultyChange}
+        programmeId={createProgrammeId}
+        onProgrammeIdChange={setCreateProgrammeId}
+        name={createName}
+        onNameChange={setCreateName}
+        description={createDescription}
+        onDescriptionChange={setCreateDescription}
+        academicYear={createAcademicYear}
+        onAcademicYearChange={setCreateAcademicYear}
+        validationError={createValidationError}
+        submitError={createError}
+        isSubmitting={isSubmitting}
+        onSubmit={handleCreateCohort}
+      />
     </InstitutionAdminWorkspaceShell>
   )
 }

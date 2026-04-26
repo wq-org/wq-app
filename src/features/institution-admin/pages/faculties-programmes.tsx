@@ -11,9 +11,13 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { listFacultiesByInstitution } from '../api/facultiesApi'
+import { createProgramme } from '../api/programmesApi'
+import { CreateProgrammDialog } from '../components/CreateProgrammDialog'
 import { FacultyProgrammeCardList } from '../components/FacultyProgrammeCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useFacultiesProgrammes } from '../hooks/useFacultiesProgrammes'
+import type { FacultySummary } from '../types/faculty.types'
 
 export function InstitutionFacultiesProgrammes() {
   const { t } = useTranslation('features.institution-admin')
@@ -21,12 +25,20 @@ export function InstitutionFacultiesProgrammes() {
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
   const [searchQuery, setSearchQuery] = useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [createName, setCreateName] = useState('')
+  const [createDescription, setCreateDescription] = useState('')
+  const [createFacultyId, setCreateFacultyId] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
+  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
 
   const {
     programmes,
     facultyNames,
     isLoading,
     error: loadError,
+    reload,
   } = useFacultiesProgrammes(institutionId)
 
   const items = useMemo(() => {
@@ -61,8 +73,66 @@ export function InstitutionFacultiesProgrammes() {
     )
   }
 
-  const handleCreateStructure = () => {
-    navigate('/institution_admin/faculties/create')
+  const facultyOptions = useMemo(() => {
+    return faculties.map((faculty) => ({
+      id: faculty.id,
+      name: faculty.name?.trim() || t('faculties.card.untitled'),
+    }))
+  }, [faculties, t])
+
+  const createValidationError = useMemo(() => {
+    if (!createFacultyId)
+      return t('faculties.pages.programmes.createDialog.validation.facultyRequired')
+    if (!createName.trim())
+      return t('faculties.pages.programmes.createDialog.validation.titleRequired')
+    return null
+  }, [createFacultyId, createName, t])
+
+  const resetCreateForm = () => {
+    setCreateName('')
+    setCreateDescription('')
+    setCreateFacultyId('')
+    setCreateError(null)
+    setIsSubmitting(false)
+  }
+
+  const handleCreateStructure = async () => {
+    setIsCreateDialogOpen(true)
+    setCreateError(null)
+    if (!institutionId) return
+    try {
+      const rows = await listFacultiesByInstitution(institutionId)
+      setFaculties(rows)
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : 'Failed to load faculties')
+    }
+  }
+
+  const handleCreateProgramme = async () => {
+    if (!institutionId) {
+      setCreateError(t('faculties.wizard.submit.missingInstitution'))
+      return
+    }
+    if (createValidationError) return
+    setIsSubmitting(true)
+    setCreateError(null)
+    try {
+      await createProgramme({
+        institution_id: institutionId,
+        faculty_id: createFacultyId,
+        name: createName.trim(),
+        description: createDescription.trim() || null,
+        duration_years: null,
+        progression_type: null,
+      })
+      setIsCreateDialogOpen(false)
+      resetCreateForm()
+      reload()
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : 'Failed to create programme')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -93,7 +163,7 @@ export function InstitutionFacultiesProgrammes() {
               onClick={handleCreateStructure}
             >
               <Plus className="size-4" />
-              <Text as="span">{t('faculties.create')}</Text>
+              <Text as="span">{t('faculties.pages.programmes.createCta')}</Text>
             </Button>
           </div>
         </div>
@@ -158,6 +228,24 @@ export function InstitutionFacultiesProgrammes() {
           </div>
         )}
       </div>
+      <CreateProgrammDialog
+        open={isCreateDialogOpen}
+        onOpenChange={(nextOpen) => {
+          setIsCreateDialogOpen(nextOpen)
+          if (!nextOpen) resetCreateForm()
+        }}
+        facultyOptions={facultyOptions}
+        facultyId={createFacultyId}
+        onFacultyIdChange={setCreateFacultyId}
+        name={createName}
+        onNameChange={setCreateName}
+        description={createDescription}
+        onDescriptionChange={setCreateDescription}
+        validationError={createValidationError}
+        submitError={createError}
+        isSubmitting={isSubmitting}
+        onSubmit={handleCreateProgramme}
+      />
     </InstitutionAdminWorkspaceShell>
   )
 }

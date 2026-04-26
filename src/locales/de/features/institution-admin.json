@@ -222,6 +222,7 @@
       "programmes": {
         "title": "Programme",
         "subtitle": "Programme an den Fakultäten Ihrer Institution.",
+        "createCta": "Programm erstellen",
         "searchLabel": "Programme durchsuchen",
         "searchPlaceholder": "Suche nach Name, Beschreibung oder Fakultät…",
         "loadError": "Programme konnten nicht geladen werden.",
@@ -238,6 +239,23 @@
           "statusActive": "Aktiv",
           "statusInactive": "Inaktiv",
           "open": "Öffnen"
+        },
+        "createDialog": {
+          "title": "Programm anlegen",
+          "description": "Fügen Sie ein Programm hinzu und verknüpfen Sie es mit einer Fakultät.",
+          "facultyLabel": "Fakultät",
+          "facultyPlaceholder": "Fakultät auswählen",
+          "titleLabel": "Titel",
+          "titlePlaceholder": "z. B. Pflegeassistenz",
+          "descriptionLabel": "Beschreibung",
+          "descriptionPlaceholder": "Beschreiben Sie dieses Programm",
+          "validation": {
+            "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
+            "titleRequired": "Ein Programmtitel ist erforderlich."
+          },
+          "cancel": "Abbrechen",
+          "create": "Programm anlegen",
+          "creating": "Wird angelegt..."
         }
       },
       "facultyProgrammes": {
@@ -304,6 +322,7 @@
       "cohorts": {
         "title": "Jahrgänge",
         "subtitle": "Aufnahmen und Jahrgänge innerhalb von Programmen.",
+        "createCta": "Jahrgang erstellen",
         "searchLabel": "Jahrgänge suchen",
         "searchPlaceholder": "Suche nach Name, Beschreibung oder Programm…",
         "loadError": "Jahrgänge konnten nicht geladen werden.",
@@ -316,6 +335,30 @@
           "noDescription": "Keine Beschreibung",
           "academicYearUnknown": "Jahrgang nicht gesetzt",
           "open": "Öffnen"
+        },
+        "createDialog": {
+          "title": "Jahrgang anlegen",
+          "description": "Fügen Sie einen Jahrgang hinzu und verknüpfen Sie ihn mit Fakultät und Programm.",
+          "facultyLabel": "Fakultät",
+          "facultyPlaceholder": "Fakultät auswählen",
+          "programmeLabel": "Programm",
+          "programmePlaceholder": "Programm auswählen",
+          "titleLabel": "Titel",
+          "titlePlaceholder": "z. B. Jahrgang 2027",
+          "descriptionLabel": "Beschreibung",
+          "descriptionPlaceholder": "Beschreiben Sie diesen Jahrgang",
+          "academicYearLabel": "Akademisches Jahr",
+          "academicYearPlaceholder": "z. B. 2027",
+          "validation": {
+            "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
+            "programmeRequired": "Bitte wählen Sie ein Programm aus.",
+            "titleRequired": "Ein Jahrgangstitel ist erforderlich.",
+            "academicYearRequired": "Ein akademisches Jahr ist erforderlich.",
+            "academicYearInvalid": "Das akademische Jahr muss eine gültige Jahreszahl sein."
+          },
+          "cancel": "Abbrechen",
+          "create": "Jahrgang anlegen",
+          "creating": "Wird angelegt..."
         }
       },
       "cohortOfferings": {
@@ -370,6 +413,7 @@
       "classGroups": {
         "title": "Klassengruppen",
         "subtitle": "Operative Lerngruppen innerhalb von Jahrgängen.",
+        "createCta": "Klassengruppe erstellen",
         "searchLabel": "Klassengruppen suchen",
         "searchPlaceholder": "Suche nach Name, Beschreibung oder Jahrgang…",
         "loadError": "Klassengruppen konnten nicht geladen werden.",
@@ -381,6 +425,29 @@
           "untitledClassGroup": "Klassengruppe ohne Titel",
           "noDescription": "Keine Beschreibung",
           "open": "Öffnen"
+        },
+        "createDialog": {
+          "title": "Klassengruppe anlegen",
+          "description": "Fügen Sie eine Klassengruppe hinzu und verknüpfen Sie sie mit Fakultät, Programm und Jahrgang.",
+          "facultyLabel": "Fakultät",
+          "facultyPlaceholder": "Fakultät auswählen",
+          "programmeLabel": "Programm",
+          "programmePlaceholder": "Programm auswählen",
+          "cohortLabel": "Jahrgang",
+          "cohortPlaceholder": "Jahrgang auswählen",
+          "titleLabel": "Titel",
+          "titlePlaceholder": "z. B. PF-1A",
+          "descriptionLabel": "Beschreibung",
+          "descriptionPlaceholder": "Beschreiben Sie diese Klassengruppe",
+          "validation": {
+            "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
+            "programmeRequired": "Bitte wählen Sie ein Programm aus.",
+            "cohortRequired": "Bitte wählen Sie einen Jahrgang aus.",
+            "titleRequired": "Ein Titel für die Klassengruppe ist erforderlich."
+          },
+          "cancel": "Abbrechen",
+          "create": "Klassengruppe anlegen",
+          "creating": "Wird angelegt..."
         }
       },
       "classGroupOfferings": {
