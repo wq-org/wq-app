@@ -22,8 +22,9 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { updateProgramme } from '../api/programmesApi'
+import { archiveProgramme, updateProgramme } from '../api/programmesApi'
 import { CohortCardList } from '../components/CohortCardList'
+import { CreateProgrammeOfferingDialog } from '../components/CreateProgrammeOfferingDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { ProgrammeOfferingsTimeline } from '../components/ProgrammeOfferingsTimeline'
 import { ProgrammeSettings } from '../components/ProgrammeSettings'
@@ -54,7 +55,10 @@ export function InstitutionProgrammeOfferings() {
   const [cohortFilterQuery, setCohortFilterQuery] = useState('')
   const [draftProgrammeName, setDraftProgrammeName] = useState('')
   const [draftProgrammeDescription, setDraftProgrammeDescription] = useState('')
+  const [draftProgrammeDurationYears, setDraftProgrammeDurationYears] = useState(3)
   const [isSaving, setIsSaving] = useState(false)
+  const [isArchiving, setIsArchiving] = useState(false)
+  const [createOfferingOpen, setCreateOfferingOpen] = useState(false)
 
   const {
     programmes,
@@ -64,6 +68,7 @@ export function InstitutionProgrammeOfferings() {
     isLoading,
     error: loadError,
     updateProgrammeInList,
+    appendOffering,
   } = useProgrammeOfferings({
     institutionId,
     facultyId: facultyIdParam,
@@ -87,7 +92,8 @@ export function InstitutionProgrammeOfferings() {
   const hasUnsavedSettingsChanges =
     selectedProgramme !== null &&
     (draftProgrammeName !== selectedProgramme.name ||
-      draftProgrammeDescription !== (selectedProgramme.description ?? ''))
+      draftProgrammeDescription !== (selectedProgramme.description ?? '') ||
+      draftProgrammeDurationYears !== (selectedProgramme.duration_years ?? 3))
 
   const searchableCohorts = useMemo(
     () =>
@@ -119,7 +125,8 @@ export function InstitutionProgrammeOfferings() {
   }
 
   const handleAddOffering = () => {
-    // Placeholder: real add-offering flow will be wired in a follow-up.
+    if (!institutionId || !programmeIdParam) return
+    setCreateOfferingOpen(true)
   }
 
   const handleSaveProgrammeSettings = async () => {
@@ -130,6 +137,7 @@ export function InstitutionProgrammeOfferings() {
         programmeId: selectedProgramme.id,
         name: draftProgrammeName,
         description: draftProgrammeDescription.trim() || null,
+        duration_years: draftProgrammeDurationYears,
       })
       updateProgrammeInList(updatedProgramme)
       toast.success(t('faculties.pages.programmeOfferings.settings.saveSuccess'))
@@ -141,6 +149,24 @@ export function InstitutionProgrammeOfferings() {
       )
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleArchiveProgramme = async () => {
+    if (!selectedProgramme || selectedProgramme.deleted_at) return
+    setIsArchiving(true)
+    try {
+      const archived = await archiveProgramme(selectedProgramme.id)
+      updateProgrammeInList(archived)
+      toast.success(t('faculties.pages.programmeOfferings.settings.archiveSuccess'))
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('faculties.pages.programmeOfferings.settings.archiveError'),
+      )
+    } finally {
+      setIsArchiving(false)
     }
   }
 
@@ -169,6 +195,7 @@ export function InstitutionProgrammeOfferings() {
 
     setDraftProgrammeName(selectedProgramme.name)
     setDraftProgrammeDescription(selectedProgramme.description ?? '')
+    setDraftProgrammeDurationYears(selectedProgramme.duration_years ?? 3)
   }, [selectedProgramme])
 
   const showCohortsSection =
@@ -310,14 +337,27 @@ export function InstitutionProgrammeOfferings() {
               selectedProgramme={selectedProgramme}
               draftProgrammeName={draftProgrammeName}
               draftProgrammeDescription={draftProgrammeDescription}
+              draftProgrammeDurationYears={draftProgrammeDurationYears}
               hasUnsavedSettingsChanges={hasUnsavedSettingsChanges}
               onProgrammeNameChange={setDraftProgrammeName}
               onProgrammeDescriptionChange={setDraftProgrammeDescription}
+              onProgrammeDurationYearsChange={setDraftProgrammeDurationYears}
               onSaveChanges={handleSaveProgrammeSettings}
+              onArchiveProgramme={handleArchiveProgramme}
+              isArchiving={isArchiving}
             />
           </div>
         )}
       </div>
+      {programmeIdParam ? (
+        <CreateProgrammeOfferingDialog
+          open={createOfferingOpen}
+          onOpenChange={setCreateOfferingOpen}
+          institutionId={institutionId}
+          programmeId={programmeIdParam}
+          onCreated={appendOffering}
+        />
+      ) : null}
     </InstitutionAdminWorkspaceShell>
   )
 }

@@ -26,6 +26,7 @@ import { updateCohort } from '../api/cohortsApi'
 import { ClassGroupCardList } from '../components/ClassGroupCardList'
 import { CohortOfferingsTimeLine } from '../components/CohortOfferingsTimeLine'
 import { CohortSettings } from '../components/CohortSettings'
+import { CreateCohortOfferingDialog } from '../components/CreateCohortOfferingDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useCohortOfferings } from '../hooks/useCohortOfferings'
 
@@ -59,6 +60,7 @@ export function InstitutionCohortOfferings() {
   const [draftCohortName, setDraftCohortName] = useState('')
   const [draftCohortDescription, setDraftCohortDescription] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [createOfferingOpen, setCreateOfferingOpen] = useState(false)
 
   const {
     cohorts,
@@ -69,6 +71,7 @@ export function InstitutionCohortOfferings() {
     isLoading,
     error: loadError,
     updateCohortInList,
+    appendOffering,
   } = useCohortOfferings({
     institutionId,
     facultyId: facultyIdParam,
@@ -127,7 +130,8 @@ export function InstitutionCohortOfferings() {
   }
 
   const handleAddOffering = () => {
-    // Placeholder: add-offering flow wired in a follow-up.
+    if (!institutionId || !programmeIdParam || !cohortIdParam) return
+    setCreateOfferingOpen(true)
   }
 
   const handleSaveCohortSettings = async () => {
@@ -375,6 +379,16 @@ export function InstitutionCohortOfferings() {
           </div>
         )}
       </div>
+      {programmeIdParam && cohortIdParam ? (
+        <CreateCohortOfferingDialog
+          open={createOfferingOpen}
+          onOpenChange={setCreateOfferingOpen}
+          institutionId={institutionId}
+          programmeId={programmeIdParam}
+          cohortId={cohortIdParam}
+          onCreated={appendOffering}
+        />
+      ) : null}
     </InstitutionAdminWorkspaceShell>
   )
 }

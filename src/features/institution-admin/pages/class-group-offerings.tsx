@@ -26,6 +26,7 @@ import { updateClassGroup } from '../api/classGroupsApi'
 import { ClassroomCardList } from '../components/ClassroomCardList'
 import { ClassGroupOfferingsTimeLine } from '../components/ClassGroupOfferingsTimeLine'
 import { ClassGroupSettings } from '../components/ClassGroupSettings'
+import { CreateClassGroupOfferingDialog } from '../components/CreateClassGroupOfferingDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useClassGroupOfferings } from '../hooks/useClassGroupOfferings'
 
@@ -61,6 +62,7 @@ export function InstitutionClassGroupOfferings() {
   const [draftClassGroupName, setDraftClassGroupName] = useState('')
   const [draftClassGroupDescription, setDraftClassGroupDescription] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [createOfferingOpen, setCreateOfferingOpen] = useState(false)
 
   const {
     classGroups,
@@ -72,6 +74,7 @@ export function InstitutionClassGroupOfferings() {
     isLoading,
     error: loadError,
     updateClassGroupInList,
+    appendOffering,
   } = useClassGroupOfferings({
     institutionId,
     facultyId: facultyIdParam,
@@ -129,7 +132,8 @@ export function InstitutionClassGroupOfferings() {
     (isLoading || selectedClassGroup)
 
   const handleAddOffering = () => {
-    // Placeholder: add-offering flow wired in a follow-up.
+    if (!institutionId || !cohortIdParam || !classGroupIdParam) return
+    setCreateOfferingOpen(true)
   }
 
   const handleOpenClassroom = (classroomId: string) => {
@@ -385,6 +389,16 @@ export function InstitutionClassGroupOfferings() {
           </div>
         )}
       </div>
+      {cohortIdParam && classGroupIdParam ? (
+        <CreateClassGroupOfferingDialog
+          open={createOfferingOpen}
+          onOpenChange={setCreateOfferingOpen}
+          institutionId={institutionId}
+          cohortId={cohortIdParam}
+          classGroupId={classGroupIdParam}
+          onCreated={appendOffering}
+        />
+      ) : null}
     </InstitutionAdminWorkspaceShell>
   )
 }

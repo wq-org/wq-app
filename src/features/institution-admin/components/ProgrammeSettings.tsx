@@ -1,11 +1,15 @@
 import { useTranslation } from 'react-i18next'
+import { Archive } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { HoldConfirmButton } from '@/components/ui/HoldConfirmButton'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
+import { YearSelectPopover } from './YearSelectPopover'
 import type { ProgrammeRecord } from '../types/programme.types'
 
 const settingsEnterMotion =
@@ -18,10 +22,14 @@ type ProgrammeSettingsProps = {
   selectedProgramme: ProgrammeRecord | null
   draftProgrammeName: string
   draftProgrammeDescription: string
+  draftProgrammeDurationYears: number
   hasUnsavedSettingsChanges: boolean
   onProgrammeNameChange: (value: string) => void
   onProgrammeDescriptionChange: (value: string) => void
+  onProgrammeDurationYearsChange: (value: number) => void
   onSaveChanges: () => void
+  onArchiveProgramme: () => void
+  isArchiving: boolean
 }
 
 function formatMetadataDate(value: string | null | undefined, locale: string): string {
@@ -42,12 +50,18 @@ export function ProgrammeSettings({
   selectedProgramme,
   draftProgrammeName,
   draftProgrammeDescription,
+  draftProgrammeDurationYears,
   hasUnsavedSettingsChanges,
   onProgrammeNameChange,
   onProgrammeDescriptionChange,
+  onProgrammeDurationYearsChange,
   onSaveChanges,
+  onArchiveProgramme,
+  isArchiving,
 }: ProgrammeSettingsProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
+  const durationOptions = [1, 2, 3, 4, 5, 6] as const
+  const isArchived = selectedProgramme?.deleted_at != null
 
   if (isLoading) {
     return (
@@ -105,22 +119,58 @@ export function ProgrammeSettings({
           )}
           rows={4}
         />
+        <div className="grid gap-2">
+          <Text
+            as="p"
+            variant="small"
+            className="font-medium"
+          >
+            {t('faculties.pages.programmeOfferings.settings.fields.durationYearsLabel')}
+          </Text>
+          <YearSelectPopover
+            label={t('faculties.pages.programmeOfferings.settings.fields.durationYearsLabel')}
+            value={draftProgrammeDurationYears}
+            years={durationOptions}
+            onChange={onProgrammeDurationYearsChange}
+            className="w-full sm:w-48"
+          />
+        </div>
       </div>
+      <Separator />
       <div className="flex flex-col items-start gap-5">
+        <Badge variant={isArchived ? 'error' : 'green'}>
+          {isArchived
+            ? t('faculties.pages.programmeOfferings.settings.status.archived')
+            : t('faculties.pages.programmeOfferings.settings.status.active')}
+        </Badge>
         <Badge variant="secondary">{`created_at: ${formatMetadataDate(selectedProgramme.created_at, i18n.language)}`}</Badge>
         <Badge variant="secondary">{`updated_at: ${formatMetadataDate(selectedProgramme.updated_at, i18n.language)}`}</Badge>
-        <Badge variant="secondary">{`deleted_at: ${formatMetadataDate(selectedProgramme.deleted_at, i18n.language)}`}</Badge>
+        <Badge variant={isArchived ? 'error' : 'secondary'}>
+          {`deleted_at: ${formatMetadataDate(selectedProgramme.deleted_at, i18n.language)}`}
+        </Badge>
       </div>
 
       <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="darkblue"
-          onClick={onSaveChanges}
-          disabled={!hasUnsavedSettingsChanges || isSaving}
-        >
-          {t('faculties.pages.programmeOfferings.settings.saveChanges')}
-        </Button>
+        <div className="flex items-center gap-3">
+          <HoldConfirmButton
+            onConfirm={onArchiveProgramme}
+            variant="orange"
+            icon={<Archive className="size-4 shrink-0" />}
+            disabled={isArchived || isArchiving}
+          >
+            {isArchiving
+              ? t('faculties.pages.programmeOfferings.settings.archiving')
+              : t('faculties.pages.programmeOfferings.settings.archive')}
+          </HoldConfirmButton>
+          <Button
+            type="button"
+            variant="darkblue"
+            onClick={onSaveChanges}
+            disabled={!hasUnsavedSettingsChanges || isSaving}
+          >
+            {t('faculties.pages.programmeOfferings.settings.saveChanges')}
+          </Button>
+        </div>
       </div>
     </div>
   )

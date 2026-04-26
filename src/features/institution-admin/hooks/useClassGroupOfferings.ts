@@ -86,6 +86,10 @@ export function useClassGroupOfferings({
     setClassGroups((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
   }, [])
 
+  const appendOffering = useCallback((created: ClassGroupOfferingRecord) => {
+    setOfferings((rows) => [...rows, created])
+  }, [])
+
   return {
     classGroups,
     offerings,
@@ -96,5 +100,6 @@ export function useClassGroupOfferings({
     isLoading,
     error,
     updateClassGroupInList,
+    appendOffering,
   }
 }

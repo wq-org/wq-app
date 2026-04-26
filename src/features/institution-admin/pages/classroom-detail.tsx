@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, UserRoundPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -111,6 +111,7 @@ export function ClassroomDetailPage() {
                   variant="darkblue"
                   onClick={() => setIsAssignDialogOpen(true)}
                 >
+                  <UserRoundPlus />
                   {t('classrooms.members.assignUser')}
                 </Button>
               </div>

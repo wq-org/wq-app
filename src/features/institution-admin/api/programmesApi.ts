@@ -66,16 +66,31 @@ type UpdateProgrammeInput = {
   programmeId: string
   name: string
   description: string | null
+  duration_years: number | null
 }
 
 export async function updateProgramme({
   programmeId,
   name,
   description,
+  duration_years,
 }: UpdateProgrammeInput): Promise<ProgrammeRecord> {
   const { data, error } = await supabase
     .from('programmes')
-    .update({ name, description })
+    .update({ name, description, duration_years })
+    .eq('id', programmeId)
+    .select(COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toProgramme(data as ProgrammeRecord)
+}
+
+export async function archiveProgramme(programmeId: string): Promise<ProgrammeRecord> {
+  const { data, error } = await supabase
+    .from('programmes')
+    .update({ deleted_at: new Date().toISOString() })
     .eq('id', programmeId)
     .select(COLUMNS)
     .single()

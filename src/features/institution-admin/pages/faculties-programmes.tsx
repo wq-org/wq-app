@@ -29,6 +29,7 @@ export function InstitutionFacultiesProgrammes() {
   const [createName, setCreateName] = useState('')
   const [createDescription, setCreateDescription] = useState('')
   const [createFacultyId, setCreateFacultyId] = useState('')
+  const [createDurationYears, setCreateDurationYears] = useState(3)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
@@ -92,6 +93,7 @@ export function InstitutionFacultiesProgrammes() {
     setCreateName('')
     setCreateDescription('')
     setCreateFacultyId('')
+    setCreateDurationYears(3)
     setCreateError(null)
     setIsSubmitting(false)
   }
@@ -122,7 +124,7 @@ export function InstitutionFacultiesProgrammes() {
         faculty_id: createFacultyId,
         name: createName.trim(),
         description: createDescription.trim() || null,
-        duration_years: null,
+        duration_years: createDurationYears,
         progression_type: null,
       })
       setIsCreateDialogOpen(false)
@@ -241,6 +243,8 @@ export function InstitutionFacultiesProgrammes() {
         onNameChange={setCreateName}
         description={createDescription}
         onDescriptionChange={setCreateDescription}
+        durationYears={createDurationYears}
+        onDurationYearsChange={setCreateDurationYears}
         validationError={createValidationError}
         submitError={createError}
         isSubmitting={isSubmitting}

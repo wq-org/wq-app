@@ -249,6 +249,7 @@
           "titlePlaceholder": "z. B. Pflegeassistenz",
           "descriptionLabel": "Beschreibung",
           "descriptionPlaceholder": "Beschreiben Sie dieses Programm",
+          "durationYearsLabel": "Dauer (Jahre)",
           "validation": {
             "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
             "titleRequired": "Ein Programmtitel ist erforderlich."
@@ -289,11 +290,20 @@
           "saveChanges": "Änderungen speichern",
           "saveSuccess": "Programmeinstellungen gespeichert",
           "saveError": "Programmeinstellungen konnten nicht gespeichert werden.",
+          "archive": "Zum Archivieren halten",
+          "archiving": "Wird archiviert...",
+          "archiveSuccess": "Programm archiviert",
+          "archiveError": "Programm konnte nicht archiviert werden.",
+          "status": {
+            "active": "Aktiv",
+            "archived": "Archiviert"
+          },
           "fields": {
             "nameLabel": "Programmname",
             "namePlaceholder": "Programmname eingeben",
             "descriptionLabel": "Beschreibung",
-            "descriptionPlaceholder": "Programmbeschreibung eingeben"
+            "descriptionPlaceholder": "Programmbeschreibung eingeben",
+            "durationYearsLabel": "Dauer (Jahre)"
           }
         },
         "unsavedChanges": {
@@ -317,6 +327,28 @@
         "cohortsSection": {
           "title": "Jahrgänge",
           "empty": "Für dieses Programm gibt es noch keine Jahrgänge."
+        },
+        "createDialog": {
+          "title": "Programmangebot hinzufügen",
+          "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieses Programms.",
+          "fields": {
+            "academicYearLabel": "Akademisches Jahr",
+            "termCodeLabel": "Term-Code",
+            "termCodePlaceholder": "z. B. GVM-2026",
+            "termCodeHint": "1–6 Großbuchstaben, ein Bindestrich und eine vierstellige Jahreszahl (z. B. GVM-2026).",
+            "startsAtLabel": "Start",
+            "endsAtLabel": "Ende",
+            "datePlaceholder": "Datum wählen",
+            "statusLabel": "Status",
+            "statusActive": "Aktiv",
+            "statusDraft": "Entwurf"
+          },
+          "validation": {
+            "academicYearRequired": "Ein akademisches Jahr ist erforderlich."
+          },
+          "cancel": "Abbrechen",
+          "create": "Angebot erstellen",
+          "creating": "Wird erstellt..."
         }
       },
       "cohorts": {
@@ -408,6 +440,27 @@
         "classGroupsSection": {
           "title": "Klassengruppen",
           "empty": "Für diesen Jahrgang gibt es noch keine Klassengruppen."
+        },
+        "createDialog": {
+          "title": "Jahrgangangebot hinzufügen",
+          "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieses Jahrgangs verknüpft mit einem Programmangebot.",
+          "fields": {
+            "programmeOfferingLabel": "Programmangebot",
+            "programmeOfferingPlaceholder": "Programmangebot auswählen",
+            "programmeOfferingEmpty": "Keine Programmangebote verfügbar – legen Sie zuerst eines auf der Programmseite an.",
+            "startsAtLabel": "Start",
+            "endsAtLabel": "Ende",
+            "datePlaceholder": "Datum wählen",
+            "statusLabel": "Status",
+            "statusActive": "Aktiv",
+            "statusDraft": "Entwurf"
+          },
+          "validation": {
+            "programmeOfferingRequired": "Bitte wählen Sie ein Programmangebot aus."
+          },
+          "cancel": "Abbrechen",
+          "create": "Angebot erstellen",
+          "creating": "Wird erstellt..."
         }
       },
       "classGroups": {
@@ -496,6 +549,27 @@
         "classroomsSection": {
           "title": "Klassenräume",
           "empty": "Für diese Klassengruppe gibt es noch keine Klassenräume."
+        },
+        "createDialog": {
+          "title": "Klassengruppenangebot hinzufügen",
+          "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieser Klassengruppe verknüpft mit einem Jahrgangangebot.",
+          "fields": {
+            "cohortOfferingLabel": "Jahrgangangebot",
+            "cohortOfferingPlaceholder": "Jahrgangangebot auswählen",
+            "cohortOfferingEmpty": "Keine Jahrgangangebote verfügbar – legen Sie zuerst eines auf der Jahrgangseite an.",
+            "startsAtLabel": "Start",
+            "endsAtLabel": "Ende",
+            "datePlaceholder": "Datum wählen",
+            "statusLabel": "Status",
+            "statusActive": "Aktiv",
+            "statusDraft": "Entwurf"
+          },
+          "validation": {
+            "cohortOfferingRequired": "Bitte wählen Sie ein Jahrgangangebot aus."
+          },
+          "cancel": "Abbrechen",
+          "create": "Angebot erstellen",
+          "creating": "Wird erstellt..."
         }
       }
     },

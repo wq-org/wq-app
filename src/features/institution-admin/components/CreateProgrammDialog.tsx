@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Text } from '@/components/ui/text'
+import { YearSelectPopover } from './YearSelectPopover'
 
 type FacultyOption = {
   id: string
@@ -36,6 +37,8 @@ type CreateProgrammDialogProps = {
   onNameChange: (value: string) => void
   description: string
   onDescriptionChange: (value: string) => void
+  durationYears: number
+  onDurationYearsChange: (value: number) => void
   validationError: string | null
   submitError: string | null
   isSubmitting: boolean
@@ -52,12 +55,15 @@ export function CreateProgrammDialog({
   onNameChange,
   description,
   onDescriptionChange,
+  durationYears,
+  onDurationYearsChange,
   validationError,
   submitError,
   isSubmitting,
   onSubmit,
 }: CreateProgrammDialogProps) {
   const { t } = useTranslation('features.institution-admin')
+  const durationOptions = [1, 2, 3, 4, 5, 6] as const
 
   return (
     <Dialog
@@ -109,6 +115,16 @@ export function CreateProgrammDialog({
             onValueChange={onDescriptionChange}
             rows={3}
           />
+          <div className="grid gap-2">
+            <Label>{t('faculties.pages.programmes.createDialog.durationYearsLabel')}</Label>
+            <YearSelectPopover
+              label={t('faculties.pages.programmes.createDialog.durationYearsLabel')}
+              value={durationYears}
+              years={durationOptions}
+              onChange={onDurationYearsChange}
+              className="w-full sm:w-48"
+            />
+          </div>
           {validationError ? (
             <Text
               as="p"

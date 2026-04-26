@@ -249,6 +249,7 @@
           "titlePlaceholder": "e.g. Nursing Assistant",
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Describe this programme",
+          "durationYearsLabel": "Duration (years)",
           "validation": {
             "facultyRequired": "Please select a faculty.",
             "titleRequired": "Programme title is required."
@@ -289,11 +290,20 @@
           "saveChanges": "Save changes",
           "saveSuccess": "Programme settings saved",
           "saveError": "Could not save programme settings.",
+          "archive": "Hold to archive",
+          "archiving": "Archiving...",
+          "archiveSuccess": "Programme archived",
+          "archiveError": "Could not archive programme.",
+          "status": {
+            "active": "Active",
+            "archived": "Archived"
+          },
           "fields": {
             "nameLabel": "Programme name",
             "namePlaceholder": "Enter programme name",
             "descriptionLabel": "Description",
-            "descriptionPlaceholder": "Enter programme description"
+            "descriptionPlaceholder": "Enter programme description",
+            "durationYearsLabel": "Duration (years)"
           }
         },
         "unsavedChanges": {
@@ -317,6 +327,28 @@
         "cohortsSection": {
           "title": "Cohorts",
           "empty": "No cohorts exist for this programme yet."
+        },
+        "createDialog": {
+          "title": "Add programme offering",
+          "description": "Create a time-bound run of this programme.",
+          "fields": {
+            "academicYearLabel": "Academic year",
+            "termCodeLabel": "Term code",
+            "termCodePlaceholder": "e.g. GVM-2026",
+            "termCodeHint": "Use 1–6 uppercase letters, a dash, then a 4-digit year (e.g. GVM-2026).",
+            "startsAtLabel": "Starts",
+            "endsAtLabel": "Ends",
+            "datePlaceholder": "Pick a date",
+            "statusLabel": "Status",
+            "statusActive": "Active",
+            "statusDraft": "Draft"
+          },
+          "validation": {
+            "academicYearRequired": "Academic year is required."
+          },
+          "cancel": "Cancel",
+          "create": "Create offering",
+          "creating": "Creating..."
         }
       },
       "cohorts": {
@@ -408,6 +440,27 @@
         "classGroupsSection": {
           "title": "Class groups",
           "empty": "No class groups exist for this cohort yet."
+        },
+        "createDialog": {
+          "title": "Add cohort offering",
+          "description": "Create a time-bound run of this cohort linked to a programme offering.",
+          "fields": {
+            "programmeOfferingLabel": "Programme offering",
+            "programmeOfferingPlaceholder": "Select a programme offering",
+            "programmeOfferingEmpty": "No programme offerings available — create one first on the programme page.",
+            "startsAtLabel": "Starts",
+            "endsAtLabel": "Ends",
+            "datePlaceholder": "Pick a date",
+            "statusLabel": "Status",
+            "statusActive": "Active",
+            "statusDraft": "Draft"
+          },
+          "validation": {
+            "programmeOfferingRequired": "Please select a programme offering."
+          },
+          "cancel": "Cancel",
+          "create": "Create offering",
+          "creating": "Creating..."
         }
       },
       "classGroups": {
@@ -496,6 +549,27 @@
         "classroomsSection": {
           "title": "Classrooms",
           "empty": "No classrooms for this class group yet."
+        },
+        "createDialog": {
+          "title": "Add class group offering",
+          "description": "Create a time-bound run of this class group linked to a cohort offering.",
+          "fields": {
+            "cohortOfferingLabel": "Cohort offering",
+            "cohortOfferingPlaceholder": "Select a cohort offering",
+            "cohortOfferingEmpty": "No cohort offerings available — create one first on the cohort page.",
+            "startsAtLabel": "Starts",
+            "endsAtLabel": "Ends",
+            "datePlaceholder": "Pick a date",
+            "statusLabel": "Status",
+            "statusActive": "Active",
+            "statusDraft": "Draft"
+          },
+          "validation": {
+            "cohortOfferingRequired": "Please select a cohort offering."
+          },
+          "cancel": "Cancel",
+          "create": "Create offering",
+          "creating": "Creating..."
         }
       }
     },

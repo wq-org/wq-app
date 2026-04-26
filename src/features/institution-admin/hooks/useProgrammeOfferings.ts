@@ -68,5 +68,18 @@ export function useProgrammeOfferings({ institutionId, facultyId, programmeId }:
     setProgrammes((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
   }, [])
 
-  return { programmes, facultyName, offerings, cohorts, isLoading, error, updateProgrammeInList }
+  const appendOffering = useCallback((created: ProgrammeOfferingRecord) => {
+    setOfferings((rows) => [...rows, created])
+  }, [])
+
+  return {
+    programmes,
+    facultyName,
+    offerings,
+    cohorts,
+    isLoading,
+    error,
+    updateProgrammeInList,
+    appendOffering,
+  }
 }
