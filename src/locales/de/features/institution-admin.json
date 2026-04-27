@@ -980,6 +980,20 @@
   },
   "auditLogs": {
     "title": "Audit-Logs",
-    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen."
+    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen.",
+    "refresh": "Aktualisieren",
+    "errorTitle": "Audit-Logs konnten nicht geladen werden",
+    "errorDescription": "Audit-Logs konnten nicht geladen werden: {{message}}",
+    "emptyTitle": "Noch keine Audit-Ereignisse",
+    "empty": "Ereignisse erscheinen hier, sobald Aktionen protokolliert wurden.",
+    "table": {
+      "occurredAt": "Zeitpunkt",
+      "actor": "Akteur",
+      "eventType": "Ereignistyp",
+      "subjectType": "Objekttyp",
+      "subjectId": "Objekt-ID",
+      "payload": "Nutzdaten",
+      "metadata": "Metadaten"
+    }
   }
 }

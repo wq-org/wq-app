@@ -980,6 +980,20 @@
   },
   "auditLogs": {
     "title": "Audit logs",
-    "subtitle": "Review important actions across your institution."
+    "subtitle": "Review important actions across your institution.",
+    "refresh": "Refresh",
+    "errorTitle": "Could not load audit logs",
+    "errorDescription": "Loading audit logs failed: {{message}}",
+    "emptyTitle": "No audit events yet",
+    "empty": "Events will appear here once actions are recorded.",
+    "table": {
+      "occurredAt": "Occurred at",
+      "actor": "Actor",
+      "eventType": "Event type",
+      "subjectType": "Subject type",
+      "subjectId": "Subject ID",
+      "payload": "Payload",
+      "metadata": "Metadata"
+    }
   }
 }

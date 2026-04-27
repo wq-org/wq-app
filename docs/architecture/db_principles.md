@@ -201,6 +201,26 @@ Audit events are mandatory for:
 
 This is a project requirement derived from accountability, minimization, and breach-response preparedness.
 
+### Audit Event Contract (MANDATORY)
+
+All audit work must follow `docs/architecture/dsgvo-audit-datendefinition.md` as a binding contract, not guidance.
+
+Required contract rules:
+
+- Use semantic, domain-specific `event_type` names (for example `membership.suspended`, `invite.accepted`, `classroom_member.withdrawn`); avoid generic catch-all naming.
+- Every event must include the canonical envelope fields: `event_type`, `occurred_at`, `actor_user_id`, `institution_id`, `subject_type`, `subject_id`.
+- `subject_type` must use consistent canonical entity names across all modules (do not mix plural table names and singular entity names for the same concept).
+- Payload is allowlist-only and minimal: include only approved operational fields; never log full-row snapshots.
+- `old_row` / `new_row` full JSON dumps are forbidden in `audit.events`.
+- Forbidden data from DSGVO definitions must never enter payload/metadata (especially tokens, credentials, free-text content, special-category data under Art. 9, raw contact data unless explicitly allowed in masked form).
+- Use `metadata.context` for filterable IDs only (for example `membership_id`, `invite_id`, `classroom_id`) and include `metadata.visibility_level` (`institution_admin` | `super_admin` | `security_only`) for UI scoping.
+- Preserve append-only integrity: clients never write directly to `audit.events`; inserts go through controlled `audit.log_event()` paths.
+- Institution admin is read-only and tenant-scoped for audit views; super admin is read-only with global scope.
+
+Review gate:
+
+- Any migration that adds/changes audit triggers, audit RPCs, or audit payload fields must be reviewed against `dsgvo-audit-datendefinition.md` allowlist/forbidden lists before merge.
+
 **Layer 2: database-level session/object auditing (in logs)**  
 For compliance and forensics, you may need to audit actual SQL activity. `pgaudit` provides detailed session/object audit logging via PostgreSQL's standard logging facility, and Supabase documents it as an auditing extension you can enable/selectively configure.
 
