@@ -29,7 +29,7 @@ export function InstitutionFacultiesProgrammes() {
   const [createName, setCreateName] = useState('')
   const [createDescription, setCreateDescription] = useState('')
   const [createFacultyId, setCreateFacultyId] = useState('')
-  const [createDurationYears, setCreateDurationYears] = useState(3)
+  const [createDurationYears, setCreateDurationYears] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
@@ -93,7 +93,7 @@ export function InstitutionFacultiesProgrammes() {
     setCreateName('')
     setCreateDescription('')
     setCreateFacultyId('')
-    setCreateDurationYears(3)
+    setCreateDurationYears(null)
     setCreateError(null)
     setIsSubmitting(false)
   }

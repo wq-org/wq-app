@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Text } from '@/components/ui/text'
+import { PROGRAMME_DURATION_YEAR_OPTIONS } from '../utils/programmeDurationYears'
 import { YearSelectPopover } from './YearSelectPopover'
 
 type FacultyOption = {
@@ -39,7 +40,7 @@ export type CreateProgrammeDialogProps = {
   onNameChange: (value: string) => void
   description: string
   onDescriptionChange: (value: string) => void
-  durationYears: number
+  durationYears: number | null
   onDurationYearsChange: (value: number) => void
   validationError: string | null
   submitError: string | null
@@ -66,7 +67,6 @@ export function CreateProgrammeDialog({
   onSubmit,
 }: CreateProgrammeDialogProps) {
   const { t } = useTranslation('features.institution-admin')
-  const durationOptions = [1, 2, 3, 4, 5, 6] as const
   const resolvedFacultyName =
     facultyOptions.find((option) => option.id === facultyId)?.name ??
     t('faculties.pages.programmes.createDialog.facultyPlaceholder')
@@ -136,8 +136,9 @@ export function CreateProgrammeDialog({
             <Label>{t('faculties.pages.programmes.createDialog.durationYearsLabel')}</Label>
             <YearSelectPopover
               label={t('faculties.pages.programmes.createDialog.durationYearsLabel')}
+              placeholder={t('faculties.pages.programmes.createDialog.durationYearsPlaceholder')}
               value={durationYears}
-              years={durationOptions}
+              years={PROGRAMME_DURATION_YEAR_OPTIONS}
               onChange={onDurationYearsChange}
               className="w-full sm:w-48"
             />

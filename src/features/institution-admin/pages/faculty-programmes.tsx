@@ -44,7 +44,7 @@ export function InstitutionFacultyProgrammes() {
   const [createFacultyId, setCreateFacultyId] = useState('')
   const [createProgrammeName, setCreateProgrammeName] = useState('')
   const [createProgrammeDescription, setCreateProgrammeDescription] = useState('')
-  const [createDurationYears, setCreateDurationYears] = useState(3)
+  const [createDurationYears, setCreateDurationYears] = useState<number | null>(null)
   const [isCreatingProgramme, setIsCreatingProgramme] = useState(false)
 
   const {
@@ -96,7 +96,7 @@ export function InstitutionFacultyProgrammes() {
     setCreateFacultyId('')
     setCreateProgrammeName('')
     setCreateProgrammeDescription('')
-    setCreateDurationYears(3)
+    setCreateDurationYears(null)
   }
 
   const handleOpenCreateProgrammeDialog = () => {

@@ -269,6 +269,7 @@
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Describe this programme",
           "durationYearsLabel": "Duration (years)",
+          "durationYearsPlaceholder": "Select duration…",
           "validation": {
             "facultyRequired": "Please select a faculty.",
             "titleRequired": "Programme title is required."

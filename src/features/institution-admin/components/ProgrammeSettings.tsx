@@ -11,6 +11,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { YearSelectPopover } from './YearSelectPopover'
 import type { ProgrammeRecord } from '../types/programme.types'
+import { PROGRAMME_DURATION_YEAR_OPTIONS } from '../utils/programmeDurationYears'
 
 const settingsEnterMotion =
   'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
@@ -60,7 +61,6 @@ export function ProgrammeSettings({
   isArchiving,
 }: ProgrammeSettingsProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
-  const durationOptions = [1, 2, 3, 4, 5, 6] as const
   const isArchived = selectedProgramme?.deleted_at != null
 
   if (isLoading) {
@@ -130,7 +130,7 @@ export function ProgrammeSettings({
           <YearSelectPopover
             label={t('faculties.pages.programmeOfferings.settings.fields.durationYearsLabel')}
             value={draftProgrammeDurationYears}
-            years={durationOptions}
+            years={PROGRAMME_DURATION_YEAR_OPTIONS}
             onChange={onProgrammeDurationYearsChange}
             className="w-full sm:w-48"
           />
