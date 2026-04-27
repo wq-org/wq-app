@@ -17,7 +17,7 @@ import { StatusSummaryCard, type StatusSummaryRow } from '@/components/shared'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useInstitutionLicensing } from '../hooks/useInstitutionLicensing'
 import type { EffectiveFeature, EffectiveFeatureSource } from '../types/licensing.types'
-import { BILLING_STATUS_VARIANT } from '../config/billingStatus'
+import { getBillingStatusBadgeVariant } from '../config/billingStatus'
 import { groupByCategory } from '../utils'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
@@ -58,7 +58,7 @@ const AdminLicenses = () => {
     : (planCode ?? '—')
 
   const billingVariant: BadgeVariant = subscription
-    ? (BILLING_STATUS_VARIANT[subscription.billing_status] ?? 'secondary')
+    ? getBillingStatusBadgeVariant(subscription.billing_status)
     : 'secondary'
 
   const statusRows: StatusSummaryRow[] = useMemo(() => {

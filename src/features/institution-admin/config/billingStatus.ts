@@ -4,7 +4,7 @@ import type { BillingStatus } from '../types/licensing.types'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
-export const BILLING_STATUS_VARIANT: Partial<Record<BillingStatus, BadgeVariant>> = {
+export const BILLING_STATUS_VARIANT = {
   active: 'green',
   trialing: 'blue',
   past_due: 'orange',
@@ -12,4 +12,8 @@ export const BILLING_STATUS_VARIANT: Partial<Record<BillingStatus, BadgeVariant>
   suspended: 'destructive',
   expired: 'secondary',
   cancelled: 'secondary',
+} as const satisfies Partial<Record<BillingStatus, BadgeVariant>>
+
+export function getBillingStatusBadgeVariant(status: BillingStatus): BadgeVariant {
+  return BILLING_STATUS_VARIANT[status] ?? 'secondary'
 }

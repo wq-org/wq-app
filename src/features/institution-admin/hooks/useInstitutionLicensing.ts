@@ -3,13 +3,16 @@ import { useEffect, useState } from 'react'
 import { useUser } from '@/contexts/user'
 import {
   fetchLatestInstitutionSubscription,
-  type InstitutionSubscriptionWithPlan,
   resolvePlanCode,
 } from '../api/institutionSubscriptionApi'
 
 import { fetchEffectiveEntitlements } from '../api/institutionEntitlementsApi'
 import { fetchInstitutionQuotasUsage } from '../api/institutionQuotasApi'
-import type { EffectiveFeature, InstitutionQuotasUsage } from '../types/licensing.types'
+import type {
+  EffectiveFeature,
+  InstitutionQuotasUsage,
+  InstitutionSubscriptionWithPlan,
+} from '../types/licensing.types'
 
 type State = {
   subscription: InstitutionSubscriptionWithPlan | null

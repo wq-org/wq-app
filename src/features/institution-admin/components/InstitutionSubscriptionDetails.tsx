@@ -9,9 +9,9 @@ import { Spinner } from '@/components/ui/spinner'
 import {
   fetchLatestInstitutionSubscription,
   resolvePlanCode,
-  type InstitutionSubscriptionWithPlan,
 } from '../api/institutionSubscriptionApi'
-import { BILLING_STATUS_VARIANT } from '../config/billingStatus'
+import { getBillingStatusBadgeVariant } from '../config/billingStatus'
+import type { InstitutionSubscriptionWithPlan } from '../types/licensing.types'
 
 function formatDateTime(iso: string | null | undefined, locale: string): string {
   if (!iso) return '—'
@@ -54,7 +54,7 @@ function SubscriptionBody({
     ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})`
     : (resolvedPlanCode ?? '—')
 
-  const billingVariant = BILLING_STATUS_VARIANT[sub.billing_status] ?? 'secondary'
+  const billingVariant = getBillingStatusBadgeVariant(sub.billing_status)
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,3 +1,4 @@
+export { normalizeClassroomMemberProfileEmbed } from './normalizeClassroomMemberProfileEmbed'
 export { groupByCategory } from './licenseUtils'
 export {
   buildInitialsFromDisplayName,
