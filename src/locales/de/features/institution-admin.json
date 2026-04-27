@@ -210,6 +210,25 @@
     "title": "Fakultäten",
     "subtitle": "Organisieren Sie Bereiche und akademische Einheiten.",
     "create": "Struktur anlegen",
+    "createFaculty": "Fakultät anlegen",
+    "createDialog": {
+      "title": "Fakultät anlegen",
+      "description": "Legen Sie eine Fakultät mit Namen und optionaler Beschreibung an.",
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "z. B. Pflege & Gesundheit",
+        "descriptionLabel": "Beschreibung",
+        "descriptionPlaceholder": "Optionale Beschreibung für Ihr Team"
+      },
+      "cancel": "Abbrechen",
+      "submit": "Fakultät anlegen",
+      "creating": "Wird angelegt…",
+      "validation": {
+        "nameRequired": "Ein Fakultätsname ist erforderlich."
+      },
+      "errorGeneric": "Fakultät konnte nicht angelegt werden.",
+      "errorNoInstitution": "Ihrem Konto ist keine Institution zugeordnet."
+    },
     "createSubtitle": "Legen Sie Fakultät, Programme, Jahrgänge und Klassengruppen in wenigen Schritten an.",
     "empty": "Noch keine Fakultäten. Legen Sie eine an, um zu starten.",
     "card": {
@@ -256,7 +275,8 @@
           },
           "cancel": "Abbrechen",
           "create": "Programm anlegen",
-          "creating": "Wird angelegt..."
+          "creating": "Wird angelegt...",
+          "errorGeneric": "Programm konnte nicht angelegt werden."
         }
       },
       "facultyProgrammes": {
@@ -574,6 +594,7 @@
       }
     },
     "wizard": {
+      "pageTitle": "Struktur anlegen",
       "backToList": "Zurück zu Fakultäten",
       "help": {
         "sectionLabels": {
@@ -854,7 +875,14 @@
     },
     "detail": {
       "back": "Zurück zu Klassenräumen",
-      "notFound": "Klassenraum nicht gefunden."
+      "notFound": "Klassenraum nicht gefunden.",
+      "mainTeacher": {
+        "title": "Hauptlehrkraft",
+        "description": "Primäre Lehrkraft, die diesem Klassenraum zugewiesen ist.",
+        "role": "Hauptlehrkraft",
+        "unassigned": "Nicht zugewiesen",
+        "noEmail": "Keine E-Mail verfügbar"
+      }
     },
     "members": {
       "title": "Mitglieder",

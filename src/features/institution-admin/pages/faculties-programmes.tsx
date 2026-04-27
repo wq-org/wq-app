@@ -13,7 +13,7 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { createProgramme } from '../api/programmesApi'
-import { CreateProgrammDialog } from '../components/CreateProgrammDialog'
+import { CreateProgrammeDialog } from '../components/CreateProgrammeDialog'
 import { FacultyProgrammeCardList } from '../components/FacultyProgrammeCardList'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useFacultiesProgrammes } from '../hooks/useFacultiesProgrammes'
@@ -230,7 +230,7 @@ export function InstitutionFacultiesProgrammes() {
           </div>
         )}
       </div>
-      <CreateProgrammDialog
+      <CreateProgrammeDialog
         open={isCreateDialogOpen}
         onOpenChange={(nextOpen) => {
           setIsCreateDialogOpen(nextOpen)

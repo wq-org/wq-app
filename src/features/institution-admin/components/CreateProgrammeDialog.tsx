@@ -27,12 +27,14 @@ type FacultyOption = {
   name: string
 }
 
-type CreateProgrammDialogProps = {
+export type CreateProgrammeDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   facultyOptions: readonly FacultyOption[]
   facultyId: string
   onFacultyIdChange: (value: string) => void
+  /** When true, faculty is fixed (e.g. faculty programmes page); shows read-only label instead of Select. */
+  facultyReadOnly?: boolean
   name: string
   onNameChange: (value: string) => void
   description: string
@@ -45,12 +47,13 @@ type CreateProgrammDialogProps = {
   onSubmit: () => void
 }
 
-export function CreateProgrammDialog({
+export function CreateProgrammeDialog({
   open,
   onOpenChange,
   facultyOptions,
   facultyId,
   onFacultyIdChange,
+  facultyReadOnly = false,
   name,
   onNameChange,
   description,
@@ -61,9 +64,13 @@ export function CreateProgrammDialog({
   submitError,
   isSubmitting,
   onSubmit,
-}: CreateProgrammDialogProps) {
+}: CreateProgrammeDialogProps) {
   const { t } = useTranslation('features.institution-admin')
   const durationOptions = [1, 2, 3, 4, 5, 6] as const
+  const resolvedFacultyName =
+    facultyOptions.find((option) => option.id === facultyId)?.name ??
+    t('faculties.pages.programmes.createDialog.facultyPlaceholder')
+  const canSubmit = name.trim().length > 0 && facultyId.length > 0
 
   return (
     <Dialog
@@ -80,26 +87,36 @@ export function CreateProgrammDialog({
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label>{t('faculties.pages.programmes.createDialog.facultyLabel')}</Label>
-            <Select
-              value={facultyId}
-              onValueChange={onFacultyIdChange}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue
-                  placeholder={t('faculties.pages.programmes.createDialog.facultyPlaceholder')}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {facultyOptions.map((faculty) => (
-                  <SelectItem
-                    key={faculty.id}
-                    value={faculty.id}
-                  >
-                    {faculty.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {facultyReadOnly ? (
+              <Text
+                as="p"
+                variant="body"
+                className="rounded-md border border-border bg-muted/40 px-3 py-2"
+              >
+                {resolvedFacultyName}
+              </Text>
+            ) : (
+              <Select
+                value={facultyId}
+                onValueChange={onFacultyIdChange}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={t('faculties.pages.programmes.createDialog.facultyPlaceholder')}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {facultyOptions.map((faculty) => (
+                    <SelectItem
+                      key={faculty.id}
+                      value={faculty.id}
+                    >
+                      {faculty.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
           <FieldInput
             label={t('faculties.pages.programmes.createDialog.titleLabel')}
@@ -157,7 +174,7 @@ export function CreateProgrammDialog({
             type="button"
             variant="darkblue"
             onClick={onSubmit}
-            disabled={!!validationError || isSubmitting}
+            disabled={!canSubmit || !!validationError || isSubmitting}
           >
             {isSubmitting
               ? t('faculties.pages.programmes.createDialog.creating')

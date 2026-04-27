@@ -21,7 +21,6 @@ type CreateFacultyDialogProps = {
   description: string
   onDescriptionChange: (value: string) => void
   validationError: string | null
-  submitError: string | null
   isSubmitting: boolean
   onSubmit: () => void
 }
@@ -34,11 +33,11 @@ export function CreateFacultyDialog({
   description,
   onDescriptionChange,
   validationError,
-  submitError,
   isSubmitting,
   onSubmit,
 }: CreateFacultyDialogProps) {
   const { t } = useTranslation('features.institution-admin')
+  const canSubmit = name.trim().length > 0
 
   return (
     <Dialog
@@ -47,20 +46,20 @@ export function CreateFacultyDialog({
     >
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>{t('faculties.title')}</DialogTitle>
-          <DialogDescription>{t('faculties.createSubtitle')}</DialogDescription>
+          <DialogTitle>{t('faculties.createDialog.title')}</DialogTitle>
+          <DialogDescription>{t('faculties.createDialog.description')}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <FieldInput
-            label={t('faculties.wizard.fields.nameLabel')}
-            placeholder={t('faculties.wizard.fields.namePlaceholder')}
+            label={t('faculties.createDialog.fields.nameLabel')}
+            placeholder={t('faculties.createDialog.fields.namePlaceholder')}
             value={name}
             onValueChange={onNameChange}
             required
           />
           <FieldTextarea
-            label={t('faculties.wizard.fields.descriptionLabel')}
-            placeholder={t('faculties.wizard.fields.descriptionPlaceholder')}
+            label={t('faculties.createDialog.fields.descriptionLabel')}
+            placeholder={t('faculties.createDialog.fields.descriptionPlaceholder')}
             value={description}
             onValueChange={onDescriptionChange}
             rows={3}
@@ -74,15 +73,6 @@ export function CreateFacultyDialog({
               {validationError}
             </Text>
           ) : null}
-          {submitError ? (
-            <Text
-              as="p"
-              variant="small"
-              color="danger"
-            >
-              {submitError}
-            </Text>
-          ) : null}
         </div>
         <DialogFooter>
           <Button
@@ -91,15 +81,17 @@ export function CreateFacultyDialog({
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
           >
-            {t('classrooms.createDialog.cancel')}
+            {t('faculties.createDialog.cancel')}
           </Button>
           <Button
             type="button"
             variant="darkblue"
             onClick={onSubmit}
-            disabled={!!validationError || isSubmitting}
+            disabled={!canSubmit || isSubmitting}
           >
-            {isSubmitting ? t('faculties.wizard.actions.finishing') : t('faculties.create')}
+            {isSubmitting
+              ? t('faculties.createDialog.creating')
+              : t('faculties.createDialog.submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

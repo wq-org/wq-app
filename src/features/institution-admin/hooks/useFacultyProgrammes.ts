@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { listProgrammesByFaculty } from '../api/programmesApi'
 import type { FacultySummary } from '../types/faculty.types'
@@ -9,6 +9,11 @@ export function useFacultyProgrammes(institutionId: string | null, facultyId: st
   const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reloadVersion, setReloadVersion] = useState(0)
+
+  const reload = useCallback(() => {
+    setReloadVersion((previous) => previous + 1)
+  }, [])
 
   useEffect(() => {
     if (!institutionId || !facultyId) {
@@ -49,7 +54,7 @@ export function useFacultyProgrammes(institutionId: string | null, facultyId: st
     return () => {
       cancelled = true
     }
-  }, [institutionId, facultyId])
+  }, [institutionId, facultyId, reloadVersion])
 
-  return { faculty, programmes, isLoading, error }
+  return { faculty, programmes, isLoading, error, reload }
 }

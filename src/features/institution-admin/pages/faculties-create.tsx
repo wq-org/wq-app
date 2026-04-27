@@ -369,7 +369,7 @@ export function InstitutionFacultiesCreate() {
               variant="h1"
               className="text-2xl font-bold"
             >
-              {t('faculties.create')}
+              {t('faculties.wizard.pageTitle')}
             </Text>
             <Text
               as="p"

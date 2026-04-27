@@ -210,6 +210,25 @@
     "title": "Faculties",
     "subtitle": "Organize departments and academic units.",
     "create": "Create structure",
+    "createFaculty": "Create faculty",
+    "createDialog": {
+      "title": "Create faculty",
+      "description": "Add a faculty with a name and optional description.",
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Nursing & Health",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Optional description for your team"
+      },
+      "cancel": "Cancel",
+      "submit": "Create faculty",
+      "creating": "Creating…",
+      "validation": {
+        "nameRequired": "Faculty name is required."
+      },
+      "errorGeneric": "Could not create faculty.",
+      "errorNoInstitution": "No institution is associated with your account."
+    },
     "createSubtitle": "Set up faculty, programmes, cohorts, and class groups in a few guided steps.",
     "empty": "No faculties yet. Create one to get started.",
     "card": {
@@ -222,7 +241,7 @@
       "programmes": {
         "title": "Programmes",
         "subtitle": "Study programmes attached to faculties in your institution.",
-        "createCta": "Create Programm",
+        "createCta": "Create programme",
         "searchLabel": "Search programmes",
         "searchPlaceholder": "Search by programme name, description, or faculty…",
         "loadError": "Could not load programmes.",
@@ -256,7 +275,8 @@
           },
           "cancel": "Cancel",
           "create": "Create programme",
-          "creating": "Creating..."
+          "creating": "Creating...",
+          "errorGeneric": "Could not create programme."
         }
       },
       "facultyProgrammes": {
@@ -574,6 +594,7 @@
       }
     },
     "wizard": {
+      "pageTitle": "Create structure",
       "backToList": "Back to faculties",
       "help": {
         "sectionLabels": {
@@ -854,7 +875,14 @@
     },
     "detail": {
       "back": "Back to classrooms",
-      "notFound": "Classroom not found."
+      "notFound": "Classroom not found.",
+      "mainTeacher": {
+        "title": "Main teacher",
+        "description": "Primary teacher assigned to this classroom.",
+        "role": "Main teacher",
+        "unassigned": "Unassigned",
+        "noEmail": "No email available"
+      }
     },
     "members": {
       "title": "Members",

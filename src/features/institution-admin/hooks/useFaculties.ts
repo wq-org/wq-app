@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { listFacultiesByInstitution } from '../api/facultiesApi'
 import type { FacultySummary } from '../types/faculty.types'
 
@@ -6,6 +6,11 @@ export function useFaculties(institutionId: string | null) {
   const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reloadVersion, setReloadVersion] = useState(0)
+
+  const reload = useCallback(() => {
+    setReloadVersion((previous) => previous + 1)
+  }, [])
 
   useEffect(() => {
     if (!institutionId) {
@@ -31,7 +36,7 @@ export function useFaculties(institutionId: string | null) {
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, reloadVersion])
 
-  return { faculties, isLoading, error }
+  return { faculties, isLoading, error, reload }
 }

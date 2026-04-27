@@ -3,8 +3,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
@@ -12,6 +14,14 @@ import { AssignClassroomMemberDialog } from '../components/AssignClassroomMember
 import { ClassroomMembersTable } from '../components/ClassroomMembersTable'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useClassroomDetail } from '../hooks/useClassroomDetail'
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+  return name.slice(0, 2).toUpperCase()
+}
 
 export function ClassroomDetailPage() {
   const { t } = useTranslation('features.institution-admin')
@@ -31,6 +41,11 @@ export function ClassroomDetailPage() {
   const statusLabel = isActive
     ? t('classrooms.card.statusActive')
     : t('classrooms.card.statusInactive')
+  const primaryTeacher =
+    members.find((member) => member.userId === classroom?.primary_teacher_id) ?? null
+  const primaryTeacherName = primaryTeacher?.name ?? t('classrooms.detail.mainTeacher.unassigned')
+  const primaryTeacherEmail = primaryTeacher?.email || t('classrooms.detail.mainTeacher.noEmail')
+  const primaryTeacherAvatarUrl = primaryTeacher?.avatarUrl ?? null
 
   return (
     <InstitutionAdminWorkspaceShell>
@@ -98,6 +113,58 @@ export function ClassroomDetailPage() {
             </div>
 
             <div className="flex flex-col gap-4">
+              <Card variant="glass">
+                <CardHeader className="gap-1">
+                  <CardTitle className="text-base font-semibold">
+                    {t('classrooms.detail.mainTeacher.title')}
+                  </CardTitle>
+                  <Text
+                    as="p"
+                    variant="small"
+                    color="muted"
+                  >
+                    {t('classrooms.detail.mainTeacher.description')}
+                  </Text>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <Avatar size="default">
+                      {primaryTeacherAvatarUrl ? (
+                        <AvatarImage
+                          src={primaryTeacherAvatarUrl}
+                          alt={primaryTeacherName}
+                        />
+                      ) : null}
+                      <AvatarFallback>{getInitials(primaryTeacherName)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <Text
+                        as="p"
+                        variant="body"
+                        className="truncate font-medium"
+                      >
+                        {primaryTeacherName}
+                      </Text>
+                      <Text
+                        as="p"
+                        variant="small"
+                        color="muted"
+                        className="truncate"
+                      >
+                        {primaryTeacherEmail}
+                      </Text>
+                    </div>
+                    <Badge
+                      variant="secondary"
+                      size="sm"
+                      className="ml-auto"
+                    >
+                      {t('classrooms.detail.mainTeacher.role')}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+
               <div className="flex items-center justify-between gap-4">
                 <Text
                   as="h2"
