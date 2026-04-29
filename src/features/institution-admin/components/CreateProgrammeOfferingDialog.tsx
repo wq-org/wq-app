@@ -29,7 +29,7 @@ type CreateProgrammeOfferingDialogProps = {
   onOpenChange: (open: boolean) => void
   institutionId: string | null
   programmeId: string
-  /** Used with `buildTermCode` to pre-fill the term code (e.g. GVM-2026). */
+  /** Used with `deriveSuggestedTermCode` (e.g. MD-2028/31). */
   programmeName?: string | null
   programmeDurationYears?: number | null
   onCreated: (offering: ProgrammeOfferingRecord) => void
@@ -91,6 +91,7 @@ export function CreateProgrammeOfferingDialog({
     institutionId,
     programmeId,
     programmeName,
+    programmeDurationYears,
     onCreated,
   })
 

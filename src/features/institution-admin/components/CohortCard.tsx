@@ -31,7 +31,7 @@ export function CohortCard({ cohort, programmeName, onOpen }: CohortCardProps) {
         <div className="flex min-w-0 flex-col items-start gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge
-              variant="cyan"
+              variant="indigo"
               size="sm"
               className="font-normal"
             >

@@ -6,14 +6,16 @@ import type {
   ProgrammeOfferingRecord,
   ProgrammeOfferingStatus,
 } from '../types/programme-offering.types'
-import { clampAcademicYear, deriveSuggestedTermCode } from '../utils/termCode'
+import { clampAcademicYear, deriveSuggestedTermCode, normalizeTermCode } from '../utils/termCode'
 
 type UseCreateProgrammeOfferingDialogParams = {
   open: boolean
   institutionId: string | null
   programmeId: string
-  /** Programme title — used with {@link buildTermCode} to derive `PREFIX-YEAR` (e.g. GVM-2026). */
+  /** Programme title — used with {@link buildTermCode} to derive span codes (e.g. MD-2028/31). */
   programmeName?: string | null
+  /** Standard duration in years; drives the end year segment of the suggested term code. */
+  programmeDurationYears?: number | null
   onCreated: (offering: ProgrammeOfferingRecord) => void
 }
 
@@ -40,6 +42,7 @@ export function useCreateProgrammeOfferingDialog({
   institutionId,
   programmeId,
   programmeName,
+  programmeDurationYears,
   onCreated,
 }: UseCreateProgrammeOfferingDialogParams) {
   const initialYear = clampAcademicYear(new Date().getFullYear())
@@ -47,7 +50,7 @@ export function useCreateProgrammeOfferingDialog({
   const [suggestedAcademicYear, setSuggestedAcademicYear] = useState<number>(initialYear)
   const [academicYear, setAcademicYear] = useState<number>(initialYear)
   const [termCode, setTermCodeState] = useState<string>(() =>
-    deriveSuggestedTermCode(programmeName, initialYear),
+    deriveSuggestedTermCode(programmeName, initialYear, programmeDurationYears),
   )
   const [status, setStatus] = useState<ProgrammeOfferingStatus>('active')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
@@ -55,7 +58,7 @@ export function useCreateProgrammeOfferingDialog({
   const [error, setError] = useState<string | null>(null)
 
   // While the user hasn't manually edited the term code, it tracks
-  // buildTermCode(programmeName, academicYear). The first manual edit
+  // deriveSuggestedTermCode(programmeName, academicYear, duration). The first manual edit
   // flips this off and the field becomes user-controlled.
   const isAutoDerivedRef = useRef(true)
   const prevProgrammeIdRef = useRef(programmeId)
@@ -80,7 +83,9 @@ export function useCreateProgrammeOfferingDialog({
         setSuggestedAcademicYear(nextAcademicYear)
         setAcademicYear(nextAcademicYear)
         if (isAutoDerivedRef.current) {
-          setTermCodeState(deriveSuggestedTermCode(programmeName, nextAcademicYear))
+          setTermCodeState(
+            deriveSuggestedTermCode(programmeName, nextAcademicYear, programmeDurationYears),
+          )
         }
       } catch {
         if (!cancelled) {
@@ -88,7 +93,9 @@ export function useCreateProgrammeOfferingDialog({
           setSuggestedAcademicYear(fallbackYear)
           setAcademicYear(fallbackYear)
           if (isAutoDerivedRef.current) {
-            setTermCodeState(deriveSuggestedTermCode(programmeName, fallbackYear))
+            setTermCodeState(
+              deriveSuggestedTermCode(programmeName, fallbackYear, programmeDurationYears),
+            )
           }
         }
       }
@@ -97,7 +104,7 @@ export function useCreateProgrammeOfferingDialog({
     return () => {
       cancelled = true
     }
-  }, [open, institutionId, programmeId, programmeName])
+  }, [open, institutionId, programmeId, programmeName, programmeDurationYears])
 
   useEffect(() => {
     if (prevProgrammeIdRef.current !== programmeId) {
@@ -105,15 +112,15 @@ export function useCreateProgrammeOfferingDialog({
       isAutoDerivedRef.current = true
     }
     if (!isAutoDerivedRef.current) return
-    setTermCodeState(deriveSuggestedTermCode(programmeName, academicYear))
-  }, [programmeId, programmeName, academicYear])
+    setTermCodeState(deriveSuggestedTermCode(programmeName, academicYear, programmeDurationYears))
+  }, [programmeId, programmeName, academicYear, programmeDurationYears])
 
   const resetForm = () => {
     const y = suggestedAcademicYear
     isAutoDerivedRef.current = true
     prevProgrammeIdRef.current = programmeId
     setAcademicYear(y)
-    setTermCodeState(deriveSuggestedTermCode(programmeName, y))
+    setTermCodeState(deriveSuggestedTermCode(programmeName, y, programmeDurationYears))
     setStatus('active')
     setDateRange(undefined)
     setError(null)
@@ -128,11 +135,15 @@ export function useCreateProgrammeOfferingDialog({
     setError(null)
 
     try {
+      const resolvedTermCode = isAutoDerivedRef.current
+        ? deriveSuggestedTermCode(programmeName, academicYear, programmeDurationYears)
+        : normalizeTermCode(termCode)
+
       const created = await createProgrammeOffering({
         institution_id: institutionId,
         programme_id: programmeId,
         academic_year: academicYear,
-        term_code: termCode.trim() || null,
+        term_code: resolvedTermCode.trim() || null,
         status,
         starts_at: dateRange?.from ? dateRange.from.toISOString() : null,
         ends_at: dateRange?.to ? dateRange.to.toISOString() : null,

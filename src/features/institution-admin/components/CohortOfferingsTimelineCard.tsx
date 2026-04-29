@@ -37,6 +37,8 @@ export function CohortOfferingsTimelineCard({
   const statusVariant =
     offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'secondary' : 'secondary'
 
+  const isArchived = offering.status === 'archived'
+
   const notSet = t('faculties.pages.cohortOfferings.offering.notSet')
   const dateRange = `${formatDate(offering.starts_at, i18n.language, notSet)} - ${formatDate(offering.ends_at, i18n.language, notSet)}`
   const po = offering.programme_offering
@@ -59,8 +61,9 @@ export function CohortOfferingsTimelineCard({
           <Button
             type="button"
             size="sm"
-            variant="outline"
+            variant="darkblue"
             onClick={handleEdit}
+            disabled={isArchived}
           >
             <Pencil className="size-4" />
             Edit

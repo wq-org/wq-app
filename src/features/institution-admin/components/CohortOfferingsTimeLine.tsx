@@ -16,9 +16,17 @@ type TimelineTabId = (typeof TIMELINE_TAB)[number]['id']
 
 type CohortOfferingsTimeLineProps = {
   offerings: readonly CohortOfferingRecord[]
+  onEditOffering?: (offeringId: string) => void
+  onArchiveOffering?: (offeringId: string) => void
+  onAddOffering?: () => void
 }
 
-export function CohortOfferingsTimeLine({ offerings }: CohortOfferingsTimeLineProps) {
+export function CohortOfferingsTimeLine({
+  offerings,
+  onEditOffering,
+  onArchiveOffering,
+  onAddOffering,
+}: CohortOfferingsTimeLineProps) {
   const [activeTabId, setActiveTabId] = useState<TimelineTabId>('timeline')
 
   const activeOfferings = offerings.filter((offering) => offering.status === 'active')
@@ -33,11 +41,23 @@ export function CohortOfferingsTimeLine({ offerings }: CohortOfferingsTimeLinePr
         onTabChange={(tabId) => setActiveTabId(tabId as TimelineTabId)}
       />
       {activeTabId === 'timeline' ? (
-        <CohortOfferingsTable offerings={activeOfferings} />
+        <CohortOfferingsTable
+          offerings={activeOfferings}
+          onEditOffering={onEditOffering}
+          onArchiveOffering={onArchiveOffering}
+        />
       ) : activeTabId === 'drafts' ? (
-        <CohortOfferingsTimelineCardList offerings={draftOfferings} />
+        <CohortOfferingsTimelineCardList
+          offerings={draftOfferings}
+          onEdit={onEditOffering}
+          onAddOffering={onAddOffering}
+        />
       ) : (
-        <CohortOfferingsTimelineCardList offerings={archivedOfferings} />
+        <CohortOfferingsTimelineCardList
+          offerings={archivedOfferings}
+          onEdit={onEditOffering}
+          onAddOffering={onAddOffering}
+        />
       )}
     </div>
   )

@@ -63,9 +63,9 @@ export function InstitutionFacultiesCreate() {
   const defaultProgrammeOfferingYear = clampAcademicYear(new Date().getFullYear())
   const defaultProgrammeOfferingTermCode = useMemo(
     () =>
-      deriveSuggestedTermCode(programmeName, defaultProgrammeOfferingYear) ||
+      deriveSuggestedTermCode(programmeName, defaultProgrammeOfferingYear, durationYears) ||
       suggestTermCode(defaultProgrammeOfferingYear),
-    [programmeName, defaultProgrammeOfferingYear],
+    [programmeName, defaultProgrammeOfferingYear, durationYears],
   )
 
   // Auto-derive cohort name from the default programme-offering term code.

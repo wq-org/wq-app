@@ -199,18 +199,8 @@ export const STOP_WORDS = new Set([
   'divers',
 ])
 
-/**
- * Derives a short term code from a programme name and year.
- * Strips diacritics, skips stop words, takes the uppercase initial of each
- * remaining word, and caps the acronym at 6 characters.
- *
- * Result is a suggestion — always let the admin confirm or edit before saving.
- *
- * @example
- * buildTermCode('Gestalter für Visuelles Marketing', 2026)  → 'GVM-2026'
- * buildTermCode('Ausbildung zur Pflegefachkraft', 2025)      → 'Z-2025'  (zur/Ausbildung/Pflegefachkraft all filtered)
- */
-export function buildTermCode(termName: string, year = new Date().getFullYear()): string {
+/** Exported for cohort naming — same logic as programme-offering term prefixes. */
+export function deriveProgrammeAcronymFromTitle(termName: string): string {
   const words = termName
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // strip diacritics (ü → u, ö → o, ä → a …)
@@ -220,60 +210,108 @@ export function buildTermCode(termName: string, year = new Date().getFullYear())
     .filter(Boolean)
     .filter((w) => !STOP_WORDS.has(w.toLowerCase()))
 
-  const acronym = words
+  return words
     .map((w) => w.charAt(0).toUpperCase())
     .join('')
-    .slice(0, 6) // max 6 chars to keep codes readable
-
-  return acronym ? `${acronym}-${year}` : String(year)
+    .slice(0, 6)
 }
 
 /**
- * Suggested term code from a programme title and year.
- * Empty / whitespace title → `''` (avoids `buildTermCode('', y)` returning only a year).
+ * Prefix segment before the first hyphen (e.g. `MD` from `MD-2028/31` or `GVM` from `GVM-2026`).
+ */
+export function extractTermCodePrefix(termCode: string | null | undefined): string | null {
+  const raw = termCode?.trim()
+  if (!raw) return null
+  const dash = raw.indexOf('-')
+  if (dash <= 0) return null
+  const prefix = raw.slice(0, dash).trim()
+  return prefix.length > 0 ? prefix : null
+}
+
+/**
+ * Derives a short term code from a programme name, cohort start year, and programme duration.
+ * Shape: `{ACRONYM}-{startYear}/{endSuffix}` — end uses two digits when the end year is in the
+ * same century as the start year (e.g. MD-2028/31).
+ *
+ * Result is a suggestion — always let the admin confirm or edit before saving.
+ *
+ * @example
+ * buildTermCode('Gestalter für Visuelles Marketing', 2026, 3) → 'GVM-2026/29'
+ * buildTermCode('Master Diagnostik', 2028, 3) → 'MD-2028/31'
+ */
+export function buildTermCode(
+  termName: string,
+  startYear: number,
+  durationYears: number = 3,
+): string {
+  const acronym = deriveProgrammeAcronymFromTitle(termName)
+  const durationRounded = Math.max(1, Math.round(durationYears))
+  const endYear = startYear + durationRounded
+  const sameCentury = Math.floor(endYear / 100) === Math.floor(startYear / 100)
+  const endSegment = sameCentury ? String(endYear).slice(-2) : String(endYear)
+
+  if (!acronym) {
+    return `${startYear}/${endSegment}`
+  }
+  return `${acronym}-${startYear}/${endSegment}`
+}
+
+/**
+ * Suggested term code from a programme title, academic start year, and optional programme duration.
+ * Empty / whitespace title → `''`.
  */
 export function deriveSuggestedTermCode(
   programmeTitle: string | null | undefined,
-  year: number,
+  startYear: number,
+  durationYears?: number | null,
 ): string {
   const name = programmeTitle?.trim() ?? ''
-  return name.length > 0 ? buildTermCode(name, year) : ''
+  if (name.length === 0) return ''
+  const duration =
+    durationYears != null && Number.isFinite(durationYears) && durationYears > 0 ? durationYears : 3
+  return buildTermCode(name, startYear, duration)
 }
 
 /**
- * Normalises a user-edited term code:
- * - uppercases everything
- * - strips characters that are not A-Z, 0-9, or hyphen
- * - collapses consecutive hyphens
- * - trims leading/trailing hyphens
- *
- * @example normalizeTermCode('gvm 2025') → 'GVM-2025'
+ * Normalises user input: keeps letters, digits, underscore, hyphen, slash; collapses repeated
+ * slashes and hyphens; trims stray separators at the ends. Case is preserved.
  */
 export function normalizeTermCode(raw: string): string {
   return raw
-    .toUpperCase()
-    .replace(/[^A-Z0-9-]/g, '')
+    .replace(/[^a-zA-Z0-9_/-]/g, '')
+    .replace(/\/+/g, '/')
     .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
+    .replace(/^[/-]+|[/-]+$/g, '')
 }
 
-/**
- * Valid term codes: 1–6 uppercase letters, a hyphen, then a 4-digit year.
- * @example 'GVM-2026' ✓   'A-2025' ✓   'TOOLONG-2026' ✗   'gvm-2026' ✗
- */
-export const TERM_CODE_PATTERN = /^[A-Z]{1,6}-\d{4}$/
+/** Legacy single-year shape (still valid for existing rows). */
+export const LEGACY_TERM_CODE_PATTERN = /^[A-Za-z0-9_]{1,12}-\d{4}$/
+
+/** Span shape: prefix, start year, slash, end year (2 or 4 digits). */
+export const SPAN_TERM_CODE_PATTERN = /^[A-Za-z0-9_]{1,12}-\d{4}\/\d{2,4}$/
+
+/** When no acronym can be derived, only years remain (rare). */
+export const BARE_YEAR_SPAN_PATTERN = /^\d{4}\/\d{2,4}$/
+
+/** Accepts legacy, span, or bare year-span term codes. */
+export const TERM_CODE_PATTERN =
+  /^(?:[A-Za-z0-9_]{1,12}-\d{4}|[A-Za-z0-9_]{1,12}-\d{4}\/\d{2,4}|\d{4}\/\d{2,4})$/
 
 export function isValidTermCode(code: string): boolean {
-  return TERM_CODE_PATTERN.test(code)
+  const trimmed = code.trim()
+  return (
+    LEGACY_TERM_CODE_PATTERN.test(trimmed) ||
+    SPAN_TERM_CODE_PATTERN.test(trimmed) ||
+    BARE_YEAR_SPAN_PATTERN.test(trimmed)
+  )
 }
 
 /**
- * Returns true when a term code matches the auto-derived `LETTERS-YEAR` pattern.
- * Used to decide whether to overwrite during auto-derivation without trampling
- * intentional manual edits.
+ * True when the term code matches a supported format (legacy single-year, span, or bare years).
+ * Still named for historical reasons — callers use it before syncing cohort names from the code.
  */
 export function isAutoGeneratedTermCode(termCode: string): boolean {
-  return TERM_CODE_PATTERN.test(termCode)
+  return isValidTermCode(termCode)
 }
 
 // ---------------------------------------------------------------------------
@@ -300,7 +338,7 @@ export function buildCohortNameFromTermCode(termCode: string, lang: 'de' | 'en' 
  * Used alongside `isAutoGeneratedTermCode` to guard auto-derivation.
  */
 export function isAutoGeneratedCohortName(cohortName: string): boolean {
-  return /^[A-Z]{1,6} (Jahrgang|Year) \d{4}$/.test(cohortName)
+  return /^[A-Za-z0-9_]+ (Jahrgang|Year) \d{4}(?:\/\d{2,4})?$/.test(cohortName)
 }
 
 // ---------------------------------------------------------------------------

@@ -22,11 +22,13 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { archiveCohortOffering } from '../api/cohortOfferingsApi'
 import { updateCohort } from '../api/cohortsApi'
 import { ClassGroupCardList } from '../components/ClassGroupCardList'
 import { CohortOfferingsTimeLine } from '../components/CohortOfferingsTimeLine'
 import { CohortSettings } from '../components/CohortSettings'
 import { CreateCohortOfferingDialog } from '../components/CreateCohortOfferingDialog'
+import { EditCohortOfferingDialog } from '../components/EditCohortOfferingDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useCohortOfferings } from '../hooks/useCohortOfferings'
 
@@ -61,6 +63,7 @@ export function InstitutionCohortOfferings() {
   const [draftCohortDescription, setDraftCohortDescription] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [createOfferingOpen, setCreateOfferingOpen] = useState(false)
+  const [editingOfferingId, setEditingOfferingId] = useState<string | null>(null)
 
   const {
     cohorts,
@@ -72,6 +75,7 @@ export function InstitutionCohortOfferings() {
     error: loadError,
     updateCohortInList,
     appendOffering,
+    replaceOffering,
   } = useCohortOfferings({
     institutionId,
     facultyId: facultyIdParam,
@@ -82,6 +86,11 @@ export function InstitutionCohortOfferings() {
   const selectedCohort = useMemo(
     () => cohorts.find((c) => c.id === cohortIdParam) ?? null,
     [cohorts, cohortIdParam],
+  )
+
+  const editingOffering = useMemo(
+    () => offerings.find((o) => o.id === editingOfferingId) ?? null,
+    [offerings, editingOfferingId],
   )
 
   const tabs = useMemo(
@@ -132,6 +141,26 @@ export function InstitutionCohortOfferings() {
   const handleAddOffering = () => {
     if (!institutionId || !programmeIdParam || !cohortIdParam) return
     setCreateOfferingOpen(true)
+  }
+
+  const handleEditOffering = (offeringId: string) => {
+    setEditingOfferingId(offeringId)
+  }
+
+  const handleArchiveOffering = async (offeringId: string) => {
+    const previous = offerings.find((o) => o.id === offeringId)
+    try {
+      const archived = await archiveCohortOffering(offeringId)
+      replaceOffering({
+        ...archived,
+        programme_offering: previous?.programme_offering ?? null,
+      })
+      toast.success(t('faculties.pages.cohortOfferings.archiveSuccess'))
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t('faculties.pages.cohortOfferings.archiveError'),
+      )
+    }
   }
 
   const handleSaveCohortSettings = async () => {
@@ -228,7 +257,14 @@ export function InstitutionCohortOfferings() {
       )
     }
 
-    return <CohortOfferingsTimeLine offerings={offerings} />
+    return (
+      <CohortOfferingsTimeLine
+        offerings={offerings}
+        onEditOffering={handleEditOffering}
+        onArchiveOffering={handleArchiveOffering}
+        onAddOffering={handleAddOffering}
+      />
+    )
   })()
 
   const showClassGroupsSection =
@@ -380,14 +416,25 @@ export function InstitutionCohortOfferings() {
         )}
       </div>
       {programmeIdParam && cohortIdParam ? (
-        <CreateCohortOfferingDialog
-          open={createOfferingOpen}
-          onOpenChange={setCreateOfferingOpen}
-          institutionId={institutionId}
-          programmeId={programmeIdParam}
-          cohortId={cohortIdParam}
-          onCreated={appendOffering}
-        />
+        <>
+          <CreateCohortOfferingDialog
+            open={createOfferingOpen}
+            onOpenChange={setCreateOfferingOpen}
+            institutionId={institutionId}
+            programmeId={programmeIdParam}
+            cohortId={cohortIdParam}
+            onCreated={appendOffering}
+          />
+          <EditCohortOfferingDialog
+            open={editingOffering !== null}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) setEditingOfferingId(null)
+            }}
+            programmeId={programmeIdParam}
+            offering={editingOffering}
+            onUpdated={replaceOffering}
+          />
+        </>
       ) : null}
     </InstitutionAdminWorkspaceShell>
   )

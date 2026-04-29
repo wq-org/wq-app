@@ -361,7 +361,7 @@
             "academicYearLabel": "Akademisches Jahr",
             "academicYearPlaceholder": "Jahr suchen oder wählen…",
             "termCodeLabel": "Term-Code",
-            "termCodePlaceholder": "z. B. GVM-2026",
+            "termCodePlaceholder": "z. B. MD-2028/31",
             "typicalDateRanges": "Typische Ausbildungsjahr-Spannen im System",
             "springCourse": "Frühjahrskurs:",
             "autumnCourse": "Herbstkurs:",
@@ -378,6 +378,9 @@
           "cancel": "Abbrechen",
           "create": "Angebot erstellen",
           "creating": "Wird erstellt..."
+        },
+        "editActiveOffering": {
+          "datesReadOnly": "Start- und Enddatum können nicht geändert werden, solange das Angebot aktiv ist. Wechseln Sie zu Entwurf, um die Daten anzupassen."
         }
       },
       "cohorts": {
@@ -405,11 +408,16 @@
           "programmeLabel": "Programm",
           "programmePlaceholder": "Programm auswählen",
           "titleLabel": "Titel",
-          "titlePlaceholder": "z. B. Jahrgang 2027",
+          "titlePlaceholder": "z. B. MD-2027 oder Modedesign — MD-2027",
           "descriptionLabel": "Beschreibung",
           "descriptionPlaceholder": "Beschreiben Sie diesen Jahrgang",
           "academicYearLabel": "Akademisches Jahr",
           "academicYearPlaceholder": "z. B. 2027",
+          "academicYearHint": "Standard ist das aktuelle Jahr oder das nächste Jahr nach dem letzten Jahrgang dieses Programms.",
+          "syncTitleLabel": "Titel automatisch aus Programmcode und Jahr",
+          "descriptiveTitleLabel": "Programmnamen einfügen (Programm — PREFIX-JAHR)",
+          "syncDescriptionLabel": "Beschreibung aus Fakultät, Programm und Jahrgang vorschlagen",
+          "syncDescriptionHint": "Wird kurz verzögert aktualisiert, wenn Sie Titel oder Auswahl ändern (Debouncing). Deaktivieren Sie die Option für eine eigene Beschreibung.",
           "validation": {
             "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
             "programmeRequired": "Bitte wählen Sie ein Programm aus.",
@@ -490,7 +498,16 @@
           "cancel": "Abbrechen",
           "create": "Angebot erstellen",
           "creating": "Wird erstellt..."
-        }
+        },
+        "editDialog": {
+          "title": "Jahrgangangebot bearbeiten",
+          "description": "Ändern Sie die Verknüpfung zum Programmangebot, die Daten oder den Status Entwurf/Aktiv.",
+          "cancel": "Abbrechen",
+          "save": "Änderungen speichern",
+          "saving": "Wird gespeichert..."
+        },
+        "archiveSuccess": "Jahrgangangebot archiviert",
+        "archiveError": "Jahrgangangebot konnte nicht archiviert werden."
       },
       "classGroups": {
         "title": "Klassengruppen",
@@ -717,8 +734,8 @@
         "academicYearLabel": "Studienjahr",
         "academicYearPlaceholder": "Jahr suchen oder wählen…",
         "termCodeLabel": "Term-Code",
-        "termCodePlaceholder": "z. B. GVM-2026",
-        "termCodeHint": "Format: 1–6 Großbuchstaben, Bindestrich, 4-stellige Jahreszahl (z. B. GVM-2026)",
+        "termCodePlaceholder": "z. B. MD-2028/31",
+        "termCodeHint": "Buchstaben, Ziffern, _, -, /. Üblich: PREFIX-START/Ende (z. B. MD-2028/31) oder älteres PREFIX-JAHR.",
         "statusActive": "Aktiv",
         "statusDraft": "Entwurf",
         "statusArchived": "Archiviert",

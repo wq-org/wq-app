@@ -99,6 +99,10 @@ export function useCohortOfferings({ institutionId, facultyId, programmeId, coho
     setOfferings((rows) => [...rows, created])
   }, [])
 
+  const replaceOffering = useCallback((updated: CohortOfferingRecord) => {
+    setOfferings((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
+  }, [])
+
   return {
     cohorts,
     offerings,
@@ -109,5 +113,6 @@ export function useCohortOfferings({ institutionId, facultyId, programmeId, coho
     error,
     updateCohortInList,
     appendOffering,
+    replaceOffering,
   }
 }

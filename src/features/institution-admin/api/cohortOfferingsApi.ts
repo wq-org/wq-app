@@ -43,3 +43,43 @@ export async function createCohortOffering(
 
   return toCohortOffering(data as CohortOfferingRecord)
 }
+
+type UpdateCohortOfferingInput = {
+  offeringId: string
+  programme_offering_id: string
+  status: CohortOfferingRecord['status']
+  starts_at: string | null
+  ends_at: string | null
+}
+
+export async function updateCohortOffering({
+  offeringId,
+  programme_offering_id,
+  status,
+  starts_at,
+  ends_at,
+}: UpdateCohortOfferingInput): Promise<CohortOfferingRecord> {
+  const { data, error } = await supabase
+    .from('cohort_offerings')
+    .update({ programme_offering_id, status, starts_at, ends_at })
+    .eq('id', offeringId)
+    .select(COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toCohortOffering(data as CohortOfferingRecord)
+}
+
+export async function archiveCohortOffering(offeringId: string): Promise<CohortOfferingRecord> {
+  const { data, error } = await supabase
+    .from('cohort_offerings')
+    .update({ status: 'archived' })
+    .eq('id', offeringId)
+    .select(COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toCohortOffering(data as CohortOfferingRecord)
+}

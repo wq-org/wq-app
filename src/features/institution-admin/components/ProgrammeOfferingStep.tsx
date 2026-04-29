@@ -68,6 +68,7 @@ export function ProgrammeOfferingStep({
   onAddOffering,
   onRemoveOffering,
   programmeName,
+  durationYears,
 }: ProgrammeOfferingStepProps) {
   const { t } = useTranslation('features.institution-admin')
   const [openPopover, setOpenPopover] = useState<string | null>(null)
@@ -76,12 +77,12 @@ export function ProgrammeOfferingStep({
   useEffect(() => {
     for (const row of offerings) {
       if (manualTermCodeRowIdsRef.current.has(row.id)) continue
-      const next = deriveSuggestedTermCode(programmeName, row.academicYear)
+      const next = deriveSuggestedTermCode(programmeName, row.academicYear, durationYears)
       if (row.termCode !== next) {
         onUpdateOffering(row.id, { termCode: next })
       }
     }
-  }, [offerings, onUpdateOffering, programmeName])
+  }, [offerings, onUpdateOffering, programmeName, durationYears])
 
   return (
     <div className="flex w-full flex-col gap-4">

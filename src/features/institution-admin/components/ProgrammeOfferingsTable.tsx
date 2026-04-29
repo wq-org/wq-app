@@ -90,14 +90,7 @@ export function ProgrammeOfferingsTable({
                   <p className="truncate text-xs font-medium text-foreground">{termLabel}</p>
                   <p className="text-xs text-muted-foreground">{dateRange}</p>
                 </div>
-                <Badge
-                  variant={statusVariant}
-                  size="sm"
-                  className="shrink-0 font-normal"
-                >
-                  {statusLabel}
-                </Badge>
-                <div className="absolute bottom-0 left-0">
+                <div className="shrink-0">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -137,6 +130,15 @@ export function ProgrammeOfferingsTable({
                       </div>
                     </PopoverContent>
                   </Popover>
+                </div>
+                <div className="absolute bottom-0 left-0">
+                  <Badge
+                    variant={statusVariant}
+                    size="sm"
+                    className="shrink-0 font-normal"
+                  >
+                    {statusLabel}
+                  </Badge>
                 </div>
               </div>
             </TickContent>

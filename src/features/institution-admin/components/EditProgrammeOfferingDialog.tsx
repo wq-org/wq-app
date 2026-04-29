@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -21,7 +21,6 @@ import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { updateProgrammeOffering } from '../api/programmeOfferingsApi'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
-import { normalizeTermCode } from '../utils/termCode'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
 
 const END_DATE_PRESET_OFFSETS = [
@@ -71,11 +70,11 @@ export function EditProgrammeOfferingDialog({
   const [endsAtOpen, setEndsAtOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const now = new Date()
-  const currentStartsAt = offering?.starts_at ? new Date(offering.starts_at) : null
-  const canEditActiveDates = Boolean(currentStartsAt && currentStartsAt > now)
 
-  const seedFromOffering = () => {
+  /** Active offerings lock start/end dates; switch to draft to change them. */
+  const datesDisabled = status === 'active'
+
+  const seedFromOffering = useCallback(() => {
     if (!offering) return
     setAcademicYear(offering.academic_year)
     setTermCode(offering.term_code ?? '')
@@ -85,12 +84,12 @@ export function EditProgrammeOfferingDialog({
       to: offering.ends_at ? new Date(offering.ends_at) : undefined,
     })
     setError(null)
-  }
+  }, [offering])
 
   useEffect(() => {
     if (!open || !offering) return
     seedFromOffering()
-  }, [open, offering?.id])
+  }, [open, offering, seedFromOffering])
 
   const validationError = useMemo(() => {
     if (!Number.isFinite(academicYear)) {
@@ -136,13 +135,13 @@ export function EditProgrammeOfferingDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
-          {!canEditActiveDates ? (
+          {datesDisabled ? (
             <Text
               as="p"
               variant="small"
               color="muted"
             >
-              Active offerings allow date edits only when the start date is still in the future.
+              {t('faculties.pages.programmeOfferings.editActiveOffering.datesReadOnly')}
             </Text>
           ) : null}
 
@@ -166,7 +165,7 @@ export function EditProgrammeOfferingDialog({
               'faculties.pages.programmeOfferings.createDialog.fields.termCodePlaceholder',
             )}
             value={termCode}
-            onValueChange={(raw) => setTermCode(normalizeTermCode(raw))}
+            onValueChange={setTermCode}
           />
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -183,7 +182,7 @@ export function EditProgrammeOfferingDialog({
                     type="button"
                     variant="outline"
                     className="justify-start font-normal"
-                    disabled={!canEditActiveDates}
+                    disabled={datesDisabled}
                   >
                     <CalendarIcon className="mr-2 size-4 shrink-0 opacity-70" />
                     {dateRange?.from ? (
@@ -205,7 +204,7 @@ export function EditProgrammeOfferingDialog({
                   <CalendarWithPresets
                     compact
                     value={dateRange?.from}
-                    disabled={!canEditActiveDates ? true : undefined}
+                    disabled={datesDisabled ? true : undefined}
                     onChange={(date) => {
                       setDateRange({
                         from: date,
@@ -232,7 +231,7 @@ export function EditProgrammeOfferingDialog({
                     type="button"
                     variant="outline"
                     className="justify-start font-normal"
-                    disabled={!canEditActiveDates}
+                    disabled={datesDisabled}
                   >
                     <CalendarIcon className="mr-2 size-4 shrink-0 opacity-70" />
                     {dateRange?.to ? (
@@ -255,7 +254,7 @@ export function EditProgrammeOfferingDialog({
                     compact
                     value={dateRange?.to ?? dateRange?.from ?? new Date()}
                     disabled={
-                      !canEditActiveDates
+                      datesDisabled
                         ? true
                         : dateRange?.from
                           ? { before: dateRange.from }

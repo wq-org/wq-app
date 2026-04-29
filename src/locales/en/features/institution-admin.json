@@ -361,7 +361,7 @@
             "academicYearLabel": "Academic year",
             "academicYearPlaceholder": "Search or pick a year…",
             "termCodeLabel": "Term code",
-            "termCodePlaceholder": "e.g. GVM-2026",
+            "termCodePlaceholder": "e.g. MD-2028/31",
             "typicalDateRanges": "Typical programme date ranges in the system",
             "springCourse": "Spring course:",
             "autumnCourse": "Autumn course:",
@@ -378,6 +378,9 @@
           "cancel": "Cancel",
           "create": "Create offering",
           "creating": "Creating..."
+        },
+        "editActiveOffering": {
+          "datesReadOnly": "Start and end dates cannot be changed while the offering is active. Switch to draft to edit dates."
         }
       },
       "cohorts": {
@@ -405,11 +408,16 @@
           "programmeLabel": "Programme",
           "programmePlaceholder": "Select a programme",
           "titleLabel": "Title",
-          "titlePlaceholder": "e.g. Cohort 2027",
+          "titlePlaceholder": "e.g. MD-2027 or Mode Design — MD-2027",
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Describe this cohort",
           "academicYearLabel": "Academic year",
           "academicYearPlaceholder": "e.g. 2027",
+          "academicYearHint": "Defaults to the current year or the next year after your latest cohort for this programme.",
+          "syncTitleLabel": "Auto-fill title from programme code and year",
+          "descriptiveTitleLabel": "Include programme name (Programme — PREFIX-YEAR)",
+          "syncDescriptionLabel": "Suggest description from faculty, programme, and cohort",
+          "syncDescriptionHint": "Updates shortly after you change the title or selections (debounced). Turn off to write your own description.",
           "validation": {
             "facultyRequired": "Please select a faculty.",
             "programmeRequired": "Please select a programme.",
@@ -490,7 +498,16 @@
           "cancel": "Cancel",
           "create": "Create offering",
           "creating": "Creating..."
-        }
+        },
+        "editDialog": {
+          "title": "Edit cohort offering",
+          "description": "Change the programme offering link, dates, or draft/active status.",
+          "cancel": "Cancel",
+          "save": "Save changes",
+          "saving": "Saving..."
+        },
+        "archiveSuccess": "Cohort offering archived",
+        "archiveError": "Could not archive cohort offering."
       },
       "classGroups": {
         "title": "Class groups",
@@ -717,8 +734,8 @@
         "academicYearLabel": "Academic year",
         "academicYearPlaceholder": "Search or pick a year…",
         "termCodeLabel": "Term code",
-        "termCodePlaceholder": "e.g. GVM-2026",
-        "termCodeHint": "Format: 1–6 uppercase letters, dash, 4-digit year (e.g. GVM-2026)",
+        "termCodePlaceholder": "e.g. MD-2028/31",
+        "termCodeHint": "Letters, digits, _, -, /. Typically PREFIX-START/end (e.g. MD-2028/31) or legacy PREFIX-YEAR.",
         "statusActive": "Active",
         "statusDraft": "Draft",
         "statusArchived": "Archived",

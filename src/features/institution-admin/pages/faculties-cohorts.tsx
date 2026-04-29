@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Users, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +12,7 @@ import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { createCohort } from '../api/cohortsApi'
+import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
 import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { CohortCardList } from '../components/CohortCardList'
 import { CreateCohortDialog } from '../components/CreateCohortDialog'
@@ -19,9 +20,17 @@ import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWo
 import { useFacultiesCohorts } from '../hooks/useFacultiesCohorts'
 import type { FacultySummary } from '../types/faculty.types'
 import type { ProgrammeRecord } from '../types/programme.types'
+import {
+  computeNextAcademicYearForProgramme,
+  suggestCohortShortTitle,
+} from '../utils/cohortCreateSuggestion'
+import { buildSuggestedCohortDescription } from '../utils/cohortDescription'
+import { clampAcademicYear } from '../utils/termCode'
+
+const COHORT_DESCRIPTION_DEBOUNCE_MS = 400
 
 export function InstitutionFacultiesCohorts() {
-  const { t } = useTranslation('features.institution-admin')
+  const { t, i18n } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
@@ -31,7 +40,14 @@ export function InstitutionFacultiesCohorts() {
   const [createProgrammeId, setCreateProgrammeId] = useState('')
   const [createName, setCreateName] = useState('')
   const [createDescription, setCreateDescription] = useState('')
-  const [createAcademicYear, setCreateAcademicYear] = useState('')
+  const [createAcademicYear, setCreateAcademicYear] = useState<number>(() =>
+    clampAcademicYear(new Date().getFullYear()),
+  )
+  const [syncTitleWithProgramme, setSyncTitleWithProgramme] = useState(true)
+  const [descriptiveTitle, setDescriptiveTitle] = useState(false)
+  const [syncDescriptionWithProgramme, setSyncDescriptionWithProgramme] = useState(true)
+  const [offeringTermCodes, setOfferingTermCodes] = useState<readonly string[]>([])
+  const cohortProgrammeDefaultsRef = useRef<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
@@ -89,11 +105,13 @@ export function InstitutionFacultiesCohorts() {
   }
 
   const facultyOptions = useMemo(() => {
+    const facultyIdsWithProgrammes = new Set(programmes.map((programme) => programme.faculty_id))
     return faculties.map((faculty) => ({
       id: faculty.id,
       name: faculty.name?.trim() || t('faculties.card.untitled'),
+      disabled: !facultyIdsWithProgrammes.has(faculty.id),
     }))
-  }, [faculties, t])
+  }, [faculties, programmes, t])
 
   const programmeOptions = useMemo(() => {
     return programmes
@@ -104,6 +122,117 @@ export function InstitutionFacultiesCohorts() {
       }))
   }, [createFacultyId, programmes, t])
 
+  const selectedFacultyLabel = useMemo(() => {
+    const row = faculties.find((f) => f.id === createFacultyId)
+    return row?.name?.trim() ?? ''
+  }, [faculties, createFacultyId])
+
+  const selectedProgrammeLabel = useMemo(() => {
+    const p = programmeMap.get(createProgrammeId)
+    return p?.name?.trim() ?? ''
+  }, [programmeMap, createProgrammeId])
+
+  useEffect(() => {
+    if (!isCreateDialogOpen || !createProgrammeId) {
+      setOfferingTermCodes([])
+      return
+    }
+    setOfferingTermCodes([])
+    let cancelled = false
+    void listProgrammeOfferings(createProgrammeId)
+      .then((rows) => {
+        if (cancelled) return
+        setOfferingTermCodes(
+          rows.map((r) => r.term_code ?? '').filter((code) => code.trim().length > 0),
+        )
+      })
+      .catch(() => {
+        if (!cancelled) setOfferingTermCodes([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isCreateDialogOpen, createProgrammeId])
+
+  useEffect(() => {
+    if (!isCreateDialogOpen) {
+      cohortProgrammeDefaultsRef.current = null
+      return
+    }
+    if (!createProgrammeId) {
+      cohortProgrammeDefaultsRef.current = null
+      return
+    }
+    if (cohortProgrammeDefaultsRef.current === createProgrammeId) return
+    cohortProgrammeDefaultsRef.current = createProgrammeId
+
+    const programme = programmeMap.get(createProgrammeId)
+    if (!programme) return
+
+    const years = cohorts
+      .filter((c) => c.programme_id === createProgrammeId)
+      .map((c) => c.academic_year)
+      .filter((y): y is number => y != null && Number.isFinite(y))
+    const nextY = computeNextAcademicYearForProgramme(
+      years,
+      clampAcademicYear(new Date().getFullYear()),
+    )
+    setCreateAcademicYear(nextY)
+    setSyncTitleWithProgramme(true)
+  }, [isCreateDialogOpen, createProgrammeId, cohorts, programmeMap])
+
+  useEffect(() => {
+    if (!isCreateDialogOpen || !createProgrammeId || !syncTitleWithProgramme) return
+    const programme = programmeMap.get(createProgrammeId)
+    if (!programme) return
+
+    setCreateName(
+      suggestCohortShortTitle({
+        programmeName: programme.name ?? '',
+        academicYear: createAcademicYear,
+        offeringTermCodes,
+        descriptive: descriptiveTitle,
+      }),
+    )
+  }, [
+    isCreateDialogOpen,
+    createProgrammeId,
+    createAcademicYear,
+    offeringTermCodes,
+    syncTitleWithProgramme,
+    descriptiveTitle,
+    programmeMap,
+  ])
+
+  useEffect(() => {
+    if (!isCreateDialogOpen || !syncDescriptionWithProgramme) return
+
+    const cohortName = createName.trim()
+    const timerId = window.setTimeout(() => {
+      if (!selectedFacultyLabel || !selectedProgrammeLabel || !cohortName) {
+        setCreateDescription('')
+        return
+      }
+      setCreateDescription(
+        buildSuggestedCohortDescription({
+          language: i18n.language,
+          cohortName,
+          programmeName: selectedProgrammeLabel,
+          facultyName: selectedFacultyLabel,
+        }),
+      )
+    }, COHORT_DESCRIPTION_DEBOUNCE_MS)
+
+    return () => window.clearTimeout(timerId)
+  }, [
+    isCreateDialogOpen,
+    syncDescriptionWithProgramme,
+    createName,
+    selectedFacultyLabel,
+    selectedProgrammeLabel,
+    i18n.language,
+  ])
+
   const createValidationError = useMemo(() => {
     if (!createFacultyId)
       return t('faculties.pages.cohorts.createDialog.validation.facultyRequired')
@@ -111,10 +240,7 @@ export function InstitutionFacultiesCohorts() {
       return t('faculties.pages.cohorts.createDialog.validation.programmeRequired')
     if (!createName.trim())
       return t('faculties.pages.cohorts.createDialog.validation.titleRequired')
-    if (!createAcademicYear.trim())
-      return t('faculties.pages.cohorts.createDialog.validation.academicYearRequired')
-    const yearValue = Number(createAcademicYear)
-    if (!Number.isInteger(yearValue)) {
+    if (!Number.isInteger(createAcademicYear)) {
       return t('faculties.pages.cohorts.createDialog.validation.academicYearInvalid')
     }
     return null
@@ -125,7 +251,12 @@ export function InstitutionFacultiesCohorts() {
     setCreateProgrammeId('')
     setCreateName('')
     setCreateDescription('')
-    setCreateAcademicYear('')
+    setCreateAcademicYear(clampAcademicYear(new Date().getFullYear()))
+    setSyncTitleWithProgramme(true)
+    setDescriptiveTitle(false)
+    setSyncDescriptionWithProgramme(true)
+    setOfferingTermCodes([])
+    cohortProgrammeDefaultsRef.current = null
     setCreateError(null)
     setIsSubmitting(false)
   }
@@ -145,6 +276,21 @@ export function InstitutionFacultiesCohorts() {
   const handleFacultyChange = (facultyId: string) => {
     setCreateFacultyId(facultyId)
     setCreateProgrammeId('')
+    cohortProgrammeDefaultsRef.current = null
+  }
+
+  const handleCreateNameChange = (value: string) => {
+    setCreateName(value)
+    setSyncTitleWithProgramme(false)
+  }
+
+  const handleProgrammeIdChange = (programmeId: string) => {
+    setCreateProgrammeId(programmeId)
+  }
+
+  const handleCreateDescriptionChange = (value: string) => {
+    setCreateDescription(value)
+    setSyncDescriptionWithProgramme(false)
   }
 
   const handleCreateCohort = async () => {
@@ -161,7 +307,7 @@ export function InstitutionFacultiesCohorts() {
         programme_id: createProgrammeId,
         name: createName.trim(),
         description: createDescription.trim() || null,
-        academic_year: Number(createAcademicYear),
+        academic_year: createAcademicYear,
       })
       setIsCreateDialogOpen(false)
       resetCreateForm()
@@ -271,13 +417,19 @@ export function InstitutionFacultiesCohorts() {
         facultyId={createFacultyId}
         onFacultyIdChange={handleFacultyChange}
         programmeId={createProgrammeId}
-        onProgrammeIdChange={setCreateProgrammeId}
-        name={createName}
-        onNameChange={setCreateName}
-        description={createDescription}
-        onDescriptionChange={setCreateDescription}
+        onProgrammeIdChange={handleProgrammeIdChange}
         academicYear={createAcademicYear}
         onAcademicYearChange={setCreateAcademicYear}
+        name={createName}
+        onNameChange={handleCreateNameChange}
+        description={createDescription}
+        onDescriptionChange={handleCreateDescriptionChange}
+        syncTitleWithProgramme={syncTitleWithProgramme}
+        onSyncTitleWithProgrammeChange={setSyncTitleWithProgramme}
+        descriptiveTitle={descriptiveTitle}
+        onDescriptiveTitleChange={setDescriptiveTitle}
+        syncDescriptionWithProgramme={syncDescriptionWithProgramme}
+        onSyncDescriptionWithProgrammeChange={setSyncDescriptionWithProgramme}
         validationError={createValidationError}
         submitError={createError}
         isSubmitting={isSubmitting}
