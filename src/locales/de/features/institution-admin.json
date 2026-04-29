@@ -485,15 +485,23 @@
             "programmeOfferingLabel": "Programmangebot",
             "programmeOfferingPlaceholder": "Programmangebot auswählen",
             "programmeOfferingEmpty": "Keine Programmangebote verfügbar – legen Sie zuerst eines auf der Programmseite an.",
+            "programmeOfferingArchivedSuffix": "archiviert",
+            "programmeOfferingAlreadyLinkedSuffix": "bereits mit diesem Jahrgang verknüpft",
             "startsAtLabel": "Start",
             "endsAtLabel": "Ende",
             "datePlaceholder": "Datum wählen",
             "statusLabel": "Status",
             "statusActive": "Aktiv",
-            "statusDraft": "Entwurf"
+            "statusDraft": "Entwurf",
+            "applyProgrammeOfferingDates": "Programmangebot-Daten übernehmen",
+            "selectProgrammeOfferingForDateHints": "Wählen Sie ein Programmangebot, um den empfohlenen Datumsbereich zu sehen.",
+            "programmeOfferingDatesNotSet": "Für dieses Programmangebot sind noch keine Daten hinterlegt — ergänzen Sie diese zuerst beim Programmangebot.",
+            "startsAtProgrammeOfferingHint": "Wählen Sie einen Start zwischen {{from}} und {{to}} (Programmangebot).",
+            "endsAtProgrammeOfferingHint": "Wählen Sie ein Ende zwischen {{from}} und {{to}} (Programmangebot)."
           },
           "validation": {
-            "programmeOfferingRequired": "Bitte wählen Sie ein Programmangebot aus."
+            "programmeOfferingRequired": "Bitte wählen Sie ein Programmangebot aus.",
+            "noSelectableProgrammeOffering": "Alle Programmangebote dieses Programms sind archiviert oder bereits mit diesem Jahrgang verknüpft."
           },
           "cancel": "Abbrechen",
           "create": "Angebot erstellen",

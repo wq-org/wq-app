@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { de, enUS } from 'date-fns/locale'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, CalendarSync, Info } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -66,6 +66,11 @@ const mapEndDatePresetToStartDate = (
   return matched ? getDateWithOffset(startDate, matched) : selectedDate
 }
 
+type ProgrammeOfferingDateWindow =
+  | { kind: 'no_selection' }
+  | { kind: 'no_po_dates' }
+  | { kind: 'window'; fromLabel: string; toLabel: string }
+
 function formatProgrammeOfferingLabel(offering: ProgrammeOfferingRecord, locale: string): string {
   const dateLocale = locale.startsWith('de') ? de : enUS
   const formatStr = 'd. MMMM yyyy'
@@ -84,6 +89,28 @@ function formatProgrammeOfferingLabel(offering: ProgrammeOfferingRecord, locale:
   return parts.join(' · ')
 }
 
+function programmeOfferingDateHintText(
+  window: ProgrammeOfferingDateWindow,
+  role: 'starts' | 'ends',
+  t: (key: string, options?: Record<string, string>) => string,
+): string {
+  switch (window.kind) {
+    case 'no_selection':
+      return t(
+        'faculties.pages.cohortOfferings.createDialog.fields.selectProgrammeOfferingForDateHints',
+      )
+    case 'no_po_dates':
+      return t('faculties.pages.cohortOfferings.createDialog.fields.programmeOfferingDatesNotSet')
+    case 'window': {
+      const key =
+        role === 'starts'
+          ? 'faculties.pages.cohortOfferings.createDialog.fields.startsAtProgrammeOfferingHint'
+          : 'faculties.pages.cohortOfferings.createDialog.fields.endsAtProgrammeOfferingHint'
+      return t(key, { from: window.fromLabel, to: window.toLabel })
+    }
+  }
+}
+
 export function CreateCohortOfferingDialog({
   open,
   onOpenChange,
@@ -98,6 +125,7 @@ export function CreateCohortOfferingDialog({
 
   const {
     programmeOfferings,
+    linkedProgrammeOfferingIds,
     selectedProgrammeOfferingId,
     setSelectedProgrammeOfferingId,
     status,
@@ -112,9 +140,22 @@ export function CreateCohortOfferingDialog({
   } = useCreateCohortOfferingDialog({ institutionId, programmeId, cohortId, open, onCreated })
 
   const programmeOfferingLabels = useMemo(
-    () => programmeOfferings.map((po) => formatProgrammeOfferingLabel(po, i18n.language)),
-    [i18n.language, programmeOfferings],
+    () =>
+      programmeOfferings.map((po) => {
+        const base = formatProgrammeOfferingLabel(po, i18n.language)
+        if (po.status === 'archived') {
+          return `${base} (${t('faculties.pages.cohortOfferings.createDialog.fields.programmeOfferingArchivedSuffix')})`
+        }
+        if (linkedProgrammeOfferingIds.has(po.id)) {
+          return `${base} (${t('faculties.pages.cohortOfferings.createDialog.fields.programmeOfferingAlreadyLinkedSuffix')})`
+        }
+        return base
+      }),
+    [i18n.language, programmeOfferings, linkedProgrammeOfferingIds, t],
   )
+
+  const isProgrammeOfferingOptionDisabled = (po: ProgrammeOfferingRecord) =>
+    po.status === 'archived' || linkedProgrammeOfferingIds.has(po.id)
 
   const programmeOfferingIdByLabel = useMemo(() => {
     const map = new Map<string, string>()
@@ -129,12 +170,71 @@ export function CreateCohortOfferingDialog({
     return index >= 0 ? programmeOfferingLabels[index] : ''
   }, [programmeOfferingLabels, programmeOfferings, selectedProgrammeOfferingId])
 
+  const selectedProgrammeOffering = useMemo(
+    () =>
+      selectedProgrammeOfferingId
+        ? (programmeOfferings.find((p) => p.id === selectedProgrammeOfferingId) ?? null)
+        : null,
+    [programmeOfferings, selectedProgrammeOfferingId],
+  )
+
+  const canApplyProgrammeOfferingDates = Boolean(
+    selectedProgrammeOffering?.starts_at ?? selectedProgrammeOffering?.ends_at,
+  )
+
+  const programmeOfferingDateWindow = useMemo((): ProgrammeOfferingDateWindow => {
+    if (!selectedProgrammeOffering) {
+      return { kind: 'no_selection' }
+    }
+    const po = selectedProgrammeOffering
+    if (!po.starts_at && !po.ends_at) {
+      return { kind: 'no_po_dates' }
+    }
+    const dateLocale = i18n.language.startsWith('de') ? de : enUS
+    const formatStr = 'd. MMMM yyyy'
+    const fromLabel = po.starts_at
+      ? format(new Date(po.starts_at), formatStr, { locale: dateLocale })
+      : '—'
+    const toLabel = po.ends_at
+      ? format(new Date(po.ends_at), formatStr, { locale: dateLocale })
+      : '—'
+    return { kind: 'window', fromLabel, toLabel }
+  }, [selectedProgrammeOffering, i18n.language])
+
+  const startsAtProgrammeOfferingHint = useMemo(
+    () => programmeOfferingDateHintText(programmeOfferingDateWindow, 'starts', t),
+    [programmeOfferingDateWindow, t],
+  )
+
+  const endsAtProgrammeOfferingHint = useMemo(
+    () => programmeOfferingDateHintText(programmeOfferingDateWindow, 'ends', t),
+    [programmeOfferingDateWindow, t],
+  )
+
+  const selectableProgrammeOfferings = useMemo(
+    () =>
+      programmeOfferings.filter(
+        (po) => po.status !== 'archived' && !linkedProgrammeOfferingIds.has(po.id),
+      ),
+    [programmeOfferings, linkedProgrammeOfferingIds],
+  )
+
   const validationError = useMemo(() => {
+    if (programmeOfferings.length > 0 && selectableProgrammeOfferings.length === 0) {
+      return t(
+        'faculties.pages.cohortOfferings.createDialog.validation.noSelectableProgrammeOffering',
+      )
+    }
     if (!selectedProgrammeOfferingId) {
       return t('faculties.pages.cohortOfferings.createDialog.validation.programmeOfferingRequired')
     }
     return null
-  }, [selectedProgrammeOfferingId, t])
+  }, [
+    programmeOfferings.length,
+    selectableProgrammeOfferings.length,
+    selectedProgrammeOfferingId,
+    t,
+  ])
 
   const canSubmit = !validationError && !isSubmitting && !isLoading
 
@@ -158,9 +258,21 @@ export function CreateCohortOfferingDialog({
       return
     }
     const id = programmeOfferingIdByLabel.get(value)
-    if (id) {
+    const po = id ? programmeOfferings.find((p) => p.id === id) : undefined
+    if (id && po && !isProgrammeOfferingOptionDisabled(po)) {
       setSelectedProgrammeOfferingId(id)
     }
+  }
+
+  const handleApplyProgrammeOfferingDates = () => {
+    if (!selectedProgrammeOffering) return
+    const from = selectedProgrammeOffering.starts_at
+      ? new Date(selectedProgrammeOffering.starts_at)
+      : undefined
+    const to = selectedProgrammeOffering.ends_at
+      ? new Date(selectedProgrammeOffering.ends_at)
+      : undefined
+    setDateRange({ from, to })
   }
 
   return (
@@ -213,14 +325,20 @@ export function CreateCohortOfferingDialog({
                     )}
                   </ComboboxEmpty>
                   <ComboboxList>
-                    {(item: string) => (
-                      <ComboboxItem
-                        key={item}
-                        value={item}
-                      >
-                        {item}
-                      </ComboboxItem>
-                    )}
+                    {(item: string) => {
+                      const id = programmeOfferingIdByLabel.get(item)
+                      const po = id ? programmeOfferings.find((p) => p.id === id) : undefined
+                      const disabled = po ? isProgrammeOfferingOptionDisabled(po) : false
+                      return (
+                        <ComboboxItem
+                          key={item}
+                          value={item}
+                          disabled={disabled}
+                        >
+                          {item}
+                        </ComboboxItem>
+                      )
+                    }}
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
@@ -256,6 +374,7 @@ export function CreateCohortOfferingDialog({
                     align="start"
                   >
                     <CalendarWithPresets
+                      compact
                       value={dateRange?.from}
                       onChange={(date) => {
                         setDateRange({
@@ -270,6 +389,13 @@ export function CreateCohortOfferingDialog({
                     />
                   </PopoverContent>
                 </Popover>
+                <div className="flex items-start gap-1.5 text-sm text-muted-foreground">
+                  <Info
+                    className="mt-0.5 size-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
+                  <span>{startsAtProgrammeOfferingHint}</span>
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -301,6 +427,7 @@ export function CreateCohortOfferingDialog({
                     align="start"
                   >
                     <CalendarWithPresets
+                      compact
                       value={dateRange?.to ?? dateRange?.from ?? new Date()}
                       disabled={dateRange?.from ? { before: dateRange.from } : undefined}
                       onChange={(date) => {
@@ -311,7 +438,29 @@ export function CreateCohortOfferingDialog({
                     />
                   </PopoverContent>
                 </Popover>
+                <div className="flex items-start gap-1.5 text-sm text-muted-foreground">
+                  <Info
+                    className="mt-0.5 size-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
+                  <span>{endsAtProgrammeOfferingHint}</span>
+                </div>
               </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="teal"
+                size="sm"
+                disabled={!canApplyProgrammeOfferingDates}
+                onClick={handleApplyProgrammeOfferingDates}
+              >
+                <CalendarSync />
+                {t(
+                  'faculties.pages.cohortOfferings.createDialog.fields.applyProgrammeOfferingDates',
+                )}
+              </Button>
             </div>
 
             <div className="flex items-center justify-end gap-3">

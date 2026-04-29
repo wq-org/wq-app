@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 
-import { createCohortOffering } from '../api/cohortOfferingsApi'
+import { createCohortOffering, listCohortOfferings } from '../api/cohortOfferingsApi'
 import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
 import type { CohortOfferingRecord } from '../types/cohort-offering.types'
 import type {
@@ -33,9 +33,12 @@ export function useCreateCohortOfferingDialog({
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [linkedProgrammeOfferingIds, setLinkedProgrammeOfferingIds] = useState<ReadonlySet<string>>(
+    new Set(),
+  )
 
   useEffect(() => {
-    if (!open || !programmeId) {
+    if (!open || !programmeId || !cohortId) {
       return
     }
 
@@ -45,13 +48,29 @@ export function useCreateCohortOfferingDialog({
 
     const load = async () => {
       try {
-        const rows = await listProgrammeOfferings(programmeId)
+        const [rows, cohortOfferingRows] = await Promise.all([
+          listProgrammeOfferings(programmeId),
+          listCohortOfferings(cohortId),
+        ])
         if (cancelled) return
+
+        const linked = new Set(cohortOfferingRows.map((r) => r.programme_offering_id))
+        setLinkedProgrammeOfferingIds(linked)
         setProgrammeOfferings(rows)
-        setSelectedProgrammeOfferingId((previous) => previous || rows[0]?.id || '')
+
+        const isSelectable = (po: ProgrammeOfferingRecord) =>
+          po.status !== 'archived' && !linked.has(po.id)
+
+        setSelectedProgrammeOfferingId((previous) => {
+          if (previous && rows.some((p) => p.id === previous && isSelectable(p))) {
+            return previous
+          }
+          return rows.find(isSelectable)?.id ?? ''
+        })
       } catch (loadError) {
         if (!cancelled) {
           setProgrammeOfferings([])
+          setLinkedProgrammeOfferingIds(new Set())
           setError(
             loadError instanceof Error ? loadError.message : 'Failed to load programme offerings',
           )
@@ -67,7 +86,7 @@ export function useCreateCohortOfferingDialog({
     return () => {
       cancelled = true
     }
-  }, [open, programmeId])
+  }, [open, programmeId, cohortId])
 
   const resetForm = () => {
     setSelectedProgrammeOfferingId('')
@@ -122,6 +141,7 @@ export function useCreateCohortOfferingDialog({
 
   return {
     programmeOfferings,
+    linkedProgrammeOfferingIds,
     selectedProgrammeOfferingId,
     setSelectedProgrammeOfferingId,
     status,

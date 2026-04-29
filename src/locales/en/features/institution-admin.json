@@ -485,15 +485,23 @@
             "programmeOfferingLabel": "Programme offering",
             "programmeOfferingPlaceholder": "Select a programme offering",
             "programmeOfferingEmpty": "No programme offerings available — create one first on the programme page.",
+            "programmeOfferingArchivedSuffix": "archived",
+            "programmeOfferingAlreadyLinkedSuffix": "already linked to this cohort",
             "startsAtLabel": "Starts",
             "endsAtLabel": "Ends",
             "datePlaceholder": "Pick a date",
             "statusLabel": "Status",
             "statusActive": "Active",
-            "statusDraft": "Draft"
+            "statusDraft": "Draft",
+            "applyProgrammeOfferingDates": "Use programme offering dates",
+            "selectProgrammeOfferingForDateHints": "Select a programme offering to see the suggested date window.",
+            "programmeOfferingDatesNotSet": "This programme offering has no start/end dates yet — add them on the programme offering first.",
+            "startsAtProgrammeOfferingHint": "Choose a start between {{from}} and {{to}} (programme offering).",
+            "endsAtProgrammeOfferingHint": "Choose an end between {{from}} and {{to}} (programme offering)."
           },
           "validation": {
-            "programmeOfferingRequired": "Please select a programme offering."
+            "programmeOfferingRequired": "Please select a programme offering.",
+            "noSelectableProgrammeOffering": "Every programme offering for this programme is archived or already linked to this cohort."
           },
           "cancel": "Cancel",
           "create": "Create offering",
