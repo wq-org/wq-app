@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 import {
@@ -19,6 +20,7 @@ type YearSelectPopoverProps = {
   onChange: (year: number) => void
   className?: string
   disabled?: boolean
+  side?: 'top' | 'right' | 'bottom' | 'left'
 }
 
 export function YearSelectPopover({
@@ -28,6 +30,7 @@ export function YearSelectPopover({
   years,
   onChange,
   className,
+  side,
   disabled = false,
 }: YearSelectPopoverProps) {
   const [open, setOpen] = useState(false)
@@ -57,22 +60,13 @@ export function YearSelectPopover({
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        side={side}
         className="w-auto p-0"
         align="start"
         onCloseAutoFocus={(event) => event.preventDefault()}
         onWheel={(event) => event.stopPropagation()}
       >
-        {/* Native overflow: Radix ScrollArea + modal popovers inside Dialogs often block wheel / hide the thumb.
-            Thin scrollbar stays visible; wheel is stopped so the parent dialog does not steal scroll or dismiss. */}
-        <div
-          data-slot="scroll-area-native"
-          className={cn(
-            'h-48 w-[min(160px,calc(100vw-2rem))] overflow-y-scroll overscroll-contain p-1',
-            '[scrollbar-width:thin] [scrollbar-color:hsl(var(--border))_hsl(var(--muted)/0.35)]',
-            '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-muted/40',
-          )}
-          onWheel={(event) => event.stopPropagation()}
-        >
+        <ScrollArea className="h-48 w-[min(160px,calc(100vw-2rem))] p-1">
           <ul className="flex flex-col gap-0.5">
             {years.map((y) => (
               <li key={y}>
@@ -92,7 +86,7 @@ export function YearSelectPopover({
               </li>
             ))}
           </ul>
-        </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   )

@@ -355,6 +355,7 @@ export function InstitutionProgrammeOfferings() {
           onOpenChange={setCreateOfferingOpen}
           institutionId={institutionId}
           programmeId={programmeIdParam}
+          programmeName={selectedProgramme?.name ?? ''}
           onCreated={appendOffering}
         />
       ) : null}

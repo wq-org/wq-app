@@ -20,6 +20,11 @@
     "students": "Students",
     "courses": "Courses"
   },
+  "components": {
+    "academicYearCombobox": {
+      "empty": "No matching year."
+    }
+  },
   "assignUsersSheet": {
     "title": "Assign users",
     "description": "Select institution members to assign to this offering.",
@@ -354,9 +359,9 @@
           "description": "Create a time-bound run of this programme.",
           "fields": {
             "academicYearLabel": "Academic year",
+            "academicYearPlaceholder": "Search or pick a year…",
             "termCodeLabel": "Term code",
             "termCodePlaceholder": "e.g. GVM-2026",
-            "termCodeHint": "Use 1–6 uppercase letters, a dash, then a 4-digit year (e.g. GVM-2026).",
             "startsAtLabel": "Starts",
             "endsAtLabel": "Ends",
             "datePlaceholder": "Pick a date",
@@ -707,6 +712,7 @@
       "offering": {
         "intro": "Define one or more programme offerings (academic year / term window). Values are saved when API wiring is ready.",
         "academicYearLabel": "Academic year",
+        "academicYearPlaceholder": "Search or pick a year…",
         "termCodeLabel": "Term code",
         "termCodePlaceholder": "e.g. GVM-2026",
         "termCodeHint": "Format: 1–6 uppercase letters, dash, 4-digit year (e.g. GVM-2026)",
@@ -725,7 +731,8 @@
         "intro": "Name the intake or year group within this programme.",
         "nameLabel": "Cohort name",
         "namePlaceholder": "e.g. Cohort 2026",
-        "academicYearLabel": "Academic year"
+        "academicYearLabel": "Academic year",
+        "academicYearPlaceholder": "Search or pick a year…"
       },
       "cohortOffering": {
         "intro": "Define the calendar window for this cohort.",

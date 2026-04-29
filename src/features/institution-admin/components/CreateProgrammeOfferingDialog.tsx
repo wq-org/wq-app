@@ -17,19 +17,20 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
-import { cn } from '@/lib/utils'
 import { CalendarWithPresets } from '@/components/shared'
 
 import { useCreateProgrammeOfferingDialog } from '../hooks/useCreateProgrammeOfferingDialog'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
-import { isValidTermCode, normalizeTermCode, yearRangeInclusive } from '../utils/termCode'
-import { YearSelectPopover } from './YearSelectPopover'
+import { normalizeTermCode } from '../utils/termCode'
+import { AcademicYearCombobox } from './AcademicYearCombobox'
 
 type CreateProgrammeOfferingDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   institutionId: string | null
   programmeId: string
+  /** Used with `buildTermCode` to pre-fill the term code (e.g. GVM-2026). */
+  programmeName?: string | null
   onCreated: (offering: ProgrammeOfferingRecord) => void
 }
 
@@ -63,6 +64,7 @@ export function CreateProgrammeOfferingDialog({
   onOpenChange,
   institutionId,
   programmeId,
+  programmeName,
   onCreated,
 }: CreateProgrammeOfferingDialogProps) {
   const { t } = useTranslation('features.institution-admin')
@@ -82,9 +84,7 @@ export function CreateProgrammeOfferingDialog({
     error,
     resetForm,
     handleSubmit,
-  } = useCreateProgrammeOfferingDialog({ institutionId, programmeId, onCreated })
-
-  const academicYears = useMemo(() => yearRangeInclusive(1990, 2060), [])
+  } = useCreateProgrammeOfferingDialog({ institutionId, programmeId, programmeName, onCreated })
 
   const validationError = useMemo(() => {
     if (!Number.isFinite(academicYear)) {
@@ -127,12 +127,13 @@ export function CreateProgrammeOfferingDialog({
             <Label>
               {t('faculties.pages.programmeOfferings.createDialog.fields.academicYearLabel')}
             </Label>
-            <YearSelectPopover
-              label={t('faculties.pages.programmeOfferings.createDialog.fields.academicYearLabel')}
+            <AcademicYearCombobox
               value={academicYear}
-              years={academicYears}
-              onChange={setAcademicYear}
-              className="w-auto self-start"
+              onValueChange={setAcademicYear}
+              placeholder={t(
+                'faculties.pages.programmeOfferings.createDialog.fields.academicYearPlaceholder',
+              )}
+              className="self-start"
             />
           </div>
 
@@ -145,16 +146,6 @@ export function CreateProgrammeOfferingDialog({
               value={termCode}
               onValueChange={(raw) => setTermCode(normalizeTermCode(raw))}
             />
-            <p
-              className={cn(
-                'text-xs transition-opacity duration-150',
-                termCode && !isValidTermCode(termCode)
-                  ? 'text-muted-foreground opacity-100'
-                  : 'pointer-events-none select-none opacity-0',
-              )}
-            >
-              {t('faculties.pages.programmeOfferings.createDialog.fields.termCodeHint')}
-            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -185,10 +176,12 @@ export function CreateProgrammeOfferingDialog({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
+                  side="bottom"
                   className="w-auto p-3"
                   align="start"
                 >
                   <CalendarWithPresets
+                    compact
                     value={dateRange?.from}
                     onChange={(date) => {
                       setDateRange({
@@ -230,10 +223,12 @@ export function CreateProgrammeOfferingDialog({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
+                  side="bottom"
                   className="w-auto p-3"
                   align="start"
                 >
                   <CalendarWithPresets
+                    compact
                     value={dateRange?.to ?? dateRange?.from ?? new Date()}
                     disabled={dateRange?.from ? { before: dateRange.from } : undefined}
                     onChange={(date) => {

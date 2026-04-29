@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Text } from '@/components/ui/text'
+import { buildSuggestedProgrammeDescription } from '../utils/programmeDescription'
 import { PROGRAMME_DURATION_YEAR_OPTIONS } from '../utils/programmeDurationYears'
 import { YearSelectPopover } from './YearSelectPopover'
 
@@ -66,11 +68,29 @@ export function CreateProgrammeDialog({
   isSubmitting,
   onSubmit,
 }: CreateProgrammeDialogProps) {
-  const { t } = useTranslation('features.institution-admin')
+  const { t, i18n } = useTranslation('features.institution-admin')
   const resolvedFacultyName =
     facultyOptions.find((option) => option.id === facultyId)?.name ??
     t('faculties.pages.programmes.createDialog.facultyPlaceholder')
   const canSubmit = name.trim().length > 0 && facultyId.length > 0
+
+  useEffect(() => {
+    const trimmedName = name.trim()
+    if (!trimmedName || !facultyId) return
+
+    const timeoutId = window.setTimeout(() => {
+      onDescriptionChange(
+        buildSuggestedProgrammeDescription({
+          language: i18n.language,
+          programmeName: trimmedName,
+          facultyName: resolvedFacultyName,
+          durationYears,
+        }),
+      )
+    }, 500)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [name, durationYears, resolvedFacultyName, i18n.language, onDescriptionChange])
 
   return (
     <Dialog
@@ -118,6 +138,17 @@ export function CreateProgrammeDialog({
               </Select>
             )}
           </div>
+          <div className="grid gap-2">
+            <Label>{t('faculties.pages.programmes.createDialog.durationYearsLabel')}</Label>
+            <YearSelectPopover
+              label={t('faculties.pages.programmes.createDialog.durationYearsLabel')}
+              placeholder={t('faculties.pages.programmes.createDialog.durationYearsPlaceholder')}
+              value={durationYears}
+              years={PROGRAMME_DURATION_YEAR_OPTIONS}
+              onChange={onDurationYearsChange}
+              className="w-full sm:w-48"
+            />
+          </div>
           <FieldInput
             label={t('faculties.pages.programmes.createDialog.titleLabel')}
             placeholder={t('faculties.pages.programmes.createDialog.titlePlaceholder')}
@@ -132,17 +163,6 @@ export function CreateProgrammeDialog({
             onValueChange={onDescriptionChange}
             rows={3}
           />
-          <div className="grid gap-2">
-            <Label>{t('faculties.pages.programmes.createDialog.durationYearsLabel')}</Label>
-            <YearSelectPopover
-              label={t('faculties.pages.programmes.createDialog.durationYearsLabel')}
-              placeholder={t('faculties.pages.programmes.createDialog.durationYearsPlaceholder')}
-              value={durationYears}
-              years={PROGRAMME_DURATION_YEAR_OPTIONS}
-              onChange={onDurationYearsChange}
-              className="w-full sm:w-48"
-            />
-          </div>
           {validationError ? (
             <Text
               as="p"

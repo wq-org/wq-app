@@ -1,13 +1,11 @@
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
+import { AcademicYearCombobox } from './AcademicYearCombobox'
 import { HelpPopover } from './HelpPopover'
-import { YearSelectPopover } from './YearSelectPopover'
-import { yearRangeInclusive } from '../utils/termCode'
 
 type CohortStepProps = {
   name: string
@@ -23,7 +21,6 @@ export function CohortStep({
   onAcademicYearChange,
 }: CohortStepProps) {
   const { t } = useTranslation('features.institution-admin')
-  const academicYears = useMemo(() => yearRangeInclusive(1990, 2060), [])
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -63,12 +60,11 @@ export function CohortStep({
         <div className="flex flex-col gap-2">
           <Label>{t('faculties.wizard.cohort.academicYearLabel')}</Label>
 
-          <YearSelectPopover
-            label={t('faculties.wizard.cohort.academicYearLabel')}
+          <AcademicYearCombobox
             value={academicYear}
-            years={academicYears}
-            onChange={onAcademicYearChange}
-            className="w-full sm:w-48"
+            onValueChange={onAcademicYearChange}
+            placeholder={t('faculties.wizard.cohort.academicYearPlaceholder')}
+            className="sm:w-48"
           />
         </div>
       </FieldCard>

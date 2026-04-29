@@ -17,6 +17,20 @@ export function yearRangeInclusive(min: number, max: number): readonly number[] 
   return out
 }
 
+export const ACADEMIC_YEAR_MIN = 1999
+export const ACADEMIC_YEAR_MAX = 2099
+
+/** Academic years for UI pickers (newest first: 2099 … 1999). */
+export const ACADEMIC_YEAR_OPTIONS: readonly number[] = yearRangeInclusive(
+  ACADEMIC_YEAR_MIN,
+  ACADEMIC_YEAR_MAX,
+)
+
+export function clampAcademicYear(year: number): number {
+  if (!Number.isFinite(year)) return new Date().getFullYear()
+  return Math.min(Math.max(Math.round(year), ACADEMIC_YEAR_MIN), ACADEMIC_YEAR_MAX)
+}
+
 // ---------------------------------------------------------------------------
 // Term-code derivation
 // ---------------------------------------------------------------------------
@@ -212,6 +226,18 @@ export function buildTermCode(termName: string, year = new Date().getFullYear())
     .slice(0, 6) // max 6 chars to keep codes readable
 
   return acronym ? `${acronym}-${year}` : String(year)
+}
+
+/**
+ * Suggested term code from a programme title and year.
+ * Empty / whitespace title → `''` (avoids `buildTermCode('', y)` returning only a year).
+ */
+export function deriveSuggestedTermCode(
+  programmeTitle: string | null | undefined,
+  year: number,
+): string {
+  const name = programmeTitle?.trim() ?? ''
+  return name.length > 0 ? buildTermCode(name, year) : ''
 }
 
 /**

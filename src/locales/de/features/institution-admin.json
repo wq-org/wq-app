@@ -20,6 +20,11 @@
     "students": "Studierende",
     "courses": "Kurse"
   },
+  "components": {
+    "academicYearCombobox": {
+      "empty": "Kein passendes Jahr."
+    }
+  },
   "assignUsersSheet": {
     "title": "Nutzer zuweisen",
     "description": "Wählen Sie Institutionsmitglieder für dieses Angebot aus.",
@@ -354,9 +359,9 @@
           "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieses Programms.",
           "fields": {
             "academicYearLabel": "Akademisches Jahr",
+            "academicYearPlaceholder": "Jahr suchen oder wählen…",
             "termCodeLabel": "Term-Code",
             "termCodePlaceholder": "z. B. GVM-2026",
-            "termCodeHint": "1–6 Großbuchstaben, ein Bindestrich und eine vierstellige Jahreszahl (z. B. GVM-2026).",
             "startsAtLabel": "Start",
             "endsAtLabel": "Ende",
             "datePlaceholder": "Datum wählen",
@@ -707,6 +712,7 @@
       "offering": {
         "intro": "Legen Sie ein oder mehrere Programmangebote (Studienjahr / Terminfenster) fest. Die Speicherung folgt mit der API.",
         "academicYearLabel": "Studienjahr",
+        "academicYearPlaceholder": "Jahr suchen oder wählen…",
         "termCodeLabel": "Term-Code",
         "termCodePlaceholder": "z. B. GVM-2026",
         "termCodeHint": "Format: 1–6 Großbuchstaben, Bindestrich, 4-stellige Jahreszahl (z. B. GVM-2026)",
@@ -725,7 +731,8 @@
         "intro": "Benennen Sie die Aufnahme- oder Jahrgangsgruppe innerhalb dieses Programms.",
         "nameLabel": "Jahrgangsname",
         "namePlaceholder": "z. B. Jahrgang 2026",
-        "academicYearLabel": "Studienjahr"
+        "academicYearLabel": "Studienjahr",
+        "academicYearPlaceholder": "Jahr suchen oder wählen…"
       },
       "cohortOffering": {
         "intro": "Legen Sie das Kalenderfenster für diesen Jahrgang fest.",

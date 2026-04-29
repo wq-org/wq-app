@@ -41,6 +41,7 @@ type CalendarWithPresetsProps = {
   onChange: (date: Date | undefined) => void
   disabled?: ComponentProps<typeof Calendar>['disabled']
   className?: string
+  compact?: boolean
 }
 
 export function CalendarWithPresets({
@@ -48,6 +49,7 @@ export function CalendarWithPresets({
   onChange,
   disabled,
   className,
+  compact,
 }: CalendarWithPresetsProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(
     value ?? new Date(currentYear, new Date().getMonth(), 1),
@@ -61,7 +63,10 @@ export function CalendarWithPresets({
   }
 
   return (
-    <div className={cn('flex flex-col gap-0', className)}>
+    <ScrollArea
+      className={cn('flex flex-col gap-0', compact && 'h-91', className)}
+      onWheel={(event) => event.stopPropagation()}
+    >
       {/* Month / year navigation header */}
       <div className="flex items-center gap-1 px-2 pb-1">
         <Popover
@@ -79,6 +84,7 @@ export function CalendarWithPresets({
             </Button>
           </PopoverTrigger>
           <PopoverContent
+            side="bottom"
             className="w-40 p-1"
             align="start"
           >
@@ -176,6 +182,6 @@ export function CalendarWithPresets({
           </Button>
         ))}
       </div>
-    </div>
+    </ScrollArea>
   )
 }

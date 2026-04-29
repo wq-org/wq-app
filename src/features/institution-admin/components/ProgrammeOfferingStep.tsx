@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -13,9 +13,9 @@ import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 import { CalendarWithPresets } from '@/components/shared'
-import { YearSelectPopover } from './YearSelectPopover'
+import { AcademicYearCombobox } from './AcademicYearCombobox'
 import { HelpPopover } from './HelpPopover'
-import { isValidTermCode, normalizeTermCode, yearRangeInclusive } from '../utils/termCode'
+import { deriveSuggestedTermCode, isValidTermCode, normalizeTermCode } from '../utils/termCode'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 
 type OfferingDraft = {
@@ -67,10 +67,21 @@ export function ProgrammeOfferingStep({
   onUpdateOffering,
   onAddOffering,
   onRemoveOffering,
+  programmeName,
 }: ProgrammeOfferingStepProps) {
   const { t } = useTranslation('features.institution-admin')
-  const academicYearsOffering = yearRangeInclusive(1990, 2060)
   const [openPopover, setOpenPopover] = useState<string | null>(null)
+  const manualTermCodeRowIdsRef = useRef<Set<string>>(new Set())
+
+  useEffect(() => {
+    for (const row of offerings) {
+      if (manualTermCodeRowIdsRef.current.has(row.id)) continue
+      const next = deriveSuggestedTermCode(programmeName, row.academicYear)
+      if (row.termCode !== next) {
+        onUpdateOffering(row.id, { termCode: next })
+      }
+    }
+  }, [offerings, onUpdateOffering, programmeName])
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -121,15 +132,12 @@ export function ProgrammeOfferingStep({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label>{t('faculties.wizard.offering.academicYearLabel')}</Label>
-              <div className="self-start">
-                <YearSelectPopover
-                  label={t('faculties.wizard.offering.academicYearLabel')}
-                  value={row.academicYear}
-                  years={academicYearsOffering}
-                  onChange={(y) => onUpdateOffering(row.id, { academicYear: y })}
-                  className="w-auto"
-                />
-              </div>
+              <AcademicYearCombobox
+                value={row.academicYear}
+                onValueChange={(y) => onUpdateOffering(row.id, { academicYear: y })}
+                placeholder={t('faculties.wizard.offering.academicYearPlaceholder')}
+                className="self-start sm:w-48"
+              />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -137,9 +145,10 @@ export function ProgrammeOfferingStep({
                 label={t('faculties.wizard.offering.termCodeLabel')}
                 placeholder={t('faculties.wizard.offering.termCodePlaceholder')}
                 value={row.termCode}
-                onValueChange={(raw) =>
+                onValueChange={(raw) => {
+                  manualTermCodeRowIdsRef.current.add(row.id)
                   onUpdateOffering(row.id, { termCode: normalizeTermCode(raw) })
-                }
+                }}
               />
               {/* Show format hint only when the code exists but doesn't match the pattern */}
               <p
