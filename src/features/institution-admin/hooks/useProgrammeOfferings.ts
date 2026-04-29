@@ -72,6 +72,10 @@ export function useProgrammeOfferings({ institutionId, facultyId, programmeId }:
     setOfferings((rows) => [...rows, created])
   }, [])
 
+  const replaceOffering = useCallback((updated: ProgrammeOfferingRecord) => {
+    setOfferings((rows) => rows.map((row) => (row.id === updated.id ? updated : row)))
+  }, [])
+
   return {
     programmes,
     facultyName,
@@ -81,5 +85,6 @@ export function useProgrammeOfferings({ institutionId, facultyId, programmeId }:
     error,
     updateProgrammeInList,
     appendOffering,
+    replaceOffering,
   }
 }

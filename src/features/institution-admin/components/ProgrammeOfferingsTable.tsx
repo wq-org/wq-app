@@ -1,6 +1,10 @@
+import { Archive, EllipsisVertical, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { HoldConfirmButton } from '@/components/ui/HoldConfirmButton'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tick, TickContent, TickContents, TickTrack, Ticks } from '@/components/ui/tick'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 
@@ -31,9 +35,15 @@ function getTimelineYear(value: string | null, fallback: number): number {
 
 type ProgrammeOfferingsTableProps = {
   offerings: readonly ProgrammeOfferingRecord[]
+  onEditOffering?: (offeringId: string) => void
+  onArchiveOffering?: (offeringId: string) => void
 }
 
-export function ProgrammeOfferingsTable({ offerings }: ProgrammeOfferingsTableProps) {
+export function ProgrammeOfferingsTable({
+  offerings,
+  onEditOffering,
+  onArchiveOffering,
+}: ProgrammeOfferingsTableProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
 
   const ticks = Array.from(
@@ -75,7 +85,7 @@ export function ProgrammeOfferingsTable({ offerings }: ProgrammeOfferingsTablePr
               min={TIMELINE_MIN_YEAR}
               max={TIMELINE_MAX_YEAR}
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="relative flex items-start justify-between gap-3 pb-7">
                 <div className="min-w-0 space-y-0.5">
                   <p className="truncate text-xs font-medium text-foreground">{termLabel}</p>
                   <p className="text-xs text-muted-foreground">{dateRange}</p>
@@ -87,6 +97,47 @@ export function ProgrammeOfferingsTable({ offerings }: ProgrammeOfferingsTablePr
                 >
                   {statusLabel}
                 </Badge>
+                <div className="absolute bottom-0 left-0">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="size-6"
+                      >
+                        <EllipsisVertical className="size-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      side="top"
+                      className="w-44 p-2"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="justify-start"
+                          onClick={() => onEditOffering?.(offering.id)}
+                        >
+                          <Pencil className="size-4" />
+                          Edit
+                        </Button>
+                        <HoldConfirmButton
+                          variant="orange"
+                          size="sm"
+                          className="justify-start"
+                          icon={<Archive className="size-4 shrink-0" />}
+                          onConfirm={() => onArchiveOffering?.(offering.id)}
+                        >
+                          Archive
+                        </HoldConfirmButton>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </TickContent>
           )

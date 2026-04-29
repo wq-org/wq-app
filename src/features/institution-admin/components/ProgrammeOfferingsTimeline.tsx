@@ -23,6 +23,8 @@ type ProgrammeOfferingsTimelineProps = {
   isProgrammeMissing: boolean
   isFilteredEmpty: boolean
   t: (key: string) => string
+  onEditOffering?: (offeringId: string) => void
+  onArchiveOffering?: (offeringId: string) => void
 }
 
 export function ProgrammeOfferingsTimeline({
@@ -32,6 +34,8 @@ export function ProgrammeOfferingsTimeline({
   isProgrammeMissing,
   isFilteredEmpty,
   t,
+  onEditOffering,
+  onArchiveOffering,
 }: ProgrammeOfferingsTimelineProps) {
   const [activeTabId, setActiveTabId] = useState<TimelineTabId>('timeline')
 
@@ -103,11 +107,21 @@ export function ProgrammeOfferingsTimeline({
         onTabChange={(tabId) => setActiveTabId(tabId as TimelineTabId)}
       />
       {activeTabId === 'timeline' ? (
-        <ProgrammeOfferingsTable offerings={activeOfferings} />
+        <ProgrammeOfferingsTable
+          offerings={activeOfferings}
+          onEditOffering={onEditOffering}
+          onArchiveOffering={onArchiveOffering}
+        />
       ) : activeTabId === 'drafts' ? (
-        <ProgrammeOfferingsTimelineCardList offerings={draftOfferings} />
+        <ProgrammeOfferingsTimelineCardList
+          offerings={draftOfferings}
+          onEdit={onEditOffering}
+        />
       ) : (
-        <ProgrammeOfferingsTimelineCardList offerings={archivedOfferings} />
+        <ProgrammeOfferingsTimelineCardList
+          offerings={archivedOfferings}
+          onEdit={onEditOffering}
+        />
       )}
     </div>
   )

@@ -31,11 +31,12 @@ export function ProgrammeOfferingsTimelineCard({
     offering.status === 'active'
       ? t('faculties.pages.programmeOfferings.offering.statusActive')
       : offering.status === 'draft'
-        ? t('faculties.wizard.programmeOffering.statusDraft')
+        ? t('faculties.pages.programmeOfferings.createDialog.fields.statusDraft')
         : t('faculties.pages.programmeOfferings.offering.statusInactive')
 
   const statusVariant =
-    offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'secondary' : 'secondary'
+    offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'orange' : 'secondary'
+  const isArchived = offering.status === 'archived'
 
   const notSet = t('faculties.pages.programmeOfferings.offering.notSet')
   const dateRange = `${formatDate(offering.starts_at, i18n.language, notSet)} - ${formatDate(offering.ends_at, i18n.language, notSet)}`
@@ -53,8 +54,9 @@ export function ProgrammeOfferingsTimelineCard({
           <Button
             type="button"
             size="sm"
-            variant="outline"
+            variant="darkblue"
             onClick={handleEdit}
+            disabled={isArchived}
           >
             <Pencil className="size-4" />
             Edit

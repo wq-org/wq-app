@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 
-import { createProgrammeOffering } from '../api/programmeOfferingsApi'
+import { createProgrammeOffering, listProgrammeOfferings } from '../api/programmeOfferingsApi'
 import type {
   ProgrammeOfferingRecord,
   ProgrammeOfferingStatus,
@@ -9,6 +9,7 @@ import type {
 import { clampAcademicYear, deriveSuggestedTermCode } from '../utils/termCode'
 
 type UseCreateProgrammeOfferingDialogParams = {
+  open: boolean
   institutionId: string | null
   programmeId: string
   /** Programme title — used with {@link buildTermCode} to derive `PREFIX-YEAR` (e.g. GVM-2026). */
@@ -16,7 +17,26 @@ type UseCreateProgrammeOfferingDialogParams = {
   onCreated: (offering: ProgrammeOfferingRecord) => void
 }
 
+function getNextAcademicYearFromOfferings(
+  offerings: readonly ProgrammeOfferingRecord[],
+  fallbackYear: number,
+): number {
+  const relevantOfferings = offerings.filter((offering) => offering.status !== 'archived')
+  if (relevantOfferings.length === 0) return fallbackYear
+
+  const maxKnownYear = relevantOfferings.reduce((maxYear, offering) => {
+    const startsAtYear = offering.starts_at ? new Date(offering.starts_at).getFullYear() : null
+    const candidateYear = Number.isFinite(startsAtYear)
+      ? Number(startsAtYear)
+      : offering.academic_year
+    return Math.max(maxYear, candidateYear)
+  }, fallbackYear - 1)
+
+  return clampAcademicYear(maxKnownYear + 1)
+}
+
 export function useCreateProgrammeOfferingDialog({
+  open,
   institutionId,
   programmeId,
   programmeName,
@@ -24,6 +44,7 @@ export function useCreateProgrammeOfferingDialog({
 }: UseCreateProgrammeOfferingDialogParams) {
   const initialYear = clampAcademicYear(new Date().getFullYear())
 
+  const [suggestedAcademicYear, setSuggestedAcademicYear] = useState<number>(initialYear)
   const [academicYear, setAcademicYear] = useState<number>(initialYear)
   const [termCode, setTermCodeState] = useState<string>(() =>
     deriveSuggestedTermCode(programmeName, initialYear),
@@ -45,6 +66,40 @@ export function useCreateProgrammeOfferingDialog({
   }
 
   useEffect(() => {
+    if (!open || !institutionId || !programmeId) return
+    let cancelled = false
+
+    void (async () => {
+      try {
+        const existingOfferings = await listProgrammeOfferings(programmeId)
+        if (cancelled) return
+
+        const fallbackYear = clampAcademicYear(new Date().getFullYear())
+        const nextAcademicYear = getNextAcademicYearFromOfferings(existingOfferings, fallbackYear)
+
+        setSuggestedAcademicYear(nextAcademicYear)
+        setAcademicYear(nextAcademicYear)
+        if (isAutoDerivedRef.current) {
+          setTermCodeState(deriveSuggestedTermCode(programmeName, nextAcademicYear))
+        }
+      } catch {
+        if (!cancelled) {
+          const fallbackYear = clampAcademicYear(new Date().getFullYear())
+          setSuggestedAcademicYear(fallbackYear)
+          setAcademicYear(fallbackYear)
+          if (isAutoDerivedRef.current) {
+            setTermCodeState(deriveSuggestedTermCode(programmeName, fallbackYear))
+          }
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [open, institutionId, programmeId, programmeName])
+
+  useEffect(() => {
     if (prevProgrammeIdRef.current !== programmeId) {
       prevProgrammeIdRef.current = programmeId
       isAutoDerivedRef.current = true
@@ -54,7 +109,7 @@ export function useCreateProgrammeOfferingDialog({
   }, [programmeId, programmeName, academicYear])
 
   const resetForm = () => {
-    const y = clampAcademicYear(new Date().getFullYear())
+    const y = suggestedAcademicYear
     isAutoDerivedRef.current = true
     prevProgrammeIdRef.current = programmeId
     setAcademicYear(y)

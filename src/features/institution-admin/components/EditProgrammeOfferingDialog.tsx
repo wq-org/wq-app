@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
+import type { DateRange } from 'react-day-picker'
 
+import { CalendarWithPresets } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,23 +19,10 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
-import { CalendarWithPresets } from '@/components/shared'
-
-import { useCreateProgrammeOfferingDialog } from '../hooks/useCreateProgrammeOfferingDialog'
+import { updateProgrammeOffering } from '../api/programmeOfferingsApi'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 import { normalizeTermCode } from '../utils/termCode'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
-
-type CreateProgrammeOfferingDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  institutionId: string | null
-  programmeId: string
-  /** Used with `buildTermCode` to pre-fill the term code (e.g. GVM-2026). */
-  programmeName?: string | null
-  programmeDurationYears?: number | null
-  onCreated: (offering: ProgrammeOfferingRecord) => void
-}
 
 const END_DATE_PRESET_OFFSETS = [
   { kind: 'days' as const, value: 0 },
@@ -60,39 +49,48 @@ const mapEndDatePresetToStartDate = (
   return matched ? getDateWithOffset(startDate, matched) : selectedDate
 }
 
-export function CreateProgrammeOfferingDialog({
+type EditProgrammeOfferingDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  offering: ProgrammeOfferingRecord | null
+  onUpdated: (offering: ProgrammeOfferingRecord) => void
+}
+
+export function EditProgrammeOfferingDialog({
   open,
   onOpenChange,
-  institutionId,
-  programmeId,
-  programmeName,
-  programmeDurationYears,
-  onCreated,
-}: CreateProgrammeOfferingDialogProps) {
+  offering,
+  onUpdated,
+}: EditProgrammeOfferingDialogProps) {
   const { t } = useTranslation('features.institution-admin')
+  const [academicYear, setAcademicYear] = useState<number>(new Date().getFullYear())
+  const [termCode, setTermCode] = useState('')
+  const [status, setStatus] = useState<ProgrammeOfferingRecord['status']>('draft')
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [startsAtOpen, setStartsAtOpen] = useState(false)
   const [endsAtOpen, setEndsAtOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const now = new Date()
+  const currentStartsAt = offering?.starts_at ? new Date(offering.starts_at) : null
+  const canEditActiveDates = Boolean(currentStartsAt && currentStartsAt > now)
 
-  const {
-    academicYear,
-    setAcademicYear,
-    termCode,
-    setTermCode,
-    status,
-    setStatus,
-    dateRange,
-    setDateRange,
-    isSubmitting,
-    error,
-    resetForm,
-    handleSubmit,
-  } = useCreateProgrammeOfferingDialog({
-    open,
-    institutionId,
-    programmeId,
-    programmeName,
-    onCreated,
-  })
+  const seedFromOffering = () => {
+    if (!offering) return
+    setAcademicYear(offering.academic_year)
+    setTermCode(offering.term_code ?? '')
+    setStatus(offering.status)
+    setDateRange({
+      from: offering.starts_at ? new Date(offering.starts_at) : undefined,
+      to: offering.ends_at ? new Date(offering.ends_at) : undefined,
+    })
+    setError(null)
+  }
+
+  useEffect(() => {
+    if (!open || !offering) return
+    seedFromOffering()
+  }, [open, offering?.id])
 
   const validationError = useMemo(() => {
     if (!Number.isFinite(academicYear)) {
@@ -101,60 +99,53 @@ export function CreateProgrammeOfferingDialog({
     return null
   }, [academicYear, t])
 
-  const canSubmit = !validationError && !isSubmitting
-  const resolvedDurationYears =
-    programmeDurationYears != null && programmeDurationYears > 0 ? programmeDurationYears : 1
-  const durationMonths = Math.round(resolvedDurationYears * 12)
-
-  const buildPresetRange = (startMonthIndex: number) => {
-    const start = new Date(academicYear, startMonthIndex, 1)
-    const end = addDays(addMonths(start, durationMonths), -1)
-    return { start, end, label: `${format(start, 'dd.MM.yyyy')} - ${format(end, 'dd.MM.yyyy')}` }
-  }
-
-  const springPreset = buildPresetRange(3)
-  const autumnPreset = buildPresetRange(9)
-
-  const applySpringCourseRange = () => {
-    setDateRange({ from: springPreset.start, to: springPreset.end })
-    setStartsAtOpen(false)
-    setEndsAtOpen(false)
-  }
-
-  const applyAutumnCourseRange = () => {
-    setDateRange({ from: autumnPreset.start, to: autumnPreset.end })
-    setStartsAtOpen(false)
-    setEndsAtOpen(false)
-  }
-
-  const handleClose = (nextOpen: boolean) => {
-    onOpenChange(nextOpen)
-    if (!nextOpen) {
-      resetForm()
-    }
-  }
-
-  const handleCreate = async () => {
-    const created = await handleSubmit()
-    if (created) {
+  const handleSave = async () => {
+    if (!offering || validationError) return
+    setIsSubmitting(true)
+    setError(null)
+    try {
+      const updated = await updateProgrammeOffering({
+        offeringId: offering.id,
+        academic_year: academicYear,
+        term_code: termCode.trim() || null,
+        status,
+        starts_at: dateRange?.from ? dateRange.from.toISOString() : null,
+        ends_at: dateRange?.to ? dateRange.to.toISOString() : null,
+      })
+      onUpdated(updated)
       onOpenChange(false)
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error ? saveError.message : 'Failed to update programme offering',
+      )
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
     <Dialog
       open={open}
-      onOpenChange={handleClose}
+      onOpenChange={onOpenChange}
     >
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>{t('faculties.pages.programmeOfferings.createDialog.title')}</DialogTitle>
+          <DialogTitle>Edit programme offering</DialogTitle>
           <DialogDescription>
             {t('faculties.pages.programmeOfferings.createDialog.description')}
           </DialogDescription>
         </DialogHeader>
-
         <div className="grid gap-4">
+          {!canEditActiveDates ? (
+            <Text
+              as="p"
+              variant="small"
+              color="muted"
+            >
+              Active offerings allow date edits only when the start date is still in the future.
+            </Text>
+          ) : null}
+
           <div className="flex flex-col gap-2">
             <Label>
               {t('faculties.pages.programmeOfferings.createDialog.fields.academicYearLabel')}
@@ -169,42 +160,14 @@ export function CreateProgrammeOfferingDialog({
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <FieldInput
-              label={t('faculties.pages.programmeOfferings.createDialog.fields.termCodeLabel')}
-              placeholder={t(
-                'faculties.pages.programmeOfferings.createDialog.fields.termCodePlaceholder',
-              )}
-              value={termCode}
-              onValueChange={(raw) => setTermCode(normalizeTermCode(raw))}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label>
-              {t('faculties.pages.programmeOfferings.createDialog.fields.typicalDateRanges')}
-            </Label>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="teal"
-                size="xs"
-                onClick={applySpringCourseRange}
-              >
-                {t('faculties.pages.programmeOfferings.createDialog.fields.springCourse')}{' '}
-                {springPreset.label}
-              </Button>
-              <Button
-                type="button"
-                variant="teal"
-                size="xs"
-                onClick={applyAutumnCourseRange}
-              >
-                {t('faculties.pages.programmeOfferings.createDialog.fields.autumnCourse')}{' '}
-                {autumnPreset.label}
-              </Button>
-            </div>
-          </div>
+          <FieldInput
+            label={t('faculties.pages.programmeOfferings.createDialog.fields.termCodeLabel')}
+            placeholder={t(
+              'faculties.pages.programmeOfferings.createDialog.fields.termCodePlaceholder',
+            )}
+            value={termCode}
+            onValueChange={(raw) => setTermCode(normalizeTermCode(raw))}
+          />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
@@ -220,6 +183,7 @@ export function CreateProgrammeOfferingDialog({
                     type="button"
                     variant="outline"
                     className="justify-start font-normal"
+                    disabled={!canEditActiveDates}
                   >
                     <CalendarIcon className="mr-2 size-4 shrink-0 opacity-70" />
                     {dateRange?.from ? (
@@ -241,6 +205,7 @@ export function CreateProgrammeOfferingDialog({
                   <CalendarWithPresets
                     compact
                     value={dateRange?.from}
+                    disabled={!canEditActiveDates ? true : undefined}
                     onChange={(date) => {
                       setDateRange({
                         from: date,
@@ -267,6 +232,7 @@ export function CreateProgrammeOfferingDialog({
                     type="button"
                     variant="outline"
                     className="justify-start font-normal"
+                    disabled={!canEditActiveDates}
                   >
                     <CalendarIcon className="mr-2 size-4 shrink-0 opacity-70" />
                     {dateRange?.to ? (
@@ -288,10 +254,18 @@ export function CreateProgrammeOfferingDialog({
                   <CalendarWithPresets
                     compact
                     value={dateRange?.to ?? dateRange?.from ?? new Date()}
-                    disabled={dateRange?.from ? { before: dateRange.from } : undefined}
+                    disabled={
+                      !canEditActiveDates
+                        ? true
+                        : dateRange?.from
+                          ? { before: dateRange.from }
+                          : undefined
+                    }
                     onChange={(date) => {
-                      const resolved = mapEndDatePresetToStartDate(date, dateRange?.from)
-                      setDateRange({ from: dateRange?.from, to: resolved })
+                      setDateRange({
+                        from: dateRange?.from,
+                        to: mapEndDatePresetToStartDate(date, dateRange?.from),
+                      })
                       setEndsAtOpen(false)
                     }}
                   />
@@ -321,7 +295,6 @@ export function CreateProgrammeOfferingDialog({
               {validationError}
             </Text>
           ) : null}
-
           {error ? (
             <Text
               as="p"
@@ -332,12 +305,11 @@ export function CreateProgrammeOfferingDialog({
             </Text>
           ) : null}
         </div>
-
         <DialogFooter>
           <Button
             type="button"
             variant="outline"
-            onClick={() => handleClose(false)}
+            onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
           >
             {t('faculties.pages.programmeOfferings.createDialog.cancel')}
@@ -345,12 +317,10 @@ export function CreateProgrammeOfferingDialog({
           <Button
             type="button"
             variant="darkblue"
-            onClick={handleCreate}
-            disabled={!canSubmit}
+            onClick={handleSave}
+            disabled={Boolean(validationError) || isSubmitting || !offering}
           >
-            {isSubmitting
-              ? t('faculties.pages.programmeOfferings.createDialog.creating')
-              : t('faculties.pages.programmeOfferings.createDialog.create')}
+            {isSubmitting ? 'Saving...' : 'Save changes'}
           </Button>
         </DialogFooter>
       </DialogContent>

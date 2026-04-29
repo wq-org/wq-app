@@ -46,6 +46,50 @@ export async function createProgrammeOffering(
   return toProgrammeOffering(data as ProgrammeOfferingRecord)
 }
 
+type UpdateProgrammeOfferingInput = {
+  offeringId: string
+  academic_year: number
+  term_code: string | null
+  starts_at: string | null
+  ends_at: string | null
+  status: ProgrammeOfferingRecord['status']
+}
+
+export async function updateProgrammeOffering({
+  offeringId,
+  academic_year,
+  term_code,
+  starts_at,
+  ends_at,
+  status,
+}: UpdateProgrammeOfferingInput): Promise<ProgrammeOfferingRecord> {
+  const { data, error } = await supabase
+    .from('programme_offerings')
+    .update({ academic_year, term_code, starts_at, ends_at, status })
+    .eq('id', offeringId)
+    .select(COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toProgrammeOffering(data as ProgrammeOfferingRecord)
+}
+
+export async function archiveProgrammeOffering(
+  offeringId: string,
+): Promise<ProgrammeOfferingRecord> {
+  const { data, error } = await supabase
+    .from('programme_offerings')
+    .update({ status: 'archived' })
+    .eq('id', offeringId)
+    .select(COLUMNS)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toProgrammeOffering(data as ProgrammeOfferingRecord)
+}
+
 export async function listProgrammeOfferingsByInstitution(
   institutionId: string,
 ): Promise<readonly Pick<ProgrammeOfferingRecord, 'programme_id' | 'status'>[]> {

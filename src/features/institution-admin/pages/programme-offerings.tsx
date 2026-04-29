@@ -22,9 +22,12 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { archiveProgrammeOffering } from '../api/programmeOfferingsApi'
 import { archiveProgramme, updateProgramme } from '../api/programmesApi'
 import { CohortCardList } from '../components/CohortCardList'
 import { CreateProgrammeOfferingDialog } from '../components/CreateProgrammeOfferingDialog'
+import { EditProgrammeOfferingsDraftDialog } from '../components/EditProgrammeOfferingsDraftDialog'
+import { EditProgrammeOfferingDialog } from '../components/EditProgrammeOfferingDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { ProgrammeOfferingsTimeline } from '../components/ProgrammeOfferingsTimeline'
 import { ProgrammeSettings } from '../components/ProgrammeSettings'
@@ -59,6 +62,7 @@ export function InstitutionProgrammeOfferings() {
   const [isSaving, setIsSaving] = useState(false)
   const [isArchiving, setIsArchiving] = useState(false)
   const [createOfferingOpen, setCreateOfferingOpen] = useState(false)
+  const [editingOfferingId, setEditingOfferingId] = useState<string | null>(null)
 
   const {
     programmes,
@@ -69,6 +73,7 @@ export function InstitutionProgrammeOfferings() {
     error: loadError,
     updateProgrammeInList,
     appendOffering,
+    replaceOffering,
   } = useProgrammeOfferings({
     institutionId,
     facultyId: facultyIdParam,
@@ -79,6 +84,12 @@ export function InstitutionProgrammeOfferings() {
     () => programmes.find((programme) => programme.id === programmeIdParam) ?? null,
     [programmes, programmeIdParam],
   )
+  const editingOffering = useMemo(
+    () => offerings.find((offering) => offering.id === editingOfferingId) ?? null,
+    [offerings, editingOfferingId],
+  )
+  const editingDraftOffering = editingOffering?.status === 'draft' ? editingOffering : null
+  const editingActiveOffering = editingOffering?.status === 'active' ? editingOffering : null
 
   const tabs = useMemo(
     () =>
@@ -127,6 +138,20 @@ export function InstitutionProgrammeOfferings() {
   const handleAddOffering = () => {
     if (!institutionId || !programmeIdParam) return
     setCreateOfferingOpen(true)
+  }
+
+  const handleEditOffering = (offeringId: string) => {
+    setEditingOfferingId(offeringId)
+  }
+
+  const handleArchiveOffering = async (offeringId: string) => {
+    try {
+      const archived = await archiveProgrammeOffering(offeringId)
+      replaceOffering(archived)
+      toast.success('Offering archived')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to archive offering')
+    }
   }
 
   const handleSaveProgrammeSettings = async () => {
@@ -278,6 +303,8 @@ export function InstitutionProgrammeOfferings() {
                 isProgrammeMissing={!selectedProgramme}
                 isFilteredEmpty={offerings.length === 0}
                 t={t}
+                onEditOffering={handleEditOffering}
+                onArchiveOffering={handleArchiveOffering}
               />
             </div>
             {showCohortsSection ? (
@@ -350,14 +377,33 @@ export function InstitutionProgrammeOfferings() {
         )}
       </div>
       {programmeIdParam ? (
-        <CreateProgrammeOfferingDialog
-          open={createOfferingOpen}
-          onOpenChange={setCreateOfferingOpen}
-          institutionId={institutionId}
-          programmeId={programmeIdParam}
-          programmeName={selectedProgramme?.name ?? ''}
-          onCreated={appendOffering}
-        />
+        <>
+          <CreateProgrammeOfferingDialog
+            open={createOfferingOpen}
+            onOpenChange={setCreateOfferingOpen}
+            institutionId={institutionId}
+            programmeId={programmeIdParam}
+            programmeName={selectedProgramme?.name ?? ''}
+            programmeDurationYears={selectedProgramme?.duration_years ?? null}
+            onCreated={appendOffering}
+          />
+          <EditProgrammeOfferingDialog
+            open={editingActiveOffering !== null}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) setEditingOfferingId(null)
+            }}
+            offering={editingActiveOffering}
+            onUpdated={replaceOffering}
+          />
+          <EditProgrammeOfferingsDraftDialog
+            open={editingDraftOffering !== null}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) setEditingOfferingId(null)
+            }}
+            offering={editingDraftOffering}
+            onUpdated={replaceOffering}
+          />
+        </>
       ) : null}
     </InstitutionAdminWorkspaceShell>
   )
