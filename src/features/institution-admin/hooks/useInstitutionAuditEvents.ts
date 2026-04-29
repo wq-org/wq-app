@@ -42,6 +42,7 @@ export function useInstitutionAuditEvents(): UseInstitutionAuditEventsResult {
       ])
       const map = new Map<string, string>()
       for (const user of users) {
+        if (user.rowKind !== 'member') continue
         if (user.email?.trim()) {
           map.set(user.user_id, user.email.trim())
         }

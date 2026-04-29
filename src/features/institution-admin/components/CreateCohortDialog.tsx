@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Spinner } from '@/components/ui/spinner'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
@@ -268,10 +270,25 @@ export function CreateCohortDialog({
             variant="darkblue"
             onClick={onSubmit}
             disabled={!!validationError || isSubmitting}
+            aria-busy={isSubmitting}
+            aria-label={
+              isSubmitting
+                ? t('faculties.pages.cohorts.createDialog.creating')
+                : t('faculties.pages.cohorts.createDialog.create')
+            }
           >
-            {isSubmitting
-              ? t('faculties.pages.cohorts.createDialog.creating')
-              : t('faculties.pages.cohorts.createDialog.create')}
+            {isSubmitting ? (
+              <Spinner
+                variant="darkblue"
+                size="xs"
+                className="shrink-0"
+              />
+            ) : (
+              <>
+                <Check />
+                {t('faculties.pages.cohorts.createDialog.create')}
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -113,7 +113,7 @@ export function ClassroomDetailPage() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Card variant="glass">
+              <Card variant="soft">
                 <CardHeader className="gap-1">
                   <CardTitle className="text-base font-semibold">
                     {t('classrooms.detail.mainTeacher.title')}
