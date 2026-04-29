@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -19,11 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Spinner } from '@/components/ui/spinner'
+import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 
 type Option = {
   id: string
   name: string
+  disabled?: boolean
 }
 
 type CreateClassGroupDialogProps = {
@@ -42,6 +46,11 @@ type CreateClassGroupDialogProps = {
   onNameChange: (value: string) => void
   description: string
   onDescriptionChange: (value: string) => void
+  onSuggestTitle: () => void | Promise<void>
+  canSuggestTitle: boolean
+  isSuggestingTitle: boolean
+  syncDescriptionWithSelection: boolean
+  onSyncDescriptionWithSelectionChange: (value: boolean) => void
   validationError: string | null
   submitError: string | null
   isSubmitting: boolean
@@ -64,6 +73,11 @@ export function CreateClassGroupDialog({
   onNameChange,
   description,
   onDescriptionChange,
+  onSuggestTitle,
+  canSuggestTitle,
+  isSuggestingTitle,
+  syncDescriptionWithSelection,
+  onSyncDescriptionWithSelectionChange,
   validationError,
   submitError,
   isSubmitting,
@@ -100,8 +114,11 @@ export function CreateClassGroupDialog({
                   <SelectItem
                     key={faculty.id}
                     value={faculty.id}
+                    disabled={faculty.disabled}
                   >
-                    {faculty.name}
+                    {faculty.disabled
+                      ? `${faculty.name} (${t('faculties.pages.classGroups.createDialog.facultyNoProgrammesSuffix')})`
+                      : faculty.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -124,8 +141,11 @@ export function CreateClassGroupDialog({
                   <SelectItem
                     key={programme.id}
                     value={programme.id}
+                    disabled={programme.disabled}
                   >
-                    {programme.name}
+                    {programme.disabled
+                      ? `${programme.name} (${t('faculties.pages.classGroups.createDialog.programmeNoCohortsSuffix')})`
+                      : programme.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -155,13 +175,64 @@ export function CreateClassGroupDialog({
               </SelectContent>
             </Select>
           </div>
-          <FieldInput
-            label={t('faculties.pages.classGroups.createDialog.titleLabel')}
-            placeholder={t('faculties.pages.classGroups.createDialog.titlePlaceholder')}
-            value={name}
-            onValueChange={onNameChange}
-            required
-          />
+
+          <div className="flex flex-col gap-2">
+            <FieldInput
+              label={t('faculties.pages.classGroups.createDialog.titleLabel')}
+              placeholder={t('faculties.pages.classGroups.createDialog.titlePlaceholder')}
+              value={name}
+              onValueChange={onNameChange}
+              required
+            />
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="teal"
+                size="sm"
+                disabled={!canSuggestTitle || isSuggestingTitle}
+                title={
+                  !canSuggestTitle
+                    ? t('faculties.pages.classGroups.createDialog.noTitleSuggestionAvailable')
+                    : undefined
+                }
+                onClick={() => void onSuggestTitle()}
+              >
+                {isSuggestingTitle ? (
+                  <Spinner
+                    variant="teal"
+                    size="xs"
+                    className="shrink-0"
+                  />
+                ) : null}
+                {t('faculties.pages.classGroups.createDialog.suggestNextTitle')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 rounded-lg border border-border/80 bg-muted/30 px-3 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <Label
+                htmlFor="class-group-sync-description"
+                className="cursor-pointer text-sm font-normal leading-snug"
+              >
+                {t('faculties.pages.classGroups.createDialog.syncDescriptionLabel')}
+              </Label>
+              <Switch
+                color="teal"
+                id="class-group-sync-description"
+                checked={syncDescriptionWithSelection}
+                onCheckedChange={onSyncDescriptionWithSelectionChange}
+                disabled={!facultyId || !programmeId || !cohortId}
+              />
+            </div>
+          </div>
+          <Text
+            as="p"
+            className="text-sm text-muted-foreground"
+          >
+            {t('faculties.pages.classGroups.createDialog.syncDescriptionHint')}
+          </Text>
+
           <FieldTextarea
             label={t('faculties.pages.classGroups.createDialog.descriptionLabel')}
             placeholder={t('faculties.pages.classGroups.createDialog.descriptionPlaceholder')}
@@ -202,10 +273,25 @@ export function CreateClassGroupDialog({
             variant="darkblue"
             onClick={onSubmit}
             disabled={!!validationError || isSubmitting}
+            aria-busy={isSubmitting}
+            aria-label={
+              isSubmitting
+                ? t('faculties.pages.classGroups.createDialog.creating')
+                : t('faculties.pages.classGroups.createDialog.create')
+            }
           >
-            {isSubmitting
-              ? t('faculties.pages.classGroups.createDialog.creating')
-              : t('faculties.pages.classGroups.createDialog.create')}
+            {isSubmitting ? (
+              <Spinner
+                variant="darkblue"
+                size="xs"
+                className="shrink-0"
+              />
+            ) : (
+              <>
+                <Check />
+                {t('faculties.pages.classGroups.createDialog.create')}
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

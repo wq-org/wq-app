@@ -9,12 +9,14 @@ import type { CohortRecord } from '../types/cohort.types'
 type CohortCardProps = {
   cohort: CohortRecord
   programmeName: string | null | undefined
+  facultyName?: string | null | undefined
   onOpen?: () => void
 }
 
-export function CohortCard({ cohort, programmeName, onOpen }: CohortCardProps) {
+export function CohortCard({ cohort, programmeName, facultyName, onOpen }: CohortCardProps) {
   const { t } = useTranslation('features.institution-admin')
 
+  const resolvedFaculty = facultyName?.trim() || t('faculties.pages.programmes.card.unknownFaculty')
   const resolvedProgramme =
     programmeName?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
   const resolvedTitle = cohort.name?.trim() || t('faculties.pages.cohorts.card.untitledCohort')
@@ -35,10 +37,17 @@ export function CohortCard({ cohort, programmeName, onOpen }: CohortCardProps) {
               size="sm"
               className="font-normal"
             >
+              {resolvedFaculty}
+            </Badge>
+            <Badge
+              variant="indigo"
+              size="sm"
+              className="font-normal"
+            >
               {resolvedProgramme}
             </Badge>
             <Badge
-              variant="cyan"
+              variant="blue"
               size="sm"
               className="font-normal"
             >

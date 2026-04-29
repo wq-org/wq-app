@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -11,18 +11,24 @@ import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { createClassGroup } from '../api/classGroupsApi'
-import { listFacultiesByInstitution } from '../api/facultiesApi'
+import { createClassGroup, listClassGroupsByCohort } from '../api/classGroupsApi'
+import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
 import { ClassGroupCardList } from '../components/ClassGroupCardList'
 import { CreateClassGroupDialog } from '../components/CreateClassGroupDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useFacultiesClassGroups } from '../hooks/useFacultiesClassGroups'
 import type { CohortRecord } from '../types/cohort.types'
-import type { FacultySummary } from '../types/faculty.types'
 import type { ProgrammeRecord } from '../types/programme.types'
+import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
+import {
+  resolveClassGroupTitlePrefix,
+  suggestNextClassGroupTitle,
+} from '../utils/classGroupCreateSuggestion'
+import { buildSuggestedClassGroupDescription } from '../utils/classGroupDescription'
+const CLASS_GROUP_DESCRIPTION_DEBOUNCE_MS = 400
 
 export function InstitutionFacultiesClassGroups() {
-  const { t } = useTranslation('features.institution-admin')
+  const { t, i18n } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
   const navigate = useNavigate()
   const institutionId = getUserInstitutionId()
@@ -33,14 +39,19 @@ export function InstitutionFacultiesClassGroups() {
   const [createCohortId, setCreateCohortId] = useState('')
   const [createName, setCreateName] = useState('')
   const [createDescription, setCreateDescription] = useState('')
+  const [syncDescriptionWithSelection, setSyncDescriptionWithSelection] = useState(true)
+  const [programmeOfferingsRows, setProgrammeOfferingsRows] = useState<
+    readonly ProgrammeOfferingRecord[]
+  >([])
+  const [isSuggestingTitle, setIsSuggestingTitle] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
-  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
 
   const {
     classGroups,
     cohorts,
     programmes,
+    faculties,
     isLoading,
     error: loadError,
     reload,
@@ -58,15 +69,30 @@ export function InstitutionFacultiesClassGroups() {
     return map
   }, [programmes])
 
+  const facultyNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const f of faculties) {
+      map.set(f.id, f.name?.trim() || t('faculties.card.untitled'))
+    }
+    return map
+  }, [faculties, t])
+
   const items = useMemo(
     () =>
-      classGroups.map((classGroup) => ({
-        classGroup,
-        cohortName:
-          cohortMap.get(classGroup.cohort_id)?.name?.trim() ||
-          t('faculties.pages.classGroups.card.unknownCohort'),
-      })),
-    [classGroups, cohortMap, t],
+      classGroups.map((classGroup) => {
+        const cohort = cohortMap.get(classGroup.cohort_id)
+        const programme = cohort ? programmeMap.get(cohort.programme_id) : undefined
+        const cohortName =
+          cohort?.name?.trim() || t('faculties.pages.classGroups.card.unknownCohort')
+        const programmeName =
+          programme?.name?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
+        const facultyName = programme
+          ? facultyNameById.get(programme.faculty_id) ||
+            t('faculties.pages.programmes.card.unknownFaculty')
+          : t('faculties.pages.programmes.card.unknownFaculty')
+        return { classGroup, cohortName, programmeName, facultyName }
+      }),
+    [classGroups, cohortMap, facultyNameById, programmeMap, t],
   )
 
   const searchableItems = useMemo(
@@ -76,6 +102,8 @@ export function InstitutionFacultiesClassGroups() {
         searchClassGroupName: row.classGroup.name ?? '',
         searchClassGroupDescription: row.classGroup.description ?? '',
         searchCohortName: row.cohortName,
+        searchProgrammeName: row.programmeName,
+        searchFacultyName: row.facultyName,
       })),
     [items],
   )
@@ -84,7 +112,14 @@ export function InstitutionFacultiesClassGroups() {
     'searchClassGroupName',
     'searchClassGroupDescription',
     'searchCohortName',
-  ]).map(({ classGroup, cohortName }) => ({ classGroup, cohortName }))
+    'searchProgrammeName',
+    'searchFacultyName',
+  ]).map(({ classGroup, cohortName, facultyName, programmeName }) => ({
+    classGroup,
+    cohortName,
+    facultyName,
+    programmeName,
+  }))
 
   const handleOpenClassGroup = (classGroupId: string) => {
     const selected = filteredItems.find((item) => item.classGroup.id === classGroupId)
@@ -99,11 +134,21 @@ export function InstitutionFacultiesClassGroups() {
   }
 
   const facultyOptions = useMemo(() => {
+    const facultyIdsWithProgrammes = new Set(programmes.map((programme) => programme.faculty_id))
     return faculties.map((faculty) => ({
       id: faculty.id,
       name: faculty.name?.trim() || t('faculties.card.untitled'),
+      disabled: !facultyIdsWithProgrammes.has(faculty.id),
     }))
-  }, [faculties, t])
+  }, [faculties, programmes, t])
+
+  const programmeIdsWithCohorts = useMemo(() => {
+    const set = new Set<string>()
+    for (const cohort of cohorts) {
+      set.add(cohort.programme_id)
+    }
+    return set
+  }, [cohorts])
 
   const programmeOptions = useMemo(() => {
     return programmes
@@ -111,8 +156,9 @@ export function InstitutionFacultiesClassGroups() {
       .map((programme) => ({
         id: programme.id,
         name: programme.name?.trim() || t('faculties.pages.programmes.card.untitledProgramme'),
+        disabled: !programmeIdsWithCohorts.has(programme.id),
       }))
-  }, [createFacultyId, programmes, t])
+  }, [createFacultyId, programmes, programmeIdsWithCohorts, t])
 
   const cohortOptions = useMemo(() => {
     return cohorts
@@ -122,6 +168,91 @@ export function InstitutionFacultiesClassGroups() {
         name: cohort.name?.trim() || t('faculties.pages.cohorts.card.untitledCohort'),
       }))
   }, [cohorts, createProgrammeId, t])
+
+  const selectedFacultyLabel = useMemo(() => {
+    const row = faculties.find((f) => f.id === createFacultyId)
+    return row?.name?.trim() ?? ''
+  }, [faculties, createFacultyId])
+
+  const selectedProgrammeLabel = useMemo(() => {
+    const p = programmeMap.get(createProgrammeId)
+    return p?.name?.trim() ?? ''
+  }, [programmeMap, createProgrammeId])
+
+  useEffect(() => {
+    if (!isCreateDialogOpen || !createProgrammeId) {
+      setProgrammeOfferingsRows([])
+      return
+    }
+
+    let cancelled = false
+    void listProgrammeOfferings(createProgrammeId)
+      .then((rows) => {
+        if (cancelled) return
+        setProgrammeOfferingsRows(rows)
+      })
+      .catch(() => {
+        if (!cancelled) setProgrammeOfferingsRows([])
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isCreateDialogOpen, createProgrammeId])
+
+  const titlePrefix = useMemo(() => {
+    const cohort = createCohortId ? cohortMap.get(createCohortId) : undefined
+    const programme = programmeMap.get(createProgrammeId)
+    return resolveClassGroupTitlePrefix({
+      cohort,
+      programmeOfferings: programmeOfferingsRows,
+      programmeName: programme?.name ?? '',
+    })
+  }, [createCohortId, cohortMap, createProgrammeId, programmeMap, programmeOfferingsRows])
+
+  const suggestTitleEnabled = Boolean(createCohortId && titlePrefix)
+
+  useEffect(() => {
+    if (!isCreateDialogOpen || !syncDescriptionWithSelection) return
+
+    const cohortYear = cohortMap.get(createCohortId)?.academic_year ?? null
+    const classGroupName = createName.trim()
+
+    const timerId = window.setTimeout(() => {
+      if (
+        !selectedFacultyLabel ||
+        !selectedProgrammeLabel ||
+        !classGroupName ||
+        cohortYear == null ||
+        !Number.isFinite(cohortYear)
+      ) {
+        setCreateDescription('')
+        return
+      }
+      setCreateDescription(
+        buildSuggestedClassGroupDescription({
+          language: i18n.language,
+          classGroupName,
+          cohortYear,
+          programmeName: selectedProgrammeLabel,
+          facultyName: selectedFacultyLabel,
+        }),
+      )
+    }, CLASS_GROUP_DESCRIPTION_DEBOUNCE_MS)
+
+    return () => window.clearTimeout(timerId)
+  }, [
+    isCreateDialogOpen,
+    syncDescriptionWithSelection,
+    createName,
+    createFacultyId,
+    createProgrammeId,
+    createCohortId,
+    selectedFacultyLabel,
+    selectedProgrammeLabel,
+    i18n.language,
+    cohortMap,
+  ])
 
   const createValidationError = useMemo(() => {
     if (!createFacultyId)
@@ -141,20 +272,16 @@ export function InstitutionFacultiesClassGroups() {
     setCreateCohortId('')
     setCreateName('')
     setCreateDescription('')
+    setSyncDescriptionWithSelection(true)
+    setProgrammeOfferingsRows([])
+    setIsSuggestingTitle(false)
     setCreateError(null)
     setIsSubmitting(false)
   }
 
-  const handleCreateStructure = async () => {
+  const handleCreateStructure = () => {
     setIsCreateDialogOpen(true)
     setCreateError(null)
-    if (!institutionId) return
-    try {
-      const rows = await listFacultiesByInstitution(institutionId)
-      setFaculties(rows)
-    } catch (error) {
-      setCreateError(error instanceof Error ? error.message : 'Failed to load faculties')
-    }
   }
 
   const handleFacultyChange = (facultyId: string) => {
@@ -166,6 +293,32 @@ export function InstitutionFacultiesClassGroups() {
   const handleProgrammeChange = (programmeId: string) => {
     setCreateProgrammeId(programmeId)
     setCreateCohortId('')
+  }
+
+  const handleSuggestTitle = async () => {
+    if (!createCohortId || !titlePrefix) return
+    setIsSuggestingTitle(true)
+    try {
+      const rows = await listClassGroupsByCohort(createCohortId)
+      const names = rows.map((r) => r.name)
+      const typed = createName.trim()
+      const existingPool = typed.length > 0 ? [...names, typed] : names
+
+      const next = suggestNextClassGroupTitle({
+        prefix: titlePrefix,
+        existingNames: existingPool,
+      })
+      if (next) {
+        setCreateName(next)
+      }
+    } finally {
+      setIsSuggestingTitle(false)
+    }
+  }
+
+  const handleCreateDescriptionChange = (value: string) => {
+    setCreateDescription(value)
+    setSyncDescriptionWithSelection(false)
   }
 
   const handleCreateClassGroup = async () => {
@@ -300,7 +453,12 @@ export function InstitutionFacultiesClassGroups() {
         name={createName}
         onNameChange={setCreateName}
         description={createDescription}
-        onDescriptionChange={setCreateDescription}
+        onDescriptionChange={handleCreateDescriptionChange}
+        onSuggestTitle={handleSuggestTitle}
+        canSuggestTitle={suggestTitleEnabled}
+        isSuggestingTitle={isSuggestingTitle}
+        syncDescriptionWithSelection={syncDescriptionWithSelection}
+        onSyncDescriptionWithSelectionChange={setSyncDescriptionWithSelection}
         validationError={createValidationError}
         submitError={createError}
         isSubmitting={isSubmitting}

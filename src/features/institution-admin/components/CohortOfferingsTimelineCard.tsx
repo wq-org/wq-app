@@ -56,7 +56,15 @@ export function CohortOfferingsTimelineCard({
   return (
     <Card className="gap-4 py-4">
       <CardHeader className="gap-1 px-4">
-        <CardTitle className="text-sm">{programmeOfferingName}</CardTitle>
+        <CardTitle className="flex flex-wrap items-center gap-2 text-sm font-normal">
+          <Badge
+            variant="indigo"
+            size="sm"
+            className="font-normal"
+          >
+            {programmeOfferingName}
+          </Badge>
+        </CardTitle>
         <CardAction>
           <Button
             type="button"
@@ -71,8 +79,14 @@ export function CohortOfferingsTimelineCard({
         </CardAction>
       </CardHeader>
       <CardContent className="px-4">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground">{dateRange}</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Badge
+            variant="blue"
+            size="sm"
+            className="max-w-full font-normal whitespace-normal"
+          >
+            {dateRange}
+          </Badge>
           <Badge
             variant={statusVariant}
             size="sm"

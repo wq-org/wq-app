@@ -128,8 +128,13 @@ export function InstitutionCohortOfferings() {
 
   const classGroupCardItems = useMemo(() => {
     const cohortName = selectedCohort?.name?.trim() ?? ''
-    return filteredClassGroups.map((classGroup) => ({ classGroup, cohortName }))
-  }, [filteredClassGroups, selectedCohort?.name])
+    return filteredClassGroups.map((classGroup) => ({
+      classGroup,
+      cohortName,
+      facultyName,
+      programmeName,
+    }))
+  }, [facultyName, filteredClassGroups, programmeName, selectedCohort?.name])
 
   const handleOpenClassGroup = (classGroupId: string) => {
     if (!facultyIdParam || !programmeIdParam || !cohortIdParam) return

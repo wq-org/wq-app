@@ -16,6 +16,7 @@ export const badgeVariants = cva(
         darkblue:
           'border-[oklch(var(--oklch-darkblue)/0.18)] bg-[oklch(var(--oklch-darkblue)/0.12)] text-[oklch(var(--oklch-darkblue))] [a&]:hover:bg-[oklch(var(--oklch-darkblue)/0.16)]',
         cyan: 'border-[oklch(var(--oklch-cyan)/0.18)] bg-[oklch(var(--oklch-cyan)/0.12)] text-[oklch(var(--oklch-cyan))] [a&]:hover:bg-[oklch(var(--oklch-cyan)/0.16)]',
+        teal: 'border-[oklch(var(--oklch-teal)/0.18)] bg-[oklch(var(--oklch-teal)/0.12)] text-[oklch(var(--oklch-teal))] [a&]:hover:bg-[oklch(var(--oklch-teal)/0.16)]',
         green:
           'border-[oklch(var(--oklch-green)/0.18)] bg-[oklch(var(--oklch-green)/0.12)] text-[oklch(var(--oklch-green))] [a&]:hover:bg-[oklch(var(--oklch-green)/0.16)]',
         lime: 'border-[oklch(var(--oklch-lime)/0.18)] bg-[oklch(var(--oklch-lime)/0.12)] text-[oklch(var(--oklch-lime))] [a&]:hover:bg-[oklch(var(--oklch-lime)/0.16)]',
@@ -60,6 +61,7 @@ export const badgeDashedBorderVariants = cva('border-2 border-dashed', {
       blue: 'border-[oklch(var(--oklch-blue)/0.45)]',
       darkblue: 'border-[oklch(var(--oklch-darkblue)/0.45)]',
       cyan: 'border-[oklch(var(--oklch-cyan)/0.45)]',
+      teal: 'border-[oklch(var(--oklch-teal)/0.45)]',
       green: 'border-[oklch(var(--oklch-green)/0.45)]',
       lime: 'border-[oklch(var(--oklch-lime)/0.45)]',
       orange: 'border-[oklch(var(--oklch-orange)/0.45)]',

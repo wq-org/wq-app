@@ -9,12 +9,23 @@ import type { ClassGroupRecord } from '../types/class-group.types'
 type ClassGroupCardProps = {
   classGroup: ClassGroupRecord
   cohortName: string | null | undefined
+  facultyName?: string | null | undefined
+  programmeName?: string | null | undefined
   onOpen?: () => void
 }
 
-export function ClassGroupCard({ classGroup, cohortName, onOpen }: ClassGroupCardProps) {
+export function ClassGroupCard({
+  classGroup,
+  cohortName,
+  facultyName,
+  programmeName,
+  onOpen,
+}: ClassGroupCardProps) {
   const { t } = useTranslation('features.institution-admin')
 
+  const resolvedFaculty = facultyName?.trim() || t('faculties.pages.programmes.card.unknownFaculty')
+  const resolvedProgramme =
+    programmeName?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
   const resolvedCohort = cohortName?.trim() || t('faculties.pages.classGroups.card.unknownCohort')
   const resolvedTitle =
     classGroup.name?.trim() || t('faculties.pages.classGroups.card.untitledClassGroup')
@@ -26,6 +37,20 @@ export function ClassGroupCard({ classGroup, cohortName, onOpen }: ClassGroupCar
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="flex min-w-0 flex-col items-start gap-2">
           <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="indigo"
+              size="sm"
+              className="font-normal"
+            >
+              {resolvedFaculty}
+            </Badge>
+            <Badge
+              variant="indigo"
+              size="sm"
+              className="font-normal"
+            >
+              {resolvedProgramme}
+            </Badge>
             <Badge
               variant="blue"
               size="sm"

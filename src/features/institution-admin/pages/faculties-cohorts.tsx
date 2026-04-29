@@ -13,12 +13,10 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 import { createCohort } from '../api/cohortsApi'
 import { listProgrammeOfferings } from '../api/programmeOfferingsApi'
-import { listFacultiesByInstitution } from '../api/facultiesApi'
 import { CohortCardList } from '../components/CohortCardList'
 import { CreateCohortDialog } from '../components/CreateCohortDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useFacultiesCohorts } from '../hooks/useFacultiesCohorts'
-import type { FacultySummary } from '../types/faculty.types'
 import type { ProgrammeRecord } from '../types/programme.types'
 import {
   computeNextAcademicYearForProgramme,
@@ -50,11 +48,11 @@ export function InstitutionFacultiesCohorts() {
   const cohortProgrammeDefaultsRef = useRef<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
-  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
 
   const {
     cohorts,
     programmes,
+    faculties,
     isLoading,
     error: loadError,
     reload,
@@ -66,15 +64,27 @@ export function InstitutionFacultiesCohorts() {
     return map
   }, [programmes])
 
+  const facultyNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const f of faculties) {
+      map.set(f.id, f.name?.trim() || t('faculties.card.untitled'))
+    }
+    return map
+  }, [faculties, t])
+
   const items = useMemo(
     () =>
-      cohorts.map((cohort) => ({
-        cohort,
-        programmeName:
-          programmeMap.get(cohort.programme_id)?.name?.trim() ||
-          t('faculties.pages.cohorts.card.unknownProgramme'),
-      })),
-    [cohorts, programmeMap, t],
+      cohorts.map((cohort) => {
+        const programme = programmeMap.get(cohort.programme_id)
+        const programmeName =
+          programme?.name?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
+        const facultyName = programme
+          ? facultyNameById.get(programme.faculty_id) ||
+            t('faculties.pages.programmes.card.unknownFaculty')
+          : t('faculties.pages.programmes.card.unknownFaculty')
+        return { cohort, programmeName, facultyName }
+      }),
+    [cohorts, facultyNameById, programmeMap, t],
   )
 
   const searchableItems = useMemo(
@@ -84,6 +94,7 @@ export function InstitutionFacultiesCohorts() {
         searchCohortName: row.cohort.name ?? '',
         searchCohortDescription: row.cohort.description ?? '',
         searchProgrammeName: row.programmeName,
+        searchFacultyName: row.facultyName,
       })),
     [items],
   )
@@ -92,7 +103,8 @@ export function InstitutionFacultiesCohorts() {
     'searchCohortName',
     'searchCohortDescription',
     'searchProgrammeName',
-  ]).map(({ cohort, programmeName }) => ({ cohort, programmeName }))
+    'searchFacultyName',
+  ]).map(({ cohort, programmeName, facultyName }) => ({ cohort, programmeName, facultyName }))
 
   const handleOpenCohort = (cohortId: string) => {
     const selected = filteredItems.find((item) => item.cohort.id === cohortId)
@@ -261,16 +273,9 @@ export function InstitutionFacultiesCohorts() {
     setIsSubmitting(false)
   }
 
-  const handleCreateStructure = async () => {
+  const handleCreateStructure = () => {
     setIsCreateDialogOpen(true)
     setCreateError(null)
-    if (!institutionId) return
-    try {
-      const rows = await listFacultiesByInstitution(institutionId)
-      setFaculties(rows)
-    } catch (error) {
-      setCreateError(error instanceof Error ? error.message : 'Failed to load faculties')
-    }
   }
 
   const handleFacultyChange = (facultyId: string) => {

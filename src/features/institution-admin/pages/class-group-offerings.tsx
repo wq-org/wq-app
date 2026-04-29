@@ -109,21 +109,36 @@ export function InstitutionClassGroupOfferings() {
       classrooms.map((classroom) => ({
         classroom,
         classGroupName: classGroupDisplayName,
+        facultyName,
+        programmeName,
+        cohortName,
         searchTitle: classroom.title ?? '',
         searchGroup: classGroupDisplayName,
+        searchFacultyName: facultyName,
+        searchProgrammeName: programmeName,
+        searchCohortName: cohortName,
         searchStatus:
           classroom.status === 'active'
             ? t('classrooms.card.statusActive')
             : t('classrooms.card.statusInactive'),
       })),
-    [classGroupDisplayName, classrooms, t],
+    [classGroupDisplayName, cohortName, classrooms, facultyName, programmeName, t],
   )
 
   const filteredClassroomItems = useSearchFilter(searchableClassrooms, classroomFilterQuery, [
     'searchTitle',
     'searchGroup',
+    'searchFacultyName',
+    'searchProgrammeName',
+    'searchCohortName',
     'searchStatus',
-  ]).map(({ classroom, classGroupName }) => ({ classroom, classGroupName }))
+  ]).map(({ classroom, classGroupName, facultyName: fn, programmeName: pn, cohortName: cn }) => ({
+    classroom,
+    classGroupName,
+    facultyName: fn,
+    programmeName: pn,
+    cohortName: cn,
+  }))
 
   const showClassroomsSection =
     activeTabId === 'overview' &&
