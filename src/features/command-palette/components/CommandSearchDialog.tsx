@@ -25,13 +25,13 @@ function SearchAvatar({ avatarPath, title }: { avatarPath?: string | null; title
   const { url } = useAvatarUrl(avatarPath)
 
   return (
-    <Avatar className="w-12 h-12">
+    <Avatar size="lg">
       <AvatarImage
         src={url || DEFAULT_INSTITUTION_IMAGE}
         alt={title}
-        className="rounded-full w-12 h-12"
+        className="rounded-full"
       />
-      <AvatarFallback className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-xl text-foreground">
+      <AvatarFallback className="rounded-full bg-muted text-xl text-foreground">
         {title.charAt(0).toUpperCase()}
       </AvatarFallback>
     </Avatar>
@@ -101,6 +101,7 @@ export function CommandSearch() {
                 asChild
               >
                 <Card
+                  layout="flush"
                   onClick={() => handleClickItem(item)}
                   className="w-full cursor-pointer rounded-2xl border-0 bg-transparent px-3 py-2 text-left shadow-none hover:bg-muted focus:bg-muted focus:outline-none"
                 >

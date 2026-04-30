@@ -32,7 +32,10 @@ export function NotificationItem({ notification, isActionLoading = false }: Noti
     >
       {/* Avatar */}
       <div className="relative shrink-0">
-        <Avatar className={cn('h-12 w-12', notification.avatar?.color)}>
+        <Avatar
+          size="lg"
+          className={notification.avatar?.color}
+        >
           {notification.avatar?.src && (
             <AvatarImage
               src={notification.avatar.src}

@@ -175,7 +175,10 @@ const AdminInstitution = () => {
                             className="flex max-w-full min-w-0 items-center gap-2 rounded-md p-0 text-left font-medium outline-none ring-offset-background hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
                             onClick={() => handleOpenEditDrawer(inst)}
                           >
-                            <Avatar className="h-8 w-8 shrink-0 rounded-full">
+                            <Avatar
+                              size="sm"
+                              className="shrink-0 rounded-full"
+                            >
                               <AvatarImage
                                 src={inst.imageUrl ?? DEFAULT_INSTITUTION_IMAGE}
                                 alt={`${inst.name} logo`}

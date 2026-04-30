@@ -105,7 +105,10 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className="flex gap-2 items-center">
-                  <Avatar className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-transparent after:hidden">
+                  <Avatar
+                    size="sm"
+                    className="shrink-0 overflow-hidden rounded-full bg-transparent after:hidden"
+                  >
                     <AvatarImage
                       src={signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE}
                       alt={signedAvatarUrl?.toString() || 'avatar-profile-image'}

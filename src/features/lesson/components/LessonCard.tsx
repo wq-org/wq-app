@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
-import { cn } from '@/lib/utils'
 import type { ThemeId } from '@/lib/themes'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 import type { Lesson } from '../types/lesson.types'
@@ -48,7 +47,8 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
 
         <div className="mt-4 flex items-start gap-3">
           <Avatar
-            className={cn('h-11 w-11 shrink-0 rounded-xl')}
+            size="tile"
+            className="shrink-0 rounded-xl"
             style={getThemeBackgroundStyle(themeId)}
           >
             <AvatarFallback

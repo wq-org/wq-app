@@ -47,7 +47,7 @@ export function StatsDisplay({ value, className }: StatsDisplayProps) {
       )}
     >
       <div className="shrink-0">
-        <Avatar className="size-10 border border-border bg-muted/50">
+        <Avatar className="border border-border bg-muted/50">
           <AvatarImage
             src={avatarSrc}
             alt={profile?.display_name || 'User avatar'}

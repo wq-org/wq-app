@@ -67,7 +67,10 @@ function ProfileCourseCard({
       <CardContent className="flex flex-col p-6">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <Avatar className="w-12 h-12 rounded-full">
+          <Avatar
+            size="lg"
+            className="rounded-full"
+          >
             {teacherAvatar ? (
               <AvatarImage
                 src={teacherAvatar}

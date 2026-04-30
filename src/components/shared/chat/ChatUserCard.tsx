@@ -31,7 +31,7 @@ export function ChatUserCard({ contact, isActive, onSelect }: ChatUserCardProps)
         )}
       >
         <div className="relative shrink-0">
-          <Avatar className="size-10 rounded-full">
+          <Avatar className="rounded-full">
             <AvatarFallback
               className={cn(
                 'rounded-full text-xs font-medium',

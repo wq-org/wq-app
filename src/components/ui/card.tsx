@@ -4,17 +4,26 @@ import type { VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 import { cardVariants } from './card-variants'
 
+type CardLayout = 'default' | 'flush'
+
 function Card({
   className,
   variant,
+  layout = 'default',
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof cardVariants>) {
+}: React.ComponentProps<'div'> &
+  VariantProps<typeof cardVariants> & {
+    /** `flush`: no root gap/padding — use for dense rows (e.g. lists inside dialogs). */
+    layout?: CardLayout
+  }) {
   return (
     <div
       data-slot="card"
       className={cn(
-        cardVariants({ variant, className }),
-        'text-card-foreground flex flex-col gap-6 py-6',
+        cardVariants({ variant }),
+        layout === 'default' && 'text-card-foreground flex flex-col gap-6 py-6',
+        layout === 'flush' && 'text-card-foreground',
+        className,
       )}
       {...props}
     />

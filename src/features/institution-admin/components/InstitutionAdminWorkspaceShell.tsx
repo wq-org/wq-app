@@ -107,7 +107,10 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                   className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring w-full"
                   aria-label={t('planFeatures.accountMenu')}
                 >
-                  <Avatar className="h-8 w-8 shrink-0">
+                  <Avatar
+                    size="sm"
+                    className="shrink-0"
+                  >
                     <AvatarImage
                       src={signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE}
                       alt=""

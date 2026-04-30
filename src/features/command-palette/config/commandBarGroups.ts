@@ -49,6 +49,18 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       to: `${rolePrefix(USER_ROLES.TEACHER)}/files`,
     },
     {
+      id: 'add-new',
+      labelKey: 'actions.addNew',
+      icon: Plus,
+      actionId: 'add',
+    },
+    {
+      id: 'upload',
+      labelKey: 'actions.upload',
+      icon: Upload,
+      actionId: 'upload',
+    },
+    {
       id: 'notebook',
       labelKey: 'actions.notebook',
       icon: NotebookPen,
@@ -58,18 +70,6 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       id: 'attendance',
       labelKey: 'actions.attendance',
       icon: BellElectric,
-    },
-    {
-      id: 'upload',
-      labelKey: 'actions.upload',
-      icon: Upload,
-      actionId: 'upload',
-    },
-    {
-      id: 'add-new',
-      labelKey: 'actions.addNew',
-      icon: Plus,
-      actionId: 'add',
     },
   ],
   [USER_ROLES.INSTITUTION_ADMIN]: [
@@ -92,10 +92,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       to: `${rolePrefix(USER_ROLES.INSTITUTION_ADMIN)}/cloud-storage`,
     },
     {
-      id: 'notebook',
-      labelKey: 'actions.notebook',
-      icon: NotebookPen,
-      to: `${rolePrefix(USER_ROLES.INSTITUTION_ADMIN)}/notes`,
+      id: 'add-new',
+      labelKey: 'actions.addNew',
+      icon: Plus,
+      actionId: 'add',
     },
     {
       id: 'upload',
@@ -104,10 +104,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'upload',
     },
     {
-      id: 'add-new',
-      labelKey: 'actions.addNew',
-      icon: Plus,
-      actionId: 'add',
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.INSTITUTION_ADMIN)}/notes`,
     },
   ],
   [USER_ROLES.STUDENT]: [
@@ -136,10 +136,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       to: `${rolePrefix(USER_ROLES.STUDENT)}/files`,
     },
     {
-      id: 'notebook',
-      labelKey: 'actions.notebook',
-      icon: NotebookPen,
-      to: `${rolePrefix(USER_ROLES.STUDENT)}/notes`,
+      id: 'add',
+      labelKey: 'actions.addNew',
+      icon: Plus,
+      actionId: 'add',
     },
     {
       id: 'upload',
@@ -148,10 +148,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'upload',
     },
     {
-      id: 'add',
-      labelKey: 'actions.addNew',
-      icon: Plus,
-      actionId: 'add',
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.STUDENT)}/notes`,
     },
   ],
   [USER_ROLES.SUPER_ADMIN]: [
@@ -174,10 +174,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/files`,
     },
     {
-      id: 'notebook',
-      labelKey: 'actions.notebook',
-      icon: NotebookPen,
-      to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/notes`,
+      id: 'add-new',
+      labelKey: 'actions.addNew',
+      icon: Plus,
+      actionId: 'add',
     },
     {
       id: 'upload',
@@ -186,10 +186,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'upload',
     },
     {
-      id: 'add-new',
-      labelKey: 'actions.addNew',
-      icon: Plus,
-      actionId: 'add',
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/notes`,
     },
   ],
   'game-studio': [

@@ -28,7 +28,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
     !state.loading
 
   return (
-    <Card className="mx-auto flex h-[min(72vh,560px)] w-full max-w-md flex-col border border-border/70 bg-card/80 shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
+    <Card className="mx-auto flex h-[min(72vh,560px)] w-full max-w-md flex-col border-0 bg-card/80 shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
       <form
         className="flex min-h-0 flex-1 flex-col gap-5 animate-in fade-in-0 slide-in-from-bottom-2"
         onSubmit={async (event) => {
@@ -36,7 +36,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
           await state.handleCreate()
         }}
       >
-        <CardHeader className="items-center p-0 animate-in fade-in-0 slide-in-from-top-1">
+        <CardHeader className="shrink-0 items-center px-6 pt-6 pb-0 animate-in fade-in-0 slide-in-from-top-1">
           <div className="mb-2 flex items-center gap-3">
             <Button
               type="button"
@@ -61,8 +61,8 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
           </Text>
         </CardHeader>
 
-        <ScrollArea className="min-h-0 flex-1 w-full">
-          <CardContent className="flex w-full flex-col gap-6 px-0 animate-in fade-in-0 slide-in-from-bottom-2">
+        <ScrollArea className="h-[min(44vh,380px)] min-h-[12rem] w-full shrink-0 px-6">
+          <CardContent className="flex w-full flex-col gap-6 px-0 py-1 animate-in fade-in-0 slide-in-from-bottom-2">
             {shouldShowThemePicker ? (
               <div className="flex min-w-0 flex-col gap-3">
                 <Label className="font-normal text-foreground">
@@ -107,7 +107,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
           </CardContent>
         </ScrollArea>
 
-        <CardFooter className="flex w-full flex-col gap-3 px-0 animate-in fade-in-0 slide-in-from-bottom-2">
+        <CardFooter className="flex w-full shrink-0 flex-col gap-3 px-6 pb-6 pt-2 animate-in fade-in-0 slide-in-from-bottom-2">
           <Button
             type="submit"
             variant="darkblue"

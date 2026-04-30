@@ -19,7 +19,10 @@ function ProfileAvatar({ avatarPath, title }: { avatarPath?: string | null; titl
   const { url } = useAvatarUrl(avatarPath)
 
   return (
-    <Avatar className="size-12 shrink-0">
+    <Avatar
+      size="lg"
+      className="shrink-0"
+    >
       <AvatarImage
         src={url || DEFAULT_INSTITUTION_IMAGE}
         alt={title}

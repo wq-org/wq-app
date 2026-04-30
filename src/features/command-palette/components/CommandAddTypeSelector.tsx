@@ -20,8 +20,11 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
   )
 
   return (
-    <Card className="mx-auto flex w-full max-w-md flex-col border border-border/70 bg-card/80 shadow-sm animate-in fade-in-0 zoom-in-95">
-      <CardHeader className="items-center p-0">
+    <Card
+      layout="flush"
+      className="mx-auto flex w-full max-w-md flex-col border-0 bg-card/80 shadow-sm animate-in fade-in-0 zoom-in-95"
+    >
+      <CardHeader className="items-center px-6 pt-6 pb-0">
         <CardTitle className="text-xl text-foreground">{t('addDialog.title')}</CardTitle>
         <Text
           as="p"
@@ -32,8 +35,8 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
         </Text>
       </CardHeader>
 
-      <ScrollArea className="mt-6 max-h-[min(52vh,420px)] w-full">
-        <CardContent className="flex w-full flex-col gap-3 px-0">
+      <ScrollArea className="mt-4 h-[min(52vh,420px)] w-full px-6">
+        <CardContent className="flex w-full flex-col gap-3 px-0 pb-6 pt-1">
           {availableOptions.map(({ type, labelKey, descriptionKey, icon: Icon }) => (
             <button
               key={type}

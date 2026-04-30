@@ -99,7 +99,7 @@ export function AppNavigation({
                       aria-label={t('profile.openMenu')}
                     >
                       <div className="relative w-fit">
-                        <Avatar className="size-10">
+                        <Avatar>
                           {avatarImageUrl ? (
                             <AvatarImage
                               src={avatarImageUrl}
@@ -113,6 +113,8 @@ export function AppNavigation({
                         <span
                           className="pointer-events-none absolute -bottom-1 -right-1 inline-flex size-5 items-center justify-center rounded-full bg-muted text-muted-foreground shadow-sm"
                           aria-hidden
+                          onClick={handleOpenSettings}
+                          role="button"
                         >
                           <Pen
                             className="size-2.5"

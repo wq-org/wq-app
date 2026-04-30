@@ -215,7 +215,7 @@ const AdminUsers = () => {
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
+                        <Avatar size="sm">
                           <AvatarImage
                             src={user.avatar_url || undefined}
                             alt={user.display_name || user.username || 'User avatar'}

@@ -14,7 +14,10 @@ export function IncomingChatMessageBubble({
   return (
     <div className={cn('flex max-w-[88%] items-end gap-2', className)}>
       {avatarUrl ? (
-        <Avatar className="mb-1 size-8 shrink-0 border border-neutral-300/80">
+        <Avatar
+          size="sm"
+          className="mb-1 shrink-0 border border-neutral-300/80"
+        >
           <AvatarImage
             src={avatarUrl}
             alt="Incoming user avatar"

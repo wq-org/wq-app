@@ -4,7 +4,8 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar'
 import { cn } from '@/lib/utils'
 
 type AvatarProps = React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
-  size?: 'default' | 'sm' | 'lg'
+  /** Use the `size` prop for dimensions — plain `w-*` / `h-*` on `className` lose to internal `data-[size=*]` rules. */
+  size?: 'xs' | 'sm' | 'md' | 'default' | 'tile' | 'lg' | 'xl'
 }
 
 function Avatar({ className, size = 'default', ...props }: AvatarProps) {
@@ -14,7 +15,7 @@ function Avatar({ className, size = 'default', ...props }: AvatarProps) {
       data-size={size}
       className={cn(
         'cn-avatar group/avatar relative flex shrink-0 select-none overflow-hidden rounded-full bg-muted after:absolute after:inset-0 after:mix-blend-darken dark:after:mix-blend-lighten',
-        'data-[size=sm]:size-8 data-[size=default]:size-10 data-[size=lg]:size-12',
+        'data-[size=xs]:size-6 data-[size=sm]:size-8 data-[size=md]:size-9 data-[size=default]:size-10 data-[size=tile]:size-11 data-[size=lg]:size-12 data-[size=xl]:size-24',
         className,
       )}
       {...props}
@@ -54,9 +55,13 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>) {
       data-slot="avatar-badge"
       className={cn(
         'cn-avatar-badge absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-blend-color ring-2 select-none',
+        'group-data-[size=xs]/avatar:size-1.5 group-data-[size=xs]/avatar:[&>svg]:hidden',
         'group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden',
+        'group-data-[size=md]/avatar:size-2.5 group-data-[size=md]/avatar:[&>svg]:size-2',
         'group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2',
+        'group-data-[size=tile]/avatar:size-2.5 group-data-[size=tile]/avatar:[&>svg]:size-2',
         'group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2',
+        'group-data-[size=xl]/avatar:size-5 group-data-[size=xl]/avatar:[&>svg]:size-3',
         className,
       )}
       {...props}

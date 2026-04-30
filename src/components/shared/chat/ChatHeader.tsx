@@ -56,7 +56,10 @@ export function ChatHeader({ contact, className }: ChatHeaderProps) {
           <div className="h-6 w-px bg-neutral-300" />
 
           <div className="flex min-w-0 items-center gap-2.5">
-            <Avatar className="h-9 w-9 rounded-full">
+            <Avatar
+              size="md"
+              className="rounded-full"
+            >
               <AvatarImage
                 src={PROFILE_AVATAR_URL}
                 alt={name}

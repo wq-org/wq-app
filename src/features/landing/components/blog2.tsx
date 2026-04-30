@@ -79,7 +79,7 @@ export function Blog2({ title = 'Latest articles', posts = defaultPosts }: Blog2
                   <Badge>{post.category}</Badge>
                   <p className="flex flex-row items-center gap-2 text-sm">
                     <span className="text-muted-foreground">By</span>
-                    <Avatar className="h-6 w-6">
+                    <Avatar size="xs">
                       <AvatarImage src={post.authorAvatar} />
                       <AvatarFallback>{post.authorName.charAt(0)}</AvatarFallback>
                     </Avatar>

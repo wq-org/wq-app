@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Edit2Icon, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { BlurredImage } from '@/components/ui/blurred-image'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -10,6 +11,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
@@ -91,12 +93,15 @@ function AvatarOptionItem({
       )}
       aria-label={getSelectAvatarLabel(avatar.name)}
     >
-      <div className="size-24 shrink-0 overflow-hidden rounded-full border border-border/60 bg-background">
-        <img
+      <div className="relative size-24 shrink-0 rounded-full border border-border/60 bg-background">
+        <BlurredImage
           src={imageSrc}
           alt={avatar.name}
+          isBlurred
           onError={() => setImageFailed(true)}
-          className="h-full w-full scale-[1.08] rounded-full object-cover"
+          className="h-full w-full rounded-full object-cover"
+          containerClassName="h-full w-full overflow-visible"
+          backdropClassName="rounded-full scale-125 opacity-75"
         />
       </div>
       <AvatarMetaText avatar={avatar} />
@@ -161,7 +166,10 @@ export function SelectAvatarDrawer({
           className="relative h-auto cursor-pointer p-0 hover:bg-transparent"
           aria-label={triggerAriaLabel}
         >
-          <Avatar className="size-24 overflow-hidden rounded-full border border-border/60 bg-card shadow-sm">
+          <Avatar
+            size="xl"
+            className="overflow-hidden rounded-full border border-border/60 bg-card shadow-sm"
+          >
             <AvatarImage
               src={triggerImageSrc}
               alt={displayName || drawerTitle}
@@ -178,8 +186,8 @@ export function SelectAvatarDrawer({
           </div>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="h-screen w-[60vw]! max-w-2xl! border-border bg-background sm:max-w-2xl!">
-        <DrawerHeader>
+      <DrawerContent className="flex h-screen min-h-0 max-h-screen w-[60vw]! max-w-2xl! flex-col overflow-hidden border-border bg-background sm:max-w-2xl!">
+        <DrawerHeader className="shrink-0">
           <div className="flex items-center justify-between gap-3">
             <DrawerTitle>{drawerTitle}</DrawerTitle>
             <Button
@@ -193,8 +201,8 @@ export function SelectAvatarDrawer({
           </div>
           <DrawerDescription>{drawerDescription}</DrawerDescription>
         </DrawerHeader>
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="flex flex-wrap items-start gap-3">
+        <ScrollArea className="min-h-0 flex-1 basis-0 px-4 pb-6">
+          <div className="flex flex-wrap items-start gap-3 py-1 pr-2">
             {avatarOptions.map((avatar) => (
               <AvatarOptionItem
                 key={avatar.src}
@@ -205,7 +213,7 @@ export function SelectAvatarDrawer({
               />
             ))}
           </div>
-        </div>
+        </ScrollArea>
       </DrawerContent>
     </Drawer>
   )

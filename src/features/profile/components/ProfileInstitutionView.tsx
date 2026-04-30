@@ -122,7 +122,7 @@ export function ProfileInstitutionView({ institutionId }: ProfileInstitutionView
       <section className="rounded-2xl h-full">
         <div className="container flex flex-col gap-4 py-8">
           <div className="flex flex-col gap-4 items-start">
-            <Avatar className="w-24 h-24">
+            <Avatar size="xl">
               <AvatarImage src="#" />
               <AvatarFallback>{getInitials(titleText)}</AvatarFallback>
             </Avatar>

@@ -238,7 +238,7 @@ const InstitutionUsers = () => {
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
+                        <Avatar size="sm">
                           {row.rowKind === 'member' ? (
                             <>
                               <AvatarImage

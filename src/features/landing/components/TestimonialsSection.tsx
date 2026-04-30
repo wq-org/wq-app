@@ -14,7 +14,7 @@ export function TestimonialsSection() {
             </p>
 
             <div className="mt-12 flex items-center justify-center gap-6">
-              <Avatar className="size-12">
+              <Avatar size="lg">
                 <AvatarImage
                   src="https://api.dicebear.com/7.x/avataaars/svg?seed=brain"
                   alt="Astrid Probst"
