@@ -918,13 +918,38 @@
     "detail": {
       "back": "Zurück zu Klassenräumen",
       "notFound": "Klassenraum nicht gefunden.",
+      "tabs": {
+        "members": "Mitglieder",
+        "settings": "Einstellungen"
+      },
       "mainTeacher": {
         "title": "Hauptlehrkraft",
         "description": "Primäre Lehrkraft, die diesem Klassenraum zugewiesen ist.",
         "role": "Hauptlehrkraft",
         "unassigned": "Nicht zugewiesen",
-        "noEmail": "Keine E-Mail verfügbar"
+        "noEmail": "Keine E-Mail verfügbar",
+        "reassign": "Neu zuweisen"
       }
+    },
+    "reassignMainTeacherDialog": {
+      "title": "Hauptlehrkraft neu zuweisen",
+      "description": "Wählen Sie eine Lehrkraft, die als Hauptlehrkraft für diesen Klassenraum eingesetzt wird.",
+      "searchPlaceholder": "Lehrkräfte suchen",
+      "empty": "Keine weiteren Lehrkräfte verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Neu zuweisen",
+      "submitting": "Wird zugewiesen..."
+    },
+    "settings": {
+      "titleLabel": "Titel des Klassenraums",
+      "titlePlaceholder": "Titel eingeben",
+      "mainTeacherLabel": "Hauptlehrkraft",
+      "mainTeacherUnassigned": "Nicht zugewiesen",
+      "unassign": "Zuweisung aufheben",
+      "reassign": "Neu zuweisen",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Wird gespeichert...",
+      "saveError": "Änderungen konnten nicht gespeichert werden."
     },
     "members": {
       "title": "Mitglieder",
@@ -933,22 +958,36 @@
       "columns": {
         "name": "Name",
         "email": "E-Mail",
-        "role": "Rolle"
+        "role": "Rolle",
+        "actions": "Aktionen"
       },
       "roles": {
         "student": "Schüler",
-        "co_teacher": "Co-Lehrkraft"
-      }
+        "co_teacher": "Co-Lehrkraft",
+        "teacher": "Lehrkraft",
+        "main_teacher": "Hauptlehrkraft"
+      },
+      "kickOut": "Aus Klassenraum entfernen"
     },
     "assignDialog": {
       "title": "Nutzer dem Klassenraum zuweisen",
-      "description": "Suchen Sie Institutionsnutzer und weisen Sie sie diesem Klassenraum zu.",
-      "searchPlaceholder": "Nutzer suchen",
+      "description": "Suchen Sie Lehrkräfte und Schüler und weisen Sie sie diesem Klassenraum zu.",
+      "searchTeachersPlaceholder": "Lehrkräfte suchen",
+      "searchStudentsPlaceholder": "Schüler suchen",
+      "coTeachersLabel": "Co-Lehrkräfte",
+      "mainTeacherLabel": "Hauptlehrkraft (falls noch nicht gesetzt)",
+      "searchMainTeacherPlaceholder": "Hauptlehrkraft suchen und zuweisen",
+      "studentsLabel": "Schüler",
       "empty": "Keine aktiven Nutzer gefunden.",
       "emptyDescription": "Laden Sie Nutzer ein oder aktivieren Sie sie in der Institution, um sie hier zuzuweisen.",
+      "noTeachers": "Keine Lehrkräfte verfügbar.",
+      "noStudents": "Keine Schüler verfügbar.",
+      "alreadyAssigned": "Bereits im Klassenraum",
       "cancel": "Abbrechen",
       "assign": "Zuweisen",
-      "assigning": "Wird zugewiesen..."
+      "assigning": "Wird zugewiesen...",
+      "noChanges": "Wählen Sie mindestens einen neuen Nutzer aus.",
+      "partialFailure": "Einige Nutzer konnten nicht zugewiesen werden."
     }
   },
   "licenses": {

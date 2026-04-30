@@ -8,9 +8,10 @@ import { ClassroomMembersTableRow } from './ClassroomMembersTableRow'
 
 type ClassroomMembersTableProps = {
   members: readonly ClassroomMember[]
+  onKickOut?: (member: ClassroomMember) => void
 }
 
-export function ClassroomMembersTable({ members }: ClassroomMembersTableProps) {
+export function ClassroomMembersTable({ members, onKickOut }: ClassroomMembersTableProps) {
   const { t } = useTranslation('features.institution-admin')
 
   if (members.length === 0) {
@@ -33,6 +34,9 @@ export function ClassroomMembersTable({ members }: ClassroomMembersTableProps) {
           <TableHead>{t('classrooms.members.columns.name')}</TableHead>
           <TableHead>{t('classrooms.members.columns.email')}</TableHead>
           <TableHead>{t('classrooms.members.columns.role')}</TableHead>
+          {onKickOut ? (
+            <TableHead className="text-right">{t('classrooms.members.columns.actions')}</TableHead>
+          ) : null}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -40,6 +44,7 @@ export function ClassroomMembersTable({ members }: ClassroomMembersTableProps) {
           <ClassroomMembersTableRow
             key={member.id}
             member={member}
+            onKickOut={onKickOut}
           />
         ))}
       </TableBody>

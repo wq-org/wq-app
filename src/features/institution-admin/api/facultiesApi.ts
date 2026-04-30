@@ -16,6 +16,18 @@ function toFaculty(row: FacultyRecord): FacultyRecord {
   return row
 }
 
+export async function fetchFaculty(facultyId: string): Promise<FacultySummary> {
+  const { data, error } = await supabase
+    .from('faculties')
+    .select('id, name, description')
+    .eq('id', facultyId)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return data as FacultySummary
+}
+
 export async function listFacultiesByInstitution(
   institutionId: string,
 ): Promise<readonly FacultySummary[]> {

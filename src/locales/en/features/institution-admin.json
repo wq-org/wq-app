@@ -918,13 +918,38 @@
     "detail": {
       "back": "Back to classrooms",
       "notFound": "Classroom not found.",
+      "tabs": {
+        "members": "Members",
+        "settings": "Settings"
+      },
       "mainTeacher": {
         "title": "Main teacher",
         "description": "Primary teacher assigned to this classroom.",
         "role": "Main teacher",
         "unassigned": "Unassigned",
-        "noEmail": "No email available"
+        "noEmail": "No email available",
+        "reassign": "Reassign"
       }
+    },
+    "reassignMainTeacherDialog": {
+      "title": "Reassign main teacher",
+      "description": "Select a teacher to assign as the main teacher for this classroom.",
+      "searchPlaceholder": "Search teachers",
+      "empty": "No other teachers available.",
+      "cancel": "Cancel",
+      "submit": "Reassign",
+      "submitting": "Reassigning..."
+    },
+    "settings": {
+      "titleLabel": "Classroom title",
+      "titlePlaceholder": "Enter classroom title",
+      "mainTeacherLabel": "Main teacher",
+      "mainTeacherUnassigned": "Unassigned",
+      "unassign": "Unassign",
+      "reassign": "Reassign",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "saveError": "Could not save changes."
     },
     "members": {
       "title": "Members",
@@ -933,22 +958,36 @@
       "columns": {
         "name": "Name",
         "email": "Email",
-        "role": "Role"
+        "role": "Role",
+        "actions": "Actions"
       },
       "roles": {
         "student": "Student",
-        "co_teacher": "Co-teacher"
-      }
+        "co_teacher": "Co-teacher",
+        "teacher": "Teacher",
+        "main_teacher": "Main teacher"
+      },
+      "kickOut": "Remove from classroom"
     },
     "assignDialog": {
-      "title": "Assign user to classroom",
-      "description": "Search institution users and assign them to this classroom.",
-      "searchPlaceholder": "Search users",
+      "title": "Assign users to classroom",
+      "description": "Search teachers and students and assign them to this classroom.",
+      "searchTeachersPlaceholder": "Search teachers",
+      "searchStudentsPlaceholder": "Search students",
+      "coTeachersLabel": "Co-teachers",
+      "mainTeacherLabel": "Main teacher (if unassigned)",
+      "searchMainTeacherPlaceholder": "Search to assign main teacher",
+      "studentsLabel": "Students",
       "empty": "No active users found.",
       "emptyDescription": "Invite or activate users in your institution to assign them here.",
+      "noTeachers": "No teachers available.",
+      "noStudents": "No students available.",
+      "alreadyAssigned": "Already in classroom",
       "cancel": "Cancel",
       "assign": "Assign",
-      "assigning": "Assigning..."
+      "assigning": "Assigning...",
+      "noChanges": "Select at least one new user to assign.",
+      "partialFailure": "Some users could not be assigned."
     }
   },
   "licenses": {

@@ -13,7 +13,8 @@ function Avatar({ className, size = 'default', ...props }: AvatarProps) {
       data-slot="avatar"
       data-size={size}
       className={cn(
-        'cn-avatar group/avatar relative flex shrink-0 select-none after:absolute after:inset-0 after:mix-blend-darken dark:after:mix-blend-lighten',
+        'cn-avatar group/avatar relative flex shrink-0 select-none overflow-hidden rounded-full bg-muted after:absolute after:inset-0 after:mix-blend-darken dark:after:mix-blend-lighten',
+        'data-[size=sm]:size-8 data-[size=default]:size-10 data-[size=lg]:size-12',
         className,
       )}
       {...props}

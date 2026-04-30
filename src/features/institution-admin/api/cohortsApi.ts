@@ -23,6 +23,14 @@ export async function listCohortsByInstitution(
   return (data ?? []).map((row) => toCohort(row as CohortRecord))
 }
 
+export async function fetchCohort(cohortId: string): Promise<CohortRecord> {
+  const { data, error } = await supabase.from('cohorts').select(COLUMNS).eq('id', cohortId).single()
+
+  if (error) throw new Error(error.message)
+
+  return toCohort(data as CohortRecord)
+}
+
 export async function listCohortsByProgramme(
   programmeId: string,
 ): Promise<readonly CohortRecord[]> {

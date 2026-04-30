@@ -23,6 +23,18 @@ export async function listProgrammesByInstitution(
   return (data ?? []).map((row) => toProgramme(row as ProgrammeRecord))
 }
 
+export async function fetchProgramme(programmeId: string): Promise<ProgrammeRecord> {
+  const { data, error } = await supabase
+    .from('programmes')
+    .select(COLUMNS)
+    .eq('id', programmeId)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toProgramme(data as ProgrammeRecord)
+}
+
 export async function listProgrammesByFaculty(
   facultyId: string,
 ): Promise<readonly ProgrammeRecord[]> {

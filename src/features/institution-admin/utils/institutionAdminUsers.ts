@@ -8,11 +8,12 @@ export function buildInitialsFromDisplayName(
   username?: string | null,
 ): string {
   const source = displayName?.trim() || username?.trim() || 'U'
-  return source
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('')
+  return source.charAt(0).toUpperCase()
+}
+
+export function getInitial(name: string | null | undefined): string {
+  const trimmed = name?.trim()
+  return trimmed ? trimmed.charAt(0).toUpperCase() : '?'
 }
 
 export function institutionUserRoleTranslationKey(role: string): string {

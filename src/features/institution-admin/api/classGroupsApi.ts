@@ -23,6 +23,18 @@ export async function listClassGroupsByInstitution(
   return (data ?? []).map((row) => toClassGroup(row as ClassGroupRecord))
 }
 
+export async function fetchClassGroup(classGroupId: string): Promise<ClassGroupRecord> {
+  const { data, error } = await supabase
+    .from('class_groups')
+    .select(COLUMNS)
+    .eq('id', classGroupId)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return toClassGroup(data as ClassGroupRecord)
+}
+
 export async function listClassGroupsByCohort(
   cohortId: string,
 ): Promise<readonly ClassGroupRecord[]> {

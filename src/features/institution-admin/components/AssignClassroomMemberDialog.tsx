@@ -1,10 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { UserX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
@@ -23,13 +28,20 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
-import { useAssignClassroomMemberDialog } from '../hooks/useAssignClassroomMemberDialog'
+import {
+  useAssignClassroomMemberDialog,
+  type AssignableUserOption,
+} from '../hooks/useAssignClassroomMemberDialog'
+import type { ClassroomMember } from '../types/classroom.types'
+import { getInitial } from '../utils'
 
 type AssignClassroomMemberDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   classroomId: string | null
   institutionId: string | null
+  members: readonly ClassroomMember[]
+  primaryTeacherId: string | null
   onAssigned: () => void
 }
 
@@ -38,13 +50,22 @@ export function AssignClassroomMemberDialog({
   onOpenChange,
   classroomId,
   institutionId,
+  members,
+  primaryTeacherId,
   onAssigned,
 }: AssignClassroomMemberDialogProps) {
   const { t } = useTranslation('features.institution-admin')
   const {
-    users,
-    selectedUserId,
-    setSelectedUserId,
+    teacherOptions,
+    mainTeacherOptions,
+    studentOptions,
+    selectedPrimaryTeacherId,
+    setSelectedPrimaryTeacherId,
+    selectedCoTeacherIds,
+    selectedStudentIds,
+    setSelectedCoTeacherIds,
+    setSelectedStudentIds,
+    showMainTeacherPicker,
     isLoading,
     isSubmitting,
     error,
@@ -54,53 +75,31 @@ export function AssignClassroomMemberDialog({
   } = useAssignClassroomMemberDialog({
     classroomId,
     institutionId,
+    members,
+    primaryTeacherId,
     open,
     onAssigned,
   })
 
-  const labels = useMemo(() => users.map((user) => user.label), [users])
-  const userIdByLabel = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const user of users) {
-      map.set(user.label, user.id)
-    }
-    return map
-  }, [users])
-  const selectedLabel = useMemo(() => {
-    return users.find((user) => user.id === selectedUserId)?.label ?? ''
-  }, [selectedUserId, users])
-
-  const handleSelect = (value: string | null) => {
-    if (!value) {
-      setSelectedUserId('')
-      return
-    }
-    const nextId = userIdByLabel.get(value)
-    if (nextId) {
-      setSelectedUserId(nextId)
-    }
-  }
-
   const handleClose = (nextOpen: boolean) => {
     onOpenChange(nextOpen)
-    if (!nextOpen) {
-      reset()
-    }
+    if (!nextOpen) reset()
   }
 
-  const handleAssign = async () => {
-    const assigned = await handleSubmit()
-    if (assigned) {
-      onOpenChange(false)
-    }
+  const handleSubmitClick = async () => {
+    const ok = await handleSubmit()
+    if (ok) onOpenChange(false)
   }
+
+  const directoryEmpty = !isLoading && teacherOptions.length === 0 && studentOptions.length === 0
+  const errorMessage = error === 'partial' ? t('classrooms.assignDialog.partialFailure') : error
 
   return (
     <Dialog
       open={open}
       onOpenChange={handleClose}
     >
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t('classrooms.assignDialog.title')}</DialogTitle>
           <DialogDescription>{t('classrooms.assignDialog.description')}</DialogDescription>
@@ -114,7 +113,7 @@ export function AssignClassroomMemberDialog({
               speed={1750}
             />
           </div>
-        ) : users.length === 0 ? (
+        ) : directoryEmpty ? (
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
@@ -125,43 +124,48 @@ export function AssignClassroomMemberDialog({
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="grid gap-3">
-            <Combobox
-              value={selectedLabel || null}
-              onValueChange={handleSelect}
-              items={labels}
-              itemToStringLabel={(item) => String(item)}
-              filter={(item, query) =>
-                String(item).toLowerCase().includes(query.trim().toLowerCase())
-              }
-              autoHighlight
-            >
-              <ComboboxInput
-                placeholder={t('classrooms.assignDialog.searchPlaceholder')}
-                showClear
+          <div className="grid gap-5">
+            {showMainTeacherPicker ? (
+              <MainTeacherSection
+                label={t('classrooms.assignDialog.mainTeacherLabel')}
+                placeholder={t('classrooms.assignDialog.searchMainTeacherPlaceholder')}
+                emptyLabel={t('classrooms.assignDialog.noTeachers')}
+                options={mainTeacherOptions}
+                selectedId={selectedPrimaryTeacherId}
+                onSelectionChange={setSelectedPrimaryTeacherId}
+                roleBadgeLabel={t('classrooms.detail.mainTeacher.role')}
               />
-              <ComboboxContent>
-                <ComboboxEmpty>{t('classrooms.assignDialog.empty')}</ComboboxEmpty>
-                <ComboboxList>
-                  {(item: string) => (
-                    <ComboboxItem
-                      key={item}
-                      value={item}
-                    >
-                      {item}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
+            ) : null}
 
-            {error ? (
+            <RoleSection
+              label={t('classrooms.assignDialog.coTeachersLabel')}
+              placeholder={t('classrooms.assignDialog.searchTeachersPlaceholder')}
+              emptyLabel={t('classrooms.assignDialog.noTeachers')}
+              options={teacherOptions}
+              selectedIds={selectedCoTeacherIds}
+              onSelectionChange={setSelectedCoTeacherIds}
+              roleBadgeLabel={t('classrooms.members.roles.co_teacher')}
+              alreadyAssignedLabel={t('classrooms.assignDialog.alreadyAssigned')}
+            />
+
+            <RoleSection
+              label={t('classrooms.assignDialog.studentsLabel')}
+              placeholder={t('classrooms.assignDialog.searchStudentsPlaceholder')}
+              emptyLabel={t('classrooms.assignDialog.noStudents')}
+              options={studentOptions}
+              selectedIds={selectedStudentIds}
+              onSelectionChange={setSelectedStudentIds}
+              roleBadgeLabel={t('classrooms.members.roles.student')}
+              alreadyAssignedLabel={t('classrooms.assignDialog.alreadyAssigned')}
+            />
+
+            {errorMessage ? (
               <Text
                 as="p"
                 variant="small"
                 color="danger"
               >
-                {error}
+                {errorMessage}
               </Text>
             ) : null}
           </div>
@@ -179,7 +183,7 @@ export function AssignClassroomMemberDialog({
           <Button
             type="button"
             variant="darkblue"
-            onClick={handleAssign}
+            onClick={handleSubmitClick}
             disabled={!canSubmit}
           >
             {isSubmitting
@@ -189,5 +193,270 @@ export function AssignClassroomMemberDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+type MainTeacherSectionProps = {
+  label: string
+  placeholder: string
+  emptyLabel: string
+  options: readonly AssignableUserOption[]
+  selectedId: string
+  onSelectionChange: (id: string) => void
+  roleBadgeLabel: string
+}
+
+function MainTeacherSection({
+  label,
+  placeholder,
+  emptyLabel,
+  options,
+  selectedId,
+  onSelectionChange,
+  roleBadgeLabel,
+}: MainTeacherSectionProps) {
+  const optionsById = useMemo(() => {
+    const map = new Map<string, AssignableUserOption>()
+    for (const option of options) {
+      map.set(option.id, option)
+    }
+    return map
+  }, [options])
+
+  const handleValueChange = (next: string | null) => {
+    onSelectionChange(next ?? '')
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Text
+        as="p"
+        variant="small"
+        className="font-semibold"
+      >
+        {label}
+      </Text>
+
+      {options.length === 0 ? (
+        <Text
+          as="p"
+          variant="small"
+          color="muted"
+        >
+          {emptyLabel}
+        </Text>
+      ) : (
+        <Combobox
+          value={selectedId || null}
+          onValueChange={handleValueChange}
+          items={options.map((option) => option.id)}
+          itemToStringLabel={(item) => optionsById.get(String(item))?.name ?? ''}
+          filter={(item, query) => {
+            const option = optionsById.get(String(item))
+            if (!option) return false
+            const haystack = `${option.name} ${option.email}`.toLowerCase()
+            return haystack.includes(query.trim().toLowerCase())
+          }}
+          autoHighlight
+        >
+          <ComboboxInput
+            placeholder={placeholder}
+            showClear
+          />
+          <ComboboxContent>
+            <ComboboxEmpty>{emptyLabel}</ComboboxEmpty>
+            <ComboboxList>
+              {(item: string) => {
+                const option = optionsById.get(item)
+                if (!option) return null
+                return (
+                  <ComboboxItem
+                    key={item}
+                    value={item}
+                  >
+                    <div className="flex w-full items-center gap-3">
+                      <Avatar size="sm">
+                        {option.avatarUrl ? (
+                          <AvatarImage
+                            src={option.avatarUrl}
+                            alt={option.name}
+                          />
+                        ) : null}
+                        <AvatarFallback>{getInitial(option.name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate font-medium">{option.name}</span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          {option.email}
+                        </span>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        size="sm"
+                        className="ml-auto"
+                      >
+                        {roleBadgeLabel}
+                      </Badge>
+                    </div>
+                  </ComboboxItem>
+                )
+              }}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
+      )}
+    </div>
+  )
+}
+
+type RoleSectionProps = {
+  label: string
+  placeholder: string
+  emptyLabel: string
+  options: readonly AssignableUserOption[]
+  selectedIds: readonly string[]
+  onSelectionChange: (ids: readonly string[]) => void
+  roleBadgeLabel: string
+  alreadyAssignedLabel: string
+}
+
+function RoleSection({
+  label,
+  placeholder,
+  emptyLabel,
+  options,
+  selectedIds,
+  onSelectionChange,
+  roleBadgeLabel,
+  alreadyAssignedLabel,
+}: RoleSectionProps) {
+  const chipsAnchorRef = useRef<HTMLDivElement>(null)
+
+  const optionsById = useMemo(() => {
+    const map = new Map<string, AssignableUserOption>()
+    for (const option of options) {
+      map.set(option.id, option)
+    }
+    return map
+  }, [options])
+
+  const initiallyLockedIds = useMemo(
+    () => new Set(options.filter((option) => option.alreadyAssigned).map((option) => option.id)),
+    [options],
+  )
+
+  const handleValueChange = (next: readonly string[] | null) => {
+    const nextArray = Array.isArray(next) ? next : []
+    const merged = new Set<string>(nextArray)
+    for (const id of initiallyLockedIds) merged.add(id)
+    onSelectionChange(Array.from(merged))
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Text
+        as="p"
+        variant="small"
+        className="font-semibold"
+      >
+        {label}
+      </Text>
+
+      {options.length === 0 ? (
+        <Text
+          as="p"
+          variant="small"
+          color="muted"
+        >
+          {emptyLabel}
+        </Text>
+      ) : (
+        <Combobox
+          multiple
+          value={selectedIds as string[]}
+          onValueChange={handleValueChange}
+          items={options.map((option) => option.id)}
+          itemToStringLabel={(item) => optionsById.get(String(item))?.name ?? ''}
+          filter={(item, query) => {
+            const option = optionsById.get(String(item))
+            if (!option) return false
+            const haystack = `${option.name} ${option.email}`.toLowerCase()
+            return haystack.includes(query.trim().toLowerCase())
+          }}
+          autoHighlight
+        >
+          <ComboboxChips
+            ref={chipsAnchorRef}
+            className="w-full min-w-0"
+          >
+            {selectedIds.map((id) => {
+              const option = optionsById.get(id)
+              const locked = option?.alreadyAssigned ?? false
+              const labelText = option?.name ?? id
+              return (
+                <ComboboxChip
+                  key={id}
+                  disabled={locked}
+                  showRemove={!locked}
+                >
+                  <span className="max-w-[14rem] truncate">{labelText}</span>
+                </ComboboxChip>
+              )
+            })}
+            <ComboboxChipsInput
+              placeholder={placeholder}
+              className="min-h-7 flex-1 py-1 text-base"
+            />
+          </ComboboxChips>
+          <ComboboxContent anchor={chipsAnchorRef}>
+            <ComboboxEmpty>{emptyLabel}</ComboboxEmpty>
+            <ComboboxList>
+              {(item: string) => {
+                const option = optionsById.get(item)
+                if (!option) return null
+                return (
+                  <ComboboxItem
+                    key={item}
+                    value={item}
+                    disabled={option.alreadyAssigned}
+                  >
+                    <div className="flex w-full items-center gap-3">
+                      <Avatar size="sm">
+                        {option.avatarUrl ? (
+                          <AvatarImage
+                            src={option.avatarUrl}
+                            alt={option.name}
+                          />
+                        ) : null}
+                        <AvatarFallback>{getInitial(option.name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate font-medium">{option.name}</span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          {option.email}
+                        </span>
+                      </div>
+                      <div className="ml-auto flex items-center gap-2">
+                        {option.alreadyAssigned ? (
+                          <span className="text-xs text-muted-foreground">
+                            {alreadyAssignedLabel}
+                          </span>
+                        ) : null}
+                        <Badge
+                          variant="outline"
+                          size="sm"
+                        >
+                          {roleBadgeLabel}
+                        </Badge>
+                      </div>
+                    </div>
+                  </ComboboxItem>
+                )
+              }}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
+      )}
+    </div>
   )
 }

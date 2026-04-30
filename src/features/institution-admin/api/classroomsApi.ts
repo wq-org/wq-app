@@ -70,7 +70,83 @@ export async function createClassroom(input: CreateClassroomInput): Promise<Clas
     throw new Error(error.message)
   }
 
-  return data as ClassroomRecord
+  const created = data as ClassroomRecord
+
+  if (input.primaryTeacherId) {
+    await ensurePrimaryTeacherMembership({
+      classroomId: created.id,
+      institutionId: input.institutionId,
+      userId: input.primaryTeacherId,
+    })
+  }
+
+  return created
+}
+
+/** Keeps `classrooms.primary_teacher_id` aligned with an active co_teacher membership row (required by DB docs / list_active_classroom_ids). */
+export async function ensurePrimaryTeacherMembership(input: {
+  classroomId: string
+  institutionId: string
+  userId: string
+}): Promise<void> {
+  const { data: rows, error } = await supabase
+    .from('classroom_members')
+    .select('id, withdrawn_at, membership_role, enrolled_at')
+    .eq('classroom_id', input.classroomId)
+    .eq('user_id', input.userId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  const list = rows ?? []
+  const active = list.find((row) => row.withdrawn_at == null)
+
+  if (active) {
+    if (active.membership_role !== 'co_teacher') {
+      const { error: updateError } = await supabase
+        .from('classroom_members')
+        .update({
+          membership_role: 'co_teacher',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', active.id)
+
+      if (updateError) {
+        throw new Error(updateError.message)
+      }
+    }
+    return
+  }
+
+  const withdrawnRows = list.filter((row) => row.withdrawn_at != null)
+  const withdrawn = withdrawnRows.sort(
+    (a, b) => new Date(b.enrolled_at).getTime() - new Date(a.enrolled_at).getTime(),
+  )[0]
+
+  if (withdrawn) {
+    const { error: reactivateError } = await supabase
+      .from('classroom_members')
+      .update({
+        withdrawn_at: null,
+        leave_reason: null,
+        membership_role: 'co_teacher',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', withdrawn.id)
+
+    if (reactivateError) {
+      throw new Error(reactivateError.message)
+    }
+    return
+  }
+
+  await createClassroomMember({
+    classroomId: input.classroomId,
+    institutionId: input.institutionId,
+    userId: input.userId,
+    role: 'co_teacher',
+  })
 }
 
 export async function fetchClassroom(classroomId: string): Promise<ClassroomRecord> {
@@ -85,6 +161,43 @@ export async function fetchClassroom(classroomId: string): Promise<ClassroomReco
   }
 
   return data as ClassroomRecord
+}
+
+type UpdateClassroomInput = {
+  classroomId: string
+  title?: string
+  primaryTeacherId?: string | null
+  status?: ClassroomRecord['status']
+}
+
+export async function updateClassroom(input: UpdateClassroomInput): Promise<ClassroomRecord> {
+  const patch: Record<string, unknown> = {}
+  if (input.title !== undefined) patch.title = input.title.trim()
+  if (input.primaryTeacherId !== undefined) patch.primary_teacher_id = input.primaryTeacherId
+  if (input.status !== undefined) patch.status = input.status
+
+  const { data, error } = await supabase
+    .from('classrooms')
+    .update(patch)
+    .eq('id', input.classroomId)
+    .select(COLUMNS)
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  const updated = data as ClassroomRecord
+
+  if (input.primaryTeacherId !== undefined && input.primaryTeacherId !== null) {
+    await ensurePrimaryTeacherMembership({
+      classroomId: updated.id,
+      institutionId: updated.institution_id,
+      userId: input.primaryTeacherId,
+    })
+  }
+
+  return updated
 }
 
 const MEMBER_COLUMNS =
@@ -134,6 +247,17 @@ export async function createClassroomMember(input: CreateClassroomMemberInput): 
     user_id: input.userId,
     membership_role: input.role,
   })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function withdrawClassroomMember(memberId: string): Promise<void> {
+  const { error } = await supabase
+    .from('classroom_members')
+    .update({ withdrawn_at: new Date().toISOString() })
+    .eq('id', memberId)
 
   if (error) {
     throw new Error(error.message)

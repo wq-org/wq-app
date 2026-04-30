@@ -2,6 +2,7 @@ export { normalizeClassroomMemberProfileEmbed } from './normalizeClassroomMember
 export { groupByCategory } from './licenseUtils'
 export {
   buildInitialsFromDisplayName,
+  getInitial,
   institutionUserRoleTranslationKey,
   withdrawFromClassDialogTranslationKeys,
   removeFromInstitutionDialogTranslationKeys,
