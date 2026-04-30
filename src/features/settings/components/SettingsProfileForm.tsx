@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
@@ -104,13 +105,21 @@ export function SettingsProfileForm({
               {t('profile.sections.profileHint')}
             </Text>
             {capabilities.showRoleHint ? (
-              <Text
-                as="p"
-                variant="body"
-                className="text-xs text-muted-foreground"
-              >
-                {t('profile.sections.roleHint', { role: t(`profile.roles.${role}`) })}
-              </Text>
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <Text
+                  as="span"
+                  variant="body"
+                  className="text-xs text-muted-foreground"
+                >
+                  {t('profile.sections.roleHintPrefix')}
+                </Text>
+                <Badge
+                  variant="darkblue"
+                  size="sm"
+                >
+                  {t(`profile.roles.${role}`)}
+                </Badge>
+              </div>
             ) : null}
           </div>
           <div className="mt-4 space-y-3">

@@ -21,7 +21,7 @@
       "avatarHint": "Wähle den Avatar für dein Profil und die Spielstatistiken.",
       "profileTitle": "Profil",
       "profileHint": "Verwalte deine öffentlichen Profildaten.",
-      "roleHint": "Aktuelle Rolle: {{role}}",
+      "roleHintPrefix": "Aktuelle Rolle:",
       "accountTitle": "Konto",
       "accountHint": "Diese Felder werden vom Konto verwaltet und sind schreibgeschützt."
     },

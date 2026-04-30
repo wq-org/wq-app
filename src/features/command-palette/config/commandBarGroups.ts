@@ -256,7 +256,7 @@ export function getCommandGroupsByRole(role: CommandRoleContext): readonly Comma
 }
 
 export function getCommandBarGroups(
-  role: CommandRoleContext,
+  _role: CommandRoleContext,
   context: CommandBarContext,
 ): CommandBarGroup[] {
   if (context === 'game-studio') {

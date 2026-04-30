@@ -244,21 +244,23 @@ function ComboboxChip({
   className,
   children,
   showRemove = true,
-  disabled,
+  disabled = false,
   ...props
 }: ComboboxChipProps) {
   return (
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
-      disabled={disabled}
+      aria-disabled={disabled || undefined}
+      data-disabled={disabled ? '' : undefined}
       className={cn(
-        'flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50 has-data-[slot=combobox-chip-remove]:pr-0',
+        'flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground has-data-[slot=combobox-chip-remove]:pr-0',
+        disabled && 'pointer-events-none cursor-not-allowed opacity-50',
         className,
       )}
       {...props}
     >
       {children}
-      {showRemove && (
+      {showRemove && !disabled ? (
         <ComboboxPrimitive.ChipRemove
           className="-ml-1 opacity-50 hover:opacity-100"
           data-slot="combobox-chip-remove"
@@ -271,7 +273,7 @@ function ComboboxChip({
             </Button>
           }
         />
-      )}
+      ) : null}
     </ComboboxPrimitive.Chip>
   )
 }

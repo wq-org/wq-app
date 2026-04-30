@@ -21,7 +21,7 @@
       "avatarHint": "Choose the avatar shown on your profile and in game stats.",
       "profileTitle": "Profile",
       "profileHint": "Manage your public profile details.",
-      "roleHint": "Current role: {{role}}",
+      "roleHintPrefix": "Current role:",
       "accountTitle": "Account",
       "accountHint": "These fields are managed by your account and are read-only."
     },
