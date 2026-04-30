@@ -22,6 +22,8 @@ export type ActionId =
   | 'pan'
   | 'select'
   | 'home'
+  | 'attendanceStart'
+  | 'attendanceEnd'
 
 /**
  * Single clickable element in the command bar.
@@ -84,4 +86,4 @@ export type UpdateGameData = {
 /**
  * Types of items that can be added via CommandAddDialog
  */
-export type AddType = 'course' | 'institution' | 'game' | 'node'
+export type AddType = 'course' | 'institution' | 'game' | 'node' | 'note' | 'task'

@@ -234,17 +234,23 @@ const ComboboxChips = React.forwardRef<
   )
 })
 
+type ComboboxChipProps = ComboboxPrimitive.Chip.Props & {
+  showRemove?: boolean
+  /** When set, chip is non-interactive and cannot be removed (remove control hidden when `showRemove` is false). */
+  disabled?: boolean
+}
+
 function ComboboxChip({
   className,
   children,
   showRemove = true,
+  disabled,
   ...props
-}: ComboboxPrimitive.Chip.Props & {
-  showRemove?: boolean
-}) {
+}: ComboboxChipProps) {
   return (
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
+      disabled={disabled}
       className={cn(
         'flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50 has-data-[slot=combobox-chip-remove]:pr-0',
         className,

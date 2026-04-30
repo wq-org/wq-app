@@ -8,12 +8,18 @@ export { CommandSearch } from './components/CommandSearchDialog'
 export { CommandShortcut } from './components/CommandShortcut'
 export { CommandUploadDialog } from './components/CommandUploadDialog'
 export { CommandUploadForm } from './components/CommandUploadForm'
+export { CommandAttendanceDialog } from './components/CommandAttendanceDialog'
+export type { CommandAttendanceDialogProps } from './components/CommandAttendanceDialog'
 export { RestrictedCommandPalette } from './components/RestrictedCommandPalette'
 export { UploadedFileItem } from './components/UploadedFileItem'
 export { useCommandAdd } from './hooks/useCommandAdd'
 export type { CommandAddState } from './hooks/useCommandAdd'
 export { useSearchItems } from './hooks/useSearchItems'
 export type { SearchItem } from './hooks/useSearchItems'
+export {
+  useCommandAttendanceDialog,
+  type CommandAttendanceMode,
+} from './hooks/useCommandAttendanceDialog'
 export type {
   CommandBarView,
   CommandRoleContext,

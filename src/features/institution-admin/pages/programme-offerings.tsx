@@ -125,8 +125,13 @@ export function InstitutionProgrammeOfferings() {
 
   const cohortCardItems = useMemo(() => {
     const programmeName = selectedProgramme?.name?.trim() ?? ''
-    return filteredCohorts.map((cohort) => ({ cohort, programmeName }))
-  }, [filteredCohorts, selectedProgramme?.name])
+    const facultyNameTrimmed = facultyName?.trim() ?? ''
+    return filteredCohorts.map((cohort) => ({
+      cohort,
+      programmeName,
+      facultyName: facultyNameTrimmed,
+    }))
+  }, [filteredCohorts, selectedProgramme?.name, facultyName])
 
   const handleOpenCohort = (cohortId: string) => {
     if (!facultyIdParam || !programmeIdParam) return

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { createCourse } from '@/features/course'
-import { createInstitution } from '@/features/auth'
+import { createInstitution, getRoleRoutePrefix } from '@/features/auth'
 import { createGameForStudio } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
@@ -36,7 +37,7 @@ export function useCommandAdd({
 }: UseCommandAddOptions): CommandAddState {
   const { t } = useTranslation('features.commandPalette')
   const navigate = useNavigate()
-  const { profile } = useUser()
+  const { profile, getRole } = useUser()
   const { addNode } = useGameStudioContext()
 
   const [selectedType, setSelectedType] = useState<AddType | null>(null)
@@ -102,6 +103,26 @@ export function useCommandAdd({
         )
         reset()
         onRequestClose?.()
+        return
+      }
+
+      if (selectedType === 'note') {
+        toast.info(t('addDialog.toasts.noteNotWired'))
+        reset()
+        onRequestClose?.()
+        return
+      }
+
+      if (selectedType === 'task') {
+        const prefix = getRoleRoutePrefix(getRole())
+        reset()
+        onRequestClose?.()
+        if (prefix) {
+          navigate(`${prefix}/tasks`)
+          return
+        }
+        toast.info(t('addDialog.toasts.taskNotWired'))
+        return
       }
     } catch (error) {
       console.error('[CommandAdd] failed:', error)

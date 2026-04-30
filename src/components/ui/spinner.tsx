@@ -9,6 +9,7 @@ const spinnerVariants = cva('origin-center overflow-visible will-change-transfor
       white: '[--uib-color:theme(colors.white)]',
       black: '[--uib-color:theme(colors.black)]',
       darkblue: '[--uib-color:theme(colors.blue.500)]',
+      teal: '[--uib-color:theme(colors.teal.600)]',
     },
     size: {
       xs: 'h-4 w-4 [--uib-size:16px] [--stroke-width:2px]',

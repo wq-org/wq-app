@@ -9,6 +9,7 @@ import roleSelectionDE from './de/roleSelection.json'
 import settingsDE from './de/settings.json'
 
 // DE imports - Layout
+import layoutAppNavigationDE from './de/layout/appNavigation.json'
 import layoutDashboardLayoutDE from './de/layout/dashboardLayout.json'
 
 // DE imports - Shared
@@ -42,6 +43,7 @@ import roleSelectionEN from './en/roleSelection.json'
 import settingsEN from './en/settings.json'
 
 // EN imports - Layout
+import layoutAppNavigationEN from './en/layout/appNavigation.json'
 import layoutDashboardLayoutEN from './en/layout/dashboardLayout.json'
 
 // EN imports - Shared
@@ -119,6 +121,7 @@ i18n.use(initReactI18next).init({
       'features.teacher': featuresTeacherEN,
       'features.uploadFiles': featuresUploadFilesEN,
       // Layout namespaces
+      'layout.appNavigation': layoutAppNavigationEN,
       'layout.dashboardLayout': layoutDashboardLayoutEN,
       // Shared namespaces
       'shared.editorColors': sharedEditorColorsEN,
@@ -150,6 +153,7 @@ i18n.use(initReactI18next).init({
       'features.teacher': featuresTeacherDE,
       'features.uploadFiles': featuresUploadFilesDE,
       // Layout namespaces
+      'layout.appNavigation': layoutAppNavigationDE,
       'layout.dashboardLayout': layoutDashboardLayoutDE,
       // Shared namespaces
       'shared.editorColors': sharedEditorColorsDE,
@@ -184,6 +188,7 @@ i18n.use(initReactI18next).init({
     'features.teacher',
     'features.uploadFiles',
     // Layout namespaces
+    'layout.appNavigation',
     'layout.dashboardLayout',
     // Shared namespaces
     'shared.editorColors',

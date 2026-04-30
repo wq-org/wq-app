@@ -120,7 +120,8 @@ export {
   SkeletonLoaderForActions,
   SkeletonLoaderTextParagraphs,
 } from './skeletons'
-export { ThemeModeToggle } from './ThemeModeToggle'
+export { ThemeAppearanceMenu, ThemeModePopover, ThemeModeToggle } from './ThemeModeToggle'
+export type { ThemeAppearanceMenuProps } from './ThemeModeToggle'
 export {
   BasicTree,
   FileExplorerTreeTypeIcons,

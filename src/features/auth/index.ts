@@ -25,7 +25,14 @@ export {
 export { RequireAuth } from './components/RequireAuth'
 export { RequireOnboarding } from './components/RequireOnboarding'
 export { useAuth } from './hooks/useAuth'
-export { USER_ROLES, isValidRole, isSuperAdmin, getDashboardPathForRole } from './types/auth.types'
+export {
+  USER_ROLES,
+  isValidRole,
+  isSuperAdmin,
+  getDashboardPathForRole,
+  getRoleRoutePrefix,
+  getRoleSettingsPath,
+} from './types/auth.types'
 export type {
   User,
   UserRole,

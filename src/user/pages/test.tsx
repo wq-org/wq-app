@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { BookOpen, Box, Edit, LockIcon, SparklesIcon } from 'lucide-react'
+import { BookOpen, Box, Edit, LockIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
 
 import {
@@ -64,6 +64,7 @@ import {
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Onboarding } from '@/features/onboarding'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Divider } from '@/components/ui/divider'
 import {
@@ -74,6 +75,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tick, TickContent, TickContents, TickTrack, TickZoom, Ticks } from '@/components/ui/tick'
@@ -249,6 +256,130 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="text-lg font-semibold border-b pb-2">{title}</h2>
       <div className="flex flex-wrap gap-6 items-start">{children}</div>
     </section>
+  )
+}
+
+type AvatarGroupDemoItem = {
+  src: string
+  fallback: string
+  name: string
+}
+
+const avatarGroupDemoItems: AvatarGroupDemoItem[] = [
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png',
+    fallback: 'OS',
+    name: 'Olivia Sparks',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png',
+    fallback: 'HL',
+    name: 'Howard Lloyd',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png',
+    fallback: 'HR',
+    name: 'Hallie Richards',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png',
+    fallback: 'JW',
+    name: 'Jenny Wilson',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png',
+    fallback: 'DR',
+    name: 'Darlene Robertson',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png',
+    fallback: 'LA',
+    name: 'Leslie Alexander',
+  },
+]
+
+function AvatarGroupDemo() {
+  return (
+    <div className="flex -space-x-2">
+      {avatarGroupDemoItems.slice(0, 3).map((avatar, index) => (
+        <Avatar
+          key={index}
+          className="ring-background ring-2"
+        >
+          <AvatarImage
+            src={avatar.src}
+            alt={avatar.name}
+          />
+          <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+        </Avatar>
+      ))}
+    </div>
+  )
+}
+
+function AvatarGroupMaxDemo() {
+  return (
+    <div className="flex -space-x-2">
+      {avatarGroupDemoItems.slice(0, 3).map((avatar, index) => (
+        <Avatar
+          key={index}
+          className="ring-background ring-2"
+        >
+          <AvatarImage
+            src={avatar.src}
+            alt={avatar.name}
+          />
+          <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+        </Avatar>
+      ))}
+      <Avatar className="ring-background ring-2">
+        <AvatarFallback className="text-xs">+9</AvatarFallback>
+      </Avatar>
+    </div>
+  )
+}
+
+function AvatarGroupDropdownDemo() {
+  return (
+    <div className="flex -space-x-2">
+      {avatarGroupDemoItems.slice(0, 3).map((avatar, index) => (
+        <Avatar
+          key={index}
+          className="ring-background ring-2"
+        >
+          <AvatarImage
+            src={avatar.src}
+            alt={avatar.name}
+          />
+          <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+        </Avatar>
+      ))}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="bg-muted has-focus-visible:ring-ring/50 ring-background flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full ring-2"
+          >
+            <PlusIcon className="size-4" />
+            <span className="sr-only">Add</span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {avatarGroupDemoItems.slice(3).map((avatar, index) => (
+            <DropdownMenuItem key={index}>
+              <Avatar>
+                <AvatarImage
+                  src={avatar.src}
+                  alt={avatar.name}
+                />
+                <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+              </Avatar>
+              <span>{avatar.name}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }
 
@@ -502,6 +633,18 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Avatar group — overlapping stack">
+        <AvatarGroupDemo />
+      </Section>
+
+      <Section title="Avatar group — stack + overflow count">
+        <AvatarGroupMaxDemo />
+      </Section>
+
+      <Section title="Avatar group — visible faces + rest in menu">
+        <AvatarGroupDropdownDemo />
+      </Section>
 
       <Section title="Calendar Heatmap">
         <CalendarHeatmap

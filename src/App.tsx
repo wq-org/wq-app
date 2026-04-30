@@ -18,6 +18,9 @@ import {
   StudentDashboard,
   StudentSettingsPage,
   StudentChat,
+  StudentFilesPage,
+  StudentNotesPage,
+  StudentTasksPage,
   StudentViewPage,
 } from '@/features/student'
 import {
@@ -25,6 +28,9 @@ import {
   TeacherSettingsPage,
   GameStudio,
   TeacherChat,
+  TeacherFilesPage,
+  TeacherNotesPage,
+  TeacherTasksPage,
   TeacherViewPage,
 } from '@/features/teacher'
 import { PlayGamePage } from '@/features/game-play'
@@ -59,6 +65,9 @@ import {
   AdminPlanCatalog,
   AdminSettings,
   AdminUsers,
+  AdminFilesPage,
+  AdminNotesPage,
+  AdminTasksPage,
 } from '@/features/admin'
 import {
   InstitutionAdminDashboardPage,
@@ -84,6 +93,8 @@ import {
   InstitutionAdminCoursesPage,
   InstitutionAdminAnalyticsPage,
   InstitutionAdminCloudStoragePage,
+  InstitutionAdminNotesPage,
+  InstitutionAdminTasksPage,
   InstitutionAdminAuditLogsPage,
   InstitutionAdminSettingsPage,
 } from '@/features/institution-admin'
@@ -268,6 +279,30 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <AdminDashboard />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <RequireAuth>
+                      <AdminFilesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="notes"
+                  element={
+                    <RequireAuth>
+                      <AdminNotesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="tasks"
+                  element={
+                    <RequireAuth>
+                      <AdminTasksPage />
                     </RequireAuth>
                   }
                 />
@@ -595,6 +630,22 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="notes"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminNotesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="tasks"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminTasksPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="audit-logs"
                   element={
                     <RequireAuth>
@@ -629,6 +680,36 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherChat />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherFilesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="notes"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherNotesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="tasks"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherTasksPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -776,6 +857,36 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <StudentChat />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentFilesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="notes"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentNotesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="tasks"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentTasksPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

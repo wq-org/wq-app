@@ -17,6 +17,11 @@
     "search": "Search",
     "studio": "Game Studio",
     "chat": "Chat",
+    "cloud": "Files",
+    "notebook": "Notes",
+    "attendance": "Attendance",
+    "attendanceStart": "Start attendance session",
+    "attendanceEnd": "End attendance session",
     "upload": "Upload",
     "addNew": "Add New",
     "feedback": "Feedback",
@@ -58,7 +63,8 @@
       "course": "Course",
       "institution": "Institution",
       "game": "Game",
-      "notes": "Notes",
+      "note": "Note",
+      "task": "Task",
       "node": "Node"
     },
     "options": {
@@ -73,8 +79,65 @@
       "game": {
         "label": "New Game",
         "description": "Create a new educational game"
+      },
+      "note": {
+        "label": "New note",
+        "description": "Capture a quick note"
+      },
+      "task": {
+        "label": "New task",
+        "description": "Add something to your to-do list"
       }
+    },
+    "toasts": {
+      "noteNotWired": "Notes will be available when the notes API is connected.",
+      "taskNotWired": "Tasks will be available when the tasks API is connected."
     }
+  },
+  "attendanceDialog": {
+    "titleStart": "Start attendance session",
+    "titleEnd": "End attendance session",
+    "errorTitle": "Something went wrong",
+    "classroom": "Classroom",
+    "classroomPlaceholder": "Select a classroom",
+    "course": "Course",
+    "coursePlaceholder": "Select a course",
+    "session": "Open session",
+    "sessionPlaceholder": "Select a session",
+    "sessionTitle": "Title (optional)",
+    "sessionTitlePlaceholder": "Optional session title",
+    "sessionDate": "Session date",
+    "startsAt": "Starts at",
+    "endsAtOptional": "Ends at (optional)",
+    "closeEndsAt": "Close at",
+    "submitStart": "Start session",
+    "submitEnd": "Close session",
+    "submitting": "Saving…",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "noClassrooms": "No classrooms available.",
+    "noCourses": "No courses linked to this classroom.",
+    "noSessions": "No open attendance sessions for this classroom.",
+    "untitledSession": "Session",
+    "toastStarted": "Attendance session started.",
+    "toastClosed": "Attendance session closed.",
+    "loadClassroomsFailed": "Failed to load classrooms",
+    "errors": {
+      "classroomAndCourseRequired": "Classroom and course are required.",
+      "sessionRequired": "Select an open session to close.",
+      "requestFailed": "Request failed"
+    }
+  },
+  "taskDialog": {
+    "title": "Create task",
+    "fieldTitle": "Title",
+    "fieldTitlePlaceholder": "Task title",
+    "fieldDescription": "Description",
+    "fieldDescriptionPlaceholder": "Optional details",
+    "submit": "Save",
+    "submitting": "Saving…",
+    "cancel": "Cancel",
+    "notWiredToast": "Task creation will be available when the tasks API is connected."
   },
   "upload": {
     "dropzone": {

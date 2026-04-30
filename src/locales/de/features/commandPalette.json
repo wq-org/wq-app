@@ -17,6 +17,11 @@
     "search": "Suchen",
     "studio": "Spiel-Studio",
     "chat": "Chat",
+    "cloud": "Dateien",
+    "notebook": "Notizen",
+    "attendance": "Anwesenheit",
+    "attendanceStart": "Anwesenheit starten",
+    "attendanceEnd": "Anwesenheit beenden",
     "upload": "Hochladen",
     "addNew": "Neu hinzufügen",
     "feedback": "Feedback",
@@ -58,7 +63,8 @@
       "course": "Kurs",
       "institution": "Institution",
       "game": "Spiel",
-      "notes": "Notizen",
+      "note": "Notiz",
+      "task": "Aufgabe",
       "node": "Knoten"
     },
     "options": {
@@ -73,8 +79,65 @@
       "game": {
         "label": "Neues Spiel",
         "description": "Ein neues Lernspiel erstellen"
+      },
+      "note": {
+        "label": "Neue Notiz",
+        "description": "Schnell eine Notiz erfassen"
+      },
+      "task": {
+        "label": "Neue Aufgabe",
+        "description": "Einen Eintrag zur To-do-Liste hinzufügen"
       }
+    },
+    "toasts": {
+      "noteNotWired": "Notizen sind verfügbar, sobald die Notizen-API angebunden ist.",
+      "taskNotWired": "Aufgaben sind verfügbar, sobald die Aufgaben-API angebunden ist."
     }
+  },
+  "attendanceDialog": {
+    "titleStart": "Anwesenheitssitzung starten",
+    "titleEnd": "Anwesenheitssitzung beenden",
+    "errorTitle": "Etwas ist schiefgelaufen",
+    "classroom": "Klassenraum",
+    "classroomPlaceholder": "Klassenraum wählen",
+    "course": "Kurs",
+    "coursePlaceholder": "Kurs wählen",
+    "session": "Offene Sitzung",
+    "sessionPlaceholder": "Sitzung wählen",
+    "sessionTitle": "Titel (optional)",
+    "sessionTitlePlaceholder": "Optionaler Sitzungstitel",
+    "sessionDate": "Sitzungsdatum",
+    "startsAt": "Beginn",
+    "endsAtOptional": "Ende (optional)",
+    "closeEndsAt": "Schließen um",
+    "submitStart": "Sitzung starten",
+    "submitEnd": "Sitzung schließen",
+    "submitting": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "loading": "Wird geladen…",
+    "noClassrooms": "Keine Klassenräume verfügbar.",
+    "noCourses": "Keine Kurse mit diesem Klassenraum verknüpft.",
+    "noSessions": "Keine offenen Anwesenheitssitzungen für diesen Klassenraum.",
+    "untitledSession": "Sitzung",
+    "toastStarted": "Anwesenheitssitzung gestartet.",
+    "toastClosed": "Anwesenheitssitzung geschlossen.",
+    "loadClassroomsFailed": "Klassenräume konnten nicht geladen werden",
+    "errors": {
+      "classroomAndCourseRequired": "Klassenraum und Kurs sind erforderlich.",
+      "sessionRequired": "Wähle eine offene Sitzung zum Schließen.",
+      "requestFailed": "Anfrage fehlgeschlagen"
+    }
+  },
+  "taskDialog": {
+    "title": "Aufgabe erstellen",
+    "fieldTitle": "Titel",
+    "fieldTitlePlaceholder": "Aufgabentitel",
+    "fieldDescription": "Beschreibung",
+    "fieldDescriptionPlaceholder": "Optionale Details",
+    "submit": "Speichern",
+    "submitting": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "notWiredToast": "Aufgaben sind verfügbar, sobald die Aufgaben-API angebunden ist."
   },
   "upload": {
     "dropzone": {
