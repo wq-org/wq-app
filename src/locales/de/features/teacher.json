@@ -21,6 +21,17 @@
   "profile": {
     "followToSee": "Folge dieser Lehrkraft, um ihre Kurse und Spiele zu sehen."
   },
+  "dashboard": {
+    "classroomsEmpty": {
+      "title": "Noch keine Klassenräume",
+      "description": "Klassenräume, in denen du unterrichtest, erscheinen hier."
+    },
+    "coursesEmpty": {
+      "title": "Noch keine Kurse",
+      "description": "Du hast noch keine Kurse. Leg los und erstelle einen.",
+      "addCourse": "Kurs hinzufügen"
+    }
+  },
   "meta": {
     "followersTopLabel": "Follower",
     "followersBottomTeacher": "Schüler folgen",

@@ -32,6 +32,7 @@ import { CommandUploadDialog } from './CommandUploadDialog'
 import { CommandAddDialog } from './CommandAddDialog'
 import { CommandAttendanceDialog } from './CommandAttendanceDialog'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
+import { OPEN_COMMAND_ADD_EVENT } from '../constants/commandPaletteEvents'
 
 const activeStyles = {
   text: 'text-blue-500',
@@ -167,6 +168,15 @@ export function CommandPalette({
   )
   const [selectedId, setSelectedId] = useState<string>(defaultSelectedId)
   const activeId = selectedId
+
+  useEffect(() => {
+    const onOpenAdd = () => {
+      setActiveDialog('add')
+      setOpen(true)
+    }
+    window.addEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
+    return () => window.removeEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
+  }, [])
 
   // School (students) and Todos tabs commented out in dashboard-config.ts for teacher + student
 

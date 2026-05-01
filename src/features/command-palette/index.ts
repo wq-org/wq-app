@@ -3,6 +3,10 @@ export { CommandAddForm } from './components/CommandAddForm'
 export { CommandAddTypeSelector } from './components/CommandAddTypeSelector'
 export { CommandFeedbackForm } from './components/CommandFeedbackDialog'
 export { CommandList } from './components/CommandList'
+export {
+  OPEN_COMMAND_ADD_EVENT,
+  requestOpenCommandAddDialog,
+} from './constants/commandPaletteEvents'
 export { CommandPalette } from './components/CommandPalette'
 export { CommandSearch } from './components/CommandSearchDialog'
 export { CommandShortcut } from './components/CommandShortcut'

@@ -1,3 +1,5 @@
+export { TeacherClassroomsEmpty } from './components/TeacherClassroomsEmpty'
+export { TeacherCoursesEmpty } from './components/TeacherCoursesEmpty'
 export { TeacherView } from './components/TeacherView'
 export { Dashboard as TeacherDashboard } from './pages/dashboard'
 export { TeacherFilesPage } from './pages/files'

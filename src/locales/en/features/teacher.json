@@ -22,6 +22,17 @@
   "profile": {
     "followToSee": "Follow this teacher to see their courses and games."
   },
+  "dashboard": {
+    "classroomsEmpty": {
+      "title": "No classrooms yet",
+      "description": "Classrooms you teach will appear here."
+    },
+    "coursesEmpty": {
+      "title": "No courses yet",
+      "description": "You don’t have any courses. Create one to get started.",
+      "addCourse": "Add course"
+    }
+  },
   "meta": {
     "followersTopLabel": "Followers",
     "followersBottomTeacher": "Students follow",
