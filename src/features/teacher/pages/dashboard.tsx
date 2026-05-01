@@ -61,6 +61,7 @@ const Dashboard = () => {
             title="Schedule"
             classNameContainer="h-55.5"
             icon={Calendar}
+            showExpandButton
           >
             <SelectTabs
               variant="compact"
@@ -84,6 +85,7 @@ const Dashboard = () => {
           <DashboardSection
             title="Courses"
             classNameContainer="h-55.5"
+            showExpandButton
             icon={BookOpen}
           >
             <p>content</p>
@@ -92,12 +94,14 @@ const Dashboard = () => {
             title="Game Studio"
             classNameContainer="h-55.5"
             icon={SplinePointer}
+            showExpandButton
           >
             <p>content</p>
           </DashboardSection>
         </div>
         <DashboardSection
           title="Tasks"
+          showExpandButton
           classNameContainer="h-55.5"
           icon={ListTodo}
         >
