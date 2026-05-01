@@ -38,7 +38,8 @@
   "search": {
     "placeholder": "Kurse, Personen, Institutionen, Spiele suchen…",
     "noResults": "Keine Ergebnisse gefunden",
-    "recent": "Letzte Suchen"
+    "recent": "Letzte Suchen",
+    "openTeacherChat": "Lehrer-Chat öffnen"
   },
   "addDialog": {
     "title": "Neu hinzufügen",

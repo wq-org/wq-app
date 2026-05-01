@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LearningDashboardShell } from '@/features/dashboard'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
 import { Spinner } from '@/components/ui/spinner'
 import type { Profile } from '@/contexts/user/UserContext'
 import type { Course, EnrollmentStatus, ProfileCourseCardData } from '@/features/course'
-import { getDashboardTabs } from '@/features/dashboard'
 import { supabase } from '@/lib/supabase'
 import { EmptyCourseView, getMyEnrollmentStatusMap, requestCourseJoin } from '@/features/course'
 import { EmptyGamesView } from '@/features/student'
@@ -14,10 +12,12 @@ import { GameCardList, type GameCardProps } from '@/features/game-studio'
 import { ProfileCourseCardList } from './ProfileCourseCardList'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { getFollowedTeacherIds } from '@/features/profile'
+import { getFollowedTeacherIds } from '../api/followApi'
 import { useUser } from '@/contexts/user'
+import { getPublicProfileTabDefinitions } from '../config/profileDashboardTabs'
+import { ProfileDashboardLayout } from './ProfileDashboardLayout'
 
-interface ProfileStudentViewProps {
+interface ProfileStudentPublicPanelProps {
   profile: Profile
 }
 
@@ -86,7 +86,7 @@ async function getPublishedGames(): Promise<GameCardProps[]> {
   )
 }
 
-export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
+export function ProfileStudentPublicPanel({ profile }: ProfileStudentPublicPanelProps) {
   const [courses, setCourses] = useState<
     (Course & { teacher_profile?: { avatar_url?: string; display_name?: string } })[]
   >([])
@@ -102,6 +102,7 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
   const navigate = useNavigate()
   const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
   const { t } = useTranslation('features.course')
+  const { t: tLayout } = useTranslation('layout.dashboardLayout')
   const { getRole } = useUser()
   const viewerRole = getRole()?.toLowerCase()
   const canJoinPublishedCourses = viewerRole === 'student'
@@ -238,13 +239,18 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
     }
   })
 
-  // Filter tabs to only show courses and games
-  const coursesAndGamesTabs = getDashboardTabs('student').filter(
-    (tab) => tab.id === 'courses' || tab.id === 'games',
+  const translatedTabs = useMemo(
+    () =>
+      getPublicProfileTabDefinitions().map((tab) => ({
+        id: tab.id,
+        icon: tab.icon,
+        title: tLayout(tab.labelKey),
+      })),
+    [tLayout],
   )
 
   return (
-    <LearningDashboardShell
+    <ProfileDashboardLayout
       imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
       userName={profile.display_name || 'Student'}
       username={profile.username || undefined}
@@ -254,8 +260,9 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
       role="student"
       institutionName={profile.institution?.name || undefined}
       institutionSlug={profile.institution?.slug || undefined}
-      customTabs={coursesAndGamesTabs}
-      onClickTab={handleClickTab}
+      tabs={translatedTabs}
+      activeTabId={selectedTab}
+      onTabChange={handleClickTab}
     >
       {selectedTab === 'courses' &&
         (coursesLoading ? (
@@ -296,6 +303,6 @@ export function ProfileStudentView({ profile }: ProfileStudentViewProps) {
             onGamePlay={handleGamePlay}
           />
         ))}
-    </LearningDashboardShell>
+    </ProfileDashboardLayout>
   )
 }

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-type DashboardBadgeRowProps = {
+type ProfileMetaRowProps = {
   role: string
   followCount?: number
   followedTeacherCount?: number
@@ -17,7 +17,7 @@ type DashboardBadgeRowProps = {
   linkedInUrl?: string
 }
 
-export function DashboardBadgeRow({
+export function ProfileMetaRow({
   role,
   followCount,
   followedTeacherCount,
@@ -26,7 +26,7 @@ export function DashboardBadgeRow({
   institutionSlug,
   userEmail,
   linkedInUrl,
-}: DashboardBadgeRowProps) {
+}: ProfileMetaRowProps) {
   const { t, i18n } = useTranslation('features.teacher')
   const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
 
@@ -67,14 +67,14 @@ export function DashboardBadgeRow({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-3 items-center flex-wrap">
+      <div className="flex flex-wrap items-center gap-3">
         <Badge variant="secondary">{institutionLabel}</Badge>
 
         <Badge
           variant="secondary"
           onClick={onViewFollowerList}
           className={
-            onViewFollowerList ? 'cursor-pointer inline-flex items-center gap-1' : undefined
+            onViewFollowerList ? 'inline-flex cursor-pointer items-center gap-1' : undefined
           }
         >
           {followLabel}

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AvatarFallback, AvatarImage, Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { X, Search } from 'lucide-react'
+import { MessageCircle, Search, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -57,8 +57,8 @@ export function CommandSearch() {
     })
   }, [searchQuery, items])
 
-  const handleClickItem = (item: SearchItem) => {
-    navigate(`/profile/${item.id}`)
+  const handleOpenTeacherChat = () => {
+    navigate('/teacher/chat')
   }
 
   return (
@@ -96,45 +96,52 @@ export function CommandSearch() {
         ) : filtered.length > 0 ? (
           <div className="p-2 max-h-80 overflow-y-auto">
             {filtered.map((item) => (
-              <Dialog.Close
+              <Card
                 key={`${item.type}-${item.id}`}
-                asChild
+                layout="flush"
+                className="w-full rounded-2xl border-0 bg-transparent px-3 py-2 text-left shadow-none"
               >
-                <Card
-                  layout="flush"
-                  onClick={() => handleClickItem(item)}
-                  className="w-full cursor-pointer rounded-2xl border-0 bg-transparent px-3 py-2 text-left shadow-none hover:bg-muted focus:bg-muted focus:outline-none"
-                >
-                  <div className="flex gap-3">
-                    <SearchAvatar
-                      avatarPath={item.avatar_url}
-                      title={item.title}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <Text
-                        as="span"
-                        variant="small"
-                        className="text-sm font-medium"
-                      >
-                        {item.title}
-                      </Text>
-                      <Text
-                        as="span"
-                        variant="small"
-                        className="text-xs text-muted-foreground"
-                      >
-                        {item.email || 'No email'}
-                      </Text>
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] px-1.5 py-0 w-fit"
-                      >
-                        {t(ROLE_LABEL_KEY_MAP[item.type])}
-                      </Badge>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <SearchAvatar
+                    avatarPath={item.avatar_url}
+                    title={item.title}
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm font-medium"
+                    >
+                      {item.title}
+                    </Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-xs text-muted-foreground"
+                    >
+                      {item.email || 'No email'}
+                    </Text>
+                    <Badge
+                      variant="secondary"
+                      className="w-fit px-1.5 py-0 text-[10px]"
+                    >
+                      {t(ROLE_LABEL_KEY_MAP[item.type])}
+                    </Badge>
                   </div>
-                </Card>
-              </Dialog.Close>
+                  <Dialog.Close asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon"
+                      className="shrink-0"
+                      aria-label={t('search.openTeacherChat', { ns: 'features.commandPalette' })}
+                      onClick={handleOpenTeacherChat}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </Dialog.Close>
+                </div>
+              </Card>
             ))}
           </div>
         ) : (

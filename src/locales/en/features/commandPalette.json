@@ -38,7 +38,8 @@
   "search": {
     "placeholder": "Search courses, people, institutions, games…",
     "noResults": "No results found",
-    "recent": "Recent searches"
+    "recent": "Recent searches",
+    "openTeacherChat": "Open teacher chat"
   },
   "addDialog": {
     "title": "Add New",
