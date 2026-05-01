@@ -23,7 +23,9 @@
       "profileHint": "Verwalte deine öffentlichen Profildaten.",
       "roleHintPrefix": "Aktuelle Rolle:",
       "accountTitle": "Konto",
-      "accountHint": "Diese Felder werden vom Konto verwaltet und sind schreibgeschützt."
+      "accountHint": "Diese Felder werden vom Konto verwaltet und sind schreibgeschützt.",
+      "institutionTitle": "Institution",
+      "institutionHint": "Mit deiner Mitgliedschaft verknüpfte Organisation (schreibgeschützt)."
     },
     "avatarDrawer": {
       "title": "Avatar auswählen",
@@ -44,6 +46,15 @@
       "email": {
         "label": "E-Mail",
         "placeholder": "wq-health@serious-game.com"
+      },
+      "institutionName": {
+        "label": "Name der Institution"
+      },
+      "institutionSlug": {
+        "label": "Kurzname (Slug)"
+      },
+      "institutionEmail": {
+        "label": "E-Mail der Institution"
       },
       "linkedin": {
         "label": "LinkedIn",

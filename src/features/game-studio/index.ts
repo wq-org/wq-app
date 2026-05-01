@@ -4,6 +4,7 @@ export { GameCardList } from './components/GameCardList'
 export { GameEditorCanvas } from './components/GameEditorCanvas'
 export { GameLayout } from './components/GameDialogLayout'
 export { GameNodeLayout } from './components/GameNodeLayout'
+export { GameProjectCardCompact } from './components/GameProjectCardCompact'
 export { GameProjectCardList } from './components/GameProjectCardList'
 export { GameSidebar } from './components/GameSidebar'
 export { GameStartNode } from './components/GameStartNode'
@@ -13,7 +14,9 @@ export { PreviewStartEndSlide } from './components/PreviewStartEndSlide'
 export { StartGameDialog } from './components/StartGameDialog'
 export type {
   GameCardProps,
+  GameProjectCardCompactProps,
   GameProjectCardListProps,
+  GameProjectCardListVariant,
   FlowGameConfig,
   SerializableEdge,
   SerializableNode,

@@ -142,6 +142,7 @@ const SettingsPage = ({ role, embedded }: SettingsPageProps) => {
               initialAvatarPath={profile.avatar_url ?? ''}
               username={profile.username ?? ''}
               email={profile.email ?? ''}
+              institution={profile.institution}
               avatarOptions={avatarOptions}
               linkedInError={linkedInError}
               isSaving={isSaving}

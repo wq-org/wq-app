@@ -225,6 +225,16 @@ export interface GameProjectCardProps {
   onOpen?: () => void
 }
 
+export interface GameProjectCardCompactProps {
+  id: string
+  title?: string
+  description?: string
+  themeId?: ThemeId
+  status?: 'draft' | 'published'
+  className?: string
+  onView?: (id: string) => void
+}
+
 export interface GameCardProps {
   id: string
   title: string
@@ -245,6 +255,8 @@ export interface GameCardListProps {
   onGamePlay?: (route?: string) => void
 }
 
+export type GameProjectCardListVariant = 'default' | 'compact'
+
 export interface GameProjectCardListProps {
   projects: Array<{
     id: string
@@ -255,6 +267,9 @@ export interface GameProjectCardListProps {
     status?: 'draft' | 'published'
   }>
   onOpen?: (projectId: string) => void
+  variant?: GameProjectCardListVariant
+  className?: string
+  scrollAreaClassName?: string
 }
 
 // ========== Settings Types ==========

@@ -10,6 +10,7 @@ import { Text } from '@/components/ui/text'
 import { AccentPicker } from '@/components/shared'
 import { settingsCapabilitiesByRole } from '../config/settingsCapabilities'
 import { useSettingsProfileForm } from '../hooks/useSettingsProfileForm'
+import type { Profile } from '@/contexts/user'
 import type { SettingsFormValues, SettingsSaveValues } from '../types/settings.types'
 import { USER_ROLES, type UserRole } from '@/features/auth'
 import type { AvatarOption } from '@/features/onboarding'
@@ -23,6 +24,7 @@ type SettingsProfileFormProps = {
   initialAvatarPath: string
   username: string
   email: string
+  institution?: Profile['institution']
   avatarOptions: AvatarOption[]
   linkedInError: string | null
   isSaving: boolean
@@ -36,6 +38,7 @@ export function SettingsProfileForm({
   initialAvatarPath,
   username,
   email,
+  institution,
   avatarOptions,
   linkedInError,
   isSaving,
@@ -159,6 +162,7 @@ export function SettingsProfileForm({
         <SettingsReadonlyFields
           username={username}
           email={email}
+          institution={institution}
           title={t('profile.sections.accountTitle')}
           hint={t('profile.sections.accountHint')}
           usernameLabel={t('profile.fields.username.label')}
