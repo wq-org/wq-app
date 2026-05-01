@@ -109,8 +109,8 @@ export type {
   ToggleIconSwapOnPressProps,
   ToggleNotificationCountBadgeProps,
 } from './toggles'
-export { SelectTabs } from './tabs'
-export type { SelectTabsProps, TabItem } from './tabs'
+export { SelectTabs, SelectTabsContent, TabsContent } from './tabs'
+export type { SelectTabsProps, TabItem, SelectTabsContentProps, TabsContentProps } from './tabs'
 export {
   SkeletonLoaderAvatarsUserInfo,
   SkeletonLoaderCard,

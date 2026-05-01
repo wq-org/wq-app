@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AppShell } from '@/components/layout'
-import { SelectTabs } from '@/components/shared'
+import { SelectTabs, SelectTabsContent } from '@/components/shared'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
 import { DashboardSection } from '@/features/dashboard'
 import {
@@ -69,16 +69,13 @@ const Dashboard = () => {
               onTabChange={handleClassroomTabChange}
             />
             {CLASSROOM_TABS.map((tab) => (
-              <div
+              <SelectTabsContent
                 key={tab.id}
-                className={
-                  tab.id === activeClassroomTabId
-                    ? 'mt-3 rounded-xl border border-dashed border-border/70 p-3'
-                    : 'hidden'
-                }
+                tabId={tab.id}
+                activeTabId={activeClassroomTabId}
               >
                 <p className="text-sm text-muted-foreground">{tab.title} dummy title</p>
-              </div>
+              </SelectTabsContent>
             ))}
           </DashboardSection>
         </div>
