@@ -14,9 +14,20 @@ import {
   SplinePointer,
 } from 'lucide-react'
 
+import { ClassroomCardList } from '@/features/classroom'
+
 const CLASSROOM_TABS = [
   { id: 'all', title: 'All', icon: CalendarDays },
   { id: 'rolex-design', title: 'Rolex Design', icon: Calendar1 },
+] as const
+
+const DUMMY_TEACHER_CLASSROOM_CARDS = [
+  { id: 'c1', icon: LampDesk, name: 'Rolex Design', studentCount: 30 },
+  { id: 'c2', icon: BookOpen, name: 'Mechanics 101', studentCount: 18 },
+  { id: 'c3', icon: SplinePointer, name: 'Studio Lab', studentCount: 12 },
+  { id: 'c4', icon: ListTodo, name: 'Capstone', studentCount: 24 },
+  { id: 'c5', icon: BookOpen, name: 'Materials Lab', studentCount: 16 },
+  { id: 'c6', icon: LampDesk, name: 'Studio critique', studentCount: 20 },
 ] as const
 
 const Dashboard = () => {
@@ -36,19 +47,12 @@ const Dashboard = () => {
       </div>
       <main className="container flex flex-col gap-11 pb-40">
         <div className="flex gap-8 w-full">
-          {/* <DashboardSection
-            title="Recently Visited"
-            icon={Clock}
-            classNameContainer="h-35"
-          >
-            <p>content</p>
-          </DashboardSection> */}
           <DashboardSection
             title="Classrooms"
             icon={LampDesk}
-            classNameContainer="h-35"
+            classNameContainer="px-4"
           >
-            <p>content</p>
+            <ClassroomCardList items={DUMMY_TEACHER_CLASSROOM_CARDS} />
           </DashboardSection>
         </div>
 
