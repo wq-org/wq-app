@@ -47,7 +47,6 @@ import { TopicProvider } from './contexts/topic'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
 import { GameEditorCanvas } from '@/features/game-studio'
-import { ProfileViewPage } from '@/features/profile'
 import {
   AdminAuditLogs,
   AdminAnalytics,
@@ -932,18 +931,6 @@ const App = () => {
                   }
                 />
               </Route>
-
-              {/* Centralized Profile Routes (require auth + onboarding) */}
-              <Route
-                path="/profile/:id"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <ProfileViewPage />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
 
               {/* Play game (student and teacher) - root level so /play/:gameId works */}
               <Route

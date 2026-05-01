@@ -71,9 +71,7 @@
     }
   },
   "analytics": {
-    "membersTitle": "Course Members",
-    "membersHint": "People currently inside this course.",
-    "emptyMembers": "No members found for this course yet."
+    "placeholder": "Course analytics will be available soon."
   },
   "lessonTable": {
     "columns": {

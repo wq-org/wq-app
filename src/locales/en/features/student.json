@@ -3,14 +3,6 @@
     "title": "Student View",
     "description": "Student content will be displayed here."
   },
-  "followersDrawer": {
-    "title": "Followed teachers",
-    "loading": "Loading followed teachers...",
-    "empty": "You are not following any teachers yet.",
-    "close": "Close followed teachers drawer",
-    "teacherFallback": "Teacher",
-    "teacherRoleLabel": "Teacher"
-  },
   "emptyStudent": {
     "title": "No students found",
     "description": "Use the command palette to search for students and add them to your class."

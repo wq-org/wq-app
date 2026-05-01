@@ -21,14 +21,6 @@
   "profile": {
     "followToSee": "Folge dieser Lehrkraft, um ihre Kurse und Spiele zu sehen."
   },
-  "followersDrawer": {
-    "title": "Follower",
-    "loading": "Follower werden geladen...",
-    "empty": "Noch keine Follower.",
-    "close": "Follower-Liste schließen",
-    "studentFallback": "Schüler",
-    "studentRoleLabel": "Schüler"
-  },
   "meta": {
     "followersTopLabel": "Follower",
     "followersBottomTeacher": "Schüler folgen",

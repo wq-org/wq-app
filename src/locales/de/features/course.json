@@ -71,9 +71,7 @@
     }
   },
   "analytics": {
-    "membersTitle": "Kursmitglieder",
-    "membersHint": "Personen, die aktuell in diesem Kurs sind.",
-    "emptyMembers": "Für diesen Kurs wurden noch keine Mitglieder gefunden."
+    "placeholder": "Kursanalysen sind bald verfügbar."
   },
   "lessonTable": {
     "columns": {

@@ -15,8 +15,8 @@ export {
 export { FaqList } from './FaqList'
 export type { FaqItem, FaqListProps } from './FaqList'
 export { ContainerSlider } from './containers'
-export { FollowersDrawer, SelectAvatarDrawer } from './drawers'
-export type { FollowersDrawerProps, SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
+export { SelectAvatarDrawer } from './drawers'
+export type { SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
 export { GridIconBackground } from './GridIconBackground'
 export type { IconEntry } from './GridIconBackground'
 export {

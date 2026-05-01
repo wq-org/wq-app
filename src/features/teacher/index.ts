@@ -1,4 +1,3 @@
-export { TeacherFollowersDrawer } from './components/TeacherFollowersDrawer'
 export { TeacherView } from './components/TeacherView'
 export { Dashboard as TeacherDashboard } from './pages/dashboard'
 export { TeacherFilesPage } from './pages/files'

@@ -3,7 +3,8 @@
     "openMenu": "Profilmenü öffnen",
     "editProfile": "Profil bearbeiten",
     "profileUnavailable": "Profil ist noch nicht verfügbar.",
-    "noEmail": "Keine E-Mail hinterlegt"
+    "noEmail": "Keine E-Mail hinterlegt",
+    "noUsername": "Noch kein Benutzername"
   },
   "theme": {
     "openMenu": "Darstellung",

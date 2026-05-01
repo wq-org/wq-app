@@ -41,7 +41,9 @@ export function AppNavigation({
   const role = getRole()
   const settingsPath = getRoleSettingsPath(role)
   const emailLine = profile?.email?.trim() ?? ''
-  const popoverName = profile?.display_name?.trim() || profile?.username?.trim() || ''
+  const username = profile?.username?.trim()
+  const usernameLine = username ? `@${username}` : ''
+  const popoverName = profile?.display_name?.trim() || username || ''
   const avatarLabel = popoverName || emailLine || 'User'
   const showProfileBlock = authenticated && !loading
   const { url: avatarImageUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -167,7 +169,7 @@ export function AppNavigation({
                       </span>
                     ) : null}
                     <span className="truncate text-xs text-muted-foreground">
-                      {emailLine || t('profile.noEmail')}
+                      {usernameLine || t('profile.noUsername')}
                     </span>
                   </div>
                 ) : null}

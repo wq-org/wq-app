@@ -22,14 +22,6 @@
   "profile": {
     "followToSee": "Follow this teacher to see their courses and games."
   },
-  "followersDrawer": {
-    "title": "Followers",
-    "loading": "Loading followers...",
-    "empty": "No followers yet.",
-    "close": "Close followers drawer",
-    "studentFallback": "Student",
-    "studentRoleLabel": "Student"
-  },
   "meta": {
     "followersTopLabel": "Followers",
     "followersBottomTeacher": "Students follow",

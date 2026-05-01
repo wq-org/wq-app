@@ -1,4 +1,3 @@
-import { getFollowedTeacherIds } from '@/features/profile'
 import { supabase } from '@/lib/supabase'
 import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
@@ -181,12 +180,32 @@ export async function getTeacherFlowGames(teacherId: string): Promise<GameForStu
   return (data || []) as GameForStudio[]
 }
 
+async function getFollowedTeacherIdsForCurrentUser(): Promise<string[]> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const studentId = user?.id
+  if (!studentId) return []
+
+  const { data, error } = await supabase
+    .from('teacher_followers')
+    .select('teacher_id')
+    .eq('student_id', studentId)
+
+  if (error) {
+    console.error('Error fetching followed teachers:', error)
+    return []
+  }
+
+  return (data || []).map((row: { teacher_id: string }) => row.teacher_id)
+}
+
 /**
  * Get published games from teachers the current user (student) follows.
  * For use on the student dashboard Games tab.
  */
 export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardProps[]> {
-  const followedIds = await getFollowedTeacherIds()
+  const followedIds = await getFollowedTeacherIdsForCurrentUser()
   if (followedIds.length === 0) return []
 
   const { data, error } = await supabase

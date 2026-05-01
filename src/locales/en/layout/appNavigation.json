@@ -3,7 +3,8 @@
     "openMenu": "Open profile menu",
     "editProfile": "Edit profile",
     "profileUnavailable": "Profile is not available yet.",
-    "noEmail": "No email on file"
+    "noEmail": "No email on file",
+    "noUsername": "No username yet"
   },
   "theme": {
     "openMenu": "Appearance",

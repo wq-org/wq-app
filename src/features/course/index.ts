@@ -37,7 +37,6 @@ export {
   cancelCourseJoin,
   getMyAcceptedCourses,
   getMyEnrollmentStatusMap,
-  getCourseMembers,
 } from './api/enrollmentsApi'
 export type { LessonHeading } from './utils/lessonHeadings'
 export { getHeadingsFromLessonValue } from './utils/lessonHeadings'
