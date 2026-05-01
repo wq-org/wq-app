@@ -63,6 +63,7 @@ import {
 } from '@/components/shared/paginations'
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Onboarding } from '@/features/onboarding'
+import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -107,6 +108,21 @@ import {
   fileExplorerTreeSampleRootItemId,
 } from '@/components/shared/trees'
 import { CalendarHeatmap } from '@/components/shared/calendar'
+
+const TEXT_SEMANTIC_VARIANTS = ['h1', 'h2', 'h3', 'body', 'small'] as const
+const TEXT_COLOR_VARIANTS = [
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+  'darkblue',
+  'secondary',
+] as const
 
 const paginationPages = [1, 2, 3, 4]
 
@@ -633,6 +649,156 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Text (@/components/ui/text) — every variant prop">
+        <div className="w-full basis-full max-w-4xl space-y-8">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Semantic variants
+            </p>
+            <div className="divide-y divide-border rounded-xl border bg-card px-4">
+              {TEXT_SEMANTIC_VARIANTS.map((v) => (
+                <div
+                  key={v}
+                  className="py-4 first:pt-4 last:pb-4"
+                >
+                  <p className="mb-2 font-mono text-xs text-muted-foreground">
+                    variant=&quot;{v}&quot;
+                  </p>
+                  <Text
+                    variant={v}
+                    as={v === 'h1' ? 'h1' : v === 'h2' ? 'h2' : v === 'h3' ? 'h3' : 'p'}
+                  >
+                    The quick brown fox jumps over the lazy dog.
+                  </Text>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Color variants
+            </p>
+            <div className="divide-y divide-border rounded-xl border bg-card px-4">
+              {TEXT_COLOR_VARIANTS.map((v) => (
+                <div
+                  key={v}
+                  className="py-4 first:pt-4 last:pb-4"
+                >
+                  <p className="mb-2 font-mono text-xs text-muted-foreground">
+                    variant=&quot;{v}&quot;
+                  </p>
+                  <Text
+                    variant={v}
+                    as="p"
+                  >
+                    The quick brown fox jumps over the lazy dog.
+                  </Text>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              muted / bold booleans (body &amp; small)
+            </p>
+            <div className="divide-y divide-border rounded-xl border bg-card px-4">
+              {(
+                [
+                  [
+                    'variant="body"',
+                    <Text
+                      key="b"
+                      variant="body"
+                    >
+                      Default body
+                    </Text>,
+                  ],
+                  [
+                    'variant="body" muted',
+                    <Text
+                      key="bm"
+                      variant="body"
+                      muted
+                    >
+                      Muted body
+                    </Text>,
+                  ],
+                  [
+                    'variant="body" bold',
+                    <Text
+                      key="bb"
+                      variant="body"
+                      bold
+                    >
+                      Bold body
+                    </Text>,
+                  ],
+                  [
+                    'variant="body" muted bold',
+                    <Text
+                      key="bmb"
+                      variant="body"
+                      muted
+                      bold
+                    >
+                      Muted bold body
+                    </Text>,
+                  ],
+                  [
+                    'variant="small"',
+                    <Text
+                      key="s"
+                      variant="small"
+                    >
+                      Default small
+                    </Text>,
+                  ],
+                  [
+                    'variant="small" muted',
+                    <Text
+                      key="sm"
+                      variant="small"
+                      muted
+                    >
+                      Muted small
+                    </Text>,
+                  ],
+                  [
+                    'variant="small" bold',
+                    <Text
+                      key="sb"
+                      variant="small"
+                      bold
+                    >
+                      Bold small
+                    </Text>,
+                  ],
+                  [
+                    'variant="small" muted bold',
+                    <Text
+                      key="smb"
+                      variant="small"
+                      muted
+                      bold
+                    >
+                      Muted bold small
+                    </Text>,
+                  ],
+                ] as const
+              ).map(([label, node]) => (
+                <div
+                  key={String(label)}
+                  className="py-4 first:pt-4 last:pb-4"
+                >
+                  <p className="mb-2 font-mono text-xs text-muted-foreground">{label}</p>
+                  {node}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
 
       <Section title="Avatar group — overlapping stack">
         <AvatarGroupDemo />

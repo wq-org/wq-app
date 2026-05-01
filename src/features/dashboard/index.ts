@@ -1,1 +1,1 @@
-export { DashboardHeader } from './components/DashboardHeader'
+export { DashboardSection } from './components/DashboardSection'

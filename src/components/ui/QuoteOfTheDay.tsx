@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Logo } from '@/components/ui/logo'
 
 const QUOTES = [
   {
@@ -32,27 +31,16 @@ export function QuoteOfTheDay({ className = '' }: Props) {
   return (
     <aside
       aria-label="Quote of the day"
-      className={`max-w-[220px] ${className}`.trim()}
+      className={`max-w-[220px] ${className} flex justify-center flex-col gap-2`.trim()}
     >
+      <span className="text-muted-foreground opacity-50 text-center  w-full  text-sm font-medium leading-tight">
+        {quote.author}
+      </span>
       <blockquote>
-        <p className="text-muted-foreground text-xl leading-relaxed italic text-center">
+        <p className="text-muted-foreground text-sm leading-relaxed italic text-center">
           {quote.text}
         </p>
       </blockquote>
-
-      <div className="mt-2 flex items-center justify-center gap-1.5">
-        <span className="flex shrink-0 cursor-default items-center rounded-full bg-muted pr-2.5 pl-1.5 py-1.5 gap-2">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full overflow-hidden bg-background">
-            <Logo
-              showText={false}
-              className="h-4 w-4"
-            />
-          </span>
-          <span className="text-muted-foreground text-sm font-medium leading-tight">
-            {quote.author}
-          </span>
-        </span>
-      </div>
     </aside>
   )
 }
