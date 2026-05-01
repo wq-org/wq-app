@@ -32,7 +32,7 @@ export function DashboardSection({
         {description ? <Text variant="small">{description}</Text> : null}
       </div>
 
-      <div className={cn('border rounded-3xl p-4', classNameContainer)}>{children}</div>
+      <div className={cn('border rounded-3xl px-6 py-4', classNameContainer)}>{children}</div>
     </div>
   )
 }

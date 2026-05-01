@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from 'react'
 import { Bell, BellDot, ChevronLeft, LogOut, Pen, UserPen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -33,6 +33,7 @@ export function AppNavigation({
   authenticated = true,
 }: AppNavigationProps): ReactElement {
   const { t } = useTranslation('layout.appNavigation')
+  const { pathname } = useLocation()
   const navigate = useNavigate()
   const { logout, profile, loading, getRole } = useUser()
   const [notificationCount, setNotificationCount] = useState(0)
@@ -46,6 +47,7 @@ export function AppNavigation({
   const popoverName = profile?.display_name?.trim() || username || ''
   const avatarLabel = popoverName || emailLine || 'User'
   const showProfileBlock = authenticated && !loading
+  const isDashboardRoute = /^\/(teacher|student)\/dashboard\/?$/.test(pathname)
   const { url: avatarImageUrl } = useAvatarUrl(profile?.avatar_url ?? null)
 
   const handleOnClickLogout = async () => {
@@ -77,22 +79,26 @@ export function AppNavigation({
       <div className="container py-3">
         <div className="flex items-center justify-between gap-4 pointer-events-none">
           <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-border bg-card/90 px-2 py-2 text-foreground shadow-sm backdrop-blur supports-backdrop-filter:bg-card/75">
-            <Button
-              variant="ghost"
-              size="icon"
-              type="button"
-              onClick={handleGoBack}
-              className="h-8 w-8 rounded-full text-foreground hover:bg-accent hover:text-foreground"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
+            {!isDashboardRoute ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                type="button"
+                onClick={handleGoBack}
+                className="h-8 w-8 rounded-full text-foreground hover:bg-accent hover:text-foreground"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            ) : null}
 
             {showProfileBlock ? (
               <div className="flex min-w-0 items-center gap-4">
-                <Separator
-                  orientation="vertical"
-                  className="bg-border/80"
-                />
+                {!isDashboardRoute ? (
+                  <Separator
+                    orientation="vertical"
+                    className="bg-border/80"
+                  />
+                ) : null}
                 <Popover
                   open={profileOpen}
                   onOpenChange={setProfileOpen}
@@ -132,7 +138,7 @@ export function AppNavigation({
                   </PopoverTrigger>
                   <PopoverContent
                     align="start"
-                    className="w-max min-w-[10.5rem] rounded-4xl border border-border/70 bg-popover/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl supports-backdrop-filter:bg-popover/90"
+                    className="w-max min-w-42 rounded-4xl border border-border/70 bg-popover/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl supports-backdrop-filter:bg-popover/90"
                   >
                     <div className="flex flex-col gap-1">
                       {!profile ? (
