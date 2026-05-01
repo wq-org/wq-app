@@ -20,6 +20,39 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-01-navigation-command-palette-update',
+    date: '1 May 2026',
+    title: 'Refresh top navigation profile strip and command palette actions',
+    summary:
+      'The header now centers identity and quick settings: name, handle, and an avatar menu for edit profile and workspace settings. The command palette was trimmed of noisy sections, tuned for calmer hover states, and expanded with attendance, chat, files, notes, tasks, and note creation shortcuts.',
+    bullets: [
+      'Navigation: profile block in the top bar—display name, handle (@username), avatar popover with edit profile and settings entry points',
+      'Command palette: removed the games and settings groupings so the palette stays focused on actions and search',
+      'Command palette: start/end attendance session (manual, bell affordance); create task (todo); open chat (message); cloud and notebook pen shortcuts',
+      'Command palette: list hover uses neutral gray; only the active row stays blue for clearer keyboard/mouse focus',
+      'Command palette: quick-create includes notes; richer attendance context (course, classroom, date/time) and task-as-create-type still planned',
+    ],
+    badges: ['feature', 'change', 'improvement'],
+  },
+  {
+    id: '2026-05-01-institution-programme-cohort-classroom-polish',
+    date: '1 May 2026',
+    title: 'Tighten programmes, cohorts, class groups, and classrooms end-to-end',
+    summary:
+      'Institution setup now walks faculty → programme → offerings → cohort → class group → classroom with clearer guards, smarter defaults, and consistent badges. Creation dialogs auto-fill names, descriptions, and academic years where it saves time, and classroom assignment is safer and easier to scan.',
+    bullets: [
+      'Structure: stepped timeline from faculty through programmes, offerings, cohorts (auto-active), class groups, and classrooms—single-faculty create dialog plus cohort shortcuts from faculty views',
+      'Programmes: reliable half-year decimals; debounced description from title/faculty/duration; scrollable year popovers and compact panels; offerings pick smarter term codes, likely years first, and calendar-aware start defaults',
+      'Cohorts: grey-out faculties with no programmes; auto titles (e.g. MD-2027) and templated descriptions; academic-year combobox picks the next sensible year',
+      'Cohort offerings: invalid combinations disabled; quick default fill; range hints turn blue when valid, orange when off',
+      'Class groups: faculty guards; optional auto codes (NS-1A…); descriptions refresh when inputs change; cards badge programme indigo and cohort teal',
+      'Class group offerings: one-click path to open classroom creation; assigned users disabled in pickers; avatars in lists',
+      'Classrooms: assign UI shows avatar, email, role; block duplicates; students via combobox; reassign main teacher; remove users; rename classroom',
+      'Badge rules: blue for dates; indigo/teal for faculty, programme, cohort, and class-group chips so structure stays scannable',
+    ],
+    badges: ['feature', 'fix', 'improvement', 'change'],
+  },
+  {
     id: '2026-04-26-institution-admin-structure-and-offerings-refresh',
     date: '26 April 2026',
     title: 'Improve institution structure, offerings, and classroom management flows',
