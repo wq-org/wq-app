@@ -88,7 +88,11 @@ export function AppNavigation({
             </Button>
 
             {showProfileBlock ? (
-              <div className="flex min-w-0 items-center gap-2">
+              <div className="flex min-w-0 items-center gap-4">
+                <Separator
+                  orientation="vertical"
+                  className="bg-border/80"
+                />
                 <Popover
                   open={profileOpen}
                   onOpenChange={setProfileOpen}
