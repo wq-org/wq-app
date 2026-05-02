@@ -1,12 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { AppShell } from '@/components/layout'
 import { SelectTabs, SelectTabsContent, type TabItem } from '@/components/shared'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
-import { CourseCardList, type CourseCardProps } from '@/features/course'
+import { Spinner } from '@/components/ui/spinner'
+import { CourseCardList, useCourses, type CourseCardProps } from '@/features/course'
 import { DashboardSection } from '@/features/dashboard'
 import { GameProjectCardList, type GameProjectCardListProps } from '@/features/game-studio'
+import { useUser } from '@/contexts/user'
 import { TeacherClassroomsEmpty } from '../components/TeacherClassroomsEmpty'
 import { TeacherCoursesEmpty } from '../components/TeacherCoursesEmpty'
 import {
@@ -17,80 +21,16 @@ import {
   DraftingCompass,
   Joystick,
   LampDesk,
+  LayoutGrid,
   LibraryBig,
-  ListTodo,
   SplinePointer,
 } from 'lucide-react'
 
-import { ClassroomCardList, type ClassroomCardListItem } from '@/features/classroom'
-
-/** Demo classrooms until teacher classrooms API is wired; swap for fetched rows. */
-const DUMMY_TEACHER_CLASSROOM_CARDS: readonly ClassroomCardListItem[] = [
-  {
-    id: '00000000-0000-4000-8000-000000000101',
-    icon: LampDesk,
-    name: 'Rolex Design Studio',
-    studentCount: 24,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000102',
-    icon: BookOpen,
-    name: 'Mechanics 101',
-    studentCount: 18,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000103',
-    icon: SplinePointer,
-    name: 'Game Studio Lab',
-    studentCount: 12,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000104',
-    icon: ListTodo,
-    name: 'Capstone Critique',
-    studentCount: 20,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000105',
-    icon: LampDesk,
-    name: 'Materials Workshop',
-    studentCount: 16,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000106',
-    icon: BookOpen,
-    name: 'Sketch & Render',
-    studentCount: 22,
-  },
-]
-
-/** Demo courses for dashboard layout until teacher dashboard loads real rows from the API. */
-const DUMMY_TEACHER_COURSE_CARDS: readonly CourseCardProps[] = [
-  {
-    id: '00000000-0000-4000-8000-000000000001',
-    title: 'Introduction to Design',
-    description: 'Foundations of visual composition and short weekly exercises.',
-    is_published: true,
-    themeId: 'blue',
-    teacherInitials: 'JD',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000002',
-    title: 'Mechanics Lab',
-    description: 'Hands-on prototypes and materials exploration.',
-    is_published: true,
-    themeId: 'teal',
-    teacherInitials: 'JD',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000003',
-    title: 'Capstone Studio',
-    description: 'Final project workspace — draft brief and milestones.',
-    is_published: false,
-    themeId: 'violet',
-    teacherInitials: 'JD',
-  },
-]
+import {
+  ClassroomCardList,
+  type ClassroomCardListItem,
+  useTeacherClassrooms,
+} from '@/features/classroom'
 
 const COURSE_FILTER_TABS = [
   { id: 'all', title: 'All', icon: LibraryBig },
@@ -133,18 +73,109 @@ const GAME_FILTER_TABS = [
 ] as const satisfies readonly TabItem[]
 
 const Dashboard = () => {
+  const { t } = useTranslation('features.teacher')
   const navigate = useNavigate()
+  const { profile } = useUser()
+  const fetchEnabled = Boolean(profile?.user_id)
+
+  const {
+    rows: teacherClassrooms,
+    loading: classroomsLoading,
+    error: classroomsError,
+  } = useTeacherClassrooms(fetchEnabled)
+  const { courses, loading: coursesLoading, error: coursesError, fetchCourses } = useCourses()
+
   const [activeCourseTabId, setActiveCourseTabId] = useState<string>(COURSE_FILTER_TABS[0].id)
   const [activeGameTabId, setActiveGameTabId] = useState<string>(GAME_FILTER_TABS[0].id)
+  const [activeScheduleTabId, setActiveScheduleTabId] = useState<string>('all')
+
+  useEffect(() => {
+    if (!profile?.user_id) return
+    void fetchCourses()
+  }, [profile?.user_id, fetchCourses])
+
+  useEffect(() => {
+    if (classroomsError) {
+      toast.error(t('dashboard.classroomsLoadError'))
+    }
+  }, [classroomsError, t])
+
+  useEffect(() => {
+    if (coursesError) {
+      toast.error(t('dashboard.coursesLoadError'))
+    }
+  }, [coursesError, t])
+
+  const classroomTitleById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const row of teacherClassrooms) {
+      map.set(row.id, row.title)
+    }
+    return map
+  }, [teacherClassrooms])
+
+  const handleClassroomView = useCallback(
+    (classroomId: string) => {
+      navigate(`/teacher/dashboard/classroom/${classroomId}`, {
+        state: { name: classroomTitleById.get(classroomId) },
+      })
+    },
+    [navigate, classroomTitleById],
+  )
+
+  const classroomCardItems: readonly ClassroomCardListItem[] = useMemo(
+    () =>
+      teacherClassrooms.map((row) => ({
+        id: row.id,
+        name: row.title,
+        studentCount: row.studentCount,
+        icon: LampDesk,
+      })),
+    [teacherClassrooms],
+  )
+
+  const scheduleScopeTabs: TabItem[] = useMemo(() => {
+    const allTab: TabItem = {
+      id: 'all',
+      title: t('dashboard.scheduleTabs.all'),
+      icon: LayoutGrid,
+    }
+    const perClassroom: TabItem[] = teacherClassrooms.map((row) => ({
+      id: row.id,
+      title: row.title,
+      icon: LampDesk,
+    }))
+    return [allTab, ...perClassroom]
+  }, [teacherClassrooms, t])
+
+  useEffect(() => {
+    if (activeScheduleTabId === 'all') return
+    const stillPresent = teacherClassrooms.some((row) => row.id === activeScheduleTabId)
+    if (!stillPresent) {
+      setActiveScheduleTabId('all')
+    }
+  }, [teacherClassrooms, activeScheduleTabId])
+
+  const courseCards: CourseCardProps[] = useMemo(
+    () =>
+      courses.map((c) => ({
+        id: c.id,
+        title: c.title,
+        description: c.description,
+        is_published: c.is_published,
+        themeId: c.theme_id,
+      })),
+    [courses],
+  )
 
   const coursesByFilterTab = useMemo(() => {
-    const all = DUMMY_TEACHER_COURSE_CARDS
+    const all = courseCards
     return {
       all: [...all],
       published: all.filter((c) => c.is_published),
       drafts: all.filter((c) => !c.is_published),
     } as const
-  }, [])
+  }, [courseCards])
 
   const gamesByFilterTab = useMemo(() => {
     const all = DUMMY_TEACHER_GAME_PROJECTS
@@ -171,6 +202,10 @@ const Dashboard = () => {
     setActiveGameTabId(tabId)
   }
 
+  const handleScheduleTabChange = (tabId: string) => {
+    setActiveScheduleTabId(tabId)
+  }
+
   return (
     <AppShell
       role="teacher"
@@ -186,10 +221,20 @@ const Dashboard = () => {
             icon={LampDesk}
             classNameContainer="px-4"
           >
-            {DUMMY_TEACHER_CLASSROOM_CARDS.length === 0 ? (
+            {fetchEnabled && classroomsLoading ? (
+              <div className="flex justify-center py-10">
+                <Spinner
+                  variant="gray"
+                  size="lg"
+                />
+              </div>
+            ) : classroomCardItems.length === 0 ? (
               <TeacherClassroomsEmpty />
             ) : (
-              <ClassroomCardList items={DUMMY_TEACHER_CLASSROOM_CARDS} />
+              <ClassroomCardList
+                items={classroomCardItems}
+                onClassroomView={handleClassroomView}
+              />
             )}
           </DashboardSection>
         </div>
@@ -197,23 +242,65 @@ const Dashboard = () => {
         <div className="flex gap-8 w-full">
           <DashboardSection
             title="Schedule"
-            classNameContainer="h-55.5"
+            classNameContainer="h-55.5 max-h-80 min-h-0"
             icon={Calendar}
             showExpandButton
+            showContainerBorder
           >
-            <p className="text-sm text-muted-foreground">Schedule content placeholder.</p>
+            {fetchEnabled && classroomsLoading ? (
+              <div className="flex justify-center py-10">
+                <Spinner
+                  variant="gray"
+                  size="lg"
+                />
+              </div>
+            ) : (
+              <>
+                <SelectTabs
+                  variant="compact"
+                  tabs={scheduleScopeTabs}
+                  activeTabId={activeScheduleTabId}
+                  onTabChange={handleScheduleTabChange}
+                />
+                {scheduleScopeTabs.map((tab) => (
+                  <SelectTabsContent
+                    key={tab.id}
+                    tabId={tab.id}
+                    activeTabId={activeScheduleTabId}
+                    className="mt-2 min-h-0 px-0"
+                  >
+                    <p className="text-sm text-muted-foreground">
+                      {tab.id === 'all'
+                        ? t('dashboard.scheduleTabs.placeholderAll')
+                        : t('dashboard.scheduleTabs.placeholderClassroom', {
+                            name: tab.title,
+                          })}
+                    </p>
+                  </SelectTabsContent>
+                ))}
+              </>
+            )}
           </DashboardSection>
         </div>
 
-        <div className="flex w-full min-w-0 gap-8">
-          <div className="min-w-0 flex-1 basis-0">
+        <div className="flex w-full min-w-0 flex-wrap gap-8">
+          <div className="min-w-0 w-full basis-full md:basis-[calc(50%-1rem)] md:max-w-[calc(50%-1rem)] md:flex-1 md:grow">
             <DashboardSection
               title="Courses"
               showExpandButton
+              expandTo="/teacher/courses"
               classNameContainer="h-55.5 max-h-80 min-h-0"
               icon={BookOpen}
+              showContainerBorder
             >
-              {DUMMY_TEACHER_COURSE_CARDS.length === 0 ? (
+              {coursesLoading ? (
+                <div className="flex justify-center py-10">
+                  <Spinner
+                    variant="gray"
+                    size="lg"
+                  />
+                </div>
+              ) : courseCards.length === 0 ? (
                 <TeacherCoursesEmpty />
               ) : (
                 <>
@@ -224,7 +311,7 @@ const Dashboard = () => {
                     onTabChange={handleCourseTabChange}
                   />
                   {COURSE_FILTER_TABS.map((tab) => {
-                    const courses =
+                    const tabCourses =
                       tab.id === 'all'
                         ? coursesByFilterTab.all
                         : tab.id === 'published'
@@ -238,14 +325,14 @@ const Dashboard = () => {
                         activeTabId={activeCourseTabId}
                         className="mt-2 min-h-0 px-0"
                       >
-                        {courses.length === 0 ? (
+                        {tabCourses.length === 0 ? (
                           <p className="text-sm text-muted-foreground">
                             No courses match this filter.
                           </p>
                         ) : (
                           <CourseCardList
                             variant="compact"
-                            courses={courses}
+                            courses={tabCourses}
                             onCourseView={handleCourseView}
                             className="gap-2"
                           />
@@ -257,12 +344,14 @@ const Dashboard = () => {
               )}
             </DashboardSection>
           </div>
-          <div className="min-w-0 flex-1 basis-0">
+          <div className="min-w-0 w-full basis-full md:basis-[calc(50%-1rem)] md:max-w-[calc(50%-1rem)] md:flex-1 md:grow">
             <DashboardSection
               title="Game Studio"
               classNameContainer="h-55.5 max-h-80 min-h-0"
               icon={SplinePointer}
               showExpandButton
+              expandTo="/teacher/game-studio"
+              showContainerBorder
             >
               {DUMMY_TEACHER_GAME_PROJECTS.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No games yet.</p>
@@ -309,14 +398,6 @@ const Dashboard = () => {
             </DashboardSection>
           </div>
         </div>
-        <DashboardSection
-          title="Tasks"
-          showExpandButton
-          classNameContainer="h-55.5"
-          icon={ListTodo}
-        >
-          <p>content</p>
-        </DashboardSection>
       </main>
     </AppShell>
   )

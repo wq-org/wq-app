@@ -21,7 +21,33 @@
   "profile": {
     "followToSee": "Folge dieser Lehrkraft, um ihre Kurse und Spiele zu sehen."
   },
+  "pages": {
+    "courses": {
+      "title": "Kurse",
+      "description": "Erstelle und verwalte Kurse für deine Lernenden.",
+      "searchLabel": "Kurse durchsuchen",
+      "searchPlaceholder": "Nach Titel oder Beschreibung suchen",
+      "addCourse": "Kurs hinzufügen",
+      "loadError": "Kurse konnten nicht geladen werden.",
+      "noMatches": "Keine Kurse entsprechen deiner Suche."
+    },
+    "classroomDetail": {
+      "titleFallback": "Klassenraum",
+      "invalidId": "Dieser Klassenraum-Link ist ungültig.",
+      "loadError": "Klassenraum-Details konnten nicht geladen werden.",
+      "sections": {
+        "studentsTitle": "Lernende",
+        "studentsPlaceholder": "Demnächst.",
+        "scheduleTitle": "Stundenplan",
+        "schedulePlaceholder": "Demnächst.",
+        "coursesTitle": "Kurse",
+        "coursesPlaceholder": "Demnächst."
+      }
+    }
+  },
   "dashboard": {
+    "classroomsLoadError": "Klassenräume konnten nicht geladen werden.",
+    "coursesLoadError": "Kurse konnten nicht geladen werden.",
     "classroomsEmpty": {
       "title": "Noch keine Klassenräume",
       "description": "Klassenräume, in denen du unterrichtest, erscheinen hier."
@@ -30,6 +56,11 @@
       "title": "Noch keine Kurse",
       "description": "Du hast noch keine Kurse. Leg los und erstelle einen.",
       "addCourse": "Kurs hinzufügen"
+    },
+    "scheduleTabs": {
+      "all": "Alle",
+      "placeholderAll": "Stundenplan für alle Klassenräume — Inhalt folgt.",
+      "placeholderClassroom": "Stundenplan für {{name}} — Inhalt folgt."
     }
   },
   "meta": {

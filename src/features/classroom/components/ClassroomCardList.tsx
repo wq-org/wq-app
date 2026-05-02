@@ -10,17 +10,18 @@ export type ClassroomCardListItem = {
   readonly icon: LucideIcon
   readonly name: string
   readonly studentCount: number
-  readonly onClick?: () => void
 }
 
 type ClassroomCardListProps = {
   readonly items: readonly ClassroomCardListItem[]
+  readonly onClassroomView?: (id: string) => void
   readonly className?: string
   readonly scrollAreaClassName?: string
 }
 
 export function ClassroomCardList({
   items,
+  onClassroomView,
   className,
   scrollAreaClassName,
 }: ClassroomCardListProps) {
@@ -35,10 +36,11 @@ export function ClassroomCardList({
         {items.map((item) => (
           <ClassroomCard
             key={item.id}
+            id={item.id}
             icon={item.icon}
             name={item.name}
             studentCount={item.studentCount}
-            onClick={item.onClick}
+            onView={onClassroomView}
           />
         ))}
       </div>

@@ -235,6 +235,9 @@
   "page": {
     "title": "Game Studio",
     "subtitle": "Erstelle und verwalte Lernspiele f\u00fcr deine Lernenden.",
+    "searchLabel": "Spiele durchsuchen",
+    "searchPlaceholder": "Nach Titel oder Beschreibung suchen",
+    "noMatches": "Keine Spiele entsprechen deiner Suche.",
     "createGame": "Spiel erstellen",
     "creating": "Wird erstellt...",
     "fallbackUntitledGame": "Unbenanntes Spiel",

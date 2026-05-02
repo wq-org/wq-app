@@ -22,7 +22,33 @@
   "profile": {
     "followToSee": "Follow this teacher to see their courses and games."
   },
+  "pages": {
+    "courses": {
+      "title": "Courses",
+      "description": "Create and manage courses for your students.",
+      "searchLabel": "Search courses",
+      "searchPlaceholder": "Search by title or description",
+      "addCourse": "Add course",
+      "loadError": "Could not load courses.",
+      "noMatches": "No courses match your search."
+    },
+    "classroomDetail": {
+      "titleFallback": "Classroom",
+      "invalidId": "This classroom link is invalid.",
+      "loadError": "Could not load classroom details.",
+      "sections": {
+        "studentsTitle": "Students",
+        "studentsPlaceholder": "Coming soon.",
+        "scheduleTitle": "Schedule",
+        "schedulePlaceholder": "Coming soon.",
+        "coursesTitle": "Courses",
+        "coursesPlaceholder": "Coming soon."
+      }
+    }
+  },
   "dashboard": {
+    "classroomsLoadError": "Could not load classrooms.",
+    "coursesLoadError": "Could not load courses.",
     "classroomsEmpty": {
       "title": "No classrooms yet",
       "description": "Classrooms you teach will appear here."
@@ -31,6 +57,11 @@
       "title": "No courses yet",
       "description": "You don’t have any courses. Create one to get started.",
       "addCourse": "Add course"
+    },
+    "scheduleTabs": {
+      "all": "All",
+      "placeholderAll": "Schedule for all classrooms — content coming soon.",
+      "placeholderClassroom": "Schedule for {{name}} — content coming soon."
     }
   },
   "meta": {

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
+import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
@@ -94,12 +95,12 @@ export function CommandSearch() {
             />
           </div>
         ) : filtered.length > 0 ? (
-          <div className="p-2 max-h-80 overflow-y-auto">
+          <BlurredScrollArea className="max-h-80 min-h-0 p-2">
             {filtered.map((item) => (
               <Card
                 key={`${item.type}-${item.id}`}
                 layout="flush"
-                className="w-full rounded-2xl border-0 bg-transparent px-3 py-2 text-left shadow-none"
+                className="w-full !border-none !shadow-none !ring-0 !ring-offset-0 border-b bg-transparent px-3 py-2 text-left outline-none"
               >
                 <div className="flex items-center gap-3">
                   <SearchAvatar
@@ -143,7 +144,7 @@ export function CommandSearch() {
                 </div>
               </Card>
             ))}
-          </div>
+          </BlurredScrollArea>
         ) : (
           <div className="p-8 text-center text-sm text-muted-foreground">
             {t('search.noResults', { ns: 'features.commandPalette' })}

@@ -25,6 +25,7 @@ import {
 } from '@/features/student'
 import {
   TeacherDashboard,
+  TeacherCoursesPage,
   TeacherSettingsPage,
   GameStudio,
   TeacherChat,
@@ -35,6 +36,7 @@ import {
 } from '@/features/teacher'
 import { PlayGamePage } from '@/features/game-play'
 import { NotFoundPage } from './user/pages/not-found'
+import { ClassroomDetailPage } from '@/features/classroom'
 import { CourseLayout, CoursePage, CourseView } from '@/features/course'
 import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
@@ -714,11 +716,31 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="dashboard/classroom/:classroomId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <ClassroomDetailPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="dashboard"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherDashboard />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherCoursesPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

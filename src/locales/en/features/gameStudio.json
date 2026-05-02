@@ -235,6 +235,9 @@
   "page": {
     "title": "Game Studio",
     "subtitle": "Create and manage educational games for your students.",
+    "searchLabel": "Search games",
+    "searchPlaceholder": "Search by title or description",
+    "noMatches": "No games match your search.",
     "createGame": "Create game",
     "creating": "Creating...",
     "fallbackUntitledGame": "Untitled Game",

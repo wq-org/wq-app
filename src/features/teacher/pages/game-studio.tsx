@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AppShell } from '@/components/layout'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
@@ -10,11 +10,13 @@ import {
   type GameProjectCardListProps,
 } from '@/features/game-studio'
 import { Button } from '@/components/ui/button'
+import { FieldInput } from '@/components/ui/field-input'
 import { toast } from 'sonner'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { Plus } from 'lucide-react'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
 
 const GameStudio = () => {
   const { t } = useTranslation('features.gameStudio')
@@ -23,6 +25,7 @@ const GameStudio = () => {
   const [projects, setProjects] = useState<GameProjectCardListProps['projects']>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const teacherId = getUserId()
@@ -50,6 +53,21 @@ const GameStudio = () => {
       .finally(() => setLoading(false))
   }, [getUserId, t])
 
+  const searchableProjects = useMemo(
+    () =>
+      projects.map((p) => ({
+        ...p,
+        title: p.title ?? '',
+        description: p.description ?? '',
+      })),
+    [projects],
+  )
+
+  const filteredProjects = useSearchFilter(searchableProjects, searchQuery, [
+    'title',
+    'description',
+  ])
+
   const handleCreateGame = async () => {
     const teacherId = getUserId()
     if (!teacherId) {
@@ -71,42 +89,43 @@ const GameStudio = () => {
     }
   }
 
+  const showSearchAndList = !loading && projects.length > 0
+
   return (
     <AppShell
-      className="flex flex-col gap-12 animate-in fade-in-0 slide-in-from-bottom-4"
+      className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4"
       role="teacher"
     >
       <div className="container py-6">
-        <div className="flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-3">
-          <Text
-            as="h1"
-            variant="h1"
-            className="text-6xl"
-          >
-            {t('page.title')}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="mt-2 text-gray-500"
-          >
-            {t('page.subtitle')}
-          </Text>
-          <div className="flex justify-end w-full">
-            <Button
-              onClick={handleCreateGame}
-              variant="darkblue"
-              disabled={creating || loading}
-              className="active:animate-in active:zoom-in-95"
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-xl space-y-2">
+            <Text
+              as="h1"
+              variant="h1"
+              className="text-3xl font-semibold tracking-tight md:text-4xl"
             >
-              <Plus size="4" />
-              {creating ? t('page.creating') : t('page.createGame')}
-            </Button>
+              {t('page.title')}
+            </Text>
+            <Text
+              as="p"
+              variant="body"
+              muted
+            >
+              {t('page.subtitle')}
+            </Text>
           </div>
+          <Button
+            onClick={handleCreateGame}
+            variant="darkblue"
+            disabled={creating || loading}
+            className="shrink-0 gap-2 active:animate-in active:zoom-in-95"
+          >
+            <Plus className="size-4" />
+            {creating ? t('page.creating') : t('page.createGame')}
+          </Button>
         </div>
-      </div>
-      <div className="container pb-14 animate-in fade-in-0 slide-in-from-bottom-4">
-        <div>
+
+        <div className="mt-8">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Spinner
@@ -116,12 +135,33 @@ const GameStudio = () => {
             </div>
           ) : projects.length === 0 ? (
             <EmptyProjectsView />
-          ) : (
-            <GameProjectCardList
-              projects={projects}
-              onOpen={(id) => navigate(`/teacher/canvas/${id}`)}
-            />
-          )}
+          ) : null}
+
+          {showSearchAndList ? (
+            <div className="flex flex-col gap-6">
+              <FieldInput
+                value={searchQuery}
+                onValueChange={setSearchQuery}
+                label={t('page.searchLabel')}
+                placeholder={t('page.searchPlaceholder')}
+                className="max-w-md"
+              />
+              {filteredProjects.length === 0 ? (
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm text-muted-foreground"
+                >
+                  {t('page.noMatches')}
+                </Text>
+              ) : (
+                <GameProjectCardList
+                  projects={filteredProjects}
+                  onOpen={(id) => navigate(`/teacher/canvas/${id}`)}
+                />
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
     </AppShell>
