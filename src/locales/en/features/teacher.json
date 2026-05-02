@@ -39,18 +39,26 @@
     "classroomDetail": {
       "titleFallback": "Classroom",
       "invalidId": "This classroom link is invalid.",
+      "loading": "Loading classroom…",
       "loadError": "Could not load classroom details.",
       "sections": {
         "studentsTitle": "Students",
         "studentsPlaceholder": "Coming soon.",
+        "studentsLoading": "Loading students…",
         "scheduleTitle": "Schedule",
         "schedulePlaceholder": "Coming soon.",
+        "scheduleLoading": "Loading schedule…",
         "coursesTitle": "Courses",
-        "coursesPlaceholder": "Coming soon."
+        "coursesPlaceholder": "Coming soon.",
+        "coursesLoading": "Loading courses…"
       }
     }
   },
   "dashboard": {
+    "loading": "Loading…",
+    "loadingClassrooms": "Loading classrooms…",
+    "loadingSchedule": "Loading schedule…",
+    "loadingCourses": "Loading courses…",
     "classroomsLoadError": "Could not load classrooms.",
     "coursesLoadError": "Could not load courses.",
     "classroomsEmpty": {

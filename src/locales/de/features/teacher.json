@@ -38,18 +38,26 @@
     "classroomDetail": {
       "titleFallback": "Klassenraum",
       "invalidId": "Dieser Klassenraum-Link ist ungültig.",
+      "loading": "Klassenraum wird geladen …",
       "loadError": "Klassenraum-Details konnten nicht geladen werden.",
       "sections": {
         "studentsTitle": "Lernende",
         "studentsPlaceholder": "Demnächst.",
+        "studentsLoading": "Lernende werden geladen …",
         "scheduleTitle": "Stundenplan",
         "schedulePlaceholder": "Demnächst.",
+        "scheduleLoading": "Stundenplan wird geladen …",
         "coursesTitle": "Kurse",
-        "coursesPlaceholder": "Demnächst."
+        "coursesPlaceholder": "Demnächst.",
+        "coursesLoading": "Kurse werden geladen …"
       }
     }
   },
   "dashboard": {
+    "loading": "Wird geladen …",
+    "loadingClassrooms": "Klassenräume werden geladen …",
+    "loadingSchedule": "Stundenplan wird geladen …",
+    "loadingCourses": "Kurse werden geladen …",
     "classroomsLoadError": "Klassenräume konnten nicht geladen werden.",
     "coursesLoadError": "Kurse konnten nicht geladen werden.",
     "classroomsEmpty": {

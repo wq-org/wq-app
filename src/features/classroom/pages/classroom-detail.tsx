@@ -4,8 +4,8 @@ import { BookOpen, Calendar, Users } from 'lucide-react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { AppShell } from '@/components/layout'
+import { LoadingPage } from '@/components/shared'
 import { DashboardSection } from '@/features/dashboard'
-import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
 import { useClassroomDetail } from '../hooks/useClassroomDetail'
@@ -55,15 +55,6 @@ export function ClassroomDetailPage() {
       className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4"
     >
       <div className="container py-6">
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <Spinner
-              variant="gray"
-              size="lg"
-            />
-          </div>
-        ) : null}
-
         {error ? (
           <Text
             as="p"
@@ -89,13 +80,21 @@ export function ClassroomDetailPage() {
             classNameContainer="px-4 py-4"
             showContainerBorder
           >
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('pages.classroomDetail.sections.studentsPlaceholder')}
-            </Text>
+            {loading ? (
+              <LoadingPage
+                variant="embedded"
+                message={t('pages.classroomDetail.sections.studentsLoading')}
+                size={72}
+              />
+            ) : (
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                {t('pages.classroomDetail.sections.studentsPlaceholder')}
+              </Text>
+            )}
           </DashboardSection>
 
           <DashboardSection
@@ -104,13 +103,21 @@ export function ClassroomDetailPage() {
             classNameContainer="px-4 py-4"
             showContainerBorder
           >
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('pages.classroomDetail.sections.schedulePlaceholder')}
-            </Text>
+            {loading ? (
+              <LoadingPage
+                variant="embedded"
+                message={t('pages.classroomDetail.sections.scheduleLoading')}
+                size={72}
+              />
+            ) : (
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                {t('pages.classroomDetail.sections.schedulePlaceholder')}
+              </Text>
+            )}
           </DashboardSection>
 
           <DashboardSection
@@ -119,13 +126,21 @@ export function ClassroomDetailPage() {
             classNameContainer="px-4 py-4"
             showContainerBorder
           >
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('pages.classroomDetail.sections.coursesPlaceholder')}
-            </Text>
+            {loading ? (
+              <LoadingPage
+                variant="embedded"
+                message={t('pages.classroomDetail.sections.coursesLoading')}
+                size={72}
+              />
+            ) : (
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                {t('pages.classroomDetail.sections.coursesPlaceholder')}
+              </Text>
+            )}
           </DashboardSection>
         </div>
       </div>

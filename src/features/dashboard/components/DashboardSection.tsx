@@ -48,7 +48,7 @@ export function DashboardSection({
 
       <div
         className={cn(
-          'rounded-4xl flex min-h-0 flex-col overflow-hidden',
+          'rounded-3xl flex min-h-0 flex-col overflow-hidden',
           !showExpandButton && 'px-6 py-4',
           classNameContainer,
           showContainerBorder ? 'border' : '',

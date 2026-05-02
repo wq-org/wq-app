@@ -1,4 +1,7 @@
 {
+  "dashboard": {
+    "loading": "Loading…"
+  },
   "view": {
     "title": "Student View",
     "description": "Student content will be displayed here."

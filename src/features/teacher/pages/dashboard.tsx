@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { AppShell } from '@/components/layout'
-import { SelectTabs, SelectTabsContent, type TabItem } from '@/components/shared'
+import { LoadingPage, SelectTabs, SelectTabsContent, type TabItem } from '@/components/shared'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
-import { Spinner } from '@/components/ui/spinner'
 import { CourseCardList, useCourses, type CourseCardProps } from '@/features/course'
 import { DashboardSection } from '@/features/dashboard'
 import { GameProjectCardList, type GameProjectCardListProps } from '@/features/game-studio'
@@ -265,12 +264,11 @@ const Dashboard = () => {
             classNameContainer="p-0"
           >
             {fetchEnabled && classroomsLoading ? (
-              <div className="flex justify-center py-10">
-                <Spinner
-                  variant="gray"
-                  size="lg"
-                />
-              </div>
+              <LoadingPage
+                variant="embedded"
+                message={t('dashboard.loadingClassrooms')}
+                size={72}
+              />
             ) : classroomCardItems.length === 0 ? (
               <TeacherClassroomsEmpty />
             ) : (
@@ -292,12 +290,11 @@ const Dashboard = () => {
             showContainerBorder
           >
             {fetchEnabled && classroomsLoading ? (
-              <div className="flex justify-center py-10">
-                <Spinner
-                  variant="gray"
-                  size="lg"
-                />
-              </div>
+              <LoadingPage
+                variant="embedded"
+                message={t('dashboard.loadingSchedule')}
+                size={72}
+              />
             ) : (
               <>
                 <SelectTabs
@@ -338,12 +335,11 @@ const Dashboard = () => {
               showContainerBorder
             >
               {coursesLoading ? (
-                <div className="flex justify-center py-10">
-                  <Spinner
-                    variant="gray"
-                    size="lg"
-                  />
-                </div>
+                <LoadingPage
+                  variant="embedded"
+                  message={t('dashboard.loadingCourses')}
+                  size={72}
+                />
               ) : courseCards.length === 0 ? (
                 <TeacherCoursesEmpty />
               ) : (

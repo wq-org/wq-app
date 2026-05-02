@@ -1,4 +1,7 @@
 {
+  "dashboard": {
+    "loading": "Wird geladen …"
+  },
   "view": {
     "title": "Lernendenansicht",
     "description": "Inhalte für Lernende werden hier angezeigt."

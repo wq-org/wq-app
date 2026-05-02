@@ -36,6 +36,8 @@ export {
   MinimalInputWithoutBordersBackground,
   QuantityStepper,
 } from './inputs'
+export { LoadingPage } from './LoadingPage'
+export type { LoadingPageProps } from './LoadingPage'
 export { LanguageSwitcher } from './LanguageSwitcher'
 export { ImageCarousel, PdfPreview, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'

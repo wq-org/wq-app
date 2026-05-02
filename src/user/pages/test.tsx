@@ -29,6 +29,7 @@ import {
   SocialMediaReactionToggles,
   ToggleIconSwapOnPress,
   ToggleNotificationCountBadge,
+  LoadingPage,
   SliderDynamicTooltipIndicator,
   SliderReferenceLabels,
   SliderSyncedNumberInput,
@@ -64,6 +65,7 @@ import {
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Onboarding } from '@/features/onboarding'
 import { Text } from '@/components/ui/text'
+import { Zoomies } from '@/components/ui/zoomies'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -1476,6 +1478,46 @@ export default function Test() {
 
       <Section title="SwitchListCardIcons">
         <SwitchListCardIcons items={switchCardItems} />
+      </Section>
+
+      <Section title="Zoomies + LoadingPage">
+        <div className="flex flex-col gap-10 rounded-2xl border border-dashed border-border p-8">
+          <div>
+            <Text
+              as="p"
+              variant="small"
+              muted
+              className="mb-3"
+            >
+              Zoomies — blue (size 100, stroke 6)
+            </Text>
+            <Zoomies
+              color="blue"
+              size={100}
+              stroke={6}
+              speed={1.4}
+              bgOpacity={0.1}
+            />
+          </div>
+          <div>
+            <Text
+              as="p"
+              variant="small"
+              muted
+              className="mb-3"
+            >
+              LoadingPage — embedded, blue Zoomies
+            </Text>
+            <div className="rounded-xl border bg-muted/30 p-4">
+              <LoadingPage
+                variant="embedded"
+                message="Loading workspace…"
+                zoomiesColor="blue"
+                size={72}
+              />
+            </div>
+          </div>
+        </div>
       </Section>
     </div>
   )
