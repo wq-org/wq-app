@@ -246,6 +246,7 @@ const Dashboard = () => {
             classNameContainer="h-55.5 max-h-80 min-h-0"
             icon={Calendar}
             showExpandButton
+            expandTo="/teacher/schedule"
             showContainerBorder
           >
             {fetchEnabled && classroomsLoading ? (
