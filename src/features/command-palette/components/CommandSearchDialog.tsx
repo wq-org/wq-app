@@ -100,7 +100,7 @@ export function CommandSearch() {
               <Card
                 key={`${item.type}-${item.id}`}
                 layout="flush"
-                className="w-full !border-none !shadow-none !ring-0 !ring-offset-0 border-b bg-transparent px-3 py-2 text-left outline-none"
+                className="w-full !border-0 !shadow-none !ring-0 !ring-offset-0 border-b bg-transparent px-3 py-2 text-left outline-none"
               >
                 <div className="flex items-center gap-3">
                   <SearchAvatar

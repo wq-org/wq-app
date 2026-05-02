@@ -18,10 +18,11 @@ import {
   BookOpenCheck,
   BookOpenText,
   Calendar,
+  Calendar1,
+  CalendarDays,
   DraftingCompass,
   Joystick,
   LampDesk,
-  LayoutGrid,
   LibraryBig,
   SplinePointer,
 } from 'lucide-react'
@@ -138,12 +139,12 @@ const Dashboard = () => {
     const allTab: TabItem = {
       id: 'all',
       title: t('dashboard.scheduleTabs.all'),
-      icon: LayoutGrid,
+      icon: CalendarDays,
     }
     const perClassroom: TabItem[] = teacherClassrooms.map((row) => ({
       id: row.id,
       title: row.title,
-      icon: LampDesk,
+      icon: Calendar1,
     }))
     return [allTab, ...perClassroom]
   }, [teacherClassrooms, t])

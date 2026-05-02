@@ -7,7 +7,7 @@ import type { CourseCardProps } from '../types/course.types'
 type CourseCardListVariant = 'default' | 'compact'
 
 export type CourseCardListProps = {
-  courses: CourseCardProps[]
+  courses: readonly CourseCardProps[]
   onCourseView?: (id: string) => void
   variant?: CourseCardListVariant
   className?: string

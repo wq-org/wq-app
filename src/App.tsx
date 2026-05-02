@@ -26,6 +26,7 @@ import {
 import {
   TeacherDashboard,
   TeacherCoursesPage,
+  TeacherSchedulePage,
   TeacherSettingsPage,
   GameStudio,
   TeacherChat,
@@ -741,6 +742,16 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherCoursesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="schedule"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherSchedulePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

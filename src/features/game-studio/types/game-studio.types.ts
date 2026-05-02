@@ -258,14 +258,14 @@ export interface GameCardListProps {
 export type GameProjectCardListVariant = 'default' | 'compact'
 
 export interface GameProjectCardListProps {
-  projects: Array<{
+  projects: readonly {
     id: string
     title?: string
     description?: string
     themeId?: ThemeId
     version?: number
     status?: 'draft' | 'published'
-  }>
+  }[]
   onOpen?: (projectId: string) => void
   variant?: GameProjectCardListVariant
   className?: string
