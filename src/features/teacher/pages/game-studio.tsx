@@ -97,12 +97,11 @@ const GameStudio = () => {
       role="teacher"
     >
       <div className="container py-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-xl space-y-2">
+        <div className="flex flex-col gap-6">
+          <div className="mx-auto max-w-xl space-y-2 text-center">
             <Text
               as="h1"
               variant="h1"
-              className="text-3xl font-semibold tracking-tight md:text-4xl"
             >
               {t('page.title')}
             </Text>
@@ -114,11 +113,16 @@ const GameStudio = () => {
               {t('page.subtitle')}
             </Text>
           </div>
+        </div>
+
+        <div className="flex w-full justify-end">
           <Button
+            type="button"
+            size="xl"
             onClick={handleCreateGame}
             variant="darkblue"
             disabled={creating || loading}
-            className="shrink-0 gap-2 active:animate-in active:zoom-in-95"
+            className="gap-2 active:animate-in active:zoom-in-95"
           >
             <Plus className="size-4" />
             {creating ? t('page.creating') : t('page.createGame')}
@@ -134,7 +138,10 @@ const GameStudio = () => {
               />
             </div>
           ) : projects.length === 0 ? (
-            <EmptyProjectsView />
+            <EmptyProjectsView
+              onCreateGame={handleCreateGame}
+              disableCreate={creating || loading}
+            />
           ) : null}
 
           {showSearchAndList ? (

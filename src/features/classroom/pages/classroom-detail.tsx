@@ -65,13 +65,15 @@ export function ClassroomDetailPage() {
           </Text>
         ) : null}
 
-        <Text
-          as="h1"
-          variant="h1"
-          className="text-3xl font-semibold tracking-tight md:text-4xl"
-        >
-          {displayTitle}
-        </Text>
+        <div className="text-center">
+          <Text
+            as="h1"
+            variant="h1"
+            className=" tracking-tight md:text-4xl"
+          >
+            {displayTitle}
+          </Text>
+        </div>
 
         <div className="mt-10 flex flex-col gap-10">
           <DashboardSection

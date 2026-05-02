@@ -3,12 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { CoursePreviewTab } from '@/features/course'
-import { getCourseById } from '@/features/course'
-import type { Course } from '@/features/course'
+import { getCourseById } from '../api/coursesApi'
+import { CoursePreviewTab } from '../components/CoursePreviewTab'
+import type { Course } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
 
-const CourseView = () => {
+export function CourseDetailPage() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
@@ -64,11 +64,10 @@ const CourseView = () => {
           </Text>
         ) : (
           <>
-            <div className="space-y-1">
+            <div className="space-y-1 text-center">
               <Text
                 as="h1"
                 variant="h1"
-                className="text-3xl font-semibold"
               >
                 {course.title}
               </Text>
@@ -93,5 +92,3 @@ const CourseView = () => {
     </AppShell>
   )
 }
-
-export { CourseView }

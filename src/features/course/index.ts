@@ -47,4 +47,4 @@ export {
   createYooptaStarterContentJson,
 } from './utils/yooptaContent'
 export { Course as CoursePage } from './pages/course'
-export { CourseView } from './pages/CourseView'
+export { CourseDetailPage } from './pages/course-detail'

@@ -65,9 +65,14 @@ export function TeacherCoursesPage() {
       className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4"
     >
       <div className="container py-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-xl flex flex-col space-y-2">
-            <Text variant="h1">{t('pages.courses.title')}</Text>
+        <div className="flex flex-col gap-6">
+          <div className="mx-auto max-w-xl space-y-2 text-center">
+            <Text
+              as="h1"
+              variant="h1"
+            >
+              {t('pages.courses.title')}
+            </Text>
             <Text
               as="p"
               variant="body"
@@ -78,7 +83,7 @@ export function TeacherCoursesPage() {
           </div>
         </div>
 
-        <div className="flex justify-end w-full">
+        <div className="flex w-full justify-end">
           <Button
             type="button"
             size="xl"

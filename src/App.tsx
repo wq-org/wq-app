@@ -38,7 +38,7 @@ import {
 import { PlayGamePage } from '@/features/game-play'
 import { NotFoundPage } from './user/pages/not-found'
 import { ClassroomDetailPage } from '@/features/classroom'
-import { CourseLayout, CoursePage, CourseView } from '@/features/course'
+import { CourseDetailPage, CourseLayout, CoursePage } from '@/features/course'
 import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
 import { Onboarding } from '@/features/onboarding'
@@ -947,7 +947,7 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <CourseView />
+                        <CourseDetailPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
