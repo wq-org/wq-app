@@ -23,7 +23,7 @@ export function ClassroomCard({
       onClick={onClick}
       className={cn(
         className,
-        'w-45 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor',
+        'w-45 h-35 rounded-3xl hover:border-blue-500 duration-400 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
       )}
     >
       <CardHeader>

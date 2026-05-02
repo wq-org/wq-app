@@ -65,7 +65,7 @@ export function GameProjectCardCompact({
       onClick={handleClick}
       className={cn(
         className,
-        'w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor',
+        'w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
       )}
     >
       <CardHeader className="flex flex-row items-center gap-2 space-y-0">

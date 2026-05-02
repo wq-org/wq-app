@@ -21,7 +21,7 @@ export function DashboardSection({
   return (
     <div className="flex flex-col gap-4 w-full animate-in fade-in-0 slide-in-from-bottom-2 ">
       <div className="flex flex-col">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 animate-in fade-in-0 slide-in-from-left-4">
           <Icon className="h-4 w-4 stroke-2 text-foreground" />
           <Text
             variant="small"
