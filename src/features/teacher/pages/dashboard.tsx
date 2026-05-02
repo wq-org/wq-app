@@ -23,7 +23,10 @@ import {
   DraftingCompass,
   Joystick,
   LampDesk,
+  LayoutList,
   LibraryBig,
+  ListChecks,
+  ListTodo,
   SplinePointer,
 } from 'lucide-react'
 
@@ -73,6 +76,31 @@ const GAME_FILTER_TABS = [
   { id: 'drafts', title: 'Drafts', icon: DraftingCompass },
 ] as const satisfies readonly TabItem[]
 
+const TASK_FILTER_TABS = [
+  { id: 'all', title: 'All', icon: ListTodo },
+  { id: 'published', title: 'Published', icon: ListChecks },
+  { id: 'drafts', title: 'Drafts', icon: LayoutList },
+] as const satisfies readonly TabItem[]
+
+/** Demo tasks until the teacher dashboard loads task rows from the API. */
+const DUMMY_TEACHER_TASKS = [
+  {
+    id: '00000000-0000-4000-8000-000000000301',
+    title: 'Review consent forms',
+    status: 'draft' as const,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000302',
+    title: 'Grade midterm reflections',
+    status: 'published' as const,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000303',
+    title: 'Prepare wellness check-in slides',
+    status: 'draft' as const,
+  },
+]
+
 const Dashboard = () => {
   const { t } = useTranslation('features.teacher')
   const navigate = useNavigate()
@@ -89,6 +117,7 @@ const Dashboard = () => {
   const [activeCourseTabId, setActiveCourseTabId] = useState<string>(COURSE_FILTER_TABS[0].id)
   const [activeGameTabId, setActiveGameTabId] = useState<string>(GAME_FILTER_TABS[0].id)
   const [activeScheduleTabId, setActiveScheduleTabId] = useState<string>('all')
+  const [activeTaskTabId, setActiveTaskTabId] = useState<string>(TASK_FILTER_TABS[0].id)
 
   useEffect(() => {
     if (!profile?.user_id) return
@@ -187,6 +216,15 @@ const Dashboard = () => {
     } as const
   }, [])
 
+  const tasksByFilter = useMemo(() => {
+    const all = DUMMY_TEACHER_TASKS
+    return {
+      all: [...all],
+      published: all.filter((task) => task.status === 'published'),
+      drafts: all.filter((task) => task.status === 'draft'),
+    } as const
+  }, [])
+
   const handleCourseView = (id: string) => {
     navigate(`/teacher/course/${id}`)
   }
@@ -207,6 +245,10 @@ const Dashboard = () => {
     setActiveScheduleTabId(tabId)
   }
 
+  const handleTaskTabChange = (tabId: string) => {
+    setActiveTaskTabId(tabId)
+  }
+
   return (
     <AppShell
       role="teacher"
@@ -220,7 +262,7 @@ const Dashboard = () => {
           <DashboardSection
             title="Classrooms"
             icon={LampDesk}
-            classNameContainer="px-4"
+            classNameContainer="p-0"
           >
             {fetchEnabled && classroomsLoading ? (
               <div className="flex justify-center py-10">
@@ -399,6 +441,58 @@ const Dashboard = () => {
               )}
             </DashboardSection>
           </div>
+        </div>
+
+        <div className="flex w-full min-w-0">
+          <DashboardSection
+            title="Tasks"
+            classNameContainer="h-55.5 max-h-80 min-h-0"
+            icon={ListTodo}
+            showExpandButton
+            expandTo="/teacher/tasks"
+            showContainerBorder
+          >
+            <>
+              <SelectTabs
+                variant="compact"
+                tabs={TASK_FILTER_TABS}
+                activeTabId={activeTaskTabId}
+                onTabChange={handleTaskTabChange}
+              />
+              {TASK_FILTER_TABS.map((tab) => {
+                const tabTasks =
+                  tab.id === 'all'
+                    ? tasksByFilter.all
+                    : tab.id === 'published'
+                      ? tasksByFilter.published
+                      : tasksByFilter.drafts
+
+                return (
+                  <SelectTabsContent
+                    key={tab.id}
+                    tabId={tab.id}
+                    activeTabId={activeTaskTabId}
+                    className="mt-2 min-h-0 px-0"
+                  >
+                    {tabTasks.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">{t('dashboard.tasks.empty')}</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {tabTasks.map((task) => (
+                          <li
+                            key={task.id}
+                            className="truncate text-sm text-foreground"
+                          >
+                            {task.title}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </SelectTabsContent>
+                )
+              })}
+            </>
+          </DashboardSection>
         </div>
       </main>
     </AppShell>

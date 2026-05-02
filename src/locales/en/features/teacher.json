@@ -32,6 +32,10 @@
       "loadError": "Could not load courses.",
       "noMatches": "No courses match your search."
     },
+    "cloud": {
+      "title": "Your Cloud",
+      "loadError": "Could not load your cloud files."
+    },
     "classroomDetail": {
       "titleFallback": "Classroom",
       "invalidId": "This classroom link is invalid.",
@@ -62,6 +66,9 @@
       "all": "All",
       "placeholderAll": "Schedule for all classrooms — content coming soon.",
       "placeholderClassroom": "Schedule for {{name}} — content coming soon."
+    },
+    "tasks": {
+      "empty": "No tasks match this filter."
     }
   },
   "meta": {

@@ -19,15 +19,16 @@ import {
 import { Button } from '@/components/ui/button'
 import type { FileItem } from '../types/files.types'
 import { FILE_TYPE_CONFIG } from '../types/files.types'
-import { FilesCard } from './FilesCard'
-import { FilesTableEmptyView } from './FilesTableEmptyView'
+import { CloudFileCard } from './CloudFileCard'
+import { CloudTableEmptyView } from './CloudTableEmptyView'
 import { useTranslation } from 'react-i18next'
 
-export interface FilesTableViewProps {
+export type CloudTableViewProps = {
   files: FileItem[]
   onRefresh?: () => void
 }
-export function FilesTableView({ files, onRefresh }: FilesTableViewProps) {
+
+export function CloudTableView({ files, onRefresh }: CloudTableViewProps) {
   const { t } = useTranslation('features.files')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null)
@@ -84,7 +85,7 @@ export function FilesTableView({ files, onRefresh }: FilesTableViewProps) {
   }
 
   if (files.length === 0) {
-    return <FilesTableEmptyView />
+    return <CloudTableEmptyView />
   }
 
   return (
@@ -184,22 +185,20 @@ export function FilesTableView({ files, onRefresh }: FilesTableViewProps) {
         </Pagination>
       )}
 
-      {/* FilesCard Drawer */}
-      {selectedFile && (
-        <FilesCard
+      {selectedFile ? (
+        <CloudFileCard
           file={selectedFile}
           open={isDrawerOpen}
           onOpenChange={setIsDrawerOpen}
           onFileDeleted={() => {
             setIsDrawerOpen(false)
             setSelectedFile(null)
-            // Refresh files list after deletion
             if (onRefresh) {
               onRefresh()
             }
           }}
         />
-      )}
+      ) : null}
     </div>
   )
 }

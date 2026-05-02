@@ -31,6 +31,10 @@
       "loadError": "Kurse konnten nicht geladen werden.",
       "noMatches": "Keine Kurse entsprechen deiner Suche."
     },
+    "cloud": {
+      "title": "Deine Cloud",
+      "loadError": "Cloud-Dateien konnten nicht geladen werden."
+    },
     "classroomDetail": {
       "titleFallback": "Klassenraum",
       "invalidId": "Dieser Klassenraum-Link ist ungültig.",
@@ -61,6 +65,9 @@
       "all": "Alle",
       "placeholderAll": "Stundenplan für alle Klassenräume — Inhalt folgt.",
       "placeholderClassroom": "Stundenplan für {{name}} — Inhalt folgt."
+    },
+    "tasks": {
+      "empty": "Keine Aufgaben für diesen Filter."
     }
   },
   "meta": {

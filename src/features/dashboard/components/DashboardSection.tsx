@@ -16,7 +16,8 @@ type DashboardSectionProps = {
   showContainerBorder?: boolean
 }
 
-const expandButtonClassName = 'pointer-events-auto bg-transparent shadow-none hover:bg-accent/80'
+const expandButtonClassName =
+  'pointer-events-auto size-9 shrink-0 rounded-full bg-transparent shadow-none hover:bg-accent/80'
 
 export function DashboardSection({
   title,
@@ -47,7 +48,7 @@ export function DashboardSection({
 
       <div
         className={cn(
-          'rounded-3xl flex min-h-0 flex-col overflow-hidden',
+          'rounded-4xl flex min-h-0 flex-col overflow-hidden',
           !showExpandButton && 'px-6 py-4',
           classNameContainer,
           showContainerBorder ? 'border' : '',
@@ -55,8 +56,10 @@ export function DashboardSection({
       >
         {showExpandButton ? (
           <div className="relative min-h-0 flex-1">
-            <div className="max-h-full min-h-0 overflow-y-auto px-6 py-4 pb-12">{children}</div>
-            <div className="pointer-events-none absolute bottom-2 right-6 z-10 flex justify-end">
+            <div className="max-h-full min-h-0 overflow-y-auto px-6 py-4 pb-12 pr-14">
+              {children}
+            </div>
+            <div className="pointer-events-none absolute bottom-2 right-2 z-10 flex justify-end sm:bottom-2.5 sm:right-2.5">
               {expandTo ? (
                 <Button
                   asChild

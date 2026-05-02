@@ -30,7 +30,7 @@ import {
   TeacherSettingsPage,
   GameStudio,
   TeacherChat,
-  TeacherFilesPage,
+  TeacherCloudPage,
   TeacherNotesPage,
   TeacherTasksPage,
   TeacherViewPage,
@@ -687,13 +687,22 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="files"
+                  path="cloud"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <TeacherFilesPage />
+                        <TeacherCloudPage />
                       </RequireOnboarding>
                     </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <Navigate
+                      to="/teacher/cloud"
+                      replace
+                    />
                   }
                 />
                 <Route

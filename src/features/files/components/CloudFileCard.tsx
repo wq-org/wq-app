@@ -27,14 +27,14 @@ import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 
-interface FilesCardProps {
+type CloudFileCardProps = {
   file: FileItem
   open: boolean
   onOpenChange: (open: boolean) => void
   onFileDeleted?: () => void
 }
 
-export function FilesCard({ file, open, onOpenChange, onFileDeleted }: FilesCardProps) {
+export function CloudFileCard({ file, open, onOpenChange, onFileDeleted }: CloudFileCardProps) {
   const { getUserId, getRole } = useUser()
   const { t } = useTranslation('features.files')
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
