@@ -21,13 +21,62 @@
   "profile": {
     "followToSee": "Folge dieser Lehrkraft, um ihre Kurse und Spiele zu sehen."
   },
-  "followersDrawer": {
-    "title": "Follower",
-    "loading": "Follower werden geladen...",
-    "empty": "Noch keine Follower.",
-    "close": "Follower-Liste schließen",
-    "studentFallback": "Schüler",
-    "studentRoleLabel": "Schüler"
+  "pages": {
+    "courses": {
+      "title": "Kurse",
+      "description": "Erstelle und verwalte Kurse für deine Lernenden.",
+      "searchLabel": "Kurse durchsuchen",
+      "searchPlaceholder": "Nach Titel oder Beschreibung suchen",
+      "addCourse": "Kurs hinzufügen",
+      "loadError": "Kurse konnten nicht geladen werden.",
+      "noMatches": "Keine Kurse entsprechen deiner Suche."
+    },
+    "cloud": {
+      "title": "Deine Cloud",
+      "loadError": "Cloud-Dateien konnten nicht geladen werden."
+    },
+    "classroomDetail": {
+      "titleFallback": "Klassenraum",
+      "invalidId": "Dieser Klassenraum-Link ist ungültig.",
+      "loading": "Klassenraum wird geladen …",
+      "loadError": "Klassenraum-Details konnten nicht geladen werden.",
+      "sections": {
+        "studentsTitle": "Lernende",
+        "studentsPlaceholder": "Demnächst.",
+        "studentsLoading": "Lernende werden geladen …",
+        "scheduleTitle": "Stundenplan",
+        "schedulePlaceholder": "Demnächst.",
+        "scheduleLoading": "Stundenplan wird geladen …",
+        "coursesTitle": "Kurse",
+        "coursesPlaceholder": "Demnächst.",
+        "coursesLoading": "Kurse werden geladen …"
+      }
+    }
+  },
+  "dashboard": {
+    "loading": "Wird geladen …",
+    "loadingClassrooms": "Klassenräume werden geladen …",
+    "loadingSchedule": "Stundenplan wird geladen …",
+    "loadingCourses": "Kurse werden geladen …",
+    "classroomsLoadError": "Klassenräume konnten nicht geladen werden.",
+    "coursesLoadError": "Kurse konnten nicht geladen werden.",
+    "classroomsEmpty": {
+      "title": "Noch keine Klassenräume",
+      "description": "Klassenräume, in denen du unterrichtest, erscheinen hier."
+    },
+    "coursesEmpty": {
+      "title": "Noch keine Kurse",
+      "description": "Du hast noch keine Kurse. Leg los und erstelle einen.",
+      "addCourse": "Kurs hinzufügen"
+    },
+    "scheduleTabs": {
+      "all": "Alle",
+      "placeholderAll": "Stundenplan für alle Klassenräume — Inhalt folgt.",
+      "placeholderClassroom": "Stundenplan für {{name}} — Inhalt folgt."
+    },
+    "tasks": {
+      "empty": "Keine Aufgaben für diesen Filter."
+    }
   },
   "meta": {
     "followersTopLabel": "Follower",

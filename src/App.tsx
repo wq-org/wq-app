@@ -25,17 +25,20 @@ import {
 } from '@/features/student'
 import {
   TeacherDashboard,
+  TeacherCoursesPage,
+  TeacherSchedulePage,
   TeacherSettingsPage,
   GameStudio,
   TeacherChat,
-  TeacherFilesPage,
+  TeacherCloudPage,
   TeacherNotesPage,
   TeacherTasksPage,
   TeacherViewPage,
 } from '@/features/teacher'
 import { PlayGamePage } from '@/features/game-play'
 import { NotFoundPage } from './user/pages/not-found'
-import { CourseLayout, CoursePage, CourseView } from '@/features/course'
+import { ClassroomDetailPage } from '@/features/classroom'
+import { CourseDetailPage, CourseLayout, CoursePage } from '@/features/course'
 import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
 import { Onboarding } from '@/features/onboarding'
@@ -47,7 +50,6 @@ import { TopicProvider } from './contexts/topic'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
 import { GameEditorCanvas } from '@/features/game-studio'
-import { ProfileViewPage } from '@/features/profile'
 import {
   AdminAuditLogs,
   AdminAnalytics,
@@ -685,13 +687,22 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="files"
+                  path="cloud"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <TeacherFilesPage />
+                        <TeacherCloudPage />
                       </RequireOnboarding>
                     </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <Navigate
+                      to="/teacher/cloud"
+                      replace
+                    />
                   }
                 />
                 <Route
@@ -715,11 +726,41 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="dashboard/classroom/:classroomId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <ClassroomDetailPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="dashboard"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherDashboard />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherCoursesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="schedule"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherSchedulePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -906,7 +947,7 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <CourseView />
+                        <CourseDetailPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -932,18 +973,6 @@ const App = () => {
                   }
                 />
               </Route>
-
-              {/* Centralized Profile Routes (require auth + onboarding) */}
-              <Route
-                path="/profile/:id"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <ProfileViewPage />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
 
               {/* Play game (student and teacher) - root level so /play/:gameId works */}
               <Route

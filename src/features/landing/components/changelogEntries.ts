@@ -20,17 +20,25 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
-    id: '2026-05-01-navigation-command-palette-update',
-    date: '1 May 2026',
-    title: 'Refresh top navigation profile strip and command palette actions',
+    id: '2026-05-02-teacher-dashboard-shell-loading-course-experience',
+    date: '2 May 2026',
+    title:
+      'Refresh teacher workspace layout, navigation, and loading—plus tighter course and Game Studio pages',
     summary:
-      'The header now centers identity and quick settings: name, handle, and an avatar menu for edit profile and workspace settings. The command palette was trimmed of noisy sections, tuned for calmer hover states, and expanded with attendance, chat, files, notes, tasks, and note creation shortcuts.',
+      'This batch simplifies shells after retiring the standalone profile area, rebuilds the teacher dashboard into clear sections with expandable cards and better routing to classrooms, courses, schedule, and cloud. It also adds smoother loading states (Zoomies), polishes page titles and empty states, and renames the student course screen for clarity.',
     bullets: [
-      'Navigation: profile block in the top bar—display name, handle (@username), avatar popover with edit profile and settings entry points',
-      'Command palette: removed the games and settings groupings so the palette stays focused on actions and search',
-      'Command palette: start/end attendance session (manual, bell affordance); create task (todo); open chat (message); cloud and notebook pen shortcuts',
-      'Command palette: list hover uses neutral gray; only the active row stays blue for clearer keyboard/mouse focus',
-      'Command palette: quick-create includes notes; richer attendance context (course, classroom, date/time) and task-as-create-type still planned',
+      'Layout: app shells were simplified and the old profile feature removed so navigation stays focused on role workspaces',
+      'Layout: the header separates back navigation from the profile block for clearer wayfinding',
+      'Teacher dashboard: teacher home now uses sectioned layout with animated cards, optional “expand” actions on dashboard sections, and improved spacing on the main content column',
+      'Teacher dashboard: compact course and game cards, dashboard tabs, and institution-aware settings hooks improve scanning and organization',
+      'Navigation: classroom hub, courses listing, schedule, and cloud surfaces are wired from the dashboard with clearer route logic',
+      'Schedule: dedicated schedule page plus dashboard rows that can expand into the full schedule experience',
+      'Cloud: teacher-facing cloud/storage area landed with UI labels aligned to “Cloud” terminology',
+      'Shared UI: SelectTabs now drives real tab panels; DashboardSection supports expandable destinations; scrollbar styling got visibility controls where needed',
+      'Loading: many dashboards and classroom sections now use the Zoomies-based LoadingPage instead of bare spinners for clearer, branded feedback',
+      'Courses & classroom: student course view lives in a dedicated course detail page; classroom and course titles can be centered where intended',
+      'Teacher Courses & Game Studio: hero titles stay centered while primary actions stay right-aligned; Game Studio empty state matches dark theme better and includes a clear create action',
+      'Small UX polish: classroom card lists, readonly card typing fixes, and minor dashboard animation and offset tweaks',
     ],
     badges: ['feature', 'change', 'improvement'],
   },

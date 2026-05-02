@@ -26,7 +26,7 @@ export function AppShell({ children, role, className, commandBarContext }: AppSh
   return (
     <>
       <AppNavigation />
-      <main className={cn('min-h-screen', className)}>{children}</main>
+      <main className={cn('min-h-screen', '-mt-10', className)}>{children}</main>
       <CommandPalette commandBarContext={effectiveContext} />
     </>
   )

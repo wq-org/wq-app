@@ -23,7 +23,9 @@
       "profileHint": "Manage your public profile details.",
       "roleHintPrefix": "Current role:",
       "accountTitle": "Account",
-      "accountHint": "These fields are managed by your account and are read-only."
+      "accountHint": "These fields are managed by your account and are read-only.",
+      "institutionTitle": "Institution",
+      "institutionHint": "Organization linked to your membership (read-only)."
     },
     "avatarDrawer": {
       "title": "Choose your avatar",
@@ -44,6 +46,15 @@
       "email": {
         "label": "E-mail",
         "placeholder": "wq-health@serious-game.com"
+      },
+      "institutionName": {
+        "label": "Institution name"
+      },
+      "institutionSlug": {
+        "label": "Institution slug"
+      },
+      "institutionEmail": {
+        "label": "Institution email"
       },
       "linkedin": {
         "label": "LinkedIn",

@@ -9,7 +9,10 @@ type BlurredScrollAreaProps = React.ComponentPropsWithoutRef<typeof ScrollAreaPr
   fadeClassName?: string
   scrollbars?: 'vertical' | 'horizontal' | 'both'
   orientation?: 'vertical' | 'horizontal'
+  /** Visually hides the vertical scrollbar (`opacity-0 pointer-events-none`); viewport scrolling is unchanged. */
   hideScrollBar?: boolean
+  /** Visually hides the horizontal scrollbar (`opacity-0 pointer-events-none`); viewport scrolling is unchanged. */
+  hideHorizontalScrollBar?: boolean
   shadowSize?: number
 }
 
@@ -53,6 +56,7 @@ export function BlurredScrollArea({
   scrollbars,
   orientation = 'vertical',
   hideScrollBar = false,
+  hideHorizontalScrollBar = true,
   shadowSize = 40,
   ...props
 }: BlurredScrollAreaProps) {
@@ -171,13 +175,20 @@ export function BlurredScrollArea({
         {children}
       </ScrollAreaPrimitive.Viewport>
 
-      {!hideScrollBar && (resolvedScrollbars === 'vertical' || resolvedScrollbars === 'both') && (
-        <ScrollBar />
+      {(resolvedScrollbars === 'vertical' || resolvedScrollbars === 'both') && (
+        <ScrollBar
+          className={cn(hideScrollBar && 'pointer-events-none opacity-0')}
+          aria-hidden={hideScrollBar}
+        />
       )}
-      {!hideScrollBar && (resolvedScrollbars === 'horizontal' || resolvedScrollbars === 'both') && (
-        <ScrollBar orientation="horizontal" />
+      {(resolvedScrollbars === 'horizontal' || resolvedScrollbars === 'both') && (
+        <ScrollBar
+          orientation="horizontal"
+          className={cn(hideHorizontalScrollBar && 'pointer-events-none opacity-0')}
+          aria-hidden={hideHorizontalScrollBar}
+        />
       )}
-      {!hideScrollBar && resolvedScrollbars === 'both' ? <ScrollAreaPrimitive.Corner /> : null}
+      {resolvedScrollbars === 'both' ? <ScrollAreaPrimitive.Corner /> : null}
     </ScrollAreaPrimitive.Root>
   )
 }

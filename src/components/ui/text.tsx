@@ -15,6 +15,7 @@ type TextColorVariant =
   | 'orange'
   | 'pink'
   | 'darkblue'
+  | 'secondary'
 
 type TextVariant = TextSemanticVariant | TextColorVariant
 
@@ -37,12 +38,17 @@ const colorVariantMap: Record<TextColorVariant, NonNullable<TextVariants['color'
   orange: 'orange',
   pink: 'pink',
   darkblue: 'darkblue',
+  secondary: 'secondary',
 }
 
 export type TextProps<T extends React.ElementType = 'p'> = {
   as?: T
   className?: string
   variant?: TextVariant
+  /** Same color as Tailwind `text-muted-foreground` (theme `--muted-foreground`). Overrides `variant` color tokens and the `color` prop when true. */
+  muted?: boolean
+  /** Applies `font-bold` (use with `variant="body"` or `variant="small"` for emphasis). */
+  bold?: boolean
 } & TextVariants &
   Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'color'>
 
@@ -53,6 +59,8 @@ function Text<T extends React.ElementType = 'p'>({
   color,
   font,
   className,
+  muted = false,
+  bold = false,
   ...props
 }: TextProps<T>) {
   const Component = as || 'p'
@@ -63,14 +71,17 @@ function Text<T extends React.ElementType = 'p'>({
   const mappedColor =
     variant && variant in colorVariantMap ? colorVariantMap[variant as TextColorVariant] : undefined
 
+  const resolvedColor: TextVariants['color'] = muted ? 'muted' : (mappedColor ?? color)
+
   return (
     <Component
       className={cn(
         textVariants({
           size: semanticVariant.size ?? size,
-          color: mappedColor ?? color,
+          color: resolvedColor,
           font,
         }),
+        bold && 'font-bold',
         className,
       )}
       {...props}

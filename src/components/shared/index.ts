@@ -15,8 +15,8 @@ export {
 export { FaqList } from './FaqList'
 export type { FaqItem, FaqListProps } from './FaqList'
 export { ContainerSlider } from './containers'
-export { FollowersDrawer, SelectAvatarDrawer } from './drawers'
-export type { FollowersDrawerProps, SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
+export { SelectAvatarDrawer } from './drawers'
+export type { SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
 export { GridIconBackground } from './GridIconBackground'
 export type { IconEntry } from './GridIconBackground'
 export {
@@ -36,6 +36,8 @@ export {
   MinimalInputWithoutBordersBackground,
   QuantityStepper,
 } from './inputs'
+export { LoadingPage } from './LoadingPage'
+export type { LoadingPageProps } from './LoadingPage'
 export { LanguageSwitcher } from './LanguageSwitcher'
 export { ImageCarousel, PdfPreview, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'
@@ -109,8 +111,8 @@ export type {
   ToggleIconSwapOnPressProps,
   ToggleNotificationCountBadgeProps,
 } from './toggles'
-export { SelectTabs } from './tabs'
-export type { SelectTabsProps, TabItem } from './tabs'
+export { SelectTabs, SelectTabsContent, TabsContent } from './tabs'
+export type { SelectTabsProps, TabItem, SelectTabsContentProps, TabsContentProps } from './tabs'
 export {
   SkeletonLoaderAvatarsUserInfo,
   SkeletonLoaderCard,

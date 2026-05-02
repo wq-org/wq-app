@@ -3,6 +3,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes zoomies-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 @font-face {
   font-family: 'Satoshi';
   src: url('./assets/fonts/Satoshi-Light.ttf') format('truetype');

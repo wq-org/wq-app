@@ -22,13 +22,62 @@
   "profile": {
     "followToSee": "Follow this teacher to see their courses and games."
   },
-  "followersDrawer": {
-    "title": "Followers",
-    "loading": "Loading followers...",
-    "empty": "No followers yet.",
-    "close": "Close followers drawer",
-    "studentFallback": "Student",
-    "studentRoleLabel": "Student"
+  "pages": {
+    "courses": {
+      "title": "Courses",
+      "description": "Create and manage courses for your students.",
+      "searchLabel": "Search courses",
+      "searchPlaceholder": "Search by title or description",
+      "addCourse": "Add course",
+      "loadError": "Could not load courses.",
+      "noMatches": "No courses match your search."
+    },
+    "cloud": {
+      "title": "Your Cloud",
+      "loadError": "Could not load your cloud files."
+    },
+    "classroomDetail": {
+      "titleFallback": "Classroom",
+      "invalidId": "This classroom link is invalid.",
+      "loading": "Loading classroom…",
+      "loadError": "Could not load classroom details.",
+      "sections": {
+        "studentsTitle": "Students",
+        "studentsPlaceholder": "Coming soon.",
+        "studentsLoading": "Loading students…",
+        "scheduleTitle": "Schedule",
+        "schedulePlaceholder": "Coming soon.",
+        "scheduleLoading": "Loading schedule…",
+        "coursesTitle": "Courses",
+        "coursesPlaceholder": "Coming soon.",
+        "coursesLoading": "Loading courses…"
+      }
+    }
+  },
+  "dashboard": {
+    "loading": "Loading…",
+    "loadingClassrooms": "Loading classrooms…",
+    "loadingSchedule": "Loading schedule…",
+    "loadingCourses": "Loading courses…",
+    "classroomsLoadError": "Could not load classrooms.",
+    "coursesLoadError": "Could not load courses.",
+    "classroomsEmpty": {
+      "title": "No classrooms yet",
+      "description": "Classrooms you teach will appear here."
+    },
+    "coursesEmpty": {
+      "title": "No courses yet",
+      "description": "You don’t have any courses. Create one to get started.",
+      "addCourse": "Add course"
+    },
+    "scheduleTabs": {
+      "all": "All",
+      "placeholderAll": "Schedule for all classrooms — content coming soon.",
+      "placeholderClassroom": "Schedule for {{name}} — content coming soon."
+    },
+    "tasks": {
+      "empty": "No tasks match this filter."
+    }
   },
   "meta": {
     "followersTopLabel": "Followers",

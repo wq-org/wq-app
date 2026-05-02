@@ -3,12 +3,13 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AvatarFallback, AvatarImage, Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { X, Search } from 'lucide-react'
+import { MessageCircle, Search, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useSearchItems, type SearchItem } from '../hooks'
 import { useTranslation } from 'react-i18next'
+import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
@@ -57,8 +58,8 @@ export function CommandSearch() {
     })
   }, [searchQuery, items])
 
-  const handleClickItem = (item: SearchItem) => {
-    navigate(`/profile/${item.id}`)
+  const handleOpenTeacherChat = () => {
+    navigate('/teacher/chat')
   }
 
   return (
@@ -94,49 +95,56 @@ export function CommandSearch() {
             />
           </div>
         ) : filtered.length > 0 ? (
-          <div className="p-2 max-h-80 overflow-y-auto">
+          <BlurredScrollArea className="max-h-80 min-h-0 p-2">
             {filtered.map((item) => (
-              <Dialog.Close
+              <Card
                 key={`${item.type}-${item.id}`}
-                asChild
+                layout="flush"
+                className="w-full !border-0 !shadow-none !ring-0 !ring-offset-0 border-b bg-transparent px-3 py-2 text-left outline-none"
               >
-                <Card
-                  layout="flush"
-                  onClick={() => handleClickItem(item)}
-                  className="w-full cursor-pointer rounded-2xl border-0 bg-transparent px-3 py-2 text-left shadow-none hover:bg-muted focus:bg-muted focus:outline-none"
-                >
-                  <div className="flex gap-3">
-                    <SearchAvatar
-                      avatarPath={item.avatar_url}
-                      title={item.title}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <Text
-                        as="span"
-                        variant="small"
-                        className="text-sm font-medium"
-                      >
-                        {item.title}
-                      </Text>
-                      <Text
-                        as="span"
-                        variant="small"
-                        className="text-xs text-muted-foreground"
-                      >
-                        {item.email || 'No email'}
-                      </Text>
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] px-1.5 py-0 w-fit"
-                      >
-                        {t(ROLE_LABEL_KEY_MAP[item.type])}
-                      </Badge>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <SearchAvatar
+                    avatarPath={item.avatar_url}
+                    title={item.title}
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-sm font-medium"
+                    >
+                      {item.title}
+                    </Text>
+                    <Text
+                      as="span"
+                      variant="small"
+                      className="text-xs text-muted-foreground"
+                    >
+                      {item.email || 'No email'}
+                    </Text>
+                    <Badge
+                      variant="secondary"
+                      className="w-fit px-1.5 py-0 text-[10px]"
+                    >
+                      {t(ROLE_LABEL_KEY_MAP[item.type])}
+                    </Badge>
                   </div>
-                </Card>
-              </Dialog.Close>
+                  <Dialog.Close asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon"
+                      className="shrink-0"
+                      aria-label={t('search.openTeacherChat', { ns: 'features.commandPalette' })}
+                      onClick={handleOpenTeacherChat}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </Dialog.Close>
+                </div>
+              </Card>
             ))}
-          </div>
+          </BlurredScrollArea>
         ) : (
           <div className="p-8 text-center text-sm text-muted-foreground">
             {t('search.noResults', { ns: 'features.commandPalette' })}

@@ -28,7 +28,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
     !state.loading
 
   return (
-    <Card className="mx-auto flex h-[min(72vh,560px)] w-full max-w-md flex-col border-0 bg-card/80 shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
+    <Card className="mx-auto flex h-[min(72vh,560px)] w-full max-w-md flex-col border-0 bg-card/80 shadow-none ring-0 animate-in fade-in-0 zoom-in-95 slide-in-from-right-2">
       <form
         className="flex min-h-0 flex-1 flex-col gap-5 animate-in fade-in-0 slide-in-from-bottom-2"
         onSubmit={async (event) => {

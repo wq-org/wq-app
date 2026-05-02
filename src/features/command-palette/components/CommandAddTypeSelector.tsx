@@ -22,7 +22,7 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
   return (
     <Card
       layout="flush"
-      className="mx-auto flex w-full max-w-md flex-col border-0 bg-card/80 shadow-sm animate-in fade-in-0 zoom-in-95"
+      className="mx-auto flex w-full max-w-md flex-col border-0 bg-card/80 shadow-none ring-0 animate-in fade-in-0 zoom-in-95"
     >
       <CardHeader className="items-center px-6 pt-6 pb-0">
         <CardTitle className="text-xl text-foreground">{t('addDialog.title')}</CardTitle>

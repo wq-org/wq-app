@@ -46,7 +46,7 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       id: 'cloud',
       labelKey: 'actions.cloud',
       icon: Cloud,
-      to: `${rolePrefix(USER_ROLES.TEACHER)}/files`,
+      to: `${rolePrefix(USER_ROLES.TEACHER)}/cloud`,
     },
     {
       id: 'add-new',

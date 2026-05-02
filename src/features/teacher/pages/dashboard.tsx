@@ -1,235 +1,497 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LearningDashboardShell } from '@/features/dashboard'
-import { CommandPalette } from '@/features/command-palette'
-import {
-  CourseCardList,
-  CourseToolBar,
-  COURSE_SEARCH_FIELDS,
-  EmptyCourseView,
-  type CourseCardProps,
-} from '@/features/course'
-import { FilesTableView, type FileItem } from '@/features/files'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+
+import { AppShell } from '@/components/layout'
+import { LoadingPage, SelectTabs, SelectTabsContent, type TabItem } from '@/components/shared'
+import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
+import { CourseCardList, useCourses, type CourseCardProps } from '@/features/course'
+import { DashboardSection } from '@/features/dashboard'
+import { GameProjectCardList, type GameProjectCardListProps } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
-import { useCourse } from '@/contexts/course'
-import { useAvatarUrl } from '@/hooks/useAvatarUrl'
-import { AVATAR_PLACEHOLDER_SRC } from '@/lib/constants'
-import { Spinner } from '@/components/ui/spinner'
-import type { FileListItem } from '@/components/shared'
-import { fetchFilesByRole } from '@/components/shared'
-import { GamePlayList } from '@/features/game-play'
-import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { TeacherFollowersDrawer } from '../components/TeacherFollowersDrawer'
+import { TeacherClassroomsEmpty } from '../components/TeacherClassroomsEmpty'
+import { TeacherCoursesEmpty } from '../components/TeacherCoursesEmpty'
+import {
+  BookOpen,
+  BookOpenCheck,
+  BookOpenText,
+  Calendar,
+  Calendar1,
+  CalendarDays,
+  DraftingCompass,
+  Joystick,
+  LampDesk,
+  LayoutList,
+  LibraryBig,
+  ListChecks,
+  ListTodo,
+  SplinePointer,
+} from 'lucide-react'
 
-// Helper function to map file extension to FileItem type
-function getFileTypeFromExtension(filename: string): FileItem['type'] {
-  const extension = filename.split('.').pop()?.toUpperCase() || ''
+import {
+  ClassroomCardList,
+  type ClassroomCardListItem,
+  useTeacherClassrooms,
+} from '@/features/classroom'
 
-  if (['DOC', 'DOCX', 'TXT'].includes(extension)) {
-    return 'Word'
-  }
-  if (extension === 'PDF') {
-    return 'PDF'
-  }
-  if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
-    return 'Exl'
-  }
-  if (['PPT', 'PPTX'].includes(extension)) {
-    return 'PPT'
-  }
-  if (['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP'].includes(extension)) {
-    return 'Image'
-  }
-  if (['MP4', 'AVI', 'MOV', 'WMV'].includes(extension)) {
-    return 'Video'
-  }
-  return 'PDF' // Default fallback
-}
+const COURSE_FILTER_TABS = [
+  { id: 'all', title: 'All', icon: LibraryBig },
+  { id: 'published', title: 'Published', icon: BookOpenCheck },
+  { id: 'drafts', title: 'Drafts', icon: BookOpenText },
+] as const satisfies readonly TabItem[]
 
-// Helper function to format file size
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-}
+/** Demo flow games for dashboard until teacher dashboard loads studio rows from the API. */
+const DUMMY_TEACHER_GAME_PROJECTS: GameProjectCardListProps['projects'] = [
+  {
+    id: '00000000-0000-4000-8000-000000000201',
+    title: 'Branching wellness quest',
+    description: 'If/else flow with two endings and a short score recap.',
+    themeId: 'cyan',
+    version: 3,
+    status: 'published',
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000202',
+    title: 'Image pin lab',
+    description: 'Draft: image-pin nodes and placeholder assets.',
+    themeId: 'orange',
+    version: 1,
+    status: 'draft',
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000203',
+    title: 'Paragraph line select',
+    description: 'Published reading activity with line highlights.',
+    themeId: 'green',
+    version: 2,
+    status: 'published',
+  },
+]
+
+const GAME_FILTER_TABS = [
+  { id: 'all', title: 'All', icon: SplinePointer },
+  { id: 'published', title: 'Published', icon: Joystick },
+  { id: 'drafts', title: 'Drafts', icon: DraftingCompass },
+] as const satisfies readonly TabItem[]
+
+const TASK_FILTER_TABS = [
+  { id: 'all', title: 'All', icon: ListTodo },
+  { id: 'published', title: 'Published', icon: ListChecks },
+  { id: 'drafts', title: 'Drafts', icon: LayoutList },
+] as const satisfies readonly TabItem[]
+
+/** Demo tasks until the teacher dashboard loads task rows from the API. */
+const DUMMY_TEACHER_TASKS = [
+  {
+    id: '00000000-0000-4000-8000-000000000301',
+    title: 'Review consent forms',
+    status: 'draft' as const,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000302',
+    title: 'Grade midterm reflections',
+    status: 'published' as const,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000303',
+    title: 'Prepare wellness check-in slides',
+    status: 'draft' as const,
+  },
+]
 
 const Dashboard = () => {
-  const [selectedTab, setSelectedTab] = useState<string>('courses')
-  const [courseSearchQuery, setCourseSearchQuery] = useState('')
-  const { profile, loading, getUserId, getRole, getUserInstitutionId } = useUser()
-  const { courses, loading: coursesLoading, fetchCourses, setSelectedCourse } = useCourse()
-  const { url: signedAvatarUrl } = useAvatarUrl(profile?.avatar_url || '')
+  const { t } = useTranslation('features.teacher')
   const navigate = useNavigate()
-  const [files, setFiles] = useState<FileItem[]>([])
-  const [filesLoading, setFilesLoading] = useState(false)
-  const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false)
-  const filteredCourses = useSearchFilter(courses, courseSearchQuery, COURSE_SEARCH_FIELDS)
+  const { profile } = useUser()
+  const fetchEnabled = Boolean(profile?.user_id)
 
-  // Fetch courses when profile is loaded
+  const {
+    rows: teacherClassrooms,
+    loading: classroomsLoading,
+    error: classroomsError,
+  } = useTeacherClassrooms(fetchEnabled)
+  const { courses, loading: coursesLoading, error: coursesError, fetchCourses } = useCourses()
+
+  const [activeCourseTabId, setActiveCourseTabId] = useState<string>(COURSE_FILTER_TABS[0].id)
+  const [activeGameTabId, setActiveGameTabId] = useState<string>(GAME_FILTER_TABS[0].id)
+  const [activeScheduleTabId, setActiveScheduleTabId] = useState<string>('all')
+  const [activeTaskTabId, setActiveTaskTabId] = useState<string>(TASK_FILTER_TABS[0].id)
+
   useEffect(() => {
-    if (profile?.user_id && !loading) {
-      fetchCourses()
+    if (!profile?.user_id) return
+    void fetchCourses()
+  }, [profile?.user_id, fetchCourses])
+
+  useEffect(() => {
+    if (classroomsError) {
+      toast.error(t('dashboard.classroomsLoadError'))
     }
-  }, [profile?.user_id, loading, fetchCourses])
+  }, [classroomsError, t])
 
-  // Function to load files - extracted so it can be called from onFilesUploaded
-  const loadFiles = useCallback(async () => {
-    const userId = getUserId()
-    const role = getRole()?.toLowerCase()
-    const userInstitutionId = getUserInstitutionId()
-
-    if (!userId || !role || !userInstitutionId || loading) {
-      return
+  useEffect(() => {
+    if (coursesError) {
+      toast.error(t('dashboard.coursesLoadError'))
     }
+  }, [coursesError, t])
 
-    setFilesLoading(true)
-    try {
-      const result = await fetchFilesByRole(userInstitutionId, role, userId, {
-        limit: 100,
-        sortBy: { column: 'created_at', order: 'desc' },
+  const classroomTitleById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const row of teacherClassrooms) {
+      map.set(row.id, row.title)
+    }
+    return map
+  }, [teacherClassrooms])
+
+  const handleClassroomView = useCallback(
+    (classroomId: string) => {
+      navigate(`/teacher/dashboard/classroom/${classroomId}`, {
+        state: { name: classroomTitleById.get(classroomId) },
       })
+    },
+    [navigate, classroomTitleById],
+  )
 
-      if (result.success && result.files) {
-        const mappedFiles: FileItem[] = result.files.map((file: FileListItem, index) => {
-          const fileSize = Number(file.metadata?.size) || 0
-          const storagePath = `${userInstitutionId}/${role}/${userId}/${file.name}`
-          return {
-            id: index + 1,
-            filename: file.name,
-            description: '',
-            type: getFileTypeFromExtension(file.name),
-            size: formatFileSize(fileSize),
-            storagePath,
-          }
-        })
-        setFiles(mappedFiles)
-      } else {
-        console.error('Failed to fetch files:', result.error)
-        setFiles([])
-      }
-    } catch (error) {
-      console.error('Error fetching files:', error)
-      setFiles([])
-    } finally {
-      setFilesLoading(false)
+  const classroomCardItems: readonly ClassroomCardListItem[] = useMemo(
+    () =>
+      teacherClassrooms.map((row) => ({
+        id: row.id,
+        name: row.title,
+        studentCount: row.studentCount,
+        icon: LampDesk,
+      })),
+    [teacherClassrooms],
+  )
+
+  const scheduleScopeTabs: TabItem[] = useMemo(() => {
+    const allTab: TabItem = {
+      id: 'all',
+      title: t('dashboard.scheduleTabs.all'),
+      icon: CalendarDays,
     }
-  }, [getUserId, getRole, loading, getUserInstitutionId])
+    const perClassroom: TabItem[] = teacherClassrooms.map((row) => ({
+      id: row.id,
+      title: row.title,
+      icon: Calendar1,
+    }))
+    return [allTab, ...perClassroom]
+  }, [teacherClassrooms, t])
 
-  // Fetch files when profile is loaded and user is on cloud tab
   useEffect(() => {
-    if (selectedTab === 'cloud') {
-      loadFiles()
+    if (activeScheduleTabId === 'all') return
+    const stillPresent = teacherClassrooms.some((row) => row.id === activeScheduleTabId)
+    if (!stillPresent) {
+      setActiveScheduleTabId('all')
     }
-  }, [profile?.role, profile?.user_id, loading, selectedTab, loadFiles])
+  }, [teacherClassrooms, activeScheduleTabId])
 
-  const handleClickTab = (id: string) => setSelectedTab(id)
+  const courseCards: CourseCardProps[] = useMemo(
+    () =>
+      courses.map((c) => ({
+        id: c.id,
+        title: c.title,
+        description: c.description,
+        is_published: c.is_published,
+        themeId: c.theme_id,
+      })),
+    [courses],
+  )
 
-  function handleCardView(id: string) {
-    // Find the course in the list and store it in context
-    const course = courses.find((c) => c.id === id)
-    if (course) {
-      setSelectedCourse(course)
-    }
+  const coursesByFilterTab = useMemo(() => {
+    const all = courseCards
+    return {
+      all: [...all],
+      published: all.filter((c) => c.is_published),
+      drafts: all.filter((c) => !c.is_published),
+    } as const
+  }, [courseCards])
+
+  const gamesByFilterTab = useMemo(() => {
+    const all = DUMMY_TEACHER_GAME_PROJECTS
+    return {
+      all: [...all],
+      published: all.filter((g) => g.status === 'published'),
+      drafts: all.filter((g) => g.status === 'draft'),
+    } as const
+  }, [])
+
+  const tasksByFilter = useMemo(() => {
+    const all = DUMMY_TEACHER_TASKS
+    return {
+      all: [...all],
+      published: all.filter((task) => task.status === 'published'),
+      drafts: all.filter((task) => task.status === 'draft'),
+    } as const
+  }, [])
+
+  const handleCourseView = (id: string) => {
     navigate(`/teacher/course/${id}`)
   }
 
-  const handleOpenFollowersDrawer = useCallback(() => {
-    setIsFollowersDrawerOpen(true)
-  }, [])
+  const handleGameOpen = (id: string) => {
+    navigate(`/teacher/canvas/${id}`)
+  }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner
-          variant="gray"
-          size="lg"
-        />
-      </div>
-    )
+  const handleCourseTabChange = (tabId: string) => {
+    setActiveCourseTabId(tabId)
+  }
+
+  const handleGameTabChange = (tabId: string) => {
+    setActiveGameTabId(tabId)
+  }
+
+  const handleScheduleTabChange = (tabId: string) => {
+    setActiveScheduleTabId(tabId)
+  }
+
+  const handleTaskTabChange = (tabId: string) => {
+    setActiveTaskTabId(tabId)
   }
 
   return (
-    <>
-      <LearningDashboardShell
-        imageUrl={signedAvatarUrl || AVATAR_PLACEHOLDER_SRC}
-        userName={profile?.display_name || 'Teacher'}
-        username={profile?.username || undefined}
-        email={profile?.email || undefined}
-        linkedInUrl={profile?.linkedin_url || undefined}
-        description={profile?.description || 'Welcome to your dashboard'}
-        role="teacher"
-        institutionName={profile?.institution?.name || undefined}
-        institutionSlug={profile?.institution?.slug || undefined}
-        followCount={profile?.follow_count ?? 0}
-        onViewFollowerList={handleOpenFollowersDrawer}
-        onClickTab={(tabId: string) => handleClickTab(tabId)}
-      >
-        {selectedTab === 'courses' &&
-          (coursesLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Spinner
-                variant="gray"
-                size="lg"
-                speed={1750}
+    <AppShell
+      role="teacher"
+      className="flex flex-col gap-8"
+    >
+      <div className="flex w-full justify-center">
+        <QuoteOfTheDay />
+      </div>
+      <main className="container flex flex-col gap-11 pb-40">
+        <div className="flex gap-8 w-full">
+          <DashboardSection
+            title="Classrooms"
+            icon={LampDesk}
+            classNameContainer="p-0"
+          >
+            {fetchEnabled && classroomsLoading ? (
+              <LoadingPage
+                variant="embedded"
+                message={t('dashboard.loadingClassrooms')}
+                size={72}
               />
-            </div>
-          ) : courses.length === 0 ? (
-            <EmptyCourseView />
-          ) : (
-            <div className="flex w-full min-w-0 flex-col gap-6">
-              <div className="w-full min-w-0">
-                <CourseToolBar
-                  searchValue={courseSearchQuery}
-                  onSearchChange={setCourseSearchQuery}
+            ) : classroomCardItems.length === 0 ? (
+              <TeacherClassroomsEmpty />
+            ) : (
+              <ClassroomCardList
+                items={classroomCardItems}
+                onClassroomView={handleClassroomView}
+              />
+            )}
+          </DashboardSection>
+        </div>
+
+        <div className="flex gap-8 w-full">
+          <DashboardSection
+            title="Schedule"
+            classNameContainer="h-55.5 max-h-80 min-h-0"
+            icon={Calendar}
+            showExpandButton
+            expandTo="/teacher/schedule"
+            showContainerBorder
+          >
+            {fetchEnabled && classroomsLoading ? (
+              <LoadingPage
+                variant="embedded"
+                message={t('dashboard.loadingSchedule')}
+                size={72}
+              />
+            ) : (
+              <>
+                <SelectTabs
+                  variant="compact"
+                  tabs={scheduleScopeTabs}
+                  activeTabId={activeScheduleTabId}
+                  onTabChange={handleScheduleTabChange}
                 />
-              </div>
+                {scheduleScopeTabs.map((tab) => (
+                  <SelectTabsContent
+                    key={tab.id}
+                    tabId={tab.id}
+                    activeTabId={activeScheduleTabId}
+                    className="mt-2 min-h-0 px-0"
+                  >
+                    <p className="text-sm text-muted-foreground">
+                      {tab.id === 'all'
+                        ? t('dashboard.scheduleTabs.placeholderAll')
+                        : t('dashboard.scheduleTabs.placeholderClassroom', {
+                            name: tab.title,
+                          })}
+                    </p>
+                  </SelectTabsContent>
+                ))}
+              </>
+            )}
+          </DashboardSection>
+        </div>
 
-              <CourseCardList
-                courses={filteredCourses.map(
-                  (course) =>
-                    ({
-                      id: course.id,
-                      title: course.title,
-                      description: course.description,
-                      is_published: course.is_published,
-                      themeId: course.theme_id,
-                    }) satisfies CourseCardProps,
-                )}
-                onCourseView={handleCardView}
+        <div className="flex w-full min-w-0 flex-wrap gap-8">
+          <div className="min-w-0 w-full basis-full md:basis-[calc(50%-1rem)] md:max-w-[calc(50%-1rem)] md:flex-1 md:grow">
+            <DashboardSection
+              title="Courses"
+              showExpandButton
+              expandTo="/teacher/courses"
+              classNameContainer="h-55.5 max-h-80 min-h-0"
+              icon={BookOpen}
+              showContainerBorder
+            >
+              {coursesLoading ? (
+                <LoadingPage
+                  variant="embedded"
+                  message={t('dashboard.loadingCourses')}
+                  size={72}
+                />
+              ) : courseCards.length === 0 ? (
+                <TeacherCoursesEmpty />
+              ) : (
+                <>
+                  <SelectTabs
+                    variant="compact"
+                    tabs={COURSE_FILTER_TABS}
+                    activeTabId={activeCourseTabId}
+                    onTabChange={handleCourseTabChange}
+                  />
+                  {COURSE_FILTER_TABS.map((tab) => {
+                    const tabCourses =
+                      tab.id === 'all'
+                        ? coursesByFilterTab.all
+                        : tab.id === 'published'
+                          ? coursesByFilterTab.published
+                          : coursesByFilterTab.drafts
+
+                    return (
+                      <SelectTabsContent
+                        key={tab.id}
+                        tabId={tab.id}
+                        activeTabId={activeCourseTabId}
+                        className="mt-2 min-h-0 px-0"
+                      >
+                        {tabCourses.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            No courses match this filter.
+                          </p>
+                        ) : (
+                          <CourseCardList
+                            variant="compact"
+                            courses={tabCourses}
+                            onCourseView={handleCourseView}
+                            className="gap-2"
+                          />
+                        )}
+                      </SelectTabsContent>
+                    )
+                  })}
+                </>
+              )}
+            </DashboardSection>
+          </div>
+          <div className="min-w-0 w-full basis-full md:basis-[calc(50%-1rem)] md:max-w-[calc(50%-1rem)] md:flex-1 md:grow">
+            <DashboardSection
+              title="Game Studio"
+              classNameContainer="h-55.5 max-h-80 min-h-0"
+              icon={SplinePointer}
+              showExpandButton
+              expandTo="/teacher/game-studio"
+              showContainerBorder
+            >
+              {DUMMY_TEACHER_GAME_PROJECTS.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No games yet.</p>
+              ) : (
+                <>
+                  <SelectTabs
+                    variant="compact"
+                    tabs={GAME_FILTER_TABS}
+                    activeTabId={activeGameTabId}
+                    onTabChange={handleGameTabChange}
+                  />
+                  {GAME_FILTER_TABS.map((tab) => {
+                    const games =
+                      tab.id === 'all'
+                        ? gamesByFilterTab.all
+                        : tab.id === 'published'
+                          ? gamesByFilterTab.published
+                          : gamesByFilterTab.drafts
+
+                    return (
+                      <SelectTabsContent
+                        key={tab.id}
+                        tabId={tab.id}
+                        activeTabId={activeGameTabId}
+                        className="mt-2 min-h-0 px-0"
+                      >
+                        {games.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            No games match this filter.
+                          </p>
+                        ) : (
+                          <GameProjectCardList
+                            variant="compact"
+                            projects={games}
+                            onOpen={handleGameOpen}
+                            className="gap-2"
+                          />
+                        )}
+                      </SelectTabsContent>
+                    )
+                  })}
+                </>
+              )}
+            </DashboardSection>
+          </div>
+        </div>
+
+        <div className="flex w-full min-w-0">
+          <DashboardSection
+            title="Tasks"
+            classNameContainer="h-55.5 max-h-80 min-h-0"
+            icon={ListTodo}
+            showExpandButton
+            expandTo="/teacher/tasks"
+            showContainerBorder
+          >
+            <>
+              <SelectTabs
+                variant="compact"
+                tabs={TASK_FILTER_TABS}
+                activeTabId={activeTaskTabId}
+                onTabChange={handleTaskTabChange}
               />
-            </div>
-          ))}
+              {TASK_FILTER_TABS.map((tab) => {
+                const tabTasks =
+                  tab.id === 'all'
+                    ? tasksByFilter.all
+                    : tab.id === 'published'
+                      ? tasksByFilter.published
+                      : tasksByFilter.drafts
 
-        {selectedTab === 'games' && <GamePlayList />}
-
-        {selectedTab === 'cloud' &&
-          (filesLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Spinner
-                variant="gray"
-                size="lg"
-                speed={1750}
-              />
-            </div>
-          ) : (
-            <FilesTableView
-              files={files}
-              onRefresh={loadFiles}
-            />
-          ))}
-      </LearningDashboardShell>
-      <CommandPalette
-        commandBarContext="teacher"
-        onCourseCreated={fetchCourses}
-        onFilesUploaded={loadFiles}
-      />
-      <TeacherFollowersDrawer
-        open={isFollowersDrawerOpen}
-        onOpenChange={setIsFollowersDrawerOpen}
-      />
-    </>
+                return (
+                  <SelectTabsContent
+                    key={tab.id}
+                    tabId={tab.id}
+                    activeTabId={activeTaskTabId}
+                    className="mt-2 min-h-0 px-0"
+                  >
+                    {tabTasks.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">{t('dashboard.tasks.empty')}</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {tabTasks.map((task) => (
+                          <li
+                            key={task.id}
+                            className="truncate text-sm text-foreground"
+                          >
+                            {task.title}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </SelectTabsContent>
+                )
+              })}
+            </>
+          </DashboardSection>
+        </div>
+      </main>
+    </AppShell>
   )
 }
 

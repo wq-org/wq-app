@@ -27,6 +27,7 @@
     "themeHint": "Wahle den Standardhintergrund fur den Kurs, wenn kein eigenes Bild verwendet wird."
   },
   "page": {
+    "loadError": "Dieser Kurs konnte nicht geladen werden.",
     "notFound": "Kurs nicht gefunden",
     "courseLabel": "Kurs:",
     "topicLabel": "Thema:",
@@ -71,9 +72,7 @@
     }
   },
   "analytics": {
-    "membersTitle": "Kursmitglieder",
-    "membersHint": "Personen, die aktuell in diesem Kurs sind.",
-    "emptyMembers": "Für diesen Kurs wurden noch keine Mitglieder gefunden."
+    "placeholder": "Kursanalysen sind bald verfügbar."
   },
   "lessonTable": {
     "columns": {
