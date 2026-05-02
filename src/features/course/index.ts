@@ -16,6 +16,7 @@ export { EmptyCourseView } from './components/EmptyCourseView'
 export { EmptyLessonsView } from './components/EmptyLessonsView'
 export { EmptyTopicsView } from './components/EmptyTopicsView'
 export { useCourses } from './hooks/useCourses'
+export { useCourseDetail } from './hooks/useCourseDetail'
 export { COURSE_SEARCH_FIELDS } from './types/course.types'
 export type {
   Course,

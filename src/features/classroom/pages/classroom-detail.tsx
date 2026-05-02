@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BookOpen, Calendar, Users } from 'lucide-react'
+import { BookOpen, Calendar, type LucideIcon, Users } from 'lucide-react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { AppShell } from '@/components/layout'
@@ -13,6 +13,34 @@ import { useClassroomDetail } from '../hooks/useClassroomDetail'
 type ClassroomLocationState = {
   name?: string
 }
+
+type SectionSpec = {
+  icon: LucideIcon
+  titleKey: string
+  placeholderKey: string
+  loadingKey: string
+}
+
+const CLASSROOM_SECTIONS: SectionSpec[] = [
+  {
+    icon: Users,
+    titleKey: 'pages.classroomDetail.sections.studentsTitle',
+    placeholderKey: 'pages.classroomDetail.sections.studentsPlaceholder',
+    loadingKey: 'pages.classroomDetail.sections.studentsLoading',
+  },
+  {
+    icon: Calendar,
+    titleKey: 'pages.classroomDetail.sections.scheduleTitle',
+    placeholderKey: 'pages.classroomDetail.sections.schedulePlaceholder',
+    loadingKey: 'pages.classroomDetail.sections.scheduleLoading',
+  },
+  {
+    icon: BookOpen,
+    titleKey: 'pages.classroomDetail.sections.coursesTitle',
+    placeholderKey: 'pages.classroomDetail.sections.coursesPlaceholder',
+    loadingKey: 'pages.classroomDetail.sections.coursesLoading',
+  },
+]
 
 export function ClassroomDetailPage() {
   const { t } = useTranslation('features.teacher')
@@ -69,81 +97,37 @@ export function ClassroomDetailPage() {
           <Text
             as="h1"
             variant="h1"
-            className=" tracking-tight md:text-4xl"
           >
             {displayTitle}
           </Text>
         </div>
 
         <div className="mt-10 flex flex-col gap-10">
-          <DashboardSection
-            title={t('pages.classroomDetail.sections.studentsTitle')}
-            icon={Users}
-            classNameContainer="px-4 py-4"
-            showContainerBorder
-          >
-            {loading ? (
-              <LoadingPage
-                variant="embedded"
-                message={t('pages.classroomDetail.sections.studentsLoading')}
-                size={72}
-              />
-            ) : (
-              <Text
-                as="p"
-                variant="body"
-                className="text-sm text-muted-foreground"
-              >
-                {t('pages.classroomDetail.sections.studentsPlaceholder')}
-              </Text>
-            )}
-          </DashboardSection>
-
-          <DashboardSection
-            title={t('pages.classroomDetail.sections.scheduleTitle')}
-            icon={Calendar}
-            classNameContainer="px-4 py-4"
-            showContainerBorder
-          >
-            {loading ? (
-              <LoadingPage
-                variant="embedded"
-                message={t('pages.classroomDetail.sections.scheduleLoading')}
-                size={72}
-              />
-            ) : (
-              <Text
-                as="p"
-                variant="body"
-                className="text-sm text-muted-foreground"
-              >
-                {t('pages.classroomDetail.sections.schedulePlaceholder')}
-              </Text>
-            )}
-          </DashboardSection>
-
-          <DashboardSection
-            title={t('pages.classroomDetail.sections.coursesTitle')}
-            icon={BookOpen}
-            classNameContainer="px-4 py-4"
-            showContainerBorder
-          >
-            {loading ? (
-              <LoadingPage
-                variant="embedded"
-                message={t('pages.classroomDetail.sections.coursesLoading')}
-                size={72}
-              />
-            ) : (
-              <Text
-                as="p"
-                variant="body"
-                className="text-sm text-muted-foreground"
-              >
-                {t('pages.classroomDetail.sections.coursesPlaceholder')}
-              </Text>
-            )}
-          </DashboardSection>
+          {CLASSROOM_SECTIONS.map((spec) => (
+            <DashboardSection
+              key={spec.titleKey}
+              title={t(spec.titleKey)}
+              icon={spec.icon}
+              classNameContainer="px-4 py-4"
+              showContainerBorder
+            >
+              {loading ? (
+                <LoadingPage
+                  variant="embedded"
+                  message={t(spec.loadingKey)}
+                  size={72}
+                />
+              ) : (
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm text-muted-foreground"
+                >
+                  {t(spec.placeholderKey)}
+                </Text>
+              )}
+            </DashboardSection>
+          ))}
         </div>
       </div>
     </AppShell>

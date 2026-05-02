@@ -20,6 +20,29 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-02-teacher-dashboard-shell-loading-course-experience',
+    date: '2 May 2026',
+    title:
+      'Refresh teacher workspace layout, navigation, and loading—plus tighter course and Game Studio pages',
+    summary:
+      'This batch simplifies shells after retiring the standalone profile area, rebuilds the teacher dashboard into clear sections with expandable cards and better routing to classrooms, courses, schedule, and cloud. It also adds smoother loading states (Zoomies), polishes page titles and empty states, and renames the student course screen for clarity.',
+    bullets: [
+      'Layout: app shells were simplified and the old profile feature removed so navigation stays focused on role workspaces',
+      'Layout: the header separates back navigation from the profile block for clearer wayfinding',
+      'Teacher dashboard: teacher home now uses sectioned layout with animated cards, optional “expand” actions on dashboard sections, and improved spacing on the main content column',
+      'Teacher dashboard: compact course and game cards, dashboard tabs, and institution-aware settings hooks improve scanning and organization',
+      'Navigation: classroom hub, courses listing, schedule, and cloud surfaces are wired from the dashboard with clearer route logic',
+      'Schedule: dedicated schedule page plus dashboard rows that can expand into the full schedule experience',
+      'Cloud: teacher-facing cloud/storage area landed with UI labels aligned to “Cloud” terminology',
+      'Shared UI: SelectTabs now drives real tab panels; DashboardSection supports expandable destinations; scrollbar styling got visibility controls where needed',
+      'Loading: many dashboards and classroom sections now use the Zoomies-based LoadingPage instead of bare spinners for clearer, branded feedback',
+      'Courses & classroom: student course view lives in a dedicated course detail page; classroom and course titles can be centered where intended',
+      'Teacher Courses & Game Studio: hero titles stay centered while primary actions stay right-aligned; Game Studio empty state matches dark theme better and includes a clear create action',
+      'Small UX polish: classroom card lists, readonly card typing fixes, and minor dashboard animation and offset tweaks',
+    ],
+    badges: ['feature', 'change', 'improvement'],
+  },
+  {
     id: '2026-04-26-institution-admin-structure-and-offerings-refresh',
     date: '26 April 2026',
     title: 'Improve institution structure, offerings, and classroom management flows',

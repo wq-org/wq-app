@@ -27,6 +27,7 @@
     "themeHint": "Choose the default course background when no custom image is used."
   },
   "page": {
+    "loadError": "Could not load this course.",
     "notFound": "Course not found",
     "courseLabel": "Course:",
     "topicLabel": "Topic:",

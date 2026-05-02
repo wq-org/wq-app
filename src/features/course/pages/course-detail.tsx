@@ -1,52 +1,36 @@
-import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+
 import { AppShell } from '@/components/layout'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { getCourseById } from '../api/coursesApi'
 import { CoursePreviewTab } from '../components/CoursePreviewTab'
-import type { Course } from '../types/course.types'
-import { useTranslation } from 'react-i18next'
+import { useCourseDetail } from '../hooks/useCourseDetail'
 
 export function CourseDetailPage() {
   const { t } = useTranslation('features.course')
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
-  const [course, setCourse] = useState<Course | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { course, loading, error } = useCourseDetail(courseId)
 
-  useEffect(() => {
-    let cancelled = false
+  const handleTopicView = (topicId: string) => {
+    navigate(`/student/course/${courseId}/topic/${topicId}`)
+  }
 
-    async function loadCourse() {
-      if (!courseId) {
-        setCourse(null)
-        setLoading(false)
-        return
-      }
-
-      setLoading(true)
-      try {
-        const data = await getCourseById(courseId)
-        if (!cancelled) setCourse(data)
-      } catch (error) {
-        console.error('Error loading course for student view:', error)
-        if (!cancelled) setCourse(null)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    void loadCourse()
-    return () => {
-      cancelled = true
-    }
-  }, [courseId])
+  const missingId = !courseId?.trim()
 
   return (
     <AppShell role="student">
       <div className="container flex w-full flex-col gap-6 py-6">
-        {loading ? (
+        {missingId ? (
+          <Text
+            as="p"
+            variant="body"
+            className="text-muted-foreground"
+          >
+            {t('page.notFound')}
+          </Text>
+        ) : loading ? (
           <div className="flex items-center justify-center py-12">
             <Spinner
               variant="gray"
@@ -54,7 +38,15 @@ export function CourseDetailPage() {
               speed={1750}
             />
           </div>
-        ) : !course || !courseId ? (
+        ) : error ? (
+          <Text
+            as="p"
+            variant="body"
+            className="text-sm text-destructive"
+          >
+            {t('page.loadError')}
+          </Text>
+        ) : !course ? (
           <Text
             as="p"
             variant="body"
@@ -84,7 +76,7 @@ export function CourseDetailPage() {
             <CoursePreviewTab
               courseId={courseId}
               themeId={course.theme_id}
-              onTopicView={(topicId) => navigate(`/student/course/${courseId}/topic/${topicId}`)}
+              onTopicView={handleTopicView}
             />
           </>
         )}
