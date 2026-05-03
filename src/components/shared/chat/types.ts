@@ -1,3 +1,5 @@
+import type { ChatBubbleRounded, ChatBubbleVariant } from './chat-bubble-variants'
+
 export type ChatHistoryMessageDirection = 'incoming' | 'receiving'
 
 export type ChatImageItem =
@@ -23,4 +25,6 @@ export type ChatMessageBubbleProps = {
   className?: string
   avatarUrl?: string
   avatarFallback?: string
+  variant?: ChatBubbleVariant
+  rounded?: ChatBubbleRounded
 }

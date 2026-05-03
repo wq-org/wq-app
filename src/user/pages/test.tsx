@@ -110,6 +110,13 @@ import {
   fileExplorerTreeSampleRootItemId,
 } from '@/components/shared/trees'
 import { CalendarHeatmap } from '@/components/shared/calendar'
+import {
+  ChatImageCarousel,
+  IncomingChatMessageBubble,
+  ReceivingChatMessageBubble,
+  type ChatBubbleRounded,
+  type ChatBubbleVariant,
+} from '@/components/shared/chat'
 
 const TEXT_SEMANTIC_VARIANTS = ['h1', 'h2', 'h3', 'body', 'small'] as const
 const TEXT_COLOR_VARIANTS = [
@@ -255,6 +262,52 @@ const demoSwitchItems: SwitchItem[] = [
 
 const ratingSliderEmojis = ['😡', '🙁', '😐', '🙂', '😍'] as const
 const ratingSliderLabels = ['Awful', 'Poor', 'Okay', 'Good', 'Amazing'] as const
+
+const chatBubbleVariantList: ChatBubbleVariant[] = [
+  'default',
+  'dark',
+  'blue-on-gray',
+  'darkblue-on-blue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+  'darkblue',
+]
+
+const chatBubbleRoundedList: ChatBubbleRounded[] = ['sm', 'md', 'lg', 'xl', 'pill']
+
+const chatCarouselImages = [
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png',
+    alt: 'Sample 1',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png',
+    alt: 'Sample 2',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png',
+    alt: 'Sample 3',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png',
+    alt: 'Sample 5',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png',
+    alt: 'Sample 6',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png',
+    alt: 'Sample 16',
+  },
+]
 
 function CompactSettingsDemo() {
   const [items, setItems] = useState(demoSwitchItems)
@@ -1478,6 +1531,119 @@ export default function Test() {
 
       <Section title="SwitchListCardIcons">
         <SwitchListCardIcons items={switchCardItems} />
+      </Section>
+
+      <Section title="ChatMessageBubble — variants (incoming)">
+        <div className="flex w-full max-w-3xl flex-col gap-3">
+          {chatBubbleVariantList.map((variant) => (
+            <div
+              key={`incoming-${variant}`}
+              className="space-y-1"
+            >
+              <p className="font-mono text-xs text-muted-foreground">
+                variant=&quot;{variant}&quot;
+              </p>
+              <IncomingChatMessageBubble
+                text={`Incoming bubble — ${variant}`}
+                time="10:24"
+                variant={variant}
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="ChatMessageBubble — variants (receiving)">
+        <div className="flex w-full max-w-3xl flex-col items-end gap-3">
+          {chatBubbleVariantList.map((variant) => (
+            <div
+              key={`receiving-${variant}`}
+              className="flex w-full flex-col items-end gap-1"
+            >
+              <p className="self-start font-mono text-xs text-muted-foreground">
+                variant=&quot;{variant}&quot;
+              </p>
+              <ReceivingChatMessageBubble
+                text={`Receiving bubble — ${variant}`}
+                time="10:25"
+                variant={variant}
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="ChatMessageBubble — rounded variants">
+        <div className="flex w-full max-w-3xl flex-col gap-4">
+          {chatBubbleRoundedList.map((rounded) => (
+            <div
+              key={`rounded-${rounded}`}
+              className="space-y-2"
+            >
+              <p className="font-mono text-xs text-muted-foreground">
+                rounded=&quot;{rounded}&quot;
+              </p>
+              <div className="flex flex-col gap-2">
+                <IncomingChatMessageBubble
+                  text={`blue-on-gray ${rounded}`}
+                  time="10:24"
+                  variant="blue-on-gray"
+                  rounded={rounded}
+                />
+                <div className="flex justify-end">
+                  <ReceivingChatMessageBubble
+                    text={`darkblue-on-blue ${rounded}`}
+                    time="10:25"
+                    variant="darkblue-on-blue"
+                    rounded={rounded}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="ChatImageCarousel — horizontal (BlurredImage)">
+        <div className="w-full max-w-3xl space-y-6">
+          <div className="space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              orientation=&quot;horizontal&quot; blurredBackdrop
+            </p>
+            <ChatImageCarousel
+              images={chatCarouselImages}
+              orientation="horizontal"
+              itemWidth={180}
+              itemHeight={220}
+              rounded="xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              orientation=&quot;horizontal&quot; blurredBackdrop=false
+            </p>
+            <ChatImageCarousel
+              images={chatCarouselImages}
+              orientation="horizontal"
+              itemWidth={140}
+              itemHeight={140}
+              blurredBackdrop={false}
+              rounded="lg"
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="ChatImageCarousel — vertical (ScrollArea)">
+        <div className="w-full max-w-sm">
+          <ChatImageCarousel
+            images={chatCarouselImages}
+            orientation="vertical"
+            itemHeight={200}
+            viewportHeight={360}
+            rounded="xl"
+          />
+        </div>
       </Section>
 
       <Section title="Zoomies + LoadingPage">

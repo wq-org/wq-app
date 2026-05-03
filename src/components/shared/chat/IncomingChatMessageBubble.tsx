@@ -1,6 +1,10 @@
 import { ChatImageList } from '@/components/shared/chat/ChatImageList'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import type { ChatMessageBubbleProps } from '@/components/shared/chat/types'
+import {
+  chatBubbleVariants,
+  getChatBubbleTailClass,
+} from '@/components/shared/chat/chat-bubble-variants'
 import { cn } from '@/lib/utils'
 
 export function IncomingChatMessageBubble({
@@ -10,6 +14,8 @@ export function IncomingChatMessageBubble({
   className,
   avatarUrl,
   avatarFallback = 'U',
+  variant = 'default',
+  rounded = 'lg',
 }: ChatMessageBubbleProps) {
   return (
     <div className={cn('flex max-w-[88%] items-end gap-2', className)}>
@@ -33,9 +39,14 @@ export function IncomingChatMessageBubble({
           images={images}
           className="mb-2"
         />
-        <div className="rounded-[1.25rem] rounded-bl-md bg-neutral-200 px-4 py-2.5 text-neutral-800 shadow-sm">
-          <p className="text-sm leading-relaxed">{text}</p>
-          <p className="mt-1 text-[10px] text-neutral-500">{time}</p>
+        <div
+          className={cn(
+            chatBubbleVariants({ variant, rounded }),
+            getChatBubbleTailClass('incoming', rounded),
+          )}
+        >
+          <p>{text}</p>
+          <p className="mt-1 text-[10px] opacity-70">{time}</p>
         </div>
       </div>
     </div>
