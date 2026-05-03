@@ -3,6 +3,7 @@ import {
   ChartSpline,
   ClipboardList,
   Cloud,
+  BadgeCheck,
   CreditCard,
   GraduationCap,
   Home,
@@ -80,6 +81,11 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
     titleKey: 'nav.gdprRequest',
     url: '/gdpr-request',
     icon: ShieldCheck,
+  },
+  {
+    titleKey: 'nav.license',
+    url: '/license',
+    icon: BadgeCheck,
   },
   {
     titleKey: 'nav.billing',

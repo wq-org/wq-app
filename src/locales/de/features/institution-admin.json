@@ -12,6 +12,7 @@
     "classrooms": "Klassenräume",
     "licenseUsage": "Lizenznutzung",
     "gdprRequest": "DSGVO-Anfragen",
+    "license": "Lizenz",
     "billing": "Abrechnung",
     "analytics": "Analysen",
     "cloudStorage": "Cloud-Speicher",
@@ -1043,7 +1044,11 @@
   },
   "billing": {
     "title": "Abrechnung",
-    "subtitle": "Laufzeit, Verlängerung und Zahlungsdetails Ihres Abonnements.",
+    "subtitle": "Rechnungen und Zahlungshistorie Ihrer Institution."
+  },
+  "license": {
+    "title": "Lizenz",
+    "subtitle": "Abonnement, Planleistungen und Verlängerung.",
     "noInstitution": "Ihrem Konto ist keine Institution zugeordnet.",
     "invoices": {
       "title": "Rechnungen",

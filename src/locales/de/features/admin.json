@@ -101,6 +101,15 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Wird gespeichert..."
+    },
+    "details": {
+      "back": "Zurück zur Übersicht",
+      "description": "Profil, Kontakte, Rechnungsfelder und Abonnement dieser Institution prüfen.",
+      "notFound": "Institution nicht gefunden oder kein Zugriff mehr.",
+      "tabs": {
+        "overview": "Übersicht",
+        "subscription": "Abonnement"
+      }
     }
   },
   "institutionInvites": {

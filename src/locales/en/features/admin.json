@@ -101,6 +101,15 @@
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving..."
+    },
+    "details": {
+      "back": "Back to institutions",
+      "description": "Review institution profile, contacts, billing fields, and subscription.",
+      "notFound": "Institution not found or you no longer have access.",
+      "tabs": {
+        "overview": "Overview",
+        "subscription": "Subscription"
+      }
     }
   },
   "institutionInvites": {

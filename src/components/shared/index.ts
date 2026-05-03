@@ -44,6 +44,8 @@ export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from '
 export { SidebarAccountMenu, SidebarPrimaryNav, SidebarWorkspaceSwitcher } from './sidebar'
 export { ExpandableBillingUsageCard } from './ExpandableBillingUsageCard'
 export type { ExpandableBillingUsageCardProps, UsageRow } from './ExpandableBillingUsageCard'
+export { PlanFeaturesCard } from './billing'
+export type { PlanFeaturesCardProps } from './billing'
 export { InvoiceList } from './InvoiceList'
 export type {
   InvoiceListItem,
@@ -198,3 +200,5 @@ export type {
   FileValidationResult,
   UploadedFile,
 } from './upload-files'
+
+export { DateTimePicker, TimePickerWithIcon } from './date-time'

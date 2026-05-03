@@ -60,6 +60,7 @@ import {
   AdminFeatures,
   AdminGdprRequest,
   AdminInstitution,
+  AdminInstitutionDetails,
   AdminInstitutionInvites,
   AdminLicenses,
   AdminPlanEntitlementsEditor,
@@ -91,12 +92,11 @@ import {
   InstitutionAdminLicensesPage,
   InstitutionAdminUsagePage,
   InstitutionAdminGDPRRequestPage,
+  InstitutionAdminLicensePage,
   InstitutionAdminBillingPage,
   InstitutionAdminCoursesPage,
   InstitutionAdminAnalyticsPage,
   InstitutionAdminCloudStoragePage,
-  InstitutionAdminNotesPage,
-  InstitutionAdminTasksPage,
   InstitutionAdminAuditLogsPage,
   InstitutionAdminSettingsPage,
 } from '@/features/institution-admin'
@@ -322,6 +322,14 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="institution/:institutionId"
+                  element={
+                    <RequireAuth>
+                      <AdminInstitutionDetails />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="institution"
                   element={
                     <RequireAuth>
@@ -488,6 +496,14 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="license"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminLicensePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="courses"
                   element={
                     <RequireAuth>
@@ -631,22 +647,7 @@ const App = () => {
                     </RequireAuth>
                   }
                 />
-                <Route
-                  path="notes"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminNotesPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="tasks"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminTasksPage />
-                    </RequireAuth>
-                  }
-                />
+
                 <Route
                   path="audit-logs"
                   element={

@@ -20,15 +20,21 @@ export { ClassroomDetailPage as InstitutionAdminClassroomDetailPage } from './pa
 export { AdminLicenses as InstitutionAdminLicensesPage } from './pages/licenses'
 export { InstitutionUsage as InstitutionAdminUsagePage } from './pages/usage'
 export { InstitutionGDPRRequest as InstitutionAdminGDPRRequestPage } from './pages/gdpr-request'
-export { AdminBilling as InstitutionAdminBillingPage } from './pages/billing'
+export { InstitutionAdminLicense as InstitutionAdminLicensePage } from './pages/license'
+export { InstitutionAdminBillingPage } from './pages/billing'
 export { InstitutionCourses as InstitutionAdminCoursesPage } from './pages/courses'
 export { AdminAnalytics as InstitutionAdminAnalyticsPage } from './pages/analytics'
 export { InstitutionCloudStorage as InstitutionAdminCloudStoragePage } from './pages/cloud-storage'
-export { InstitutionAdminNotesPage } from './pages/notes'
-export { InstitutionAdminTasksPage } from './pages/tasks'
 export { InstitutionAuditLogs as InstitutionAdminAuditLogsPage } from './pages/audit-logs'
-export { AdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
+export { InstitutionAdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
 export { FacultyCard } from './components/FacultyCard'
 export { FacultyCardList } from './components/FacultyCardList'
+
+export { useInstitutionLicensingForInstitution } from './hooks/useInstitutionLicensingForInstitution'
+export type {
+  EffectiveFeature,
+  EffectiveFeatureGroup,
+  EffectiveFeatureSource,
+} from './types/licensing.types'
 export { FacultyProgrammeCard } from './components/FacultyProgrammeCard'
 export { FacultyProgrammeCardList } from './components/FacultyProgrammeCardList'

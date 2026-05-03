@@ -83,7 +83,7 @@ export async function fetchEffectiveEntitlements(
 ): Promise<EffectiveFeature[]> {
   const [features, planEntitlements, overrides] = await Promise.all([
     listFeatureDefinitions(),
-    listPlanEntitlements(planId).catch(() => [] as PlanEntitlement[]),
+    listPlanEntitlements(planId),
     listOverrides(institutionId),
   ])
 

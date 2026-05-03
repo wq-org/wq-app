@@ -12,6 +12,7 @@
     "classrooms": "Classrooms",
     "licenseUsage": "Usage",
     "gdprRequest": "GDPR requests",
+    "license": "License",
     "billing": "Billing",
     "analytics": "Analytics",
     "cloudStorage": "Cloud storage",
@@ -1043,7 +1044,11 @@
   },
   "billing": {
     "title": "Billing",
-    "subtitle": "Subscription term, renewal and payment details.",
+    "subtitle": "Invoices and payment history for your institution."
+  },
+  "license": {
+    "title": "License",
+    "subtitle": "Subscription, plan entitlements, and renewal details.",
     "noInstitution": "No institution associated with your account.",
     "invoices": {
       "title": "Invoices",

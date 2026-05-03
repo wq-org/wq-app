@@ -129,7 +129,9 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                       variant="small"
                       className="truncate font-semibold text-xs"
                     >
-                      {profile?.display_name?.trim() || profile?.username?.trim() || '—'}
+                      {profile?.institution?.name?.trim() ||
+                        profile?.institution?.slug?.trim() ||
+                        '—'}
                     </Text>
                     <Text
                       as="p"
