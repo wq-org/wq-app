@@ -35,6 +35,7 @@ import {
   type ClassroomCardListItem,
   useTeacherClassrooms,
 } from '@/features/classroom'
+import { TeacherGameProjectsEmpty } from '../components/TeacherGameProjectsEmpty'
 
 const COURSE_FILTER_TABS = [
   { id: 'all', title: 'All', icon: LibraryBig },
@@ -309,7 +310,7 @@ const Dashboard = () => {
                   size={72}
                 />
               ) : courseCards.length === 0 ? (
-                <TeacherCoursesEmpty />
+                <TeacherCoursesEmpty hideIcon />
               ) : (
                 <>
                   <SelectTabs
@@ -384,7 +385,7 @@ const Dashboard = () => {
                       className="mt-2 min-h-0 px-0"
                     >
                       {games.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No games yet.</p>
+                        <TeacherGameProjectsEmpty />
                       ) : (
                         <GameProjectCardList
                           variant="compact"

@@ -30,7 +30,7 @@ export function EmptyProjectsView({ onCreateGame, disableCreate = false }: Empty
       <EmptyContent className="flex-row flex-wrap justify-center gap-2">
         <Button
           type="button"
-          variant="darkblue"
+          variant="outline"
           size="lg"
           onClick={onCreateGame}
           disabled={disableCreate}
