@@ -109,7 +109,11 @@
       "tabs": {
         "overview": "Overview",
         "subscription": "Subscription"
-      }
+      },
+      "subscriptionAlreadyActive": "This institution already has an active subscription.",
+      "assigningSubscription": "Assigning subscription…",
+      "subscriptionAssigned": "Subscription assigned.",
+      "subscriptionAssignError": "Could not assign subscription."
     }
   },
   "institutionInvites": {

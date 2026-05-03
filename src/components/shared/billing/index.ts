@@ -1,2 +1,6 @@
 export { PlanFeaturesCard } from './PlanFeaturesCard'
 export type { PlanFeaturesCardProps } from './PlanFeaturesCard'
+export { SubscriptionPlanPopover } from './SubscriptionPlanPopover'
+export type { SubscriptionPlanPopoverProps } from './SubscriptionPlanPopover'
+export { useBillingPlans } from './useBillingPlans'
+export type { BillingPlanOption } from './useBillingPlans'

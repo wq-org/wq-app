@@ -9,7 +9,8 @@ import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWo
 export const InstitutionAdminLicense = () => {
   const { t } = useTranslation('features.institution-admin')
   const { getUserInstitutionId } = useUser()
-  const { features, planCode, subscription, isLoading, error } = useInstitutionLicensing()
+  const { features, planCode, subscription, isLoading, error, refreshSubscription } =
+    useInstitutionLicensing()
   const institutionId = getUserInstitutionId()
 
   return (
@@ -33,7 +34,10 @@ export const InstitutionAdminLicense = () => {
         </div>
 
         {institutionId !== null ? (
-          <InstitutionSubscriptionDetails subscription={subscription ?? null} />
+          <InstitutionSubscriptionDetails
+            subscription={subscription ?? null}
+            onSubscriptionCanceled={refreshSubscription}
+          />
         ) : (
           <Text
             as="p"

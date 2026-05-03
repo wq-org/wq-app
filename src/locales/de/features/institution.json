@@ -24,6 +24,16 @@
     "loading": "Abonnement wird geladen…",
     "loadError": "Abonnementdetails konnten nicht geladen werden.",
     "empty": "Kein Abonnement vorhanden, oder Sie haben keinen Zugriff auf diese Angaben.",
+    "planPopover": {
+      "title": "Verfügbare Pläne",
+      "subtitle": "Wähle einen Plan aus, um ihn dieser Institution zuzuweisen.",
+      "assignPlan": "Plan zuweisen",
+      "current": "Aktuell",
+      "loading": "Pläne werden geladen…",
+      "loadError": "Pläne konnten nicht geladen werden",
+      "empty": "Keine aktiven Pläne verfügbar.",
+      "error": "Plan konnte nicht zugewiesen werden."
+    },
     "sectionPlan": "Tarif",
     "sectionTerm": "Laufzeit",
     "sectionBilling": "Abrechnung",
@@ -51,6 +61,14 @@
       "suspended": "Ausgesetzt",
       "expired": "Abgelaufen",
       "cancelled": "Gekündigt"
-    }
+    },
+    "cancelSubscription": "Abonnement kündigen",
+    "cancelSubscriptionDialogTitle": "Dieses Abonnement kündigen?",
+    "cancelSubscriptionDialogDescription": "Das Abonnement endet sofort. Der Abrechnungsstatus wird auf „gekündigt“ gesetzt.",
+    "cancelSubscriptionDialogDismiss": "Abonnement behalten",
+    "cancelSubscriptionDialogConfirm": "Abonnement kündigen",
+    "cancelSubscriptionDialogConfirming": "Wird gekündigt…",
+    "cancelSubscriptionSuccess": "Abonnement wurde gekündigt.",
+    "cancelSubscriptionError": "Das Abonnement konnte nicht gekündigt werden."
   }
 }

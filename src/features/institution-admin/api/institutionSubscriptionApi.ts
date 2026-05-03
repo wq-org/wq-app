@@ -67,3 +67,14 @@ export async function fetchLatestInstitutionSubscription(
     plan_catalog: normalizePlanCatalog(row.plan_catalog),
   }
 }
+
+/** Sets subscription end to now and marks billing as cancelled (direct cancel). */
+export async function cancelInstitutionSubscriptionNow(subscriptionId: string): Promise<void> {
+  const now = new Date().toISOString()
+  const { error } = await supabase
+    .from('institution_subscriptions')
+    .update({ effective_to: now, billing_status: 'cancelled' })
+    .eq('id', subscriptionId)
+
+  if (error) throw new Error(error.message)
+}

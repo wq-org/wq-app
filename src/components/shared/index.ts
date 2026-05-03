@@ -46,6 +46,8 @@ export { ExpandableBillingUsageCard } from './ExpandableBillingUsageCard'
 export type { ExpandableBillingUsageCardProps, UsageRow } from './ExpandableBillingUsageCard'
 export { PlanFeaturesCard } from './billing'
 export type { PlanFeaturesCardProps } from './billing'
+export { SubscriptionPlanPopover } from './billing'
+export type { SubscriptionPlanPopoverProps } from './billing'
 export { InvoiceList } from './InvoiceList'
 export type {
   InvoiceListItem,

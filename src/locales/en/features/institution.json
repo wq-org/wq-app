@@ -24,6 +24,16 @@
     "loading": "Loading subscription…",
     "loadError": "Could not load subscription details.",
     "empty": "No subscription on file, or you do not have access to this information.",
+    "planPopover": {
+      "title": "Available plans",
+      "subtitle": "Pick a plan to assign it to this institution.",
+      "assignPlan": "Assign plan",
+      "current": "Current",
+      "loading": "Loading plans…",
+      "loadError": "Could not load plans",
+      "empty": "No active plans available.",
+      "error": "Could not assign plan."
+    },
     "sectionPlan": "Plan",
     "sectionTerm": "Subscription term",
     "sectionBilling": "Billing",
@@ -51,6 +61,14 @@
       "suspended": "Suspended",
       "expired": "Expired",
       "cancelled": "Cancelled"
-    }
+    },
+    "cancelSubscription": "Cancel subscription",
+    "cancelSubscriptionDialogTitle": "Cancel this subscription?",
+    "cancelSubscriptionDialogDescription": "The subscription will end immediately. Billing status will be set to cancelled.",
+    "cancelSubscriptionDialogDismiss": "Keep subscription",
+    "cancelSubscriptionDialogConfirm": "Cancel subscription",
+    "cancelSubscriptionDialogConfirming": "Cancelling…",
+    "cancelSubscriptionSuccess": "Subscription cancelled.",
+    "cancelSubscriptionError": "Could not cancel subscription."
   }
 }

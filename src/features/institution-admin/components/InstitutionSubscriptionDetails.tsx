@@ -1,16 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import { Spinner } from '@/components/ui/spinner'
+import { SubscriptionPlanPopover } from '@/components/shared'
 
 import {
+  cancelInstitutionSubscriptionNow,
   fetchLatestInstitutionSubscription,
   resolvePlanCode,
 } from '../api/institutionSubscriptionApi'
-import { getBillingStatusBadgeVariant } from '../config/billingStatus'
+import { getBillingStatusBadgeVariant, isTerminalBillingStatus } from '../config/billingStatus'
 import type { InstitutionSubscriptionWithPlan } from '../types/licensing.types'
 
 function formatDateTime(iso: string | null | undefined, locale: string): string {
@@ -45,16 +57,16 @@ function SubscriptionBody({
   locale,
   t,
 }: {
-  sub: InstitutionSubscriptionWithPlan
+  sub: InstitutionSubscriptionWithPlan | null
   resolvedPlanCode: string | null
   locale: string
   t: (key: string) => string
 }) {
-  const planLabel = sub.plan_catalog
+  const planLabel = sub?.plan_catalog
     ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})`
-    : (resolvedPlanCode ?? '—')
-
-  const billingVariant = getBillingStatusBadgeVariant(sub.billing_status)
+    : sub
+      ? (resolvedPlanCode ?? '—')
+      : '—'
 
   return (
     <div className="flex flex-col gap-4">
@@ -91,7 +103,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.effective_from, locale)}
+            {formatDateTime(sub?.effective_from, locale)}
           </Text>
         </DetailRow>
         <DetailRow label={t('subscription.effectiveTo')}>
@@ -99,7 +111,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.effective_to, locale)}
+            {formatDateTime(sub?.effective_to, locale)}
           </Text>
         </DetailRow>
       </div>
@@ -115,16 +127,25 @@ function SubscriptionBody({
           {t('subscription.sectionBilling')}
         </Text>
         <DetailRow label={t('subscription.billingStatus')}>
-          <Badge variant={billingVariant}>
-            {t(`subscription.billingStatuses.${sub.billing_status}`)}
-          </Badge>
+          {sub ? (
+            <Badge variant={getBillingStatusBadgeVariant(sub.billing_status)}>
+              {t(`subscription.billingStatuses.${sub.billing_status}`)}
+            </Badge>
+          ) : (
+            <Text
+              as="p"
+              variant="body"
+            >
+              —
+            </Text>
+          )}
         </DetailRow>
         <DetailRow label={t('subscription.renewalAt')}>
           <Text
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.renewal_at, locale)}
+            {formatDateTime(sub?.renewal_at, locale)}
           </Text>
         </DetailRow>
       </div>
@@ -144,7 +165,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.current_period_start, locale)}
+            {formatDateTime(sub?.current_period_start, locale)}
           </Text>
         </DetailRow>
         <DetailRow label={t('subscription.currentPeriodEnd')}>
@@ -152,7 +173,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.current_period_end, locale)}
+            {formatDateTime(sub?.current_period_end, locale)}
           </Text>
         </DetailRow>
       </div>
@@ -172,7 +193,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {sub.cancel_at_period_end ? t('subscription.yes') : t('subscription.no')}
+            {sub ? (sub.cancel_at_period_end ? t('subscription.yes') : t('subscription.no')) : '—'}
           </Text>
         </DetailRow>
         <DetailRow label={t('subscription.canceledAt')}>
@@ -180,7 +201,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.canceled_at, locale)}
+            {formatDateTime(sub?.canceled_at, locale)}
           </Text>
         </DetailRow>
         <DetailRow label={t('subscription.trialEndsAt')}>
@@ -188,7 +209,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.trial_ends_at, locale)}
+            {formatDateTime(sub?.trial_ends_at, locale)}
           </Text>
         </DetailRow>
       </div>
@@ -208,7 +229,7 @@ function SubscriptionBody({
             as="p"
             variant="body"
           >
-            {formatDateTime(sub.updated_at, locale)}
+            {formatDateTime(sub?.updated_at, locale)}
           </Text>
         </DetailRow>
       </div>
@@ -216,13 +237,33 @@ function SubscriptionBody({
   )
 }
 
+type PlanAssignment = {
+  disabled?: boolean
+  onSelectPlan?: (planId: string) => Promise<void> | void
+}
+
 type InstitutionSubscriptionDetailsProps =
-  | { institutionId: string; subscription?: undefined }
-  | { institutionId?: undefined; subscription: InstitutionSubscriptionWithPlan | null }
+  | {
+      institutionId: string
+      refreshToken?: number
+      planAssignment?: PlanAssignment
+      onSubscriptionCanceled?: () => void
+      subscription?: undefined
+    }
+  | {
+      institutionId?: undefined
+      refreshToken?: number
+      planAssignment?: PlanAssignment
+      onSubscriptionCanceled?: () => void
+      subscription: InstitutionSubscriptionWithPlan | null
+    }
 
 export function InstitutionSubscriptionDetails({
   institutionId,
   subscription: propSubscription,
+  refreshToken = 0,
+  planAssignment,
+  onSubscriptionCanceled,
 }: InstitutionSubscriptionDetailsProps) {
   const { t, i18n } = useTranslation('features.institution')
   const isPropControlled = propSubscription !== undefined
@@ -232,6 +273,40 @@ export function InstitutionSubscriptionDetails({
   )
   const [resolvedPlanCode, setResolvedPlanCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isCanceling, setIsCanceling] = useState(false)
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+
+  const refetchLatest = useCallback(async () => {
+    if (!institutionId) return
+    const row = await fetchLatestInstitutionSubscription(institutionId)
+    setSub(row)
+    if (row && !row.plan_catalog) {
+      const code = await resolvePlanCode(row.plan_id)
+      setResolvedPlanCode(code)
+    } else {
+      setResolvedPlanCode(null)
+    }
+  }, [institutionId])
+
+  const handleCancelSubscription = useCallback(async () => {
+    if (!sub) return
+    setIsCanceling(true)
+    try {
+      await cancelInstitutionSubscriptionNow(sub.id)
+      toast.success(t('subscription.cancelSubscriptionSuccess'))
+      setCancelDialogOpen(false)
+      onSubscriptionCanceled?.()
+      if (!isPropControlled && institutionId) {
+        await refetchLatest()
+      }
+    } catch (e) {
+      toast.error(t('subscription.cancelSubscriptionError'), {
+        description: e instanceof Error ? e.message : undefined,
+      })
+    } finally {
+      setIsCanceling(false)
+    }
+  }, [sub, t, onSubscriptionCanceled, isPropControlled, institutionId, refetchLatest])
 
   useEffect(() => {
     if (isPropControlled) {
@@ -261,9 +336,19 @@ export function InstitutionSubscriptionDetails({
     return () => {
       cancelled = true
     }
-  }, [institutionId, isPropControlled, propSubscription])
+  }, [institutionId, isPropControlled, propSubscription, refreshToken])
+
+  useEffect(() => {
+    if (!sub || isTerminalBillingStatus(sub.billing_status)) {
+      setCancelDialogOpen(false)
+    }
+  }, [sub])
 
   const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
+  const canAssignPlan = Boolean(planAssignment?.onSelectPlan) && !planAssignment?.disabled
+  const currentPlanLabel = sub?.plan_catalog
+    ? `${sub.plan_catalog.name} (${sub.plan_catalog.code})`
+    : (resolvedPlanCode ?? '')
 
   if (sub === undefined) {
     return (
@@ -300,35 +385,85 @@ export function InstitutionSubscriptionDetails({
     )
   }
 
-  if (!sub) {
-    return (
-      <div className="rounded-2xl border bg-card p-6">
-        <Text
-          as="p"
-          variant="body"
-          color="muted"
-        >
-          {t('subscription.empty')}
-        </Text>
-      </div>
-    )
-  }
+  const showCancelFooter = Boolean(sub && !isTerminalBillingStatus(sub.billing_status))
 
   return (
     <div className="rounded-2xl border bg-card p-6 shadow-sm">
-      <Text
-        as="h2"
-        variant="h2"
-        className="text-lg font-semibold mb-4"
-      >
-        {t('subscription.title')}
-      </Text>
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <Text
+          as="h2"
+          variant="h2"
+          className="text-lg font-semibold"
+        >
+          {t('subscription.title')}
+        </Text>
+        <SubscriptionPlanPopover
+          currentPlanId={sub?.plan_id ?? null}
+          currentPlanLabel={currentPlanLabel}
+          disabled={!canAssignPlan}
+          onSelectPlan={
+            canAssignPlan
+              ? async (plan) => {
+                  await planAssignment?.onSelectPlan?.(plan.id)
+                }
+              : undefined
+          }
+        />
+      </div>
       <SubscriptionBody
         sub={sub}
         resolvedPlanCode={resolvedPlanCode}
         locale={locale}
         t={t}
       />
+      {showCancelFooter ? (
+        <>
+          <Separator className="my-4" />
+          <div className="flex flex-col gap-3 border-t pt-4">
+            <Button
+              type="button"
+              variant="delete"
+              disabled={isCanceling}
+              onClick={() => setCancelDialogOpen(true)}
+            >
+              {t('subscription.cancelSubscription')}
+            </Button>
+          </div>
+          <Dialog
+            open={cancelDialogOpen}
+            onOpenChange={setCancelDialogOpen}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('subscription.cancelSubscriptionDialogTitle')}</DialogTitle>
+                <DialogDescription>
+                  {t('subscription.cancelSubscriptionDialogDescription')}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isCanceling}
+                  onClick={() => setCancelDialogOpen(false)}
+                >
+                  {t('subscription.cancelSubscriptionDialogDismiss')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="delete"
+                  disabled={isCanceling}
+                  onClick={() => void handleCancelSubscription()}
+                >
+                  {isCanceling
+                    ? t('subscription.cancelSubscriptionDialogConfirming')
+                    : t('subscription.cancelSubscriptionDialogConfirm')}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      ) : null}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useUser } from '@/contexts/user'
 import {
@@ -33,10 +33,18 @@ const INITIAL_STATE: State = {
   error: null,
 }
 
-export function useInstitutionLicensing(): State & { institutionId: string | null } {
+export function useInstitutionLicensing(): State & {
+  institutionId: string | null
+  refreshSubscription: () => void
+} {
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
   const [state, setState] = useState<State>(INITIAL_STATE)
+  const [refreshToken, setRefreshToken] = useState(0)
+
+  const refreshSubscription = useCallback(() => {
+    setRefreshToken((n) => n + 1)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -72,7 +80,7 @@ export function useInstitutionLicensing(): State & { institutionId: string | nul
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, refreshToken])
 
-  return { ...state, institutionId }
+  return { ...state, institutionId, refreshSubscription }
 }

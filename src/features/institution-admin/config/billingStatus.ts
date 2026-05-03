@@ -17,3 +17,7 @@ export const BILLING_STATUS_VARIANT = {
 export function getBillingStatusBadgeVariant(status: BillingStatus): BadgeVariant {
   return BILLING_STATUS_VARIANT[status] ?? 'secondary'
 }
+
+export function isTerminalBillingStatus(status: BillingStatus): boolean {
+  return status === 'expired' || status === 'cancelled'
+}

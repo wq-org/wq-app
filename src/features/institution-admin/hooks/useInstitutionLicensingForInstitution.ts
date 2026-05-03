@@ -31,7 +31,10 @@ const INITIAL_STATE: State = {
 }
 
 /** Loads subscription, plan code, quotas, and effective entitlements for an institution (e.g. super-admin viewing any tenant). */
-export function useInstitutionLicensingForInstitution(institutionId: string | null) {
+export function useInstitutionLicensingForInstitution(
+  institutionId: string | null,
+  refreshToken = 0,
+) {
   const [state, setState] = useState<State>(INITIAL_STATE)
 
   useEffect(() => {
@@ -67,7 +70,7 @@ export function useInstitutionLicensingForInstitution(institutionId: string | nu
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, refreshToken])
 
   return { ...state, institutionId }
 }

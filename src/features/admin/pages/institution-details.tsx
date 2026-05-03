@@ -13,9 +13,11 @@ import {
   InstitutionSubscriptionDetails,
   useInstitutionLicensingForInstitution,
 } from '@/features/institution-admin'
+import { isTerminalBillingStatus } from '@/features/institution-admin/config/billingStatus'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { InstitutionOverviewFields } from '../components/InstitutionOverviewFields'
+import { assignInstitutionSubscription } from '../api/institutionSubscriptionApi'
 import { useInstitutions } from '../hooks/useInstitutions'
 import {
   createFormValuesFromInstitution,
@@ -33,6 +35,8 @@ const AdminInstitutionDetails = () => {
   const { institutions, isLoading, error, editInstitution } = useInstitutions()
   const [activeTab, setActiveTab] = useState(OVERVIEW_TAB)
   const [isSaving, setIsSaving] = useState(false)
+  const [subscriptionRefreshToken, setSubscriptionRefreshToken] = useState(0)
+  const [isAssigningSubscription, setIsAssigningSubscription] = useState(false)
 
   const role = getRole()
   const listPath = role ? `/${role}/institution` : '/'
@@ -58,7 +62,38 @@ const AdminInstitutionDetails = () => {
     }
   }, [error, t])
 
-  const licensing = useInstitutionLicensingForInstitution(institution?.id ?? null)
+  const licensing = useInstitutionLicensingForInstitution(
+    institution?.id ?? null,
+    subscriptionRefreshToken,
+  )
+
+  const canAssignSubscription =
+    !licensing.subscription || isTerminalBillingStatus(licensing.subscription.billing_status)
+
+  const handleAssignSubscriptionPlan = async (planId: string) => {
+    if (!institution) return
+
+    if (!canAssignSubscription) {
+      toast.error(t('institutions.details.subscriptionAlreadyActive'))
+      return
+    }
+
+    setIsAssigningSubscription(true)
+    const loadingToastId = toast.loading(t('institutions.details.assigningSubscription'))
+    try {
+      await assignInstitutionSubscription(institution.id, planId)
+      setSubscriptionRefreshToken((current) => current + 1)
+      toast.dismiss(loadingToastId)
+      toast.success(t('institutions.details.subscriptionAssigned'))
+    } catch (e) {
+      toast.dismiss(loadingToastId)
+      toast.error(t('institutions.details.subscriptionAssignError'), {
+        description: e instanceof Error ? e.message : t('institutions.toasts.unexpectedError'),
+      })
+    } finally {
+      setIsAssigningSubscription(false)
+    }
+  }
 
   const tabs = useMemo(
     () => [
@@ -220,7 +255,15 @@ const AdminInstitutionDetails = () => {
             activeTabId={activeTab}
             className="mt-0 space-y-6 px-0"
           >
-            <InstitutionSubscriptionDetails institutionId={institution.id} />
+            <InstitutionSubscriptionDetails
+              institutionId={institution.id}
+              refreshToken={subscriptionRefreshToken}
+              onSubscriptionCanceled={() => setSubscriptionRefreshToken((current) => current + 1)}
+              planAssignment={{
+                disabled: isAssigningSubscription || !canAssignSubscription,
+                onSelectPlan: handleAssignSubscriptionPlan,
+              }}
+            />
             <PlanFeaturesCard
               features={licensing.features}
               planCode={licensing.planCode}

@@ -109,7 +109,11 @@
       "tabs": {
         "overview": "Übersicht",
         "subscription": "Abonnement"
-      }
+      },
+      "subscriptionAlreadyActive": "Diese Institution hat bereits ein aktives Abonnement.",
+      "assigningSubscription": "Abonnement wird zugewiesen…",
+      "subscriptionAssigned": "Abonnement zugewiesen.",
+      "subscriptionAssignError": "Abonnement konnte nicht zugewiesen werden."
     }
   },
   "institutionInvites": {
