@@ -9,18 +9,18 @@ export function suggestTermCode(academicYear: number, referenceDate: Date = new 
   return `${academicYear}${semesterLetter}1`
 }
 
-/** Inclusive integer range `[min, max]`, descending (newest first). */
+/** Inclusive integer range `[min, max]`, ascending. */
 export function yearRangeInclusive(min: number, max: number): readonly number[] {
   if (min > max) return []
   const out: number[] = []
-  for (let y = max; y >= min; y -= 1) out.push(y)
+  for (let y = min; y <= max; y += 1) out.push(y)
   return out
 }
 
 export const ACADEMIC_YEAR_MIN = 1999
 export const ACADEMIC_YEAR_MAX = 2099
 
-/** Academic years for UI pickers (newest first: 2099 … 1999). */
+/** Academic years for UI pickers (oldest first: 1999 … 2099). */
 export const ACADEMIC_YEAR_OPTIONS: readonly number[] = yearRangeInclusive(
   ACADEMIC_YEAR_MIN,
   ACADEMIC_YEAR_MAX,

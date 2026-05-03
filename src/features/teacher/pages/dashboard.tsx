@@ -10,6 +10,7 @@ import { CourseCardList, useCourses, type CourseCardProps } from '@/features/cou
 import { DashboardSection } from '@/features/dashboard'
 import { GameProjectCardList, type GameProjectCardListProps } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
+import { useMyInstitutionFeatureFlags } from '@/features/entitlements'
 import { TeacherClassroomsEmpty } from '../components/TeacherClassroomsEmpty'
 import { TeacherCoursesEmpty } from '../components/TeacherCoursesEmpty'
 import {
@@ -41,34 +42,6 @@ const COURSE_FILTER_TABS = [
   { id: 'drafts', title: 'Drafts', icon: BookOpenText },
 ] as const satisfies readonly TabItem[]
 
-/** Demo flow games for dashboard until teacher dashboard loads studio rows from the API. */
-const DUMMY_TEACHER_GAME_PROJECTS: GameProjectCardListProps['projects'] = [
-  {
-    id: '00000000-0000-4000-8000-000000000201',
-    title: 'Branching wellness quest',
-    description: 'If/else flow with two endings and a short score recap.',
-    themeId: 'cyan',
-    version: 3,
-    status: 'published',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000202',
-    title: 'Image pin lab',
-    description: 'Draft: image-pin nodes and placeholder assets.',
-    themeId: 'orange',
-    version: 1,
-    status: 'draft',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000203',
-    title: 'Paragraph line select',
-    description: 'Published reading activity with line highlights.',
-    themeId: 'green',
-    version: 2,
-    status: 'published',
-  },
-]
-
 const GAME_FILTER_TABS = [
   { id: 'all', title: 'All', icon: SplinePointer },
   { id: 'published', title: 'Published', icon: Joystick },
@@ -81,25 +54,6 @@ const TASK_FILTER_TABS = [
   { id: 'drafts', title: 'Drafts', icon: LayoutList },
 ] as const satisfies readonly TabItem[]
 
-/** Demo tasks until the teacher dashboard loads task rows from the API. */
-const DUMMY_TEACHER_TASKS = [
-  {
-    id: '00000000-0000-4000-8000-000000000301',
-    title: 'Review consent forms',
-    status: 'draft' as const,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000302',
-    title: 'Grade midterm reflections',
-    status: 'published' as const,
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000303',
-    title: 'Prepare wellness check-in slides',
-    status: 'draft' as const,
-  },
-]
-
 const Dashboard = () => {
   const { t } = useTranslation('features.teacher')
   const navigate = useNavigate()
@@ -111,6 +65,20 @@ const Dashboard = () => {
     loading: classroomsLoading,
     error: classroomsError,
   } = useTeacherClassrooms(fetchEnabled)
+
+  const {
+    features: institutionFeatureFlags,
+    planCode: institutionPlanCode,
+    isLoading: institutionFlagsLoading,
+  } = useMyInstitutionFeatureFlags(fetchEnabled)
+
+  useEffect(() => {
+    if (institutionFlagsLoading) return
+    console.log('[TeacherDashboard] institution feature flags', {
+      planCode: institutionPlanCode,
+      features: institutionFeatureFlags,
+    })
+  }, [institutionFlagsLoading, institutionPlanCode, institutionFeatureFlags])
   const { courses, loading: coursesLoading, error: coursesError, fetchCourses } = useCourses()
 
   const [activeCourseTabId, setActiveCourseTabId] = useState<string>(COURSE_FILTER_TABS[0].id)
@@ -207,18 +175,18 @@ const Dashboard = () => {
   }, [courseCards])
 
   const gamesByFilterTab = useMemo(() => {
-    const all = DUMMY_TEACHER_GAME_PROJECTS
+    const all: GameProjectCardListProps['projects'] = []
     return {
-      all: [...all],
+      all,
       published: all.filter((g) => g.status === 'published'),
       drafts: all.filter((g) => g.status === 'draft'),
     } as const
   }, [])
 
   const tasksByFilter = useMemo(() => {
-    const all = DUMMY_TEACHER_TASKS
+    const all: { id: string; title: string; status: 'draft' | 'published' }[] = []
     return {
-      all: [...all],
+      all,
       published: all.filter((task) => task.status === 'published'),
       drafts: all.filter((task) => task.status === 'draft'),
     } as const
@@ -393,48 +361,42 @@ const Dashboard = () => {
               expandTo="/teacher/game-studio"
               showContainerBorder
             >
-              {DUMMY_TEACHER_GAME_PROJECTS.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No games yet.</p>
-              ) : (
-                <>
-                  <SelectTabs
-                    variant="compact"
-                    tabs={GAME_FILTER_TABS}
-                    activeTabId={activeGameTabId}
-                    onTabChange={handleGameTabChange}
-                  />
-                  {GAME_FILTER_TABS.map((tab) => {
-                    const games =
-                      tab.id === 'all'
-                        ? gamesByFilterTab.all
-                        : tab.id === 'published'
-                          ? gamesByFilterTab.published
-                          : gamesByFilterTab.drafts
+              <>
+                <SelectTabs
+                  variant="compact"
+                  tabs={GAME_FILTER_TABS}
+                  activeTabId={activeGameTabId}
+                  onTabChange={handleGameTabChange}
+                />
+                {GAME_FILTER_TABS.map((tab) => {
+                  const games =
+                    tab.id === 'all'
+                      ? gamesByFilterTab.all
+                      : tab.id === 'published'
+                        ? gamesByFilterTab.published
+                        : gamesByFilterTab.drafts
 
-                    return (
-                      <SelectTabsContent
-                        key={tab.id}
-                        tabId={tab.id}
-                        activeTabId={activeGameTabId}
-                        className="mt-2 min-h-0 px-0"
-                      >
-                        {games.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">
-                            No games match this filter.
-                          </p>
-                        ) : (
-                          <GameProjectCardList
-                            variant="compact"
-                            projects={games}
-                            onOpen={handleGameOpen}
-                            className="gap-2"
-                          />
-                        )}
-                      </SelectTabsContent>
-                    )
-                  })}
-                </>
-              )}
+                  return (
+                    <SelectTabsContent
+                      key={tab.id}
+                      tabId={tab.id}
+                      activeTabId={activeGameTabId}
+                      className="mt-2 min-h-0 px-0"
+                    >
+                      {games.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No games yet.</p>
+                      ) : (
+                        <GameProjectCardList
+                          variant="compact"
+                          projects={games}
+                          onOpen={handleGameOpen}
+                          className="gap-2"
+                        />
+                      )}
+                    </SelectTabsContent>
+                  )
+                })}
+              </>
             </DashboardSection>
           </div>
         </div>

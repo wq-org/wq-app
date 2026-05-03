@@ -1,7 +1,9 @@
 import { useState, type ReactElement } from 'react'
-import { Bell, BellDot, ChevronLeft, LogOut, Pen, UserPen } from 'lucide-react'
+import { BadgeCheck, Bell, BellDot, ChevronLeft, LogOut, Pen, UserPen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+import { USER_ROLES } from '@/features/auth'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -35,7 +37,7 @@ export function AppNavigation({
   const { t } = useTranslation('layout.appNavigation')
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { logout, profile, loading, getRole } = useUser()
+  const { logout, profile, loading, getRole, getUserInstitutionId } = useUser()
   const [notificationCount, setNotificationCount] = useState(0)
   const [profileOpen, setProfileOpen] = useState(false)
 
@@ -49,6 +51,14 @@ export function AppNavigation({
   const showProfileBlock = authenticated && !loading
   const isDashboardRoute = /^\/(teacher|student)\/dashboard\/?$/.test(pathname)
   const { url: avatarImageUrl } = useAvatarUrl(profile?.avatar_url ?? null)
+
+  const showTeacherLicense =
+    authenticated && !loading && getRole() === USER_ROLES.TEACHER && Boolean(getUserInstitutionId())
+
+  const handleNavigateToLicense = () => {
+    navigate('/teacher/license')
+    setProfileOpen(false)
+  }
 
   const handleOnClickLogout = async () => {
     try {
@@ -160,6 +170,18 @@ export function AppNavigation({
                         >
                           <UserPen className="size-4 shrink-0 opacity-70" />
                           {t('profile.editProfile')}
+                        </Button>
+                      ) : null}
+                      {showTeacherLicense ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 w-full justify-start gap-2 rounded-2xl px-2 font-normal"
+                          onClick={handleNavigateToLicense}
+                        >
+                          <BadgeCheck className="size-4 shrink-0 opacity-70" />
+                          {t('profile.license')}
                         </Button>
                       ) : null}
                       <Separator className="my-0.5 bg-border/80" />

@@ -1,6 +1,7 @@
 {
   "profile": {
     "openMenu": "Profilmenü öffnen",
+    "license": "Lizenz",
     "editProfile": "Profil bearbeiten",
     "profileUnavailable": "Profil ist noch nicht verfügbar.",
     "noEmail": "Keine E-Mail hinterlegt",

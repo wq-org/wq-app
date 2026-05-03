@@ -64,3 +64,25 @@ export async function createFaculty(input: {
 
   return toFaculty(data as FacultyRecord)
 }
+
+export async function updateFaculty(input: {
+  institution_id: string
+  faculty_id: string
+  name: string
+  description: string | null
+}): Promise<FacultySummary> {
+  const { data, error } = await supabase
+    .from('faculties')
+    .update({
+      name: input.name,
+      description: input.description,
+    })
+    .eq('id', input.faculty_id)
+    .eq('institution_id', input.institution_id)
+    .select('id, name, description')
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return data as FacultySummary
+}

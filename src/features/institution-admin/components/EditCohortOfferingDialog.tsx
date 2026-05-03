@@ -108,24 +108,6 @@ export function EditCohortOfferingDialog({
     handleSubmit,
   } = useEditCohortOfferingDialog({ programmeId, offering, open, onUpdated })
 
-  const programmeOfferingLabels = useMemo(
-    () => programmeOfferings.map((po) => formatProgrammeOfferingLabel(po, i18n.language)),
-    [i18n.language, programmeOfferings],
-  )
-
-  const programmeOfferingIdByLabel = useMemo(() => {
-    const map = new Map<string, string>()
-    programmeOfferings.forEach((po, index) => {
-      map.set(programmeOfferingLabels[index], po.id)
-    })
-    return map
-  }, [programmeOfferingLabels, programmeOfferings])
-
-  const selectedProgrammeOfferingLabel = useMemo(() => {
-    const index = programmeOfferings.findIndex((po) => po.id === selectedProgrammeOfferingId)
-    return index >= 0 ? programmeOfferingLabels[index] : ''
-  }, [programmeOfferingLabels, programmeOfferings, selectedProgrammeOfferingId])
-
   const validationError = useMemo(() => {
     if (!selectedProgrammeOfferingId) {
       return t('faculties.pages.cohortOfferings.createDialog.validation.programmeOfferingRequired')
@@ -143,17 +125,6 @@ export function EditCohortOfferingDialog({
     const ok = await handleSubmit()
     if (ok) {
       onOpenChange(false)
-    }
-  }
-
-  const handleProgrammeOfferingSelect = (value: string | null) => {
-    if (!value) {
-      setSelectedProgrammeOfferingId('')
-      return
-    }
-    const id = programmeOfferingIdByLabel.get(value)
-    if (id) {
-      setSelectedProgrammeOfferingId(id)
     }
   }
 
@@ -185,13 +156,22 @@ export function EditCohortOfferingDialog({
                 {t('faculties.pages.cohortOfferings.createDialog.fields.programmeOfferingLabel')}
               </Label>
               <Combobox
-                value={selectedProgrammeOfferingLabel || null}
-                onValueChange={handleProgrammeOfferingSelect}
-                items={programmeOfferingLabels}
-                itemToStringLabel={(item) => String(item)}
-                filter={(item, query) =>
-                  String(item).toLowerCase().includes(query.trim().toLowerCase())
-                }
+                value={selectedProgrammeOfferingId || null}
+                onValueChange={(value) => {
+                  setSelectedProgrammeOfferingId(typeof value === 'string' ? value : '')
+                }}
+                items={programmeOfferings}
+                itemToStringLabel={(id) => {
+                  const po = programmeOfferings.find((p) => p.id === id)
+                  return po ? formatProgrammeOfferingLabel(po, i18n.language) : ''
+                }}
+                filter={(id, query) => {
+                  const po = programmeOfferings.find((p) => p.id === id)
+                  if (!po) return false
+                  return formatProgrammeOfferingLabel(po, i18n.language)
+                    .toLowerCase()
+                    .includes(query.trim().toLowerCase())
+                }}
                 autoHighlight
               >
                 <ComboboxInput
@@ -207,12 +187,12 @@ export function EditCohortOfferingDialog({
                     )}
                   </ComboboxEmpty>
                   <ComboboxList>
-                    {(item: string) => (
+                    {(item: ProgrammeOfferingRecord) => (
                       <ComboboxItem
-                        key={item}
-                        value={item}
+                        key={item.id}
+                        value={item.id}
                       >
-                        {item}
+                        {formatProgrammeOfferingLabel(item, i18n.language)}
                       </ComboboxItem>
                     )}
                   </ComboboxList>
@@ -250,6 +230,7 @@ export function EditCohortOfferingDialog({
                     align="start"
                   >
                     <CalendarWithPresets
+                      compact
                       value={dateRange?.from}
                       onChange={(date) => {
                         setDateRange({
@@ -295,6 +276,7 @@ export function EditCohortOfferingDialog({
                     align="start"
                   >
                     <CalendarWithPresets
+                      compact
                       value={dateRange?.to ?? dateRange?.from ?? new Date()}
                       disabled={dateRange?.from ? { before: dateRange.from } : undefined}
                       onChange={(date) => {

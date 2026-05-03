@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { LayoutGrid, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { SelectTabs, showUnsavedChangesToast, type TabItem } from '@/components/shared'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,26 +13,19 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { Button } from '@/components/ui/button'
-import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
+import { updateFaculty } from '../api/facultiesApi'
 import { createProgramme } from '../api/programmesApi'
 import { CreateProgrammeDialog } from '../components/CreateProgrammeDialog'
-import { FacultyProgrammeCardList } from '../components/FacultyProgrammeCardList'
+import { FacultyOverview } from '../components/FacultyOverview'
+import { FacultySettings } from '../components/FacultySettings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { useFacultyProgrammes } from '../hooks/useFacultyProgrammes'
+
+type FacultyTabId = 'overview' | 'settings'
 
 export function InstitutionFacultyProgrammes() {
   const { t } = useTranslation('features.institution-admin')
@@ -39,13 +33,21 @@ export function InstitutionFacultyProgrammes() {
   const navigate = useNavigate()
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
+
+  const [activeTabId, setActiveTabId] = useState<FacultyTabId>('overview')
   const [searchQuery, setSearchQuery] = useState('')
+
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [createFacultyId, setCreateFacultyId] = useState('')
   const [createProgrammeName, setCreateProgrammeName] = useState('')
   const [createProgrammeDescription, setCreateProgrammeDescription] = useState('')
   const [createDurationYears, setCreateDurationYears] = useState<number | null>(null)
   const [isCreatingProgramme, setIsCreatingProgramme] = useState(false)
+
+  const [draftFacultyName, setDraftFacultyName] = useState('')
+  const [draftFacultyDescription, setDraftFacultyDescription] = useState('')
+  const [isSavingSettings, setIsSavingSettings] = useState(false)
+  const [settingsError, setSettingsError] = useState<string | null>(null)
 
   const {
     faculty,
@@ -56,7 +58,7 @@ export function InstitutionFacultyProgrammes() {
   } = useFacultyProgrammes(institutionId, facultyIdParam)
 
   const facultyDisplayName = faculty?.name?.trim() || t('faculties.card.untitled')
-  const facultyDescription =
+  const facultyDisplayDescription =
     faculty?.description?.trim() || t('faculties.pages.facultyProgrammes.noFacultyDescription')
 
   const searchableProgrammes = useMemo(
@@ -67,23 +69,18 @@ export function InstitutionFacultyProgrammes() {
         searchName: programme.name ?? '',
         searchDescription: programme.description ?? '',
       })),
-    [programmes, facultyDisplayName],
+    [facultyDisplayName, programmes],
   )
 
-  const filteredItems = useSearchFilter(searchableProgrammes, searchQuery, [
+  const filteredProgrammeItems = useSearchFilter(searchableProgrammes, searchQuery, [
     'searchName',
     'searchDescription',
   ]).map(({ programme, facultyName }) => ({ programme, facultyName }))
 
   const facultyOptionForDialog = useMemo(() => {
     if (!faculty || !facultyIdParam) return []
-    return [
-      {
-        id: faculty.id,
-        name: facultyDisplayName,
-      },
-    ]
-  }, [faculty, facultyIdParam, facultyDisplayName])
+    return [{ id: faculty.id, name: facultyDisplayName }]
+  }, [faculty, facultyDisplayName, facultyIdParam])
 
   const createProgrammeValidationError = useMemo(() => {
     if (!createProgrammeName.trim()) {
@@ -91,6 +88,14 @@ export function InstitutionFacultyProgrammes() {
     }
     return null
   }, [createProgrammeName, t])
+
+  const hasUnsavedSettingsChanges = useMemo(() => {
+    if (!faculty) return false
+    return (
+      draftFacultyName.trim() !== faculty.name.trim() ||
+      draftFacultyDescription.trim() !== (faculty.description?.trim() ?? '')
+    )
+  }, [draftFacultyDescription, draftFacultyName, faculty])
 
   const resetCreateProgrammeForm = () => {
     setCreateFacultyId('')
@@ -154,94 +159,96 @@ export function InstitutionFacultyProgrammes() {
     )
   }
 
-  const mainContent = (() => {
-    if (!facultyIdParam) {
-      return (
-        <Text
-          as="p"
-          variant="body"
-          color="muted"
-        >
-          {t('faculties.pages.facultyProgrammes.missingFacultyId')}
-        </Text>
-      )
+  const handleSaveFacultySettings = async () => {
+    if (!faculty || !facultyIdParam || !institutionId) return
+
+    const trimmedName = draftFacultyName.trim()
+    if (!trimmedName) {
+      setSettingsError(t('faculties.pages.facultyProgrammes.settings.validation.nameRequired'))
+      return
     }
 
-    if (isLoading) {
-      return (
-        <div className="flex min-h-40 items-center justify-center">
-          <Spinner
-            variant="gray"
-            size="sm"
-            speed={1750}
-          />
-        </div>
+    setIsSavingSettings(true)
+    setSettingsError(null)
+    try {
+      await updateFaculty({
+        institution_id: institutionId,
+        faculty_id: facultyIdParam,
+        name: trimmedName,
+        description: draftFacultyDescription.trim() || null,
+      })
+      reload()
+      toast.success(t('faculties.pages.facultyProgrammes.settings.saveSuccess'))
+    } catch (error) {
+      setSettingsError(
+        error instanceof Error
+          ? error.message
+          : t('faculties.pages.facultyProgrammes.settings.saveError'),
       )
+    } finally {
+      setIsSavingSettings(false)
+    }
+  }
+
+  const handleTabChange = (nextTabId: string) => {
+    const resolvedTab = nextTabId as FacultyTabId
+    if (resolvedTab === activeTabId) return
+
+    if (activeTabId === 'settings' && hasUnsavedSettingsChanges) {
+      showUnsavedChangesToast({
+        t: (key) => t(`faculties.pages.facultyProgrammes.${key}`),
+        onStay: () => {},
+        onContinue: () => setActiveTabId(resolvedTab),
+      })
+      return
     }
 
-    if (loadError) {
-      return (
-        <Text
-          as="p"
-          variant="small"
-          color="danger"
-        >
-          {loadError}
-        </Text>
-      )
-    }
+    setActiveTabId(resolvedTab)
+  }
 
+  useEffect(() => {
     if (!faculty) {
-      return null
+      setDraftFacultyName('')
+      setDraftFacultyDescription('')
+      return
     }
 
-    if (programmes.length > 0 && filteredItems.length === 0) {
-      return (
-        <Text
-          as="p"
-          variant="body"
-          color="muted"
-          className="animate-in fade-in-0 slide-in-from-bottom-2"
-        >
-          {t('faculties.pages.facultyProgrammes.noSearchResults')}
-        </Text>
-      )
-    }
+    setDraftFacultyName(faculty.name ?? '')
+    setDraftFacultyDescription(faculty.description ?? '')
+    setSettingsError(null)
+  }, [faculty])
 
-    if (filteredItems.length === 0) {
-      return (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Plus className="size-6" />
-            </EmptyMedia>
-            <EmptyTitle>{t('faculties.pages.facultyProgrammes.emptyTitle')}</EmptyTitle>
-            <EmptyDescription>
-              {t('faculties.pages.facultyProgrammes.emptyDescription')}
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button
-              variant="outline"
-              type="button"
-              className="gap-2"
-              onClick={handleOpenCreateProgrammeDialog}
-            >
-              <Plus className="size-4" />
-              <Text as="span">{t('faculties.pages.facultyProgrammes.addProgramme')}</Text>
-            </Button>
-          </EmptyContent>
-        </Empty>
-      )
-    }
+  const tabs = useMemo<readonly TabItem[]>(
+    () => [
+      {
+        id: 'overview',
+        icon: LayoutGrid,
+        title: t('faculties.pages.facultyProgrammes.tabs.overview'),
+      },
+      {
+        id: 'settings',
+        icon: Settings,
+        title: t('faculties.pages.facultyProgrammes.tabs.settings'),
+      },
+    ],
+    [t],
+  )
 
+  if (!facultyIdParam) {
     return (
-      <FacultyProgrammeCardList
-        items={filteredItems}
-        onOpenProgramme={handleOpenProgramme}
-      />
+      <InstitutionAdminWorkspaceShell>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-2 pb-12 pt-4">
+          <Text
+            as="p"
+            variant="body"
+            color="muted"
+          >
+            {t('faculties.pages.facultyProgrammes.missingFacultyId')}
+          </Text>
+        </div>
+      </InstitutionAdminWorkspaceShell>
     )
-  })()
+  }
 
   return (
     <InstitutionAdminWorkspaceShell>
@@ -263,6 +270,7 @@ export function InstitutionFacultyProgrammes() {
         isSubmitting={isCreatingProgramme}
         onSubmit={() => void handleSubmitCreateProgramme()}
       />
+
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-2 pb-12 pt-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <Breadcrumb>
           <BreadcrumbList>
@@ -278,7 +286,7 @@ export function InstitutionFacultyProgrammes() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="flex animate-in fade-in-0 slide-in-from-bottom-3 flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <div className="flex max-w-2xl flex-col gap-2">
             <Text
               as="h1"
@@ -292,33 +300,52 @@ export function InstitutionFacultyProgrammes() {
               variant="body"
               color="muted"
             >
-              {facultyDescription}
+              {facultyDisplayDescription}
             </Text>
-          </div>
-          <div className="flex justify-end">
-            <Button
-              variant="darkblue"
-              type="button"
-              className="gap-2"
-              onClick={handleOpenCreateProgrammeDialog}
-              disabled={!faculty}
-            >
-              <Plus className="size-4" />
-              <Text as="span">{t('faculties.pages.facultyProgrammes.addProgramme')}</Text>
-            </Button>
           </div>
         </div>
 
-        <FieldInput
-          label={t('faculties.pages.facultyProgrammes.searchLabel')}
-          placeholder={t('faculties.pages.facultyProgrammes.searchPlaceholder')}
-          value={searchQuery}
-          onValueChange={setSearchQuery}
-          className="max-w-xl animate-in fade-in-0 slide-in-from-bottom-2"
-          disabled={!faculty || isLoading}
+        <SelectTabs
+          tabs={tabs}
+          activeTabId={activeTabId}
+          onTabChange={handleTabChange}
         />
 
-        <div className="animate-in fade-in-0 slide-in-from-bottom-2">{mainContent}</div>
+        {activeTabId === 'overview' ? (
+          <FacultyOverview
+            facultyName={facultyDisplayName}
+            facultyDescription={facultyDisplayDescription}
+            isLoading={isLoading}
+            loadError={loadError}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            items={filteredProgrammeItems}
+            isSearchActive={searchQuery.trim().length > 0}
+            onAddProgramme={handleOpenCreateProgrammeDialog}
+            onOpenProgramme={handleOpenProgramme}
+          />
+        ) : (
+          <FacultySettings
+            isLoading={isLoading}
+            isSaving={isSavingSettings}
+            loadError={loadError}
+            selectedFaculty={faculty}
+            draftFacultyName={draftFacultyName}
+            draftFacultyDescription={draftFacultyDescription}
+            hasUnsavedSettingsChanges={hasUnsavedSettingsChanges}
+            validationError={
+              faculty
+                ? draftFacultyName.trim()
+                  ? null
+                  : t('faculties.pages.facultyProgrammes.settings.validation.nameRequired')
+                : null
+            }
+            saveError={settingsError}
+            onFacultyNameChange={setDraftFacultyName}
+            onFacultyDescriptionChange={setDraftFacultyDescription}
+            onSaveChanges={handleSaveFacultySettings}
+          />
+        )}
       </div>
     </InstitutionAdminWorkspaceShell>
   )

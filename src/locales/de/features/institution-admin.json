@@ -296,7 +296,32 @@
         "addProgramme": "Programm hinzufügen",
         "searchLabel": "Programme durchsuchen",
         "searchPlaceholder": "Suche nach Name oder Beschreibung…",
-        "noSearchResults": "Keine Treffer für diese Suche."
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saving": "Wird gespeichert...",
+          "saveSuccess": "Fakultätseinstellungen gespeichert",
+          "saveError": "Fakultätseinstellungen konnten nicht gespeichert werden.",
+          "validation": {
+            "nameRequired": "Der Fakultätsname ist erforderlich."
+          },
+          "fields": {
+            "nameLabel": "Fakultätsname",
+            "namePlaceholder": "Fakultätsname eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Fakultätsbeschreibung eingeben"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        }
       },
       "programmeOfferings": {
         "titleFallback": "Programmangebote",
@@ -883,7 +908,7 @@
     },
     "createDialog": {
       "title": "Klassenraum hinzufügen",
-      "description": "Erstellen Sie einen Klassenraum mit Klassengruppe, Angebot und Hauptlehrkraft.",
+      "description": "Erstellen Sie einen Klassenraum mit Klassengruppe und Angebot. Die Hauptlehrkraft ist optional.",
       "cancel": "Abbrechen",
       "create": "Klassenraum erstellen",
       "creating": "Wird erstellt...",
@@ -893,7 +918,7 @@
         "classGroupLabel": "Klassengruppe",
         "classGroupPlaceholder": "Klassengruppen suchen",
         "offeringLabel": "Klassengruppenangebot",
-        "teacherLabel": "Hauptlehrkraft",
+        "teacherLabel": "Hauptlehrkraft (optional)",
         "teacherPlaceholder": "Lehrkräfte suchen"
       },
       "classGroup": {
@@ -909,8 +934,7 @@
       "validation": {
         "titleRequired": "Ein Klassenraumtitel ist erforderlich.",
         "classGroupRequired": "Bitte wählen Sie eine Klassengruppe.",
-        "offeringRequired": "Bitte wählen Sie ein Klassengruppenangebot.",
-        "teacherRequired": "Bitte wählen Sie genau eine Hauptlehrkraft."
+        "offeringRequired": "Bitte wählen Sie ein Klassengruppenangebot."
       },
       "suggestions": {
         "label": "Vorschläge:"

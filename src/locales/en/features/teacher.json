@@ -36,11 +36,17 @@
       "title": "Your Cloud",
       "loadError": "Could not load your cloud files."
     },
+    "license": {
+      "title": "License",
+      "subtitle": "Features included with your institution’s current plan.",
+      "noInstitution": "No institution is selected on your profile, so plan features cannot be loaded."
+    },
     "classroomDetail": {
       "titleFallback": "Classroom",
       "invalidId": "This classroom link is invalid.",
       "loading": "Loading classroom…",
       "loadError": "Could not load classroom details.",
+      "description": "Overview of students, schedule, and courses for this classroom.",
       "sections": {
         "studentsTitle": "Students",
         "studentsPlaceholder": "Coming soon.",

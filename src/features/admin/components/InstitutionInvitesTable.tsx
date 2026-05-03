@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Copy, ChevronRight, Mail, MailPlus } from 'lucide-react'
+import { ChevronRight, Mail, MailPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import type { VariantProps } from 'class-variance-authority'
 
@@ -71,16 +71,6 @@ export function InstitutionInvitesTable({
     }
   }
 
-  async function handleCopyToken(e: React.MouseEvent, token: string) {
-    e.stopPropagation()
-    try {
-      await navigator.clipboard.writeText(token)
-      toast.success(t('institutionInvites.copySuccess'))
-    } catch {
-      toast.error(t('institutionInvites.copyFailed'))
-    }
-  }
-
   function handleOpenDetails(invite: InstitutionInvite) {
     setSelectedInvite(invite)
   }
@@ -115,7 +105,6 @@ export function InstitutionInvitesTable({
             <TableRow>
               <TableHead>{t('institutionInvites.table.email')}</TableHead>
               <TableHead>{t('institutionInvites.table.membershipRole')}</TableHead>
-              <TableHead>{t('institutionInvites.table.token')}</TableHead>
               <TableHead className="text-right">{t('institutionInvites.table.actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -127,21 +116,6 @@ export function InstitutionInvitesTable({
                   <Badge variant={membershipRoleVariant(row.membershipRole)}>
                     {row.membershipRole}
                   </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex max-w-[280px] items-center gap-1">
-                    <code className="truncate text-xs">{row.token}</code>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 shrink-0"
-                      aria-label={t('institutionInvites.copyTokenAria')}
-                      onClick={(e) => void handleCopyToken(e, row.token)}
-                    >
-                      <Copy className="size-4" />
-                    </Button>
-                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">

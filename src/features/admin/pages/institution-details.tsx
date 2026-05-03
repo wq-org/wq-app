@@ -157,7 +157,7 @@ const AdminInstitutionDetails = () => {
               <Text
                 as="h1"
                 variant="h1"
-                className="text-2xl font-semibold text-gray-900"
+                className="text-2xl font-semibold"
               >
                 {institution.name}
               </Text>

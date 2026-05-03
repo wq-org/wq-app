@@ -75,7 +75,7 @@ export function SettingsReadonlyFields({
         />
         {institution ? (
           <div
-            className="space-y-4 border-t border-border pt-4"
+            className="space-y-4  pt-4"
             aria-label={t('profile.sections.institutionTitle')}
           >
             <div className="space-y-1">

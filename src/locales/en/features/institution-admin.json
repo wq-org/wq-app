@@ -296,7 +296,32 @@
         "addProgramme": "Add programme",
         "searchLabel": "Search programmes",
         "searchPlaceholder": "Search by programme name or description…",
-        "noSearchResults": "No programmes match your search."
+        "noSearchResults": "No programmes match your search.",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saving": "Saving...",
+          "saveSuccess": "Faculty settings saved",
+          "saveError": "Could not save faculty settings.",
+          "validation": {
+            "nameRequired": "Faculty name is required."
+          },
+          "fields": {
+            "nameLabel": "Faculty name",
+            "namePlaceholder": "Enter faculty name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter faculty description"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        }
       },
       "programmeOfferings": {
         "titleFallback": "Programme offerings",
@@ -883,7 +908,7 @@
     },
     "createDialog": {
       "title": "Add classroom",
-      "description": "Create a classroom with class group, offering, and a primary teacher.",
+      "description": "Create a classroom with a class group and offering. The primary teacher is optional.",
       "cancel": "Cancel",
       "create": "Create classroom",
       "creating": "Creating...",
@@ -893,7 +918,7 @@
         "classGroupLabel": "Class group",
         "classGroupPlaceholder": "Search class groups",
         "offeringLabel": "Class group offering",
-        "teacherLabel": "Primary teacher",
+        "teacherLabel": "Primary teacher (optional)",
         "teacherPlaceholder": "Search teachers"
       },
       "classGroup": {
@@ -909,8 +934,7 @@
       "validation": {
         "titleRequired": "A classroom title is required.",
         "classGroupRequired": "Please select a class group.",
-        "offeringRequired": "Please select a class group offering.",
-        "teacherRequired": "Please select one primary teacher."
+        "offeringRequired": "Please select a class group offering."
       },
       "suggestions": {
         "label": "Suggestions:"

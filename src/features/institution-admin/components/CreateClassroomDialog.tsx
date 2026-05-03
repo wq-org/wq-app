@@ -117,9 +117,8 @@ export function CreateClassroomDialog({
     if (!title.trim()) return t('classrooms.createDialog.validation.titleRequired')
     if (!selectedClassGroupId) return t('classrooms.createDialog.validation.classGroupRequired')
     if (!selectedOfferingId) return t('classrooms.createDialog.validation.offeringRequired')
-    if (!selectedTeacherId) return t('classrooms.createDialog.validation.teacherRequired')
     return null
-  }, [selectedClassGroupId, selectedOfferingId, selectedTeacherId, t, title])
+  }, [selectedClassGroupId, selectedOfferingId, t, title])
 
   const canSubmit = !validationError && !isSubmitting && !isLoading
 

@@ -35,11 +35,17 @@
       "title": "Deine Cloud",
       "loadError": "Cloud-Dateien konnten nicht geladen werden."
     },
+    "license": {
+      "title": "Lizenz",
+      "subtitle": "Funktionen gemäß dem aktuellen Plan deiner Institution.",
+      "noInstitution": "Auf deinem Profil ist keine Institution ausgewählt; Planfunktionen können nicht geladen werden."
+    },
     "classroomDetail": {
       "titleFallback": "Klassenraum",
       "invalidId": "Dieser Klassenraum-Link ist ungültig.",
       "loading": "Klassenraum wird geladen …",
       "loadError": "Klassenraum-Details konnten nicht geladen werden.",
+      "description": "Übersicht über Lernende, Stundenplan und Kurse dieses Klassenraums.",
       "sections": {
         "studentsTitle": "Lernende",
         "studentsPlaceholder": "Demnächst.",

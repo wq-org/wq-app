@@ -269,6 +269,7 @@ export function CreateClassGroupOfferingDialog({
                     align="start"
                   >
                     <CalendarWithPresets
+                      compact
                       value={dateRange?.from}
                       onChange={(date) => {
                         setDateRange({
@@ -316,6 +317,7 @@ export function CreateClassGroupOfferingDialog({
                     align="start"
                   >
                     <CalendarWithPresets
+                      compact
                       value={dateRange?.to ?? dateRange?.from ?? new Date()}
                       disabled={dateRange?.from ? { before: dateRange.from } : undefined}
                       onChange={(date) => {

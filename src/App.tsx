@@ -28,6 +28,7 @@ import {
   TeacherCoursesPage,
   TeacherSchedulePage,
   TeacherSettingsPage,
+  TeacherLicensePage,
   GameStudio,
   TeacherChat,
   TeacherCloudPage,
@@ -69,8 +70,6 @@ import {
   AdminSettings,
   AdminUsers,
   AdminFilesPage,
-  AdminNotesPage,
-  AdminTasksPage,
 } from '@/features/admin'
 import {
   InstitutionAdminDashboardPage,
@@ -292,23 +291,6 @@ const App = () => {
                     </RequireAuth>
                   }
                 />
-                <Route
-                  path="notes"
-                  element={
-                    <RequireAuth>
-                      <AdminNotesPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="tasks"
-                  element={
-                    <RequireAuth>
-                      <AdminTasksPage />
-                    </RequireAuth>
-                  }
-                />
-
                 <Route
                   path="institution/new-institution"
                   element={<NewInstitution />}
@@ -805,6 +787,16 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherSettingsPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="license"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherLicensePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

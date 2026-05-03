@@ -117,7 +117,7 @@ export function SettingsProfileForm({
                   {t('profile.sections.roleHintPrefix')}
                 </Text>
                 <Badge
-                  variant="darkblue"
+                  variant="secondary"
                   size="sm"
                 >
                   {t(`profile.roles.${role}`)}

@@ -178,12 +178,12 @@ export function InstitutionFacultiesCreate() {
         description: null,
         academicYear: cohortAcademicYear,
       },
-      cohortOfferings: [{ status: 'draft' as const, dateRange: undefined }],
+      cohortOfferings: [],
       classGroup: {
         name: classGroupName,
         description: classGroupDescription.trim() || null,
       },
-      classGroupOfferings: [{ status: 'draft' as const, dateRange: undefined }],
+      classGroupOfferings: [],
     }
 
     setIsSubmitting(true)

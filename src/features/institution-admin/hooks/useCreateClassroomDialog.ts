@@ -161,7 +161,7 @@ export function useCreateClassroomDialog({
     if (!nextTitle) {
       return false
     }
-    if (!selectedClassGroupId || !selectedOfferingId || !selectedTeacherId) {
+    if (!selectedClassGroupId || !selectedOfferingId) {
       return false
     }
 
@@ -173,7 +173,7 @@ export function useCreateClassroomDialog({
         institutionId,
         classGroupId: selectedClassGroupId,
         classGroupOfferingId: selectedOfferingId,
-        primaryTeacherId: selectedTeacherId,
+        primaryTeacherId: selectedTeacherId || null,
         title: nextTitle,
       })
       onCreated(created)

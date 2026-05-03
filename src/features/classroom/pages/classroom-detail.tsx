@@ -100,6 +100,14 @@ export function ClassroomDetailPage() {
           >
             {displayTitle}
           </Text>
+          <Text
+            as="p"
+            variant="body"
+            muted
+            className="mt-2"
+          >
+            {t('pages.classroomDetail.description')}
+          </Text>
         </div>
 
         <div className="mt-10 flex flex-col gap-10">
