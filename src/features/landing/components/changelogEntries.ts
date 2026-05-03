@@ -20,6 +20,26 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-03-plans-license-faculty-and-teacher-dashboard',
+    date: '3 May 2026',
+    title:
+      'Clearer plans for schools, a license view for teachers, and smoother faculty and course workflows',
+    summary:
+      'Schools get a clearer picture of which product capabilities apply to their institution, and teachers can open a dedicated License item from the profile menu when they belong to a school. Faculty administrators see programmes and faculty details on separate tabs so browsing and editing stay easy to follow. The teacher home dashboard no longer shows sample games and tasks—filters stay in place with honest empty states until your own content appears—and saving topics and lessons is more reliable for everyday course authoring.',
+    bullets: [
+      'Institutions: the app can reflect your school’s plan and enabled features in the product experience, so what teachers and students see stays aligned with what you subscribe to',
+      'Teachers: open License from the profile menu (when you are linked to a school) to see subscription and entitlement context in one place',
+      'Teachers: home dashboard keeps the same course, game, and task filters but drops placeholder rows—each tab tells you clearly when there is nothing to show yet',
+      'Teachers and students: creating and editing course topics and lessons should feel more dependable, with fewer unexplained save failures during normal use',
+      'Institution admins: the faculty programmes area now has an Overview tab for searching and adding programmes, and a Settings tab to update the faculty name and description with clear unsaved-change prompts',
+      'Institution admins: dialogs for cohort offerings, classrooms, and class groups are a little easier to use, with smarter defaults and clearer choices when picking programmes and terms',
+      'Teachers: dashboard sections can be visually toned down when a block is not meant to be interactive yet, so the page feels calmer and easier to scan',
+      'Platform admins: unused Notes and Tasks shortcuts were removed from navigation so the admin area stays focused on what you actually use',
+      'Small polish to classroom and profile-related screens for a tidier day-to-day experience',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-05-02-teacher-dashboard-shell-loading-course-experience',
     date: '2 May 2026',
     title:
