@@ -14,6 +14,12 @@ type DashboardSectionProps = {
   /** When set with `showExpandButton`, the expand control navigates to this path. */
   expandTo?: string
   showContainerBorder?: boolean
+  /**
+   * When true, the title row is muted (`opacity-20`); the rounded body is non-interactive
+   * (`pointer-events-none`), visually muted (`opacity-50`), and `inert` so focus does not
+   * enter the block. Description text is unchanged.
+   */
+  disabled?: boolean
 }
 
 const expandButtonClassName =
@@ -28,11 +34,17 @@ export function DashboardSection({
   showExpandButton = false,
   expandTo,
   showContainerBorder = false,
+  disabled = false,
 }: DashboardSectionProps) {
   return (
     <div className="flex flex-col gap-4 w-full animate-in fade-in-0 slide-in-from-bottom-2 ">
       <div className="flex flex-col">
-        <div className="flex items-center gap-2 animate-in fade-in-0 slide-in-from-left-4">
+        <div
+          className={cn(
+            'flex items-center gap-2 animate-in fade-in-0 slide-in-from-left-4',
+            disabled && 'opacity-20',
+          )}
+        >
           <Icon className="h-4 w-4 stroke-2 text-foreground" />
           <Text
             variant="small"
@@ -52,7 +64,10 @@ export function DashboardSection({
           !showExpandButton && 'px-6 py-4',
           classNameContainer,
           showContainerBorder ? 'border' : '',
+          disabled && 'pointer-events-none opacity-50',
         )}
+        aria-disabled={disabled || undefined}
+        inert={disabled ? true : undefined}
       >
         {showExpandButton ? (
           <div className="relative min-h-0 flex-1">
@@ -65,7 +80,7 @@ export function DashboardSection({
                   asChild
                   size="icon"
                   variant="secondary"
-                  className={expandButtonClassName}
+                  className={cn(expandButtonClassName, disabled && 'pointer-events-none')}
                 >
                   <Link
                     to={expandTo}
@@ -80,7 +95,7 @@ export function DashboardSection({
                   size="icon"
                   variant="secondary"
                   aria-label="Expand"
-                  className={expandButtonClassName}
+                  className={cn(expandButtonClassName, disabled && 'pointer-events-none')}
                 >
                   <MoveDiagonal2 className="size-4" />
                 </Button>
