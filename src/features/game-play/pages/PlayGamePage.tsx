@@ -37,7 +37,7 @@ const PlayGamePage = () => {
           setEdges([])
           return
         }
-        const config = game.game_config
+        const config = game.game_content
         if (!config?.nodes?.length) {
           setError('Game has no content')
           setNodes([])

@@ -56,18 +56,18 @@ const Course = () => {
 
   if (!courseId) {
     return (
-      <Empty className="w-full rounded-xl border border-dashed border-gray-200 p-6 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
+      <Empty className="w-full rounded-xl border border-dashed border-border p-6 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
         <EmptyHeader>
           <EmptyMedia
             variant="icon"
-            className="border border-gray-200 bg-gray-50 text-gray-400"
+            className="border border-border bg-muted text-muted-foreground"
           >
-            <MessageSquareWarning className="h-8 w-8 text-gray-400" />
+            <MessageSquareWarning className="h-8 w-8 text-muted-foreground" />
           </EmptyMedia>
-          <EmptyTitle className="text-sm font-normal text-gray-500">
+          <EmptyTitle className="text-sm font-normal text-muted-foreground">
             {t('page.emptyState.title')}
           </EmptyTitle>
-          <EmptyDescription className="text-xs text-gray-400">
+          <EmptyDescription className="text-xs text-muted-foreground/80">
             {t('page.emptyState.description')}
           </EmptyDescription>
         </EmptyHeader>

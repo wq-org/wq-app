@@ -11,11 +11,7 @@ import type { PublishDrawerProps } from '../types/game-studio.types'
 import type { Node } from '@xyflow/react'
 import { toast } from 'sonner'
 import { Text } from '@/components/ui/text'
-import {
-  getValidationResult,
-  getPointsForNode,
-  hasParagraphPenalties,
-} from '../utils/publishValidation'
+import { getValidationResult, getPointsForNode } from '../utils/publishValidation'
 import { PublishGameCheckList } from './PublishGameCheckList'
 import { useTranslation } from 'react-i18next'
 
@@ -40,7 +36,6 @@ export function GamePublishDrawer({
   const canPublish = validationResult.canPublish
   const totalNodesCount = nodes.length
   const totalPoints = nodes.reduce((sum, node) => sum + getPointsForNode(node), 0)
-  const showFloorNote = hasParagraphPenalties(nodes)
 
   const handlePublish = async () => {
     if (!canPublish) {
@@ -141,15 +136,6 @@ export function GamePublishDrawer({
                         {t('publishDrawer.pointsValue', { points: totalPoints.toFixed(1) })}
                       </Badge>
                     </div>
-                    {showFloorNote && (
-                      <Text
-                        as="p"
-                        variant="body"
-                        className="text-xs text-muted-foreground"
-                      >
-                        {t('publishDrawer.floorNote')}
-                      </Text>
-                    )}
                   </div>
                 </div>
               </CardContent>

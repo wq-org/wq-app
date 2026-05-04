@@ -82,7 +82,8 @@
     },
     "tasks": {
       "empty": "Keine Aufgaben für diesen Filter."
-    }
+    },
+    "gamesFilterNoMatches": "Keine Spiele für diesen Filter."
   },
   "meta": {
     "followersTopLabel": "Follower",

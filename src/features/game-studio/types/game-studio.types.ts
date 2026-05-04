@@ -1,169 +1,5 @@
-import type { LucideIcon } from 'lucide-react'
 import type { Node, Edge } from '@xyflow/react'
 import type { ThemeId } from '@/lib/themes'
-
-// ========== Core Types ==========
-export interface GameNodeTemplate {
-  id: string
-  label: string
-  type: string
-}
-
-export interface GameOption {
-  id: string
-  icon: LucideIcon
-  title: string
-  description: string
-  component: React.ComponentType
-}
-
-// ========== History Types ==========
-export interface HistoryState {
-  nodes: Node[]
-  edges: Edge[]
-}
-
-// ========== Node Data Types ==========
-export interface GameNodeData {
-  label?: string
-  onClick?: () => void
-  title?: string
-  description?: string
-  condition?: string
-  correctMessage?: string
-  wrongMessage?: string
-  correctPath?: 'A' | 'B'
-  gameType?: string
-}
-
-// ========== Node Component Props ==========
-export interface GameStartNodeProps {
-  data?: {
-    onClick?: () => void
-    title?: string
-    label?: string
-  }
-  selected?: boolean
-}
-
-export interface GameEndNodeProps {
-  data?: {
-    label?: string
-    onClick?: () => void
-  }
-  selected?: boolean
-}
-
-export interface GameIfElseNodeProps {
-  data?: {
-    label?: string
-    title?: string
-    onClick?: () => void
-    condition?: string
-    correctMessage?: string
-    wrongMessage?: string
-    correctPath?: 'A' | 'B'
-  }
-  selected?: boolean
-}
-
-export interface GameParagraphNodeProps {
-  data?: {
-    label?: string
-    onClick?: () => void
-    gameType?: string
-  }
-  selected?: boolean
-}
-
-export interface GameImageTermsNodeProps {
-  data?: {
-    label?: string
-    onClick?: () => void
-    gameType?: string
-  }
-  selected?: boolean
-}
-
-export interface GameImagePinNodeProps {
-  data?: {
-    label?: string
-    onClick?: () => void
-    gameType?: string
-  }
-  selected?: boolean
-}
-
-// ========== Dialog Props ==========
-export interface StartGameDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave?: (data: { title: string; description: string; theme_id: ThemeId }) => void
-  nodeId?: string
-  initialData?: { title?: string; label?: string; description?: string; theme_id?: ThemeId }
-}
-
-export interface EndGameDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave?: (data: { title: string; description: string }) => void
-  initialData?: { title?: string; label?: string; description?: string }
-  nodeId?: string
-}
-
-export interface IfElseGameDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave?: (
-    data: {
-      title?: string
-      description?: string
-      condition?: string
-      correctMessage?: string
-      wrongMessage?: string
-      correctPath?: 'A' | 'B'
-    },
-    nodeId?: string,
-  ) => void
-  initialData?: {
-    title?: string
-    label?: string
-    description?: string
-    condition?: string
-    correctMessage?: string
-    wrongMessage?: string
-    correctPath?: 'A' | 'B'
-  }
-  nodeId?: string
-  onDelete?: () => void
-  nodes?: Node[]
-  edges?: Edge[]
-}
-
-export interface GameNodeDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  nodeType?: string
-  nodeId?: string
-  initialData?: unknown
-  onSave?: (
-    data: {
-      points?: number
-      paragraphGameData?: unknown
-      imageTermGameData?: unknown
-      imagePinGameData?: unknown
-    },
-    nodeId?: string,
-  ) => void
-  onDelete?: () => void
-  /** Upload image for game node; returns storage path and public URL or null. Used when saving image-term or image-pin nodes. */
-  onUploadImage?: (
-    file: File,
-    nodeId: string,
-  ) => Promise<{ path: string; publicUrl: string | null } | null>
-  /** Remove image from storage when user clears the image in editor. Called with storage path. */
-  onRemoveImage?: (path: string) => void | Promise<void>
-}
 
 // ========== Drawer Props ==========
 export interface SettingsDrawerProps {
@@ -203,15 +39,6 @@ export interface PublishDrawerProps {
   gameTitle?: string
   /** Called when user clicks Publish (after validation). Should save then publish. */
   onPublish?: () => Promise<void>
-}
-
-// ========== Sidebar Types ==========
-export interface SidebarItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  category: 'node' | 'logic'
-  nodeType: string
 }
 
 // ========== Card Types ==========
@@ -272,12 +99,7 @@ export interface GameProjectCardListProps {
   scrollAreaClassName?: string
 }
 
-// ========== Settings Types ==========
-export interface GameNodeSettingsProps {
-  nodeId?: string
-}
-
-// ========== Flow game config (persisted in games.game_config) ==========
+// ========== Flow game config (persisted in games.game_content) ==========
 /** Serializable node for persistence (no functions in data). */
 export interface SerializableNode {
   id: string
@@ -294,7 +116,7 @@ export interface SerializableEdge {
   sourceHandle?: string | null
 }
 
-/** Shape stored in games.game_config for flow/canvas projects. */
+/** Shape stored in games.game_content for flow/canvas projects. */
 export interface FlowGameConfig {
   projectVersion: string
   nodes: SerializableNode[]

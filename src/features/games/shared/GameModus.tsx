@@ -6,7 +6,7 @@ import { NODE_TYPE_TO_GAME } from './nodeTypeToGame'
 import { Text } from '@/components/ui/text'
 
 export interface GameModusProps {
-  /** Playable game nodes only (gameParagraph, gameImageTerms, gameImagePin), in flow order. */
+  /** Playable game nodes only (gameImagePin), in flow order. */
   nodes: Node[]
   className?: string
 }

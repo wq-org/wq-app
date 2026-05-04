@@ -40,7 +40,7 @@ function getTitleAndDescription(data: Record<string, unknown> | undefined): {
 }
 
 function isPlayableNodeType(type: string | undefined) {
-  return type === 'gameParagraph' || type === 'gameImageTerms' || type === 'gameImagePin'
+  return type === 'gameImagePin'
 }
 
 export function GamePlayView({

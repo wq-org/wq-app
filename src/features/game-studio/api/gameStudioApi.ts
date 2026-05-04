@@ -8,10 +8,11 @@ export interface GameForStudio {
   title: string
   description: string | null
   teacher_id: string
-  topic_id: string | null
+  institution_id: string | null
+  course_id: string | null
   game_type: string
   theme_id: ThemeId
-  game_config: FlowGameConfig | null
+  game_content: FlowGameConfig | null
   status: string | null
   version: number | null
   published_version: number | null
@@ -23,7 +24,7 @@ export interface GameForStudio {
 
 /**
  * Create a new flow game for the studio (canvas). Inserts with game_type 'flow'
- * and default game_config (single Start node).
+ * and default game_content (single Start node).
  */
 export async function createGameForStudio(
   teacherId: string,
@@ -39,9 +40,8 @@ export async function createGameForStudio(
       title,
       description,
       teacher_id: teacherId,
-      topic_id: null,
       game_type: 'flow',
-      game_config: gameConfig,
+      game_content: gameConfig,
       status: 'draft',
       is_draft: true,
       version: 1,
@@ -62,11 +62,11 @@ export interface UpdateGameForStudioPayload {
   title?: string
   description?: string
   theme_id?: ThemeId
-  game_config?: FlowGameConfig
+  game_content?: FlowGameConfig
 }
 
 /**
- * Update an existing game (Save). Overwrites game_config, title, description.
+ * Update an existing game (Save). Overwrites game_content, title, description.
  * Does not create a new version or change status.
  */
 export async function updateGameForStudio(
@@ -79,7 +79,7 @@ export async function updateGameForStudio(
   if (payload.title !== undefined) updates.title = payload.title
   if (payload.description !== undefined) updates.description = payload.description
   if (payload.theme_id !== undefined) updates.theme_id = payload.theme_id
-  if (payload.game_config !== undefined) updates.game_config = payload.game_config
+  if (payload.game_content !== undefined) updates.game_content = payload.game_content
 
   const { data, error } = await supabase
     .from('games')
@@ -147,7 +147,7 @@ export async function unpublishGame(gameId: string): Promise<GameForStudio> {
 }
 
 /**
- * Get a single game by ID (full row including game_config for loading canvas).
+ * Get a single game by ID (full row including game_content for loading canvas).
  */
 export async function getGameForStudio(gameId: string): Promise<GameForStudio | null> {
   const { data, error } = await supabase.from('games').select('*').eq('id', gameId).single()

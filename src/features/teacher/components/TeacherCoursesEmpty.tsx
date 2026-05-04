@@ -1,4 +1,4 @@
-import { BookAlert } from 'lucide-react'
+import { BookAlert, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -40,6 +40,8 @@ export function TeacherCoursesEmpty({ hideIcon }: TeacherCoursesEmptyProps) {
           size="sm"
           onClick={handleAddCourse}
         >
+          <Plus className="size-4" />
+
           {t('dashboard.coursesEmpty.addCourse')}
         </Button>
       </EmptyContent>

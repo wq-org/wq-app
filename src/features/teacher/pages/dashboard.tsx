@@ -175,14 +175,16 @@ const Dashboard = () => {
     } as const
   }, [courseCards])
 
+  const gameProjects: GameProjectCardListProps['projects'] = useMemo(() => [], [])
+
   const gamesByFilterTab = useMemo(() => {
-    const all: GameProjectCardListProps['projects'] = []
+    const all = gameProjects
     return {
-      all,
+      all: [...all],
       published: all.filter((g) => g.status === 'published'),
       drafts: all.filter((g) => g.status === 'draft'),
     } as const
-  }, [])
+  }, [gameProjects])
 
   const tasksByFilter = useMemo(() => {
     const all: { id: string; title: string; status: 'draft' | 'published' }[] = []
@@ -362,42 +364,48 @@ const Dashboard = () => {
               expandTo="/teacher/game-studio"
               showContainerBorder
             >
-              <>
-                <SelectTabs
-                  variant="compact"
-                  tabs={GAME_FILTER_TABS}
-                  activeTabId={activeGameTabId}
-                  onTabChange={handleGameTabChange}
-                />
-                {GAME_FILTER_TABS.map((tab) => {
-                  const games =
-                    tab.id === 'all'
-                      ? gamesByFilterTab.all
-                      : tab.id === 'published'
-                        ? gamesByFilterTab.published
-                        : gamesByFilterTab.drafts
+              {gamesByFilterTab.all.length === 0 ? (
+                <TeacherGameProjectsEmpty hideIcon />
+              ) : (
+                <>
+                  <SelectTabs
+                    variant="compact"
+                    tabs={GAME_FILTER_TABS}
+                    activeTabId={activeGameTabId}
+                    onTabChange={handleGameTabChange}
+                  />
+                  {GAME_FILTER_TABS.map((tab) => {
+                    const games =
+                      tab.id === 'all'
+                        ? gamesByFilterTab.all
+                        : tab.id === 'published'
+                          ? gamesByFilterTab.published
+                          : gamesByFilterTab.drafts
 
-                  return (
-                    <SelectTabsContent
-                      key={tab.id}
-                      tabId={tab.id}
-                      activeTabId={activeGameTabId}
-                      className="mt-2 min-h-0 px-0"
-                    >
-                      {games.length === 0 ? (
-                        <TeacherGameProjectsEmpty />
-                      ) : (
-                        <GameProjectCardList
-                          variant="compact"
-                          projects={games}
-                          onOpen={handleGameOpen}
-                          className="gap-2"
-                        />
-                      )}
-                    </SelectTabsContent>
-                  )
-                })}
-              </>
+                    return (
+                      <SelectTabsContent
+                        key={tab.id}
+                        tabId={tab.id}
+                        activeTabId={activeGameTabId}
+                        className="mt-2 min-h-0 px-0"
+                      >
+                        {games.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            {t('dashboard.gamesFilterNoMatches')}
+                          </p>
+                        ) : (
+                          <GameProjectCardList
+                            variant="compact"
+                            projects={games}
+                            onOpen={handleGameOpen}
+                            className="gap-2"
+                          />
+                        )}
+                      </SelectTabsContent>
+                    )
+                  })}
+                </>
+              )}
             </DashboardSection>
           </div>
         </div>
