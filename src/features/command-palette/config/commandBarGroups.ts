@@ -214,16 +214,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'select',
     },
     {
-      id: 'cloud',
-      labelKey: 'actions.cloud',
-      icon: Cloud,
-      to: `${rolePrefix(USER_ROLES.STUDENT)}/files`,
-    },
-    {
-      id: 'computer',
-      labelKey: 'actions.cloud',
+      id: 'agent',
+      labelKey: 'actions.agent',
       icon: AgentComputerIcon,
-      actionId: 'computer',
+      actionId: 'agent',
     },
     {
       id: 'upload',

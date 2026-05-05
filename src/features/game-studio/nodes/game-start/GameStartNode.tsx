@@ -1,6 +1,6 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { Play } from 'lucide-react'
-import { GameNodeLayout } from '../../node-layout/GameNodeLayout'
+import { GameNodeLayout } from '../../components/GameNodeLayout'
 import type { GameStartNodeData } from './game-start.schema'
 
 type StartCanvasData = GameStartNodeData & { onClick?: () => void }

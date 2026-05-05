@@ -39,7 +39,7 @@ import {
 } from '../api/gameStudioApi'
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
-import { GamePreviewDrawer } from '../components/GamePreviewDrawer'
+import { GamePreviewDialog } from '../components/GamePreviewDialog'
 import { GamePublishDrawer } from '../components/GamePublishDrawer'
 import { deleteGame } from '@/features/command-palette'
 import { GameEditorSidebar } from './GameEditorSidebar'
@@ -695,7 +695,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         isPublished={isPublished}
         onUnpublish={handleUnpublish}
       />
-      <GamePreviewDrawer
+      <GamePreviewDialog
         open={isPreviewDrawerOpen}
         onOpenChange={setIsPreviewDrawerOpen}
         nodes={nodes}

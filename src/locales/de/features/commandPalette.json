@@ -29,7 +29,8 @@
     "pan": "Verschieben",
     "select": "Auswählen",
     "undo": "Rückgängig",
-    "redo": "Wiederholen"
+    "redo": "Wiederholen",
+    "agent": "Agent"
   },
   "navigation": {
     "pan": "Verschieben",

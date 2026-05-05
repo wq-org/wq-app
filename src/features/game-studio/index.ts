@@ -18,11 +18,11 @@ export { PreviewIfElseSlide } from './components/PreviewIfElseSlide'
 export { PreviewStartEndSlide } from './components/PreviewStartEndSlide'
 
 // ---- Shared shells ----
-export { GameNodeLayout, type GameNodeLayoutProps } from './node-layout/GameNodeLayout'
+export { GameNodeLayout, type GameNodeLayoutProps } from './components/GameNodeLayout'
 export {
   GameNodeDialogShell,
   type GameNodeDialogShellProps,
-} from './node-dialog/GameNodeDialogShell'
+} from './components/GameNodeDialogShell'
 
 // ---- Registry ----
 export {

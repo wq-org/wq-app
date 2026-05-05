@@ -1,4 +1,5 @@
-import { DoorOpen, EllipsisVertical, Play, Save, Settings2, Upload } from 'lucide-react'
+import { DoorOpen, EllipsisVertical, Play, Save, Settings2, PackageCheck } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
@@ -17,6 +18,8 @@ export function GameEditorToolbar({
   onPublish,
   onOpenSettings,
 }: GameEditorToolbarProps) {
+  const { t } = useTranslation('features.gameStudio')
+
   return (
     <div className="absolute top-4 right-4 z-20 flex items-center gap-2 rounded-full bg-white/70 p-1.5 backdrop-blur-sm pointer-events-auto dark:bg-zinc-900/80 dark:ring-1 dark:ring-white/10">
       <Popover>
@@ -41,7 +44,7 @@ export function GameEditorToolbar({
               onClick={onSave}
             >
               <Save className="h-4 w-4" />
-              Save
+              {t('editorCanvas.actions.save')}
             </Button>
             <Button
               variant="ghost"
@@ -50,7 +53,7 @@ export function GameEditorToolbar({
               onClick={onPreview}
             >
               <Play className="h-4 w-4" />
-              Preview
+              {t('editorCanvas.actions.preview')}
             </Button>
             <Button
               variant="ghost"
@@ -59,7 +62,7 @@ export function GameEditorToolbar({
               onClick={onLeave}
             >
               <DoorOpen className="h-4 w-4" />
-              Leave
+              {t('editorCanvas.actions.leave')}
             </Button>
             <Button
               variant="ghost"
@@ -67,8 +70,8 @@ export function GameEditorToolbar({
               className="w-full justify-start gap-2 rounded-lg dark:hover:bg-zinc-800"
               onClick={onPublish}
             >
-              <Upload className="h-4 w-4" />
-              Publish
+              <PackageCheck className="h-4 w-4" />
+              {t('editorCanvas.actions.publish')}
             </Button>
           </div>
         </PopoverContent>

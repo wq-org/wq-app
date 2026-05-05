@@ -1,7 +1,7 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { Split } from 'lucide-react'
 import { Text } from '@/components/ui/text'
-import { GameNodeLayout } from '../../node-layout/GameNodeLayout'
+import { GameNodeLayout } from '../../components/GameNodeLayout'
 import { IF_ELSE_HANDLE_A, IF_ELSE_HANDLE_B, type GameIfElseNodeData } from './game-if-else.schema'
 
 const MAX_LABEL_LENGTH = 24
@@ -38,14 +38,14 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
           <Handle
             type="target"
             position={Position.Left}
-            className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
+            className="w-3! h-3! bg-orange-500! border-2! border-white!"
             id="left"
             onClick={(e) => e.stopPropagation()}
           />
           <Handle
             type="source"
             position={Position.Right}
-            className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
+            className="w-3! h-3! bg-orange-500! border-2! border-white!"
             id={IF_ELSE_HANDLE_A}
             onClick={(e) => e.stopPropagation()}
             style={{ top: '30%' }}
@@ -53,7 +53,7 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
           <Handle
             type="source"
             position={Position.Right}
-            className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white"
+            className="w-3! h-3! bg-orange-500! border-2! border-white!"
             id={IF_ELSE_HANDLE_B}
             onClick={(e) => e.stopPropagation()}
             style={{ top: '70%' }}

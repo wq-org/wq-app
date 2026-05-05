@@ -1,6 +1,6 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { Square } from 'lucide-react'
-import { GameNodeLayout } from '../../node-layout/GameNodeLayout'
+import { GameNodeLayout } from '../../components/GameNodeLayout'
 import type { GameEndNodeData } from './game-end.schema'
 
 type EndCanvasData = GameEndNodeData & { onClick?: () => void }

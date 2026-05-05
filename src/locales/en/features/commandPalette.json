@@ -29,7 +29,8 @@
     "pan": "Pan",
     "select": "Select",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "agent": "Agent"
   },
   "navigation": {
     "pan": "Pan",

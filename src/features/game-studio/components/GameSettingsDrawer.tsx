@@ -123,116 +123,123 @@ export function GameSettingsDrawer({
             </Button>
           </div>
         </DrawerHeader>
-        <div className="p-4 flex flex-col gap-6 h-full overflow-y-auto">
-          <FieldInput
-            id="project-title"
-            value={localTitle}
-            onValueChange={setLocalTitle}
-            label={t('settingsDrawer.projectTitleLabel')}
-            placeholder={t('settingsDrawer.projectTitlePlaceholder')}
-          />
-
-          <FieldTextarea
-            id="project-description"
-            value={localDescription}
-            onValueChange={setLocalDescription}
-            label={t('settingsDrawer.projectDescriptionLabel')}
-            placeholder={t('settingsDrawer.projectDescriptionPlaceholder')}
-            rows={4}
-          />
-
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">{t('settingsDrawer.themeLabel')}</Label>
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('settingsDrawer.themeHint')}
-            </Text>
-            <ColorPicker
-              selectedId={localThemeId}
-              onSelect={setLocalThemeId}
+        <div className="flex h-full min-h-0 flex-col">
+          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-4">
+            <FieldInput
+              id="project-title"
+              value={localTitle}
+              onValueChange={setLocalTitle}
+              label={t('settingsDrawer.projectTitleLabel')}
+              placeholder={t('settingsDrawer.projectTitlePlaceholder')}
             />
-          </div>
 
-          {/* Publish status */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('settingsDrawer.publishStatusLabel')}</Label>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <Text
-                  as="p"
-                  variant="body"
-                  className="text-sm font-medium"
-                >
-                  {isPublished
-                    ? t('settingsDrawer.publishStatus.published')
-                    : t('settingsDrawer.publishStatus.draft')}
-                </Text>
-                <Text
-                  as="p"
-                  variant="body"
-                  className="text-xs text-muted-foreground"
-                >
-                  {isPublished
-                    ? t('settingsDrawer.publishStatus.publishedHint')
-                    : t('settingsDrawer.publishStatus.draftHint')}
-                </Text>
-              </div>
-              <Switch
-                checked={isPublished}
-                onCheckedChange={handleUnpublishToggle}
-                disabled={!isPublished || isUnpublishPending}
-              />
-            </div>
-          </div>
+            <FieldTextarea
+              id="project-description"
+              value={localDescription}
+              onValueChange={setLocalDescription}
+              label={t('settingsDrawer.projectDescriptionLabel')}
+              placeholder={t('settingsDrawer.projectDescriptionPlaceholder')}
+              rows={4}
+            />
 
-          {/* Version Badge */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{t('settingsDrawer.versionLabel')}</label>
-            <div>
-              <Badge variant="outline">{t('settingsDrawer.versionValue', { version })}</Badge>
-            </div>
-          </div>
-
-          {/* Rollback Section */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{t('settingsDrawer.rollbackLabel')}</label>
-            {rollbackVersions.length > 0 ? (
-              <div className="space-y-2">
-                {rollbackVersions.map((versionItem) => (
-                  <Button
-                    key={versionItem.id}
-                    variant="outline"
-                    className="w-full justify-start gap-2"
-                    onClick={() => handleRollback(versionItem.id)}
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                    {t('settingsDrawer.rollbackToVersion', { version: versionItem.version })}
-                  </Button>
-                ))}
-              </div>
-            ) : (
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">{t('settingsDrawer.themeLabel')}</Label>
               <Text
                 as="p"
                 variant="body"
                 className="text-sm text-muted-foreground"
               >
-                {t('settingsDrawer.noPreviousVersions')}
+                {t('settingsDrawer.themeHint')}
               </Text>
-            )}
+              <ColorPicker
+                selectedId={localThemeId}
+                onSelect={setLocalThemeId}
+              />
+            </div>
+
+            {/* Publish status */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {t('settingsDrawer.publishStatusLabel')}
+              </Label>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-sm font-medium"
+                  >
+                    {isPublished
+                      ? t('settingsDrawer.publishStatus.published')
+                      : t('settingsDrawer.publishStatus.draft')}
+                  </Text>
+                  <Text
+                    as="p"
+                    variant="body"
+                    className="text-xs text-muted-foreground"
+                  >
+                    {isPublished
+                      ? t('settingsDrawer.publishStatus.publishedHint')
+                      : t('settingsDrawer.publishStatus.draftHint')}
+                  </Text>
+                </div>
+                <Switch
+                  checked={isPublished}
+                  onCheckedChange={handleUnpublishToggle}
+                  disabled={!isPublished || isUnpublishPending}
+                />
+              </div>
+            </div>
+
+            {/* Version Badge */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('settingsDrawer.versionLabel')}</label>
+              <div>
+                <Badge variant="outline">{t('settingsDrawer.versionValue', { version })}</Badge>
+              </div>
+            </div>
+
+            {/* Rollback Section */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('settingsDrawer.rollbackLabel')}</label>
+              {rollbackVersions.length > 0 ? (
+                <div className="space-y-2">
+                  {rollbackVersions.map((versionItem) => (
+                    <Button
+                      key={versionItem.id}
+                      variant="outline"
+                      className="w-full justify-start gap-2"
+                      onClick={() => handleRollback(versionItem.id)}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      {t('settingsDrawer.rollbackToVersion', { version: versionItem.version })}
+                    </Button>
+                  ))}
+                </div>
+              ) : (
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm text-muted-foreground"
+                >
+                  {t('settingsDrawer.noPreviousVersions')}
+                </Text>
+              )}
+            </div>
           </div>
 
-          {/* Spacer to push buttons to bottom */}
-          <div className="flex-1" />
-
-          {/* Bottom Actions */}
-          <div className="flex flex-col gap-3 pt-4 border-t">
+          <div className="sticky bottom-0 z-10 flex items-center gap-3 border-t bg-background/95 p-4 backdrop-blur-sm">
+            <HoldToDeleteButton
+              onDelete={handleDelete}
+              className="flex-1"
+            >
+              {t('settingsDrawer.holdToDelete')}
+            </HoldToDeleteButton>
             <Button
               onClick={handleSave}
               disabled={isSaving}
               variant="darkblue"
+              className="flex-1"
             >
               {isSaving ? (
                 <Spinner
@@ -240,13 +247,10 @@ export function GameSettingsDrawer({
                   size="xs"
                 />
               ) : (
-                <Check className="size-4" />
+                <Check className="size-4 text-inherit" />
               )}
               {t('common.save')}
             </Button>
-            <HoldToDeleteButton onDelete={handleDelete}>
-              {t('settingsDrawer.holdToDelete')}
-            </HoldToDeleteButton>
           </div>
         </div>
       </DrawerContent>

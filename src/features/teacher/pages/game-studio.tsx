@@ -68,7 +68,7 @@ const GameStudio = () => {
   ])
 
   const handleCreateGame = () => {
-    requestOpenCommandAddDialog({ initialType: 'game' })
+    requestOpenCommandAddDialog()
   }
 
   const showSearchAndList = !loading && projects.length > 0

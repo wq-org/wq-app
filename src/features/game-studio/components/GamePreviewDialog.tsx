@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { PreviewDrawerProps } from '../types/game-studio.types'
 
-export function GamePreviewDrawer({ open, onOpenChange }: PreviewDrawerProps) {
+export function GamePreviewDialog({ open, onOpenChange }: PreviewDrawerProps) {
   return (
     <Dialog
       open={open}

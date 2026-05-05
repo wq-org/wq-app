@@ -24,7 +24,7 @@ export type ActionId =
   | 'home'
   | 'attendanceStart'
   | 'attendanceEnd'
-  | 'computer'
+  | 'agent'
 
 /**
  * Single clickable element in the command bar.

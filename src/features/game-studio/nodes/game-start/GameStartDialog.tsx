@@ -1,4 +1,4 @@
-import { GameNodeDialogShell } from '../../node-dialog/GameNodeDialogShell'
+import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
 
 export function GameStartDialog({ nodeId, onClose }: GameNodeDialogProps) {
