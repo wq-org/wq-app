@@ -65,8 +65,10 @@
     "loadingClassrooms": "Loading classrooms…",
     "loadingSchedule": "Loading schedule…",
     "loadingCourses": "Loading courses…",
+    "loadingGames": "Loading games…",
     "classroomsLoadError": "Could not load classrooms.",
     "coursesLoadError": "Could not load courses.",
+    "gamesLoadError": "Could not load games.",
     "classroomsEmpty": {
       "title": "No classrooms yet",
       "description": "Classrooms you teach will appear here."

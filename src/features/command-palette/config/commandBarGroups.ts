@@ -10,6 +10,7 @@ import {
   Search as SearchIcon,
   Upload,
 } from 'lucide-react'
+import { AgentComputerIcon } from '@/components/shared'
 import { USER_ROLES, getRoleRoutePrefix } from '@/features/auth'
 import type {
   CommandBarContext,
@@ -205,11 +206,24 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       icon: Hand,
       actionId: 'pan',
     },
+
     {
       id: 'select',
       labelKey: 'navigation.select',
       icon: MousePointer2,
       actionId: 'select',
+    },
+    {
+      id: 'cloud',
+      labelKey: 'actions.cloud',
+      icon: Cloud,
+      to: `${rolePrefix(USER_ROLES.STUDENT)}/files`,
+    },
+    {
+      id: 'computer',
+      labelKey: 'actions.cloud',
+      icon: AgentComputerIcon,
+      actionId: 'computer',
     },
     {
       id: 'upload',

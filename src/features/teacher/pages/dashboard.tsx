@@ -8,7 +8,7 @@ import { LoadingPage, SelectTabs, SelectTabsContent, type TabItem } from '@/comp
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
 import { CourseCardList, useCourses, type CourseCardProps } from '@/features/course'
 import { DashboardSection } from '@/features/dashboard'
-import { GameProjectCardList, type GameProjectCardListProps } from '@/features/game-studio'
+import { GameProjectCardList, useTeacherGameProjects } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
 import { useMyInstitutionFeatureFlags } from '@/features/entitlements'
 import { TeacherClassroomsEmpty } from '../components/TeacherClassroomsEmpty'
@@ -175,7 +175,11 @@ const Dashboard = () => {
     } as const
   }, [courseCards])
 
-  const gameProjects: GameProjectCardListProps['projects'] = useMemo(() => [], [])
+  const {
+    projects: gameProjects,
+    loading: gameProjectsLoading,
+    error: gameProjectsError,
+  } = useTeacherGameProjects(profile?.user_id)
 
   const gamesByFilterTab = useMemo(() => {
     const all = gameProjects
@@ -185,6 +189,12 @@ const Dashboard = () => {
       drafts: all.filter((g) => g.status === 'draft'),
     } as const
   }, [gameProjects])
+
+  useEffect(() => {
+    if (gameProjectsError) {
+      toast.error(t('dashboard.gamesLoadError'))
+    }
+  }, [gameProjectsError, t])
 
   const tasksByFilter = useMemo(() => {
     const all: { id: string; title: string; status: 'draft' | 'published' }[] = []
@@ -364,7 +374,13 @@ const Dashboard = () => {
               expandTo="/teacher/game-studio"
               showContainerBorder
             >
-              {gamesByFilterTab.all.length === 0 ? (
+              {gameProjectsLoading ? (
+                <LoadingPage
+                  variant="embedded"
+                  message={t('dashboard.loadingGames')}
+                  size={72}
+                />
+              ) : gamesByFilterTab.all.length === 0 ? (
                 <TeacherGameProjectsEmpty hideIcon />
               ) : (
                 <>

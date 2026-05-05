@@ -64,8 +64,10 @@
     "loadingClassrooms": "Klassenräume werden geladen …",
     "loadingSchedule": "Stundenplan wird geladen …",
     "loadingCourses": "Kurse werden geladen …",
+    "loadingGames": "Spiele werden geladen …",
     "classroomsLoadError": "Klassenräume konnten nicht geladen werden.",
     "coursesLoadError": "Kurse konnten nicht geladen werden.",
+    "gamesLoadError": "Spiele konnten nicht geladen werden.",
     "classroomsEmpty": {
       "title": "Noch keine Klassenräume",
       "description": "Klassenräume, in denen du unterrichtest, erscheinen hier."

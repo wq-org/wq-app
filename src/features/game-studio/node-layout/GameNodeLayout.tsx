@@ -6,19 +6,19 @@ import type { GameNodeAccent } from '../nodes/_registry/game-node-registry.types
 
 const accentClasses: Record<GameNodeAccent, { ring: string; bg: string; text: string }> = {
   gray: {
-    ring: 'border-gray-500/20',
-    bg: 'bg-gray-500/10',
-    text: 'text-gray-500',
+    ring: 'border-gray-500/20 dark:border-gray-400/30',
+    bg: 'bg-gray-500/10 dark:bg-gray-400/10',
+    text: 'text-gray-500 dark:text-gray-300',
   },
   blue: {
-    ring: 'border-blue-500/20',
-    bg: 'bg-blue-500/10',
-    text: 'text-blue-500',
+    ring: 'border-blue-500/20 dark:border-blue-400/30',
+    bg: 'bg-blue-500/10 dark:bg-blue-400/10',
+    text: 'text-blue-500 dark:text-blue-300',
   },
   orange: {
-    ring: 'border-orange-500/20',
-    bg: 'bg-orange-500/10',
-    text: 'text-orange-500',
+    ring: 'border-orange-500/20 dark:border-orange-400/30',
+    bg: 'bg-orange-500/10 dark:bg-orange-400/10',
+    text: 'text-orange-500 dark:text-orange-300',
   },
 }
 
@@ -55,10 +55,10 @@ export function GameNodeLayout({
     <div
       onClick={onClick}
       className={cn(
-        'relative flex items-center gap-3 px-4 py-3 bg-white rounded-3xl min-w-[180px]',
+        'relative flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-800 rounded-3xl min-w-[180px]',
         'cursor-pointer hover:shadow-md transition-shadow',
         'animate-in fade-in-0 slide-in-from-bottom-2',
-        selected && 'border-2 border-gray-300 animate-in zoom-in-95',
+        selected && 'border-2 border-gray-300 dark:border-zinc-500 animate-in zoom-in-95',
         className,
       )}
     >
@@ -76,7 +76,7 @@ export function GameNodeLayout({
         <Text
           as="span"
           variant="small"
-          className="text-gray-900 font-medium truncate block"
+          className="text-gray-900 dark:text-zinc-100 font-medium truncate block"
           title={label}
         >
           {label}

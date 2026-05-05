@@ -84,6 +84,7 @@ export {
   getTeacherFlowGames,
   getPublishedGamesFromFollowedTeachers,
 } from './api/gameStudioApi'
+export { useTeacherGameProjects } from './hooks/useTeacherGameProjects'
 
 // ---- Flow-traversal utilities ----
 export type {

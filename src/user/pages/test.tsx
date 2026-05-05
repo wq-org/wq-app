@@ -43,6 +43,10 @@ import {
   StatsUsageDashboard,
   StatsValueBreakdown,
   SwitchListCardIcons,
+  AgentAudioVisualizerAura,
+  AgentAudioVisualizerBar,
+  AgentComputerIcon,
+  type AgentComputerIconVariant,
 } from '@/components/shared'
 import {
   CompactSettingsTableSwitches,
@@ -700,11 +704,84 @@ export default function Test() {
     { length: colorTimelineTickMax - colorTimelineTickMin + 1 },
     (_, index) => colorTimelineTickMin + index,
   )
+  const resolvedTheme =
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+      ? 'dark'
+      : 'light'
 
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
+      <Section title="AgentComputerIcon — variants">
+        <div className="flex flex-wrap items-center gap-6">
+          {(
+            [
+              'default',
+              'dark',
+              'violet',
+              'indigo',
+              'blue',
+              'cyan',
+              'teal',
+              'green',
+              'lime',
+              'orange',
+              'pink',
+              'darkblue',
+            ] as AgentComputerIconVariant[]
+          ).map((variant) => (
+            <div
+              key={variant}
+              className="flex flex-col items-center gap-2"
+            >
+              <div className="flex items-center justify-center w-[72px] h-[72px] rounded-full bg-secondary">
+                <AgentComputerIcon
+                  size={28}
+                  strokeWidth={1.6}
+                  variant={variant}
+                />
+              </div>
+              <p className="font-mono text-[10px] text-muted-foreground">{variant}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Agent Audio Visualizers">
+        <div className="flex w-full flex-wrap items-center gap-8">
+          <div className="w-full max-w-[360px] space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Aura (state=&quot;speaking&quot;)
+            </p>
+            <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4">
+              <AgentAudioVisualizerAura
+                size="xl"
+                color="#1FD5F9"
+                colorShift={0.3}
+                state="speaking"
+                themeMode={resolvedTheme}
+                audioLevel={0.72}
+                className="aspect-square size-auto w-full"
+              />
+            </div>
+          </div>
+          <div className="w-full max-w-[360px] space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Bars (variant=&quot;teal&quot;)
+            </p>
+            <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-8">
+              <AgentAudioVisualizerBar
+                size="md"
+                state="speaking"
+                colorVariant="teal"
+                audioLevel={0.66}
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </Section>
       <Section title="Text (@/components/ui/text) — every variant prop">
         <div className="w-full basis-full max-w-4xl space-y-8">
           <div className="space-y-2">

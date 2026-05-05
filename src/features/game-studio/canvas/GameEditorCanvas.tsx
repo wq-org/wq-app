@@ -612,8 +612,8 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [openDialogNodeId, nodes])
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-1 w-full relative">
+    <div className="flex h-screen items-center justify-center">
+      <div className="w-full h-[80vh] relative">
         {loadState === 'loading' && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
             <Spinner
@@ -633,7 +633,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         <GameEditorSidebar />
         <div
           ref={containerRef}
-          className="w-full h-full rounded-4xl bg-gray-100 overflow-hidden relative"
+          className="w-full h-full rounded-4xl bg-gray-100 dark:bg-zinc-900 overflow-hidden relative"
           onDragOver={onDragOver}
           onDrop={onDrop}
         >

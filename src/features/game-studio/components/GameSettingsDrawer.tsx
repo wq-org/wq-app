@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import { X, RotateCcw } from 'lucide-react'
+import { X, RotateCcw, Check } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
@@ -14,6 +12,9 @@ import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
+import { FieldInput } from '@/components/ui/field-input'
+import { FieldTextarea } from '@/components/ui/field-textarea'
+import { Spinner } from '@/components/ui/spinner'
 
 export function GameSettingsDrawer({
   open,
@@ -123,38 +124,22 @@ export function GameSettingsDrawer({
           </div>
         </DrawerHeader>
         <div className="p-4 flex flex-col gap-6 h-full overflow-y-auto">
-          {/* Project Title */}
-          <div className="space-y-2">
-            <label
-              htmlFor="project-title"
-              className="text-sm font-medium"
-            >
-              {t('settingsDrawer.projectTitleLabel')}
-            </label>
-            <Input
-              id="project-title"
-              value={localTitle}
-              onChange={(e) => setLocalTitle(e.target.value)}
-              placeholder={t('settingsDrawer.projectTitlePlaceholder')}
-            />
-          </div>
+          <FieldInput
+            id="project-title"
+            value={localTitle}
+            onValueChange={setLocalTitle}
+            label={t('settingsDrawer.projectTitleLabel')}
+            placeholder={t('settingsDrawer.projectTitlePlaceholder')}
+          />
 
-          {/* Project Description */}
-          <div className="space-y-2">
-            <label
-              htmlFor="project-description"
-              className="text-sm font-medium"
-            >
-              {t('settingsDrawer.projectDescriptionLabel')}
-            </label>
-            <Textarea
-              id="project-description"
-              value={localDescription}
-              onChange={(e) => setLocalDescription(e.target.value)}
-              placeholder={t('settingsDrawer.projectDescriptionPlaceholder')}
-              rows={4}
-            />
-          </div>
+          <FieldTextarea
+            id="project-description"
+            value={localDescription}
+            onValueChange={setLocalDescription}
+            label={t('settingsDrawer.projectDescriptionLabel')}
+            placeholder={t('settingsDrawer.projectDescriptionPlaceholder')}
+            rows={4}
+          />
 
           <div className="space-y-3">
             <Label className="text-sm font-medium">{t('settingsDrawer.themeLabel')}</Label>
@@ -249,7 +234,15 @@ export function GameSettingsDrawer({
               disabled={isSaving}
               variant="darkblue"
             >
-              {isSaving ? t('common.saving') : t('common.save')}
+              {isSaving ? (
+                <Spinner
+                  variant="white"
+                  size="xs"
+                />
+              ) : (
+                <Check className="size-4" />
+              )}
+              {t('common.save')}
             </Button>
             <HoldToDeleteButton onDelete={handleDelete}>
               {t('settingsDrawer.holdToDelete')}
