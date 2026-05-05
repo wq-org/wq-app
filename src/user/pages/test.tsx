@@ -43,9 +43,8 @@ import {
   StatsUsageDashboard,
   StatsValueBreakdown,
   SwitchListCardIcons,
-  AgentAudioVisualizerAura,
-  AgentAudioVisualizerBar,
   AgentComputerIcon,
+  TwoColumnDialog,
   type AgentComputerIconVariant,
 } from '@/components/shared'
 import {
@@ -651,6 +650,36 @@ function StatsDashboardProgressBarsDemo() {
   )
 }
 
+function TwoColumnDialogDemo() {
+  return (
+    <TwoColumnDialog
+      triggerLabel="Open two-column dialog"
+      title="Reusable Two-Column Dialog"
+      description="Left panel takes 70%, right panel takes 30%, and the whole dialog is capped at 90vw."
+      leftChildren={
+        <div className="space-y-3">
+          <h3 className="text-base font-semibold">Left content area (70%)</h3>
+          <p className="text-sm text-muted-foreground">
+            Put any React content here: forms, editors, lists, or custom layouts.
+          </p>
+          <div className="rounded-md border p-3">
+            <p className="text-sm">Example: a rich content or form section.</p>
+          </div>
+        </div>
+      }
+      rightChildren={
+        <div className="space-y-3">
+          <h3 className="text-base font-semibold">Right content area (30%)</h3>
+          <p className="text-sm text-muted-foreground">
+            Use this for side info, summaries, actions, or a preview panel.
+          </p>
+          <Button variant="outline">Secondary action</Button>
+        </div>
+      }
+    />
+  )
+}
+
 export default function Test() {
   const [basicStepperValue, setBasicStepperValue] = useState(2)
   const [controlledStepperValue, setControlledStepperValue] = useState(2)
@@ -704,11 +733,6 @@ export default function Test() {
     { length: colorTimelineTickMax - colorTimelineTickMin + 1 },
     (_, index) => colorTimelineTickMin + index,
   )
-  const resolvedTheme =
-    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
-      ? 'dark'
-      : 'light'
-
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
@@ -745,41 +769,6 @@ export default function Test() {
               <p className="font-mono text-[10px] text-muted-foreground">{variant}</p>
             </div>
           ))}
-        </div>
-      </Section>
-
-      <Section title="Agent Audio Visualizers">
-        <div className="flex w-full flex-wrap items-center gap-8">
-          <div className="w-full max-w-[360px] space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Aura (state=&quot;speaking&quot;)
-            </p>
-            <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4">
-              <AgentAudioVisualizerAura
-                size="xl"
-                color="#1FD5F9"
-                colorShift={0.3}
-                state="speaking"
-                themeMode={resolvedTheme}
-                audioLevel={0.72}
-                className="aspect-square size-auto w-full"
-              />
-            </div>
-          </div>
-          <div className="w-full max-w-[360px] space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Bars (variant=&quot;teal&quot;)
-            </p>
-            <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-8">
-              <AgentAudioVisualizerBar
-                size="md"
-                state="speaking"
-                colorVariant="teal"
-                audioLevel={0.66}
-                className="w-full"
-              />
-            </div>
-          </div>
         </div>
       </Section>
       <Section title="Text (@/components/ui/text) — every variant prop">
@@ -1041,6 +1030,10 @@ export default function Test() {
         <div className="w-full basis-full rounded-lg border bg-muted/40 shadow-sm **:data-[slot=stepper-panel]:min-h-0">
           <Onboarding />
         </div>
+      </Section>
+
+      <Section title="TwoColumnDialog (@/components/shared/TwoColumnDialog)">
+        <TwoColumnDialogDemo />
       </Section>
 
       <SharedInputsGallery />

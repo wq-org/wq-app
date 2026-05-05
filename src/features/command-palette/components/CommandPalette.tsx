@@ -13,6 +13,7 @@ import type {
   CommandBarItem,
   CommandBarGroup,
   ActionId,
+  AddType,
   CommandPaletteProps,
   CommandRoleContext,
 } from '../types/command-bar.types'
@@ -32,7 +33,10 @@ import { CommandUploadDialog } from './CommandUploadDialog'
 import { CommandAddDialog } from './CommandAddDialog'
 import { CommandAttendanceDialog } from './CommandAttendanceDialog'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
-import { OPEN_COMMAND_ADD_EVENT } from '../constants/commandPaletteEvents'
+import {
+  OPEN_COMMAND_ADD_EVENT,
+  type OpenCommandAddEventDetail,
+} from '../constants/commandPaletteEvents'
 
 const activeStyles = {
   text: 'text-blue-500',
@@ -58,6 +62,7 @@ export function CommandPalette({
 }: CommandPaletteProps) {
   const [open, setOpen] = useState(false)
   const [activeDialog, setActiveDialog] = useState<ActionId | undefined>(undefined)
+  const [addInitialType, setAddInitialType] = useState<AddType | undefined>(undefined)
   const [isVisible, setIsVisible] = useState(true)
   const paletteRef = useRef<HTMLDivElement>(null)
   const notchRef = useRef<HTMLButtonElement>(null)
@@ -170,8 +175,10 @@ export function CommandPalette({
   const activeId = selectedId
 
   useEffect(() => {
-    const onOpenAdd = () => {
+    const onOpenAdd = (event: Event) => {
+      const customEvent = event as CustomEvent<OpenCommandAddEventDetail>
       setActiveDialog('add')
+      setAddInitialType(customEvent.detail?.initialType)
       setOpen(true)
     }
     window.addEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
@@ -387,6 +394,7 @@ export function CommandPalette({
 
   function handleOnClickAddNewDialog() {
     setActiveDialog('add')
+    setAddInitialType(undefined)
     setOpen(true)
   }
 
@@ -403,6 +411,7 @@ export function CommandPalette({
   function handleCloseOverlayDialog() {
     setOpen(false)
     setActiveDialog(undefined)
+    setAddInitialType(undefined)
   }
 
   const handleItemClick = (item: CommandBarItem) => {
@@ -499,7 +508,10 @@ export function CommandPalette({
         open={open}
         onOpenChange={(v) => {
           setOpen(v)
-          if (!v) setActiveDialog(undefined)
+          if (!v) {
+            setActiveDialog(undefined)
+            setAddInitialType(undefined)
+          }
         }}
       >
         <Dialog.Portal>
@@ -522,6 +534,7 @@ export function CommandPalette({
                     role={roleForGroups}
                     onCourseCreated={onCourseCreated}
                     onRequestClose={handleCloseOverlayDialog}
+                    initialType={addInitialType}
                   />
                 )}
                 {activeDialog === 'attendanceStart' && (

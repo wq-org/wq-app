@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -13,6 +13,7 @@ import type { ThemeId } from '@/lib/themes'
 interface UseCommandAddOptions {
   onCourseCreated?: () => void
   onRequestClose?: () => void
+  initialType?: AddType
 }
 
 const DEFAULT_THEME: ThemeId = 'blue'
@@ -34,23 +35,28 @@ export interface CommandAddState {
 export function useCommandAdd({
   onCourseCreated,
   onRequestClose,
+  initialType,
 }: UseCommandAddOptions): CommandAddState {
   const { t } = useTranslation('features.commandPalette')
   const navigate = useNavigate()
   const { profile, getRole } = useUser()
   const { addNode } = useGameStudioContext()
 
-  const [selectedType, setSelectedType] = useState<AddType | null>(null)
+  const [selectedType, setSelectedType] = useState<AddType | null>(initialType ?? null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [themeId, setThemeId] = useState<ThemeId>(DEFAULT_THEME)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    setSelectedType(initialType ?? null)
+  }, [initialType])
+
   const reset = () => {
     setTitle('')
     setDescription('')
     setThemeId(DEFAULT_THEME)
-    setSelectedType(null)
+    setSelectedType(initialType ?? null)
   }
 
   const handleCreate = async () => {

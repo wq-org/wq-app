@@ -2,20 +2,7 @@ export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
 export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
 export type { DateRangePickerProps } from './calendar'
-export {
-  AgentAudioVisualizerAura,
-  AgentAudioVisualizerBar,
-  agentAudioVisualizerAuraVariants,
-  agentAudioVisualizerBarVariants,
-  agentAudioVisualizerBarElementVariants,
-  resolveAgentVisualizerColor,
-} from './agents-ui'
-export type {
-  AgentAudioVisualizerAuraProps,
-  AgentAudioVisualizerBarProps,
-  AgentAudioVisualizerColorVariant,
-  AgentVisualizerState,
-} from './agents-ui'
+
 export { DocumentEditor, DocumentEditor as Editor } from './editors'
 export { DocumentSlashMenuPlugin } from './editors'
 export type { DocumentEditorProps, DocumentEditorProps as EditorProps } from './editors'
@@ -174,6 +161,7 @@ export type {
   PaymentMethodRadioCardOption,
   PaymentMethodRadioCardsProps,
 } from './PaymentMethodRadioCards'
+export { TwoColumnDialog } from './TwoColumnDialog'
 export { PricingComparator } from './PricingComparator'
 export type {
   PricingColumn,

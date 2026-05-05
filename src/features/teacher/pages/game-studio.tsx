@@ -5,7 +5,6 @@ import { useUser } from '@/contexts/user'
 import {
   EmptyProjectsView,
   GameProjectCardList,
-  createGameForStudio,
   getTeacherFlowGames,
   type GameProjectCardListProps,
 } from '@/features/game-studio'
@@ -17,6 +16,7 @@ import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
 import { Plus } from 'lucide-react'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { requestOpenCommandAddDialog } from '@/features/command-palette'
 
 const GameStudio = () => {
   const { t } = useTranslation('features.gameStudio')
@@ -24,7 +24,6 @@ const GameStudio = () => {
   const { getUserId } = useUser()
   const [projects, setProjects] = useState<GameProjectCardListProps['projects']>([])
   const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
@@ -68,25 +67,8 @@ const GameStudio = () => {
     'description',
   ])
 
-  const handleCreateGame = async () => {
-    const teacherId = getUserId()
-    if (!teacherId) {
-      toast.error(t('page.toasts.createRequiresSignin'))
-      return
-    }
-    setCreating(true)
-    try {
-      const created = await createGameForStudio(teacherId, {
-        title: t('page.fallbackUntitledGame'),
-        description: '',
-      })
-      navigate(`/teacher/canvas/${created.id}`)
-    } catch (err) {
-      console.error(err)
-      toast.error(t('page.toasts.createFailed'))
-    } finally {
-      setCreating(false)
-    }
+  const handleCreateGame = () => {
+    requestOpenCommandAddDialog({ initialType: 'game' })
   }
 
   const showSearchAndList = !loading && projects.length > 0
@@ -121,11 +103,11 @@ const GameStudio = () => {
             size="xl"
             onClick={handleCreateGame}
             variant="darkblue"
-            disabled={creating || loading}
+            disabled={loading}
             className="gap-2 active:animate-in active:zoom-in-95"
           >
             <Plus className="size-4" />
-            {creating ? t('page.creating') : t('page.createGame')}
+            {t('page.createGame')}
           </Button>
         </div>
 
@@ -140,7 +122,7 @@ const GameStudio = () => {
           ) : projects.length === 0 ? (
             <EmptyProjectsView
               onCreateGame={handleCreateGame}
-              disableCreate={creating || loading}
+              disableCreate={loading}
             />
           ) : null}
 
