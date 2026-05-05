@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
 export const chatBubbleVariants = cva(
-  'inline-block px-4 py-2.5 text-sm leading-relaxed shadow-sm transition-colors',
+  'inline-block px-4 py-2.5 text-sm leading-relaxed transition-colors',
   {
     variants: {
       variant: {
