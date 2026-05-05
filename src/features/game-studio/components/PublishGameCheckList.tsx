@@ -1,9 +1,8 @@
 'use client'
 
-import { Check, TriangleAlert } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import type { ValidationResult } from '../utils/publishValidation'
 import { getDisplayNameForNodeType } from '../utils/publishValidation'
 import { Separator } from '@/components/ui/separator'
@@ -18,47 +17,62 @@ export function PublishGameCheckList({ validationResult }: PublishGameCheckListP
   const { t } = useTranslation('features.gameStudio')
   const { nodeItems, globalErrors } = validationResult
   const hasAnyErrors = globalErrors.length > 0 || nodeItems.some((item) => item.errors.length > 0)
+  const title = hasAnyErrors
+    ? t('publishChecklist.requirementsNotMet')
+    : t('publishChecklist.requirementsMet')
 
   return (
-    <Card className="border-slate-200">
-      <CardHeader className="">
-        <CardTitle className="text-base text-slate-800 flex gap-2 items-center">
+    <Card className="border-border bg-card">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
           {hasAnyErrors ? (
-            <TriangleAlert className="size-4 text-amber-600 shrink-0" />
+            <X className="size-4 shrink-0 text-red-500" />
           ) : (
-            <Check className="size-4 text-slate-600 shrink-0" />
+            <Check className="size-4 shrink-0" />
           )}
-          {hasAnyErrors
-            ? t('publishChecklist.requirementsNotMet')
-            : t('publishChecklist.requirementsMet')}
+          <Text
+            as="span"
+            variant="body"
+            className="font-semibold text-foreground"
+          >
+            {title}
+          </Text>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
-        <Alert
-          variant="default"
-          className="border-slate-200 bg-slate-50 text-slate-800 [&>svg]:text-slate-600"
-        >
-          <AlertTitle className="text-slate-800">{t('publishChecklist.rulesTitle')}</AlertTitle>
-          <AlertDescription className="text-slate-600 gap-0.5">
+        <div className="rounded-md border border-border bg-muted/30 p-3">
+          <Text
+            as="p"
+            variant="small"
+            className="mb-1 font-semibold text-foreground"
+          >
+            {t('publishChecklist.rulesTitle')}
+          </Text>
+          <Text
+            as="div"
+            variant="small"
+            className="text-muted-foreground"
+          >
             <ul className="list-disc list-inside space-y-0.5">
               <li>{t('publishChecklist.rules.noAbandoned')}</li>
               <li>{t('publishChecklist.rules.linkedStartToEnd')}</li>
               <li>{t('publishChecklist.rules.connectedPath')}</li>
               <li>{t('publishChecklist.rules.minimallyFilled')}</li>
             </ul>
-          </AlertDescription>
-        </Alert>
+          </Text>
+        </div>
         <Separator />
         <div className="space-y-1">
           {globalErrors.map((msg, i) => (
             <div
               key={`global-${i}`}
-              className="flex items-center gap-2 flex-wrap text-sm text-slate-700"
+              className="flex flex-wrap items-center gap-2"
             >
-              <TriangleAlert className="size-4 text-amber-600 shrink-0" />
+              <X className="size-4 shrink-0 text-red-500" />
               <Text
                 as="span"
                 variant="small"
+                className="text-foreground"
               >
                 {msg}
               </Text>
@@ -70,21 +84,23 @@ export function PublishGameCheckList({ validationResult }: PublishGameCheckListP
             return item.errors.map((err, i) => (
               <div
                 key={`${item.node.id}-${i}`}
-                className="flex items-center gap-2 flex-wrap text-sm text-slate-700"
+                className="flex flex-wrap items-center gap-2"
               >
                 <Badge
                   variant="secondary"
-                  className="text-slate-800"
+                  className="text-foreground"
                 >
                   {displayName}
                 </Badge>
                 <Separator
                   orientation="vertical"
-                  className="h-4 bg-slate-300"
+                  className="h-4 bg-border"
                 />
+                <X className="size-4 shrink-0 text-red-500" />
                 <Text
                   as="span"
                   variant="small"
+                  className="text-foreground"
                 >
                   {err}
                 </Text>
