@@ -1,15 +1,23 @@
-import { useMemo, useState, type RefObject } from 'react'
+import { useCallback, useMemo, useRef, useState, type ChangeEvent, type RefObject } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
   LexicalTypeaheadMenuPlugin,
   MenuOption,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin'
-import type { LexicalEditor } from 'lexical'
+import { $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
 import type { LucideIcon } from 'lucide-react'
-import { List, ListOrdered, Pilcrow, Quote, Type } from 'lucide-react'
+import { AtSign, Code2, Image as ImageIcon, Link as LinkIcon, List, ListOrdered, Pilcrow, Quote, Type } from 'lucide-react'
+import { toast } from 'sonner'
+import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
+import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
+import { USER_ROLES, type UserRole } from '@/features/auth'
+import { $createImageNode, $createMentionNode } from '@/features/lexical-editor'
+import { useUser } from '@/contexts/user/UserContext'
 import { cn } from '@/lib/utils'
+import { applyLinkToSelection, validateUrl } from './editorLink'
 import {
+  applyCodeBlock,
   applyHeading,
   applyParagraph,
   applyQuote,
@@ -23,6 +31,22 @@ type SlashAction = {
   key: string
   title: string
   onSelect: (editor: LexicalEditor) => void
+}
+
+function roleForUpload(role: UserRole | null): string | null {
+  if (!role) return null
+  switch (role) {
+    case USER_ROLES.TEACHER:
+      return 'teacher'
+    case USER_ROLES.STUDENT:
+      return 'student'
+    case USER_ROLES.INSTITUTION_ADMIN:
+      return 'institutionAdmin'
+    case USER_ROLES.SUPER_ADMIN:
+      return 'superAdmin'
+    default:
+      return null
+  }
 }
 
 class SlashMenuOption extends MenuOption {
@@ -39,55 +63,6 @@ class SlashMenuOption extends MenuOption {
     this.title = action.title
   }
 }
-
-const SLASH_ACTIONS: SlashAction[] = [
-  {
-    description: 'Start writing plain text.',
-    icon: Pilcrow,
-    key: 'paragraph',
-    title: 'Paragraph',
-    onSelect: (editor) => applyParagraph(editor),
-  },
-  {
-    description: 'Big section heading.',
-    icon: Type,
-    key: 'heading-1',
-    title: 'Heading 1',
-    onSelect: (editor) => applyHeading(editor, 'h1'),
-  },
-  {
-    description: 'Medium section heading.',
-    icon: Type,
-    key: 'heading-2',
-    title: 'Heading 2',
-    onSelect: (editor) => applyHeading(editor, 'h2'),
-  },
-  {
-    description: 'Create a bullet list.',
-    icon: List,
-    key: 'bullets',
-    title: 'Bulleted List',
-    onSelect: (editor) => {
-      toggleList(editor, readEditorToolbarState(editor).blockType, 'ul')
-    },
-  },
-  {
-    description: 'Create a numbered list.',
-    icon: ListOrdered,
-    key: 'numbers',
-    title: 'Numbered List',
-    onSelect: (editor) => {
-      toggleList(editor, readEditorToolbarState(editor).blockType, 'ol')
-    },
-  },
-  {
-    description: 'Add a short note or emphasis block.',
-    icon: Quote,
-    key: 'quote',
-    title: 'Quote',
-    onSelect: (editor) => applyQuote(editor),
-  },
-]
 
 const SLASH_MENU_CLASS_NAME =
   'editor-toolbarPopover editor-slashMenu w-[24rem] !rounded-3xl border-border p-3 shadow-lg'
@@ -187,6 +162,160 @@ const SlashMenu = ({
 export const DocumentSlashMenuPlugin = () => {
   const [editor] = useLexicalComposerContext()
   const [query, setQuery] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { getRole, getUserId, getUserInstitutionId } = useUser()
+
+  const openImagePicker = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  const slashActions = useMemo((): SlashAction[] => {
+    return [
+      {
+        description: 'Start writing plain text.',
+        icon: Pilcrow,
+        key: 'paragraph',
+        title: 'Paragraph',
+        onSelect: (ed) => applyParagraph(ed),
+      },
+      {
+        description: 'Big section heading.',
+        icon: Type,
+        key: 'heading-1',
+        title: 'Heading 1',
+        onSelect: (ed) => applyHeading(ed, 'h1'),
+      },
+      {
+        description: 'Medium section heading.',
+        icon: Type,
+        key: 'heading-2',
+        title: 'Heading 2',
+        onSelect: (ed) => applyHeading(ed, 'h2'),
+      },
+      {
+        description: 'Create a bullet list.',
+        icon: List,
+        key: 'bullets',
+        title: 'Bulleted List',
+        onSelect: (ed) => {
+          toggleList(ed, readEditorToolbarState(ed).blockType, 'ul')
+        },
+      },
+      {
+        description: 'Create a numbered list.',
+        icon: ListOrdered,
+        key: 'numbers',
+        title: 'Numbered List',
+        onSelect: (ed) => {
+          toggleList(ed, readEditorToolbarState(ed).blockType, 'ol')
+        },
+      },
+      {
+        description: 'Add a short note or emphasis block.',
+        icon: Quote,
+        key: 'quote',
+        title: 'Quote',
+        onSelect: (ed) => applyQuote(ed),
+      },
+      {
+        description: 'Upload an image to cloud storage and embed it.',
+        icon: ImageIcon,
+        key: 'image',
+        title: 'Image',
+        onSelect: () => openImagePicker(),
+      },
+      {
+        description: 'Insert or wrap text with an https link.',
+        icon: LinkIcon,
+        key: 'link',
+        title: 'Link',
+        onSelect: (ed) => {
+          const raw = window.prompt('Paste link URL (https://)')
+          if (raw === null) return
+          const url = validateUrl(raw)
+          if (!url) {
+            toast.error('Enter a valid http(s) URL.')
+            return
+          }
+          applyLinkToSelection(ed, url, '')
+        },
+      },
+      {
+        description: 'Syntax-highlighted code block with Prism.',
+        icon: Code2,
+        key: 'code-block',
+        title: 'Code block',
+        onSelect: (ed) => applyCodeBlock(ed),
+      },
+      {
+        description: 'Inline @-style mention token.',
+        icon: AtSign,
+        key: 'mention',
+        title: 'Mention',
+        onSelect: (ed) => {
+          const raw = window.prompt('Mention text')
+          if (raw === null) return
+          const text = raw.trim()
+          if (!text) return
+          ed.update(() => {
+            const selection = $getSelection()
+            if ($isRangeSelection(selection)) {
+              selection.insertNodes([$createMentionNode(text)])
+            }
+          })
+        },
+      },
+    ]
+  }, [openImagePicker])
+
+  const handleImageSelected = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      event.target.value = ''
+      if (!file) return
+
+      const institutionId = getUserInstitutionId()
+      const userId = getUserId()
+      const role = roleForUpload(getRole())
+
+      if (!institutionId?.trim() || !userId?.trim() || !role) {
+        toast.error('Sign in with an institution to upload images.')
+        return
+      }
+
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
+        toast.error('Please choose a JPEG or PNG image.')
+        return
+      }
+
+      const result = await uploadFile({
+        institutionId: institutionId.trim(),
+        teacherId: userId.trim(),
+        file,
+        title: file.name.split('.')[0],
+        role,
+      })
+
+      if (!result.success || !result.publicUrl) {
+        toast.error(result.error ?? 'Could not upload image.')
+        return
+      }
+
+      editor.update(() => {
+        const selection = $getSelection()
+        if ($isRangeSelection(selection)) {
+          selection.insertNodes([
+            $createImageNode({
+              altText: file.name,
+              maxWidth: 720,
+              src: result.publicUrl!,
+            }),
+          ])
+        }
+      })
+    },
+    [editor, getRole, getUserId, getUserInstitutionId],
+  )
 
   const triggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0,
@@ -196,20 +325,29 @@ export const DocumentSlashMenuPlugin = () => {
 
   const options = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
-    if (!normalizedQuery) {
-      return SLASH_ACTIONS.map((action) => new SlashMenuOption(action))
-    }
+    const base = !normalizedQuery
+      ? slashActions
+      : slashActions.filter((action) => {
+          return (
+            action.title.toLowerCase().includes(normalizedQuery) ||
+            action.description.toLowerCase().includes(normalizedQuery)
+          )
+        })
 
-    return SLASH_ACTIONS.filter((action) => {
-      return (
-        action.title.toLowerCase().includes(normalizedQuery) ||
-        action.description.toLowerCase().includes(normalizedQuery)
-      )
-    }).map((action) => new SlashMenuOption(action))
-  }, [query])
+    return base.map((action) => new SlashMenuOption(action))
+  }, [query, slashActions])
 
   return (
-    <LexicalTypeaheadMenuPlugin
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ALLOWED_IMAGE_TYPES.join(',')}
+        className="hidden"
+        aria-hidden
+        onChange={handleImageSelected}
+      />
+      <LexicalTypeaheadMenuPlugin
       options={options}
       onQueryChange={(value) => setQuery(value ?? '')}
       onSelectOption={(option, _textNode, closeMenu) => {
@@ -233,5 +371,6 @@ export const DocumentSlashMenuPlugin = () => {
       )}
       preselectFirstItem
     />
+    </>
   )
 }

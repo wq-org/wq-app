@@ -1,3 +1,4 @@
+import { $createCodeNode } from '@lexical/code'
 import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
 import { $setBlocksType } from '@lexical/selection'
 import {
@@ -106,6 +107,15 @@ export const applyQuote = (editor: LexicalEditor) => {
     const selection = $getSelection()
     if ($isRangeSelection(selection)) {
       $setBlocksType(selection, () => $createQuoteNode())
+    }
+  })
+}
+
+export const applyCodeBlock = (editor: LexicalEditor) => {
+  editor.update(() => {
+    const selection = $getSelection()
+    if ($isRangeSelection(selection)) {
+      $setBlocksType(selection, () => $createCodeNode())
     }
   })
 }

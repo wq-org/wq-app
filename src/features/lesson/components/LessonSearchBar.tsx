@@ -12,7 +12,7 @@ export function LessonSearchBar({ searchValue, onSearchChange, className }: Less
   const { t } = useTranslation('features.lesson')
 
   return (
-    <div className={cn('flex w-full min-w-0 justify-end', className)}>
+    <div className={cn('flex w-full min-w-0 justify-start', className)}>
       <ClearableInput
         value={searchValue}
         showSearchIcon

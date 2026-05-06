@@ -6,6 +6,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
+import { DocumentCodeHighlightPlugin } from './DocumentCodeHighlightPlugin'
 import { EditorToolbarPlugin } from './EditorToolbarPlugin'
 import { DocumentSlashMenuPlugin } from './DocumentSlashMenuPlugin'
 import { createDocumentEditorInitialConfig } from './editorConfig'
@@ -39,6 +40,7 @@ export const DocumentEditor = ({ placeholder = 'Enter some text...' }: DocumentE
         <HistoryPlugin />
         <AutoFocusPlugin />
         <ListPlugin />
+        <DocumentCodeHighlightPlugin />
         <LinkPlugin validateUrl={isValidUrl} />
       </div>
     </LexicalComposer>
