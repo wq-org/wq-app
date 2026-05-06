@@ -43,9 +43,6 @@ export {
 } from './api/enrollmentsApi'
 export type { LessonHeading } from './utils/lessonHeadings'
 export { getHeadingsFromLessonValue } from './utils/lessonHeadings'
-export {
-  createYooptaStarterContentObject,
-  createYooptaStarterContentJson,
-} from './utils/yooptaContent'
+
 export { Course as CoursePage } from './pages/course'
 export { CourseDetailPage } from './pages/course-detail'

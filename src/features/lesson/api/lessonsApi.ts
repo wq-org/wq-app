@@ -1,35 +1,42 @@
 import { supabase } from '@/lib/supabase'
-import { buildLessonPages, createLessonPage, serializeLessonContent } from '../utils/lessonPages'
 import type { CreateLessonData, Lesson, LessonPage, UpdateLessonData } from '../types/lesson.types'
-import { createLessonStarterContentJson } from '../utils/createLessonStarterContent'
 
 const LESSON_SELECT_FIELDS =
   'id, title, content, pages, description, topic_id, created_at, updated_at'
 
-function normalizePersistedPages(rawPages: unknown, fallbackContent?: unknown): LessonPage[] {
-  return buildLessonPages(rawPages, fallbackContent)
+function normalizePersistedPages(rawPages: unknown): LessonPage[] {
+  if (!Array.isArray(rawPages)) return []
+  return rawPages
+    .map((page, index) => {
+      if (typeof page !== 'object' || page == null) return null
+      const record = page as Record<string, unknown>
+      return {
+        id: typeof record.id === 'string' ? record.id : `lesson-page-${index}`,
+        order: typeof record.order === 'number' ? record.order : index,
+        content: typeof record.content === 'string' ? record.content : '',
+      } satisfies LessonPage
+    })
+    .filter((page): page is LessonPage => page != null)
 }
 
 function normalizeLessonRow(row: Record<string, unknown>): Lesson {
-  const normalizedPages = normalizePersistedPages(row.pages, row.content)
+  const normalizedPages = normalizePersistedPages(row.pages)
+  const normalizedContent = typeof row.content === 'string' ? row.content : ''
 
   return {
     ...(row as unknown as Omit<Lesson, 'pages'>),
-    content: serializeLessonContent(normalizedPages),
+    content: normalizedContent,
     pages: normalizedPages,
   }
 }
 
 function buildCreateLessonPayload(data: CreateLessonData) {
-  const normalizedContent = data.content?.trim() ? data.content : createLessonStarterContentJson()
-  const normalizedPages = normalizePersistedPages(data.pages, normalizedContent)
-
   return {
     title: data.title.trim(),
     description: data.description || '',
     topic_id: data.topic_id,
-    content: serializeLessonContent(normalizedPages),
-    pages: normalizedPages,
+    content: data.content ?? '',
+    pages: data.pages ?? [],
   }
 }
 
@@ -44,22 +51,8 @@ function buildUpdateLessonPayload(updates: UpdateLessonData) {
     payload.description = updates.description
   }
 
-  if (Array.isArray(updates.pages)) {
-    const normalizedPages = normalizePersistedPages(
-      updates.pages.length > 0 ? updates.pages : [createLessonPage(0)],
-    )
-    payload.pages = normalizedPages
-    payload.content = serializeLessonContent(normalizedPages)
-    return payload
-  }
-
   if (typeof updates.content === 'string') {
-    const normalizedContent = updates.content.trim()
-      ? updates.content
-      : createLessonStarterContentJson()
-    const normalizedPages = normalizePersistedPages(undefined, normalizedContent)
-    payload.content = serializeLessonContent(normalizedPages)
-    payload.pages = normalizedPages
+    payload.content = updates.content
   }
 
   return payload
@@ -97,12 +90,11 @@ export async function updateLesson(lessonId: string, updates: UpdateLessonData):
 }
 
 export async function updateLessonPages(lessonId: string, pages: LessonPage[]): Promise<Lesson> {
-  const normalizedPages = normalizePersistedPages(pages.length > 0 ? pages : [createLessonPage(0)])
+  const normalizedPages = normalizePersistedPages(pages)
 
   const { data, error } = await supabase
     .from('lessons')
     .update({
-      content: serializeLessonContent(normalizedPages),
       pages: normalizedPages,
     })
     .eq('id', lessonId)

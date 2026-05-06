@@ -1,20 +1,5 @@
-import type { YooptaContentValue } from '@yoopta/editor'
-import type { LESSON_BLOCK_TYPES } from '../config/yooptaBlocks'
-
-export type LessonBlockType = (typeof LESSON_BLOCK_TYPES)[number]
-
-export type LessonFileKind = 'file' | 'image' | 'pdf' | 'video'
-
-export type LessonFileTag = {
-  kind: LessonFileKind
-  mimeType: string | null
-  name: string
-  path: string
-  size: number | null
-}
-
 export type LessonPage = {
-  content: YooptaContentValue
+  content: string
   id: string
   order: number
 }
@@ -41,7 +26,6 @@ export type CreateLessonData = {
 export type UpdateLessonData = Partial<{
   content: string
   description: string
-  pages: LessonPage[]
   title: string
 }>
 

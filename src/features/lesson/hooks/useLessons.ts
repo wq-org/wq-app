@@ -5,9 +5,8 @@ import {
   getLessonById as getLessonByIdApi,
   getLessonsByTopicId,
   updateLesson as updateLessonApi,
-  updateLessonPages as updateLessonPagesApi,
 } from '../api/lessonsApi'
-import type { CreateLessonData, Lesson, LessonPage, UpdateLessonData } from '../types/lesson.types'
+import type { CreateLessonData, Lesson, UpdateLessonData } from '../types/lesson.types'
 
 export function useLessons() {
   const [lessons, setLessons] = useState<Lesson[]>([])
@@ -89,28 +88,6 @@ export function useLessons() {
     }
   }, [])
 
-  const updateLessonPages = useCallback(async (lessonId: string, pages: LessonPage[]) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const updatedLesson = await updateLessonPagesApi(lessonId, pages)
-      setLesson(updatedLesson)
-      setLessons((prev) =>
-        prev.map((existingLesson) =>
-          existingLesson.id === lessonId ? updatedLesson : existingLesson,
-        ),
-      )
-      return updatedLesson
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update lesson pages'
-      setError(message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
   const deleteLesson = useCallback(async (lessonId: string) => {
     setLoading(true)
     setError(null)
@@ -138,7 +115,6 @@ export function useLessons() {
     fetchLessonById,
     createLesson,
     updateLesson,
-    updateLessonPages,
     deleteLesson,
   }
 }
