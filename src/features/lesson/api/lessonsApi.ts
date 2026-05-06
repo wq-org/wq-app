@@ -4,6 +4,8 @@ import type { CreateLessonData, Lesson, LessonPage, UpdateLessonData } from '../
 const LESSON_SELECT_FIELDS =
   'id, title, content, pages, description, topic_id, created_at, updated_at'
 
+const LESSON_LIST_SELECT_FIELDS = 'id, title, description, topic_id, created_at, updated_at'
+
 function normalizePersistedPages(rawPages: unknown): LessonPage[] {
   if (!Array.isArray(rawPages)) return []
   return rawPages
@@ -140,7 +142,7 @@ export async function deleteLesson(lessonId: string): Promise<void> {
 export async function getLessonsByTopicId(topicId: string): Promise<Lesson[]> {
   const { data, error } = await supabase
     .from('lessons')
-    .select(LESSON_SELECT_FIELDS)
+    .select(LESSON_LIST_SELECT_FIELDS)
     .eq('topic_id', topicId)
     .order('created_at', { ascending: true })
 

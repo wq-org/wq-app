@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import { TabIndentationExtension } from '@lexical/extension'
 import { HistoryExtension } from '@lexical/history'
 import { ListExtension } from '@lexical/list'
@@ -13,8 +5,12 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionComposer'
 import { RichTextExtension } from '@lexical/rich-text'
 import { defineExtension } from 'lexical'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
+import {
+  FloatingFormatExtension,
+  FloatingTextFormatToolbarPlugin,
+} from '../FloatingTextFormatToolbarPlugin'
 import { LexicalDraggableBlockPlugin } from './LexicalDraggableBlockPlugin'
 import { SlashMenuPlugin } from './SlashMenuPlugin'
 
@@ -36,20 +32,31 @@ const theme = {
     bold: 'font-bold',
     code: 'rounded-[3px] bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] dark:bg-white/10',
     italic: 'italic',
+    strikethrough: 'line-through',
+    underline: 'underline',
+    underlineStrikethrough: '[text-decoration:underline_line-through]',
   },
 }
 
 const editorExtension = defineExtension({
-  dependencies: [RichTextExtension, HistoryExtension, ListExtension, TabIndentationExtension],
+  dependencies: [
+    RichTextExtension,
+    HistoryExtension,
+    ListExtension,
+    TabIndentationExtension,
+    FloatingFormatExtension,
+  ],
   name: '@lexical/website/notion-like-editor',
   namespace: '@lexical/website/notion-like-editor',
   theme,
 })
 
 export function Editor() {
+  const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
+
   const editorPlaceholder = useMemo(
     () => (
-      <div className="pointer-events-none absolute top-[22px] left-14 text-[0.95rem] text-zinc-400 select-none">
+      <div className="pointer-events-none absolute top-2 left-10 text-[0.95rem] text-zinc-400 select-none">
         Type &apos;/&apos; for commands...
       </div>
     ),
@@ -61,17 +68,19 @@ export function Editor() {
       extension={editorExtension}
       contentEditable={null}
     >
-      <div className="relative w-full overflow-hidden rounded-lg border border-solid border-zinc-200 bg-white dark:border-white/12 dark:bg-[#1f1f21]">
-        <div className="relative">
-          <ContentEditable
-            className="h-[400px] overflow-y-auto px-14 py-5 outline-none max-[996px]:h-[260px] dark:text-zinc-200"
-            aria-label="Rich text editor"
-            aria-placeholder="Type '/' for commands..."
-            placeholder={editorPlaceholder}
-          />
-          <LexicalDraggableBlockPlugin />
-          <SlashMenuPlugin />
-        </div>
+      <div
+        ref={setAnchorElem}
+        className="relative w-full"
+      >
+        <ContentEditable
+          className="min-h-[200px] py-2 pl-10 outline-none dark:text-zinc-200"
+          aria-label="Rich text editor"
+          aria-placeholder="Type '/' for commands..."
+          placeholder={editorPlaceholder}
+        />
+        <LexicalDraggableBlockPlugin />
+        <SlashMenuPlugin />
+        {anchorElem ? <FloatingTextFormatToolbarPlugin anchorElem={anchorElem} /> : null}
       </div>
     </LexicalExtensionComposer>
   )

@@ -27,5 +27,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/features/lexical-editor/shared/.tsx"]
 }
