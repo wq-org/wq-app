@@ -90,7 +90,7 @@ const SLASH_ACTIONS: SlashAction[] = [
 ]
 
 const SLASH_MENU_CLASS_NAME =
-  'editor-toolbarPopover editor-slashMenu w-[24rem] rounded-3xl border-border p-3 shadow-lg'
+  'editor-toolbarPopover editor-slashMenu w-[24rem] !rounded-3xl border-border p-3 shadow-lg'
 
 type SlashMenuItemProps = {
   index: number

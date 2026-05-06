@@ -57,7 +57,7 @@ export function SlashMenuPlugin() {
       menuRenderFn={(anchorRef, { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }) =>
         anchorRef.current
           ? ReactDOM.createPortal(
-              <div className="w-[220px] overflow-hidden rounded-lg border border-solid border-zinc-200 bg-white text-[#1c1e21] shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:border-zinc-700 dark:bg-[#232325] dark:text-[#e3e3e3] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+              <div className="w-[220px] overflow-hidden rounded-2xl border border-solid border-zinc-200/80 bg-white/80 text-[#1c1e21] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:border-zinc-700/80 dark:bg-[#232325]/80 dark:text-[#e3e3e3] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
                 <ul className="m-0 max-h-[220px] list-none overflow-y-auto p-1">
                   {options.map((option, i) => (
                     <li
@@ -65,7 +65,7 @@ export function SlashMenuPlugin() {
                       ref={option.setRefElement}
                       role="option"
                       aria-selected={selectedIndex === i}
-                      className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-inherit ${selectedIndex === i ? 'bg-zinc-100 dark:bg-[#3a3a3c]' : 'hover:bg-zinc-100 dark:hover:bg-[#3a3a3c]'}`}
+                      className={`flex cursor-pointer items-center gap-2 rounded-2xl px-2 py-1.5 text-sm text-inherit ${selectedIndex === i ? 'bg-zinc-100 dark:bg-[#3a3a3c]' : 'hover:bg-zinc-100 dark:hover:bg-[#3a3a3c]'}`}
                       tabIndex={-1}
                       onMouseEnter={() => setHighlightedIndex(i)}
                       onClick={() => {

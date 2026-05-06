@@ -15,6 +15,7 @@ import { RichTextExtension } from '@lexical/rich-text'
 import { defineExtension } from 'lexical'
 import { useMemo } from 'react'
 
+import { LexicalDraggableBlockPlugin } from './LexicalDraggableBlockPlugin'
 import { SlashMenuPlugin } from './SlashMenuPlugin'
 
 const theme = {
@@ -68,6 +69,7 @@ export function Editor() {
             aria-placeholder="Type '/' for commands..."
             placeholder={editorPlaceholder}
           />
+          <LexicalDraggableBlockPlugin />
           <SlashMenuPlugin />
         </div>
       </div>
