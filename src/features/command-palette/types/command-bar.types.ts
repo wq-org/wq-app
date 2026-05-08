@@ -2,7 +2,7 @@
 import type { ComponentType } from 'react'
 import type { UserRole } from '@/features/auth'
 
-export type CommandBarView = 'game-studio'
+export type CommandBarView = 'game-studio' | 'lessons'
 
 export type CommandRoleContext = UserRole
 
@@ -87,4 +87,4 @@ export type UpdateGameData = {
 /**
  * Types of items that can be added via CommandAddDialog
  */
-export type AddType = 'course' | 'institution' | 'game' | 'node' | 'note' | 'task'
+export type AddType = 'course' | 'institution' | 'game' | 'node' | 'note' | 'task' | 'attendance'

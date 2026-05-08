@@ -20,18 +20,11 @@ import type {
 import { getCommandBarGroups } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
 import { isCommandBarView, normalizeCommandRole, VALID_COMMAND_ROLES } from '../config/commandRoles'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CommandSearch } from './CommandSearchDialog'
 import { CommandFeedbackForm } from './CommandFeedbackDialog'
 import { CommandUploadDialog } from './CommandUploadDialog'
 import { CommandAddDialog } from './CommandAddDialog'
-import { CommandAttendanceDialog } from './CommandAttendanceDialog'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
 import {
   OPEN_COMMAND_ADD_EVENT,
@@ -291,88 +284,23 @@ export function CommandPalette({
     )
   }
 
-  const renderAttendanceMenuItem = (item: CommandBarItem) => {
-    const Icon = item.icon
-    const isItemActive = activeId === item.id
-
-    return (
-      <DropdownMenu
-        key={item.id}
-        onOpenChange={(menuOpen) => {
-          if (menuOpen) setSelectedId(item.id)
-        }}
-      >
-        <Tooltip.Root>
-          <Tooltip.Trigger asChild>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                ref={(node) => {
-                  itemRefs.current[item.id] = node
-                }}
-                data-command-item={item.id}
-                className={itemButtonClass(isItemActive)}
-                aria-label={t(item.labelKey)}
-                aria-haspopup="menu"
-              >
-                <Icon className="h-6 w-6" />
-                <VisuallyHidden>{t(item.labelKey)}</VisuallyHidden>
-              </button>
-            </DropdownMenuTrigger>
-          </Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content
-              side="top"
-              sideOffset={8}
-              className="rounded-md border bg-popover px-2 py-1 text-xs shadow"
-            >
-              {t(item.labelKey)}
-              <Tooltip.Arrow className="fill-popover" />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-        <DropdownMenuContent
-          side="top"
-          align="center"
-          sideOffset={10}
-          className="min-w-[12rem]"
-        >
-          <DropdownMenuItem onSelect={() => handleOnClickAttendanceStartDialog()}>
-            {t('actions.attendanceStart')}
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleOnClickAttendanceEndDialog()}>
-            {t('actions.attendanceEnd')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
-  }
-
   const renderChunkRow = (chunk: readonly CommandBarItem[], chunkIndex: number) => {
-    const regular = chunk.filter((i) => i.id !== 'attendance')
-    const attendanceItem = chunk.find((i) => i.id === 'attendance')
-
     return (
       <div className="flex items-center gap-3">
-        {regular.length > 0 ? (
-          <ToggleGroup.Root
-            type="single"
-            value={selectedId}
-            onValueChange={(value) => {
-              if (value) setSelectedId(value)
-            }}
-            orientation="horizontal"
-            aria-label={
-              chunkIndex === 0
-                ? 'Primary command actions'
-                : `Primary command actions ${chunkIndex + 1}`
-            }
-            className="flex items-center gap-3"
-          >
-            {regular.map((item) => renderCommandItem(item))}
-          </ToggleGroup.Root>
-        ) : null}
-        {attendanceItem ? renderAttendanceMenuItem(attendanceItem) : null}
+        <ToggleGroup.Root
+          type="single"
+          value={selectedId}
+          onValueChange={(value) => {
+            if (value) setSelectedId(value)
+          }}
+          orientation="horizontal"
+          aria-label={
+            chunkIndex === 0 ? 'Primary command actions' : `Primary command actions ${chunkIndex + 1}`
+          }
+          className="flex items-center gap-3"
+        >
+          {chunk.map((item) => renderCommandItem(item))}
+        </ToggleGroup.Root>
       </div>
     )
   }
@@ -395,16 +323,6 @@ export function CommandPalette({
   function handleOnClickAddNewDialog() {
     setActiveDialog('add')
     setAddInitialType(undefined)
-    setOpen(true)
-  }
-
-  function handleOnClickAttendanceStartDialog() {
-    setActiveDialog('attendanceStart')
-    setOpen(true)
-  }
-
-  function handleOnClickAttendanceEndDialog() {
-    setActiveDialog('attendanceEnd')
     setOpen(true)
   }
 
@@ -535,20 +453,6 @@ export function CommandPalette({
                     onCourseCreated={onCourseCreated}
                     onRequestClose={handleCloseOverlayDialog}
                     initialType={addInitialType}
-                  />
-                )}
-                {activeDialog === 'attendanceStart' && (
-                  <CommandAttendanceDialog
-                    mode="start"
-                    open={open}
-                    onRequestClose={handleCloseOverlayDialog}
-                  />
-                )}
-                {activeDialog === 'attendanceEnd' && (
-                  <CommandAttendanceDialog
-                    mode="end"
-                    open={open}
-                    onRequestClose={handleCloseOverlayDialog}
                   />
                 )}
               </div>

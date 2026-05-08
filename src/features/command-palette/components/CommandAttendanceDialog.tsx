@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { MoveLeft } from 'lucide-react'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -23,12 +24,14 @@ export type CommandAttendanceDialogProps = {
   mode: CommandAttendanceMode
   open: boolean
   onRequestClose: () => void
+  onBack?: () => void
 }
 
 export function CommandAttendanceDialog({
   mode,
   open,
   onRequestClose,
+  onBack,
 }: CommandAttendanceDialogProps) {
   const { t } = useTranslation('features.commandPalette')
   const state = useCommandAttendanceDialog({ mode, open, onRequestClose })
@@ -38,7 +41,20 @@ export function CommandAttendanceDialog({
   return (
     <Card className="mx-auto w-full max-w-md border-0 bg-transparent shadow-none">
       <CardHeader className="p-0 pb-4">
-        <CardTitle className="text-lg">{t(titleKey)}</CardTitle>
+        <div className="flex items-center gap-3">
+          {onBack ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              disabled={state.isSubmitting}
+            >
+              <MoveLeft className="h-4 w-4" />
+            </Button>
+          ) : null}
+          <CardTitle className="text-lg">{t(titleKey)}</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 px-0">
         {state.error ? (

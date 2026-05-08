@@ -1,16 +1,12 @@
 import {
-  BellElectric,
   Cloud,
-  Hand,
   Home,
   MessageCircle,
-  MousePointer2,
   NotebookPen,
   Plus,
   Search as SearchIcon,
   Upload,
 } from 'lucide-react'
-import { AgentComputerIcon } from '@/components/shared'
 import { USER_ROLES, getRoleRoutePrefix } from '@/features/auth'
 import type {
   CommandBarContext,
@@ -18,6 +14,8 @@ import type {
   CommandBarItem,
   CommandRoleContext,
 } from '../types/command-bar.types'
+import { isCommandBarView } from './commandRoles'
+import { VIEW_COMMAND_ITEMS } from './commandAddOptions'
 
 function rolePrefix(role: CommandRoleContext): string {
   return getRoleRoutePrefix(role) ?? '/teacher'
@@ -66,11 +64,6 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       labelKey: 'actions.notebook',
       icon: NotebookPen,
       to: `${rolePrefix(USER_ROLES.TEACHER)}/notes`,
-    },
-    {
-      id: 'attendance',
-      labelKey: 'actions.attendance',
-      icon: BellElectric,
     },
   ],
   [USER_ROLES.INSTITUTION_ADMIN]: [
@@ -193,39 +186,8 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/notes`,
     },
   ],
-  'game-studio': [
-    {
-      id: 'home',
-      labelKey: 'actions.dashboard',
-      icon: Home,
-      actionId: 'home',
-    },
-    {
-      id: 'pan',
-      labelKey: 'navigation.pan',
-      icon: Hand,
-      actionId: 'pan',
-    },
-
-    {
-      id: 'select',
-      labelKey: 'navigation.select',
-      icon: MousePointer2,
-      actionId: 'select',
-    },
-    {
-      id: 'agent',
-      labelKey: 'actions.agent',
-      icon: AgentComputerIcon,
-      actionId: 'agent',
-    },
-    {
-      id: 'upload',
-      labelKey: 'actions.upload',
-      icon: Upload,
-      actionId: 'upload',
-    },
-  ],
+  'game-studio': [...VIEW_COMMAND_ITEMS['game-studio']],
+  lessons: [...VIEW_COMMAND_ITEMS.lessons],
 }
 
 const commandGroupsByContext: Record<CommandRoleContext, readonly CommandBarGroup[]> = {
@@ -267,11 +229,11 @@ export function getCommandBarGroups(
   _role: CommandRoleContext,
   context: CommandBarContext,
 ): CommandBarGroup[] {
-  if (context === 'game-studio') {
+  if (isCommandBarView(context)) {
     return [
       {
-        id: 'game-studio',
-        items: [...commandItemsByContext['game-studio']],
+        id: context,
+        items: [...commandItemsByContext[context]],
       },
     ]
   }
