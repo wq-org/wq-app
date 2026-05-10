@@ -1,7 +1,11 @@
 import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
+import { GameLayout } from '../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
+import { GameIfElseEditor } from './GameIfElseEditor'
+import { GameIfElsePreview } from './GameIfElsePreview'
+import { GameIfElseSettings } from './GameIfElseSettings'
 
-export function GameIfElseDialog({ nodeId, onClose }: GameNodeDialogProps) {
+export function GameIfElseDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
   return (
     <GameNodeDialogShell
       open
@@ -9,9 +13,17 @@ export function GameIfElseDialog({ nodeId, onClose }: GameNodeDialogProps) {
         if (!next) onClose()
       }}
       title="If / else"
-      description={`Configure the branching node (${nodeId}).`}
     >
-      {null}
+      <GameLayout
+        editorContent={<GameIfElseEditor nodeId={nodeId} />}
+        previewContent={<GameIfElsePreview nodeId={nodeId} />}
+        settingsContent={
+          <GameIfElseSettings
+            nodeId={nodeId}
+            onDelete={onDelete}
+          />
+        }
+      />
     </GameNodeDialogShell>
   )
 }

@@ -610,6 +610,57 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     return () => window.removeEventListener('resize', update)
   }, [])
 
+  // ---- Auto-save on unmount / URL change ----
+  // Track latest persistable values in refs so the cleanup below sees current
+  // data rather than the stale closure captured at mount.
+  const projectIdRef = useRef<string | undefined>(projectId)
+  const nodesRef = useRef<Node[]>(nodes)
+  const edgesRef = useRef<Edge[]>(edges)
+  const gameTitleRef = useRef<string>(gameTitle)
+  const gameThemeIdRef = useRef<ThemeId>(gameThemeId)
+  const loadStateRef = useRef(loadState)
+
+  useEffect(() => {
+    projectIdRef.current = projectId
+  }, [projectId])
+  useEffect(() => {
+    nodesRef.current = nodes
+  }, [nodes])
+  useEffect(() => {
+    edgesRef.current = edges
+  }, [edges])
+  useEffect(() => {
+    gameTitleRef.current = gameTitle
+  }, [gameTitle])
+  useEffect(() => {
+    gameThemeIdRef.current = gameThemeId
+  }, [gameThemeId])
+  useEffect(() => {
+    loadStateRef.current = loadState
+  }, [loadState])
+
+  useEffect(() => {
+    return () => {
+      const id = projectIdRef.current
+      if (!id) return
+      // Skip save if the project never finished loading — would overwrite
+      // server state with the empty initial nodes.
+      if (loadStateRef.current !== 'loaded') return
+      const gameConfig = serializeFlowGameConfig(nodesRef.current, edgesRef.current)
+      const startNode = nodesRef.current.find((n) => n.type === GAME_START_TYPE)
+      const description =
+        (startNode?.data as { description?: string } | undefined)?.description ?? ''
+      updateGameForStudio(id, {
+        title: gameTitleRef.current,
+        description,
+        theme_id: gameThemeIdRef.current,
+        game_content: gameConfig,
+      }).catch((err) => {
+        console.error('Auto-save on unmount failed:', err)
+      })
+    }
+  }, [])
+
   // ---- Command bar listener (pan / select / home) ----
   useEffect(() => {
     const handler = (event: Event) => {
@@ -636,6 +687,23 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     const entry = getRegistryEntry(node.type)
     if (!entry?.DialogComponent) return null
     return { Component: entry.DialogComponent, nodeId: node.id }
+  }, [openDialogNodeId, nodes])
+
+  // ---- Delete node from dialog (respects registry isDeletable) ----
+  const handleDeleteOpenNode = useCallback(() => {
+    if (!openDialogNodeId) return
+    const node = nodes.find((n) => n.id === openDialogNodeId)
+    if (!node) return
+    const entry = getRegistryEntry(node.type)
+    if (!entry?.isDeletable) {
+      toast.error(`Cannot delete ${entry?.label ?? node.type ?? 'this'} node`)
+      return
+    }
+    const id = node.id
+    setNodes((prev) => prev.filter((n) => n.id !== id))
+    setEdges((prev) => prev.filter((e) => e.source !== id && e.target !== id))
+    setOpenDialogNodeId(null)
+    toast.success(`${entry.label} node deleted`)
   }, [openDialogNodeId, nodes])
 
   return (
@@ -741,6 +809,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         <openDialog.Component
           nodeId={openDialog.nodeId}
           onClose={() => setOpenDialogNodeId(null)}
+          onDelete={handleDeleteOpenNode}
         />
       ) : null}
     </div>

@@ -1,7 +1,11 @@
 import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
+import { GameLayout } from '../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
+import { GameEndEditor } from './GameEndEditor'
+import { GameEndPreview } from './GameEndPreview'
+import { GameEndSettings } from './GameEndSettings'
 
-export function GameEndDialog({ nodeId, onClose }: GameNodeDialogProps) {
+export function GameEndDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
   return (
     <GameNodeDialogShell
       open
@@ -9,9 +13,17 @@ export function GameEndDialog({ nodeId, onClose }: GameNodeDialogProps) {
         if (!next) onClose()
       }}
       title="End"
-      description={`Configure the end node (${nodeId}).`}
     >
-      {null}
+      <GameLayout
+        editorContent={<GameEndEditor nodeId={nodeId} />}
+        previewContent={<GameEndPreview nodeId={nodeId} />}
+        settingsContent={
+          <GameEndSettings
+            nodeId={nodeId}
+            onDelete={onDelete}
+          />
+        }
+      />
     </GameNodeDialogShell>
   )
 }

@@ -9,6 +9,7 @@ export type GameNodeAccent = 'gray' | 'blue' | 'orange'
 export type GameNodeDialogProps = {
   nodeId: string
   onClose: () => void
+  onDelete: () => void
 }
 
 export type GameNodeRegistryEntry = {
