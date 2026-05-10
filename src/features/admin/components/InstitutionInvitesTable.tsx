@@ -16,6 +16,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
+import { cn } from '@/lib/utils'
+
 import { InstitutionInvitesSheet } from './InstitutionInvitesSheet'
 import type { InstitutionInvite } from '../types/institutionInvites.types'
 import { badgeVariants } from '@/components/ui/badge-variants'
@@ -39,12 +41,14 @@ type InstitutionInvitesTableProps = {
   invites: readonly InstitutionInvite[]
   inviterEmailByUserId: ReadonlyMap<string, string>
   onResend?: (institutionId: string) => Promise<void>
+  className?: string
 }
 
 export function InstitutionInvitesTable({
   invites,
   inviterEmailByUserId,
   onResend,
+  className,
 }: InstitutionInvitesTableProps) {
   const { t } = useTranslation('features.admin')
   const [selectedInvite, setSelectedInvite] = useState<InstitutionInvite | null>(null)
@@ -83,7 +87,7 @@ export function InstitutionInvitesTable({
 
   if (invites.length === 0) {
     return (
-      <div className="rounded-md border border-dashed">
+      <div className={cn('rounded-md border border-dashed', className)}>
         <Empty className="min-h-[280px] border-0">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -99,7 +103,7 @@ export function InstitutionInvitesTable({
 
   return (
     <>
-      <div className="rounded-lg border">
+      <div className={cn('rounded-lg border', className)}>
         <Table>
           <TableHeader>
             <TableRow>
