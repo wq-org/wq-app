@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -21,6 +21,7 @@ import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { updateProgrammeOffering } from '../api/programmeOfferingsApi'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
+import { deriveSuggestedTermCode, normalizeTermCode } from '../utils/termCode'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
 
 const END_DATE_PRESET_OFFSETS = [
@@ -52,6 +53,8 @@ type EditProgrammeOfferingDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   offering: ProgrammeOfferingRecord | null
+  programmeName?: string | null
+  programmeDurationYears?: number | null
   onUpdated: (offering: ProgrammeOfferingRecord) => void
 }
 
@@ -59,6 +62,8 @@ export function EditProgrammeOfferingDialog({
   open,
   onOpenChange,
   offering,
+  programmeName,
+  programmeDurationYears,
   onUpdated,
 }: EditProgrammeOfferingDialogProps) {
   const { t } = useTranslation('features.institution-admin')
@@ -71,25 +76,58 @@ export function EditProgrammeOfferingDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  /** While true, term code tracks {@link deriveSuggestedTermCode}; first manual edit turns this off. */
+  const isAutoDerivedTermRef = useRef(true)
+
   /** Active offerings lock start/end dates; switch to draft to change them. */
   const datesDisabled = status === 'active'
 
   const seedFromOffering = useCallback(() => {
     if (!offering) return
     setAcademicYear(offering.academic_year)
-    setTermCode(offering.term_code ?? '')
     setStatus(offering.status)
     setDateRange({
       from: offering.starts_at ? new Date(offering.starts_at) : undefined,
       to: offering.ends_at ? new Date(offering.ends_at) : undefined,
     })
     setError(null)
-  }, [offering])
+
+    const derived = deriveSuggestedTermCode(
+      programmeName,
+      offering.academic_year,
+      programmeDurationYears,
+    )
+    const stored = offering.term_code?.trim() ?? ''
+    if (!stored) {
+      isAutoDerivedTermRef.current = true
+      setTermCode(derived)
+      return
+    }
+    setTermCode(stored)
+    isAutoDerivedTermRef.current = normalizeTermCode(stored) === normalizeTermCode(derived)
+  }, [offering, programmeName, programmeDurationYears])
 
   useEffect(() => {
     if (!open || !offering) return
     seedFromOffering()
   }, [open, offering, seedFromOffering])
+
+  useEffect(() => {
+    if (!open || !offering || !isAutoDerivedTermRef.current) return
+    setTermCode(deriveSuggestedTermCode(programmeName, academicYear, programmeDurationYears))
+  }, [open, offering, programmeName, programmeDurationYears, academicYear])
+
+  const handleAcademicYearChange = (nextYear: number) => {
+    setAcademicYear(nextYear)
+    if (isAutoDerivedTermRef.current) {
+      setTermCode(deriveSuggestedTermCode(programmeName, nextYear, programmeDurationYears))
+    }
+  }
+
+  const handleTermCodeChange = (raw: string) => {
+    isAutoDerivedTermRef.current = false
+    setTermCode(normalizeTermCode(raw))
+  }
 
   const validationError = useMemo(() => {
     if (!Number.isFinite(academicYear)) {
@@ -151,7 +189,7 @@ export function EditProgrammeOfferingDialog({
             </Label>
             <AcademicYearCombobox
               value={academicYear}
-              onValueChange={setAcademicYear}
+              onValueChange={handleAcademicYearChange}
               placeholder={t(
                 'faculties.pages.programmeOfferings.createDialog.fields.academicYearPlaceholder',
               )}
@@ -165,7 +203,7 @@ export function EditProgrammeOfferingDialog({
               'faculties.pages.programmeOfferings.createDialog.fields.termCodePlaceholder',
             )}
             value={termCode}
-            onValueChange={setTermCode}
+            onValueChange={handleTermCodeChange}
           />
 
           <div className="grid gap-4 sm:grid-cols-2">

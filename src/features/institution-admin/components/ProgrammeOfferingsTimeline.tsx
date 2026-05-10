@@ -2,7 +2,15 @@ import { useState } from 'react'
 import { AlertCircle, Archive, ChartNoAxesGantt, FileSliders, GraduationCap } from 'lucide-react'
 
 import { SelectTabs } from '@/components/shared'
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Button } from '@/components/ui/button'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { Spinner } from '@/components/ui/spinner'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
 import { ProgrammeOfferingsTable } from './ProgrammeOfferingsTable'
@@ -25,6 +33,7 @@ type ProgrammeOfferingsTimelineProps = {
   t: (key: string) => string
   onEditOffering?: (offeringId: string) => void
   onArchiveOffering?: (offeringId: string) => void
+  onAddOffering?: () => void
 }
 
 export function ProgrammeOfferingsTimeline({
@@ -36,6 +45,7 @@ export function ProgrammeOfferingsTimeline({
   t,
   onEditOffering,
   onArchiveOffering,
+  onAddOffering,
 }: ProgrammeOfferingsTimelineProps) {
   const [activeTabId, setActiveTabId] = useState<TimelineTabId>('timeline')
 
@@ -91,6 +101,17 @@ export function ProgrammeOfferingsTimeline({
           <EmptyTitle>{t('faculties.pages.programmeOfferings.titleFallback')}</EmptyTitle>
           <EmptyDescription>{t('faculties.pages.programmeOfferings.empty')}</EmptyDescription>
         </EmptyHeader>
+        {onAddOffering ? (
+          <EmptyContent className="flex-row justify-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onAddOffering}
+            >
+              {t('faculties.pages.programmeOfferings.addOffering')}
+            </Button>
+          </EmptyContent>
+        ) : null}
       </Empty>
     )
   }
@@ -116,11 +137,13 @@ export function ProgrammeOfferingsTimeline({
         <ProgrammeOfferingsTimelineCardList
           offerings={draftOfferings}
           onEdit={onEditOffering}
+          onAddOffering={onAddOffering}
         />
       ) : (
         <ProgrammeOfferingsTimelineCardList
           offerings={archivedOfferings}
           onEdit={onEditOffering}
+          onAddOffering={onAddOffering}
         />
       )}
     </div>

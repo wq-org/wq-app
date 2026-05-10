@@ -82,9 +82,29 @@ function toIsoDateOrNull(value: Date | undefined): string | null {
   return value ? value.toISOString() : null
 }
 
+type OfferingLayerInput = Pick<
+  CreateFacultyStructureInput,
+  'programmeOfferings' | 'cohortOfferings' | 'classGroupOfferings'
+>
+
+/**
+ * Cohort offerings link to programme offerings; class group offerings link to cohort offerings.
+ * Empty arrays are valid for “hierarchy only” creation.
+ */
+function validateOfferingLayers(input: OfferingLayerInput): void {
+  if (input.cohortOfferings.length > 0 && input.programmeOfferings.length === 0) {
+    throw new Error('Cohort offerings require at least one programme offering')
+  }
+  if (input.classGroupOfferings.length > 0 && input.cohortOfferings.length === 0) {
+    throw new Error('Class group offerings require at least one cohort offering')
+  }
+}
+
 export async function createFacultyStructure(
   input: CreateFacultyStructureInput,
 ): Promise<CreateFacultyStructureResult> {
+  validateOfferingLayers(input)
+
   const faculty = await createFaculty({
     institution_id: input.institutionId,
     name: input.faculty.name.trim(),
@@ -114,11 +134,6 @@ export async function createFacultyStructure(
     createdProgrammeOfferings.push(row)
   }
 
-  const programmeOfferingAnchor = createdProgrammeOfferings[0]
-  if (!programmeOfferingAnchor) {
-    throw new Error('At least one programme offering is required')
-  }
-
   const cohort = await createCohort({
     institution_id: input.institutionId,
     programme_id: programme.id,
@@ -130,8 +145,8 @@ export async function createFacultyStructure(
   const createdCohortOfferings: CohortOfferingRecord[] = []
   for (const [index, offering] of input.cohortOfferings.entries()) {
     const programmeOfferingId =
-      createdProgrammeOfferings[Math.min(index, createdProgrammeOfferings.length - 1)]?.id ??
-      programmeOfferingAnchor.id
+      createdProgrammeOfferings[Math.min(index, Math.max(0, createdProgrammeOfferings.length - 1))]!
+        .id
     const row = await createCohortOffering({
       institution_id: input.institutionId,
       programme_offering_id: programmeOfferingId,
@@ -144,9 +159,6 @@ export async function createFacultyStructure(
   }
 
   const cohortOfferingAnchor = createdCohortOfferings[0]
-  if (!cohortOfferingAnchor) {
-    throw new Error('At least one cohort offering is required')
-  }
 
   const classGroup = await createClassGroup({
     institution_id: input.institutionId,
@@ -156,19 +168,23 @@ export async function createFacultyStructure(
   })
 
   const createdClassGroupOfferings: ClassGroupOfferingRecord[] = []
-  for (const [index, offering] of input.classGroupOfferings.entries()) {
-    const cohortOfferingId =
-      createdCohortOfferings[Math.min(index, createdCohortOfferings.length - 1)]?.id ??
-      cohortOfferingAnchor.id
-    const row = await createClassGroupOffering({
-      institution_id: input.institutionId,
-      cohort_offering_id: cohortOfferingId,
-      class_group_id: classGroup.id,
-      status: offering.status,
-      starts_at: toIsoDateOrNull(offering.dateRange?.from),
-      ends_at: toIsoDateOrNull(offering.dateRange?.to),
-    })
-    createdClassGroupOfferings.push(row)
+  if (input.classGroupOfferings.length > 0) {
+    if (!cohortOfferingAnchor) {
+      throw new Error('Class group offerings require at least one cohort offering')
+    }
+    for (const [index, offering] of input.classGroupOfferings.entries()) {
+      const cohortOfferingId =
+        createdCohortOfferings[Math.min(index, Math.max(0, createdCohortOfferings.length - 1))]!.id
+      const row = await createClassGroupOffering({
+        institution_id: input.institutionId,
+        cohort_offering_id: cohortOfferingId,
+        class_group_id: classGroup.id,
+        status: offering.status,
+        starts_at: toIsoDateOrNull(offering.dateRange?.from),
+        ends_at: toIsoDateOrNull(offering.dateRange?.to),
+      })
+      createdClassGroupOfferings.push(row)
+    }
   }
 
   return {
@@ -185,6 +201,8 @@ export async function createFacultyStructure(
 export async function appendProgrammeStructureToExistingFaculty(
   input: AppendProgrammeStructureToFacultyInput,
 ): Promise<AppendProgrammeStructureToFacultyResult> {
+  validateOfferingLayers(input)
+
   const programme = await createProgramme({
     institution_id: input.institutionId,
     faculty_id: input.facultyId,
@@ -208,11 +226,6 @@ export async function appendProgrammeStructureToExistingFaculty(
     createdProgrammeOfferings.push(row)
   }
 
-  const programmeOfferingAnchor = createdProgrammeOfferings[0]
-  if (!programmeOfferingAnchor) {
-    throw new Error('At least one programme offering is required')
-  }
-
   const cohort = await createCohort({
     institution_id: input.institutionId,
     programme_id: programme.id,
@@ -224,8 +237,8 @@ export async function appendProgrammeStructureToExistingFaculty(
   const createdCohortOfferings: CohortOfferingRecord[] = []
   for (const [index, offering] of input.cohortOfferings.entries()) {
     const programmeOfferingId =
-      createdProgrammeOfferings[Math.min(index, createdProgrammeOfferings.length - 1)]?.id ??
-      programmeOfferingAnchor.id
+      createdProgrammeOfferings[Math.min(index, Math.max(0, createdProgrammeOfferings.length - 1))]!
+        .id
     const row = await createCohortOffering({
       institution_id: input.institutionId,
       programme_offering_id: programmeOfferingId,
@@ -238,9 +251,6 @@ export async function appendProgrammeStructureToExistingFaculty(
   }
 
   const cohortOfferingAnchor = createdCohortOfferings[0]
-  if (!cohortOfferingAnchor) {
-    throw new Error('At least one cohort offering is required')
-  }
 
   const classGroup = await createClassGroup({
     institution_id: input.institutionId,
@@ -250,19 +260,23 @@ export async function appendProgrammeStructureToExistingFaculty(
   })
 
   const createdClassGroupOfferings: ClassGroupOfferingRecord[] = []
-  for (const [index, offering] of input.classGroupOfferings.entries()) {
-    const cohortOfferingId =
-      createdCohortOfferings[Math.min(index, createdCohortOfferings.length - 1)]?.id ??
-      cohortOfferingAnchor.id
-    const row = await createClassGroupOffering({
-      institution_id: input.institutionId,
-      cohort_offering_id: cohortOfferingId,
-      class_group_id: classGroup.id,
-      status: offering.status,
-      starts_at: toIsoDateOrNull(offering.dateRange?.from),
-      ends_at: toIsoDateOrNull(offering.dateRange?.to),
-    })
-    createdClassGroupOfferings.push(row)
+  if (input.classGroupOfferings.length > 0) {
+    if (!cohortOfferingAnchor) {
+      throw new Error('Class group offerings require at least one cohort offering')
+    }
+    for (const [index, offering] of input.classGroupOfferings.entries()) {
+      const cohortOfferingId =
+        createdCohortOfferings[Math.min(index, Math.max(0, createdCohortOfferings.length - 1))]!.id
+      const row = await createClassGroupOffering({
+        institution_id: input.institutionId,
+        cohort_offering_id: cohortOfferingId,
+        class_group_id: classGroup.id,
+        status: offering.status,
+        starts_at: toIsoDateOrNull(offering.dateRange?.from),
+        ends_at: toIsoDateOrNull(offering.dateRange?.to),
+      })
+      createdClassGroupOfferings.push(row)
+    }
   }
 
   return {

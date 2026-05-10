@@ -25,7 +25,7 @@ import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { archiveCohortOffering } from '../api/cohortOfferingsApi'
 import { updateCohort } from '../api/cohortsApi'
 import { ClassGroupCardList } from '../components/ClassGroupCardList'
-import { CohortOfferingsTimeLine } from '../components/CohortOfferingsTimeLine'
+import { CohortOfferingsTimeline } from '../components/CohortOfferingsTimeline'
 import { CohortSettings } from '../components/CohortSettings'
 import { CreateCohortOfferingDialog } from '../components/CreateCohortOfferingDialog'
 import { EditCohortOfferingDialog } from '../components/EditCohortOfferingDialog'
@@ -263,7 +263,7 @@ export function InstitutionCohortOfferings() {
     }
 
     return (
-      <CohortOfferingsTimeLine
+      <CohortOfferingsTimeline
         offerings={offerings}
         onEditOffering={handleEditOffering}
         onArchiveOffering={handleArchiveOffering}

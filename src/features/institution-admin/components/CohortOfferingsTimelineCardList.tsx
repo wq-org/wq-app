@@ -35,21 +35,23 @@ export function CohortOfferingsTimelineCardList({
           <EmptyTitle>{t('faculties.pages.cohortOfferings.titleFallback')}</EmptyTitle>
           <EmptyDescription>{t('faculties.pages.cohortOfferings.empty')}</EmptyDescription>
         </EmptyHeader>
-        <EmptyContent className="flex-row justify-center gap-2">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={onAddOffering}
-          >
-            {t('faculties.pages.cohortOfferings.addOffering')}
-          </Button>
-        </EmptyContent>
+        {onAddOffering ? (
+          <EmptyContent className="flex-row justify-center gap-2">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={onAddOffering}
+            >
+              {t('faculties.pages.cohortOfferings.addOffering')}
+            </Button>
+          </EmptyContent>
+        ) : null}
       </Empty>
     )
   }
 
   return (
-    <div className="grid gap-3">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {offerings.map((offering) => (
         <CohortOfferingsTimelineCard
           key={offering.id}

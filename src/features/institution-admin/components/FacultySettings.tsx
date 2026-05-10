@@ -1,8 +1,19 @@
+import { useState } from 'react'
+import { Archive } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
@@ -38,6 +49,7 @@ export function FacultySettings({
   onSaveChanges,
 }: FacultySettingsProps) {
   const { t } = useTranslation('features.institution-admin')
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -115,10 +127,25 @@ export function FacultySettings({
         </Text>
       ) : null}
 
-      <div className="flex justify-end">
+      <div className="flex w-full flex-wrap items-center justify-end gap-3">
+        <HoldToDeleteButton
+          variant="orange"
+          className="inline-flex h-9 max-w-full shrink-0 self-center"
+          icon={
+            <Archive
+              className="size-5 shrink-0"
+              aria-hidden
+            />
+          }
+          disabled={isSaving}
+          onDelete={() => setArchiveDialogOpen(true)}
+        >
+          {t('faculties.pages.facultyProgrammes.settings.archiveHoldLabel')}
+        </HoldToDeleteButton>
         <Button
           type="button"
           variant="darkblue"
+          className="h-9 shrink-0 self-center"
           onClick={onSaveChanges}
           disabled={!hasUnsavedSettingsChanges || isSaving}
         >
@@ -127,6 +154,38 @@ export function FacultySettings({
             : t('faculties.pages.facultyProgrammes.settings.saveChanges')}
         </Button>
       </div>
+
+      <Dialog
+        open={archiveDialogOpen}
+        onOpenChange={setArchiveDialogOpen}
+      >
+        <DialogContent showCloseButton>
+          <DialogHeader>
+            <DialogTitle>
+              {t('faculties.pages.facultyProgrammes.settings.archiveDialogTitle')}
+            </DialogTitle>
+            <DialogDescription className="text-pretty whitespace-pre-line">
+              {t('faculties.pages.facultyProgrammes.settings.archiveDialogDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setArchiveDialogOpen(false)}
+            >
+              {t('faculties.pages.facultyProgrammes.settings.archiveDialogCancel')}
+            </Button>
+            <Button
+              type="button"
+              variant="orange"
+              onClick={() => setArchiveDialogOpen(false)}
+            >
+              {t('faculties.pages.facultyProgrammes.settings.archiveDialogConfirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { CohortOfferingRecord } from '../types/cohort-offering.types'
 
 type CohortOfferingsTimelineCardProps = {
@@ -35,7 +35,7 @@ export function CohortOfferingsTimelineCard({
         : t('faculties.pages.cohortOfferings.offering.statusInactive')
 
   const statusVariant =
-    offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'secondary' : 'secondary'
+    offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'orange' : 'secondary'
 
   const isArchived = offering.status === 'archived'
 
@@ -54,47 +54,38 @@ export function CohortOfferingsTimelineCard({
   }
 
   return (
-    <Card className="gap-4 py-4">
-      <CardHeader className="gap-1 px-4">
-        <CardTitle className="flex flex-wrap items-center gap-2 text-sm font-normal">
+    <Card className="gap-2 py-3">
+      <CardHeader className="!flex flex-row items-start justify-between gap-3 border-0 px-4 pb-0 pt-2">
+        <CardTitle className="min-w-0 flex-1">
           <Badge
             variant="indigo"
             size="sm"
-            className="font-normal"
+            className="max-w-full font-normal whitespace-normal"
           >
             {programmeOfferingName}
           </Badge>
         </CardTitle>
-        <CardAction>
-          <Button
-            type="button"
-            size="sm"
-            variant="darkblue"
-            onClick={handleEdit}
-            disabled={isArchived}
-          >
-            <Pencil className="size-4" />
-            Edit
-          </Button>
-        </CardAction>
+        <Badge
+          variant={statusVariant}
+          size="sm"
+          className="shrink-0 font-normal"
+        >
+          {statusLabel}
+        </Badge>
       </CardHeader>
-      <CardContent className="px-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Badge
-            variant="blue"
-            size="sm"
-            className="max-w-full font-normal whitespace-normal"
-          >
-            {dateRange}
-          </Badge>
-          <Badge
-            variant={statusVariant}
-            size="sm"
-            className="font-normal"
-          >
-            {statusLabel}
-          </Badge>
-        </div>
+      <CardContent className="flex flex-row items-center justify-between gap-3 px-4 pt-1 pb-3">
+        <p className="min-w-0 text-xs text-muted-foreground">{dateRange}</p>
+        <Button
+          type="button"
+          size="sm"
+          variant="darkblue"
+          className="shrink-0"
+          onClick={handleEdit}
+          disabled={isArchived}
+        >
+          <Pencil className="size-4" />
+          Edit
+        </Button>
       </CardContent>
     </Card>
   )

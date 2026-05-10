@@ -29,7 +29,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
-import { useCreateClassroomDialog } from '../hooks/useCreateClassroomDialog'
+import {
+  useCreateClassroomDialog,
+  CREATE_CLASSROOM_DIALOG_BADGE_VARIANT,
+} from '../hooks/useCreateClassroomDialog'
 import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
 import type { ClassroomRecord } from '../types/classroom.types'
 
@@ -198,7 +201,7 @@ export function CreateClassroomDialog({
               {nameSuggestions.map((suggestion, index) => (
                 <Badge
                   key={`${suggestion}-${index}`}
-                  variant="indigo"
+                  variant={CREATE_CLASSROOM_DIALOG_BADGE_VARIANT}
                   className="cursor-pointer"
                   onClick={() => setTitle(suggestion)}
                 >
@@ -302,7 +305,7 @@ export function CreateClassroomDialog({
                                   {selectedClassGroupName}
                                 </span>
                                 <Badge
-                                  variant={offering.status === 'active' ? 'green' : 'secondary'}
+                                  variant={CREATE_CLASSROOM_DIALOG_BADGE_VARIANT}
                                   size="sm"
                                 >
                                   {offering.status}

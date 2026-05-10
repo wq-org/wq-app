@@ -314,7 +314,12 @@
             "namePlaceholder": "Fakultätsname eingeben",
             "descriptionLabel": "Beschreibung",
             "descriptionPlaceholder": "Fakultätsbeschreibung eingeben"
-          }
+          },
+          "archiveHoldLabel": "Halten zum Archivieren der Fakultät",
+          "archiveDialogTitle": "Fakultät archivieren",
+          "archiveDialogDescription": "Das Archivieren kennzeichnet diese Fakultät für den laufenden Betrieb als inaktiv; eine Wiederherstellung soll später über die Verwaltung möglich sein. Derzeit ändert sich noch nichts—nur die Oberfläche.\n\nSobald Archivierung angebunden ist, wird diese Fakultät als archiviert markiert: Sie bleibt für Nachweise sichtbar, soll aber keine neuen Programme mehr erhalten, bis sie wiederhergestellt wird. Verknüpfte Programme und Jahrgänge können bestehen bleiben, bis Sie sie separat bearbeiten.",
+          "archiveDialogCancel": "Abbrechen",
+          "archiveDialogConfirm": "Verstanden"
         },
         "unsavedChanges": {
           "title": "Sie haben ungespeicherte Änderungen",
@@ -407,6 +412,14 @@
         },
         "editActiveOffering": {
           "datesReadOnly": "Start- und Enddatum können nicht geändert werden, solange das Angebot aktiv ist. Wechseln Sie zu Entwurf, um die Daten anzupassen."
+        },
+        "timeline": {
+          "archiveMenuItem": "Angebot archivieren",
+          "archiveDialogTitle": "Dieses Programmangebot archivieren?",
+          "archiveDialogDescription": "Beim Archivieren wird dieses Angebot als inaktiv markiert. Es verschwindet aus der aktiven Timeline und erscheint unter dem Tab „Archiviert“. Verknüpfungen zu Jahrgängen oder Klassengruppen werden nicht automatisch entfernt; bearbeiten oder archivieren Sie diese bei Bedarf separat.",
+          "archiveDialogOfferingLabel": "Angebot: {{term}}",
+          "archiveDialogCancel": "Abbrechen",
+          "holdToArchive": "Zum Archivieren halten"
         }
       },
       "cohorts": {

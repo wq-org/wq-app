@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
 
 type ClassGroupOfferingsTimelineCardProps = {
@@ -35,7 +35,9 @@ export function ClassGroupOfferingsTimelineCard({
         : t('faculties.pages.classGroupOfferings.offering.statusInactive')
 
   const statusVariant =
-    offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'secondary' : 'secondary'
+    offering.status === 'active' ? 'green' : offering.status === 'draft' ? 'orange' : 'secondary'
+
+  const isArchived = offering.status === 'archived'
 
   const notSet = t('faculties.pages.classGroupOfferings.offering.notSet')
   const dateRange = `${formatDate(offering.starts_at, i18n.language, notSet)} - ${formatDate(offering.ends_at, i18n.language, notSet)}`
@@ -45,29 +47,30 @@ export function ClassGroupOfferingsTimelineCard({
   }
 
   return (
-    <Card className="gap-4 py-4">
-      <CardHeader className="gap-1 px-4">
-        <CardTitle className="text-sm">{dateRange}</CardTitle>
-        <CardAction>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={handleEdit}
-          >
-            <Pencil className="size-4" />
-            Edit
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="px-4">
+    <Card className="gap-2 py-3">
+      <CardHeader className="!flex flex-row items-start justify-between gap-3 border-0 px-4 pb-0 pt-2">
+        <CardTitle className="min-w-0 flex-1 text-sm font-normal leading-snug">
+          {dateRange}
+        </CardTitle>
         <Badge
           variant={statusVariant}
           size="sm"
-          className="font-normal"
+          className="shrink-0 font-normal"
         >
           {statusLabel}
         </Badge>
+      </CardHeader>
+      <CardContent className="flex justify-end px-4 pt-1 pb-3">
+        <Button
+          type="button"
+          size="sm"
+          variant="darkblue"
+          onClick={handleEdit}
+          disabled={isArchived}
+        >
+          <Pencil className="size-4" />
+          Edit
+        </Button>
       </CardContent>
     </Card>
   )

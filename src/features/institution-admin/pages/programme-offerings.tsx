@@ -310,6 +310,7 @@ export function InstitutionProgrammeOfferings() {
                 t={t}
                 onEditOffering={handleEditOffering}
                 onArchiveOffering={handleArchiveOffering}
+                onAddOffering={handleAddOffering}
               />
             </div>
             {showCohortsSection ? (
@@ -398,6 +399,8 @@ export function InstitutionProgrammeOfferings() {
               if (!nextOpen) setEditingOfferingId(null)
             }}
             offering={editingActiveOffering}
+            programmeName={selectedProgramme?.name ?? ''}
+            programmeDurationYears={selectedProgramme?.duration_years ?? null}
             onUpdated={replaceOffering}
           />
           <EditProgrammeOfferingsDraftDialog
@@ -406,6 +409,7 @@ export function InstitutionProgrammeOfferings() {
               if (!nextOpen) setEditingOfferingId(null)
             }}
             offering={editingDraftOffering}
+            programmeDurationYears={selectedProgramme?.duration_years ?? null}
             onUpdated={replaceOffering}
           />
         </>

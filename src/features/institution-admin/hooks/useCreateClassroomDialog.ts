@@ -11,6 +11,9 @@ import type { ClassGroupRecord } from '../types/class-group.types'
 import type { ClassroomRecord } from '../types/classroom.types'
 import type { InstitutionDirectoryRow } from '../types/institution-users.types'
 
+/** Badge variant for create-classroom dialog chips (see CreateClassroomDialog). */
+export const CREATE_CLASSROOM_DIALOG_BADGE_VARIANT = 'teal' as const
+
 type TeacherOption = {
   id: string
   label: string

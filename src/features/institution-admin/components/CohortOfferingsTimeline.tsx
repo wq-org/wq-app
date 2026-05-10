@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Archive, ChartNoAxesGantt, FileSliders } from 'lucide-react'
 
 import { SelectTabs } from '@/components/shared'
-import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
-import { ClassGroupOfferingsTimelineCardList } from './ClassGroupOfferingsTimelineCardList'
-import { ClassGroupOfferingsTable } from './ClassGroupOfferingsTable'
+import type { CohortOfferingRecord } from '../types/cohort-offering.types'
+import { CohortOfferingsTimelineCardList } from './CohortOfferingsTimelineCardList'
+import { CohortOfferingsTable } from './CohortOfferingsTable'
 
 const TIMELINE_TAB = [
   { id: 'timeline', title: 'Timeline', icon: ChartNoAxesGantt },
@@ -14,11 +14,19 @@ const TIMELINE_TAB = [
 
 type TimelineTabId = (typeof TIMELINE_TAB)[number]['id']
 
-type ClassGroupOfferingsTimeLineProps = {
-  offerings: readonly ClassGroupOfferingRecord[]
+type CohortOfferingsTimelineProps = {
+  offerings: readonly CohortOfferingRecord[]
+  onEditOffering?: (offeringId: string) => void
+  onArchiveOffering?: (offeringId: string) => void
+  onAddOffering?: () => void
 }
 
-export function ClassGroupOfferingsTimeLine({ offerings }: ClassGroupOfferingsTimeLineProps) {
+export function CohortOfferingsTimeline({
+  offerings,
+  onEditOffering,
+  onArchiveOffering,
+  onAddOffering,
+}: CohortOfferingsTimelineProps) {
   const [activeTabId, setActiveTabId] = useState<TimelineTabId>('timeline')
 
   const activeOfferings = offerings.filter((offering) => offering.status === 'active')
@@ -33,11 +41,23 @@ export function ClassGroupOfferingsTimeLine({ offerings }: ClassGroupOfferingsTi
         onTabChange={(tabId) => setActiveTabId(tabId as TimelineTabId)}
       />
       {activeTabId === 'timeline' ? (
-        <ClassGroupOfferingsTable offerings={activeOfferings} />
+        <CohortOfferingsTable
+          offerings={activeOfferings}
+          onEditOffering={onEditOffering}
+          onArchiveOffering={onArchiveOffering}
+        />
       ) : activeTabId === 'drafts' ? (
-        <ClassGroupOfferingsTimelineCardList offerings={draftOfferings} />
+        <CohortOfferingsTimelineCardList
+          offerings={draftOfferings}
+          onEdit={onEditOffering}
+          onAddOffering={onAddOffering}
+        />
       ) : (
-        <ClassGroupOfferingsTimelineCardList offerings={archivedOfferings} />
+        <CohortOfferingsTimelineCardList
+          offerings={archivedOfferings}
+          onEdit={onEditOffering}
+          onAddOffering={onAddOffering}
+        />
       )}
     </div>
   )

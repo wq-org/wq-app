@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { StepperProgressBarTitles } from '@/components/shared'
 import { useUser } from '@/contexts/user'
@@ -176,14 +177,7 @@ export function InstitutionFacultiesCreate() {
         durationYears,
         progressionType,
       },
-      programmeOfferings: [
-        {
-          academicYear: defaultProgrammeOfferingYear,
-          termCode: defaultProgrammeOfferingTermCode.trim() || null,
-          status: 'draft' as const,
-          dateRange: undefined,
-        },
-      ],
+      programmeOfferings: [],
       cohort: {
         name: cohortName,
         description: null,
@@ -429,13 +423,24 @@ export function InstitutionFacultiesCreate() {
             ) : (
               <Button
                 type="button"
-                variant="darkblue"
+                variant="teal"
+                className="min-w-0 flex-1"
                 onClick={handleFinish}
                 disabled={isSubmitting}
+                aria-busy={isSubmitting}
               >
-                {isSubmitting
-                  ? t('faculties.wizard.actions.finishing')
-                  : t('faculties.wizard.actions.finish')}
+                {isSubmitting ? (
+                  <>
+                    <span className="sr-only">{t('faculties.wizard.actions.finishing')}</span>
+                    <Spinner
+                      variant="teal"
+                      size="xs"
+                      aria-hidden
+                    />
+                  </>
+                ) : (
+                  t('faculties.wizard.actions.finish')
+                )}
               </Button>
             )}
           </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addMonths, format, isSameDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -21,6 +21,7 @@ import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { updateProgrammeOffering } from '../api/programmeOfferingsApi'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
+import { typicalSpringAutumnRanges } from '../utils/programmeOfferingTypicalRanges'
 import { normalizeTermCode } from '../utils/termCode'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
 
@@ -53,6 +54,8 @@ type EditProgrammeOfferingsDraftDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   offering: ProgrammeOfferingRecord | null
+  /** Programme duration in years (same as create dialog); drives typical spring/autumn spans. */
+  programmeDurationYears?: number | null
   onUpdated: (offering: ProgrammeOfferingRecord) => void
 }
 
@@ -60,6 +63,7 @@ export function EditProgrammeOfferingsDraftDialog({
   open,
   onOpenChange,
   offering,
+  programmeDurationYears,
   onUpdated,
 }: EditProgrammeOfferingsDraftDialogProps) {
   const { t } = useTranslation('features.institution-admin')
@@ -72,7 +76,7 @@ export function EditProgrammeOfferingsDraftDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const seedFromOffering = () => {
+  const seedFromOffering = useCallback(() => {
     if (!offering) return
     setAcademicYear(offering.academic_year)
     setTermCode(offering.term_code ?? '')
@@ -82,12 +86,29 @@ export function EditProgrammeOfferingsDraftDialog({
       to: offering.ends_at ? new Date(offering.ends_at) : undefined,
     })
     setError(null)
-  }
+  }, [offering])
 
   useEffect(() => {
     if (!open || !offering) return
     seedFromOffering()
-  }, [open, offering?.id])
+  }, [open, offering, seedFromOffering])
+
+  const { spring: springPreset, autumn: autumnPreset } = useMemo(
+    () => typicalSpringAutumnRanges(academicYear, programmeDurationYears),
+    [academicYear, programmeDurationYears],
+  )
+
+  const applySpringCourseRange = () => {
+    setDateRange({ from: springPreset.start, to: springPreset.end })
+    setStartsAtOpen(false)
+    setEndsAtOpen(false)
+  }
+
+  const applyAutumnCourseRange = () => {
+    setDateRange({ from: autumnPreset.start, to: autumnPreset.end })
+    setStartsAtOpen(false)
+    setEndsAtOpen(false)
+  }
 
   const validationError = useMemo(() => {
     if (!Number.isFinite(academicYear)) {
@@ -153,6 +174,32 @@ export function EditProgrammeOfferingsDraftDialog({
             value={termCode}
             onValueChange={(raw) => setTermCode(normalizeTermCode(raw))}
           />
+
+          <div className="grid gap-2">
+            <Label>
+              {t('faculties.pages.programmeOfferings.createDialog.fields.typicalDateRanges')}
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="teal"
+                size="xs"
+                onClick={applySpringCourseRange}
+              >
+                {t('faculties.pages.programmeOfferings.createDialog.fields.springCourse')}{' '}
+                {springPreset.label}
+              </Button>
+              <Button
+                type="button"
+                variant="teal"
+                size="xs"
+                onClick={applyAutumnCourseRange}
+              >
+                {t('faculties.pages.programmeOfferings.createDialog.fields.autumnCourse')}{' '}
+                {autumnPreset.label}
+              </Button>
+            </div>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">

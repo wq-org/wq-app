@@ -21,6 +21,7 @@ import { CalendarWithPresets } from '@/components/shared'
 
 import { useCreateProgrammeOfferingDialog } from '../hooks/useCreateProgrammeOfferingDialog'
 import type { ProgrammeOfferingRecord } from '../types/programme-offering.types'
+import { typicalSpringAutumnRanges } from '../utils/programmeOfferingTypicalRanges'
 import { normalizeTermCode } from '../utils/termCode'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
 
@@ -103,18 +104,11 @@ export function CreateProgrammeOfferingDialog({
   }, [academicYear, t])
 
   const canSubmit = !validationError && !isSubmitting
-  const resolvedDurationYears =
-    programmeDurationYears != null && programmeDurationYears > 0 ? programmeDurationYears : 1
-  const durationMonths = Math.round(resolvedDurationYears * 12)
 
-  const buildPresetRange = (startMonthIndex: number) => {
-    const start = new Date(academicYear, startMonthIndex, 1)
-    const end = addDays(addMonths(start, durationMonths), -1)
-    return { start, end, label: `${format(start, 'dd.MM.yyyy')} - ${format(end, 'dd.MM.yyyy')}` }
-  }
-
-  const springPreset = buildPresetRange(3)
-  const autumnPreset = buildPresetRange(9)
+  const { spring: springPreset, autumn: autumnPreset } = useMemo(
+    () => typicalSpringAutumnRanges(academicYear, programmeDurationYears),
+    [academicYear, programmeDurationYears],
+  )
 
   const applySpringCourseRange = () => {
     setDateRange({ from: springPreset.start, to: springPreset.end })

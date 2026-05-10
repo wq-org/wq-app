@@ -314,7 +314,12 @@
             "namePlaceholder": "Enter faculty name",
             "descriptionLabel": "Description",
             "descriptionPlaceholder": "Enter faculty description"
-          }
+          },
+          "archiveHoldLabel": "Hold to archive faculty",
+          "archiveDialogTitle": "Archive this faculty",
+          "archiveDialogDescription": "Archiving marks this faculty as inactive for ongoing operations; restoration will be available from admin tools. Nothing is changed yet—this flow is UI only.\n\nOnce archiving is connected, this faculty will be marked archived: it remains visible for records but should not receive new programmes until restored. Underlying programmes and cohorts may stay linked until you manage them separately.",
+          "archiveDialogCancel": "Cancel",
+          "archiveDialogConfirm": "Got it"
         },
         "unsavedChanges": {
           "title": "You have unsaved changes",
@@ -407,6 +412,14 @@
         },
         "editActiveOffering": {
           "datesReadOnly": "Start and end dates cannot be changed while the offering is active. Switch to draft to edit dates."
+        },
+        "timeline": {
+          "archiveMenuItem": "Archive offering",
+          "archiveDialogTitle": "Archive this programme offering?",
+          "archiveDialogDescription": "Archiving marks this offering as inactive. It will disappear from the active timeline and appear under the Archived tab. Links to cohorts or class groups are not removed automatically; update or archive those separately if needed.",
+          "archiveDialogOfferingLabel": "Offering: {{term}}",
+          "archiveDialogCancel": "Cancel",
+          "holdToArchive": "Hold to archive"
         }
       },
       "cohorts": {
