@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Edit, Eye, Settings } from 'lucide-react'
+import { Edit, Gamepad2, Settings } from 'lucide-react'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 
@@ -31,7 +31,7 @@ export function GameLayout({
 
   const tabs: TabItem[] = [
     { id: 'editor', icon: Edit, title: 'Editor' },
-    { id: 'preview', icon: Eye, title: 'Preview' },
+    { id: 'preview', icon: Gamepad2, title: 'Preview' },
     { id: 'settings', icon: Settings, title: 'Settings' },
   ]
 
