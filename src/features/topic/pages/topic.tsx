@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
@@ -23,9 +24,10 @@ const Topic = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<TopicTabId>('editor')
   const [searchQuery, setSearchQuery] = useState('')
+  const [loadError, setLoadError] = useState<string | null>(null)
   const { selectedCourse, fetchCourseById } = useCourse()
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
-  const { lessons, fetchLessonsByTopicId, loading: lessonLoading } = useLesson()
+  const { lessons, fetchLessonsByTopicId, listLoading: lessonLoading, error: lessonError } = useLesson()
 
   const filteredLessons = useSearchFilter(lessons, searchQuery, LESSON_SEARCH_FIELDS)
 
@@ -39,6 +41,7 @@ const Topic = () => {
     if (!topicId) return
 
     let cancelled = false
+    setLoadError(null)
 
     const loadTopic = async () => {
       try {
@@ -52,6 +55,9 @@ const Topic = () => {
         await fetchLessonsByTopicId(topic.id)
       } catch (error) {
         if (!cancelled) {
+          const message =
+            error instanceof Error ? error.message : t('page.emptyState.description')
+          setLoadError(message)
           console.error('Failed to load topic:', error)
         }
       }
@@ -62,7 +68,7 @@ const Topic = () => {
     return () => {
       cancelled = true
     }
-  }, [topicId, courseId, fetchTopicById, fetchLessonsByTopicId])
+  }, [topicId, courseId, fetchTopicById, fetchLessonsByTopicId, t])
 
   if (!courseId || !topicId) {
     return (
@@ -96,7 +102,7 @@ const Topic = () => {
     )
   }
 
-  if (!selectedTopic || selectedTopic.course_id !== courseId || topicError) {
+  if (!selectedTopic || selectedTopic.course_id !== courseId || topicError || loadError) {
     return (
       <Empty className="w-full rounded-xl border border-dashed border-gray-200 p-6 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
         <EmptyHeader>
@@ -110,7 +116,7 @@ const Topic = () => {
             {t('page.notFound')}
           </EmptyTitle>
           <EmptyDescription className="text-xs text-gray-400">
-            {t('page.emptyState.description')}
+            {loadError || topicError || t('page.emptyState.description')}
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -157,9 +163,6 @@ const Topic = () => {
             <LessonForm
               topicId={selectedTopic.id}
               courseId={courseId}
-              onLessonCreated={() => {
-                void fetchLessonsByTopicId(selectedTopic.id)
-              }}
             />
           </div>
 
@@ -174,6 +177,13 @@ const Topic = () => {
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
           />
+
+          {lessonError ? (
+            <Alert variant="destructive">
+              <AlertTitle>{t('page.notFound')}</AlertTitle>
+              <AlertDescription>{lessonError}</AlertDescription>
+            </Alert>
+          ) : null}
 
           {lessonLoading ? (
             <div className="flex items-center justify-center py-12">

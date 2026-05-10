@@ -91,6 +91,11 @@
         }
       }
     },
+    "toasts": {
+      "autosaveSaved": "Lesson saved",
+      "autosaveFailed": "Couldn't save your lesson",
+      "autosaveFailedDescription": "We hit an error saving recent edits. Check your connection and try again."
+    },
     "toolbar": {
       "writeContent": "Write Content",
       "blocksTrigger": "Blocks",

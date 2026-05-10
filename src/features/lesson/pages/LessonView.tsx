@@ -2,17 +2,26 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '@/components/layout'
+import { SkeletonLoaderTextParagraphs } from '@/components/shared'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { Textarea } from '@/components/ui/textarea'
 import { getLessonById } from '../api/lessonsApi'
+import { useLessonBlocks } from '../hooks/useLessonBlocks'
 import type { Lesson } from '../types/lesson.types'
+import { Editor } from '@/features/lexical-editor'
 
 const LessonView = () => {
   const { t } = useTranslation('features.lesson')
   const { lessonId } = useParams<{ lessonId: string }>()
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(true)
+  const {
+    headBlocks,
+    tailBlocks,
+    isHeadLoading: isBlocksHeadLoading,
+    registry,
+  } = useLessonBlocks(lessonId)
 
   useEffect(() => {
     let cancelled = false
@@ -100,11 +109,24 @@ const LessonView = () => {
               >
                 Content
               </Text>
-              <Textarea
-                value={lesson?.content ?? ''}
-                readOnly
-                rows={10}
-              />
+              {lessonId && isBlocksHeadLoading ? (
+                <SkeletonLoaderTextParagraphs />
+              ) : null}
+              {lessonId && !isBlocksHeadLoading ? (
+                <div
+                  key={lessonId}
+                  className="rounded-md border border-border/60 bg-muted/20 p-2"
+                >
+                  <Editor
+                    blockTypeRegistry={registry}
+                    headBlocks={headBlocks}
+                    isHeadLoading={false}
+                    lessonId={lessonId}
+                    readOnly
+                    tailBlocks={tailBlocks}
+                  />
+                </div>
+              ) : null}
             </div>
           </>
         )}

@@ -14,11 +14,12 @@ import { LessonContext, type LessonContextValue } from './LessonContext'
 export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [lesson, setLesson] = useState<Lesson | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [listLoading, setListLoading] = useState(false)
+  const [lessonLoading, setLessonLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const fetchLessonsByTopicId = useCallback(async (topicId: string): Promise<Lesson[]> => {
-    setLoading(true)
+    setListLoading(true)
     setError(null)
     try {
       const fetchedLessons = await getLessonsByTopicIdApi(topicId)
@@ -30,12 +31,12 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
       console.error('Error fetching lessons:', err)
       throw err
     } finally {
-      setLoading(false)
+      setListLoading(false)
     }
   }, [])
 
   const fetchLessonById = useCallback(async (lessonId: string): Promise<Lesson> => {
-    setLoading(true)
+    setLessonLoading(true)
     setError(null)
     setLesson(null)
     try {
@@ -48,12 +49,12 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
       console.error('Error fetching lesson:', err)
       throw err
     } finally {
-      setLoading(false)
+      setLessonLoading(false)
     }
   }, [])
 
   const createLesson = useCallback(async (data: CreateLessonData): Promise<Lesson> => {
-    setLoading(true)
+    setListLoading(true)
     setError(null)
     try {
       const newLesson = await createLessonApi(data)
@@ -66,7 +67,7 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
       console.error('Error creating lesson:', err)
       throw err
     } finally {
-      setLoading(false)
+      setListLoading(false)
     }
   }, [])
 
@@ -77,7 +78,7 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
         throw new Error('No lesson selected')
       }
 
-      setLoading(true)
+      setLessonLoading(true)
       setError(null)
       try {
         const updatedLesson = await updateLessonApi(targetLessonId, updates)
@@ -94,14 +95,14 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
         console.error('Error updating lesson:', err)
         throw err
       } finally {
-        setLoading(false)
+        setLessonLoading(false)
       }
     },
     [lesson?.id],
   )
 
   const deleteLesson = useCallback(async (lessonId: string): Promise<void> => {
-    setLoading(true)
+    setListLoading(true)
     setError(null)
     try {
       await deleteLessonApi(lessonId)
@@ -113,14 +114,16 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
       console.error('Error deleting lesson:', err)
       throw err
     } finally {
-      setLoading(false)
+      setListLoading(false)
     }
   }, [])
 
   const value: LessonContextValue = {
     lessons,
     lesson,
-    loading,
+    listLoading,
+    lessonLoading,
+    loading: listLoading || lessonLoading,
     error,
     fetchLessonsByTopicId,
     setLesson,

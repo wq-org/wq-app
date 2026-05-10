@@ -1,26 +1,109 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { File, TextQuote } from 'lucide-react'
-import { SkeletonLoaderTextParagraphs } from '@/components/shared'
+import { File, TextQuote, X } from 'lucide-react'
+import {
+  dismissSaveStatusToast,
+  LessonTextSkeleton,
+  showSaveStatusToast,
+} from '@/components/shared'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
-import { Editor } from '@/features/lexical-editor'
+import { useLessonBlocks, type SaveStatus } from '@/features/lesson'
+import { Editor, type PasteOverflowInfo } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 
 const AUTOSAVE_DELAY_MS = 600
+const AUTOSAVE_TOAST_ID = 'lesson-autosave-status'
 
 export const Lesson = () => {
   const { t } = useTranslation('features.lesson')
   const { lessonId } = useParams<{ lessonId: string }>()
   const { fetchLessonById, updateLesson } = useLesson()
   const { selectedCourse } = useCourse()
+  const {
+    headBlocks,
+    tailBlocks,
+    isHeadLoading: isBlocksHeadLoading,
+    isFullyHydrated: isBlocksFullyHydrated,
+    persistSerializedBlocks,
+    registry,
+  } = useLessonBlocks(lessonId)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(true)
+  const [pasteOverflow, setPasteOverflow] = useState<PasteOverflowInfo | null>(null)
   const isHydratedRef = useRef(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isHeaderSaveInFlightRef = useRef(false)
+  const queuedHeaderPayloadRef = useRef<{ title: string; description: string } | null>(null)
+
+  const showAutosaveError = useCallback(() => {
+    showSaveStatusToast({
+      id: AUTOSAVE_TOAST_ID,
+      tone: 'error',
+      title: t('page.toasts.autosaveFailed'),
+      description: t('page.toasts.autosaveFailedDescription'),
+    })
+  }, [t])
+
+  const handleSaveStatusChange = useCallback(
+    (status: SaveStatus) => {
+      if (status === 'error') {
+        showAutosaveError()
+        return
+      }
+      // 'idle' | 'saving' | 'queued' — no toast; clear any stale one.
+      dismissSaveStatusToast(AUTOSAVE_TOAST_ID)
+    },
+    [showAutosaveError],
+  )
+
+  const handlePasteOverflow = useCallback((info: PasteOverflowInfo) => {
+    setPasteOverflow(info)
+  }, [])
+
+  const dismissPasteOverflow = useCallback(() => {
+    setPasteOverflow(null)
+  }, [])
+
+  useEffect(() => {
+    isHeaderSaveInFlightRef.current = false
+    queuedHeaderPayloadRef.current = null
+  }, [lessonId])
+
+  const enqueueHeaderSave = useCallback(
+    (payload: { title: string; description: string }) => {
+      if (!lessonId) return
+      if (isHeaderSaveInFlightRef.current) {
+        queuedHeaderPayloadRef.current = payload
+        return
+      }
+
+      isHeaderSaveInFlightRef.current = true
+      void (async () => {
+        let nextPayload: { title: string; description: string } | null = payload
+
+        while (nextPayload) {
+          try {
+            await updateLesson(nextPayload, lessonId)
+          } catch (error) {
+            console.error(error)
+            showAutosaveError()
+          }
+
+          nextPayload = queuedHeaderPayloadRef.current
+          queuedHeaderPayloadRef.current = null
+        }
+
+        isHeaderSaveInFlightRef.current = false
+      })()
+    },
+    [lessonId, showAutosaveError, updateLesson],
+  )
 
   useEffect(() => {
     if (!lessonId) {
@@ -48,18 +131,19 @@ export const Lesson = () => {
     if (!lessonId || !isHydratedRef.current) return
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
-      void updateLesson({ title, description }, lessonId).catch((error) => console.error(error))
+      enqueueHeaderSave({ title, description })
     }, AUTOSAVE_DELAY_MS)
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     }
-  }, [title, description, lessonId, updateLesson])
+  }, [title, description, lessonId, enqueueHeaderSave])
 
   const coverStyle = getThemeBackgroundStyle(selectedCourse?.theme_id)
   const themeClasses = getThemeClasses(selectedCourse?.theme_id)
   const titlePlaceholder = t('page.fallbackTitle')
   const descriptionLabel = t('settings.descriptionLabel')
   const descriptionPlaceholder = t('page.fallbackDescription')
+  const isLessonContentLoading = loading || (Boolean(lessonId) && isBlocksHeadLoading)
 
   return (
     <div className="-mx-[calc(50vw-50%)] -mt-6 w-screen">
@@ -78,8 +162,8 @@ export const Lesson = () => {
             />
           </div>
         </div>
-        {loading ? (
-          <SkeletonLoaderTextParagraphs />
+        {isLessonContentLoading ? (
+          <LessonTextSkeleton />
         ) : (
           <>
             <input
@@ -104,8 +188,44 @@ export const Lesson = () => {
                 hideSeparator
               />
             </div>
+            {pasteOverflow ? (
+              <Alert
+                variant="destructive"
+                className="mt-4 ml-10"
+              >
+                <AlertTitle>Paste too large</AlertTitle>
+                <AlertDescription>
+                  That&apos;s {pasteOverflow.actualChars.toLocaleString()} characters — the limit is{' '}
+                  {pasteOverflow.limitChars.toLocaleString()} per paste. Try splitting the content into
+                  smaller sections.
+                  <Button
+                    aria-label="Dismiss"
+                    className="ml-2 h-6 px-2"
+                    onClick={dismissPasteOverflow}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <X className="size-3" />
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            ) : null}
             <div className="mt-2 -ml-10 pb-24">
-              <Editor />
+              {lessonId && !isBlocksHeadLoading ? (
+                <div key={lessonId}>
+                  <Editor
+                    blockTypeRegistry={registry}
+                    headBlocks={headBlocks}
+                    isHeadLoading={false}
+                    isFullyHydrated={isBlocksFullyHydrated}
+                    lessonId={lessonId}
+                    onPasteOverflow={handlePasteOverflow}
+                    onPersistSerializedBlocks={persistSerializedBlocks}
+                    onSaveStatusChange={handleSaveStatusChange}
+                    tailBlocks={tailBlocks}
+                  />
+                </div>
+              ) : null}
             </div>
           </>
         )}

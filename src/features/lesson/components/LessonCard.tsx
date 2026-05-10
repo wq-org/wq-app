@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { StickyNote } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -7,6 +8,7 @@ import { Text } from '@/components/ui/text'
 import type { ThemeId } from '@/lib/themes'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 import type { Lesson } from '../types/lesson.types'
+import { useLessonPrefetch } from '../hooks/useLessonPrefetch'
 import { formatRelativeUpdatedTime } from '../utils/relativeTime'
 
 export interface LessonCardProps {
@@ -17,6 +19,7 @@ export interface LessonCardProps {
 
 export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
   const { t, i18n } = useTranslation(['features.lesson', 'features.course'])
+  const prefetchLesson = useLessonPrefetch()
   const description =
     lesson.description?.trim() ||
     t('lessonTable.noDescription', { ns: 'features.course', defaultValue: 'No description' })
@@ -38,8 +41,20 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
     },
   )
 
+  const handlePrefetch = useCallback(() => {
+    prefetchLesson(lesson.id)
+  }, [prefetchLesson, lesson.id])
+
+  const handleOpen = useCallback(() => {
+    onOpen?.(lesson.id)
+  }, [onOpen, lesson.id])
+
   return (
-    <Card className="w-full max-w-[350px] rounded-2xl border border-border bg-card shadow-sm">
+    <Card
+      className="w-full max-w-[350px] rounded-2xl border border-border bg-card shadow-sm"
+      onMouseEnter={handlePrefetch}
+      onFocus={handlePrefetch}
+    >
       <CardContent className="flex h-full min-h-[180px] flex-col">
         <p className="text-sm font-normal leading-none text-muted-foreground">
           {t('card.subheading', { ns: 'features.lesson', defaultValue: 'Lesson' })}
@@ -76,7 +91,9 @@ export function LessonCard({ lesson, themeId, onOpen }: LessonCardProps) {
           <div className="self-end shrink-0">
             <Button
               variant="darkblue"
-              onClick={() => onOpen?.(lesson.id)}
+              onClick={handleOpen}
+              onFocus={handlePrefetch}
+              onMouseEnter={handlePrefetch}
             >
               <Text
                 as="span"

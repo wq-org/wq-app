@@ -14,10 +14,9 @@ import { FieldTextarea } from '@/components/ui/field-textarea'
 export type LessonFormProps = {
   topicId?: string
   courseId?: string
-  onLessonCreated?: () => void
 }
 
-export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormProps) {
+export function LessonForm({ topicId, courseId }: LessonFormProps) {
   const { t } = useTranslation('features.course')
   const [newLesson, setNewLesson] = useState('')
   const [description, setDescription] = useState('')
@@ -25,15 +24,15 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
   const navigate = useNavigate()
   const { createLesson } = useLesson()
   const bothFieldsFilled = Boolean(newLesson.trim() && description.trim() && topicId)
+  const canCreate = bothFieldsFilled && !loading
 
   const handleCreateLesson = async () => {
-    if (!bothFieldsFilled || !topicId) return
+    if (!canCreate || !topicId) return
 
     setLoading(true)
     try {
       const createdLesson = await createLesson({
         title: newLesson.trim(),
-        content: '',
         description: description.trim(),
         topic_id: topicId,
       })
@@ -46,7 +45,6 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
       toast.success(t('createLesson.toasts.success'))
       setNewLesson('')
       setDescription('')
-      onLessonCreated?.()
     } catch (error) {
       toast.error(t('createLesson.toasts.error'))
       console.error('Failed to create lesson:', error)
@@ -83,12 +81,11 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
         <Button
           variant="darkblue"
           onClick={handleCreateLesson}
-          disabled={loading || !bothFieldsFilled}
+          disabled={!canCreate}
         >
           {loading ? (
             <Spinner
               size="sm"
-              variant="white"
             />
           ) : (
             <Plus className="h-6 w-6" />

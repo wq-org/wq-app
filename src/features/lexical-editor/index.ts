@@ -1,4 +1,11 @@
-export { Editor } from './components/Editor'
+export { Editor, type EditorProps } from './components/Editor'
+export {
+  PasteGuardPlugin,
+  DEFAULT_PASTE_MAX_BYTES,
+  DEFAULT_PASTE_MAX_CHARS,
+  type PasteGuardPluginProps,
+  type PasteOverflowInfo,
+} from './components/PasteGuardPlugin'
 export {
   ImageNode,
   $createImageNode,

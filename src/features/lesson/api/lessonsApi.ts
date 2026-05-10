@@ -1,10 +1,36 @@
 import { supabase } from '@/lib/supabase'
-import type { CreateLessonData, Lesson, LessonPage, UpdateLessonData } from '../types/lesson.types'
+import type {
+  CreateLessonData,
+  Lesson,
+  LessonPage,
+  LessonTopicRef,
+  UpdateLessonData,
+} from '../types/lesson.types'
 
-const LESSON_SELECT_FIELDS =
-  'id, title, content, pages, description, topic_id, created_at, updated_at'
+/**
+ * The slim header shape used by the editor, list, and card UI.
+ * Lesson body now lives in `lesson_blocks` — never pull `content` / `pages` here.
+ */
+const LESSON_LIST_FIELDS = 'id, title, description, created_at, updated_at'
+const LESSON_DETAIL_FIELDS = 'id, title, description, created_at, updated_at'
+const LESSON_TOPIC_REF_FIELDS = 'id, topic_id'
 
-const LESSON_LIST_SELECT_FIELDS = 'id, title, description, topic_id, created_at, updated_at'
+function normalizeLessonRow(row: Record<string, unknown>): Lesson {
+  return {
+    id: row.id as string,
+    title: typeof row.title === 'string' ? row.title : '',
+    description: typeof row.description === 'string' ? row.description : '',
+    created_at: typeof row.created_at === 'string' ? row.created_at : undefined,
+    updated_at: typeof row.updated_at === 'string' ? row.updated_at : undefined,
+  }
+}
+
+function normalizeLessonTopicRefRow(row: Record<string, unknown>): LessonTopicRef {
+  return {
+    id: row.id as string,
+    topic_id: row.topic_id as string,
+  }
+}
 
 function normalizePersistedPages(rawPages: unknown): LessonPage[] {
   if (!Array.isArray(rawPages)) return []
@@ -21,24 +47,16 @@ function normalizePersistedPages(rawPages: unknown): LessonPage[] {
     .filter((page): page is LessonPage => page != null)
 }
 
-function normalizeLessonRow(row: Record<string, unknown>): Lesson {
-  const normalizedPages = normalizePersistedPages(row.pages)
-  const normalizedContent = typeof row.content === 'string' ? row.content : ''
-
-  return {
-    ...(row as unknown as Omit<Lesson, 'pages'>),
-    content: normalizedContent,
-    pages: normalizedPages,
-  }
-}
-
 function buildCreateLessonPayload(data: CreateLessonData) {
+  // Legacy compatibility: baseline schema still defines lessons.content as JSONB NOT NULL.
+  // Canonical lesson body remains lesson_blocks; this seed payload only satisfies insert constraints.
+  const legacyContent = data.content ? { value: data.content } : {}
+
   return {
     title: data.title.trim(),
     description: data.description || '',
     topic_id: data.topic_id,
-    content: data.content ?? '',
-    pages: data.pages ?? [],
+    content: legacyContent,
   }
 }
 
@@ -53,10 +71,6 @@ function buildUpdateLessonPayload(updates: UpdateLessonData) {
     payload.description = updates.description
   }
 
-  if (typeof updates.content === 'string') {
-    payload.content = updates.content
-  }
-
   return payload
 }
 
@@ -64,7 +78,7 @@ export async function createLesson(data: CreateLessonData): Promise<Lesson> {
   const { data: lesson, error } = await supabase
     .from('lessons')
     .insert(buildCreateLessonPayload(data))
-    .select(LESSON_SELECT_FIELDS)
+    .select(LESSON_DETAIL_FIELDS)
     .single()
 
   if (error) {
@@ -80,7 +94,7 @@ export async function updateLesson(lessonId: string, updates: UpdateLessonData):
     .from('lessons')
     .update(buildUpdateLessonPayload(updates))
     .eq('id', lessonId)
-    .select(LESSON_SELECT_FIELDS)
+    .select(LESSON_DETAIL_FIELDS)
     .single()
 
   if (error) {
@@ -91,6 +105,10 @@ export async function updateLesson(lessonId: string, updates: UpdateLessonData):
   return normalizeLessonRow(data as Record<string, unknown>)
 }
 
+/**
+ * Legacy helper retained for compatibility. New code must persist Lexical content via
+ * `syncLessonBlocksForLesson` in `lessonBlocksApi`.
+ */
 export async function updateLessonPages(lessonId: string, pages: LessonPage[]): Promise<Lesson> {
   const normalizedPages = normalizePersistedPages(pages)
 
@@ -100,7 +118,7 @@ export async function updateLessonPages(lessonId: string, pages: LessonPage[]): 
       pages: normalizedPages,
     })
     .eq('id', lessonId)
-    .select(LESSON_SELECT_FIELDS)
+    .select(LESSON_DETAIL_FIELDS)
     .single()
 
   if (error) {
@@ -114,7 +132,7 @@ export async function updateLessonPages(lessonId: string, pages: LessonPage[]): 
 export async function getLessonById(lessonId: string): Promise<Lesson> {
   const { data, error } = await supabase
     .from('lessons')
-    .select(LESSON_SELECT_FIELDS)
+    .select(LESSON_DETAIL_FIELDS)
     .eq('id', lessonId)
     .single()
 
@@ -130,6 +148,21 @@ export async function fetchLessonWithPages(lessonId: string): Promise<Lesson> {
   return getLessonById(lessonId)
 }
 
+export async function getLessonTopicRefById(lessonId: string): Promise<LessonTopicRef> {
+  const { data, error } = await supabase
+    .from('lessons')
+    .select(LESSON_TOPIC_REF_FIELDS)
+    .eq('id', lessonId)
+    .single()
+
+  if (error) {
+    console.error('Error fetching lesson topic ref:', error)
+    throw error
+  }
+
+  return normalizeLessonTopicRefRow(data as Record<string, unknown>)
+}
+
 export async function deleteLesson(lessonId: string): Promise<void> {
   const { error } = await supabase.from('lessons').delete().eq('id', lessonId)
 
@@ -142,7 +175,7 @@ export async function deleteLesson(lessonId: string): Promise<void> {
 export async function getLessonsByTopicId(topicId: string): Promise<Lesson[]> {
   const { data, error } = await supabase
     .from('lessons')
-    .select(LESSON_LIST_SELECT_FIELDS)
+    .select(LESSON_LIST_FIELDS)
     .eq('topic_id', topicId)
     .order('created_at', { ascending: true })
 

@@ -15,20 +15,26 @@ import { TextNode } from 'lexical'
 import { useCallback, useMemo, useState } from 'react'
 import * as ReactDOM from 'react-dom'
 
+import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
+
 import { BlockOption, getBlockOptions, ICON_URLS } from './blockOptions'
 
-export function SlashMenuPlugin() {
+type SlashMenuPluginProps = {
+  registry?: LessonBlockTypeRegistryRow[]
+}
+
+export function SlashMenuPlugin({ registry }: SlashMenuPluginProps) {
   const [editor] = useLexicalComposerContext()
   const [queryString, setQueryString] = useState<string | null>(null)
 
   const options = useMemo(() => {
-    const base = getBlockOptions(editor)
+    const base = getBlockOptions(editor, registry)
     if (!queryString) {
       return base
     }
     const regex = new RegExp(queryString, 'i')
     return base.filter((o) => regex.test(o.title) || o.keywords.some((k) => regex.test(k)))
-  }, [editor, queryString])
+  }, [editor, queryString, registry])
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     allowWhitespace: true,

@@ -12,6 +12,8 @@ import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
 import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
 
+import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
+
 export const ICON_URLS = {
   bullet: '/img/list-ul.svg',
   h1: '/img/type-h1.svg',
@@ -45,7 +47,11 @@ export class BlockOption extends MenuOption {
   }
 }
 
-export function getBlockOptions(editor: LexicalEditor): BlockOption[] {
+export function getBlockOptions(editor: LexicalEditor, registry?: LessonBlockTypeRegistryRow[]): BlockOption[] {
+  const pendingRegistryPlugins =
+    registry?.filter((row) => row.plugin_key != null && row.plugin_key !== '').length ?? 0
+  void pendingRegistryPlugins
+
   return [
     new BlockOption('Text', {
       iconKey: 'paragraph',

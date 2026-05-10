@@ -91,6 +91,11 @@
         }
       }
     },
+    "toasts": {
+      "autosaveSaved": "Lektion gespeichert",
+      "autosaveFailed": "Lektion konnte nicht gespeichert werden",
+      "autosaveFailedDescription": "Beim Speichern deiner letzten Änderungen ist ein Fehler aufgetreten. Prüfe deine Verbindung und versuche es erneut."
+    },
     "toolbar": {
       "writeContent": "Inhalt schreiben",
       "blocksTrigger": "Blöcke",
