@@ -566,6 +566,9 @@
       "inviteAlertTitle": "Invite email",
       "inviteAlertDescription": "After creation we will send an invite link to the given email address. The link is valid for 30 minutes."
     },
+    "review": {
+      "structureHint": "Once programmes exist, class groups may use codes like {{exampleCode}} (prefix {{prefix}}), consistent with how naming works elsewhere in the product."
+    },
     "billing": {
       "legalName": "Legal name",
       "billingEmail": "Billing email",

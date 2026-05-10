@@ -22,15 +22,7 @@ export const wizardBillingSchema = z.object({
   country: z.string().min(1, 'Country is required'),
 })
 
-export const wizardStructureSchema = z.object({
-  createInitialStructure: z.boolean(),
-  facultyName: z.string(),
-  programmeName: z.string(),
-})
-
-export const newInstitutionWizardSchema = wizardIdentitySchema
-  .extend(wizardBillingSchema.shape)
-  .extend(wizardStructureSchema.shape)
+export const newInstitutionWizardSchema = wizardIdentitySchema.extend(wizardBillingSchema.shape)
 
 export type NewInstitutionWizardFormValues = z.infer<typeof newInstitutionWizardSchema>
 

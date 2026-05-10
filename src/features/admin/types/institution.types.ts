@@ -34,9 +34,6 @@ export type NewInstitutionWizardValues = {
   postalCode: string
   city: string
   country: string
-  createInitialStructure: boolean
-  facultyName: string
-  programmeName: string
 }
 
 export type BootstrapInstitutionFromWizardResult = {

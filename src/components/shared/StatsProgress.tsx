@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 
 export type StatsProgressItem = {
   name: string
@@ -24,9 +25,7 @@ const DEFAULT_ITEMS: StatsProgressItem[] = [
 
 export default function StatsProgress({ items = DEFAULT_ITEMS, className }: StatsProgressProps) {
   return (
-    <dl
-      className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 w-full ${className ?? ''}`}
-    >
+    <dl className={cn('grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4', className)}>
       {items.map((item) => (
         <Card
           key={item.name}

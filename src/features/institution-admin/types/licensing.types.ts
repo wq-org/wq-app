@@ -33,6 +33,8 @@ export type InstitutionQuotasUsage = {
   studentsCap: number | null
   teachersUsed: number
   teachersCap: number | null
+  classroomsUsed: number
+  classroomsCap: number | null
   storageUsedBytes: number
   storageBytesCap: string | null
   updatedAt: string

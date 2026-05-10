@@ -174,9 +174,9 @@ const statsProgressItems: StatsProgressItem[] = [
 ]
 
 const segmentedProgressItems: StatsSegmentedProgressSegment[] = [
-  { label: 'Video', value: 2800, color: 'bg-blue-500' },
-  { label: 'Docs', value: 1900, color: 'bg-emerald-500' },
-  { label: 'Audio', value: 700, color: 'bg-amber-500' },
+  { label: 'Video', value: 5.5, color: 'bg-blue-500' },
+  { label: 'Docs', value: 4.2, color: 'bg-emerald-500' },
+  { label: 'Audio', value: 2.1, color: 'bg-amber-500' },
 ]
 
 const trendingItems = [
@@ -1491,9 +1491,9 @@ export default function Test() {
       <Section title="StatsSegmentedProgress">
         <StatsSegmentedProgress
           title="Storage usage"
-          used={5400}
-          total={10}
-          usedLabel="MB"
+          used={11.8}
+          total={15}
+          usedLabel="GB"
           totalLabel="GB"
           segments={segmentedProgressItems}
         />

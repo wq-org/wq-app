@@ -745,7 +745,10 @@
         "previous": "Previous",
         "next": "Next",
         "finish": "Create structure",
-        "finishing": "Creating..."
+        "finishing": "Creating...",
+        "autoSuggestFacultyDescription": "Suggest faculty description",
+        "autoSuggestProgrammeDescription": "Suggest programme description",
+        "autoSuggestClassGroupDescription": "Suggest class group description"
       },
       "fields": {
         "nameLabel": "Name",
@@ -1052,10 +1055,14 @@
       "teachers": {
         "title": "Teachers"
       },
+      "classrooms": {
+        "title": "Classrooms"
+      },
       "storage": {
         "title": "Storage",
         "using": "Using Storage",
         "used": "Used",
+        "unmetered": "No storage cap is set for this plan — reported usage is still from your live data.",
         "ok": "Within plan limits.",
         "warning": "Approaching the storage limit."
       }

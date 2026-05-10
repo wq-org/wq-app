@@ -1,8 +1,11 @@
+import { Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { buildSuggestedFacultyDescription } from '../utils/facultyDescription'
 import { HelpPopover } from './HelpPopover'
 
 type FacultyStepProps = {
@@ -20,7 +23,7 @@ export function FacultyStep({
   onDescriptionChange,
   readOnly = false,
 }: FacultyStepProps) {
-  const { t } = useTranslation('features.institution-admin')
+  const { t, i18n } = useTranslation('features.institution-admin')
 
   return (
     <div className="w-full">
@@ -48,14 +51,38 @@ export function FacultyStep({
           onValueChange={onNameChange}
           disabled={readOnly}
         />
-        <FieldTextarea
-          label={t('faculties.wizard.fields.descriptionLabel')}
-          placeholder={t('faculties.wizard.fields.descriptionPlaceholder')}
-          value={description}
-          onValueChange={onDescriptionChange}
-          rows={3}
-          readOnly={readOnly}
-        />
+        <div className="flex flex-col gap-2">
+          <FieldTextarea
+            label={t('faculties.wizard.fields.descriptionLabel')}
+            placeholder={t('faculties.wizard.fields.descriptionPlaceholder')}
+            value={description}
+            onValueChange={onDescriptionChange}
+            rows={3}
+            readOnly={readOnly}
+          />
+          {!readOnly ? (
+            <Button
+              type="button"
+              variant="teal"
+              className="self-start gap-2"
+              disabled={!name.trim()}
+              onClick={() =>
+                onDescriptionChange(
+                  buildSuggestedFacultyDescription({
+                    language: i18n.language,
+                    facultyName: name,
+                  }),
+                )
+              }
+            >
+              <Sparkles
+                className="size-4 shrink-0"
+                aria-hidden
+              />
+              {t('faculties.wizard.actions.autoSuggestFacultyDescription')}
+            </Button>
+          ) : null}
+        </div>
       </FieldCard>
     </div>
   )

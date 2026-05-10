@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +13,7 @@ import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { cn } from '@/lib/utils'
 import { HelpPopover } from './HelpPopover'
 import { generateClassGroupSuggestions } from '../utils/termCode'
+import { buildSuggestedClassGroupDescription } from '../utils/classGroupDescription'
 
 // Two rows visible in collapsed state (flex-direction:column + max-height layout).
 // Each badge row is ~28px tall with gap-2; 2 rows × 28px + 1 × 8px gap ≈ 64px.
@@ -21,6 +22,9 @@ const COLLAPSED_HEIGHT_PX = 64
 const INITIAL_VISIBLE_COUNT = 12
 
 type ClassGroupStepProps = {
+  facultyName: string
+  programmeName: string
+  cohortAcademicYear: number
   name: string
   onNameChange: (value: string) => void
   description: string
@@ -29,13 +33,16 @@ type ClassGroupStepProps = {
 }
 
 export function ClassGroupStep({
+  facultyName,
+  programmeName,
+  cohortAcademicYear,
   name,
   onNameChange,
   description,
   onDescriptionChange,
   termCode,
 }: ClassGroupStepProps) {
-  const { t } = useTranslation('features.institution-admin')
+  const { t, i18n } = useTranslation('features.institution-admin')
   const [isExpanded, setIsExpanded] = useState(false)
 
   // --- Compute before render ---
@@ -46,6 +53,13 @@ export function ClassGroupStep({
   const collapsedHeight = `${COLLAPSED_HEIGHT_PX}px`
 
   const handleToggleExpand = () => setIsExpanded((prev) => !prev)
+
+  const canSuggestClassGroupDescription = Boolean(
+    facultyName.trim() &&
+      programmeName.trim() &&
+      name.trim() &&
+      Number.isFinite(cohortAcademicYear),
+  )
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -166,13 +180,38 @@ export function ClassGroupStep({
           value={name}
           onValueChange={onNameChange}
         />
-        <FieldTextarea
-          label={t('faculties.wizard.classGroup.descriptionLabel')}
-          placeholder={t('faculties.wizard.classGroup.descriptionPlaceholder')}
-          value={description}
-          onValueChange={onDescriptionChange}
-          rows={3}
-        />
+
+        <div className="flex flex-col gap-2">
+          <FieldTextarea
+            label={t('faculties.wizard.classGroup.descriptionLabel')}
+            placeholder={t('faculties.wizard.classGroup.descriptionPlaceholder')}
+            value={description}
+            onValueChange={onDescriptionChange}
+            rows={3}
+          />
+          <Button
+            type="button"
+            variant="teal"
+            className="self-start gap-2"
+            disabled={!canSuggestClassGroupDescription}
+            onClick={() => {
+              const text = buildSuggestedClassGroupDescription({
+                language: i18n.language,
+                classGroupName: name.trim(),
+                cohortYear: Math.trunc(Number(cohortAcademicYear)),
+                programmeName: programmeName.trim(),
+                facultyName: facultyName.trim(),
+              })
+              if (text) onDescriptionChange(text)
+            }}
+          >
+            <Sparkles
+              className="size-4 shrink-0"
+              aria-hidden
+            />
+            {t('faculties.wizard.actions.autoSuggestClassGroupDescription')}
+          </Button>
+        </div>
       </FieldCard>
     </div>
   )

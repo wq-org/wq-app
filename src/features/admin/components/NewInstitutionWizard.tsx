@@ -69,9 +69,6 @@ function NewInstitutionWizard({
       postalCode: '',
       city: '',
       country: '',
-      createInitialStructure: false,
-      facultyName: '',
-      programmeName: '',
     },
   })
 

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Card, CardContent } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import StatsProgress, { type StatsProgressItem } from '@/components/shared/StatsProgress'
@@ -24,7 +25,7 @@ const InstitutionUsage = () => {
   const { t } = useTranslation('features.institution-admin')
   const { quotas, isLoading, error } = useInstitutionLicensing()
 
-  const studentItem = useMemo((): StatsProgressItem[] => {
+  const seatMetricItems = useMemo((): StatsProgressItem[] => {
     if (!quotas) return []
     return [
       {
@@ -36,12 +37,6 @@ const InstitutionUsage = () => {
             : t('licenseUsage.metrics.unlimited'),
         percentage: pct(quotas.studentsUsed, quotas.studentsCap),
       },
-    ]
-  }, [quotas, t])
-
-  const teacherItem = useMemo((): StatsProgressItem[] => {
-    if (!quotas) return []
-    return [
       {
         name: t('licenseUsage.metrics.teachers.title'),
         stat: String(quotas.teachersUsed),
@@ -50,6 +45,15 @@ const InstitutionUsage = () => {
             ? String(quotas.teachersCap)
             : t('licenseUsage.metrics.unlimited'),
         percentage: pct(quotas.teachersUsed, quotas.teachersCap),
+      },
+      {
+        name: t('licenseUsage.metrics.classrooms.title'),
+        stat: String(quotas.classroomsUsed),
+        limit:
+          quotas.classroomsCap != null
+            ? String(quotas.classroomsCap)
+            : t('licenseUsage.metrics.unlimited'),
+        percentage: pct(quotas.classroomsUsed, quotas.classroomsCap),
       },
     ]
   }, [quotas, t])
@@ -65,7 +69,9 @@ const InstitutionUsage = () => {
     ]
   }, [quotas, t])
 
-  const storageCapGB = quotas?.storageBytesCap ? formatGB(Number(quotas.storageBytesCap)) : 0
+  const storageCapBytes = quotas?.storageBytesCap ? Number(quotas.storageBytesCap) : null
+  const storageCapGB =
+    storageCapBytes != null && storageCapBytes > 0 ? formatGB(storageCapBytes) : null
   const storageUsedGB = quotas ? formatGB(quotas.storageUsedBytes) : 0
 
   return (
@@ -116,20 +122,10 @@ const InstitutionUsage = () => {
           </div>
         ) : (
           <>
-            <div className="flex gap-6">
-              <div className="flex-1">
-                <StatsProgress
-                  items={studentItem}
-                  className="sm:grid-cols-1! lg:grid-cols-1!"
-                />
-              </div>
-              <div className="flex-1">
-                <StatsProgress
-                  items={teacherItem}
-                  className="sm:grid-cols-1! lg:grid-cols-1!"
-                />
-              </div>
-            </div>
+            <StatsProgress
+              items={seatMetricItems}
+              className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+            />
 
             <div className="flex flex-col gap-2">
               <Text
@@ -139,14 +135,43 @@ const InstitutionUsage = () => {
               >
                 {t('licenseUsage.metrics.storage.title')}
               </Text>
-              <StatsSegmentedProgress
-                title={t('licenseUsage.metrics.storage.using')}
-                used={storageUsedGB}
-                total={storageCapGB || 10}
-                usedLabel="GB"
-                totalLabel="GB"
-                segments={storageSegments}
-              />
+              {storageCapGB != null ? (
+                <StatsSegmentedProgress
+                  title={t('licenseUsage.metrics.storage.using')}
+                  used={storageUsedGB}
+                  total={storageCapGB}
+                  usedLabel="GB"
+                  totalLabel="GB"
+                  segments={storageSegments}
+                />
+              ) : (
+                <Card className="max-w-4xl shadow-sm">
+                  <CardContent className="py-6">
+                    <Text
+                      as="p"
+                      variant="small"
+                      color="muted"
+                      className="mb-1"
+                    >
+                      {t('licenseUsage.metrics.storage.using')}
+                    </Text>
+                    <Text
+                      as="p"
+                      className="tabular-nums text-2xl font-semibold text-foreground"
+                    >
+                      {storageUsedGB} GB
+                    </Text>
+                    <Text
+                      as="p"
+                      variant="small"
+                      color="muted"
+                      className="mt-2"
+                    >
+                      {t('licenseUsage.metrics.storage.unmetered')}
+                    </Text>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </>
         )}

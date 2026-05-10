@@ -745,7 +745,10 @@
         "previous": "Zurück",
         "next": "Weiter",
         "finish": "Struktur anlegen",
-        "finishing": "Wird angelegt..."
+        "finishing": "Wird angelegt...",
+        "autoSuggestFacultyDescription": "Fakultätsbeschreibung vorschlagen",
+        "autoSuggestProgrammeDescription": "Programmbeschreibung vorschlagen",
+        "autoSuggestClassGroupDescription": "Klassengruppenbeschreibung vorschlagen"
       },
       "fields": {
         "nameLabel": "Name",
@@ -1052,10 +1055,14 @@
       "teachers": {
         "title": "Lehrkräfte"
       },
+      "classrooms": {
+        "title": "Klassenräume"
+      },
       "storage": {
         "title": "Speicher",
         "using": "Speichernutzung",
         "used": "Verwendet",
+        "unmetered": "Für diesen Tarif ist keine Speicherobergrenze festgelegt — die angezeigte Nutzung stammt aus Live-Daten.",
         "ok": "Innerhalb der Tarifgrenzen.",
         "warning": "Sie nähern sich dem Speicherlimit."
       }

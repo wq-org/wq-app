@@ -7,7 +7,10 @@ import {
 } from '../api/institutionSubscriptionApi'
 
 import { fetchEffectiveEntitlements } from '../api/institutionEntitlementsApi'
-import { fetchInstitutionQuotasUsage } from '../api/institutionQuotasApi'
+import {
+  fetchInstitutionUsageMetrics,
+  mergeInstitutionQuotasWithFeatures,
+} from '../api/institutionQuotasApi'
 import type {
   EffectiveFeature,
   InstitutionQuotasUsage,
@@ -62,10 +65,11 @@ export function useInstitutionLicensing(): State & {
         const planCode =
           subscription?.plan_catalog?.code ?? (planId ? await resolvePlanCode(planId) : null)
 
-        const [quotas, features] = await Promise.all([
-          fetchInstitutionQuotasUsage(institutionId),
+        const [metrics, features] = await Promise.all([
+          fetchInstitutionUsageMetrics(institutionId),
           planId ? fetchEffectiveEntitlements(institutionId, planId) : Promise.resolve([]),
         ])
+        const quotas = mergeInstitutionQuotasWithFeatures(metrics, features)
         if (cancelled) return
         setState({ subscription, planCode, quotas, features, isLoading: false, error: null })
       } catch (e) {

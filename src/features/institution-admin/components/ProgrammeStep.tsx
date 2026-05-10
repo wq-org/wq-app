@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ChevronDown, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ProgrammeProgressionType } from '../types/programme.types'
-import { ChevronDown } from 'lucide-react'
+import { buildSuggestedProgrammeDescription } from '../utils/programmeDescription'
 import { HelpPopover } from './HelpPopover'
 
 const DURATION_OPTIONS = [
@@ -17,6 +18,7 @@ const DURATION_OPTIONS = [
 ] as const
 
 type ProgrammeStepProps = {
+  facultyName: string
   name: string
   onNameChange: (value: string) => void
   description: string
@@ -29,6 +31,7 @@ type ProgrammeStepProps = {
 }
 
 export function ProgrammeStep({
+  facultyName,
   name,
   onNameChange,
   description,
@@ -39,7 +42,7 @@ export function ProgrammeStep({
   onProgressionTypeChange,
   progressionOptions,
 }: ProgrammeStepProps) {
-  const { t } = useTranslation('features.institution-admin')
+  const { t, i18n } = useTranslation('features.institution-admin')
   const [durationOpen, setDurationOpen] = useState(false)
   const [progressionOpen, setProgressionOpen] = useState(false)
 
@@ -68,13 +71,37 @@ export function ProgrammeStep({
           value={name}
           onValueChange={onNameChange}
         />
-        <FieldTextarea
-          label={t('faculties.wizard.programme.descriptionLabel')}
-          placeholder={t('faculties.wizard.programme.descriptionPlaceholder')}
-          value={description}
-          onValueChange={onDescriptionChange}
-          rows={3}
-        />
+        <div className="flex flex-col gap-2">
+          <FieldTextarea
+            label={t('faculties.wizard.programme.descriptionLabel')}
+            placeholder={t('faculties.wizard.programme.descriptionPlaceholder')}
+            value={description}
+            onValueChange={onDescriptionChange}
+            rows={3}
+          />
+          <Button
+            type="button"
+            variant="teal"
+            className="self-start gap-2"
+            disabled={!name.trim()}
+            onClick={() =>
+              onDescriptionChange(
+                buildSuggestedProgrammeDescription({
+                  language: i18n.language,
+                  programmeName: name,
+                  facultyName,
+                  durationYears,
+                }),
+              )
+            }
+          >
+            <Sparkles
+              className="size-4 shrink-0"
+              aria-hidden
+            />
+            {t('faculties.wizard.actions.autoSuggestProgrammeDescription')}
+          </Button>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
