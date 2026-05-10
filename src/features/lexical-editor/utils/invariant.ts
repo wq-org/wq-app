@@ -9,12 +9,7 @@
 // invariant(condition, message) will refine types based on "condition", and
 // if "condition" is false will throw an error. This function is special-cased
 // in flow itself, so we can't name it anything else.
-export default function invariant(
-  cond?: boolean,
-  message?: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ...args: string[]
-): asserts cond {
+export default function invariant(cond?: boolean, message?: string): asserts cond {
   if (cond) {
     return
   }

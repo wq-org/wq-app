@@ -22,7 +22,7 @@ export const EMPTY_LEXICAL_EDITOR_JSON = JSON.stringify({
     type: 'root',
     version: 1,
   },
-} satisfies SerializedEditorState)
+} as unknown as SerializedEditorState)
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -31,20 +31,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 /** Maps a serialized Lexical node to a registry block_type key (FK-safe). */
 export function serializedNodeToBlockType(node: SerializedLexicalNode): LessonBlockType {
   if (!isRecord(node)) return 'Custom'
-  const type = node.type
+  const record = node as Record<string, unknown>
+  const type = record.type
 
   if (type === 'paragraph') return 'Paragraph'
   if (type === 'quote') return 'Quote'
 
   if (type === 'heading') {
-    const tag = node.tag
+    const tag = record.tag
     if (tag === 'h2') return 'HeadingTwo'
     if (tag === 'h3') return 'HeadingThree'
     return 'HeadingOne'
   }
 
   if (type === 'list') {
-    return node.listType === 'number' ? 'NumberedList' : 'BulletedList'
+    return record.listType === 'number' ? 'NumberedList' : 'BulletedList'
   }
 
   if (type === 'horizontalrule' || type === 'divider') return 'Divider'

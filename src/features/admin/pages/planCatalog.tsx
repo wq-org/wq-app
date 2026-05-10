@@ -53,8 +53,8 @@ const AdminPlanCatalog = () => {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex flex-col gap-6 py-8 px-4">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-6 px-4 py-8 animate-in fade-in-0 slide-in-from-bottom-4">
+        <div className="flex flex-col gap-2 animate-in fade-in-0 slide-in-from-left-4">
           <Text
             as="h1"
             variant="h3"
@@ -73,7 +73,7 @@ const AdminPlanCatalog = () => {
         </div>
 
         {!isLoading && items.length > 0 ? (
-          <div className="w-full min-w-0 md:max-w-md">
+          <div className="w-full min-w-0 md:max-w-md animate-in fade-in-0 slide-in-from-bottom-2">
             <FieldInput
               label={t('planCatalog.filterLabel')}
               placeholder={t('planCatalog.filterPlaceholder')}
@@ -141,6 +141,7 @@ const AdminPlanCatalog = () => {
             plans={filteredPlans}
             onEdit={handleEdit}
             onPreview={handlePreview}
+            className="animate-in fade-in-0 slide-in-from-bottom-4"
           />
         )}
       </div>

@@ -90,9 +90,11 @@ export function useLessonBlocks(lessonId: string | undefined) {
     setIsTailHydrated(false)
     setError(null)
 
+    const resolvedLessonId = lessonId!
+
     async function loadHead() {
       try {
-        const head = await fetchLessonBlocksPage(lessonId, 0, FIRST_PAGE_SIZE - 1)
+        const head = await fetchLessonBlocksPage(resolvedLessonId, 0, FIRST_PAGE_SIZE - 1)
         if (!cancelled && lessonLoadRevisionRef.current === loadRevision) {
           setHeadBlocks(head)
         }
@@ -124,6 +126,8 @@ export function useLessonBlocks(lessonId: string | undefined) {
       return
     }
 
+    const resolvedLessonId = lessonId!
+
     let cancelled = false
 
     idleCallbackRef.current = scheduleIdle(() => {
@@ -133,7 +137,11 @@ export function useLessonBlocks(lessonId: string | undefined) {
       async function loadTail() {
         setIsTailHydrating(true)
         try {
-          const rest = await fetchLessonBlocksPage(lessonId, FIRST_PAGE_SIZE, FIRST_PAGE_SIZE + 10000)
+          const rest = await fetchLessonBlocksPage(
+            resolvedLessonId,
+            FIRST_PAGE_SIZE,
+            FIRST_PAGE_SIZE + 10000,
+          )
           if (!cancelled && lessonLoadRevisionRef.current === loadRevision) {
             setTailBlocks(rest)
           }

@@ -42,10 +42,10 @@ const AdminDashboard = () => {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 px-4 py-8 animate-in fade-in-0 slide-in-from-bottom-4">
         <StatsLinks
           items={statsItems}
-          className="p-0 py-2"
+          className="p-0 py-2 animate-in fade-in-0 slide-in-from-bottom-2"
         />
       </div>
     </AdminWorkspaceShell>

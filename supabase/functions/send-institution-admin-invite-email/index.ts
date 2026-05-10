@@ -326,8 +326,9 @@ Deno.serve(async (req) => {
       htmlContent,
       textContent,
       tags: ['institution_admin_invite'],
+      // Per-send key: same invite token must allow intentional resends (Brevo dedupes on key).
       headers: {
-        'Idempotency-Key': inviteToken,
+        'Idempotency-Key': `${inviteToken}:${crypto.randomUUID()}`,
       },
     }),
   })

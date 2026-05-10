@@ -137,6 +137,28 @@ body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Motion — Tailwind utilities: ease-out-quint, ease-in-out-cubic, … (also var(--ease-*) in CSS).
+     tw-animate enter/exit: add [--tw-ease:var(--ease-out-quint)] with duration-* on the same element. */
+  --transition-fast: 150ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --ease-in-quad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --ease-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --ease-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+  --ease-in-quint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+  --ease-in-out-quad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
+  --ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 
 :root {
@@ -356,6 +378,34 @@ body {
 
   .cn-alert-variant-destructive *:where([data-slot='alert-description']) {
     color: color-mix(in oklch, var(--destructive) 90%, transparent);
+  }
+
+  .cn-alert-variant-blue {
+    border-color: color-mix(in oklch, oklch(var(--oklch-blue)) 38%, transparent);
+    background-color: color-mix(in oklch, oklch(var(--oklch-blue)) 12%, var(--card));
+    color: oklch(var(--oklch-blue));
+  }
+
+  .cn-alert-variant-blue > svg {
+    color: currentColor;
+  }
+
+  .cn-alert-variant-blue *:where([data-slot='alert-description']) {
+    color: color-mix(in oklch, oklch(var(--oklch-blue)) 55%, var(--muted-foreground));
+  }
+
+  .cn-alert-variant-orange {
+    border-color: color-mix(in oklch, oklch(var(--oklch-orange)) 38%, transparent);
+    background-color: color-mix(in oklch, oklch(var(--oklch-orange)) 12%, var(--card));
+    color: oklch(var(--oklch-orange));
+  }
+
+  .cn-alert-variant-orange > svg {
+    color: currentColor;
+  }
+
+  .cn-alert-variant-orange *:where([data-slot='alert-description']) {
+    color: color-mix(in oklch, oklch(var(--oklch-orange)) 55%, var(--muted-foreground));
   }
 
   .cn-alert-action {

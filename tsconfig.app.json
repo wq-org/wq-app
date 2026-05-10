@@ -27,5 +27,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/features/lexical-editor/shared/.tsx"]
+  "include": ["src", "src/features/lexical-editor/shared/.tsx"],
+  "exclude": ["src/features/lexical-editor/CommentPlugin/**/*"]
 }

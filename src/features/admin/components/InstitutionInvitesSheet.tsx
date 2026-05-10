@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Check, XCircle } from 'lucide-react'
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { FieldInput } from '@/components/ui/field-input'
-import { Label } from '@/components/ui/label'
 import {
   Sheet,
   SheetContent,
@@ -66,73 +66,53 @@ export function InstitutionInvitesSheet({
                 className="flex flex-col gap-4"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <div className="flex flex-col gap-2">
-                  <Label>{t('institutionInvites.table.expiresAt')}</Label>
-                  <FieldInput
-                    id="invite-expires-at"
-                    label={t('institutionInvites.table.expiresAt')}
-                    value={expiresFormatted}
-                    onValueChange={() => {}}
-                    disabled
-                    inputClassName="bg-muted"
-                  />
-                </div>
+                <FieldInput
+                  id="invite-expires-at"
+                  label={t('institutionInvites.table.expiresAt')}
+                  value={expiresFormatted}
+                  onValueChange={() => {}}
+                  disabled
+                  inputClassName="bg-muted"
+                />
 
-                <div className="flex flex-col gap-2">
-                  <Label>{t('institutionInvites.table.invitedBy')}</Label>
-                  <FieldInput
-                    id="invite-invited-by"
-                    label={t('institutionInvites.table.invitedBy')}
-                    value={inviterDisplay}
-                    onValueChange={() => {}}
-                    disabled
-                    inputClassName="bg-muted"
-                  />
-                </div>
+                <FieldInput
+                  id="invite-invited-by"
+                  label={t('institutionInvites.table.invitedBy')}
+                  value={inviterDisplay}
+                  onValueChange={() => {}}
+                  disabled
+                  inputClassName="bg-muted"
+                />
 
-                <div className="flex flex-col gap-2">
-                  <Label>{t('institutionInvites.table.accepted')}</Label>
-                  <div className="flex min-h-10 items-center gap-2 rounded-md border border-input bg-muted px-3 py-2">
-                    <div
-                      role="img"
-                      className={`inline-flex shrink-0 ${isAccepted ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'}`}
-                      aria-label={
-                        isAccepted
-                          ? t('institutionInvites.acceptedYes')
-                          : t('institutionInvites.acceptedNo')
-                      }
-                    >
-                      {isAccepted ? (
-                        <Check
-                          className="size-5"
-                          aria-hidden
-                        />
+                <Alert variant={isAccepted ? 'blue' : 'orange'}>
+                  {isAccepted ? (
+                    <Check
+                      className="size-4"
+                      aria-hidden
+                    />
+                  ) : (
+                    <XCircle
+                      className="size-4"
+                      aria-hidden
+                    />
+                  )}
+                  <AlertTitle>
+                    {isAccepted
+                      ? t('institutionInvites.acceptedYes')
+                      : t('institutionInvites.acceptedNo')}
+                  </AlertTitle>
+                  <AlertDescription>
+                    {isAccepted ? (
+                      acceptedUserDisplay !== '—' ? (
+                        <span className="font-mono text-xs">{acceptedUserDisplay}</span>
                       ) : (
-                        <XCircle
-                          className="size-5"
-                          aria-hidden
-                        />
-                      )}
-                    </div>
-                    <span className="text-muted-foreground text-sm">
-                      {isAccepted
-                        ? t('institutionInvites.acceptedYes')
-                        : t('institutionInvites.acceptedNo')}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label>{t('institutionInvites.table.acceptedUserId')}</Label>
-                  <FieldInput
-                    id="invite-accepted-user-id"
-                    label={t('institutionInvites.table.acceptedUserId')}
-                    value={acceptedUserDisplay}
-                    onValueChange={() => {}}
-                    disabled
-                    inputClassName="bg-muted font-mono text-xs"
-                  />
-                </div>
+                        <span>{t('institutionInvites.sheet.acceptedNoUserId')}</span>
+                      )
+                    ) : (
+                      t('institutionInvites.sheet.pendingInviteHint')
+                    )}
+                  </AlertDescription>
+                </Alert>
               </form>
             </div>
           </>
