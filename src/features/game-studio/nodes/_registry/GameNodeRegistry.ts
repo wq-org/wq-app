@@ -1,16 +1,20 @@
 import type { ComponentType } from 'react'
 import type { NodeProps } from '@xyflow/react'
 
+import { gameDragDropMathEntry } from '../drag-drop-math'
 import { gameStartEntry } from '../game-start'
 import { gameEndEntry } from '../game-end'
 import { gameIfElseEntry } from '../game-if-else'
 import { gameImagePinEntry } from '../game-image-pin'
+import { gameOpenQuestionEntry } from '../open-question'
 import type { GameNodeCategory, GameNodeRegistryEntry } from './game-node-registry.types'
 
 export const GAME_NODE_REGISTRY: readonly GameNodeRegistryEntry[] = [
   gameStartEntry,
   gameEndEntry,
   gameIfElseEntry,
+  gameDragDropMathEntry,
+  gameOpenQuestionEntry,
   gameImagePinEntry,
 ] as const
 

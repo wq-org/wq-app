@@ -2,7 +2,7 @@ import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import type { NodeProps } from '@xyflow/react'
 
-export type GameNodeCategory = 'nodes' | 'logic'
+export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
 export type GameNodeAccent = 'gray' | 'blue' | 'orange'
 
@@ -36,4 +36,6 @@ export type GameNodeRegistryEntry = {
   allowMultiple: boolean
   /** Whether this node may be dragged from the sidebar (false hides it from sidebar) */
   isDraggable: boolean
+  /** When set, sidebar drag + canvas drop require this institution feature key. */
+  featureKey?: string
 }

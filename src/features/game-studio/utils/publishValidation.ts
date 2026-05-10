@@ -3,9 +3,16 @@ import { GAME_END_TYPE } from '../nodes/game-end/game-end.schema'
 import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/game-image-pin.schema'
 import { GAME_START_TYPE } from '../nodes/game-start/game-start.schema'
+import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/drag-drop-math/drag-drop-math.schema'
+import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/open-question.schema'
 import { validateNodeConfig } from '../nodes/_registry/GameNodeRegistry'
 
-const GAME_NODE_TYPES = [GAME_IMAGE_PIN_TYPE, GAME_IF_ELSE_TYPE] as const
+const GAME_NODE_TYPES = [
+  GAME_IMAGE_PIN_TYPE,
+  GAME_IF_ELSE_TYPE,
+  GAME_DRAG_DROP_MATH_TYPE,
+  GAME_OPEN_QUESTION_TYPE,
+] as const
 
 export function getNodeLabel(node: Node): string {
   const d = node.data as Record<string, unknown> | undefined
@@ -68,7 +75,9 @@ export function getValidationResult(nodes: Node[], edges: Edge[]): ValidationRes
 
   if (!startNode) globalErrors.push('At least one Start node is required')
   if (gameNodes.length === 0) {
-    globalErrors.push('At least one game node (Image Pin or If/Else) is required')
+    globalErrors.push(
+      'At least one game node (Games section: drag-and-drop math, open question, image pin, or Logic: If/Else) is required',
+    )
   }
   if (!endNode) globalErrors.push('At least one End node is required')
 
@@ -101,6 +110,10 @@ export function getPointsForNode(node: Node): number {
   const type = node.type
   const data = node.data as Record<string, unknown> | undefined
   if (!type || !(GAME_NODE_TYPES as readonly string[]).includes(type)) return 0
+  if (type === GAME_DRAG_DROP_MATH_TYPE || type === GAME_OPEN_QUESTION_TYPE) {
+    if (typeof data?.points === 'number' && data.points >= 0) return data.points
+    return 100
+  }
   if (typeof data?.points === 'number' && data.points >= 0) return data.points
   if (type === GAME_IMAGE_PIN_TYPE && data) {
     const squares = Array.isArray(data.squares) ? data.squares : []
@@ -121,6 +134,10 @@ export function getDisplayNameForNodeType(type: string | undefined): string {
       return 'End Node'
     case GAME_IMAGE_PIN_TYPE:
       return 'Image and Pin'
+    case GAME_DRAG_DROP_MATH_TYPE:
+      return 'Drag & drop math'
+    case GAME_OPEN_QUESTION_TYPE:
+      return 'Open question'
     case GAME_IF_ELSE_TYPE:
       return 'If/Else'
     default:

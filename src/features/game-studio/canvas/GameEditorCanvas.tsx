@@ -22,6 +22,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useGameStudioContext } from '@/contexts/game-studio'
 import { useUser } from '@/contexts/user'
+import { useMyInstitutionFeatureFlags } from '@/features/entitlements'
 import type { ThemeId } from '@/lib/themes'
 
 import { MAX_END_NODE_INCOMING_CONNECTIONS } from '../constants'
@@ -31,6 +32,8 @@ import { GAME_START_TYPE } from '../nodes/game-start/game-start.schema'
 import { GAME_END_TYPE } from '../nodes/game-end/game-end.schema'
 import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/game-image-pin.schema'
+import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/drag-drop-math/drag-drop-math.schema'
+import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/open-question.schema'
 import {
   getGameForStudio,
   publishGame,
@@ -44,6 +47,7 @@ import { GamePublishDrawer } from '../components/GamePublishDrawer'
 import { deleteGame } from '@/features/command-palette'
 import { GameEditorSidebar } from './GameEditorSidebar'
 import { GameEditorToolbar } from './GameEditorToolbar'
+import { isInstitutionFeatureEnabledForKey } from '../utils/isInstitutionFeatureEnabledForKey'
 
 const DEFAULT_TITLE = 'Untitled game'
 
@@ -57,8 +61,18 @@ const initialNodes: Node[] = [
 ]
 
 const SINGLETON_TYPES = new Set<string>([GAME_START_TYPE, GAME_END_TYPE])
-const SINGLE_OUTGOING_TYPES = new Set<string>([GAME_START_TYPE, GAME_IMAGE_PIN_TYPE])
-const SINGLE_INCOMING_TYPES = new Set<string>([GAME_IMAGE_PIN_TYPE, GAME_IF_ELSE_TYPE])
+const SINGLE_OUTGOING_TYPES = new Set<string>([
+  GAME_START_TYPE,
+  GAME_IMAGE_PIN_TYPE,
+  GAME_DRAG_DROP_MATH_TYPE,
+  GAME_OPEN_QUESTION_TYPE,
+])
+const SINGLE_INCOMING_TYPES = new Set<string>([
+  GAME_IMAGE_PIN_TYPE,
+  GAME_DRAG_DROP_MATH_TYPE,
+  GAME_OPEN_QUESTION_TYPE,
+  GAME_IF_ELSE_TYPE,
+])
 
 function checkSingletonConstraints(nodes: Node[]): { valid: boolean; reason?: string } {
   for (const type of SINGLETON_TYPES) {
@@ -95,7 +109,9 @@ export type GameEditorCanvasProps = {
 
 export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const navigate = useNavigate()
-  const { getUserId } = useUser()
+  const { getUserId, profile } = useUser()
+  const fetchFeatureFlags = Boolean(profile?.user_id)
+  const { features: institutionFeatures } = useMyInstitutionFeatureFlags(fetchFeatureFlags)
   const {
     nodes: contextNodes,
     setNodes: setContextNodes,
@@ -348,69 +364,80 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     event.dataTransfer.dropEffect = 'move'
   }, [])
 
-  const onDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault()
-    if (isDroppingRef.current) return
-    isDroppingRef.current = true
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault()
+      if (isDroppingRef.current) return
+      isDroppingRef.current = true
 
-    const bounds = containerRef.current?.getBoundingClientRect()
-    if (!reactFlowInstance.current || !bounds) {
-      isDroppingRef.current = false
-      return
-    }
-    const raw = event.dataTransfer.getData('application/reactflow')
-    if (!raw) {
-      isDroppingRef.current = false
-      return
-    }
-    try {
-      const payload = JSON.parse(raw) as { type: string; label?: string; nodeId?: string }
-      const entry = getRegistryEntry(payload.type)
-      if (!entry) {
-        toast.error(`Unknown node type: ${payload.type}`)
+      const bounds = containerRef.current?.getBoundingClientRect()
+      if (!reactFlowInstance.current || !bounds) {
         isDroppingRef.current = false
         return
       }
-      const position = reactFlowInstance.current.screenToFlowPosition({
-        x: event.clientX - bounds.left,
-        y: event.clientY - bounds.top,
-      })
-      const newNodeId = `${payload.type}-${Date.now()}`
-      const newNode: Node = {
-        id: newNodeId,
-        type: entry.type,
-        position,
-        data: { ...entry.defaultConfig, label: payload.label ?? entry.label },
+      const raw = event.dataTransfer.getData('application/reactflow')
+      if (!raw) {
+        isDroppingRef.current = false
+        return
       }
+      try {
+        const payload = JSON.parse(raw) as { type: string; label?: string; nodeId?: string }
+        const entry = getRegistryEntry(payload.type)
+        if (!entry) {
+          toast.error(`Unknown node type: ${payload.type}`)
+          isDroppingRef.current = false
+          return
+        }
+        if (
+          entry.featureKey &&
+          !isInstitutionFeatureEnabledForKey(institutionFeatures, entry.featureKey)
+        ) {
+          toast.error('This node type is not enabled for your institution')
+          isDroppingRef.current = false
+          return
+        }
+        const position = reactFlowInstance.current.screenToFlowPosition({
+          x: event.clientX - bounds.left,
+          y: event.clientY - bounds.top,
+        })
+        const newNodeId = `${payload.type}-${Date.now()}`
+        const newNode: Node = {
+          id: newNodeId,
+          type: entry.type,
+          position,
+          data: { ...entry.defaultConfig, label: payload.label ?? entry.label },
+        }
 
-      setNodes((prev) => {
-        if (prev.find((n) => n.id === newNodeId)) {
-          isDroppingRef.current = false
-          return prev
-        }
-        if (!entry.allowMultiple && prev.some((n) => n.type === entry.type)) {
-          toast.error(`Only one ${entry.label} node is allowed`)
-          isDroppingRef.current = false
-          return prev
-        }
-        const test = [...prev, newNode]
-        const constraint = checkSingletonConstraints(test)
-        if (!constraint.valid) {
-          toast.error(constraint.reason ?? 'Cannot add this node')
-          isDroppingRef.current = false
-          return prev
-        }
-        setTimeout(() => {
-          isDroppingRef.current = false
-        }, 100)
-        toast.success('Node added')
-        return test
-      })
-    } catch (err) {
-      console.error('Error parsing drop data:', err)
-      isDroppingRef.current = false
-    }
-  }, [])
+        setNodes((prev) => {
+          if (prev.find((n) => n.id === newNodeId)) {
+            isDroppingRef.current = false
+            return prev
+          }
+          if (!entry.allowMultiple && prev.some((n) => n.type === entry.type)) {
+            toast.error(`Only one ${entry.label} node is allowed`)
+            isDroppingRef.current = false
+            return prev
+          }
+          const test = [...prev, newNode]
+          const constraint = checkSingletonConstraints(test)
+          if (!constraint.valid) {
+            toast.error(constraint.reason ?? 'Cannot add this node')
+            isDroppingRef.current = false
+            return prev
+          }
+          setTimeout(() => {
+            isDroppingRef.current = false
+          }, 100)
+          toast.success('Node added')
+          return test
+        })
+      } catch (err) {
+        console.error('Error parsing drop data:', err)
+        isDroppingRef.current = false
+      }
+    },
+    [institutionFeatures],
+  )
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
@@ -630,7 +657,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
             </Text>
           </div>
         )}
-        <GameEditorSidebar />
+        <GameEditorSidebar features={institutionFeatures} />
         <div
           ref={containerRef}
           className="w-full h-full rounded-4xl bg-gray-100 dark:bg-zinc-900 overflow-hidden relative"

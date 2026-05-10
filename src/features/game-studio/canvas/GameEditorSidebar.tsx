@@ -3,12 +3,15 @@ import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
+import type { EffectiveFeature } from '@/features/institution-admin'
+
 import { getSidebarEntries } from '../nodes/_registry/GameNodeRegistry'
 import type {
   GameNodeAccent,
   GameNodeCategory,
   GameNodeRegistryEntry,
 } from '../nodes/_registry/game-node-registry.types'
+import { isInstitutionFeatureEnabledForKey } from '../utils/isInstitutionFeatureEnabledForKey'
 
 const accentTileClasses: Record<GameNodeAccent, string> = {
   gray: 'border-gray-500/20 bg-gray-500/10 text-gray-500 dark:border-gray-400/30 dark:bg-gray-400/10 dark:text-gray-300',
@@ -20,6 +23,7 @@ const accentTileClasses: Record<GameNodeAccent, string> = {
 const sectionTitles: Record<GameNodeCategory, string> = {
   nodes: 'Nodes',
   logic: 'Logic',
+  games: 'Games',
 }
 
 function onDragStart(event: React.DragEvent, entry: GameNodeRegistryEntry) {
@@ -33,9 +37,11 @@ function onDragStart(event: React.DragEvent, entry: GameNodeRegistryEntry) {
 function SidebarSection({
   title,
   entries,
+  features,
 }: {
   title: string
   entries: readonly GameNodeRegistryEntry[]
+  features: readonly EffectiveFeature[]
 }) {
   if (entries.length === 0) return null
   return (
@@ -50,15 +56,26 @@ function SidebarSection({
       <div className="space-y-1">
         {entries.map((entry) => {
           const Icon = entry.Icon
+          const gated = Boolean(entry.featureKey)
+          const enabled =
+            !gated || isInstitutionFeatureEnabledForKey(features, entry.featureKey as string)
           return (
             <div
               key={entry.type}
-              draggable
-              onDragStart={(e) => onDragStart(e, entry)}
+              draggable={enabled}
+              onDragStart={(e) => {
+                if (!enabled) {
+                  e.preventDefault()
+                  return
+                }
+                onDragStart(e, entry)
+              }}
               className={cn(
                 'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
-                'cursor-grab active:cursor-grabbing transition-colors hover:bg-accent dark:hover:bg-zinc-800',
-                'flex items-center',
+                'flex items-center transition-colors',
+                enabled &&
+                  'cursor-grab active:cursor-grabbing hover:bg-accent dark:hover:bg-zinc-800',
+                !enabled && 'cursor-not-allowed opacity-50',
               )}
             >
               <div
@@ -84,12 +101,17 @@ function SidebarSection({
   )
 }
 
-export function GameEditorSidebar() {
+type GameEditorSidebarProps = {
+  features?: readonly EffectiveFeature[]
+}
+
+export function GameEditorSidebar({ features = [] }: GameEditorSidebarProps) {
   const [query, setQuery] = useState('')
   const all = getSidebarEntries()
   const matches = all.filter((entry) => entry.label.toLowerCase().includes(query.toLowerCase()))
   const nodeEntries = matches.filter((entry) => entry.category === 'nodes')
   const logicEntries = matches.filter((entry) => entry.category === 'logic')
+  const gameEntries = matches.filter((entry) => entry.category === 'games')
 
   return (
     <div className="absolute left-4 top-4 z-10">
@@ -107,17 +129,24 @@ export function GameEditorSidebar() {
           </div>
         </div>
 
-        <div className="p-4 space-y-6">
+        <div className="space-y-6 p-4">
           <SidebarSection
             title={sectionTitles.nodes}
             entries={nodeEntries}
+            features={features}
           />
           <SidebarSection
             title={sectionTitles.logic}
             entries={logicEntries}
+            features={features}
           />
-          {nodeEntries.length === 0 && logicEntries.length === 0 && (
-            <div className="text-center py-8 text-sm text-muted-foreground">No matches</div>
+          <SidebarSection
+            title={sectionTitles.games}
+            entries={gameEntries}
+            features={features}
+          />
+          {nodeEntries.length === 0 && logicEntries.length === 0 && gameEntries.length === 0 && (
+            <div className="py-8 text-center text-sm text-muted-foreground">No matches</div>
           )}
         </div>
       </div>
