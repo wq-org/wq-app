@@ -202,7 +202,8 @@ async function getFollowedTeacherIdsForCurrentUser(): Promise<string[]> {
 
 /**
  * Get published games from teachers the current user (student) follows.
- * For use on the student dashboard Games tab.
+ * For use on the student dashboard Games tab. Card entries omit `route` until
+ * a dedicated play URL is reintroduced (e.g. embed or player under game-studio).
  */
 export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardProps[]> {
   const followedIds = await getFollowedTeacherIdsForCurrentUser()
@@ -236,7 +237,6 @@ export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardP
       themeId: row.theme_id,
       version: row.version ?? undefined,
       status: (row.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
-      route: `/play/${row.id}`,
     }),
   )
 }

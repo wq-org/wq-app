@@ -22,7 +22,6 @@ import featuresAuthDE from './de/features/auth.json'
 import featuresCommandPaletteDE from './de/features/commandPalette.json'
 import featuresCourseDE from './de/features/course.json'
 import featuresFilesDE from './de/features/files.json'
-import featuresGamesDE from './de/features/games.json'
 import featuresGameStudioDE from './de/features/gameStudio.json'
 import featuresInstitutionDE from './de/features/institution.json'
 import featuresInstitutionAdminDE from './de/features/institution-admin.json'
@@ -54,7 +53,6 @@ import sharedLanguageSwitcherEN from './en/shared/languageSwitcher.json'
 import featuresAdminEN from './en/features/admin.json'
 import featuresCourseEN from './en/features/course.json'
 import featuresFilesEN from './en/features/files.json'
-import featuresGamesEN from './en/features/games.json'
 import featuresGameStudioEN from './en/features/gameStudio.json'
 import featuresInstitutionEN from './en/features/institution.json'
 import featuresInstitutionAdminEN from './en/features/institution-admin.json'
@@ -110,7 +108,6 @@ i18n.use(initReactI18next).init({
       'features.commandPalette': featuresCommandPaletteEN,
       'features.course': featuresCourseEN,
       'features.files': featuresFilesEN,
-      'features.games': featuresGamesEN,
       'features.gameStudio': featuresGameStudioEN,
       'features.institution': featuresInstitutionEN,
       'features.institution-admin': featuresInstitutionAdminEN,
@@ -142,7 +139,6 @@ i18n.use(initReactI18next).init({
       'features.commandPalette': featuresCommandPaletteDE,
       'features.course': featuresCourseDE,
       'features.files': featuresFilesDE,
-      'features.games': featuresGamesDE,
       'features.gameStudio': featuresGameStudioDE,
       'features.institution': featuresInstitutionDE,
       'features.institution-admin': featuresInstitutionAdminDE,
@@ -177,7 +173,6 @@ i18n.use(initReactI18next).init({
     'features.commandPalette',
     'features.course',
     'features.files',
-    'features.games',
     'features.gameStudio',
     'features.institution',
     'features.institution-admin',

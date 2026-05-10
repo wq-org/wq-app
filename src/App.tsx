@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
-import { useUser } from '@/contexts/user'
 import {
   AuthInvitePage,
   LoginPage,
@@ -36,7 +35,6 @@ import {
   TeacherTasksPage,
   TeacherViewPage,
 } from '@/features/teacher'
-import { PlayGamePage } from '@/features/game-play'
 import { NotFoundPage } from './user/pages/not-found'
 import { ClassroomDetailPage } from '@/features/classroom'
 import { CourseDetailPage, CourseLayout, CoursePage } from '@/features/course'
@@ -103,19 +101,6 @@ import {
 const GameEditorCanvasWithProjectId = () => {
   const { id } = useParams<{ id: string }>()
   return <GameEditorCanvas projectId={id ?? undefined} />
-}
-
-const PlayRouteWrapper = () => {
-  const { getRole } = useUser()
-  const role = getRole() ?? 'student'
-  return (
-    <AppShell
-      role={role}
-      className="flex flex-col h-screen"
-    >
-      <PlayGamePage />
-    </AppShell>
-  )
 }
 
 const App = () => {
@@ -966,18 +951,6 @@ const App = () => {
                   }
                 />
               </Route>
-
-              {/* Play game (student and teacher) - root level so /play/:gameId works */}
-              <Route
-                path="/play/:gameId"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <PlayRouteWrapper />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
 
               {/* Catch-all 404 route - must be last */}
               <Route

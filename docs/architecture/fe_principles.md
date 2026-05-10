@@ -375,7 +375,7 @@ src/contexts/lesson/
 | ------------------------------------- | ------------------------------------------------ |
 | Singular for one bounded domain       | `lesson` `course` `topic` `profile`              |
 | Plural only for umbrella collections  | `games` `files`                                  |
-| Kebab-case for multi-word names       | `game-studio` `institution-admin` `game-play`    |
+| Kebab-case for multi-word names       | `game-studio` `institution-admin`                |
 | Cross-feature imports via barrel only | `import { useLessons } from '@/features/lesson'` |
 
 ---

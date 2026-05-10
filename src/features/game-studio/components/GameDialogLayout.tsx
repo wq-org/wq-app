@@ -10,7 +10,7 @@ interface GameLayoutProps {
   previewContent?: ReactNode
   settingsContent?: ReactNode
   previewOnly?: boolean
-  /** When true, show only preview content (no Editor/Preview/Settings tabs). Used in game-play. */
+  /** When true, show only preview content (no Editor/Preview/Settings tabs). */
   playMode?: boolean
 }
 type TabType = 'editor' | 'preview' | 'settings'
