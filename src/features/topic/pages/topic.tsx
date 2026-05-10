@@ -2,22 +2,24 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { dismissSaveStatusToast, showSaveStatusToast } from '@/components/shared'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
 import { useTopic } from '@/contexts/topic'
-import { LessonCardList, LessonForm } from '@/features/lesson'
+import { LessonCardList, LessonForm, LessonToolbar } from '@/features/lesson'
 import { TopicLayout } from '@/features/topic'
 import { TopicPreviewTab } from '@/features/topic'
 import { TopicSettings } from '@/features/topic'
-import { LessonSearchBar } from '@/features/lesson'
 import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
 import { Separator } from '@/components/ui/separator'
+
+const TOPIC_LESSONS_ERROR_TOAST_ID = 'topic-lessons-list-error'
+
 const Topic = () => {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
@@ -29,7 +31,24 @@ const Topic = () => {
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
   const { lessons, fetchLessonsByTopicId, listLoading: lessonLoading, error: lessonError } = useLesson()
 
+  /** Header columns only; lesson body is loaded separately via `lesson_blocks` on the lesson route. */
   const filteredLessons = useSearchFilter(lessons, searchQuery, LESSON_SEARCH_FIELDS)
+
+  useEffect(() => {
+    if (lessonError) {
+      showSaveStatusToast({
+        id: TOPIC_LESSONS_ERROR_TOAST_ID,
+        tone: 'error',
+        title: t('page.notFound'),
+        description: lessonError,
+      })
+    } else {
+      dismissSaveStatusToast(TOPIC_LESSONS_ERROR_TOAST_ID)
+    }
+    return () => {
+      dismissSaveStatusToast(TOPIC_LESSONS_ERROR_TOAST_ID)
+    }
+  }, [lessonError, t])
 
   useEffect(() => {
     if (courseId && (!selectedCourse || selectedCourse.id !== courseId)) {
@@ -173,17 +192,10 @@ const Topic = () => {
             {t('page.lessonsTitle')}
           </Text>
 
-          <LessonSearchBar
+          <LessonToolbar
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
           />
-
-          {lessonError ? (
-            <Alert variant="destructive">
-              <AlertTitle>{t('page.notFound')}</AlertTitle>
-              <AlertDescription>{lessonError}</AlertDescription>
-            </Alert>
-          ) : null}
 
           {lessonLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -222,23 +234,7 @@ const Topic = () => {
 
       {activeTab === 'settings' ? <TopicSettings topicId={selectedTopic.id} /> : null}
 
-      {activeTab === 'analytics' ? (
-        <div className="rounded-2xl border bg-white p-6">
-          <Text
-            as="h3"
-            variant="h3"
-          >
-            {t('layout.tabs.analytics', { defaultValue: 'Analytics' })}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="mt-2 text-muted-foreground"
-          >
-            Topic analytics will be available soon.
-          </Text>
-        </div>
-      ) : null}
+  
     </TopicLayout>
   )
 }

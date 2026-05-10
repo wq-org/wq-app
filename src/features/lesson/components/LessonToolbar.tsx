@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { ClearableInput } from '@/components/shared'
 import { cn } from '@/lib/utils'
 
-export type LessonSearchBarProps = {
+export type LessonToolbarProps = {
   searchValue: string
   onSearchChange: (value: string) => void
   className?: string
 }
 
-export function LessonSearchBar({ searchValue, onSearchChange, className }: LessonSearchBarProps) {
+export function LessonToolbar({ searchValue, onSearchChange, className }: LessonToolbarProps) {
   const { t } = useTranslation('features.lesson')
 
   return (

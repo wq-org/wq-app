@@ -20,6 +20,24 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-10-lesson-authoring-reliability-and-topic-polish',
+    date: '10 May 2026',
+    title: 'Smoother lesson authoring, faster topic lesson lists, and clearer feedback while you work',
+    summary:
+      'Lesson writing is built around saving content in sensible chunks instead of one oversized blob, which helps long lessons load and autosave more reliably. Creating lessons from a topic works smoothly again, topic pages give quieter errors when something goes wrong, and small touches—steady buttons, simpler toasts, snappier lists—make everyday course editing feel less fiddly.',
+    bullets: [
+      'Teachers: long lessons should feel lighter to open and save because lesson material is handled in smaller pieces behind the scenes instead of one giant block',
+      'Teachers: adding a new lesson from a topic page should succeed consistently again',
+      'Teachers: if lessons fail to load on a topic, you get a short toast instead of a loud warning taking over the page',
+      'Teachers: save and autosave messages match the normal toast style used elsewhere so status feels familiar',
+      'Teachers: the create-lesson action keeps a stable layout while it works so the button does not jump around',
+      'Teachers: topic lesson lists aim to load only what the screen needs so scrolling your lesson cards feels quicker',
+      'Topics: the lesson search strip on topic and course preview is presented as a simple toolbar-style row—same search, clearer intent',
+      'Small fixes across the lesson workspace so editing titles, descriptions, and lesson content stays dependable day to day',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-05-03-plans-license-faculty-and-teacher-dashboard',
     date: '3 May 2026',
     title:

@@ -7,7 +7,7 @@ import { EmptyTopicsView } from '@/features/course'
 import type { Topic } from '@/features/topic'
 import { TopicCardList } from '@/features/topic'
 import type { ThemeId } from '@/lib/themes'
-import { LessonSearchBar } from '@/features/lesson'
+import { LessonToolbar } from '@/features/lesson'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { getTopicsByCourseId, TOPIC_SEARCH_FIELDS } from '@/features/topic'
 
@@ -56,7 +56,7 @@ export function CoursePreviewTab({ courseId, themeId, onTopicView }: CoursePrevi
         {t('page.topicsTitle')}
       </Text>
 
-      <LessonSearchBar
+      <LessonToolbar
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       />

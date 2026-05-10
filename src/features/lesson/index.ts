@@ -4,8 +4,8 @@ export { LessonCardList } from './components/LessonCardList'
 export type { LessonCardListProps } from './components/LessonCardList'
 export { LessonForm } from './components/LessonForm'
 export type { LessonFormProps } from './components/LessonForm'
-export { LessonSearchBar } from './components/LessonSearchBar'
-export type { LessonSearchBarProps } from './components/LessonSearchBar'
+export { LessonToolbar } from './components/LessonToolbar'
+export type { LessonToolbarProps } from './components/LessonToolbar'
 export {
   createLesson,
   deleteLesson,
@@ -13,7 +13,6 @@ export {
   getLessonTopicRefById,
   getLessonsByTopicId,
   updateLesson,
-  updateLessonPages,
 } from './api/lessonsApi'
 export {
   deleteLessonBlock,
@@ -53,7 +52,6 @@ export type {
   LessonBlockRow,
   LessonBlockType,
   LessonBlockTypeRegistryRow,
-  LessonPage,
   LessonTopicRef,
   UpdateLessonData,
 } from './types/lesson.types'

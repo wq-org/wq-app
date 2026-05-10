@@ -68,21 +68,15 @@ export type LessonBlockEventType =
   | 'block_copied'
   | 'block_link_clicked'
 
-export type LessonPage = {
-  content: string
-  id: string
-  order: number
-}
-
+/**
+ * Lesson metadata row only. Body lives in `lesson_blocks`.
+ * API selects explicit columns — never legacy `content` / `pages` JSON on `lessons`.
+ */
 export type Lesson = {
-  /** @deprecated Legacy `lessons.content` JSONB; lesson body now lives in `lesson_blocks`. Not fetched by default. */
-  content?: string
-  created_at?: string
-  description: string
   id: string
-  /** @deprecated Legacy `lessons.pages` JSONB; superseded by `lesson_blocks`. Not fetched by default. */
-  pages?: LessonPage[]
   title: string
+  description: string
+  created_at?: string
   updated_at?: string
 }
 
@@ -91,17 +85,14 @@ export type LessonTopicRef = {
   topic_id: string
 }
 
+/** Payload for creating a lesson header row; editor body is persisted via `lesson_blocks`. */
 export type CreateLessonData = {
-  /** Optional legacy `content` blob; `lesson_blocks` is the authoritative store. */
-  content?: string
   description: string
-  pages?: LessonPage[]
   title: string
   topic_id: string
 }
 
 export type UpdateLessonData = Partial<{
-  content: string
   description: string
   title: string
 }>

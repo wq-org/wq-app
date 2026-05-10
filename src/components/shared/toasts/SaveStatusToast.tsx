@@ -1,13 +1,8 @@
-import { Check, OctagonX } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Text } from '@/components/ui/text'
-import { cn } from '@/lib/utils'
-
 /**
- * Two-state save indicator surfaced through Sonner.
- * Color flips with the active theme so the toast always sits at maximum
- * contrast against the page: black on light, white on dark.
+ * Save / error lines for autosave, using the app `Toaster` (see
+ * `@/components/ui/sonner`) — standard success/error toasts, no custom chrome.
  */
 export type SaveStatusToastTone = 'saved' | 'error'
 
@@ -37,54 +32,18 @@ export function showSaveStatusToast({
   id,
   durationMs,
 }: SaveStatusToastOptions): string | number {
-  const Icon = tone === 'saved' ? Check : OctagonX
+  const duration = durationMs ?? DEFAULT_DURATION_MS[tone]
+  const options = {
+    id,
+    duration,
+    ...(description !== undefined && description !== '' ? { description } : {}),
+  } satisfies Parameters<typeof toast.success>[1]
 
-  return toast.custom(
-    () => (
-      <div
-        role="status"
-        aria-live="polite"
-        data-tone={tone}
-        className={cn(
-          'pointer-events-auto flex w-full items-start gap-3 rounded-xl border px-4 py-3',
-          tone === 'error'
-            ? 'text-red-500 bg-white border-red-500/20 shadow-lg shadow-red-500/10 dark:bg-black dark:border-red-500/40'
-            : 'border-foreground/10 bg-foreground text-background shadow-lg shadow-black/10 dark:border-background/10 dark:shadow-black/40',
-        )}
-      >
-        <Icon
-          className="mt-0.5 size-4 shrink-0"
-          strokeWidth={2}
-          aria-hidden
-        />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <Text
-            as="p"
-            variant="small"
-            className={cn(
-              'font-semibold leading-tight',
-              tone === 'error' ? 'text-red-500' : 'text-background',
-            )}
-          >
-            {title}
-          </Text>
-          {description ? (
-            <Text
-              as="p"
-              variant="small"
-              className={cn('leading-tight', tone === 'error' ? 'text-red-500/90' : 'text-background/80')}
-            >
-              {description}
-            </Text>
-          ) : null}
-        </div>
-      </div>
-    ),
-    {
-      id,
-      duration: durationMs ?? DEFAULT_DURATION_MS[tone],
-    },
-  )
+  if (tone === 'error') {
+    return toast.error(title, options)
+  }
+
+  return toast.success(title, options)
 }
 
 /** Drop a previously shown save-status toast by its stable id. */

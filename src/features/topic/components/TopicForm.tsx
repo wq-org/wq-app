@@ -41,6 +41,7 @@ export function TopicForm({
           onValueChange={onDescriptionChange}
           label={t('topic.descriptionLabel')}
           placeholder={t('page.addTopicDescriptionPlaceholder')}
+          maxLength={120}
           rows={3}
         />
       </FieldCard>

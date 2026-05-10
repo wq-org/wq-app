@@ -85,7 +85,9 @@ export function LessonForm({ topicId, courseId }: LessonFormProps) {
         >
           {loading ? (
             <Spinner
-              size="sm"
+                 variant="darkblue"
+                size="xs"
+                className="shrink-0"
             />
           ) : (
             <Plus className="h-6 w-6" />

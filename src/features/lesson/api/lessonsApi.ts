@@ -1,18 +1,14 @@
 import { supabase } from '@/lib/supabase'
-import type {
-  CreateLessonData,
-  Lesson,
-  LessonPage,
-  LessonTopicRef,
-  UpdateLessonData,
-} from '../types/lesson.types'
+import type { CreateLessonData, Lesson, LessonTopicRef, UpdateLessonData } from '../types/lesson.types'
 
 /**
- * The slim header shape used by the editor, list, and card UI.
- * Lesson body now lives in `lesson_blocks` — never pull `content` / `pages` here.
+ * Explicit column lists only — no `content`, `pages`, or joins. Body is `lesson_blocks`.
  */
 const LESSON_LIST_FIELDS = 'id, title, description, created_at, updated_at'
+/** Returned from create / update so list cards keep timestamps without refetch. */
 const LESSON_DETAIL_FIELDS = 'id, title, description, created_at, updated_at'
+/** Single-lesson header load for the editor — minimal payload. */
+const LESSON_HEADER_FETCH_FIELDS = 'id, title, description'
 const LESSON_TOPIC_REF_FIELDS = 'id, topic_id'
 
 function normalizeLessonRow(row: Record<string, unknown>): Lesson {
@@ -32,31 +28,13 @@ function normalizeLessonTopicRefRow(row: Record<string, unknown>): LessonTopicRe
   }
 }
 
-function normalizePersistedPages(rawPages: unknown): LessonPage[] {
-  if (!Array.isArray(rawPages)) return []
-  return rawPages
-    .map((page, index) => {
-      if (typeof page !== 'object' || page == null) return null
-      const record = page as Record<string, unknown>
-      return {
-        id: typeof record.id === 'string' ? record.id : `lesson-page-${index}`,
-        order: typeof record.order === 'number' ? record.order : index,
-        content: typeof record.content === 'string' ? record.content : '',
-      } satisfies LessonPage
-    })
-    .filter((page): page is LessonPage => page != null)
-}
-
 function buildCreateLessonPayload(data: CreateLessonData) {
-  // Legacy compatibility: baseline schema still defines lessons.content as JSONB NOT NULL.
-  // Canonical lesson body remains lesson_blocks; this seed payload only satisfies insert constraints.
-  const legacyContent = data.content ? { value: data.content } : {}
-
   return {
     title: data.title.trim(),
     description: data.description || '',
     topic_id: data.topic_id,
-    content: legacyContent,
+    /** Legacy column: DB NOT NULL until dropped; empty JSON only (body is lesson_blocks). */
+    content: {},
   }
 }
 
@@ -105,34 +83,10 @@ export async function updateLesson(lessonId: string, updates: UpdateLessonData):
   return normalizeLessonRow(data as Record<string, unknown>)
 }
 
-/**
- * Legacy helper retained for compatibility. New code must persist Lexical content via
- * `syncLessonBlocksForLesson` in `lessonBlocksApi`.
- */
-export async function updateLessonPages(lessonId: string, pages: LessonPage[]): Promise<Lesson> {
-  const normalizedPages = normalizePersistedPages(pages)
-
-  const { data, error } = await supabase
-    .from('lessons')
-    .update({
-      pages: normalizedPages,
-    })
-    .eq('id', lessonId)
-    .select(LESSON_DETAIL_FIELDS)
-    .single()
-
-  if (error) {
-    console.error('Error updating lesson pages:', error)
-    throw error
-  }
-
-  return normalizeLessonRow(data as Record<string, unknown>)
-}
-
 export async function getLessonById(lessonId: string): Promise<Lesson> {
   const { data, error } = await supabase
     .from('lessons')
-    .select(LESSON_DETAIL_FIELDS)
+    .select(LESSON_HEADER_FETCH_FIELDS)
     .eq('id', lessonId)
     .single()
 
@@ -142,10 +96,6 @@ export async function getLessonById(lessonId: string): Promise<Lesson> {
   }
 
   return normalizeLessonRow(data as Record<string, unknown>)
-}
-
-export async function fetchLessonWithPages(lessonId: string): Promise<Lesson> {
-  return getLessonById(lessonId)
 }
 
 export async function getLessonTopicRefById(lessonId: string): Promise<LessonTopicRef> {

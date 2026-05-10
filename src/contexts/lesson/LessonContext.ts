@@ -25,6 +25,12 @@ export type LessonContextValue = {
   deleteLesson: (lessonId: string) => Promise<void>
 }
 
+const emptyLesson = (): Lesson => ({
+  id: '',
+  title: '',
+  description: '',
+})
+
 export const LessonContext = createContext<LessonContextValue>({
   lessons: [],
   lesson: null,
@@ -34,9 +40,9 @@ export const LessonContext = createContext<LessonContextValue>({
   error: null,
   fetchLessonsByTopicId: async () => [],
   setLesson: () => {},
-  fetchLessonById: async () => ({}) as Lesson,
-  createLesson: async () => ({}) as Lesson,
-  updateLesson: async () => ({}) as Lesson,
+  fetchLessonById: async () => emptyLesson(),
+  createLesson: async () => emptyLesson(),
+  updateLesson: async () => emptyLesson(),
   deleteLesson: async () => {},
 })
 

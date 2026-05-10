@@ -9,8 +9,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { EmptyTopicsView } from '@/features/course'
-import { TopicForm } from '@/features/topic'
-import { TopicsToolbar } from '@/features/topic'
+import { TopicForm, TopicToolbar } from '@/features/topic'
 import { TopicCardList } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
@@ -95,7 +94,7 @@ const Course = () => {
       </Text>
 
       <div className="w-full min-w-0">
-        <TopicsToolbar
+        <TopicToolbar
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
         />
@@ -104,8 +103,9 @@ const Course = () => {
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <Spinner
-            variant="gray"
-            size="md"
+            variant="darkblue"
+            size="xs"
+            className='shrink-0'
           />
         </div>
       ) : filteredTopics.length === 0 ? (

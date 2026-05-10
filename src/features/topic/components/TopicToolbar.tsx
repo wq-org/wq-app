@@ -8,11 +8,11 @@ export interface TopicsToolbarProps {
   className?: string
 }
 
-export function TopicsToolbar({ searchValue, onSearchChange, className }: TopicsToolbarProps) {
+export function TopicToolbar({ searchValue, onSearchChange, className }: TopicsToolbarProps) {
   const { t } = useTranslation('features.course')
 
   return (
-    <div className={cn('flex w-full min-w-0 justify-end', className)}>
+    <div className={cn('flex w-full min-w-0 justify-start', className)}>
       <ClearableInput
         showSearchIcon
         value={searchValue}
