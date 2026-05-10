@@ -139,7 +139,9 @@ export const ClearableInput = ({
         )}
       </div>
 
-      {!hideSeparator ? <Separator className={separatorClassName} /> : null}
+      {!hideSeparator ? (
+        <Separator className={cn('mt-2', separatorClassName)} />
+      ) : null}
     </div>
   )
 }

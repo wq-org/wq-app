@@ -16,6 +16,8 @@ export type LessonFormProps = {
   courseId?: string
 }
 
+const LESSON_DESCRIPTION_MAX_LENGTH = 120
+
 export function LessonForm({ topicId, courseId }: LessonFormProps) {
   const { t } = useTranslation('features.course')
   const [newLesson, setNewLesson] = useState('')
@@ -23,8 +25,9 @@ export function LessonForm({ topicId, courseId }: LessonFormProps) {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { createLesson } = useLesson()
+  const withinDescriptionLimit = description.length <= LESSON_DESCRIPTION_MAX_LENGTH
   const bothFieldsFilled = Boolean(newLesson.trim() && description.trim() && topicId)
-  const canCreate = bothFieldsFilled && !loading
+  const canCreate = bothFieldsFilled && withinDescriptionLimit && !loading
 
   const handleCreateLesson = async () => {
     if (!canCreate || !topicId) return
@@ -65,14 +68,10 @@ export function LessonForm({ topicId, courseId }: LessonFormProps) {
           />
           <FieldTextarea
             value={description}
-            onValueChange={(nextDescription) => {
-              if (nextDescription.length <= 120) {
-                setDescription(nextDescription)
-              }
-            }}
+            onValueChange={setDescription}
             label={t('createLesson.descriptionLabel')}
             placeholder={t('createLesson.descriptionPlaceholder')}
-            maxLength={120}
+            maxLength={LESSON_DESCRIPTION_MAX_LENGTH}
             rows={3}
           />
         </FieldCard>
@@ -85,9 +84,9 @@ export function LessonForm({ topicId, courseId }: LessonFormProps) {
         >
           {loading ? (
             <Spinner
-                 variant="darkblue"
-                size="xs"
-                className="shrink-0"
+              variant="darkblue"
+              size="xs"
+              className="shrink-0"
             />
           ) : (
             <Plus className="h-6 w-6" />

@@ -57,6 +57,14 @@
     "title": "Add a new topic",
     "description": "No topic exists yet. Use the input field and click the plus button."
   },
+  "emptyCourse": {
+    "title": "Create your first course",
+    "description": "Use the <0></0> command in the command bar to create a new course."
+  },
+  "emptyLessons": {
+    "title": "Add your first lesson",
+    "description": "Use the fields above and click Create lesson to add a new lesson."
+  },
   "layout": {
     "tabs": {
       "overview": "Editor",
@@ -103,12 +111,13 @@
     },
     "titleLabel": "Title",
     "descriptionLabel": "Description",
-    "toolbar": {
+    "filter": {
+      "searchLabel": "Search topics",
       "searchPlaceholder": "Search topics by title or description..."
     }
   },
   "course": {
-    "toolbar": {
+    "filter": {
       "searchLabel": "Search courses",
       "searchPlaceholder": "Search courses by title or description..."
     }

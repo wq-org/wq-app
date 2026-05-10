@@ -4,8 +4,8 @@ export { LessonCardList } from './components/LessonCardList'
 export type { LessonCardListProps } from './components/LessonCardList'
 export { LessonForm } from './components/LessonForm'
 export type { LessonFormProps } from './components/LessonForm'
-export { LessonToolbar } from './components/LessonToolbar'
-export type { LessonToolbarProps } from './components/LessonToolbar'
+export { LessonFilter } from './components/LessonFilter'
+export type { LessonFilterProps } from './components/LessonFilter'
 export {
   createLesson,
   deleteLesson,

@@ -9,7 +9,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
 import { useTopic } from '@/contexts/topic'
-import { LessonCardList, LessonForm, LessonToolbar } from '@/features/lesson'
+import { LessonCardList, LessonForm, LessonFilter } from '@/features/lesson'
 import { TopicLayout } from '@/features/topic'
 import { TopicPreviewTab } from '@/features/topic'
 import { TopicSettings } from '@/features/topic'
@@ -192,7 +192,7 @@ const Topic = () => {
             {t('page.lessonsTitle')}
           </Text>
 
-          <LessonToolbar
+          <LessonFilter
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
           />

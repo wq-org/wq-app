@@ -4,7 +4,7 @@ import { LessonCardList, type Lesson } from '@/features/lesson'
 import type { ThemeId } from '@/lib/themes'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
-import { TopicToolbar } from './TopicToolbar'
+import { TopicFilter } from './TopicFilter'
 import { useState } from 'react'
 export interface TopicPreviewTabProps {
   lessons: Lesson[]
@@ -58,7 +58,7 @@ export function TopicPreviewTab({
         </div>
       ) : null}
 
-      <TopicToolbar
+      <TopicFilter
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       />

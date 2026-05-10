@@ -115,8 +115,6 @@
         "block": "Blocks",
         "media": "Media"
       },
-      "searchLabel": "Search lessons",
-      "searchPlaceholder": "Search lessons by title or description...",
       "blocks": {
         "paragraph": {
           "label": "Paragraph",
@@ -235,6 +233,10 @@
     "subheading": "Lesson",
     "updatedRecently": "Updated recently",
     "updatedRelative": "Updated {{relative}}"
+  },
+  "filter": {
+    "searchLabel": "Search lessons",
+    "searchPlaceholder": "Search lessons by title or description..."
   },
   "layout": {
     "loading": "Loading...",

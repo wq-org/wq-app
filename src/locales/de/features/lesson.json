@@ -115,8 +115,6 @@
         "block": "Blöcke",
         "media": "Medien"
       },
-      "searchLabel": "Lektionen suchen",
-      "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen...",
       "blocks": {
         "paragraph": {
           "label": "Absatz",
@@ -235,6 +233,10 @@
     "subheading": "Lektion",
     "updatedRecently": "Kürzlich aktualisiert",
     "updatedRelative": "Aktualisiert {{relative}}"
+  },
+  "filter": {
+    "searchLabel": "Lektionen suchen",
+    "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen..."
   },
   "layout": {
     "loading": "Wird geladen...",

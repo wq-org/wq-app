@@ -58,6 +58,14 @@
     "title": "Neues Thema hinzuf\u00fcgen",
     "description": "Es gibt noch kein Thema. Nutze das Eingabefeld und klicke auf das Plus-Symbol."
   },
+  "emptyCourse": {
+    "title": "Erstelle deinen ersten Kurs",
+    "description": "Benutze das Kommando <0></0> in der Befehlsleiste, um einen neuen Kurs zu erstellen."
+  },
+  "emptyLessons": {
+    "title": "F\u00fcge eine neue Lektion hinzu",
+    "description": "Benutze das Eingabefeld und klicke auf \u201eLektion erstellen\u201c, um eine neue Lektion zu erstellen."
+  },
   "layout": {
     "tabs": {
       "preview": "Vorschau",
@@ -103,12 +111,13 @@
     },
     "titleLabel": "Titel",
     "descriptionLabel": "Beschreibung",
-    "toolbar": {
+    "filter": {
+      "searchLabel": "Themen durchsuchen",
       "searchPlaceholder": "nach Titel oder Beschreibung suchen..."
     }
   },
   "course": {
-    "toolbar": {
+    "filter": {
       "searchLabel": "Kurse suchen",
       "searchPlaceholder": "Nach Titel oder Beschreibung suchen..."
     }

@@ -130,7 +130,7 @@ export function CourseLayout() {
               onTabChange={handleTabChange}
               className="border-b"
             />
-            <div>
+            <div className="flex flex-col gap-8">
               {(activeTab === 'editor' || activeTab === 'preview') && selectedCourse ? (
                 <CourseSectionHeader
                   title={selectedCourse.title}
