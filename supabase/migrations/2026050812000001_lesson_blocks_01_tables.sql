@@ -1,6 +1,8 @@
 -- =============================================================================
--- Lesson block type registry + lesson_blocks (row-per-block Lexical storage)
--- Extensible block types via registry INSERT (no ENUM migrations).
+-- LESSON BLOCKS — tables, indexes, constraints, tenant-key trigger
+-- =============================================================================
+-- Row-per-block Lexical storage. Extensible block types via registry INSERT
+-- (no ENUM migrations). RLS and seed data live in sibling _02 / _03 files.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -24,53 +26,13 @@ COMMENT ON TABLE public.lesson_block_type_registry IS
 
 COMMENT ON COLUMN public.lesson_block_type_registry.block_type IS
   'Stable key (matches TS CORE_BLOCK_TYPES / plugin identifiers).';
-
 COMMENT ON COLUMN public.lesson_block_type_registry.category IS
   'Logical group for analytics: heading|content|media|interactive|layout|custom.';
-
 COMMENT ON COLUMN public.lesson_block_type_registry.is_lexical_core IS
   'TRUE when type ships with Lexical core packages; FALSE for WQ custom plugins.';
-
 COMMENT ON COLUMN public.lesson_block_type_registry.plugin_key IS
   'Lexical plugin / node registration key for custom blocks; NULL for core types.';
-
 COMMENT ON COLUMN public.lesson_block_type_registry.created_at IS 'Registry row creation time.';
-
-INSERT INTO public.lesson_block_type_registry (
-  block_type,
-  category,
-  is_lexical_core,
-  plugin_key
-)
-VALUES
-  ('HeadingOne', 'heading', TRUE, NULL),
-  ('HeadingTwo', 'heading', TRUE, NULL),
-  ('HeadingThree', 'heading', TRUE, NULL),
-  ('Paragraph', 'content', TRUE, NULL),
-  ('BulletedList', 'content', TRUE, NULL),
-  ('NumberedList', 'content', TRUE, NULL),
-  ('Quote', 'content', TRUE, NULL),
-  ('Divider', 'layout', TRUE, NULL),
-  ('Image', 'media', TRUE, NULL),
-  ('Video', 'media', TRUE, NULL),
-  ('Callout', 'content', TRUE, NULL),
-  ('Code', 'content', TRUE, NULL),
-  ('Custom', 'custom', FALSE, NULL)
-ON CONFLICT (block_type) DO NOTHING;
-
-ALTER TABLE public.lesson_block_type_registry ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.lesson_block_type_registry FORCE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS lesson_block_type_registry_select_authenticated ON public.lesson_block_type_registry;
-CREATE POLICY lesson_block_type_registry_select_authenticated ON public.lesson_block_type_registry
-  FOR SELECT TO authenticated
-  USING (TRUE);
-
-DROP POLICY IF EXISTS lesson_block_type_registry_all_super_admin ON public.lesson_block_type_registry;
-CREATE POLICY lesson_block_type_registry_all_super_admin ON public.lesson_block_type_registry
-  FOR ALL TO authenticated
-  USING ((SELECT app.is_super_admin()) IS TRUE)
-  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
 -- -----------------------------------------------------------------------------
 -- 2. lesson_blocks — one row per top-level Lexical block
@@ -110,6 +72,9 @@ COMMENT ON COLUMN public.lesson_blocks.content_schema_version IS 'Lexical/editor
 COMMENT ON COLUMN public.lesson_blocks.created_at IS 'Row creation time.';
 COMMENT ON COLUMN public.lesson_blocks.updated_at IS 'Last update time.';
 
+-- -----------------------------------------------------------------------------
+-- 3. Indexes
+-- -----------------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_lesson_blocks_lesson_meta_order
   ON public.lesson_blocks (lesson_id, meta_order);
 
@@ -121,7 +86,7 @@ CREATE INDEX IF NOT EXISTS idx_lesson_blocks_value_gin
   USING gin (value jsonb_path_ops);
 
 -- -----------------------------------------------------------------------------
--- Triggers: tenant key + updated_at
+-- 4. Triggers: tenant key + updated_at
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.lesson_blocks_before_insert_set_institution()
 RETURNS TRIGGER
@@ -159,90 +124,3 @@ DROP TRIGGER IF EXISTS trg_lesson_blocks_set_updated_at ON public.lesson_blocks;
 CREATE TRIGGER trg_lesson_blocks_set_updated_at
   BEFORE UPDATE ON public.lesson_blocks
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
-
--- -----------------------------------------------------------------------------
--- RLS
--- -----------------------------------------------------------------------------
-ALTER TABLE public.lesson_blocks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.lesson_blocks FORCE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS lesson_blocks_all_super_admin ON public.lesson_blocks;
-CREATE POLICY lesson_blocks_all_super_admin ON public.lesson_blocks
-  FOR ALL TO authenticated
-  USING ((SELECT app.is_super_admin()) IS TRUE)
-  WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
-
-DROP POLICY IF EXISTS lesson_blocks_all_institution_admin ON public.lesson_blocks;
-CREATE POLICY lesson_blocks_all_institution_admin ON public.lesson_blocks
-  FOR ALL TO authenticated
-  USING (institution_id IN (SELECT app.admin_institution_ids()))
-  WITH CHECK (institution_id IN (SELECT app.admin_institution_ids()));
-
-DROP POLICY IF EXISTS lesson_blocks_select_lesson_scope ON public.lesson_blocks;
-CREATE POLICY lesson_blocks_select_lesson_scope ON public.lesson_blocks
-  FOR SELECT TO authenticated
-  USING (
-    (SELECT app.is_super_admin()) IS TRUE
-    OR institution_id IN (SELECT app.admin_institution_ids())
-    OR EXISTS (
-      SELECT 1
-      FROM public.lessons l
-      INNER JOIN public.topics t ON t.id = l.topic_id
-      INNER JOIN public.courses c ON c.id = t.course_id
-      WHERE l.id = lesson_blocks.lesson_id
-        AND c.teacher_id = (SELECT app.auth_uid())
-    )
-    OR (SELECT app.student_can_access_lesson(lesson_blocks.lesson_id))
-  );
-
-DROP POLICY IF EXISTS lesson_blocks_insert_teacher ON public.lesson_blocks;
-CREATE POLICY lesson_blocks_insert_teacher ON public.lesson_blocks
-  FOR INSERT TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1
-      FROM public.lessons l
-      INNER JOIN public.topics t ON t.id = l.topic_id
-      INNER JOIN public.courses c ON c.id = t.course_id
-      WHERE l.id = lesson_blocks.lesson_id
-        AND c.teacher_id = (SELECT app.auth_uid())
-    )
-  );
-
-DROP POLICY IF EXISTS lesson_blocks_update_teacher ON public.lesson_blocks;
-CREATE POLICY lesson_blocks_update_teacher ON public.lesson_blocks
-  FOR UPDATE TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1
-      FROM public.lessons l
-      INNER JOIN public.topics t ON t.id = l.topic_id
-      INNER JOIN public.courses c ON c.id = t.course_id
-      WHERE l.id = lesson_blocks.lesson_id
-        AND c.teacher_id = (SELECT app.auth_uid())
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1
-      FROM public.lessons l
-      INNER JOIN public.topics t ON t.id = l.topic_id
-      INNER JOIN public.courses c ON c.id = t.course_id
-      WHERE l.id = lesson_blocks.lesson_id
-        AND c.teacher_id = (SELECT app.auth_uid())
-    )
-  );
-
-DROP POLICY IF EXISTS lesson_blocks_delete_teacher ON public.lesson_blocks;
-CREATE POLICY lesson_blocks_delete_teacher ON public.lesson_blocks
-  FOR DELETE TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1
-      FROM public.lessons l
-      INNER JOIN public.topics t ON t.id = l.topic_id
-      INNER JOIN public.courses c ON c.id = t.course_id
-      WHERE l.id = lesson_blocks.lesson_id
-        AND c.teacher_id = (SELECT app.auth_uid())
-    )
-  );

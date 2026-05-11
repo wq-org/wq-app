@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
 import {
   AuthInvitePage,
@@ -9,6 +9,8 @@ import {
   ResetPasswordPage,
   RequireAuth,
   RequireOnboarding,
+  RequireRole,
+  USER_ROLES,
 } from '@/features/auth'
 import Test from './user/pages/test'
 import Home from './user/pages/home'
@@ -273,8 +275,15 @@ const App = () => {
                 }
               />
 
-              {/* Super Admin Routes (require auth) */}
-              <Route path="/super_admin">
+              {/* Super Admin Routes (require auth + super_admin role) */}
+              <Route
+                path="/super_admin"
+                element={
+                  <RequireRole role={USER_ROLES.SUPER_ADMIN}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   path="dashboard"
                   element={
@@ -426,8 +435,15 @@ const App = () => {
                 />
               </Route>
 
-              {/* Institution Admin Routes (require auth) */}
-              <Route path="/institution_admin">
+              {/* Institution Admin Routes (require auth + institution_admin role) */}
+              <Route
+                path="/institution_admin"
+                element={
+                  <RequireRole role={USER_ROLES.INSTITUTION_ADMIN}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   index
                   element={
@@ -648,8 +664,15 @@ const App = () => {
                 />
               </Route>
 
-              {/* Teacher Routes (require auth + onboarding) */}
-              <Route path="/teacher">
+              {/* Teacher Routes (require auth + onboarding + teacher role) */}
+              <Route
+                path="/teacher"
+                element={
+                  <RequireRole role={USER_ROLES.TEACHER}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   index
                   element={
@@ -854,8 +877,15 @@ const App = () => {
                 />
               </Route>
 
-              {/* Student Routes (require auth + onboarding) */}
-              <Route path="/student">
+              {/* Student Routes (require auth + onboarding + student role) */}
+              <Route
+                path="/student"
+                element={
+                  <RequireRole role={USER_ROLES.STUDENT}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   index
                   element={

@@ -13,6 +13,8 @@
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
+import { linkExpiryDurationPhrase } from '../_shared/minutesUntilExpiry.ts'
+
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -149,6 +151,8 @@ Deno.serve(async (req) => {
 
   const inviteUrl = `${publicSiteUrl}/auth/invite?token=${encodeURIComponent(inviteToken)}`
 
+  const expiryNotice = linkExpiryDurationPhrase(expiresAt)
+
   const subject = `Invitation: administer ${displayName}`
 
   const textContent = [
@@ -157,7 +161,7 @@ Deno.serve(async (req) => {
     `Open this link to sign up (use ${adminEmailRaw}):`,
     inviteUrl,
     '',
-    'This link expires soon. If you did not expect this email, you can ignore it.',
+    `${expiryNotice} If you did not expect this email, you can ignore it.`,
   ].join('\n')
 
   const htmlContent = `<!DOCTYPE html>
@@ -301,7 +305,7 @@ Deno.serve(async (req) => {
                     color:#6b7280;
                   "
                 >
-                  This link expires soon. If you did not expect this email, you can ignore it.
+                  ${escapeHtml(expiryNotice)} If you did not expect this email, you can ignore it.
                 </p>
               </td>
             </tr>
