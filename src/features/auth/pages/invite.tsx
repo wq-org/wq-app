@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import { AuthCardLayout } from '../components/AuthCardLayout'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
-import { logRoleDebug } from '../utils/roleDebugLog'
 
 type InviteState =
   | { status: 'loading' }
@@ -50,10 +49,6 @@ export function AuthInvitePage() {
           institutionId: result.institutionId,
           membershipRole: result.membershipRole,
         })
-        logRoleDebug('invite: token valid', {
-          membershipRole: result.membershipRole,
-          institutionId: result.institutionId,
-        })
       }
     })
   }, [token])
@@ -72,10 +67,6 @@ export function AuthInvitePage() {
 
     try {
       setPendingRole(inviteState.membershipRole)
-      logRoleDebug('invite: submit start', {
-        setPendingRole: inviteState.membershipRole,
-        inviteMembershipRole: inviteState.membershipRole,
-      })
 
       const response = await signUpUser({
         email: inviteState.email,
@@ -97,16 +88,9 @@ export function AuthInvitePage() {
         // Refresh profile so React state picks up the DB role (institution_admin)
         await refreshProfile()
       } catch (redeemError) {
-        logRoleDebug('invite: redeem failed (profile.role may stay student)', {
-          error: redeemError instanceof Error ? redeemError.message : String(redeemError),
-        })
         console.error('Invite redemption failed:', redeemError)
         // Still proceed to onboarding — invite can be redeemed later on login
       }
-
-      logRoleDebug('invite: navigate /onboarding', {
-        note: 'check prior logs for redeem success vs failure',
-      })
 
       toast.success('Account Created!', {
         description: "Welcome! Let's complete your profile.",

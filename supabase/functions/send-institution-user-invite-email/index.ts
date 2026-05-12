@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
 
   const { data: invite, error: inviteError } = await supabase
     .from('institution_invites')
-    .select('email, expires_at, accepted_at, institution_id, membership_role')
+    .select('email, expires_at, accepted_at, revoked_at, institution_id, membership_role')
     .eq('token', inviteToken)
     .maybeSingle()
 
@@ -122,6 +122,10 @@ Deno.serve(async (req) => {
 
   if (invite.accepted_at != null) {
     return jsonResponse({ error: 'Invite already accepted' }, 400)
+  }
+
+  if (invite.revoked_at != null) {
+    return jsonResponse({ error: 'Invite revoked' }, 400)
   }
 
   const expiresAt = new Date(invite.expires_at as string)

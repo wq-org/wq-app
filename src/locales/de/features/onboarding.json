@@ -32,7 +32,8 @@
   "finish": {
     "successDialog": {
       "title": "Willkommen bei WQ Health! 🎉",
-      "description": "Dein Konto wurde erfolgreich eingerichtet. Du bist jetzt bereit, deine Reise mit uns zu beginnen."
+      "description": "Dein Konto wurde erfolgreich eingerichtet. Du bist jetzt bereit, deine Reise mit uns zu beginnen.",
+      "button": "Fertig"
     },
     "header": {
       "title": "Alles erledigt! 🎉",

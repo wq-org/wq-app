@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronRight, Mail, MailPlus } from 'lucide-react'
+import { ChevronRight, Mail, MailPlus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { VariantProps } from 'class-variance-authority'
 
@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils'
 
 import { InstitutionInvitesSheet } from './InstitutionInvitesSheet'
+import { RevokeInstitutionInviteDialog } from './RevokeInstitutionInviteDialog'
 import type { InstitutionInvite } from '../types/institutionInvites.types'
 import { badgeVariants } from '@/components/ui/badge-variants'
 
@@ -41,6 +42,7 @@ type InstitutionInvitesTableProps = {
   invites: readonly InstitutionInvite[]
   inviterEmailByUserId: ReadonlyMap<string, string>
   onResend?: (institutionId: string) => Promise<void>
+  onRevoke?: (inviteId: string) => Promise<boolean>
   className?: string
 }
 
@@ -48,11 +50,14 @@ export function InstitutionInvitesTable({
   invites,
   inviterEmailByUserId,
   onResend,
+  onRevoke,
   className,
 }: InstitutionInvitesTableProps) {
   const { t } = useTranslation('features.admin')
   const [selectedInvite, setSelectedInvite] = useState<InstitutionInvite | null>(null)
   const [resendingId, setResendingId] = useState<string | null>(null)
+  const [revokeTarget, setRevokeTarget] = useState<InstitutionInvite | null>(null)
+  const [isRevoking, setIsRevoking] = useState(false)
   const sheetOpen = selectedInvite !== null
 
   async function handleResendInvite(e: React.MouseEvent, institutionId: string) {
@@ -72,6 +77,28 @@ export function InstitutionInvitesTable({
       )
     } finally {
       setResendingId(null)
+    }
+  }
+
+  function handleRevokeRequest(e: React.MouseEvent, invite: InstitutionInvite) {
+    e.stopPropagation()
+    setRevokeTarget(invite)
+  }
+
+  async function handleConfirmRevoke() {
+    if (!onRevoke || !revokeTarget) return
+    setIsRevoking(true)
+    try {
+      await onRevoke(revokeTarget.id)
+      toast.success(t('institutionInvites.revokeSuccess', { defaultValue: 'Invite revoked' }))
+      setRevokeTarget(null)
+    } catch (e) {
+      toast.error(
+        t('institutionInvites.revokeError', { defaultValue: 'Failed to revoke invite' }),
+        { description: e instanceof Error ? e.message : undefined },
+      )
+    } finally {
+      setIsRevoking(false)
     }
   }
 
@@ -137,6 +164,17 @@ export function InstitutionInvitesTable({
                           : t('institutionInvites.table.resend')}
                       </Button>
                     )}
+                    {!row.acceptedAtIso && onRevoke && (
+                      <Button
+                        type="button"
+                        variant="delete"
+                        size="sm"
+                        onClick={(e) => handleRevokeRequest(e, row)}
+                      >
+                        <Trash2 className="size-4" />
+                        {t('institutionInvites.table.revoke', { defaultValue: 'Revoke' })}
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="darkblue"
@@ -159,6 +197,16 @@ export function InstitutionInvitesTable({
         onOpenChange={handleSheetOpenChange}
         invite={selectedInvite}
         inviterEmailByUserId={inviterEmailByUserId}
+      />
+
+      <RevokeInstitutionInviteDialog
+        open={revokeTarget !== null}
+        email={revokeTarget?.email ?? null}
+        isRevoking={isRevoking}
+        onOpenChange={(open) => {
+          if (!open && !isRevoking) setRevokeTarget(null)
+        }}
+        onConfirmRevoke={handleConfirmRevoke}
       />
     </>
   )

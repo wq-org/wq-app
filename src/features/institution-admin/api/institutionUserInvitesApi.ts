@@ -128,6 +128,22 @@ export async function resendTeacherStudentInviteEmail(params: {
   })
 }
 
+export async function revokeTeacherStudentInvite(inviteId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('revoke_institution_invite', {
+    p_invite_id: inviteId,
+  })
+  if (error) throw new Error(error.message)
+  return data === true
+}
+
+export async function revokeExpiredTeacherStudentInvites(institutionId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('revoke_expired_institution_invites', {
+    p_institution_id: institutionId,
+  })
+  if (error) throw new Error(error.message)
+  return typeof data === 'number' ? data : 0
+}
+
 type MembershipStatusDb = 'invited' | 'active' | 'suspended'
 
 type MembershipRowDb = {
@@ -165,6 +181,7 @@ function pickMembershipProfile(
 }
 
 type InviteRowDb = {
+  id: string
   token: string
   email: string
   membership_role: string
@@ -195,9 +212,10 @@ export async function fetchInstitutionUserDirectory(
         .is('deleted_at', null),
       supabase
         .from('institution_invites')
-        .select('token, email, membership_role, expires_at')
+        .select('id, token, email, membership_role, expires_at')
         .eq('institution_id', institutionId)
         .is('accepted_at', null)
+        .is('revoked_at', null)
         .in('membership_role', ['teacher', 'student']),
     ])
 
@@ -234,6 +252,7 @@ export async function fetchInstitutionUserDirectory(
 
     invites.push({
       rowKind: 'invite',
+      invite_id: inv.id,
       invite_token: inv.token,
       email: inv.email,
       membership_role: role,

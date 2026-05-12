@@ -54,8 +54,9 @@ export function TopicForm({
         >
           {loading ? (
             <Spinner
-              variant="white"
-              size="sm"
+              variant="darkblue"
+              size="xs"
+              className="shrink-0"
             />
           ) : (
             <Plus className="h-5 w-5" />

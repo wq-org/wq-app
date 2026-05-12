@@ -14,7 +14,6 @@ import { validateEmail } from '@/lib/validations'
 import { AuthCardLayout } from '../components/AuthCardLayout'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { useUser } from '@/contexts/user'
-import { logRoleDebug } from '../utils/roleDebugLog'
 import { AUTH_GRID_ICONS } from '../constants'
 import { Check } from 'lucide-react'
 
@@ -78,7 +77,6 @@ export const LoginPage = () => {
           }
 
           if (!profile.data) {
-            logRoleDebug('login: no profile row → onboarding', { userId: responseData.user.id })
             toast.info('Complete Your Profile', {
               description: 'Please complete the onboarding process',
             })
@@ -87,17 +85,8 @@ export const LoginPage = () => {
             return
           }
 
-          logRoleDebug('login: profile loaded', {
-            role: profile.data.role,
-            is_onboarded: profile.data.is_onboarded,
-          })
-
           if (profile.data.is_onboarded !== true || !profile.data.role) {
             if (profile.data.role) {
-              logRoleDebug('login: setPendingRole from profile (incomplete onboarding path)', {
-                profileRole: profile.data.role,
-                note: 'overwrites sessionStorage pendingRole if present',
-              })
               setPendingRole(profile.data.role)
             }
             toast.info('Complete Your Profile', {
@@ -108,10 +97,6 @@ export const LoginPage = () => {
             clearPendingRole()
             const userRole = profile.data.role as UserRole
             const dashboardPath = getDashboardPathForRole(userRole)
-            logRoleDebug('login: fully onboarded → dashboard', {
-              userRole,
-              dashboardPath,
-            })
             toast.success('Welcome Back!', {
               description: `Logging you in as ${userRole}`,
               duration: 2000,

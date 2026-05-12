@@ -4,6 +4,8 @@ import {
   fetchEmailsForUserIds,
   listInstitutionInvites,
   resendInviteEmail,
+  revokeExpiredInstitutionInvites,
+  revokeInstitutionInvite,
 } from '../api/institutionInvitesApi'
 import type { InstitutionInvite } from '../types/institutionInvites.types'
 
@@ -14,6 +16,8 @@ type UseInstitutionInvitesResult = {
   error: string | null
   refresh: () => Promise<void>
   resend: (institutionId: string) => Promise<void>
+  revoke: (inviteId: string) => Promise<boolean>
+  cleanupExpired: () => Promise<number>
 }
 
 export function useInstitutionInvites(): UseInstitutionInvitesResult {
@@ -50,6 +54,21 @@ export function useInstitutionInvites(): UseInstitutionInvitesResult {
     await resendInviteEmail(institutionId)
   }, [])
 
+  const revoke = useCallback(
+    async (inviteId: string): Promise<boolean> => {
+      const result = await revokeInstitutionInvite(inviteId)
+      await load()
+      return result
+    },
+    [load],
+  )
+
+  const cleanupExpired = useCallback(async (): Promise<number> => {
+    const count = await revokeExpiredInstitutionInvites()
+    await load()
+    return count
+  }, [load])
+
   return {
     invites,
     inviterEmailByUserId: inviterEmailByUserId as ReadonlyMap<string, string>,
@@ -57,5 +76,7 @@ export function useInstitutionInvites(): UseInstitutionInvitesResult {
     error,
     refresh: load,
     resend,
+    revoke,
+    cleanupExpired,
   }
 }

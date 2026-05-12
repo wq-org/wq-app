@@ -74,7 +74,7 @@ export function Spinner({ className, variant, size, speed = 2000, ...props }: Sp
         role="status"
         aria-live="polite"
         aria-label="Loading"
-        className={cn(spinnerVariants({ variant, size }), className)}
+        className={cn(spinnerVariants({ variant, size }), 'shrink-0', className)}
         style={
           {
             '--uib-speed': `${speedInSeconds}s`,

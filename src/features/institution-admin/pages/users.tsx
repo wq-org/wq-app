@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { DoorOpen, Mail, UserMinus, UserRoundPlus, UsersRound } from 'lucide-react'
+import { DoorOpen, Eraser, Mail, Trash2, UserMinus, UserRoundPlus, UsersRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -21,7 +21,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useUser } from '@/contexts/user'
 
-import { resendTeacherStudentInviteEmail } from '../api/institutionUserInvitesApi'
+import {
+  resendTeacherStudentInviteEmail,
+  revokeExpiredTeacherStudentInvites,
+  revokeTeacherStudentInvite,
+} from '../api/institutionUserInvitesApi'
 import { useInstitutionUsers } from '../hooks/useInstitutionUsers'
 import { AssignClassGroupDialog } from '../components/AssignClassGroupDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
@@ -68,7 +72,14 @@ const InstitutionUsers = () => {
   const [removeLoading, setRemoveLoading] = useState(false)
   const [resendToken, setResendToken] = useState<string | null>(null)
 
-  const { users: directory, isLoading, error: loadError } = useInstitutionUsers(institutionId)
+  const {
+    users: directory,
+    isLoading,
+    error: loadError,
+    refresh,
+  } = useInstitutionUsers(institutionId)
+  const [revokingToken, setRevokingToken] = useState<string | null>(null)
+  const [isCleaningExpired, setIsCleaningExpired] = useState(false)
 
   const filteredDirectory = useMemo(() => {
     if (!roleFilter) return directory
@@ -150,6 +161,49 @@ const InstitutionUsers = () => {
     }
   }
 
+  async function handleRevokeInvite(row: InstitutionInviteDirectoryRow) {
+    setRevokingToken(row.invite_token)
+    setUserActionsPopoverId(null)
+    try {
+      await revokeTeacherStudentInvite(row.invite_id)
+      toast.success(t('users.toasts.revokeInviteSuccess', { defaultValue: 'Invite revoked' }))
+      await refresh()
+    } catch (e) {
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : t('users.toasts.revokeInviteError', { defaultValue: 'Failed to revoke invite' }),
+      )
+    } finally {
+      setRevokingToken(null)
+    }
+  }
+
+  async function handleCleanupExpired() {
+    if (!institutionId) return
+    setIsCleaningExpired(true)
+    try {
+      const count = await revokeExpiredTeacherStudentInvites(institutionId)
+      toast.success(
+        t('users.toasts.cleanupExpiredSuccess', {
+          defaultValue: 'Cleaned up {{count}} expired invite(s)',
+          count,
+        }),
+      )
+      await refresh()
+    } catch (e) {
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : t('users.toasts.cleanupExpiredError', {
+              defaultValue: 'Failed to clean up expired invites',
+            }),
+      )
+    } finally {
+      setIsCleaningExpired(false)
+    }
+  }
+
   function renderStatusCell(row: InstitutionDirectoryRow) {
     if (row.rowKind === 'invite') {
       return <Badge variant="secondary">{t('users.inviteStatus.pendingEmail')}</Badge>
@@ -179,15 +233,28 @@ const InstitutionUsers = () => {
             ) : null}
             {loadError ? <p className="mt-2 text-sm text-destructive">{loadError}</p> : null}
           </div>
-          <Button
-            type="button"
-            variant="darkblue"
-            className="shrink-0 self-start"
-            onClick={() => navigate('/institution_admin/users/invite-users')}
-          >
-            <UserRoundPlus />
-            {t('users.inviteUsersCta')}
-          </Button>
+          <div className="flex shrink-0 flex-wrap items-center gap-2 self-start">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => void handleCleanupExpired()}
+              disabled={!institutionId || isCleaningExpired || isLoading}
+            >
+              <Eraser className="size-4" />
+              {isCleaningExpired
+                ? t('users.cleanupRunning', { defaultValue: 'Cleaning…' })
+                : t('users.cleanupExpired', { defaultValue: 'Clean up expired' })}
+            </Button>
+            <Button
+              type="button"
+              variant="darkblue"
+              onClick={() => navigate('/institution_admin/users/invite-users')}
+            >
+              <UserRoundPlus />
+              {t('users.inviteUsersCta')}
+            </Button>
+          </div>
         </div>
 
         {!institutionId ? (
@@ -299,20 +366,40 @@ const InstitutionUsers = () => {
                             align="end"
                             className="w-64 p-2"
                           >
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="w-full justify-start font-normal"
-                              disabled={resendToken === row.invite_token}
-                              onClick={() => void handleResendInvite(row)}
-                            >
-                              <Mail
-                                className="size-4 shrink-0"
-                                aria-hidden
-                              />
-                              {t('users.actions.resendInvitation')}
-                            </Button>
+                            <div className="flex flex-col gap-1">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                disabled={resendToken === row.invite_token}
+                                onClick={() => void handleResendInvite(row)}
+                              >
+                                <Mail
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {t('users.actions.resendInvitation')}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="delete"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                disabled={revokingToken === row.invite_token}
+                                onClick={() => void handleRevokeInvite(row)}
+                              >
+                                <Trash2
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {revokingToken === row.invite_token
+                                  ? t('users.actions.revokingInvite', { defaultValue: 'Revoking…' })
+                                  : t('users.actions.revokeInvite', {
+                                      defaultValue: 'Revoke invite',
+                                    })}
+                              </Button>
+                            </div>
                           </PopoverContent>
                         </Popover>
                       ) : (

@@ -195,9 +195,13 @@ new_role          -- z.B. "teacher"
 
 ```
 ✅ ERLAUBT im Audit:
-  event_type:        invite.created | accepted | expired | revoked | resent | deleted
+  event_type:        invite.created | accepted | revoked | resent | deleted
+                     (revoked = revoked_at transitioning from NULL to a timestamp,
+                      emitted by audit.log_institution_invites_audit; covers both
+                      single-row revoke_institution_invite and bulk
+                      revoke_expired_institution_invites RPCs)
   subject_id:        invite UUID
-  actor_user_id:     UUID
+  actor_user_id:     UUID (revoked: revoked_by = auth.uid())
   target_role:       z.B. "teacher", "student"
   institution_id
 
