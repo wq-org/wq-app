@@ -117,7 +117,14 @@ export function useLessonAutosave({
           return
         }
         retryCountRef.current = 0
-        console.error('[useLessonAutosave] save failed after retries', err)
+        const pgError = err as { code?: string; message?: string; details?: string; hint?: string }
+        console.error('[useLessonAutosave] save failed after retries', {
+          code: pgError?.code,
+          message: pgError?.message,
+          details: pgError?.details,
+          hint: pgError?.hint,
+          err,
+        })
         setStatus('error')
       } finally {
         isSavingRef.current = false

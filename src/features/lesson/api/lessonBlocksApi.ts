@@ -130,67 +130,34 @@ export async function syncLessonBlocksForLesson(
   const sortedExisting = [...existing].sort((a, b) => a.order - b.order)
   const allowDeleteTrailing = options?.allowDeleteTrailing ?? true
 
-  for (let index = 0; index < serializedNodes.length; index++) {
-    const node = serializedNodes[index]
-    const blockType = serializedNodeToBlockType(node)
+  const payload = serializedNodes.map((node, index) => {
     const prev = sortedExisting[index]
-
-    if (prev) {
-      const { error } = await supabase
-        .from('lesson_blocks')
-        .update({
-          block_type: blockType,
-          value: node as unknown as Record<string, unknown>,
-          meta_order: index,
-          meta_depth: 0,
-          content_schema_version: 1,
-        })
-        .eq('id', prev.id)
-
-      if (error) {
-        console.error('syncLessonBlocksForLesson update:', error)
-        throw error
-      }
-    } else {
-      const { error } = await supabase.from('lesson_blocks').insert({
-        lesson_id: lessonId,
-        block_type: blockType,
-        value: node as unknown as Record<string, unknown>,
-        meta_order: index,
-        meta_depth: 0,
-        content_schema_version: 1,
-      })
-
-      if (error) {
-        console.error('syncLessonBlocksForLesson insert:', error)
-        throw error
-      }
+    return {
+      ...(prev ? { id: prev.id } : {}),
+      block_type: serializedNodeToBlockType(node),
+      value: node as unknown as Record<string, unknown>,
+      meta_depth: 0,
+      content_schema_version: 1,
     }
+  })
+
+  const { data, error } = await supabase.rpc('upsert_lesson_blocks', {
+    p_lesson_id: lessonId,
+    p_blocks: payload,
+    p_allow_delete_trailing: allowDeleteTrailing,
+  })
+
+  if (error) {
+    console.error('upsert_lesson_blocks failed', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    })
+    throw error
   }
 
-  const trailing = sortedExisting.slice(serializedNodes.length)
-  if (trailing.length > 0 && allowDeleteTrailing) {
-    const { error } = await supabase
-      .from('lesson_blocks')
-      .delete()
-      .in(
-        'id',
-        trailing.map((b) => b.id),
-      )
-
-    if (error) {
-      console.error('syncLessonBlocksForLesson delete:', error)
-      throw error
-    }
-  }
-
-  if (trailing.length > 0 && !allowDeleteTrailing) {
-    console.warn(
-      `syncLessonBlocksForLesson: skipped deleting ${trailing.length} trailing blocks for lesson ${lessonId} because snapshot may be partial`,
-    )
-  }
-
-  return fetchAllLessonBlocks(lessonId)
+  return (data as LessonBlockRow[]).map(toLessonBlock)
 }
 
 export async function deleteLessonBlock(blockId: string): Promise<void> {
