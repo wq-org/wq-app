@@ -1,6 +1,6 @@
-import type { SerializedEditorState } from 'lexical'
+import type { SerializedEditorState, SerializedParagraphNode } from 'lexical'
 
-export const EMPTY_LESSON_DRAFT_STATE: SerializedEditorState = {
+export const EMPTY_LESSON_DRAFT_STATE: SerializedEditorState<SerializedParagraphNode> = {
   root: {
     children: [
       {
@@ -8,6 +8,8 @@ export const EMPTY_LESSON_DRAFT_STATE: SerializedEditorState = {
         direction: null,
         format: '',
         indent: 0,
+        textFormat: 0,
+        textStyle: '',
         type: 'paragraph',
         version: 1,
       },
