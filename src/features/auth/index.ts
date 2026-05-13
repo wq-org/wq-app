@@ -24,6 +24,7 @@ export {
 } from './api/authApi'
 export { RequireAuth } from './components/RequireAuth'
 export { RequireOnboarding } from './components/RequireOnboarding'
+export { RequireRole } from './components/RequireRole'
 export { useAuth } from './hooks/useAuth'
 export {
   USER_ROLES,

@@ -1,13 +1,13 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, PartyPopper } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
 import { Spinner } from '@/components/ui/spinner'
-import { StepperProgressBarTitles } from '@/components/shared'
-import { useEffect, useState } from 'react'
+import { StepperProgressBarTitles, SuccessDialog } from '@/components/shared'
+import { useState } from 'react'
 import type {
   BootstrapInstitutionFromWizardResult,
   NewInstitutionWizardValues,
@@ -19,7 +19,6 @@ import {
 import { NewInstitutionWizardBillingStep } from './NewInstitutionWizardBillingStep'
 import { NewInstitutionWizardIdentityStep } from './NewInstitutionWizardIdentityStep'
 import { NewInstitutionWizardReviewStep } from './NewInstitutionWizardReviewStep'
-import { NewInstitutionWizardSuccessDialog } from './NewInstitutionWizardSuccessDialog'
 import { sendInstitutionAdminInviteEmail } from '../api/institutionApi'
 
 const STEP_COUNT = 3
@@ -33,15 +32,15 @@ type NewInstitutionWizardProps = {
   onCreate: (values: NewInstitutionWizardValues) => Promise<BootstrapInstitutionFromWizardResult>
   onCancel: () => void
   onFinished: () => void
-  /** Report submit-in-flight so the host page can show a loading overlay (e.g. Spinner). */
-  onCreatingChange?: (creating: boolean) => void
+  /** When set, success dialog primary action navigates here before closing. */
+  successRedirectPath?: string
 }
 
 function NewInstitutionWizard({
   onCreate,
   onCancel,
   onFinished,
-  onCreatingChange,
+  successRedirectPath,
 }: NewInstitutionWizardProps) {
   const { t } = useTranslation('features.admin')
   const [step, setStep] = useState(1)
@@ -71,10 +70,6 @@ function NewInstitutionWizard({
       country: '',
     },
   })
-
-  useEffect(() => {
-    onCreatingChange?.(isSubmitting)
-  }, [isSubmitting, onCreatingChange])
 
   async function handleBack() {
     setStep((prev) => Math.max(1, prev - 1))
@@ -123,15 +118,25 @@ function NewInstitutionWizard({
     }
   }
 
-  function handleSuccessDone() {
-    setSuccessDialogOpen(false)
-  }
-
   const wizardSteps = [
     { title: t('wizard.steps.identity') },
     { title: t('wizard.steps.billing') },
     { title: t('wizard.steps.review') },
   ] as const
+
+  const successDecoration = (
+    <div className="flex justify-center sm:justify-start">
+      <div
+        className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary"
+        aria-hidden
+      >
+        <PartyPopper
+          className="size-8"
+          strokeWidth={1.75}
+        />
+      </div>
+    </div>
+  )
 
   return (
     <>
@@ -198,6 +203,7 @@ function NewInstitutionWizard({
               variant="darkblue"
               onClick={handleCreate}
               disabled={isSubmitting}
+              className="gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -218,11 +224,18 @@ function NewInstitutionWizard({
         </div>
       </FieldCard>
 
-      <NewInstitutionWizardSuccessDialog
+      <SuccessDialog
         open={successDialogOpen}
         onOpenChange={handleSuccessDialogOpenChange}
-        adminEmail={successAdminEmail}
-        onDone={handleSuccessDone}
+        title={t('wizard.success.title')}
+        description={t('wizard.success.description', { email: successAdminEmail })}
+        buttonDescription={t('wizard.success.done')}
+        path={successRedirectPath}
+        decoration={successDecoration}
+        contentClassName="sm:max-w-md sm:text-left"
+        headerClassName="gap-4 text-center sm:text-left"
+        footerClassName="sm:justify-center"
+        primaryButtonClassName="w-full sm:w-auto"
       />
     </>
   )

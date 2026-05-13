@@ -1,7 +1,6 @@
 export { StepAccount } from './components/StepAccount'
 export { StepAvatar } from './components/StepAvatar'
 export { StepFinish } from './components/StepFinish'
-export { SuccessPage } from './components/SuccessPage'
 export type {
   AvatarDisplayAttributes,
   AvatarOption,

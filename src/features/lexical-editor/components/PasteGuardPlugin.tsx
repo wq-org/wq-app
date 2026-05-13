@@ -25,7 +25,7 @@ export const DEFAULT_PASTE_MAX_CHARS = 10_000
  * `onOverflow`; rendering UI is the parent's responsibility (toast / dialog).
  *
  * Pairs with useLessonAutosave (whole-document size guard) and the DB-side
- * chk_lesson_blocks_value_size constraint as the final safety net.
+ * lessons.content JSONB size / validation constraints as the final safety net.
  */
 export function PasteGuardPlugin({
   maxBytes = DEFAULT_PASTE_MAX_BYTES,

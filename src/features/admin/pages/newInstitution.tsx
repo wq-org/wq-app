@@ -1,9 +1,7 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 
-import { Spinner } from '@/components/ui/spinner'
 import { useUser } from '@/contexts/user'
 import type { NewInstitutionWizardValues } from '../types/institution.types'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
@@ -15,9 +13,9 @@ const NewInstitution = () => {
   const { getRole } = useUser()
   const { t } = useTranslation('features.admin')
   const { addInstitutionFromWizard } = useInstitutions()
-  const [isCreating, setIsCreating] = useState(false)
 
   const role = getRole()
+  const successRedirectPath = `/${role}/institution`
 
   const handleCreate = async (values: NewInstitutionWizardValues) => {
     try {
@@ -40,24 +38,11 @@ const NewInstitution = () => {
   return (
     <AdminWorkspaceShell>
       <div className="relative flex flex-col items-center gap-4 py-8">
-        {isCreating ? (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-[1px]"
-            aria-busy="true"
-            aria-live="polite"
-          >
-            <Spinner
-              variant="darkblue"
-              size="xl"
-              speed={1750}
-            />
-          </div>
-        ) : null}
         <NewInstitutionWizard
           onCreate={handleCreate}
           onCancel={handleCancel}
           onFinished={handleFinished}
-          onCreatingChange={setIsCreating}
+          successRedirectPath={successRedirectPath}
         />
       </div>
     </AdminWorkspaceShell>

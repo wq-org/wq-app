@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { File, TextQuote, X } from 'lucide-react'
+import type { SerializedEditorState } from 'lexical'
 import {
   dismissSaveStatusToast,
   LessonTextSkeleton,
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
-import { useLessonBlocks, type SaveStatus } from '@/features/lesson'
+import { type SaveStatus } from '@/features/lesson'
 import { Editor, type PasteOverflowInfo } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 
@@ -22,16 +23,8 @@ const AUTOSAVE_TOAST_ID = 'lesson-autosave-status'
 export const Lesson = () => {
   const { t } = useTranslation('features.lesson')
   const { lessonId } = useParams<{ lessonId: string }>()
-  const { fetchLessonById, updateLesson } = useLesson()
+  const { lesson, fetchLessonById, updateLesson } = useLesson()
   const { selectedCourse } = useCourse()
-  const {
-    headBlocks,
-    tailBlocks,
-    isHeadLoading: isBlocksHeadLoading,
-    isFullyHydrated: isBlocksFullyHydrated,
-    persistSerializedBlocks,
-    registry,
-  } = useLessonBlocks(lessonId)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(true)
@@ -69,6 +62,26 @@ export const Lesson = () => {
   const dismissPasteOverflow = useCallback(() => {
     setPasteOverflow(null)
   }, [])
+
+  const persistSerializedContent = useCallback(
+    async (serializedState: SerializedEditorState) => {
+      if (!lessonId) return
+
+      try {
+        await updateLesson(
+          {
+            content: serializedState,
+            contentSchemaVersion: lesson?.contentSchemaVersion ?? 1,
+          },
+          lessonId,
+        )
+      } catch (error) {
+        console.error(error)
+        showAutosaveError()
+      }
+    },
+    [lesson?.contentSchemaVersion, lessonId, showAutosaveError, updateLesson],
+  )
 
   useEffect(() => {
     isHeaderSaveInFlightRef.current = false
@@ -143,7 +156,7 @@ export const Lesson = () => {
   const titlePlaceholder = t('page.fallbackTitle')
   const descriptionLabel = t('settings.descriptionLabel')
   const descriptionPlaceholder = t('page.fallbackDescription')
-  const isLessonContentLoading = loading || (Boolean(lessonId) && isBlocksHeadLoading)
+  const isLessonContentLoading = loading
 
   return (
     <div className="-mx-[calc(50vw-50%)] -mt-6 w-screen">
@@ -179,7 +192,7 @@ export const Lesson = () => {
                 aria-hidden
               />
               <FieldTextarea
-                className="min-w-0 flex-1 pb-0 [&_label]:text-muted-foreground [&>div.relative]:my-1 [&_[data-slot=textarea]]:min-h-0 [&_[data-slot=textarea]]:max-h-[2.75rem] [&_[data-slot=textarea]]:overflow-y-auto [&_[data-slot=textarea]]:py-1"
+                className="min-w-0 flex-1 pb-0 [&_label]:text-muted-foreground [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
                 value={description}
                 onValueChange={setDescription}
                 label={descriptionLabel}
@@ -196,8 +209,8 @@ export const Lesson = () => {
                 <AlertTitle>Paste too large</AlertTitle>
                 <AlertDescription>
                   That&apos;s {pasteOverflow.actualChars.toLocaleString()} characters — the limit is{' '}
-                  {pasteOverflow.limitChars.toLocaleString()} per paste. Try splitting the content into
-                  smaller sections.
+                  {pasteOverflow.limitChars.toLocaleString()} per paste. Try splitting the content
+                  into smaller sections.
                   <Button
                     aria-label="Dismiss"
                     className="ml-2 h-6 px-2"
@@ -211,18 +224,15 @@ export const Lesson = () => {
               </Alert>
             ) : null}
             <div className="mt-2 -ml-10 pb-24">
-              {lessonId && !isBlocksHeadLoading ? (
+              {lessonId && !loading && lesson ? (
                 <div key={lessonId}>
                   <Editor
-                    blockTypeRegistry={registry}
-                    headBlocks={headBlocks}
-                    isHeadLoading={false}
-                    isFullyHydrated={isBlocksFullyHydrated}
+                    initialContent={lesson?.content ?? null}
+                    isLoading={loading}
                     lessonId={lessonId}
+                    onPersistSerializedContent={persistSerializedContent}
                     onPasteOverflow={handlePasteOverflow}
-                    onPersistSerializedBlocks={persistSerializedBlocks}
                     onSaveStatusChange={handleSaveStatusChange}
-                    tailBlocks={tailBlocks}
                   />
                 </div>
               ) : null}

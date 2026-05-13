@@ -86,6 +86,8 @@ export { default as StatsTrending } from './StatsTrending'
 export { StatsUsageBreakdown } from './StatsUsageBreakdown'
 export { default as StatsUsageDashboard } from './StatsUsageDashboard'
 export { StatsValueBreakdown } from './StatsValueBreakdown'
+export { SuccessDialog } from './SuccessDialog'
+export type { SuccessDialogProps } from './SuccessDialog'
 export {
   RatingSliderEmojiFeedback,
   SliderDynamicTooltipIndicator,

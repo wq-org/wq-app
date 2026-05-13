@@ -13,6 +13,8 @@
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
+import { linkExpiryDurationPhrase } from '../_shared/minutesUntilExpiry.ts'
+
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -109,7 +111,7 @@ Deno.serve(async (req) => {
 
   const { data: invite, error: inviteError } = await supabase
     .from('institution_invites')
-    .select('email, expires_at, accepted_at, institution_id')
+    .select('email, expires_at, accepted_at, revoked_at, institution_id')
     .eq('token', inviteToken)
     .maybeSingle()
 
@@ -119,6 +121,10 @@ Deno.serve(async (req) => {
 
   if (invite.accepted_at != null) {
     return jsonResponse({ error: 'Invite already accepted' }, 400)
+  }
+
+  if (invite.revoked_at != null) {
+    return jsonResponse({ error: 'Invite revoked' }, 400)
   }
 
   const expiresAt = new Date(invite.expires_at as string)
@@ -149,6 +155,8 @@ Deno.serve(async (req) => {
 
   const inviteUrl = `${publicSiteUrl}/auth/invite?token=${encodeURIComponent(inviteToken)}`
 
+  const expiryNotice = linkExpiryDurationPhrase(expiresAt)
+
   const subject = `Invitation: administer ${displayName}`
 
   const textContent = [
@@ -157,7 +165,7 @@ Deno.serve(async (req) => {
     `Open this link to sign up (use ${adminEmailRaw}):`,
     inviteUrl,
     '',
-    'This link expires soon. If you did not expect this email, you can ignore it.',
+    `${expiryNotice} If you did not expect this email, you can ignore it.`,
   ].join('\n')
 
   const htmlContent = `<!DOCTYPE html>
@@ -301,7 +309,7 @@ Deno.serve(async (req) => {
                     color:#6b7280;
                   "
                 >
-                  This link expires soon. If you did not expect this email, you can ignore it.
+                  ${escapeHtml(expiryNotice)} If you did not expect this email, you can ignore it.
                 </p>
               </td>
             </tr>

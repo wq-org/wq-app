@@ -70,8 +70,8 @@ CREATE TABLE public.learning_events (
 COMMENT ON TABLE public.learning_events IS 'Append-only student learning event log for analytics (doc 07 §6).';
 COMMENT ON COLUMN public.learning_events.institution_id IS 'Tenant boundary.';
 COMMENT ON COLUMN public.learning_events.course_id IS 'Denormalized from lesson→topic→course for fast analytics queries.';
-COMMENT ON COLUMN public.learning_events.event_type IS 'What happened: lesson_opened, slide_viewed, etc.';
-COMMENT ON COLUMN public.learning_events.slide_index IS 'Page/slide index within the lesson (0-based).';
-COMMENT ON COLUMN public.learning_events.duration_ms IS 'Time spent in milliseconds (for slide_time_spent events).';
-COMMENT ON COLUMN public.learning_events.direction IS 'Navigation direction: forward, backward, jump (for slide_navigation).';
-COMMENT ON COLUMN public.learning_events.metadata IS 'Extensible payload: e.g. {note_id} for note_created_from_slide.';
+COMMENT ON COLUMN public.learning_events.event_type IS 'What happened: lesson_opened, page_viewed, etc.';
+COMMENT ON COLUMN public.learning_events.slide_index IS 'Page index within the lesson (0-based).';
+COMMENT ON COLUMN public.learning_events.duration_ms IS 'Time spent in milliseconds (for page_time_spent events).';
+COMMENT ON COLUMN public.learning_events.direction IS 'Navigation direction: forward, backward, jump (for page_navigation).';
+COMMENT ON COLUMN public.learning_events.metadata IS 'Extensible payload: e.g. {note_id} for note_created_from_page.';

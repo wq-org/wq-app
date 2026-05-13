@@ -32,7 +32,8 @@
   "finish": {
     "successDialog": {
       "title": "Welcome to WQ Health! 🎉",
-      "description": "Your account has been set up successfully. You are now ready to start your journey with us."
+      "description": "Your account has been set up successfully. You are now ready to start your journey with us.",
+      "button": "Done"
     },
     "header": {
       "title": "All Set! 🎉",
