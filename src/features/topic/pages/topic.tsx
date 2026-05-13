@@ -29,9 +29,14 @@ const Topic = () => {
   const [loadError, setLoadError] = useState<string | null>(null)
   const { selectedCourse, fetchCourseById } = useCourse()
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
-  const { lessons, fetchLessonsByTopicId, listLoading: lessonLoading, error: lessonError } = useLesson()
+  const {
+    lessons,
+    fetchLessonsByTopicId,
+    listLoading: lessonLoading,
+    error: lessonError,
+  } = useLesson()
 
-  /** Header columns only; lesson body is loaded separately via `lesson_blocks` on the lesson route. */
+  /** Header columns only; lesson body is loaded separately via the lesson draft JSON on the lesson route. */
   const filteredLessons = useSearchFilter(lessons, searchQuery, LESSON_SEARCH_FIELDS)
 
   useEffect(() => {
@@ -74,8 +79,7 @@ const Topic = () => {
         await fetchLessonsByTopicId(topic.id)
       } catch (error) {
         if (!cancelled) {
-          const message =
-            error instanceof Error ? error.message : t('page.emptyState.description')
+          const message = error instanceof Error ? error.message : t('page.emptyState.description')
           setLoadError(message)
           console.error('Failed to load topic:', error)
         }
@@ -233,8 +237,6 @@ const Topic = () => {
       ) : null}
 
       {activeTab === 'settings' ? <TopicSettings topicId={selectedTopic.id} /> : null}
-
-  
     </TopicLayout>
   )
 }

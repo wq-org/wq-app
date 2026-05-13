@@ -1,14 +1,21 @@
 import { supabase } from '@/lib/supabase'
-import type { CreateLessonData, Lesson, LessonTopicRef, UpdateLessonData } from '../types/lesson.types'
+import { createEmptyLessonDraftState, normalizeLessonDraftState } from '../utils/lessonDraftState'
+import type {
+  CreateLessonData,
+  Lesson,
+  LessonTopicRef,
+  UpdateLessonData,
+} from '../types/lesson.types'
 
 /**
- * Explicit column lists only — no `content`, `pages`, or joins. Body is `lesson_blocks`.
+ * Explicit column lists only. Lesson draft content now lives on `lessons.content`.
  */
 const LESSON_LIST_FIELDS = 'id, title, description, created_at, updated_at'
 /** Returned from create / update so list cards keep timestamps without refetch. */
-const LESSON_DETAIL_FIELDS = 'id, title, description, created_at, updated_at'
-/** Single-lesson header load for the editor — minimal payload. */
-const LESSON_HEADER_FETCH_FIELDS = 'id, title, description'
+const LESSON_DETAIL_FIELDS =
+  'id, title, description, content, content_schema_version, created_at, updated_at'
+/** Single-lesson load for the editor — include draft content. */
+const LESSON_HEADER_FETCH_FIELDS = 'id, title, description, content, content_schema_version'
 const LESSON_TOPIC_REF_FIELDS = 'id, topic_id'
 
 function normalizeLessonRow(row: Record<string, unknown>): Lesson {
@@ -16,6 +23,9 @@ function normalizeLessonRow(row: Record<string, unknown>): Lesson {
     id: row.id as string,
     title: typeof row.title === 'string' ? row.title : '',
     description: typeof row.description === 'string' ? row.description : '',
+    content: row.content !== undefined ? normalizeLessonDraftState(row.content) : undefined,
+    contentSchemaVersion:
+      typeof row.content_schema_version === 'number' ? row.content_schema_version : undefined,
     created_at: typeof row.created_at === 'string' ? row.created_at : undefined,
     updated_at: typeof row.updated_at === 'string' ? row.updated_at : undefined,
   }
@@ -33,8 +43,8 @@ function buildCreateLessonPayload(data: CreateLessonData) {
     title: data.title.trim(),
     description: data.description || '',
     topic_id: data.topic_id,
-    /** Legacy column: DB NOT NULL until dropped; empty JSON only (body is lesson_blocks). */
-    content: {},
+    content: createEmptyLessonDraftState(),
+    content_schema_version: 1,
   }
 }
 
@@ -47,6 +57,14 @@ function buildUpdateLessonPayload(updates: UpdateLessonData) {
 
   if (typeof updates.description === 'string') {
     payload.description = updates.description
+  }
+
+  if (updates.content !== undefined) {
+    payload.content = updates.content
+  }
+
+  if (typeof updates.contentSchemaVersion === 'number') {
+    payload.content_schema_version = updates.contentSchemaVersion
   }
 
   return payload

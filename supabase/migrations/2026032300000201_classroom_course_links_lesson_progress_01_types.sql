@@ -5,13 +5,19 @@
 -- =============================================================================
 
 DO $$ BEGIN
-  CREATE TYPE learning_event_type AS ENUM (
-    'lesson_opened',
-    'lesson_completed',
-    'slide_viewed',
-    'slide_time_spent',
-    'slide_navigation',
-    'note_created_from_slide'
-  );
+CREATE TYPE learning_event_type AS ENUM (
+  'lesson_opened',
+  'page_viewed',
+  'page_time_spent',
+  'page_navigation',
+  'lesson_completed',
+  'note_created_from_page',
+  'interaction_recorded',
+  'answer_submitted',
+  'answer_correct',
+  'answer_incorrect',
+  'help_opened',
+  'asset_opened'
+);
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;

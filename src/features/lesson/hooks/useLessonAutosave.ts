@@ -6,7 +6,7 @@ import {
   HISTORY_MERGE_TAG,
   type EditorState,
   type LexicalEditor,
-  type SerializedLexicalNode,
+  type SerializedEditorState,
 } from 'lexical'
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'queued' | 'error'
@@ -14,7 +14,7 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'queued' | 'error'
 export type UseLessonAutosaveOptions = {
   editor: LexicalEditor
   lessonId: string | undefined
-  save: (serializedBlocks: SerializedLexicalNode[]) => Promise<void>
+  save: (serializedState: SerializedEditorState) => Promise<void>
   onStatusChange?: (status: SaveStatus) => void
   debounceMs?: number
   maxDocSizeBytes?: number
@@ -74,12 +74,12 @@ export function useLessonAutosave({
       isSavingRef.current = true
       setStatus('saving')
 
-      let serializedBlocks: SerializedLexicalNode[] = []
+      let serializedDocState: SerializedEditorState | null = null
       let serializedDocJson = ''
       editorState.read(() => {
         const stateJson = editorState.toJSON()
+        serializedDocState = stateJson
         serializedDocJson = JSON.stringify(stateJson)
-        serializedBlocks = (stateJson.root.children ?? []) as SerializedLexicalNode[]
       })
 
       const byteSize = new Blob([serializedDocJson]).size
@@ -94,7 +94,10 @@ export function useLessonAutosave({
       }
 
       try {
-        await saveRef.current(serializedBlocks)
+        if (!serializedDocState) {
+          throw new Error('lesson autosave failed to serialize editor state')
+        }
+        await saveRef.current(serializedDocState)
         retryCountRef.current = 0
         setStatus('saved')
 
@@ -117,7 +120,14 @@ export function useLessonAutosave({
           return
         }
         retryCountRef.current = 0
-        console.error('[useLessonAutosave] save failed after retries', err)
+        const pgError = err as { code?: string; message?: string; details?: string; hint?: string }
+        console.error('[useLessonAutosave] save failed after retries', {
+          code: pgError?.code,
+          message: pgError?.message,
+          details: pgError?.details,
+          hint: pgError?.hint,
+          err,
+        })
         setStatus('error')
       } finally {
         isSavingRef.current = false

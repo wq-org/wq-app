@@ -5,20 +5,15 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionComposer'
 import { RichTextExtension } from '@lexical/rich-text'
-import {
-  $getRoot,
-  $parseSerializedNode,
-  defineExtension,
-  type SerializedLexicalNode,
-} from 'lexical'
+import { defineExtension, type SerializedEditorState } from 'lexical'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
-  blocksToSerializedEditorStateJson,
   LESSON_HYDRATION_TAG,
+  normalizeLessonDraftState,
   useLessonAutosave,
-  type LessonBlock,
   type LessonBlockTypeRegistryRow,
+  type LessonDraftState,
   type SaveStatus,
 } from '@/features/lesson'
 
@@ -71,13 +66,11 @@ const lessonEditorExtension = defineExtension({
 
 export type EditorProps = {
   lessonId: string
-  headBlocks: LessonBlock[]
-  tailBlocks: LessonBlock[]
+  initialContent?: LessonDraftState | null
   blockTypeRegistry?: LessonBlockTypeRegistryRow[]
   readOnly?: boolean
-  isHeadLoading?: boolean
-  isFullyHydrated?: boolean
-  onPersistSerializedBlocks?: (nodes: SerializedLexicalNode[]) => void | Promise<void>
+  isLoading?: boolean
+  onPersistSerializedContent?: (state: SerializedEditorState) => void | Promise<void>
   onSaveStatusChange?: (status: SaveStatus) => void
   onPasteOverflow?: (info: PasteOverflowInfo) => void
 }
@@ -92,14 +85,14 @@ function LessonEditablePlugin({ readOnly }: { readOnly: boolean }) {
   return null
 }
 
-function LessonHeadHydrationPlugin({
+function LessonHydrationPlugin({
   lessonId,
-  headBlocks,
-  isHeadLoading,
+  initialContent,
+  isLoading,
 }: {
   lessonId: string
-  headBlocks: LessonBlock[]
-  isHeadLoading: boolean
+  initialContent?: LessonDraftState | null
+  isLoading: boolean
 }) {
   const [editor] = useLexicalComposerContext()
   const hydratedLessonIdRef = useRef<string | null>(null)
@@ -109,7 +102,7 @@ function LessonHeadHydrationPlugin({
   }, [lessonId])
 
   useEffect(() => {
-    if (isHeadLoading) {
+    if (isLoading) {
       return
     }
 
@@ -118,53 +111,10 @@ function LessonHeadHydrationPlugin({
     }
 
     hydratedLessonIdRef.current = lessonId
-    const json = blocksToSerializedEditorStateJson(headBlocks)
-    const nextState = editor.parseEditorState(json)
+    const normalized = normalizeLessonDraftState(initialContent)
+    const nextState = editor.parseEditorState(JSON.stringify(normalized))
     editor.setEditorState(nextState, { tag: LESSON_HYDRATION_TAG })
-  }, [editor, headBlocks, isHeadLoading, lessonId])
-
-  return null
-}
-
-function LessonTailHydrationPlugin({
-  lessonId,
-  tailBlocks,
-}: {
-  lessonId: string
-  tailBlocks: LessonBlock[]
-}) {
-  const [editor] = useLexicalComposerContext()
-  const appendedIdsRef = useRef<Set<string>>(new Set())
-  const lessonIdRef = useRef(lessonId)
-
-  useEffect(() => {
-    if (lessonIdRef.current !== lessonId) {
-      lessonIdRef.current = lessonId
-      appendedIdsRef.current = new Set()
-    }
-  }, [lessonId])
-
-  useEffect(() => {
-    if (tailBlocks.length === 0) {
-      return
-    }
-
-    editor.update(() => {
-      const root = $getRoot()
-      for (const block of tailBlocks) {
-        if (appendedIdsRef.current.has(block.id)) {
-          continue
-        }
-        appendedIdsRef.current.add(block.id)
-        try {
-          const node = $parseSerializedNode(block.value as SerializedLexicalNode)
-          root.append(node)
-        } catch (err) {
-          console.error('LessonTailHydrationPlugin: failed to append block', err)
-        }
-      }
-    }, { tag: LESSON_HYDRATION_TAG })
-  }, [editor, lessonId, tailBlocks])
+  }, [editor, initialContent, isLoading, lessonId])
 
   return null
 }
@@ -172,22 +122,22 @@ function LessonTailHydrationPlugin({
 function LessonAutosaveBridge({
   lessonId,
   readOnly,
-  onPersistSerializedBlocks,
+  onPersistSerializedContent,
   onSaveStatusChange,
 }: {
   lessonId: string
   readOnly: boolean
-  onPersistSerializedBlocks?: (nodes: SerializedLexicalNode[]) => void | Promise<void>
+  onPersistSerializedContent?: (state: SerializedEditorState) => void | Promise<void>
   onSaveStatusChange?: (status: SaveStatus) => void
 }) {
   const [editor] = useLexicalComposerContext()
 
   const save = useCallback(
-    async (serialized: SerializedLexicalNode[]) => {
-      if (!onPersistSerializedBlocks) return
-      await Promise.resolve(onPersistSerializedBlocks(serialized))
+    async (serialized: SerializedEditorState) => {
+      if (!onPersistSerializedContent) return
+      await Promise.resolve(onPersistSerializedContent(serialized))
     },
-    [onPersistSerializedBlocks],
+    [onPersistSerializedContent],
   )
 
   useLessonAutosave({
@@ -203,13 +153,11 @@ function LessonAutosaveBridge({
 
 export function Editor({
   lessonId,
-  headBlocks,
-  tailBlocks,
+  initialContent,
   blockTypeRegistry,
   readOnly = false,
-  isHeadLoading = false,
-  isFullyHydrated = true,
-  onPersistSerializedBlocks,
+  isLoading = false,
+  onPersistSerializedContent,
   onSaveStatusChange,
   onPasteOverflow,
 }: EditorProps) {
@@ -237,22 +185,16 @@ export function Editor({
       contentEditable={null}
     >
       <LessonEditablePlugin readOnly={readOnly} />
-      <LessonHeadHydrationPlugin
-        headBlocks={headBlocks}
-        isHeadLoading={isHeadLoading}
+      <LessonHydrationPlugin
+        initialContent={initialContent}
+        isLoading={isLoading}
         lessonId={lessonId}
       />
-      <LessonTailHydrationPlugin
-        lessonId={lessonId}
-        tailBlocks={tailBlocks}
-      />
-      {!readOnly && onPasteOverflow ? (
-        <PasteGuardPlugin onOverflow={handlePasteOverflow} />
-      ) : null}
-      {!readOnly && isFullyHydrated ? (
+      {!readOnly && onPasteOverflow ? <PasteGuardPlugin onOverflow={handlePasteOverflow} /> : null}
+      {!readOnly && !isLoading ? (
         <LessonAutosaveBridge
           lessonId={lessonId}
-          onPersistSerializedBlocks={onPersistSerializedBlocks}
+          onPersistSerializedContent={onPersistSerializedContent}
           onSaveStatusChange={onSaveStatusChange}
           readOnly={readOnly}
         />
