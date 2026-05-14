@@ -9,6 +9,7 @@ import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 import { HelpPopover } from '@/features/institution-admin/components'
 import { getFileSignedUrl } from '@/features/files'
+import { cn } from '@/lib/utils'
 
 import { ImagePinRectStage } from './ImagePinRectStage'
 import {
@@ -19,6 +20,11 @@ import {
 import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
 import type { GameImagePinCloudUploadResult } from './useGameImagePinImageUpload'
 import { useImagePinCloudGalleryImages } from './useImagePinCloudGalleryImages'
+
+const imagePinEditorEnterLift =
+  'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
+const imagePinEditorEnterSubtle =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -141,6 +147,35 @@ export function GameImagePinEditor({
     setSelectedRectId(null)
   }, [onPatchNodeData, rectangles, selectedRectId])
 
+  const handleImageLoadFailed = useCallback(
+    (failedSrc: string) => {
+      console.warn(
+        '[GameImagePinEditor] Image load failed, attempting refresh:',
+        failedSrc.substring(0, 50) + (failedSrc.length > 50 ? '...' : ''),
+      )
+
+      // If cloud image with filepath, try refreshing signed URL
+      const filepath = typeof pin.filepath === 'string' ? pin.filepath.trim() : ''
+      if (filepath) {
+        getFileSignedUrl(filepath, 3600)
+          .then((newUrl) => {
+            if (newUrl && newUrl !== failedSrc) {
+              console.log('[GameImagePinEditor] Refreshed signed URL successfully')
+              onPatchNodeData({
+                imagePreview: newUrl,
+                filepath,
+                rectangles,
+              })
+            }
+          })
+          .catch((error) => {
+            console.error('[GameImagePinEditor] Failed to refresh signed URL:', error)
+          })
+      }
+    },
+    [pin.filepath, onPatchNodeData, rectangles],
+  )
+
   const applyImagePreviewFromSrc = useCallback(
     async (src: string, options?: { filepath?: string }) => {
       const trimmed = src.trim()
@@ -246,7 +281,12 @@ export function GameImagePinEditor({
 
   /** Always rendered under the dropzone: combines other Image Pin nodes + your cloud library. */
   const galleryBelowDropzone = (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/10 p-3">
+    <div
+      className={cn(
+        'flex flex-col gap-2 rounded-xl border border-border bg-muted/10 p-3',
+        imagePinEditorEnterSubtle,
+      )}
+    >
       <Text
         as="p"
         variant="body"
@@ -287,7 +327,7 @@ export function GameImagePinEditor({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-start gap-2">
+      <div className={cn('flex items-start gap-2', imagePinEditorEnterSubtle)}>
         <div className="flex flex-col gap-1">
           <Text
             as="p"
@@ -321,7 +361,7 @@ export function GameImagePinEditor({
       <div className="flex w-full flex-col gap-4">
         <div className="flex flex-col gap-4">
           {!imagePreview ? (
-            <div className="flex flex-col gap-4">
+            <div className={cn('flex flex-col gap-4', imagePinEditorEnterLift)}>
               <FileDropzone
                 accept="image/*"
                 onFilesSelected={handleFileSelected}
@@ -331,7 +371,7 @@ export function GameImagePinEditor({
             </div>
           ) : null}
           {imagePreview ? (
-            <div className="flex w-full max-w-full flex-col gap-3">
+            <div className={cn('flex w-full max-w-full flex-col gap-3', imagePinEditorEnterLift)}>
               <div className="flex justify-between gap-2">
                 <div className="flex gap-2">
                   <Button
@@ -395,10 +435,16 @@ export function GameImagePinEditor({
                 selectedRectId={selectedRectId}
                 onSelectedRectIdChange={setSelectedRectId}
                 onSceneMetrics={setSceneMetrics}
+                onImageLoadFailed={handleImageLoadFailed}
               />
 
               {rectangles.length > 0 ? (
-                <div className="flex flex-col gap-4 border-t border-border pt-4">
+                <div
+                  className={cn(
+                    'flex flex-col gap-4 border-t border-border pt-4',
+                    imagePinEditorEnterSubtle,
+                  )}
+                >
                   <Text
                     as="p"
                     variant="body"

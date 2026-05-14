@@ -8,12 +8,7 @@ export type OpenQuestionSettingsProps = {
 export function OpenQuestionSettings({ onDelete }: OpenQuestionSettingsProps) {
   return (
     <div className="flex flex-col gap-4">
-      <HoldToDeleteButton
-        variant="delete"
-        onDelete={onDelete}
-      >
-        Hold to delete node
-      </HoldToDeleteButton>
+      <HoldToDeleteButton onDelete={onDelete}>Hold to delete node</HoldToDeleteButton>
     </div>
   )
 }

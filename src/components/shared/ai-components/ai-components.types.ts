@@ -25,7 +25,6 @@ export type Ai02Props = {
   /** Suggestion chips below the composer; defaults to `AI02_DEFAULT_PROMPTS` */
   prompts?: readonly Ai02PromptSuggestion[]
   /** Model list for the selector; defaults to `AI02_DEFAULT_MODELS` */
-  models?: readonly Ai02ModelOption[]
   /** Initial model `value` when uncontrolled */
   defaultModelValue?: string
   /** Controlled textarea value */

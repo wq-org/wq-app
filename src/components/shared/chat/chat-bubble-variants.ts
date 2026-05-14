@@ -62,3 +62,7 @@ export function getChatBubbleTailClass(
 ) {
   return direction === 'incoming' ? tailIncomingByRounded[rounded] : tailReceivingByRounded[rounded]
 }
+
+/** Subtle entrance when a bubble mounts or switches from loading to content. */
+export const chatBubbleEnterAnimation =
+  'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const

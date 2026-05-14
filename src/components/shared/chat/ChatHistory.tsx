@@ -23,20 +23,6 @@ type ChatHistoryProps = {
   receivingBubbleRounded?: ChatBubbleRounded
 }
 
-function TypingIndicator() {
-  return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-3 py-2 shadow-sm">
-      {[0, 1, 2].map((index) => (
-        <span
-          key={index}
-          className="size-1.5 animate-pulse rounded-full bg-muted-foreground/45"
-          style={{ animationDelay: `${index * 120}ms` }}
-        />
-      ))}
-    </div>
-  )
-}
-
 export function ChatHistory({
   messages,
   className,
@@ -57,46 +43,54 @@ export function ChatHistory({
   }, [messages, shouldAutoScroll])
 
   return (
-    <BlurredScrollArea
-      className={cn('flex-1 rounded-[1.25rem] bg-background px-4 sm:px-5', className)}
+    <div
+      className={cn(
+        'flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[1.25rem]',
+        className,
+      )}
     >
-      <div className="flex flex-col gap-4 pt-5 pb-6">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={cn(
-              'flex',
-              message.direction === 'receiving' ? 'justify-end' : 'justify-start',
-            )}
-          >
-            {message.direction === 'receiving' ? (
-              <ReceivingChatMessageBubble
-                text={message.text}
-                time={message.time}
-                images={message.images}
-                variant={receivingBubbleVariant}
-                rounded={receivingBubbleRounded}
-              />
-            ) : (
-              <IncomingChatMessageBubble
-                text={message.text}
-                time={message.time}
-                images={message.images}
-                avatarUrl={incomingAvatarUrl}
-                avatarFallback={incomingAvatarFallback}
-                variant={incomingBubbleVariant}
-                rounded={incomingBubbleRounded}
-              />
-            )}
-          </div>
-        ))}
+      <BlurredScrollArea
+        className="flex h-full min-h-0 flex-1 flex-col bg-background px-4 sm:px-5"
+        viewportClassName="min-h-0 max-h-full flex-1 basis-0 [&>div]:!block [&>div]:min-h-0"
+      >
+        <div className="flex flex-col gap-4 pb-6 pt-5">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={cn(
+                'flex',
+                message.direction === 'receiving' ? 'justify-end' : 'justify-start',
+              )}
+            >
+              {message.direction === 'receiving' ? (
+                <ReceivingChatMessageBubble
+                  text={message.text}
+                  time={message.time}
+                  images={message.images}
+                  variant={receivingBubbleVariant}
+                  rounded={receivingBubbleRounded}
+                  status={message.status}
+                  messageId={message.id}
+                />
+              ) : (
+                <IncomingChatMessageBubble
+                  text={message.text}
+                  time={message.time}
+                  images={message.images}
+                  avatarUrl={incomingAvatarUrl}
+                  avatarFallback={incomingAvatarFallback}
+                  variant={incomingBubbleVariant}
+                  rounded={incomingBubbleRounded}
+                  status={message.status}
+                  messageId={message.id}
+                />
+              )}
+            </div>
+          ))}
 
-        <div className="flex justify-start">
-          <TypingIndicator />
+          <div ref={bottomRef} />
         </div>
-
-        <div ref={bottomRef} />
-      </div>
-    </BlurredScrollArea>
+      </BlurredScrollArea>
+    </div>
   )
 }

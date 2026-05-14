@@ -33,6 +33,7 @@ export function ChatMessages({
     time: message.time,
     direction: message.isMe ? 'receiving' : 'incoming',
     images: message.images,
+    status: message.status,
   }))
 
   return (

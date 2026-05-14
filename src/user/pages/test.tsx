@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { VariantProps } from 'class-variance-authority'
 import { BookOpen, Box, Edit, LockIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
 
@@ -71,6 +72,8 @@ import {
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Onboarding } from '@/features/onboarding'
 import { Text } from '@/components/ui/text'
+import DotWaveLoader from '@/components/ui/dot-wave-loader'
+import { dotWaveVariants } from '@/components/ui/dot-wave-loader-variant'
 import { Zoomies } from '@/components/ui/zoomies'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -222,6 +225,18 @@ const toggleIconSwapColorVariants = [
   'pink',
 ] as const
 
+type DotWaveLoaderVariant = NonNullable<VariantProps<typeof dotWaveVariants>['variant']>
+
+/** Demo rows for `DotWaveLoader` — variants from `dot-wave-loader-variant.ts`. */
+const dotWaveLoaderDemoRows = [
+  { variant: 'confirm', label: 'confirm' },
+  { variant: 'darkblue', label: 'darkblue' },
+  { variant: 'indigo', label: 'indigo' },
+  { variant: 'default', label: 'default (theme primary)' },
+  { variant: 'orange', label: 'orange' },
+  { variant: 'active', label: 'active' },
+] as const satisfies ReadonlyArray<{ variant: DotWaveLoaderVariant; label: string }>
+
 const pricingColumns = [
   { name: 'Starter', cta: { text: 'Choose Starter', href: '#', variant: 'outline' as const } },
   { name: 'Pro', cta: { text: 'Choose Pro', href: '#', variant: 'default' as const } },
@@ -341,6 +356,40 @@ const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
     direction: 'incoming',
   },
 ]
+
+const chatHistoryStagedLoadingSeed: ChatHistoryMessage[] = chatHistoryColorDemoMessages.map(
+  (message) => ({ ...message, status: 'loading' }),
+)
+
+function ChatHistoryStagedLoadingDemo() {
+  const [messages, setMessages] = useState<ChatHistoryMessage[]>(() =>
+    chatHistoryStagedLoadingSeed.map((message) => ({ ...message })),
+  )
+
+  useEffect(() => {
+    const timers = chatHistoryStagedLoadingSeed.map((message, index) =>
+      window.setTimeout(
+        () => {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === message.id ? { ...m, status: 'ready' as const } : m)),
+          )
+        },
+        450 * (index + 1),
+      ),
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
+  return (
+    <ChatHistory
+      messages={messages}
+      autoScroll={false}
+      className="h-[320px] w-full max-w-md"
+      incomingBubbleVariant="default"
+      receivingBubbleVariant="default"
+    />
+  )
+}
 
 const chatCarouselImages = [
   {
@@ -1716,6 +1765,16 @@ export default function Test() {
         </div>
       </Section>
 
+      <Section title="ChatHistory — loading → ready (DotWaveLoader in bubble)">
+        <div className="w-full max-w-md space-y-2">
+          <p className="font-mono text-xs text-muted-foreground">
+            Each message starts as status loading; timers flip to ready so the bubble content runs
+            the enter animation.
+          </p>
+          <ChatHistoryStagedLoadingDemo />
+        </div>
+      </Section>
+
       <Section title="Ai components (@/components/shared — Ai02, Ai03)">
         <div className="flex w-full basis-full flex-col gap-10 lg:max-w-5xl">
           <div className="space-y-3">
@@ -1798,6 +1857,7 @@ export default function Test() {
                 text={`Incoming bubble — ${variant}`}
                 time="10:24"
                 variant={variant}
+                messageId={`test-incoming-${variant}`}
               />
             </div>
           ))}
@@ -1818,6 +1878,7 @@ export default function Test() {
                 text={`Receiving bubble — ${variant}`}
                 time="10:25"
                 variant={variant}
+                messageId={`test-receiving-${variant}`}
               />
             </div>
           ))}
@@ -1840,6 +1901,7 @@ export default function Test() {
                   time="10:24"
                   variant="blue-on-gray"
                   rounded={rounded}
+                  messageId={`test-rounded-in-${rounded}`}
                 />
                 <div className="flex justify-end">
                   <ReceivingChatMessageBubble
@@ -1847,6 +1909,7 @@ export default function Test() {
                     time="10:25"
                     variant="darkblue-on-blue"
                     rounded={rounded}
+                    messageId={`test-rounded-out-${rounded}`}
                   />
                 </div>
               </div>
@@ -1894,6 +1957,29 @@ export default function Test() {
             viewportHeight={360}
             rounded="xl"
           />
+        </div>
+      </Section>
+
+      <Section title="DotWaveLoader (@/components/ui/dot-wave-loader)">
+        <div className="flex w-full basis-full max-w-4xl flex-col gap-6">
+          <p className="text-xs text-muted-foreground">
+            Dot colors from <span className="font-mono">dot-wave-loader-variant.ts</span> — confirm,
+            darkblue, indigo, default (theme primary), orange, active.
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {dotWaveLoaderDemoRows.map(({ variant, label }) => (
+              <div
+                key={variant}
+                className="flex flex-col items-center gap-3 rounded-xl border bg-card px-4 py-6"
+              >
+                <DotWaveLoader variant={variant} />
+                <p className="font-mono text-xs text-muted-foreground">{label}</p>
+                <p className="font-mono text-[10px] text-muted-foreground/80">
+                  variant=&quot;{variant}&quot;
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </Section>
 

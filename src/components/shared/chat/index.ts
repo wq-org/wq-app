@@ -11,6 +11,7 @@ export { ChatUserCard } from './ChatUserCard'
 export { IncomingChatMessageBubble } from './IncomingChatMessageBubble'
 export { ReceivingChatMessageBubble } from './ReceivingChatMessageBubble'
 export {
+  chatBubbleEnterAnimation,
   chatBubbleVariants,
   getChatBubbleTailClass,
   type ChatBubbleVariants,
@@ -23,6 +24,7 @@ export type {
   ChatImageItem,
   ChatHistoryMessageDirection,
   ChatMessageBubbleProps,
+  ChatMessageStatus,
 } from './types'
 
 export type { ChatImageCarouselImage, ChatImageCarouselProps } from './ChatImageCarousel'

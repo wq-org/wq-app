@@ -6,11 +6,11 @@ import useImage from 'use-image'
 import type { GameImagePinRect } from './game-image-pin.schema'
 import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from './imagePinRectGeometry'
 
-const RECT_FILL = 'rgba(1, 105, 111, 0.18)'
-const RECT_STROKE_SELECTED = '#01696f'
-const RECT_STROKE = '#7a7974'
+const RECT_FILL = 'rgba(186, 213, 228, 0.18)'
+const RECT_STROKE_SELECTED = '#0000FF'
+const RECT_STROKE = '#0B3C6F'
 const LABEL_FONT_SIZE = 20
-const LABEL_FONT_COLOR = '#01696f'
+const LABEL_FONT_COLOR = '#0B3C6F'
 
 type DraftBox = { sx: number; sy: number; cx: number; cy: number }
 
@@ -35,6 +35,7 @@ export type ImagePinRectStageProps = {
   selectedRectId: string | null
   onSelectedRectIdChange: (id: string | null) => void
   onSceneMetrics?: (metrics: { width: number; height: number }) => void
+  onImageLoadFailed?: (imageSrc: string) => void
 }
 
 function getScenePointer(stage: Konva.Stage): { x: number; y: number } | null {
@@ -68,13 +69,19 @@ export function ImagePinRectStage({
   selectedRectId,
   onSelectedRectIdChange,
   onSceneMetrics,
+  onImageLoadFailed,
 }: ImagePinRectStageProps) {
-  const [image, status, error] = useImage(imageSrc, 'anonymous')
+  const [image, status] = useImage(imageSrc, 'anonymous')
   const [draft, setDraft] = useState<DraftBox | null>(null)
+  const [imageFailureReported, setImageFailureReported] = useState(false)
+
+  // Compute image load states (per clean_code_principles.md: compute before render)
+  const hasImage = image && status === 'loaded'
+  const isImageFailed = status === 'failed'
 
   // Log image loading status for debugging
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (typeof window !== 'undefined' && import.meta.env.DEV) {
       if (status === 'loading') {
         console.log(
           '[ImagePinRectStage] Image loading:',
@@ -85,14 +92,23 @@ export function ImagePinRectStage({
           width: image?.naturalWidth,
           height: image?.naturalHeight,
         })
+        // Reset failure state when image loads successfully
+        setImageFailureReported(false)
       } else if (status === 'failed') {
         console.error('[ImagePinRectStage] Failed to load image:', {
-          error,
           imageSrc: imageSrc.substring(0, 50) + (imageSrc.length > 50 ? '...' : ''),
         })
       }
     }
-  }, [status, error, image, imageSrc])
+  }, [status, image, imageSrc])
+
+  // Call onImageLoadFailed callback when image fails to load
+  useEffect(() => {
+    if (isImageFailed && !imageFailureReported && onImageLoadFailed) {
+      setImageFailureReported(true)
+      onImageLoadFailed(imageSrc)
+    }
+  }, [isImageFailed, imageFailureReported, onImageLoadFailed, imageSrc])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
@@ -226,7 +242,7 @@ export function ImagePinRectStage({
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-hidden rounded-lg border bg-muted/20"
+      className="relative w-full overflow-hidden rounded-lg border bg-muted/20"
     >
       <Stage
         ref={stageRef}
@@ -237,7 +253,7 @@ export function ImagePinRectStage({
         onMouseDown={handleStageMouseDown}
       >
         <Layer>
-          {image ? (
+          {hasImage ? (
             <KonvaImage
               image={image}
               x={0}
@@ -354,6 +370,18 @@ export function ImagePinRectStage({
           ) : null}
         </Layer>
       </Stage>
+
+      {/* Error overlay when image fails to load */}
+      {isImageFailed && (
+        <div className="absolute inset-0 flex items-center justify-center bg-destructive/10 rounded-lg">
+          <div className="flex flex-col items-center gap-2 bg-background px-4 py-3 rounded-md border border-destructive">
+            <p className="text-sm font-medium text-destructive">Image failed to load</p>
+            <p className="text-xs text-muted-foreground">
+              Try refreshing the image or re-uploading it.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

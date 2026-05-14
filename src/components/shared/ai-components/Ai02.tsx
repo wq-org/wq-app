@@ -53,7 +53,7 @@ export function Ai02({
   const canSend = Boolean(inputValue.trim())
 
   return (
-    <div className={cn('flex w-full max-w-2xl flex-col gap-4', className)}>
+    <div className={cn('flex w-full  flex-col gap-4', className)}>
       <div className="flex flex-wrap justify-center gap-2">
         {prompts.map((item) => {
           const Icon = item.icon
@@ -62,7 +62,7 @@ export function Ai02({
               key={item.text}
               type="button"
               variant="ghost"
-              className="group flex h-auto items-center gap-2 rounded-full border bg-transparent px-3 py-2 text-sm text-foreground transition-colors duration-200 ease-out hover:bg-muted/30 dark:bg-muted"
+              className="group flex h-auto items-center gap-2 rounded-full border bg-transparent px-3 py-2 text-sm text-foreground transition-colors duration-200 ease-out hover:bg-muted/30 dark:bg-transparent"
               onClick={() => handlePromptClick(item.prompt)}
             >
               <Icon className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
@@ -73,9 +73,9 @@ export function Ai02({
       </div>
       <form
         onSubmit={handleFormSubmit}
-        className="flex min-h-[120px] cursor-text flex-col rounded-2xl border border-border bg-card shadow-lg"
+        className="flex min-h-[120px] cursor-text flex-col rounded-2xl border border-border bg-transparent"
       >
-        <div className="relative max-h-[258px] flex-1 overflow-y-auto">
+        <div className="relative max-h-[100px] flex-1 overflow-y-auto">
           <Textarea
             ref={inputRef}
             value={inputValue}
@@ -89,16 +89,13 @@ export function Ai02({
           <div className="ml-auto flex items-center gap-3">
             <Button
               type="submit"
-              variant="ghost"
+              variant="secondary"
               size="icon-sm"
               disabled={!canSend}
-              className={cn(
-                'cursor-pointer rounded-full bg-primary transition-colors duration-100 ease-out',
-                canSend && 'hover:bg-primary/90',
-              )}
+              className={cn('cursor-pointer rounded-full', canSend && 'hover:bg-primary/90')}
               aria-label="Send message"
             >
-              <ArrowUp className="h-4 w-4 text-primary-foreground" />
+              <ArrowUp className="h-4 w-4 text-white" />
             </Button>
           </div>
         </div>
