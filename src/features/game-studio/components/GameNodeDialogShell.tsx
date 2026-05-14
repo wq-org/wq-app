@@ -37,7 +37,7 @@ export function GameNodeDialogShell({
       onOpenChange={onOpenChange}
     >
       <DialogContent
-        className={cn('flex h-[80vh] flex-col overflow-hidden sm:max-w-4xl rounded-3xl', className)}
+        className={cn('flex h-[90vh] flex-col overflow-hidden sm:max-w-4xl rounded-3xl', className)}
       >
         <DialogHeader className="shrink-0">
           <DialogTitle>{title}</DialogTitle>
