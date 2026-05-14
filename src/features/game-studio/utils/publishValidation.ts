@@ -116,12 +116,9 @@ export function getPointsForNode(node: Node): number {
   }
   if (typeof data?.points === 'number' && data.points >= 0) return data.points
   if (type === GAME_IMAGE_PIN_TYPE && data) {
-    const squares = Array.isArray(data.squares) ? data.squares : []
-    return squares.reduce(
-      (s: number, sq: Record<string, unknown>) =>
-        s + (typeof sq.points === 'number' && sq.points > 0 ? sq.points : 1),
-      0,
-    )
+    if (typeof data.points === 'number' && data.points >= 0) return data.points
+    const rects = Array.isArray(data.rectangles) ? data.rectangles : []
+    return rects.length > 0 ? rects.length : 100
   }
   return 100
 }

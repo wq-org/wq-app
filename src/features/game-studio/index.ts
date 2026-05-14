@@ -49,7 +49,7 @@ export { gameOpenQuestionEntry } from './nodes/open-question'
 export type { GameStartNodeData } from './nodes/game-start'
 export type { GameEndNodeData } from './nodes/game-end'
 export type { GameIfElseNodeData, GameIfElseCorrectPath } from './nodes/game-if-else'
-export type { GameImagePinNodeData, ImagePinSquare } from './nodes/game-image-pin'
+export type { GameImagePinNodeData, GameImagePinRect } from './nodes/game-image-pin'
 export type { GameDragDropMathNodeData } from './nodes/drag-drop-math'
 export type { GameOpenQuestionNodeData } from './nodes/open-question'
 

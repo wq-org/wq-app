@@ -28,4 +28,4 @@ export const gameImagePinEntry: GameNodeRegistryEntry = {
 
 export { GameImagePinNode } from './GameImagePinNode'
 export { GameImagePinDialog } from './GameImagePinDialog'
-export type { GameImagePinNodeData, ImagePinSquare } from './game-image-pin.schema'
+export type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'

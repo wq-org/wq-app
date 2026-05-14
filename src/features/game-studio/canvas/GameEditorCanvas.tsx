@@ -756,6 +756,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
           {dimensions.width > 0 && dimensions.height > 0 && (
             <ReactFlow
+              deleteKeyCode={null}
               nodes={nodesWithHandlers}
               edges={edges}
               nodeTypes={nodeTypes}

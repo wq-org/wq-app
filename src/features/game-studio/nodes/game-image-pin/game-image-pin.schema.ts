@@ -1,7 +1,16 @@
-export type ImagePinSquare = {
+/**
+ * One drawable region on the image pin bitmap.
+ * Coordinates are in the image's natural pixel space (same as Konva scene width/height).
+ * For durable backend storage, normalize to ratios (e.g. x / imageWidth) before persisting to Supabase.
+ */
+export type GameImagePinRect = {
+  id: string
+  x: number
+  y: number
+  width: number
+  height: number
+  /** Question copy for this region (publish validation requires at least one non-empty). */
   question?: string
-  points?: number
-  pointsWhenWrong?: number
 }
 
 export type GameImagePinNodeData = {
@@ -10,7 +19,8 @@ export type GameImagePinNodeData = {
   description?: string
   imagePreview?: string
   filepath?: string
-  squares?: ImagePinSquare[]
+  rectangles?: GameImagePinRect[]
+  /** Optional aggregate score for publish / analytics until per-rect scoring exists. */
   points?: number
 }
 
@@ -20,7 +30,7 @@ export const gameImagePinDefaultConfig: GameImagePinNodeData = {
   label: 'Image Pin',
   title: '',
   description: '',
-  squares: [],
+  rectangles: [],
 }
 
 export function validateGameImagePinConfig(data: unknown): string[] {
@@ -33,26 +43,22 @@ export function validateGameImagePinConfig(data: unknown): string[] {
       (typeof d.filepath === 'string' && d.filepath.trim()),
   )
   if (!hasImage) errors.push('Missing image')
-  const squares = Array.isArray(d.squares) ? d.squares : []
-  if (squares.length < 1) {
-    errors.push('No squares')
+  const rectangles = Array.isArray(d.rectangles) ? d.rectangles : []
+  if (rectangles.length < 1) {
+    errors.push('No rectangles')
     return errors
   }
-  const hasValidSquare = squares.some(
-    (s) =>
-      String(s.question ?? '').trim() !== '' &&
-      typeof s.points === 'number' &&
-      (typeof s.pointsWhenWrong === 'number' || s.pointsWhenWrong === undefined),
+  const hasValidRect = rectangles.some(
+    (r) =>
+      typeof r.x === 'number' &&
+      typeof r.y === 'number' &&
+      typeof r.width === 'number' &&
+      typeof r.height === 'number' &&
+      r.width > 0 &&
+      r.height > 0,
   )
-  if (!hasValidSquare) {
-    const hasQuestion = squares.some((s) => String(s.question ?? '').trim() !== '')
-    const hasPoints = squares.some(
-      (s) =>
-        typeof s.points === 'number' &&
-        (typeof s.pointsWhenWrong === 'number' || s.pointsWhenWrong === undefined),
-    )
-    if (!hasQuestion) errors.push('Missing question text')
-    if (!hasPoints) errors.push('Missing points')
-  }
+  if (!hasValidRect) errors.push('Invalid rectangle geometry')
+  const hasQuestion = rectangles.some((r) => String(r.question ?? '').trim() !== '')
+  if (!hasQuestion) errors.push('Missing question text')
   return errors
 }
