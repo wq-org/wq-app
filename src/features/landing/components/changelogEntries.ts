@@ -20,9 +20,33 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-15-game-studio-image-pin-chat-and-ai-building-blocks',
+    date: '15 May 2026',
+    title:
+      'Game Studio Image Pin gets real authoring—draw regions, save images to cloud, and reuse pictures—plus richer chat and AI-style composer pieces',
+    summary:
+      'Game authors can now build Image Pin activities properly inside the studio: node settings save to the game flow, you can upload or replace a background image without losing your pin layout, draw several tap regions on the picture with per-region questions, and pick images from other pins on the same game or from your institution cloud library when uploads are enabled. Shared chat surfaces gained optional loading states and gentler motion, incoming and receiving bubbles can follow clearer color presets in light and dark themes, and reusable AI-style composer widgets landed for future features. Internal polish covers clearer node dialogs, textarea contrast in dark mode, and a safer image-load path when a link expires.',
+    bullets: [
+      'Game Studio (Image Pin): open the node editor in a roomier dialog; upload a background image, swap it later with a replace control, and clear it when you want to start over',
+      'Game Studio (Image Pin): draw multiple rectangular tap zones on the image, give each zone its own prompt or question, and keep zone positions sensibly scaled when you change the picture',
+      'Game Studio (Image Pin): when cloud upload is wired for your role, images can be stored in your institution cloud with a stable file reference while the editor shows a working preview (including signed links for private buckets)',
+      'Game Studio (Image Pin): browse a gallery that mixes other Image Pin images from the same game with images already in your cloud folder so you can reuse artwork instead of re-uploading every time',
+      'Game Studio (Image Pin): if a preview link fails (for example an expired signed URL), the editor can try to refresh the image instead of leaving you stuck on a broken thumbnail',
+      'Game Studio (Image Pin): on-canvas pin labels and refreshed highlight colors make regions easier to see while you edit',
+      'Creators & integrators: shared “AI composer” style inputs (Ai02 and Ai03) are available from the shared component library for consistent ask-a-question or chat-style bars across the product',
+      'Chat: you can style incoming and receiving bubbles independently, the history panel behaves better inside tight layouts, and messages can show a subtle loading state before the final text appears',
+      'Chat: message bubbles can fade and slide in lightly when they appear so threads feel a little more alive without distracting motion',
+      'Design system: a small dot-wave loading pattern and extra separator styling options were added for loading states and future layout work',
+      'Internal testing: the consolidated UI test page showcases new chat presets, staged loading, and the AI-style composers so design and QA can review behavior in one place',
+      'Small fixes: form text areas in dense dialogs show clearer separators and scrollbars in dark mode, loading spinners default to a higher-contrast style, and a hold-to-delete control on another node type no longer passes an invalid button variant',
+    ],
+    badges: ['feature', 'improvement', 'change'],
+  },
+  {
     id: '2026-05-10-lesson-authoring-reliability-and-topic-polish',
     date: '10 May 2026',
-    title: 'Smoother lesson authoring, faster topic lesson lists, and clearer feedback while you work',
+    title:
+      'Smoother lesson authoring, faster topic lesson lists, and clearer feedback while you work',
     summary:
       'Lesson writing is built around saving content in sensible chunks instead of one oversized blob, which helps long lessons load and autosave more reliably. Creating lessons from a topic works smoothly again, topic pages give quieter errors when something goes wrong, and small touches—steady buttons, simpler toasts, snappier lists—make everyday course editing feel less fiddly.',
     bullets: [
