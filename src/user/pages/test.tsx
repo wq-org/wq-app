@@ -4,6 +4,8 @@ import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHov
 
 import {
   AccentPicker,
+  Ai02,
+  Ai03,
   GridIconBackground,
   IconPreviewCardSquare,
   IconPreviewCardWide,
@@ -46,6 +48,7 @@ import {
   AgentComputerIcon,
   TwoColumnDialog,
   type AgentComputerIconVariant,
+  type Ai03MenuActionId,
 } from '@/components/shared'
 import {
   CompactSettingsTableSwitches,
@@ -114,11 +117,13 @@ import {
 } from '@/components/shared/trees'
 import { CalendarHeatmap } from '@/components/shared/calendar'
 import {
+  ChatHistory,
   ChatImageCarousel,
   IncomingChatMessageBubble,
   ReceivingChatMessageBubble,
   type ChatBubbleRounded,
   type ChatBubbleVariant,
+  type ChatHistoryMessage,
 } from '@/components/shared/chat'
 
 const TEXT_SEMANTIC_VARIANTS = ['h1', 'h2', 'h3', 'body', 'small'] as const
@@ -284,6 +289,58 @@ const chatBubbleVariantList: ChatBubbleVariant[] = [
 ]
 
 const chatBubbleRoundedList: ChatBubbleRounded[] = ['sm', 'md', 'lg', 'xl', 'pill']
+
+const CHAT_DEMO_MACBOOK_NEO_IMAGE =
+  'https://is1-ssl.mzstatic.com/image/thumb/za7Mqkp-OSK_2BHWq8AtSQ/1960x1102.jpg'
+
+const chatHistoryColorDemoMessages: ChatHistoryMessage[] = [
+  {
+    id: 'demo-in-1',
+    text: 'Incoming message — left side.',
+    time: '10:22',
+    direction: 'incoming',
+  },
+  {
+    id: 'demo-out-1',
+    text: 'Receiving message — right side.',
+    time: '10:23',
+    direction: 'receiving',
+  },
+  {
+    id: 'demo-in-2',
+    text: 'Another incoming line for contrast.',
+    time: '10:24',
+    direction: 'incoming',
+  },
+]
+
+/** Same thread as `chatHistoryColorDemoMessages`, first incoming uses `ChatImageList` (one image). */
+const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
+  {
+    id: 'demo-default-blue-in-1',
+    text: 'Incoming with one image (rendered via ChatImageList).',
+    time: '10:22',
+    direction: 'incoming',
+    images: [
+      {
+        src: CHAT_DEMO_MACBOOK_NEO_IMAGE,
+        alt: 'MacBook Neo — highlights, AI',
+      },
+    ],
+  },
+  {
+    id: 'demo-default-blue-out-1',
+    text: 'Receiving message — right side.',
+    time: '10:23',
+    direction: 'receiving',
+  },
+  {
+    id: 'demo-default-blue-in-2',
+    text: 'Another incoming line for contrast.',
+    time: '10:24',
+    direction: 'incoming',
+  },
+]
 
 const chatCarouselImages = [
   {
@@ -691,6 +748,21 @@ export default function Test() {
   const [segmentedStepperValue, setSegmentedStepperValue] = useState(1)
   const [verticalStepperValue, setVerticalStepperValue] = useState(2)
   const [progressIndicatorStepperValue, setProgressIndicatorStepperValue] = useState(2)
+
+  const [aiComponentLog, setAiComponentLog] = useState<string[]>([])
+
+  const logAiEvent = (line: string) => {
+    setAiComponentLog((prev) =>
+      [
+        `${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} — ${line}`,
+        ...prev,
+      ].slice(0, 12),
+    )
+  }
+
+  const handleAi03PlusMenu = (id: Ai03MenuActionId) => {
+    logAiEvent(`Ai03 plus menu: ${id}`)
+  }
 
   const [durationMonths, setDurationMonths] = useState(5)
   const [storageQuota, setStorageQuota] = useState(15)
@@ -1601,6 +1673,115 @@ export default function Test() {
 
       <Section title="SwitchListCardIcons">
         <SwitchListCardIcons items={switchCardItems} />
+      </Section>
+
+      <Section title="ChatHistory — incoming / receiving color presets">
+        <div className="flex w-full basis-full max-w-6xl flex-col gap-8 lg:flex-row lg:items-start lg:gap-6">
+          <div className="min-h-[280px] min-w-0 flex-1 space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              incoming default · receiving default
+            </p>
+            <ChatHistory
+              messages={chatHistoryColorDemoMessages}
+              autoScroll={false}
+              className="h-[280px]"
+              incomingBubbleVariant="default"
+              receivingBubbleVariant="default"
+            />
+          </div>
+          <div className="min-h-[280px] min-w-0 flex-1 space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              incoming dark · receiving blue
+            </p>
+            <ChatHistory
+              messages={chatHistoryColorDemoMessages}
+              autoScroll={false}
+              className="h-[280px]"
+              incomingBubbleVariant="dark"
+              receivingBubbleVariant="blue"
+            />
+          </div>
+          <div className="min-h-[280px] min-w-0 flex-1 space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              incoming default · receiving blue
+            </p>
+            <ChatHistory
+              messages={chatHistoryDefaultIncomingBlueReceivingMessages}
+              autoScroll={false}
+              className="h-[280px]"
+              incomingBubbleVariant="default"
+              receivingBubbleVariant="blue"
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Ai components (@/components/shared — Ai02, Ai03)">
+        <div className="flex w-full basis-full flex-col gap-10 lg:max-w-5xl">
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Ai02 — composer + prompts
+            </p>
+            <Ai02
+              onSubmit={(message) =>
+                logAiEvent(`Ai02 submit: ${message.slice(0, 80)}${message.length > 80 ? '…' : ''}`)
+              }
+              onModelChange={(model) => logAiEvent(`Ai02 model: ${model.name}`)}
+              onAttachImagesClick={() => logAiEvent('Ai02 attach images click')}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Ai03 — default
+            </p>
+            <Ai03
+              placeholder="Ask anything (test page)"
+              onSubmitMessage={(message) =>
+                logAiEvent(`Ai03 submit: ${message.slice(0, 80)}${message.length > 80 ? '…' : ''}`)
+              }
+              onFilesSelected={(files) => logAiEvent(`Ai03 files: ${files.length} file(s)`)}
+              onPlusMenuAction={handleAi03PlusMenu}
+              onModelLabelChange={(label) => logAiEvent(`Ai03 model label: ${label}`)}
+              onAgentLabelChange={(label) => logAiEvent(`Ai03 agent: ${label}`)}
+              onPerformanceLabelChange={(label) => logAiEvent(`Ai03 performance: ${label}`)}
+              onAutoModeChange={(enabled) => logAiEvent(`Ai03 auto: ${enabled ? 'on' : 'off'}`)}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Ai03 — compact
+            </p>
+            <Ai03
+              compact
+              placeholder="Compact layout…"
+              onSubmitMessage={(message) =>
+                logAiEvent(
+                  `Ai03 compact submit: ${message.length > 60 ? `${message.slice(0, 60)}…` : message}`,
+                )
+              }
+            />
+          </div>
+
+          <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Callback log (newest first)
+            </p>
+            {aiComponentLog.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                Submit a message or use controls above to see onSubmit, onPlusMenuAction, and
+                related handlers.
+              </p>
+            ) : (
+              <ul className="max-h-48 space-y-1 overflow-y-auto font-mono text-[11px] text-muted-foreground">
+                {aiComponentLog.map((line, i) => (
+                  <li key={`${i}-${line}`}>{line}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
       </Section>
 
       <Section title="ChatMessageBubble — variants (incoming)">

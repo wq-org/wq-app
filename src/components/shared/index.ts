@@ -217,3 +217,17 @@ export type {
 } from './upload-files'
 
 export { DateTimePicker, TimePickerWithIcon } from './date-time'
+export {
+  Ai02,
+  Ai03,
+  AI02_DEFAULT_MODELS,
+  AI02_DEFAULT_PROMPTS,
+  AI03_MENU_ACTION_IDS,
+} from './ai-components'
+export type {
+  Ai02ModelOption,
+  Ai02PromptSuggestion,
+  Ai02Props,
+  Ai03MenuActionId,
+  Ai03Props,
+} from './ai-components'

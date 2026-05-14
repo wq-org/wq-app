@@ -10,12 +10,7 @@ type ChatImageProps = {
 
 export function ChatImage({ src, alt, ratio = 4 / 3, className }: ChatImageProps) {
   return (
-    <div
-      className={cn(
-        'w-60 max-w-full overflow-hidden rounded-2xl border border-neutral-200 shadow-sm',
-        className,
-      )}
-    >
+    <div className={cn('w-60 max-w-full overflow-hidden rounded-2xl shadow-sm', className)}>
       <AspectRatio ratio={ratio}>
         <img
           src={src}
