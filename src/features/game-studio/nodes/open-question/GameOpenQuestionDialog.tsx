@@ -5,7 +5,8 @@ import { OpenQuestionEditor } from './OpenQuestionEditor'
 import { OpenQuestionPreview } from './OpenQuestionPreview'
 import { OpenQuestionSettings } from './OpenQuestionSettings'
 
-export function GameOpenQuestionDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
+export function GameOpenQuestionDialog(props: GameNodeDialogProps) {
+  const { nodeId, onClose, onDelete } = props
   return (
     <GameNodeDialogShell
       open

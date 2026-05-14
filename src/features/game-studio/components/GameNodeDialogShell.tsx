@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
 export type GameNodeDialogShellProps = {
   open: boolean
@@ -35,13 +36,15 @@ export function GameNodeDialogShell({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className={className ?? 'sm:max-w-2xl'}>
-        <DialogHeader>
+      <DialogContent
+        className={cn('flex h-[80vh] flex-col overflow-hidden sm:max-w-4xl rounded-3xl', className)}
+      >
+        <DialogHeader className="shrink-0">
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
-        <div className="py-2">{children}</div>
-        {footer ? <div className="pt-4">{footer}</div> : null}
+        <div className="min-h-0 flex-1 overflow-y-auto py-2">{children}</div>
+        {footer ? <div className="shrink-0 pt-4">{footer}</div> : null}
       </DialogContent>
     </Dialog>
   )

@@ -8,6 +8,10 @@ export type GameNodeAccent = 'gray' | 'blue' | 'orange'
 
 export type GameNodeDialogProps = {
   nodeId: string
+  /** Current flow node `data` from the canvas (updates when patched). */
+  nodeData: Record<string, unknown>
+  /** Shallow-merge `patch` into this node's `data`. */
+  onPatchNodeData: (patch: Record<string, unknown>) => void
   onClose: () => void
   onDelete: () => void
 }

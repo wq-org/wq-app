@@ -686,8 +686,22 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     if (!node) return null
     const entry = getRegistryEntry(node.type)
     if (!entry?.DialogComponent) return null
-    return { Component: entry.DialogComponent, nodeId: node.id }
+    return { Component: entry.DialogComponent, nodeId: node.id, node }
   }, [openDialogNodeId, nodes])
+
+  const handlePatchOpenNodeData = useCallback(
+    (patch: Record<string, unknown>) => {
+      if (!openDialogNodeId) return
+      setNodes((prev) =>
+        prev.map((n) =>
+          n.id === openDialogNodeId
+            ? { ...n, data: { ...(n.data as Record<string, unknown>), ...patch } }
+            : n,
+        ),
+      )
+    },
+    [openDialogNodeId],
+  )
 
   // ---- Delete node from dialog (respects registry isDeletable) ----
   const handleDeleteOpenNode = useCallback(() => {
@@ -808,6 +822,8 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       {openDialog ? (
         <openDialog.Component
           nodeId={openDialog.nodeId}
+          nodeData={(openDialog.node.data as Record<string, unknown>) ?? {}}
+          onPatchNodeData={handlePatchOpenNodeData}
           onClose={() => setOpenDialogNodeId(null)}
           onDelete={handleDeleteOpenNode}
         />

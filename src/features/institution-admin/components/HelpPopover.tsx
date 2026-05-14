@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 
 type HelpPopoverProps = {
   title: string
@@ -16,6 +17,7 @@ type HelpPopoverProps = {
   exampleTitle: string
   exampleValues: string[]
   reason?: string
+  showButtonText?: boolean
 }
 
 export function HelpPopover({
@@ -28,6 +30,7 @@ export function HelpPopover({
   exampleTitle,
   exampleValues,
   reason,
+  showButtonText = false,
 }: HelpPopoverProps) {
   const hasReason = Boolean(reason && reason.trim())
 
@@ -37,10 +40,11 @@ export function HelpPopover({
         <Button
           type="button"
           variant="ghost"
-          size="icon"
-          className="size-8 text-muted-foreground hover:text-foreground"
+          size={!showButtonText ? 'icon' : 'default'}
+          className={cn('text-muted-foreground hover:text-foreground', !showButtonText && 'size-8')}
           aria-label={title}
         >
+          {showButtonText ? 'Need help' : null}
           <CircleQuestionMark className="size-4" />
         </Button>
       </PopoverTrigger>

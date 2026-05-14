@@ -5,7 +5,8 @@ import { GameIfElseEditor } from './GameIfElseEditor'
 import { GameIfElsePreview } from './GameIfElsePreview'
 import { GameIfElseSettings } from './GameIfElseSettings'
 
-export function GameIfElseDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
+export function GameIfElseDialog(props: GameNodeDialogProps) {
+  const { nodeId, onClose, onDelete } = props
   return (
     <GameNodeDialogShell
       open

@@ -5,7 +5,8 @@ import { GameEndEditor } from './GameEndEditor'
 import { GameEndPreview } from './GameEndPreview'
 import { GameEndSettings } from './GameEndSettings'
 
-export function GameEndDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
+export function GameEndDialog(props: GameNodeDialogProps) {
+  const { nodeId, onClose, onDelete } = props
   return (
     <GameNodeDialogShell
       open

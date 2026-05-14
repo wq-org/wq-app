@@ -5,7 +5,8 @@ import { GameStartEditor } from './GameStartEditor'
 import { GameStartPreview } from './GameStartPreview'
 import { GameStartSettings } from './GameStartSettings'
 
-export function GameStartDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
+export function GameStartDialog(props: GameNodeDialogProps) {
+  const { nodeId, onClose, onDelete } = props
   return (
     <GameNodeDialogShell
       open

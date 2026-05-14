@@ -5,7 +5,8 @@ import { DragDropMathEditor } from './DragDropMathEditor'
 import { DragDropMathPreview } from './DragDropMathPreview'
 import { DragDropMathSettings } from './DragDropMathSettings'
 
-export function GameDragDropMathDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
+export function GameDragDropMathDialog(props: GameNodeDialogProps) {
+  const { nodeId, onClose, onDelete } = props
   return (
     <GameNodeDialogShell
       open

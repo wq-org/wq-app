@@ -9,6 +9,10 @@ import { cn } from '@/lib/utils'
 const TEXTAREA_BODY =
   'placeholder:text-muted-foreground disabled:opacity-50 min-h-16 w-full resize-none whitespace-pre-wrap break-words py-2 text-base leading-normal outline-none'
 
+/** Scrollbar colors follow theme tokens (native UA scrollbars are often illegible on dark surfaces). */
+const TEXTAREA_SCROLLBAR =
+  '[scrollbar-width:thin] [scrollbar-color:var(--primary)_var(--muted)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary'
+
 export type FieldTextareaLengthDetail = {
   length: number
   maxLength: number
@@ -113,7 +117,7 @@ export const FieldTextarea = ({
 
   const separatorClassName = cn(
     'transition-colors duration-200',
-    isTextareaFocused ? 'bg-black' : isTextareaHovered ? 'bg-gray-300' : undefined,
+    isTextareaFocused ? 'bg-primary' : isTextareaHovered ? 'bg-muted-foreground/45' : undefined,
   )
 
   return (
@@ -143,7 +147,7 @@ export const FieldTextarea = ({
         <textarea
           id={resolvedId}
           data-slot="textarea"
-          className={cn(textareaShared, 'relative z-10')}
+          className={cn(textareaShared, 'relative z-10', TEXTAREA_SCROLLBAR)}
           style={
             useHighlightOverlay
               ? ({ WebkitTextFillColor: 'transparent' } satisfies CSSProperties)

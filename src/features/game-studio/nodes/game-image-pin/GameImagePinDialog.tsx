@@ -5,7 +5,13 @@ import { GameImagePinEditor } from './GameImagePinEditor'
 import { GameImagePinPreview } from './GameImagePinPreview'
 import { GameImagePinSettings } from './GameImagePinSettings'
 
-export function GameImagePinDialog({ nodeId, onClose, onDelete }: GameNodeDialogProps) {
+export function GameImagePinDialog({
+  nodeId,
+  onClose,
+  onDelete,
+  nodeData,
+  onPatchNodeData,
+}: GameNodeDialogProps) {
   return (
     <GameNodeDialogShell
       open
@@ -15,7 +21,12 @@ export function GameImagePinDialog({ nodeId, onClose, onDelete }: GameNodeDialog
       title="Image Pin"
     >
       <GameLayout
-        editorContent={<GameImagePinEditor nodeId={nodeId} />}
+        editorContent={
+          <GameImagePinEditor
+            nodeData={nodeData}
+            onPatchNodeData={onPatchNodeData}
+          />
+        }
         previewContent={<GameImagePinPreview nodeId={nodeId} />}
         settingsContent={
           <GameImagePinSettings
