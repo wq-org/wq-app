@@ -253,5 +253,35 @@
   },
   "helpDrawer": {
     "title": "Game Studio Help"
+  },
+  "imagePinDialog": {
+    "title": "Image Pin"
+  },
+  "imagePinEditor": {
+    "intro": "Upload an image and mark the relevant areas with rectangles. Write a question for each rectangle and set scoring in the node settings. Save, version, and publish the game when you are ready.",
+    "drawHint": "Drag on the image to draw a rectangle.",
+    "galleryTitle": "Images from this project",
+    "galleryHint": "Pick a thumbnail from this game or from images already in your cloud folder.",
+    "galleryEmpty": "No images yet. Upload one above, or add an image to another Image Pin node on this canvas—then they will show up here.",
+    "helpTitle": "Image Pin",
+    "helpSectionDefinition": "What this node does",
+    "helpSectionExample": "Example",
+    "helpSectionExamples": "Examples",
+    "helpSectionReason": "Why it matters",
+    "helpDefinition": "Learners see your image and place a pin or work inside the regions you define. Each region can carry its own question text.",
+    "helpExampleTitle": "Typical setup",
+    "helpExampleValues": "Upload an anatomy image, draw rectangles on two structures, and ask a different identification question for each region.",
+    "questionsPerRegion": "Questions per region",
+    "questionLabel": "Question {{index}}",
+    "questionPlaceholder": "What should the learner answer for this region?",
+    "addRectangle": "Rectangle",
+    "deleteSelection": "Delete selection",
+    "removeRegionAria": "Remove region {{index}} and its question",
+    "replaceImageAria": "Replace image",
+    "removeImageAria": "Remove image",
+    "toastUploadRequiresContext": "Sign in with an institution to upload images.",
+    "toastUploadInvalidType": "Please choose a JPEG or PNG image.",
+    "toastUploadFailed": "Could not upload the image. Try again.",
+    "toastUploadSuccess": "Image uploaded to your cloud."
   }
 }

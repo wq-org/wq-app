@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { Plus, Repeat, Trash2, ImageMinus, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
-import { FileDropzone } from '@/components/shared'
+import { FileDropzone, ImageCarousel } from '@/components/shared'
+import type { ImageCarouselImage } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 import { HelpPopover } from '@/features/institution-admin/components'
+import { getFileSignedUrl } from '@/features/files'
 
 import { ImagePinRectStage } from './ImagePinRectStage'
 import {
@@ -14,15 +17,26 @@ import {
   remapRectsForNewImageSize,
 } from './imagePinRectGeometry'
 import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
+import type { GameImagePinCloudUploadResult } from './useGameImagePinImageUpload'
+import { useImagePinCloudGalleryImages } from './useImagePinCloudGalleryImages'
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => {
       const result = reader.result
-      resolve(typeof result === 'string' ? result : '')
+      const dataUrl = typeof result === 'string' ? result : ''
+      if (!dataUrl) {
+        reject(new Error('Failed to read file as data URL'))
+        return
+      }
+      console.log('[readFileAsDataUrl] Data URL created, length:', dataUrl.length)
+      resolve(dataUrl)
     }
-    reader.onerror = () => reject(reader.error)
+    reader.onerror = () => {
+      console.error('[readFileAsDataUrl] FileReader error:', reader.error)
+      reject(reader.error)
+    }
     reader.readAsDataURL(file)
   })
 }
@@ -30,9 +44,22 @@ function readFileAsDataUrl(file: File): Promise<string> {
 export type GameImagePinEditorProps = {
   nodeData: Record<string, unknown>
   onPatchNodeData: (patch: Record<string, unknown>) => void
+  /** Thumbnails from other Image Pin nodes on the same canvas (from `GameEditorCanvas`). */
+  projectImageGallery?: readonly { url: string; title: string; storagePath?: string }[]
+  /**
+   * When set (wired from `GameImagePinDialog`), file picks upload to institution cloud
+   * via `uploadFile` and the node stores the public URL plus storage `filepath`.
+   */
+  uploadGameImagePinFile?: (file: File) => Promise<GameImagePinCloudUploadResult | null>
 }
 
-export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEditorProps) {
+export function GameImagePinEditor({
+  nodeData,
+  onPatchNodeData,
+  projectImageGallery,
+  uploadGameImagePinFile,
+}: GameImagePinEditorProps) {
+  const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameImagePinNodeData
   const imagePreview =
     typeof pin.imagePreview === 'string' && pin.imagePreview.trim() !== '' ? pin.imagePreview : ''
@@ -43,9 +70,28 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
   )
 
   const replaceImageInputRef = useRef<HTMLInputElement>(null)
-
+  /** Ignores cloud upload results if the user picked another image meanwhile. */
   const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
   const [sceneMetrics, setSceneMetrics] = useState<{ width: number; height: number } | null>(null)
+  const [cloudGalleryRefresh, setCloudGalleryRefresh] = useState(0)
+
+  const galleryItems = useMemo(() => projectImageGallery ?? [], [projectImageGallery])
+  const { items: cloudGalleryItems, isLoading: cloudGalleryLoading } =
+    useImagePinCloudGalleryImages(cloudGalleryRefresh)
+
+  const mergedGalleryItems = useMemo(() => {
+    const byUrl = new Map<string, { url: string; title: string; storagePath?: string }>()
+    for (const item of galleryItems) {
+      if (item.url.trim()) byUrl.set(item.url.trim(), { ...item })
+    }
+    for (const item of cloudGalleryItems) {
+      const key = item.url.trim()
+      if (key && !byUrl.has(key)) byUrl.set(key, item)
+    }
+    const merged = [...byUrl.values()]
+
+    return merged
+  }, [cloudGalleryItems, galleryItems])
 
   useEffect(() => {
     setSelectedRectId(null)
@@ -95,14 +141,12 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
     setSelectedRectId(null)
   }, [onPatchNodeData, rectangles, selectedRectId])
 
-  const handleFileSelected = useCallback(
-    async (files: File[]) => {
-      const file = files.find((f) => f.type.startsWith('image/'))
-      if (!file) return
+  const applyImagePreviewFromSrc = useCallback(
+    async (src: string, options?: { filepath?: string }) => {
+      const trimmed = src.trim()
+      if (!trimmed) return
       try {
-        const dataUrl = await readFileAsDataUrl(file)
-        if (!dataUrl) return
-        const { width: newW, height: newH } = await loadImageNaturalSize(dataUrl)
+        const { width: newW, height: newH } = await loadImageNaturalSize(trimmed)
 
         let oldW = sceneMetrics?.width ?? 0
         let oldH = sceneMetrics?.height ?? 0
@@ -111,8 +155,8 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
             const cur = await loadImageNaturalSize(imagePreview)
             oldW = cur.width
             oldH = cur.height
-          } catch {
-            /* keep zeros */
+          } catch (e) {
+            console.log('[GameImagePinEditor] Could not load previous image for remapping:', e)
           }
         }
 
@@ -121,12 +165,70 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
           nextRects = remapRectsForNewImageSize(rectangles, oldW, oldH, newW, newH)
         }
 
-        onPatchNodeData({ imagePreview: dataUrl, filepath: '', rectangles: nextRects })
-      } catch {
-        // Ignore read errors; user can retry
+        console.log('[GameImagePinEditor] Patching node data with image preview:', {
+          filepath: options?.filepath,
+          rectCount: nextRects.length,
+        })
+        onPatchNodeData({
+          imagePreview: trimmed,
+          filepath: options?.filepath ?? '',
+          rectangles: nextRects,
+        })
+      } catch (error) {
+        console.error('[GameImagePinEditor] Failed to apply image preview:', error)
       }
     },
     [imagePreview, onPatchNodeData, rectangles, sceneMetrics],
+  )
+
+  const handleGallerySelect = useCallback(
+    (image: ImageCarouselImage) => {
+      void applyImagePreviewFromSrc(image.url, {
+        filepath: image.storagePath ?? '',
+      })
+    },
+    [applyImagePreviewFromSrc],
+  )
+
+  const handleFileSelected = useCallback(
+    async (files: File[]) => {
+      const file = files.find((f) => f.type.startsWith('image/'))
+      if (!file) {
+        console.log('[GameImagePinEditor] No image file selected')
+        return
+      }
+
+      try {
+        const dataUrl = await readFileAsDataUrl(file)
+        if (!dataUrl) {
+          console.warn('[GameImagePinEditor] Failed to read file as data URL')
+          return
+        }
+
+        // Show the bitmap immediately (data URL) so the stage is usable while cloud upload runs.
+        await applyImagePreviewFromSrc(dataUrl, { filepath: '' })
+
+        if (!uploadGameImagePinFile) {
+          return
+        }
+
+        const uploaded = await uploadGameImagePinFile(file)
+        if (!uploaded) {
+          console.warn('[GameImagePinEditor] Upload failed or returned null')
+          return
+        }
+
+        // For private buckets, use signed URL instead of public URL
+        const signedUrl = await getFileSignedUrl(uploaded.path, 3600) // 1 hour expiry
+        const urlToUse = signedUrl || uploaded.publicUrl
+
+        await applyImagePreviewFromSrc(urlToUse, { filepath: uploaded.path })
+        setCloudGalleryRefresh((c) => c + 1)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    [applyImagePreviewFromSrc, uploadGameImagePinFile],
   )
 
   const handleClearImage = useCallback(() => {
@@ -142,18 +244,57 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
     [handleFileSelected],
   )
 
+  /** Always rendered under the dropzone: combines other Image Pin nodes + your cloud library. */
+  const galleryBelowDropzone = (
+    <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/10 p-3">
+      <Text
+        as="p"
+        variant="body"
+        className="text-sm font-medium text-foreground"
+      >
+        {t('imagePinEditor.galleryTitle')}
+      </Text>
+      <Text
+        as="p"
+        variant="body"
+        className="text-xs text-muted-foreground"
+      >
+        {t('imagePinEditor.galleryHint')}
+      </Text>
+      {cloudGalleryLoading ? (
+        <ImageCarousel
+          images={[]}
+          isLoading
+          className="max-w-full"
+        />
+      ) : mergedGalleryItems.length > 0 ? (
+        <ImageCarousel
+          images={[...mergedGalleryItems]}
+          onSelect={handleGallerySelect}
+          className="max-w-full"
+        />
+      ) : (
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm text-muted-foreground"
+        >
+          {t('imagePinEditor.galleryEmpty')}
+        </Text>
+      )}
+    </div>
+  )
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-start gap-2">
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <Text
             as="p"
             variant="body"
             className="text-sm"
           >
-            Lade ein Bild hoch und markiere die relevanten Bereiche mit Rechtecken. Formuliere für
-            jedes Rechteck eine Frage und hinterlege die passende Punktebewertung. Speichere,
-            versioniere und veröffentliche das Spiel
+            {t('imagePinEditor.intro')}
           </Text>
           <Text
             as="span"
@@ -161,30 +302,33 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
             bold
             className="text-xs"
           >
-            Auf dem Bild ziehen, um ein Rechteck zu zeichnen.
+            {t('imagePinEditor.drawHint')}
           </Text>
         </div>
 
         <HelpPopover
-          title="Test"
-          sectionDefinitionLabel=".... "
-          sectionExampleLabel=".... "
-          sectionExampleValuesLabel=".... "
-          sectionReasonLabel=".... "
-          definition=".... "
-          exampleTitle=".... "
-          exampleValues={['hallo', 'world']}
+          title={t('imagePinEditor.helpTitle')}
+          sectionDefinitionLabel={t('imagePinEditor.helpSectionDefinition')}
+          sectionExampleLabel={t('imagePinEditor.helpSectionExample')}
+          sectionExampleValuesLabel={t('imagePinEditor.helpSectionExamples')}
+          sectionReasonLabel={t('imagePinEditor.helpSectionReason')}
+          definition={t('imagePinEditor.helpDefinition')}
+          exampleTitle={t('imagePinEditor.helpExampleTitle')}
+          exampleValues={[t('imagePinEditor.helpExampleValues')]}
         />
       </div>
 
       <div className="flex w-full flex-col gap-4">
-        <div>
+        <div className="flex flex-col gap-4">
           {!imagePreview ? (
-            <FileDropzone
-              accept="image/*"
-              onFilesSelected={handleFileSelected}
-              disabled={false}
-            />
+            <div className="flex flex-col gap-4">
+              <FileDropzone
+                accept="image/*"
+                onFilesSelected={handleFileSelected}
+                disabled={false}
+              />
+              {galleryBelowDropzone}
+            </div>
           ) : null}
           {imagePreview ? (
             <div className="flex w-full max-w-full flex-col gap-3">
@@ -198,7 +342,7 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                     onClick={handleAddRect}
                   >
                     <Plus className="size-4" />
-                    Rechteck
+                    {t('imagePinEditor.addRectangle')}
                   </Button>
                   <Button
                     type="button"
@@ -208,7 +352,7 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                     onClick={handleDeleteSelectedRect}
                   >
                     <Trash2 className="size-4" />
-                    Auswahl löschen
+                    {t('imagePinEditor.deleteSelection')}
                   </Button>
                 </div>
                 <div className="flex gap-2">
@@ -227,7 +371,7 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                     size="icon"
                     onClick={() => replaceImageInputRef.current?.click()}
                     className="rounded-full"
-                    aria-label="Bild ersetzen"
+                    aria-label={t('imagePinEditor.replaceImageAria')}
                   >
                     <Repeat />
                   </Button>
@@ -237,7 +381,7 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                     size="icon"
                     onClick={handleClearImage}
                     className="rounded-full"
-                    aria-label="Bild entfernen"
+                    aria-label={t('imagePinEditor.removeImageAria')}
                   >
                     <ImageMinus />
                   </Button>
@@ -260,7 +404,7 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                     variant="body"
                     className="text-sm font-medium text-foreground"
                   >
-                    Fragen pro Bereich
+                    {t('imagePinEditor.questionsPerRegion')}
                   </Text>
                   <div className="flex flex-col gap-4">
                     {rectangles.map((rect, index) => (
@@ -271,8 +415,8 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                       >
                         <FieldTextarea
                           className="min-w-0 flex-1"
-                          label={`Frage ${index + 1}`}
-                          placeholder="where is the center of the image pin it ?"
+                          label={t('imagePinEditor.questionLabel', { index: index + 1 })}
+                          placeholder={t('imagePinEditor.questionPlaceholder')}
                           value={rect.question ?? ''}
                           onValueChange={(value) => patchRectQuestion(rect.id, value)}
                           rows={2}
@@ -283,7 +427,7 @@ export function GameImagePinEditor({ nodeData, onPatchNodeData }: GameImagePinEd
                           size="icon"
                           className="rounded-full shrink-0 self-end sm:self-start"
                           onClick={() => handleDeleteRectRow(rect.id)}
-                          aria-label={`Bereich ${index + 1} und Frage entfernen`}
+                          aria-label={t('imagePinEditor.removeRegionAria', { index: index + 1 })}
                         >
                           <X className="size-4" />
                         </Button>

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Konva from 'konva'
-import { Image as KonvaImage, Layer, Rect, Stage, Transformer } from 'react-konva'
+import { Image as KonvaImage, Layer, Rect, Stage, Text, Transformer } from 'react-konva'
 import useImage from 'use-image'
 
 import type { GameImagePinRect } from './game-image-pin.schema'
@@ -9,8 +9,24 @@ import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from './imagePinRectGeometr
 const RECT_FILL = 'rgba(1, 105, 111, 0.18)'
 const RECT_STROKE_SELECTED = '#01696f'
 const RECT_STROKE = '#7a7974'
+const LABEL_FONT_SIZE = 20
+const LABEL_FONT_COLOR = '#01696f'
 
 type DraftBox = { sx: number; sy: number; cx: number; cy: number }
+
+/** Calculate text position to center it inside a rectangle */
+function getCenteredTextPosition(
+  rectX: number,
+  rectY: number,
+  rectWidth: number,
+  rectHeight: number,
+  fontSize: number,
+): { x: number; y: number } {
+  const textWidth = fontSize * 0.6 // Approximate character width
+  const x = rectX + (rectWidth - textWidth) / 2
+  const y = rectY + (rectHeight - fontSize) / 2
+  return { x, y }
+}
 
 export type ImagePinRectStageProps = {
   imageSrc: string
@@ -53,8 +69,30 @@ export function ImagePinRectStage({
   onSelectedRectIdChange,
   onSceneMetrics,
 }: ImagePinRectStageProps) {
-  const [image] = useImage(imageSrc, 'anonymous')
+  const [image, status, error] = useImage(imageSrc, 'anonymous')
   const [draft, setDraft] = useState<DraftBox | null>(null)
+
+  // Log image loading status for debugging
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      if (status === 'loading') {
+        console.log(
+          '[ImagePinRectStage] Image loading:',
+          imageSrc.substring(0, 50) + (imageSrc.length > 50 ? '...' : ''),
+        )
+      } else if (status === 'loaded') {
+        console.log('[ImagePinRectStage] Image loaded successfully:', {
+          width: image?.naturalWidth,
+          height: image?.naturalHeight,
+        })
+      } else if (status === 'failed') {
+        console.error('[ImagePinRectStage] Failed to load image:', {
+          error,
+          imageSrc: imageSrc.substring(0, 50) + (imageSrc.length > 50 ? '...' : ''),
+        })
+      }
+    }
+  }, [status, error, image, imageSrc])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
@@ -209,55 +247,80 @@ export function ImagePinRectStage({
             />
           ) : null}
 
-          {rectangles.map((rect) => (
-            <Rect
-              key={rect.id}
-              ref={(node) => {
-                rectRefs.current[rect.id] = node
-              }}
-              x={rect.x}
-              y={rect.y}
-              width={rect.width}
-              height={rect.height}
-              fill={RECT_FILL}
-              stroke={selectedRectId === rect.id ? RECT_STROKE_SELECTED : RECT_STROKE}
-              strokeWidth={2}
-              draggable
-              onClick={() => onSelectedRectIdChange(rect.id)}
-              onTap={() => onSelectedRectIdChange(rect.id)}
-              onDragEnd={(event) => {
-                const node = event.target
-                const c = clampRectToImage(
-                  node.x(),
-                  node.y(),
-                  node.width(),
-                  node.height(),
-                  sceneSize.width,
-                  sceneSize.height,
-                )
-                patchRect(rect.id, { x: c.x, y: c.y })
-              }}
-              onTransformEnd={() => {
-                const node = rectRefs.current[rect.id]
-                if (!node) return
-                const scaleX = node.scaleX()
-                const scaleY = node.scaleY()
-                node.scaleX(1)
-                node.scaleY(1)
-                const rawW = Math.max(IMAGE_PIN_RECT_MIN_SIZE, node.width() * scaleX)
-                const rawH = Math.max(IMAGE_PIN_RECT_MIN_SIZE, node.height() * scaleY)
-                const c = clampRectToImage(
-                  node.x(),
-                  node.y(),
-                  rawW,
-                  rawH,
-                  sceneSize.width,
-                  sceneSize.height,
-                )
-                patchRect(rect.id, { x: c.x, y: c.y, width: c.width, height: c.height })
-              }}
-            />
-          ))}
+          {rectangles.map((rect, index) => {
+            const questionNum = index + 1
+            const labelPos = getCenteredTextPosition(
+              rect.x,
+              rect.y,
+              rect.width,
+              rect.height,
+              LABEL_FONT_SIZE,
+            )
+
+            return (
+              <React.Fragment key={rect.id}>
+                <Rect
+                  ref={(node) => {
+                    rectRefs.current[rect.id] = node
+                  }}
+                  x={rect.x}
+                  y={rect.y}
+                  width={rect.width}
+                  height={rect.height}
+                  fill={RECT_FILL}
+                  stroke={selectedRectId === rect.id ? RECT_STROKE_SELECTED : RECT_STROKE}
+                  strokeWidth={2}
+                  draggable
+                  onClick={() => onSelectedRectIdChange(rect.id)}
+                  onTap={() => onSelectedRectIdChange(rect.id)}
+                  onDragEnd={(event) => {
+                    const node = event.target
+                    const c = clampRectToImage(
+                      node.x(),
+                      node.y(),
+                      node.width(),
+                      node.height(),
+                      sceneSize.width,
+                      sceneSize.height,
+                    )
+                    patchRect(rect.id, { x: c.x, y: c.y })
+                  }}
+                  onTransformEnd={() => {
+                    const node = rectRefs.current[rect.id]
+                    if (!node) return
+                    const scaleX = node.scaleX()
+                    const scaleY = node.scaleY()
+                    node.scaleX(1)
+                    node.scaleY(1)
+                    const rawW = Math.max(IMAGE_PIN_RECT_MIN_SIZE, node.width() * scaleX)
+                    const rawH = Math.max(IMAGE_PIN_RECT_MIN_SIZE, node.height() * scaleY)
+                    const c = clampRectToImage(
+                      node.x(),
+                      node.y(),
+                      rawW,
+                      rawH,
+                      sceneSize.width,
+                      sceneSize.height,
+                    )
+                    patchRect(rect.id, { x: c.x, y: c.y, width: c.width, height: c.height })
+                  }}
+                />
+
+                {/* Question number label centered in rectangle */}
+                <Text
+                  x={labelPos.x}
+                  y={labelPos.y}
+                  text={`Q${questionNum}`}
+                  fontSize={LABEL_FONT_SIZE}
+                  fontFamily="Arial, sans-serif"
+                  fontStyle="bold"
+                  fill={LABEL_FONT_COLOR}
+                  align="center"
+                  pointerEvents="none"
+                />
+              </React.Fragment>
+            )
+          })}
 
           {draftShape ? (
             <Rect

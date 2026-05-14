@@ -253,5 +253,35 @@
   },
   "helpDrawer": {
     "title": "Game Studio Hilfe"
+  },
+  "imagePinDialog": {
+    "title": "Bild und Pins"
+  },
+  "imagePinEditor": {
+    "intro": "Lade ein Bild hoch und markiere die relevanten Bereiche mit Rechtecken. Formuliere für jedes Rechteck eine Frage und hinterlege die passende Punktebewertung in den Knoteneinstellungen. Speichere, versioniere und veröffentliche das Spiel, wenn du fertig bist.",
+    "drawHint": "Ziehe auf dem Bild, um ein Rechteck zu zeichnen.",
+    "galleryTitle": "Bilder aus diesem Projekt",
+    "galleryHint": "Wähle eine Vorschau aus diesem Spiel oder aus Bildern, die bereits in deinem Cloud-Ordner liegen.",
+    "galleryEmpty": "Noch keine Bilder. Lade oben eines hoch, oder füge einem anderen Bild-Pin-Knoten auf dieser Fläche ein Bild hinzu—dann erscheinen sie hier.",
+    "helpTitle": "Bild und Pins",
+    "helpSectionDefinition": "Was dieser Knoten macht",
+    "helpSectionExample": "Beispiel",
+    "helpSectionExamples": "Beispiele",
+    "helpSectionReason": "Warum das wichtig ist",
+    "helpDefinition": "Lernende sehen dein Bild und arbeiten in den von dir markierten Bereichen. Jeder Bereich kann eine eigene Frage tragen.",
+    "helpExampleTitle": "Typisches Setup",
+    "helpExampleValues": "Lade z. B. ein Anatomiebild hoch, markiere zwei Strukturen mit Rechtecken und stelle für jeden Bereich eine andere Zuordnungsfrage.",
+    "questionsPerRegion": "Fragen pro Bereich",
+    "questionLabel": "Frage {{index}}",
+    "questionPlaceholder": "Was soll die Lernperson für diesen Bereich beantworten?",
+    "addRectangle": "Rechteck",
+    "deleteSelection": "Auswahl löschen",
+    "removeRegionAria": "Bereich {{index}} und zugehörige Frage entfernen",
+    "replaceImageAria": "Bild ersetzen",
+    "removeImageAria": "Bild entfernen",
+    "toastUploadRequiresContext": "Melde dich mit einer Institution an, um Bilder hochzuladen.",
+    "toastUploadInvalidType": "Bitte wähle ein JPEG- oder PNG-Bild.",
+    "toastUploadFailed": "Bild konnte nicht hochgeladen werden. Bitte erneut versuchen.",
+    "toastUploadSuccess": "Bild in deine Cloud hochgeladen."
   }
 }

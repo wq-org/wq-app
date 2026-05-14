@@ -40,6 +40,7 @@ import {
   unpublishGame,
   updateGameForStudio,
 } from '../api/gameStudioApi'
+import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
 import { GamePreviewDialog } from '../components/GamePreviewDialog'
@@ -689,6 +690,13 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     return { Component: entry.DialogComponent, nodeId: node.id, node }
   }, [openDialogNodeId, nodes])
 
+  const projectImageGallery = useMemo(() => {
+    const openNode = openDialogNodeId ? nodes.find((n) => n.id === openDialogNodeId) : undefined
+    const preview = (openNode?.data as { imagePreview?: string } | undefined)?.imagePreview
+    const skipUrl = typeof preview === 'string' ? preview : ''
+    return collectImagePinGalleryImages(nodes, { skipUrl })
+  }, [nodes, openDialogNodeId])
+
   const handlePatchOpenNodeData = useCallback(
     (patch: Record<string, unknown>) => {
       if (!openDialogNodeId) return
@@ -827,6 +835,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           onPatchNodeData={handlePatchOpenNodeData}
           onClose={() => setOpenDialogNodeId(null)}
           onDelete={handleDeleteOpenNode}
+          projectImageGallery={projectImageGallery}
         />
       ) : null}
     </div>

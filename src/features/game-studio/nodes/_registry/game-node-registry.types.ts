@@ -14,6 +14,11 @@ export type GameNodeDialogProps = {
   onPatchNodeData: (patch: Record<string, unknown>) => void
   onClose: () => void
   onDelete: () => void
+  /**
+   * De-duplicated image URLs from Image Pin nodes on the canvas (quick-select).
+   * Editors that need it (e.g. Image Pin) read this; others ignore it.
+   */
+  projectImageGallery?: readonly { url: string; title: string; storagePath?: string }[]
 }
 
 export type GameNodeRegistryEntry = {

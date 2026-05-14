@@ -116,9 +116,16 @@ export async function uploadFile({
     }
 
     // Get public URL for the uploaded file
+    // Note: If bucket is private, getPublicUrl() returns an invalid URL.
+    // For private buckets, use getFileSignedUrl() instead (see filesApi.ts).
     const { data: urlData } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(data.path)
 
     const publicUrl = urlData?.publicUrl
+
+    console.log('[uploadFile] Upload result:', {
+      path: data.path,
+      publicUrl: publicUrl?.substring(0, 80) + (publicUrl && publicUrl.length > 80 ? '...' : ''),
+    })
 
     return {
       success: true,

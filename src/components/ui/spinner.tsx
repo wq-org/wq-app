@@ -4,6 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 const spinnerVariants = cva('origin-center overflow-visible will-change-transform', {
   variants: {
     variant: {
+      primary: '[--uib-color:theme(colors.foreground)]',
       gray: '[--uib-color:theme(colors.gray.800)]',
       light: '[--uib-color:theme(colors.gray.200)]',
       white: '[--uib-color:theme(colors.white)]',
@@ -20,7 +21,7 @@ const spinnerVariants = cva('origin-center overflow-visible will-change-transfor
     },
   },
   defaultVariants: {
-    variant: 'gray',
+    variant: 'primary',
     size: 'md',
   },
 })

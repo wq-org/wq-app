@@ -35,13 +35,16 @@ export function createDefaultImagePinRectangle(
   }
 }
 
-/** Decode intrinsic pixel size of a bitmap `src` (e.g. data URL). */
+/** Decode intrinsic pixel size of a bitmap `src` (e.g. data URL, public URL). */
 export function loadImageNaturalSize(src: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.crossOrigin = 'anonymous'
+    // Only set crossOrigin for non-data URLs; data URLs don't need CORS headers
+    if (!src.startsWith('data:')) {
+      img.crossOrigin = 'anonymous'
+    }
     img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
-    img.onerror = () => reject(new Error('Failed to load image'))
+    img.onerror = () => reject(new Error(`Failed to load image from: ${src}`))
     img.src = src
   })
 }

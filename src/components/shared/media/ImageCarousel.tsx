@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { Spinner } from '@/components/ui/spinner'
 
 export type ImageCarouselImage = {
   url: string
@@ -22,6 +23,8 @@ export type ImageCarouselProps = {
   className?: string
   /** Max length for title truncation (character count). Default 40. */
   titleMaxLength?: number
+  /** Show loading spinner while fetching images. */
+  isLoading?: boolean
 }
 
 function normalizeImages(images: ImageCarouselItem[]): ImageCarouselImage[] {
@@ -43,16 +46,39 @@ export function ImageCarousel({
   onSelect,
   className,
   titleMaxLength = 40,
+  isLoading = false,
 }: ImageCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const normalized = normalizeImages(images)
+
+  // Show spinner while loading
+  if (isLoading) {
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-center py-6 animate-in fade-in-0 slide-in-from-bottom-2',
+          className,
+        )}
+      >
+        <Spinner
+          size="sm"
+          speed={1500}
+        />
+      </div>
+    )
+  }
 
   if (normalized.length === 0) {
     return null
   }
 
   return (
-    <div className={cn('w-full min-w-0 max-w-[700px] overflow-hidden', className)}>
+    <div
+      className={cn(
+        'w-full min-w-0 max-w-[700px] overflow-hidden animate-in fade-in-0 slide-in-from-bottom-4',
+        className,
+      )}
+    >
       <div
         ref={scrollRef}
         className="flex -ml-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
