@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { AI02_DEFAULT_PROMPTS } from './ai-components.constants'
 import type { Ai02Props } from './ai-components.types'
+import { ImagePin } from '@/features/game-studio/nodes/game-image-pin/ImagePin'
 
 export function Ai02({
   className,
@@ -62,6 +63,9 @@ export function Ai02({
 
   return (
     <div className={cn('flex w-full  flex-col gap-4', className)}>
+      <div className="flex flex-wrap justify-center gap-2">
+        <ImagePin />
+      </div>
       <div className="flex flex-wrap justify-center gap-2">
         {prompts.map((item) => {
           const Icon = item.icon

@@ -3,49 +3,12 @@ import { Ai02, type Ai02PromptSuggestion } from '@/components/shared/ai-componen
 import { ChatHistory, type ChatHistoryMessage } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
 import { Check, MessageCircle, HandHelping } from 'lucide-react'
+import type { GameImagePinNodeData } from './game-image-pin.schema'
 
 export type GameImagePinPreviewProps = {
   nodeId: string
+  nodeData: GameImagePinNodeData
 }
-
-const previewChatSeedMessages: ChatHistoryMessage[] = [
-  {
-    id: 'demo-default-blue-in-1',
-    text: 'Incoming with one image (rendered via ChatImageList).',
-    time: '10:22',
-    direction: 'incoming',
-    images: [
-      {
-        src: 'https://is1-ssl.mzstatic.com/image/thumb/D7jPY10jdztPWqX8fx4CaQ/2400x1350sr.webp',
-        alt: 'MacBook Neo — highlights, AI',
-      },
-    ],
-  },
-  {
-    id: 'demo-default-blue-out-1',
-    text: 'Receiving message — right side.',
-    time: '10:23',
-    direction: 'receiving',
-  },
-  {
-    id: 'demo-default-blue-out-1e33',
-    text: 'Receiving message — right side.',
-    time: '10:23',
-    direction: 'receiving',
-  },
-  {
-    id: 'default-blue-out-1e33',
-    text: 'Receiving message — right side.',
-    time: '10:23',
-    direction: 'receiving',
-  },
-  {
-    id: 'demo-default-blue-in-2',
-    text: 'Another incoming line for contrast.',
-    time: '10:24',
-    direction: 'incoming',
-  },
-]
 
 const prompts = [
   {
@@ -66,34 +29,124 @@ const prompts = [
   },
 ] as const satisfies readonly Ai02PromptSuggestion[]
 
-function clonePreviewChatSeed(): ChatHistoryMessage[] {
-  return previewChatSeedMessages.map((message) => ({ ...message }))
+type PreviewQuestion = {
+  id: string
+  question: string
 }
 
 function formatPreviewChatTime(date = new Date()): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-function buildPreviewUserMessage(text: string): ChatHistoryMessage {
+function getPreviewImageSrc(nodeData: GameImagePinNodeData): string {
+  return typeof nodeData.imagePreview === 'string' ? nodeData.imagePreview.trim() : ''
+}
+
+function getPreviewQuestions(nodeData: GameImagePinNodeData): PreviewQuestion[] {
+  const rectangles = Array.isArray(nodeData.rectangles) ? nodeData.rectangles : []
+  return rectangles.flatMap((rect) => {
+    const question = String(rect.question ?? '').trim()
+    if (!question) return []
+    return [{ id: rect.id, question }]
+  })
+}
+
+function buildPreviewQuestionMessage(
+  nodeId: string,
+  imageSrc: string,
+  question: PreviewQuestion,
+  index: number,
+): ChatHistoryMessage {
   return {
-    id: `preview-user-${crypto.randomUUID()}`,
+    id: `preview-${nodeId}-question-${index}-${question.id}`,
+    text: question.question,
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
+    images: imageSrc
+      ? [
+          {
+            src: imageSrc,
+            alt: 'Game Image Pin preview image',
+          },
+        ]
+      : undefined,
+  }
+}
+
+function buildPreviewAnswerMessage(
+  text: string,
+  nodeId: string,
+  index: number,
+): ChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-answer-${index}`,
     text,
     time: formatPreviewChatTime(),
     direction: 'receiving',
   }
 }
 
-export function GameImagePinPreview({ nodeId }: GameImagePinPreviewProps) {
-  const [messages, setMessages] = useState<ChatHistoryMessage[]>(clonePreviewChatSeed)
+function buildInitialPreviewMessages(
+  nodeId: string,
+  imageSrc: string,
+  questions: PreviewQuestion[],
+): ChatHistoryMessage[] {
+  const firstQuestion = questions[0]
+  if (!firstQuestion) return []
+  return [buildPreviewQuestionMessage(nodeId, imageSrc, firstQuestion, 0)]
+}
+
+type PreviewState = {
+  messages: ChatHistoryMessage[]
+  questionIndex: number
+}
+
+function buildResetKey(nodeId: string, imageSrc: string, questions: PreviewQuestion[]): string {
+  return [
+    nodeId,
+    imageSrc,
+    ...questions.map((question) => `${question.id}:${question.question}`),
+  ].join('::')
+}
+
+export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewProps) {
+  const imageSrc = getPreviewImageSrc(nodeData)
+  const questions = getPreviewQuestions(nodeData)
+  const resetKey = buildResetKey(nodeId, imageSrc, questions)
+
+  const [state, setState] = useState<PreviewState>(() => ({
+    messages: buildInitialPreviewMessages(nodeId, imageSrc, questions),
+    questionIndex: 0,
+  }))
 
   useEffect(() => {
-    setMessages(clonePreviewChatSeed())
-  }, [nodeId])
+    setState({
+      messages: buildInitialPreviewMessages(nodeId, imageSrc, questions),
+      questionIndex: 0,
+    })
+  }, [resetKey])
 
   const handleSubmit = (message: string) => {
     const trimmed = message.trim()
     if (!trimmed) return
-    setMessages((prev) => [...prev, buildPreviewUserMessage(trimmed)])
+    setState((prev) => {
+      const nextMessages = [
+        ...prev.messages,
+        buildPreviewAnswerMessage(trimmed, nodeId, prev.questionIndex),
+      ]
+      const nextQuestionIndex = prev.questionIndex + 1
+      const nextQuestion = questions[nextQuestionIndex]
+      if (nextQuestion) {
+        nextMessages.push(
+          buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, nextQuestionIndex),
+        )
+      }
+
+      return {
+        messages: nextMessages,
+        questionIndex: nextQuestionIndex,
+      }
+    })
   }
 
   return (
@@ -108,9 +161,9 @@ export function GameImagePinPreview({ nodeId }: GameImagePinPreviewProps) {
       </Text>
 
       <ChatHistory
-        messages={messages}
+        messages={state.messages}
         className="h-[390px]"
-        incomingBubbleVariant="default"
+        incomingBubbleVariant="dark"
         receivingBubbleVariant="blue"
       />
 

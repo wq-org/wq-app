@@ -1,4 +1,4 @@
-import { StickyNoteOff } from 'lucide-react'
+import { StickyNote } from 'lucide-react'
 
 type ImagePinRectErrorOverlayProps = {
   title?: string
@@ -13,7 +13,7 @@ export function ImagePinRectErrorOverlay({
     <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-destructive/10">
       <div className="flex max-w-[18rem] flex-col items-center gap-3 rounded-md border border-destructive bg-background px-4 py-3 text-center shadow-sm">
         <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-          <StickyNoteOff
+          <StickyNote
             className="size-6"
             aria-hidden="true"
           />
