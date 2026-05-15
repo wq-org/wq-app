@@ -161,8 +161,8 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         className="h-[390px]"
         showUserAvatar
         incomingAvatarUrl={userAvatarUrl ?? undefined}
-        incomingBubbleVariant="dark"
-        receivingBubbleVariant="blue"
+        incomingBubbleVariant="orange"
+        receivingBubbleVariant="dark"
       />
 
       <Ai02

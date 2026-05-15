@@ -8,7 +8,7 @@ const imagePinVariants = cva('rounded-full border-2 border-white animate-pulse r
       default: 'bg-primary',
       secondary: 'bg-secondary',
       correct: 'bg-blue-400',
-      wrong: 'bg-orange-400',
+      wrong: 'bg-red-400',
     },
   },
   defaultVariants: {
@@ -24,7 +24,7 @@ const pingVariants = cva(
         default: 'bg-primary',
         secondary: 'bg-secondary',
         correct: 'bg-blue-400',
-        wrong: 'bg-orange-400',
+        wrong: 'bg-red-400',
       },
     },
     defaultVariants: {

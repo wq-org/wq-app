@@ -5,6 +5,7 @@ import type { ChatImageItem } from '@/components/shared/chat/types'
 type ChatImageListProps = {
   images?: ChatImageItem[]
   className?: string
+  centered?: boolean
 }
 
 function normalizeChatImage(image: ChatImageItem, index: number) {
@@ -23,7 +24,7 @@ function normalizeChatImage(image: ChatImageItem, index: number) {
   }
 }
 
-export function ChatImageList({ images, className }: ChatImageListProps) {
+export function ChatImageList({ images, className, centered = false }: ChatImageListProps) {
   if (!images || images.length === 0) return null
 
   const normalizedImages = images.map((image, index) => normalizeChatImage(image, index))
@@ -37,6 +38,7 @@ export function ChatImageList({ images, className }: ChatImageListProps) {
           src={image.src}
           alt={image.alt}
           ratio={image.ratio}
+          centered={centered}
         />
       </div>
     )
@@ -51,6 +53,7 @@ export function ChatImageList({ images, className }: ChatImageListProps) {
           alt={image.alt}
           ratio={image.ratio}
           className="w-full"
+          centered={centered}
         />
       ))}
     </div>
