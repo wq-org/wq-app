@@ -255,7 +255,8 @@
     "title": "Game Studio Hilfe"
   },
   "imagePinDialog": {
-    "title": "Bild und Pins"
+    "title": "Bild und Pins",
+    "description": "Lade ein Bild hoch, markiere Bereiche und formuliere für jeden Bereich eine Frage."
   },
   "imagePinEditor": {
     "intro": "Lade ein Bild hoch und markiere die relevanten Bereiche mit Rechtecken. Formuliere für jedes Rechteck eine Frage und hinterlege die passende Punktebewertung in den Knoteneinstellungen. Speichere, versioniere und veröffentliche das Spiel, wenn du fertig bist.",

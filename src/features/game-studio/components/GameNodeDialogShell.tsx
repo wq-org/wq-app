@@ -38,6 +38,7 @@ export function GameNodeDialogShell({
     >
       <DialogContent
         className={cn('flex h-[90vh] flex-col overflow-hidden sm:max-w-4xl rounded-3xl', className)}
+        {...(!description ? { 'aria-describedby': undefined } : {})}
       >
         <DialogHeader className="shrink-0">
           <DialogTitle>{title}</DialogTitle>

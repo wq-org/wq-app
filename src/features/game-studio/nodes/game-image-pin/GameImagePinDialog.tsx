@@ -26,6 +26,7 @@ export function GameImagePinDialog({
         if (!next) onClose()
       }}
       title={t('imagePinDialog.title')}
+      description={t('imagePinDialog.description')}
     >
       <GameLayout
         editorContent={

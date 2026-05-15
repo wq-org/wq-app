@@ -255,7 +255,8 @@
     "title": "Game Studio Help"
   },
   "imagePinDialog": {
-    "title": "Image Pin"
+    "title": "Image Pin",
+    "description": "Upload an image, draw regions, and set a question for each area."
   },
   "imagePinEditor": {
     "intro": "Upload an image and mark the relevant areas with rectangles. Write a question for each rectangle and set scoring in the node settings. Save, version, and publish the game when you are ready.",

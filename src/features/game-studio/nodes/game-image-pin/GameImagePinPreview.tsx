@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Ai02, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
 import { ChatHistory, type ChatHistoryMessage } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
@@ -7,7 +8,7 @@ export type GameImagePinPreviewProps = {
   nodeId: string
 }
 
-const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
+const previewChatSeedMessages: ChatHistoryMessage[] = [
   {
     id: 'demo-default-blue-in-1',
     text: 'Incoming with one image (rendered via ChatImageList).',
@@ -64,7 +65,37 @@ const prompts = [
       'Scan through the codebase to identify and fix 3 critical bugs, providing detailed explanations for each fix.',
   },
 ] as const satisfies readonly Ai02PromptSuggestion[]
-export function GameImagePinPreview() {
+
+function clonePreviewChatSeed(): ChatHistoryMessage[] {
+  return previewChatSeedMessages.map((message) => ({ ...message }))
+}
+
+function formatPreviewChatTime(date = new Date()): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function buildPreviewUserMessage(text: string): ChatHistoryMessage {
+  return {
+    id: `preview-user-${crypto.randomUUID()}`,
+    text,
+    time: formatPreviewChatTime(),
+    direction: 'receiving',
+  }
+}
+
+export function GameImagePinPreview({ nodeId }: GameImagePinPreviewProps) {
+  const [messages, setMessages] = useState<ChatHistoryMessage[]>(clonePreviewChatSeed)
+
+  useEffect(() => {
+    setMessages(clonePreviewChatSeed())
+  }, [nodeId])
+
+  const handleSubmit = (message: string) => {
+    const trimmed = message.trim()
+    if (!trimmed) return
+    setMessages((prev) => [...prev, buildPreviewUserMessage(trimmed)])
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <Text
@@ -77,8 +108,7 @@ export function GameImagePinPreview() {
       </Text>
 
       <ChatHistory
-        messages={chatHistoryDefaultIncomingBlueReceivingMessages}
-        autoScroll={false}
+        messages={messages}
         className="h-[390px]"
         incomingBubbleVariant="default"
         receivingBubbleVariant="blue"
@@ -86,9 +116,7 @@ export function GameImagePinPreview() {
 
       <Ai02
         prompts={prompts}
-        onSubmit={(message: string) =>
-          console.log(`Ai02 submit: ${message.slice(0, 80)}${message.length > 80 ? '…' : ''}`)
-        }
+        onSubmit={handleSubmit}
       />
     </div>
   )

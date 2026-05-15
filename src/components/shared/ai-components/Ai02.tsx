@@ -50,6 +50,14 @@ export function Ai02({
     handleSubmit()
   }
 
+  const handleComposerKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter') return
+    if (e.nativeEvent.isComposing) return
+    if (e.shiftKey) return
+    e.preventDefault()
+    handleSubmit()
+  }
+
   const canSend = Boolean(inputValue.trim())
 
   return (
@@ -80,8 +88,9 @@ export function Ai02({
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleComposerKeyDown}
             placeholder={placeholder}
-            className="min-h-[48.4px] w-full resize-none border-0 bg-transparent p-3 text-[16px] wrap-break-word whitespace-pre-wrap text-foreground shadow-none outline-none transition-[padding] duration-200 ease-in-out focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="min-h-[48.4px] w-full resize-none border-0 bg-transparent p-3 text-[16px] wrap-break-word whitespace-pre-wrap text-foreground shadow-none outline-none transition-[padding] duration-200 ease-in-out focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-input/0 "
           />
         </div>
 
@@ -89,13 +98,13 @@ export function Ai02({
           <div className="ml-auto flex items-center gap-3">
             <Button
               type="submit"
-              variant="secondary"
+              variant="default"
               size="icon-sm"
               disabled={!canSend}
-              className={cn('cursor-pointer rounded-full', canSend && 'hover:bg-primary/90')}
+              className={cn('cursor-pointer rounded-full')}
               aria-label="Send message"
             >
-              <ArrowUp className="h-4 w-4 text-white" />
+              <ArrowUp className="h-4 w-4" />
             </Button>
           </div>
         </div>

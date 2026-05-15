@@ -4,6 +4,7 @@ import { Image as KonvaImage, Layer, Rect, Stage, Text, Transformer } from 'reac
 import useImage from 'use-image'
 
 import type { GameImagePinRect } from './game-image-pin.schema'
+import { ImagePinRectErrorOverlay } from './ImagePinRectErrorOverlay'
 import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from './imagePinRectGeometry'
 
 const RECT_FILL = 'rgba(186, 213, 228, 0.18)'
@@ -371,17 +372,7 @@ export function ImagePinRectStage({
         </Layer>
       </Stage>
 
-      {/* Error overlay when image fails to load */}
-      {isImageFailed && (
-        <div className="absolute inset-0 flex items-center justify-center bg-destructive/10 rounded-lg">
-          <div className="flex flex-col items-center gap-2 bg-background px-4 py-3 rounded-md border border-destructive">
-            <p className="text-sm font-medium text-destructive">Image failed to load</p>
-            <p className="text-xs text-muted-foreground">
-              Try refreshing the image or re-uploading it.
-            </p>
-          </div>
-        </div>
-      )}
+      {isImageFailed && <ImagePinRectErrorOverlay />}
     </div>
   )
 }
