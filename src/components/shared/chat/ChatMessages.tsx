@@ -9,6 +9,7 @@ import type { Message } from '@/lib/chat-data'
 interface ChatMessagesProps {
   messages: Message[]
   className?: string
+  showUserAvatar?: boolean
   incomingAvatarUrl?: string
   incomingAvatarFallback?: string
   incomingBubbleVariant?: ChatBubbleVariant
@@ -20,6 +21,7 @@ interface ChatMessagesProps {
 export function ChatMessages({
   messages,
   className,
+  showUserAvatar,
   incomingAvatarUrl,
   incomingAvatarFallback,
   incomingBubbleVariant,
@@ -40,6 +42,7 @@ export function ChatMessages({
     <ChatHistory
       messages={historyMessages}
       className={className}
+      showUserAvatar={showUserAvatar}
       incomingAvatarUrl={incomingAvatarUrl}
       incomingAvatarFallback={incomingAvatarFallback}
       incomingBubbleVariant={incomingBubbleVariant}

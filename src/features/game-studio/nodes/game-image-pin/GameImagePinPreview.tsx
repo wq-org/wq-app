@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Ai02, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
 import { ChatHistory, type ChatHistoryMessage } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
 import { Check, MessageCircle, HandHelping } from 'lucide-react'
+import { useUser } from '@/contexts/user'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import type { GameImagePinNodeData } from './game-image-pin.schema'
 
 export type GameImagePinPreviewProps = {
@@ -101,30 +103,24 @@ type PreviewState = {
   questionIndex: number
 }
 
-function buildResetKey(nodeId: string, imageSrc: string, questions: PreviewQuestion[]): string {
-  return [
-    nodeId,
-    imageSrc,
-    ...questions.map((question) => `${question.id}:${question.question}`),
-  ].join('::')
-}
-
 export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewProps) {
+  const { profile } = useUser()
+  const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
   const imageSrc = getPreviewImageSrc(nodeData)
-  const questions = getPreviewQuestions(nodeData)
-  const resetKey = buildResetKey(nodeId, imageSrc, questions)
-
-  const [state, setState] = useState<PreviewState>(() => ({
-    messages: buildInitialPreviewMessages(nodeId, imageSrc, questions),
-    questionIndex: 0,
-  }))
-
-  useEffect(() => {
-    setState({
+  const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
+  const initialState = useMemo<PreviewState>(
+    () => ({
       messages: buildInitialPreviewMessages(nodeId, imageSrc, questions),
       questionIndex: 0,
-    })
-  }, [resetKey])
+    }),
+    [imageSrc, nodeId, questions],
+  )
+
+  const [state, setState] = useState<PreviewState>(() => initialState)
+
+  useEffect(() => {
+    setState(initialState)
+  }, [initialState])
 
   const handleSubmit = (message: string) => {
     const trimmed = message.trim()
@@ -163,6 +159,8 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
       <ChatHistory
         messages={state.messages}
         className="h-[390px]"
+        showUserAvatar
+        incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingBubbleVariant="dark"
         receivingBubbleVariant="blue"
       />

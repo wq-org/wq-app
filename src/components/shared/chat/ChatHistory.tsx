@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 type ChatHistoryProps = {
   messages: ChatHistoryMessage[]
   className?: string
+  showUserAvatar?: boolean
   incomingAvatarUrl?: string
   incomingAvatarFallback?: string
   autoScroll?: boolean
@@ -26,8 +27,9 @@ type ChatHistoryProps = {
 export function ChatHistory({
   messages,
   className,
+  showUserAvatar = false,
   incomingAvatarUrl,
-  incomingAvatarFallback,
+  incomingAvatarFallback = '/favicon.ico',
   autoScroll,
   incomingBubbleVariant,
   receivingBubbleVariant,
@@ -67,6 +69,8 @@ export function ChatHistory({
                   text={message.text}
                   time={message.time}
                   images={message.images}
+                  avatarUrl={showUserAvatar ? '/favicon.ico' : undefined}
+                  avatarFallback="/favicon.ico"
                   variant={receivingBubbleVariant}
                   rounded={receivingBubbleRounded}
                   status={message.status}
@@ -77,7 +81,9 @@ export function ChatHistory({
                   text={message.text}
                   time={message.time}
                   images={message.images}
-                  avatarUrl={incomingAvatarUrl}
+                  avatarUrl={
+                    showUserAvatar ? incomingAvatarUrl?.trim() || '/favicon.ico' : incomingAvatarUrl
+                  }
                   avatarFallback={incomingAvatarFallback}
                   variant={incomingBubbleVariant}
                   rounded={incomingBubbleRounded}
