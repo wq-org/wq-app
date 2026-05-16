@@ -42,6 +42,19 @@ export type Ai02Props = {
   clearOnSubmit?: boolean
 }
 
+export type Ai01Props = {
+  className?: string
+  placeholder?: string
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
+  onSubmit?: (message: string) => void
+  onFilesSelected?: (files: FileList) => void
+  clearOnSubmit?: boolean
+  showDropDown?: boolean
+  showMic?: boolean
+}
+
 export type Ai03Props = {
   className?: string
   placeholder?: string

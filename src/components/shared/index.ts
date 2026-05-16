@@ -218,16 +218,20 @@ export type {
 
 export { DateTimePicker, TimePickerWithIcon } from './date-time'
 export {
+  Ai01,
   Ai02,
   Ai03,
+  AiPromptBadgeList,
   AI02_DEFAULT_MODELS,
   AI02_DEFAULT_PROMPTS,
   AI03_MENU_ACTION_IDS,
 } from './ai-components'
 export type {
+  Ai01Props,
   Ai02ModelOption,
   Ai02PromptSuggestion,
   Ai02Props,
+  AiPromptBadgeListProps,
   Ai03MenuActionId,
   Ai03Props,
 } from './ai-components'

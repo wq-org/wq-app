@@ -305,7 +305,7 @@ const chatBubbleVariantList: ChatBubbleVariant[] = [
 
 const chatBubbleRoundedList: ChatBubbleRounded[] = ['sm', 'md', 'lg', 'xl', 'pill']
 
-const CHAT_DEMO_MACBOOK_NEO_IMAGE =
+const CHAT_DEMO_MAC_BOOK_NEO_IMAGE =
   'https://is1-ssl.mzstatic.com/image/thumb/za7Mqkp-OSK_2BHWq8AtSQ/1960x1102.jpg'
 
 const chatHistoryColorDemoMessages: ChatHistoryMessage[] = [
@@ -338,7 +338,7 @@ const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
     direction: 'incoming',
     images: [
       {
-        src: CHAT_DEMO_MACBOOK_NEO_IMAGE,
+        src: CHAT_DEMO_MAC_BOOK_NEO_IMAGE,
         alt: 'MacBook Neo — highlights, AI',
       },
     ],

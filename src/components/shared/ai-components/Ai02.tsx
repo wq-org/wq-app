@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { AI02_DEFAULT_PROMPTS } from './ai-components.constants'
+import { AiPromptBadgeList } from './AiPromptBadgeList'
 import type { Ai02Props } from './ai-components.types'
-import { ImagePin } from '@/features/game-studio/nodes/game-image-pin/ImagePin'
 
 export function Ai02({
   className,
@@ -62,27 +62,12 @@ export function Ai02({
   const canSend = Boolean(inputValue.trim())
 
   return (
-    <div className={cn('flex w-full  flex-col gap-4', className)}>
-      <div className="flex flex-wrap justify-center gap-2">
-        <ImagePin />
-      </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        {prompts.map((item) => {
-          const Icon = item.icon
-          return (
-            <Button
-              key={item.text}
-              type="button"
-              variant="ghost"
-              className="group flex h-auto items-center gap-2 rounded-full border bg-transparent px-3 py-2 text-sm text-foreground transition-colors duration-200 ease-out hover:bg-muted/30 dark:bg-transparent"
-              onClick={() => handlePromptClick(item.prompt)}
-            >
-              <Icon className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-              <span>{item.text}</span>
-            </Button>
-          )
-        })}
-      </div>
+    <div className={cn('flex w-full flex-col gap-4', className)}>
+      <AiPromptBadgeList
+        prompts={prompts}
+        onPromptClick={handlePromptClick}
+      />
+
       <form
         onSubmit={handleFormSubmit}
         className="flex min-h-[120px] cursor-text flex-col rounded-2xl border border-border bg-transparent"

@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Ai02, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
+import {
+  Ai01,
+  AiPromptBadgeList,
+  type Ai02PromptSuggestion,
+} from '@/components/shared/ai-components'
 import { ChatHistory, type ChatHistoryMessage } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
-import { Check, MessageCircle, HandHelping } from 'lucide-react'
+import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import type { GameImagePinNodeData } from './game-image-pin.schema'
@@ -10,6 +14,11 @@ import type { GameImagePinNodeData } from './game-image-pin.schema'
 export type GameImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
+}
+
+type PreviewQuestion = {
+  id: string
+  question: string
 }
 
 const prompts = [
@@ -24,17 +33,12 @@ const prompts = [
     prompt: 'I need help ? ',
   },
   {
-    icon: MessageCircle,
+    icon: CircleQuestionMark,
     text: 'how to play the game',
     prompt:
       'Scan through the codebase to identify and fix 3 critical bugs, providing detailed explanations for each fix.',
   },
 ] as const satisfies readonly Ai02PromptSuggestion[]
-
-type PreviewQuestion = {
-  id: string
-  question: string
-}
 
 function formatPreviewChatTime(date = new Date()): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -145,6 +149,10 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     })
   }
 
+  const handlePromptClick = (message: string) => {
+    handleSubmit(message)
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <Text
@@ -165,8 +173,15 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         receivingBubbleVariant="dark"
       />
 
-      <Ai02
+      <AiPromptBadgeList
         prompts={prompts}
+        onPromptClick={handlePromptClick}
+      />
+
+      <Ai01
+        placeholder="Submit your answer"
+        showDropDown={false}
+        showMic={false}
         onSubmit={handleSubmit}
       />
     </div>
