@@ -59,12 +59,13 @@ function SidebarSection({
           const gated = Boolean(entry.featureKey)
           const enabled =
             !gated || isInstitutionFeatureEnabledForKey(features, entry.featureKey as string)
+          const isDisabled = entry.disabled === true || !enabled
           return (
             <div
               key={entry.type}
-              draggable={enabled}
+              draggable={!isDisabled && entry.isDraggable}
               onDragStart={(e) => {
-                if (!enabled) {
+                if (isDisabled || !entry.isDraggable) {
                   e.preventDefault()
                   return
                 }
@@ -73,9 +74,9 @@ function SidebarSection({
               className={cn(
                 'w-full justify-start gap-3 px-3 py-2 rounded-lg text-sm h-auto',
                 'flex items-center transition-colors',
-                enabled &&
+                !isDisabled &&
                   'cursor-grab active:cursor-grabbing hover:bg-accent dark:hover:bg-zinc-800',
-                !enabled && 'cursor-not-allowed opacity-50',
+                isDisabled && 'cursor-not-allowed opacity-50',
               )}
             >
               <div

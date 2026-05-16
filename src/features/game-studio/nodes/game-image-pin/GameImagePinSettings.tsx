@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 
 export type GameImagePinSettingsProps = {
@@ -6,9 +7,13 @@ export type GameImagePinSettingsProps = {
 }
 
 export function GameImagePinSettings({ onDelete }: GameImagePinSettingsProps) {
+  const { t } = useTranslation('features.gameStudio')
+
   return (
     <div className="flex flex-col gap-4">
-      <HoldToDeleteButton onDelete={onDelete}>Hold to delete node</HoldToDeleteButton>
+      <HoldToDeleteButton onDelete={onDelete}>
+        {t('imagePinSettings.holdToDeleteNode')}
+      </HoldToDeleteButton>
     </div>
   )
 }

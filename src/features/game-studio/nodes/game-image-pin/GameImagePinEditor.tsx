@@ -326,27 +326,10 @@ export function GameImagePinEditor({
   )
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className={cn('flex items-start gap-2', imagePinEditorEnterSubtle)}>
-        <div className="flex flex-col gap-1">
-          <Text
-            as="p"
-            variant="body"
-            className="text-sm"
-          >
-            {t('imagePinEditor.intro')}
-          </Text>
-          <Text
-            as="span"
-            variant="body"
-            bold
-            className="text-xs"
-          >
-            {t('imagePinEditor.drawHint')}
-          </Text>
-        </div>
-
+    <div className="flex max-h-[calc(100vh-10rem)] min-h-0 flex-col gap-8 overflow-y-auto pr-2">
+      <div className={cn('flex  justify-end gap-2', imagePinEditorEnterSubtle)}>
         <HelpPopover
+          showButtonText
           title={t('imagePinEditor.helpTitle')}
           sectionDefinitionLabel={t('imagePinEditor.helpSectionDefinition')}
           sectionExampleLabel={t('imagePinEditor.helpSectionExample')}

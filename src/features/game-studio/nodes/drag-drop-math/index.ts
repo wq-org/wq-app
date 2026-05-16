@@ -22,7 +22,8 @@ export const gameDragDropMathEntry: GameNodeRegistryEntry = {
   validateConfig: validateGameDragDropMathConfig,
   isDeletable: true,
   allowMultiple: true,
-  isDraggable: true,
+  isDraggable: false,
+  disabled: true,
   featureKey: GAME_FEATURE_KEY_DRAG_DROP_MATH,
 }
 

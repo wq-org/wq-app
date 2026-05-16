@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
 import confetti from 'canvas-confetti'
+import { useTranslation } from 'react-i18next'
 import type { GameChatHistoryMessage } from '../../components/game-chat.types'
 import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
 import { loadImageNaturalSize } from './imagePinRectGeometry'
@@ -14,24 +15,6 @@ import {
 export const PIN_SOURCE_DROPPABLE_ID = 'pin-source'
 export const PIN_IMAGE_DROPPABLE_ID = 'image-pin-target'
 export const PIN_DRAGGABLE_ID = 'image-pin'
-export const SUBMIT_ANSWER_PROMPT =
-  'I placed the pin on the image. Please check my answer and tell me if it is correct.'
-
-export const HOW_TO_PLAY_PROMPT =
-  'Explain how to play this game. Tell me how to answer the question by dragging the pin to the correct place on the image.'
-
-const HOW_TO_PLAY_RESPONSE = [
-  "Here's how to play:",
-  '',
-  '1. Read the question shown above the image.',
-  '2. Drag the pin from the slot below onto the image.',
-  '3. Position it so the whole pin sits inside the highlighted rectangle.',
-  '4. Click "Submit Answer" to lock your placement.',
-  '5. Correct answers turn the pin blue with confetti; misses turn it red.',
-  '6. The next question loads after a short pause.',
-  '',
-  'Tip: you can drag the pin back to the slot any time before you submit.',
-].join('\n')
 
 const NEXT_QUESTION_DELAY_MS = 3000
 
@@ -168,8 +151,12 @@ function fireCorrectConfetti(): void {
 }
 
 export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArgs) {
+  const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
   const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
+  const submitAnswerPrompt = t('imagePinGamePreview.submitAnswerPrompt')
+  const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')
+  const howToPlayResponse = t('imagePinGamePreview.howToPlayResponse')
 
   const initialState = useMemo<PreviewState>(
     () => ({
@@ -307,11 +294,11 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
 
   const handleSubmitAnswer = () => {
     if (!hasActiveQuestion || !latestQuestionFromMessage) {
-      appendReceivingMessage(SUBMIT_ANSWER_PROMPT)
+      appendReceivingMessage(submitAnswerPrompt)
       return
     }
     if (!currentPin || !naturalSize) {
-      appendReceivingMessage(SUBMIT_ANSWER_PROMPT)
+      appendReceivingMessage(submitAnswerPrompt)
       return
     }
 
@@ -336,7 +323,7 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
         questionIndex: nextQuestionIndex,
         messages: [
           ...prev.messages,
-          buildPreviewAnswerMessage(SUBMIT_ANSWER_PROMPT, nodeId, prev.questionIndex),
+          buildPreviewAnswerMessage(submitAnswerPrompt, nodeId, prev.questionIndex),
           buildPreviewLoadingMessage(nodeId, nextQuestionIndex),
         ],
       }
@@ -375,18 +362,18 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
       ...prev,
       messages: [
         ...prev.messages,
-        buildPreviewAnswerMessage(HOW_TO_PLAY_PROMPT, nodeId, prev.questionIndex),
-        buildAssistantReplyMessage(HOW_TO_PLAY_RESPONSE, nodeId, prev.messages.length),
+        buildPreviewAnswerMessage(howToPlayPrompt, nodeId, prev.questionIndex),
+        buildAssistantReplyMessage(howToPlayResponse, nodeId, prev.messages.length),
       ],
     }))
   }
 
   const handlePromptClick = (message: string) => {
-    if (message === SUBMIT_ANSWER_PROMPT) {
+    if (message === submitAnswerPrompt) {
       handleSubmitAnswer()
       return
     }
-    if (message === HOW_TO_PLAY_PROMPT) {
+    if (message === howToPlayPrompt) {
       handleHowToPlay()
       return
     }
@@ -400,6 +387,8 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     handleDragEnd,
     handlePromptClick,
     handleChatInput,
+    submitAnswerPrompt,
+    howToPlayPrompt,
     pinAtSource,
     currentPin,
     getSubmissionForMessage,

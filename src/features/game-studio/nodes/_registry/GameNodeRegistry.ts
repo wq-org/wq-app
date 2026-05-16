@@ -32,11 +32,9 @@ export function buildXYFlowNodeTypes(): Record<string, ComponentType<NodeProps>>
   return Object.fromEntries(GAME_NODE_REGISTRY.map((entry) => [entry.type, entry.NodeComponent]))
 }
 
-/** Sidebar items, optionally filtered by category. Hides entries marked non-draggable. */
+/** Sidebar items, optionally filtered by category. Disabled entries stay visible. */
 export function getSidebarEntries(category?: GameNodeCategory): readonly GameNodeRegistryEntry[] {
-  return GAME_NODE_REGISTRY.filter(
-    (entry) => entry.isDraggable && (category ? entry.category === category : true),
-  )
+  return GAME_NODE_REGISTRY.filter((entry) => (category ? entry.category === category : true))
 }
 
 /** Per-node validation — delegates to the registry entry. Empty array if type unknown. */

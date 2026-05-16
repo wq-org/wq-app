@@ -8,6 +8,7 @@ import { Text } from '@/components/ui/text'
 import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { GameChatHistory } from '../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../components/game-chat.types'
@@ -23,10 +24,8 @@ import {
   type Modifier,
 } from '@dnd-kit/core'
 import {
-  HOW_TO_PLAY_PROMPT,
   PIN_DRAGGABLE_ID,
   PIN_SOURCE_DROPPABLE_ID,
-  SUBMIT_ANSWER_PROMPT,
   useGameImagePinGame,
 } from './useGameImagePinGame'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from './gameImagePinValidation'
@@ -35,26 +34,6 @@ export type GameImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
 }
-
-const prompts = [
-  {
-    icon: Check,
-    text: 'Submit Answer',
-    prompt: SUBMIT_ANSWER_PROMPT,
-  },
-  {
-    icon: HandHelping,
-    text: 'Give me a hint',
-    prompt:
-      'Give me a helpful hint for where I should place the pin, but do not reveal the full answer.',
-    disabled: true,
-  },
-  {
-    icon: CircleQuestionMark,
-    text: 'how to play the game',
-    prompt: HOW_TO_PLAY_PROMPT,
-  },
-] as const satisfies readonly Ai02PromptSuggestion[]
 
 /**
  * Anchors the overlay's centre to the cursor regardless of where on the pin
@@ -142,6 +121,7 @@ function PinSourceSlot({ pinAtSource }: { pinAtSource: boolean }) {
 }
 
 export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewProps) {
+  const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
   const {
@@ -153,7 +133,28 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     currentPin,
     getSubmissionForMessage,
     latestQuestionMessageId,
+    submitAnswerPrompt,
+    howToPlayPrompt,
   } = useGameImagePinGame({ nodeId, nodeData })
+
+  const prompts = [
+    {
+      icon: Check,
+      text: t('imagePinGamePreview.badgeSubmitAnswer'),
+      prompt: submitAnswerPrompt,
+    },
+    {
+      icon: HandHelping,
+      text: t('imagePinGamePreview.badgeHint'),
+      prompt: t('imagePinGamePreview.hintPrompt'),
+      disabled: true,
+    },
+    {
+      icon: CircleQuestionMark,
+      text: t('imagePinGamePreview.badgeHowToPlay'),
+      prompt: howToPlayPrompt,
+    },
+  ] as const satisfies readonly Ai02PromptSuggestion[]
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
@@ -196,8 +197,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         variant="small"
         color="orange"
       >
-        You are in preview mode. This test view shows how the game component will look and behave
-        during real play.
+        {t('imagePinGamePreview.previewNotice')}
       </Text>
 
       <DndContext

@@ -264,14 +264,14 @@
     "galleryTitle": "Bilder aus diesem Projekt",
     "galleryHint": "Wähle eine Vorschau aus diesem Spiel oder aus Bildern, die bereits in deinem Cloud-Ordner liegen.",
     "galleryEmpty": "Noch keine Bilder. Lade oben eines hoch, oder füge einem anderen Bild-Pin-Knoten auf dieser Fläche ein Bild hinzu—dann erscheinen sie hier.",
-    "helpTitle": "Bild und Pins",
+    "helpTitle": "So benutzt du Bild und Pins",
     "helpSectionDefinition": "Was dieser Knoten macht",
     "helpSectionExample": "Beispiel",
     "helpSectionExamples": "Beispiele",
     "helpSectionReason": "Warum das wichtig ist",
-    "helpDefinition": "Lernende sehen dein Bild und arbeiten in den von dir markierten Bereichen. Jeder Bereich kann eine eigene Frage tragen.",
-    "helpExampleTitle": "Typisches Setup",
-    "helpExampleValues": "Lade z. B. ein Anatomiebild hoch, markiere zwei Strukturen mit Rechtecken und stelle für jeden Bereich eine andere Zuordnungsfrage.",
+    "helpDefinition": "1. Lade ein Bild hoch.\n2. Ziehe ein Rechteck um jeden wichtigen Bereich.\n3. Schreibe für jedes Rechteck eine Frage.\n4. Speichere den Knoten.\n5. Veröffentliche das Spiel, wenn du bereit bist.\n\nDie Lernenden sehen das Bild und beantworten die Frage für jeden markierten Bereich.",
+    "helpExampleTitle": "Einfaches Beispiel",
+    "helpExampleValues": "Lade ein Anatomiebild hoch, markiere das Herz mit einem Rechteck und frage: „Wie heißt dieser Teil?“",
     "questionsPerRegion": "Fragen pro Bereich",
     "questionLabel": "Frage {{index}}",
     "questionPlaceholder": "Was soll die Lernperson für diesen Bereich beantworten?",
@@ -284,5 +284,18 @@
     "toastUploadInvalidType": "Bitte wähle ein JPEG- oder PNG-Bild.",
     "toastUploadFailed": "Bild konnte nicht hochgeladen werden. Bitte erneut versuchen.",
     "toastUploadSuccess": "Bild in deine Cloud hochgeladen."
+  },
+  "imagePinGamePreview": {
+    "previewNotice": "Vorschau-Modus. Hier siehst du, wie das Spiel beim Erstellen aussieht und funktioniert.",
+    "badgeSubmitAnswer": "Antwort abgeben",
+    "badgeHint": "Tipp geben",
+    "badgeHowToPlay": "So funktioniert es",
+    "submitAnswerPrompt": "Ich habe den Pin auf das Bild gesetzt. Bitte prüfe meine Antwort und sag mir, ob sie richtig ist.",
+    "hintPrompt": "Gib mir einen hilfreichen Hinweis, wo ich den Pin platzieren soll, aber verrate nicht die ganze Lösung.",
+    "howToPlayPrompt": "Erkläre, wie man dieses Spiel spielt. Sag mir, wie ich die Frage beantworte, indem ich den Pin an die richtige Stelle ziehe.",
+    "howToPlayResponse": "So funktioniert es:\n1. Lies die Frage über dem Bild.\n2. Ziehe den Pin aus dem Feld unten auf das Bild.\n3. Platziere den ganzen Pin im markierten Rechteck.\n4. Klicke auf Antwort abgeben, um deine Position festzulegen.\n5. Richtige Antworten machen den Pin blau und zeigen Konfetti. Falsche Antworten machen ihn rot.\n6. Die nächste Frage erscheint nach einer kurzen Pause.\n\nTipp: Du kannst den Pin vor dem Abgeben zurück ins Feld ziehen."
+  },
+  "imagePinSettings": {
+    "holdToDeleteNode": "Gedrückt halten, um den Knoten zu löschen"
   }
 }
