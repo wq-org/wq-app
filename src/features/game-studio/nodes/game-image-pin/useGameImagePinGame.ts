@@ -17,6 +17,22 @@ export const PIN_DRAGGABLE_ID = 'image-pin'
 export const SUBMIT_ANSWER_PROMPT =
   'I placed the pin on the image. Please check my answer and tell me if it is correct.'
 
+export const HOW_TO_PLAY_PROMPT =
+  'Explain how to play this game. Tell me how to answer the question by dragging the pin to the correct place on the image.'
+
+const HOW_TO_PLAY_RESPONSE = [
+  "Here's how to play:",
+  '',
+  '1. Read the question shown above the image.',
+  '2. Drag the pin from the slot below onto the image.',
+  '3. Position it so the whole pin sits inside the highlighted rectangle.',
+  '4. Click "Submit Answer" to lock your placement.',
+  '5. Correct answers turn the pin blue with confetti; misses turn it red.',
+  '6. The next question loads after a short pause.',
+  '',
+  'Tip: you can drag the pin back to the slot any time before you submit.',
+].join('\n')
+
 const NEXT_QUESTION_DELAY_MS = 3000
 
 export type PreviewQuestion = {
@@ -106,6 +122,19 @@ function buildPreviewLoadingMessage(nodeId: string, index: number): GameChatHist
     time: formatPreviewChatTime(),
     direction: 'incoming',
     status: 'loading',
+  }
+}
+
+function buildAssistantReplyMessage(
+  text: string,
+  nodeId: string,
+  index: number,
+): GameChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-reply-${index}`,
+    text,
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
   }
 }
 
@@ -341,9 +370,24 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     appendReceivingMessage(trimmed)
   }
 
+  const handleHowToPlay = () => {
+    setState((prev) => ({
+      ...prev,
+      messages: [
+        ...prev.messages,
+        buildPreviewAnswerMessage(HOW_TO_PLAY_PROMPT, nodeId, prev.questionIndex),
+        buildAssistantReplyMessage(HOW_TO_PLAY_RESPONSE, nodeId, prev.messages.length),
+      ],
+    }))
+  }
+
   const handlePromptClick = (message: string) => {
     if (message === SUBMIT_ANSWER_PROMPT) {
       handleSubmitAnswer()
+      return
+    }
+    if (message === HOW_TO_PLAY_PROMPT) {
+      handleHowToPlay()
       return
     }
     handleChatInput(message)

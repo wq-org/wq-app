@@ -23,6 +23,7 @@ import {
   type Modifier,
 } from '@dnd-kit/core'
 import {
+  HOW_TO_PLAY_PROMPT,
   PIN_DRAGGABLE_ID,
   PIN_SOURCE_DROPPABLE_ID,
   SUBMIT_ANSWER_PROMPT,
@@ -46,12 +47,12 @@ const prompts = [
     text: 'Give me a hint',
     prompt:
       'Give me a helpful hint for where I should place the pin, but do not reveal the full answer.',
+    disabled: true,
   },
   {
     icon: CircleQuestionMark,
     text: 'how to play the game',
-    prompt:
-      'Explain how to play this game. Tell me how to answer the question by dragging the pin to the correct place on the image.',
+    prompt: HOW_TO_PLAY_PROMPT,
   },
 ] as const satisfies readonly Ai02PromptSuggestion[]
 

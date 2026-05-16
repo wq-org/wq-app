@@ -16,6 +16,7 @@ export type Ai02PromptSuggestion = {
   icon: LucideIcon
   text: string
   prompt: string
+  disabled?: boolean
 }
 
 export type Ai02Props = {

@@ -63,11 +63,11 @@ export function GameIncomingChatMessageBubble({
         >
           {resolvedStatus === 'loading' ? (
             <div className="flex min-h-9 items-center justify-center py-0.5">
-              <DotWaveLoader variant="default" />
+              <DotWaveLoader variant="orange" />
             </div>
           ) : (
             <>
-              <p>{text}</p>
+              <p className="whitespace-pre-line">{text}</p>
               <p className="mt-1 text-[10px] opacity-70">{time}</p>
             </>
           )}
