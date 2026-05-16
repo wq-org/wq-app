@@ -26,6 +26,8 @@ type ImagePinRuntimeSize = {
   height: number
 }
 
+type ImagePinDragRect = Pick<DOMRect, 'left' | 'top' | 'right' | 'bottom' | 'width' | 'height'>
+
 type ImagePinNaturalBounds = {
   left: number
   top: number
@@ -112,7 +114,7 @@ export function useImagePinDropRuntime({ imageSrc, rectangles }: UseImagePinDrop
     setFeedbackText(null)
   }, [imageSrc])
 
-  const getNaturalBoundsFromClientRect = (clientRect: ClientRect | DOMRect) => {
+  const getNaturalBoundsFromClientRect = (clientRect: ImagePinDragRect) => {
     const imageElement = imageRef.current
     if (!imageElement || !naturalSize?.width || !naturalSize.height) return null
 
@@ -131,7 +133,7 @@ export function useImagePinDropRuntime({ imageSrc, rectangles }: UseImagePinDrop
     return { left, top, right, bottom, centerXPercent, centerYPercent }
   }
 
-  const getPlacementFromDragRect = (clientRect: ClientRect | DOMRect) => {
+  const getPlacementFromDragRect = (clientRect: ImagePinDragRect) => {
     if (!currentTarget) return null
 
     const bounds = getNaturalBoundsFromClientRect(clientRect)

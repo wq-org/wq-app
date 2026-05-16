@@ -6,6 +6,7 @@ export { AI02_DEFAULT_MODELS, AI02_DEFAULT_PROMPTS } from './ai-components.const
 export { AI03_MENU_ACTION_IDS } from './ai-components.types'
 export type {
   Ai01Props,
+  Ai02ModelOption,
   Ai02PromptSuggestion,
   Ai02Props,
   Ai03MenuActionId,
