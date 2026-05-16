@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type {
   ChatBubbleRounded,
   ChatBubbleVariant,
@@ -10,6 +11,8 @@ export type GameChatImagePinDescriptor = {
   src: string
   alt?: string
   rect?: GameImagePinRect
+  /** When set, the image becomes a dnd-kit drop target with this id. Requires an enclosing DndContext. */
+  droppableId?: string
 }
 
 export type GameChatImageDescriptor = GameChatImagePinDescriptor
@@ -27,6 +30,8 @@ export type GameChatMessageBubbleProps = {
   text: string
   time: string
   image?: GameChatImageDescriptor
+  /** Optional overlay rendered inside the image container (e.g. a draggable pin placed by the player). */
+  imageChildren?: ReactNode
   className?: string
   avatarUrl?: string
   avatarFallback?: string

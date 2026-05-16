@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useDroppable } from '@dnd-kit/core'
 import { cn } from '@/lib/utils'
 import type { GameChatImageDescriptor } from './game-chat.types'
 
 type GameChatImageProps = GameChatImageDescriptor & {
   className?: string
+  children?: ReactNode
 }
 
 const RECT_FILL = 'rgba(0, 0, 255, 0.12)'
@@ -18,7 +20,24 @@ export function GameChatImage(props: GameChatImageProps) {
   }
 }
 
-function GameChatImagePin({ src, alt, rect, className }: GameChatImagePinDescriptorWithClass) {
+type ImagePinViewProps = Extract<GameChatImageDescriptor, { variant: 'image-pin' }> & {
+  className?: string
+  children?: ReactNode
+}
+
+function GameChatImagePin(props: ImagePinViewProps) {
+  if (props.droppableId) {
+    return (
+      <GameChatImagePinDroppable
+        {...props}
+        droppableId={props.droppableId}
+      />
+    )
+  }
+  return <GameChatImagePinStatic {...props} />
+}
+
+function GameChatImagePinStatic({ src, alt, rect, className, children }: ImagePinViewProps) {
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null)
 
   useEffect(() => {
@@ -29,6 +48,69 @@ function GameChatImagePin({ src, alt, rect, className }: GameChatImagePinDescrip
 
   return (
     <div className={cn('relative w-full overflow-hidden rounded-2xl shadow-sm', className)}>
+      <GameChatImagePinMedia
+        src={src}
+        alt={alt}
+        rect={rect}
+        dims={dims}
+        onDims={setDims}
+      />
+      {children}
+    </div>
+  )
+}
+
+type DroppableProps = ImagePinViewProps & { droppableId: string }
+
+function GameChatImagePinDroppable({
+  src,
+  alt,
+  rect,
+  className,
+  children,
+  droppableId,
+}: DroppableProps) {
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null)
+  const { isOver, setNodeRef } = useDroppable({ id: droppableId })
+
+  useEffect(() => {
+    setDims(null)
+  }, [src])
+
+  if (!src) return null
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        'relative w-full overflow-hidden rounded-2xl shadow-sm transition-shadow',
+        isOver && 'ring-2 ring-[#0000FF] ring-offset-2 ring-offset-background',
+        className,
+      )}
+    >
+      <GameChatImagePinMedia
+        src={src}
+        alt={alt}
+        rect={rect}
+        dims={dims}
+        onDims={setDims}
+      />
+      {children}
+    </div>
+  )
+}
+
+type MediaProps = {
+  src: string
+  alt?: string
+  rect: ImagePinViewProps['rect']
+  dims: { w: number; h: number } | null
+  onDims: (dims: { w: number; h: number }) => void
+}
+
+function GameChatImagePinMedia({ src, alt, rect, dims, onDims }: MediaProps) {
+  return (
+    <>
       <img
         src={src}
         alt={alt ?? 'Game preview image'}
@@ -36,7 +118,7 @@ function GameChatImagePin({ src, alt, rect, className }: GameChatImagePinDescrip
         draggable={false}
         className="block h-auto w-full"
         onLoad={(event) =>
-          setDims({
+          onDims({
             w: event.currentTarget.naturalWidth,
             h: event.currentTarget.naturalHeight,
           })
@@ -63,13 +145,6 @@ function GameChatImagePin({ src, alt, rect, className }: GameChatImagePinDescrip
           />
         </svg>
       ) : null}
-    </div>
+    </>
   )
-}
-
-type GameChatImagePinDescriptorWithClass = Extract<
-  GameChatImageDescriptor,
-  { variant: 'image-pin' }
-> & {
-  className?: string
 }

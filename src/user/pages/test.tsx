@@ -384,7 +384,7 @@ function ChatHistoryStagedLoadingDemo() {
     <ChatHistory
       messages={messages}
       autoScroll={false}
-      className="h-[320px] w-full max-w-md"
+      className="h-80 w-full max-w-md"
       incomingBubbleVariant="default"
       receivingBubbleVariant="default"
     />

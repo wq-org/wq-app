@@ -13,6 +13,7 @@ export function GameIncomingChatMessageBubble({
   text,
   time,
   image,
+  imageChildren,
   className,
   avatarUrl,
   avatarFallback = 'U',
@@ -48,7 +49,9 @@ export function GameIncomingChatMessageBubble({
           <GameChatImage
             {...image}
             className="mb-2"
-          />
+          >
+            {imageChildren}
+          </GameChatImage>
         ) : null}
         <div
           key={bubbleStateKey}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import type { ChatBubbleRounded, ChatBubbleVariant } from '@/components/shared/chat'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { cn } from '@/lib/utils'
@@ -19,6 +19,8 @@ type GameChatHistoryProps = {
   receivingBubbleVariant?: ChatBubbleVariant
   incomingBubbleRounded?: ChatBubbleRounded
   receivingBubbleRounded?: ChatBubbleRounded
+  /** Overlay rendered inside the message's image container (e.g. a dropped pin on the active question). */
+  renderImageChildren?: (message: GameChatHistoryMessage) => ReactNode
 }
 
 export function GameChatHistory({
@@ -32,6 +34,7 @@ export function GameChatHistory({
   receivingBubbleVariant,
   incomingBubbleRounded,
   receivingBubbleRounded,
+  renderImageChildren,
 }: GameChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const shouldAutoScroll = autoScroll !== false
@@ -66,6 +69,7 @@ export function GameChatHistory({
                   text={message.text}
                   time={message.time}
                   image={message.image}
+                  imageChildren={renderImageChildren?.(message)}
                   avatarUrl={showUserAvatar ? '/favicon.ico' : undefined}
                   avatarFallback="/favicon.ico"
                   variant={receivingBubbleVariant}
@@ -78,6 +82,7 @@ export function GameChatHistory({
                   text={message.text}
                   time={message.time}
                   image={message.image}
+                  imageChildren={renderImageChildren?.(message)}
                   avatarUrl={
                     showUserAvatar ? incomingAvatarUrl?.trim() || '/favicon.ico' : incomingAvatarUrl
                   }
