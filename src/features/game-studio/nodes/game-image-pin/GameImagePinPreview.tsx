@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   Ai01,
   AiPromptBadgeList,
@@ -11,32 +11,35 @@ import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { cn } from '@/lib/utils'
 import { GameChatHistory } from '../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../components/game-chat.types'
-import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
+import type { GameImagePinNodeData } from './game-image-pin.schema'
 import { ImagePin } from './ImagePin'
-import { DndContext, useDraggable, useDroppable, type DragEndEvent } from '@dnd-kit/core'
-
-const PIN_SOURCE_DROPPABLE_ID = 'pin-source'
-const PIN_IMAGE_DROPPABLE_ID = 'image-pin-target'
-const PIN_DRAGGABLE_ID = 'image-pin'
+import {
+  DndContext,
+  DragOverlay,
+  useDraggable,
+  useDroppable,
+  type DragEndEvent,
+  type DragStartEvent,
+  type Modifier,
+} from '@dnd-kit/core'
+import {
+  PIN_DRAGGABLE_ID,
+  PIN_SOURCE_DROPPABLE_ID,
+  SUBMIT_ANSWER_PROMPT,
+  useGameImagePinGame,
+} from './useGameImagePinGame'
+import type { ImagePinSubmissionVariant, NormalizedPinPoint } from './gameImagePinValidation'
 
 export type GameImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
 }
 
-type PreviewQuestion = {
-  id: string
-  question: string
-  rect: GameImagePinRect
-}
-
-type PinDrop = { x: number; y: number }
-
 const prompts = [
   {
     icon: Check,
     text: 'Submit Answer',
-    prompt: 'I placed the pin on the image. Please check my answer and tell me if it is correct.',
+    prompt: SUBMIT_ANSWER_PROMPT,
   },
   {
     icon: HandHelping,
@@ -52,87 +55,70 @@ const prompts = [
   },
 ] as const satisfies readonly Ai02PromptSuggestion[]
 
-function formatPreviewChatTime(date = new Date()): string {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function getPreviewImageSrc(nodeData: GameImagePinNodeData): string {
-  return typeof nodeData.imagePreview === 'string' ? nodeData.imagePreview.trim() : ''
-}
-
-function getPreviewQuestions(nodeData: GameImagePinNodeData): PreviewQuestion[] {
-  const rectangles = Array.isArray(nodeData.rectangles) ? nodeData.rectangles : []
-  return rectangles.flatMap((rect) => {
-    const question = String(rect.question ?? '').trim()
-    if (!question) return []
-    return [{ id: rect.id, question, rect }]
-  })
-}
-
-function buildPreviewQuestionMessage(
-  nodeId: string,
-  imageSrc: string,
-  question: PreviewQuestion,
-  index: number,
-): GameChatHistoryMessage {
+/**
+ * Anchors the overlay's centre to the cursor regardless of where on the pin
+ * the user pressed down. Mirrors `snapCenterToCursor` from `@dnd-kit/modifiers`
+ * — inlined to avoid pulling in a second dnd-kit package just for one modifier.
+ */
+const snapCenterToCursor: Modifier = ({ activatorEvent, draggingNodeRect, transform }) => {
+  if (!activatorEvent || !draggingNodeRect) return transform
+  const point = getPointerCoordinates(activatorEvent)
+  if (!point) return transform
+  const offsetX = point.x - draggingNodeRect.left
+  const offsetY = point.y - draggingNodeRect.top
   return {
-    id: `preview-${nodeId}-question-${index}-${question.id}`,
-    text: question.question,
-    time: formatPreviewChatTime(),
-    direction: 'incoming',
-    image: imageSrc
-      ? {
-          variant: 'image-pin',
-          src: imageSrc,
-          alt: 'Game Image Pin preview image',
-          rect: question.rect,
-        }
-      : undefined,
+    ...transform,
+    x: transform.x + offsetX - draggingNodeRect.width / 2,
+    y: transform.y + offsetY - draggingNodeRect.height / 2,
   }
 }
 
-function buildPreviewAnswerMessage(
-  text: string,
-  nodeId: string,
-  index: number,
-): GameChatHistoryMessage {
-  return {
-    id: `preview-${nodeId}-answer-${index}`,
-    text,
-    time: formatPreviewChatTime(),
-    direction: 'receiving',
+function getPointerCoordinates(event: Event): { x: number; y: number } | null {
+  if ('clientX' in event && typeof (event as MouseEvent).clientX === 'number') {
+    const mouseLike = event as MouseEvent
+    return { x: mouseLike.clientX, y: mouseLike.clientY }
   }
-}
-
-function buildInitialPreviewMessages(
-  nodeId: string,
-  imageSrc: string,
-  questions: PreviewQuestion[],
-): GameChatHistoryMessage[] {
-  const firstQuestion = questions[0]
-  if (!firstQuestion) return []
-  return [buildPreviewQuestionMessage(nodeId, imageSrc, firstQuestion, 0)]
-}
-
-type PreviewState = {
-  messages: GameChatHistoryMessage[]
-  questionIndex: number
+  if ('touches' in event) {
+    const touch = (event as TouchEvent).touches[0]
+    if (touch) return { x: touch.clientX, y: touch.clientY }
+  }
+  return null
 }
 
 function DraggablePin() {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: PIN_DRAGGABLE_ID,
   })
 
+  // Hide the in-place pin while it's being dragged; the visible copy
+  // is rendered in <DragOverlay> at the cursor so it isn't clipped by
+  // chat-bubble or image overflow boundaries.
   return (
     <ImagePin
       ref={setNodeRef}
-      style={{
-        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-      }}
+      style={{ opacity: isDragging ? 0 : 1 }}
       {...listeners}
       {...attributes}
     />
+  )
+}
+
+function LockedPin({ variant }: { variant: ImagePinSubmissionVariant }) {
+  return <ImagePin variant={variant} />
+}
+
+function PositionedPin({ drop, children }: { drop: NormalizedPinPoint; children: ReactNode }) {
+  return (
+    <div
+      className="absolute"
+      style={{
+        left: `${drop.x * 100}%`,
+        top: `${drop.y * 100}%`,
+        transform: 'translate(-50%, -50%)',
+      }}
+    >
+      {children}
+    </div>
   )
 }
 
@@ -157,110 +143,49 @@ function PinSourceSlot({ pinAtSource }: { pinAtSource: boolean }) {
 export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewProps) {
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
-  const imageSrc = getPreviewImageSrc(nodeData)
-  const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
-  const initialState = useMemo<PreviewState>(
-    () => ({
-      messages: buildInitialPreviewMessages(nodeId, imageSrc, questions),
-      questionIndex: 0,
-    }),
-    [imageSrc, nodeId, questions],
-  )
+  const {
+    displayMessages,
+    handleDragEnd,
+    handlePromptClick,
+    handleChatInput,
+    pinAtSource,
+    currentPin,
+    getSubmissionForMessage,
+    latestQuestionMessageId,
+  } = useGameImagePinGame({ nodeId, nodeData })
 
-  const [state, setState] = useState<PreviewState>(() => initialState)
-  const [pinDrop, setPinDrop] = useState<PinDrop | null>(null)
+  const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
-  useEffect(() => {
-    setState(initialState)
-    setPinDrop(null)
-  }, [initialState])
-
-  const latestQuestionMessageId = useMemo(() => {
-    for (let i = state.messages.length - 1; i >= 0; i--) {
-      const m = state.messages[i]
-      if (m.direction === 'incoming' && m.image) return m.id
-    }
-    return null
-  }, [state.messages])
-
-  useEffect(() => {
-    setPinDrop(null)
-  }, [latestQuestionMessageId])
-
-  const displayMessages = useMemo<GameChatHistoryMessage[]>(() => {
-    if (!latestQuestionMessageId) return state.messages
-    return state.messages.map((m) =>
-      m.id === latestQuestionMessageId && m.image
-        ? { ...m, image: { ...m.image, droppableId: PIN_IMAGE_DROPPABLE_ID } }
-        : m,
-    )
-  }, [state.messages, latestQuestionMessageId])
-
-  const handleSubmit = (message: string) => {
-    const trimmed = message.trim()
-    if (!trimmed) return
-    setState((prev) => {
-      const nextMessages = [
-        ...prev.messages,
-        buildPreviewAnswerMessage(trimmed, nodeId, prev.questionIndex),
-      ]
-      const nextQuestionIndex = prev.questionIndex + 1
-      const nextQuestion = questions[nextQuestionIndex]
-      if (nextQuestion) {
-        nextMessages.push(
-          buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, nextQuestionIndex),
-        )
-      }
-
-      return {
-        messages: nextMessages,
-        questionIndex: nextQuestionIndex,
-      }
-    })
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(String(event.active.id))
   }
 
-  const handlePromptClick = (message: string) => {
-    handleSubmit(message)
+  const handleDragEndWrapped = (event: DragEndEvent) => {
+    setActiveDragId(null)
+    handleDragEnd(event)
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const overId = event.over?.id
-    if (overId === PIN_SOURCE_DROPPABLE_ID) {
-      setPinDrop(null)
-      return
-    }
-    if (overId !== PIN_IMAGE_DROPPABLE_ID) return
-
-    const overRect = event.over?.rect
-    const dragged = event.active.rect.current.translated
-    if (!overRect || !dragged) return
-
-    const centerX = dragged.left + dragged.width / 2
-    const centerY = dragged.top + dragged.height / 2
-    const x = (centerX - overRect.left) / overRect.width
-    const y = (centerY - overRect.top) / overRect.height
-
-    setPinDrop({
-      x: Math.max(0, Math.min(1, x)),
-      y: Math.max(0, Math.min(1, y)),
-    })
+  const handleDragCancel = () => {
+    setActiveDragId(null)
   }
 
   const renderImageChildren = (message: GameChatHistoryMessage) => {
-    if (message.id !== latestQuestionMessageId) return null
-    if (pinDrop === null) return null
-    return (
-      <div
-        className="absolute"
-        style={{
-          left: `${pinDrop.x * 100}%`,
-          top: `${pinDrop.y * 100}%`,
-          transform: 'translate(-50%, -50%)',
-        }}
-      >
-        <DraggablePin />
-      </div>
-    )
+    const submission = getSubmissionForMessage(message)
+    if (submission) {
+      return (
+        <PositionedPin drop={submission.drop}>
+          <LockedPin variant={submission.variant} />
+        </PositionedPin>
+      )
+    }
+    if (message.id === latestQuestionMessageId && currentPin) {
+      return (
+        <PositionedPin drop={currentPin.drop}>
+          <DraggablePin />
+        </PositionedPin>
+      )
+    }
+    return null
   }
 
   return (
@@ -274,7 +199,12 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         during real play.
       </Text>
 
-      <DndContext onDragEnd={handleDragEnd}>
+      <DndContext
+        modifiers={[snapCenterToCursor]}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEndWrapped}
+        onDragCancel={handleDragCancel}
+      >
         <GameChatHistory
           messages={displayMessages}
           className="h-[390px]"
@@ -285,7 +215,11 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
           renderImageChildren={renderImageChildren}
         />
 
-        <PinSourceSlot pinAtSource={pinDrop === null} />
+        <PinSourceSlot pinAtSource={pinAtSource} />
+
+        <DragOverlay dropAnimation={null}>
+          {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
+        </DragOverlay>
       </DndContext>
 
       <AiPromptBadgeList
@@ -297,7 +231,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         placeholder="Submit your answer"
         showDropDown={false}
         showMic={false}
-        onSubmit={handleSubmit}
+        onSubmit={handleChatInput}
       />
     </div>
   )
