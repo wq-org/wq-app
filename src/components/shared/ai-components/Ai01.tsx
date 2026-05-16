@@ -117,7 +117,7 @@ export function Ai01({
             'mx-auto w-full max-w-2xl cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg transition-[border-radius] duration-200 ease-out dark:bg-muted/50',
             isExpanded
               ? "grid rounded-3xl [grid-template-areas:'header'_'primary'_'footer'] grid-cols-[1fr] grid-rows-[auto_1fr_auto]"
-              : "grid rounded-3xl [grid-template-areas:'header_header_header'_'leading_primary_trailing'_'._footer_.'] grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto]",
+              : "grid rounded-full [grid-template-areas:'header_header_header'_'leading_primary_trailing'_'._footer_.'] grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto]",
           )}
         >
           <div
