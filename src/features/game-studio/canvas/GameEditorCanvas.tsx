@@ -18,8 +18,7 @@ import '@xyflow/react/dist/style.css'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 
-import { Spinner } from '@/components/ui/spinner'
-import { Text } from '@/components/ui/text'
+import { LoadingPage } from '@/components/shared'
 import { useGameStudioContext } from '@/contexts/game-studio'
 import { useUser } from '@/contexts/user'
 import { useMyInstitutionFeatureFlags } from '@/features/entitlements'
@@ -732,20 +731,11 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     <div className="flex h-screen items-center justify-center">
       <div className="w-full h-[80vh] relative">
         {loadState === 'loading' && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80">
-            <Spinner
-              variant="gray"
-              size="md"
-              speed={1750}
-            />
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-gray-500"
-            >
-              Loading…
-            </Text>
-          </div>
+          <LoadingPage
+            variant="embedded"
+            message="Loading..."
+            className="absolute inset-0 z-20 bg-background/80"
+          />
         )}
         <GameEditorSidebar features={institutionFeatures} />
         <div
