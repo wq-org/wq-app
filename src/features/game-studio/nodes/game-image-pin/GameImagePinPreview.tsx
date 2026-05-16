@@ -4,12 +4,13 @@ import {
   AiPromptBadgeList,
   type Ai02PromptSuggestion,
 } from '@/components/shared/ai-components'
-import { ChatHistory, type ChatHistoryMessage } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
 import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
-import type { GameImagePinNodeData } from './game-image-pin.schema'
+import { GameChatHistory } from '../../components/GameChatHistory'
+import type { GameChatHistoryMessage } from '../../components/game-chat.types'
+import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
 import { ImagePin } from './ImagePin'
 import { DndContext, useDraggable } from '@dnd-kit/core'
 
@@ -21,6 +22,7 @@ export type GameImagePinPreviewProps = {
 type PreviewQuestion = {
   id: string
   question: string
+  rect: GameImagePinRect
 }
 
 const prompts = [
@@ -56,7 +58,7 @@ function getPreviewQuestions(nodeData: GameImagePinNodeData): PreviewQuestion[] 
   return rectangles.flatMap((rect) => {
     const question = String(rect.question ?? '').trim()
     if (!question) return []
-    return [{ id: rect.id, question }]
+    return [{ id: rect.id, question, rect }]
   })
 }
 
@@ -65,19 +67,19 @@ function buildPreviewQuestionMessage(
   imageSrc: string,
   question: PreviewQuestion,
   index: number,
-): ChatHistoryMessage {
+): GameChatHistoryMessage {
   return {
     id: `preview-${nodeId}-question-${index}-${question.id}`,
     text: question.question,
     time: formatPreviewChatTime(),
     direction: 'incoming',
-    images: imageSrc
-      ? [
-          {
-            src: imageSrc,
-            alt: 'Game Image Pin preview image',
-          },
-        ]
+    image: imageSrc
+      ? {
+          variant: 'image-pin',
+          src: imageSrc,
+          alt: 'Game Image Pin preview image',
+          rect: question.rect,
+        }
       : undefined,
   }
 }
@@ -86,7 +88,7 @@ function buildPreviewAnswerMessage(
   text: string,
   nodeId: string,
   index: number,
-): ChatHistoryMessage {
+): GameChatHistoryMessage {
   return {
     id: `preview-${nodeId}-answer-${index}`,
     text,
@@ -99,14 +101,14 @@ function buildInitialPreviewMessages(
   nodeId: string,
   imageSrc: string,
   questions: PreviewQuestion[],
-): ChatHistoryMessage[] {
+): GameChatHistoryMessage[] {
   const firstQuestion = questions[0]
   if (!firstQuestion) return []
   return [buildPreviewQuestionMessage(nodeId, imageSrc, firstQuestion, 0)]
 }
 
 type PreviewState = {
-  messages: ChatHistoryMessage[]
+  messages: GameChatHistoryMessage[]
   questionIndex: number
 }
 
@@ -186,13 +188,13 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         during real play.
       </Text>
 
-      <ChatHistory
+      <GameChatHistory
         messages={state.messages}
         className="h-[390px]"
         showUserAvatar
         incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingBubbleVariant="orange"
-        receivingBubbleVariant="dark"
+        receivingBubbleVariant="default"
       />
 
       <DndContext>

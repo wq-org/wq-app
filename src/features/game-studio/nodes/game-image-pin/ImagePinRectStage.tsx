@@ -9,9 +9,11 @@ import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from './imagePinRectGeometr
 
 const RECT_FILL = 'rgba(186, 213, 228, 0.18)'
 const RECT_STROKE_SELECTED = '#0000FF'
-const RECT_STROKE = '#0B3C6F'
+const RECT_STROKE = '#4D4DFF'
+const RECT_CORNER_RADIUS = 8
+const RECT_DASH = [6, 6]
 const LABEL_FONT_SIZE = 20
-const LABEL_FONT_COLOR = '#0B3C6F'
+const LABEL_FONT_COLOR = '#0000FF'
 
 type DraftBox = { sx: number; sy: number; cx: number; cy: number }
 
@@ -284,9 +286,11 @@ export function ImagePinRectStage({
                   y={rect.y}
                   width={rect.width}
                   height={rect.height}
+                  cornerRadius={RECT_CORNER_RADIUS}
                   fill={RECT_FILL}
                   stroke={selectedRectId === rect.id ? RECT_STROKE_SELECTED : RECT_STROKE}
                   strokeWidth={2}
+                  dash={RECT_DASH}
                   draggable
                   onClick={() => onSelectedRectIdChange(rect.id)}
                   onTap={() => onSelectedRectIdChange(rect.id)}
@@ -345,10 +349,11 @@ export function ImagePinRectStage({
               y={draftShape.y}
               width={Math.max(IMAGE_PIN_RECT_MIN_SIZE, draftShape.width)}
               height={Math.max(IMAGE_PIN_RECT_MIN_SIZE, draftShape.height)}
-              fill="rgba(1, 105, 111, 0.08)"
+              cornerRadius={RECT_CORNER_RADIUS}
+              fill="rgba(0, 0, 255, 0.08)"
               stroke={RECT_STROKE_SELECTED}
               strokeWidth={1}
-              dash={[6, 6]}
+              dash={RECT_DASH}
               listening={false}
             />
           ) : null}
