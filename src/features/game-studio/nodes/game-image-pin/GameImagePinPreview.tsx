@@ -10,6 +10,8 @@ import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import type { GameImagePinNodeData } from './game-image-pin.schema'
+import { ImagePin } from './ImagePin'
+import { DndContext, useDraggable } from '@dnd-kit/core'
 
 export type GameImagePinPreviewProps = {
   nodeId: string
@@ -25,18 +27,19 @@ const prompts = [
   {
     icon: Check,
     text: 'Submit Answer',
-    prompt: 'Submit Answer now!',
+    prompt: 'I placed the pin on the image. Please check my answer and tell me if it is correct.',
   },
   {
     icon: HandHelping,
     text: 'Give me a hint',
-    prompt: 'I need help ? ',
+    prompt:
+      'Give me a helpful hint for where I should place the pin, but do not reveal the full answer.',
   },
   {
     icon: CircleQuestionMark,
     text: 'how to play the game',
     prompt:
-      'Scan through the codebase to identify and fix 3 critical bugs, providing detailed explanations for each fix.',
+      'Explain how to play this game. Tell me how to answer the question by dragging the pin to the correct place on the image.',
   },
 ] as const satisfies readonly Ai02PromptSuggestion[]
 
@@ -107,6 +110,26 @@ type PreviewState = {
   questionIndex: number
 }
 
+function DraggablePin() {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: 'image-pin',
+  })
+
+  return (
+    <div className="w-full flex justify-center">
+      <ImagePin
+        variant={'secondary'}
+        ref={setNodeRef}
+        style={{
+          transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        }}
+        {...listeners}
+        {...attributes}
+      />
+    </div>
+  )
+}
+
 export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewProps) {
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -172,6 +195,10 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         incomingBubbleVariant="orange"
         receivingBubbleVariant="dark"
       />
+
+      <DndContext>
+        <DraggablePin />
+      </DndContext>
 
       <AiPromptBadgeList
         prompts={prompts}
