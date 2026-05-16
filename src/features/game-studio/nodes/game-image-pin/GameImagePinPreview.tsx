@@ -118,7 +118,6 @@ function DraggablePin() {
   return (
     <div className="w-full flex justify-center">
       <ImagePin
-        variant={'secondary'}
         ref={setNodeRef}
         style={{
           transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
