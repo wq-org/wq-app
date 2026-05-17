@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
-import { type SaveStatus } from '@/features/lesson'
+import { LESSON_CONTENT_SCHEMA_VERSION, type SaveStatus } from '@/features/lesson'
 import { Editor, type PasteOverflowInfo } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 
@@ -71,7 +71,7 @@ export const Lesson = () => {
         await updateLesson(
           {
             content: serializedState,
-            contentSchemaVersion: lesson?.contentSchemaVersion ?? 1,
+            contentSchemaVersion: lesson?.contentSchemaVersion ?? LESSON_CONTENT_SCHEMA_VERSION,
           },
           lessonId,
         )

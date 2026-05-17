@@ -32,6 +32,8 @@ export type LessonTopicRef = {
 /** Payload for creating a lesson row; editor body is persisted via `lessons.content`. */
 export type CreateLessonData = {
   description: string
+  content?: LessonDraftState | null
+  contentSchemaVersion?: number
   title: string
   topic_id: string
 }

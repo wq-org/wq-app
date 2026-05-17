@@ -35,6 +35,12 @@ export {
   lessonDraftStateToJson,
   lessonDraftStateToJson as stringifyLessonDraftState,
 } from './utils/lessonDraftState'
+export {
+  createDefaultLessonLexicalState,
+  isBlankLessonDraftState,
+  LESSON_CONTENT_SCHEMA_VERSION,
+  resolveLessonDraftState,
+} from './utils/createDefaultLessonLexicalState'
 export { formatRelativeUpdatedTime } from './utils/relativeTime'
 export type { RelativeUpdatedTimeLabels } from './utils/relativeTime'
 export type {

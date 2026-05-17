@@ -1,5 +1,9 @@
 import { supabase } from '@/lib/supabase'
 import { normalizeLessonDraftState } from '../utils/lessonDraftState'
+import {
+  LESSON_CONTENT_SCHEMA_VERSION,
+  resolveLessonDraftState,
+} from '../utils/createDefaultLessonLexicalState'
 import type {
   CreateLessonData,
   Lesson,
@@ -82,6 +86,8 @@ function normalizeLessonTopicRefRow(row: Record<string, unknown>): LessonTopicRe
 
 function buildCreateLessonPayload(data: CreateLessonData) {
   return {
+    content: resolveLessonDraftState(data.content),
+    contentSchemaVersion: data.contentSchemaVersion ?? LESSON_CONTENT_SCHEMA_VERSION,
     title: data.title.trim(),
     description: data.description || '',
     topic_id: data.topic_id,
@@ -119,6 +125,8 @@ export async function createLesson(data: CreateLessonData): Promise<Lesson> {
         p_topic_id: payload.topic_id,
         p_title: payload.title,
         p_description: payload.description,
+        p_content: payload.content,
+        p_content_schema_version: payload.contentSchemaVersion,
       },
       'Teacher lesson create returned no data',
     )
@@ -135,6 +143,8 @@ export async function createLesson(data: CreateLessonData): Promise<Lesson> {
         title: payload.title,
         description: payload.description,
         topic_id: payload.topic_id,
+        content: payload.content,
+        content_schema_version: payload.contentSchemaVersion,
       })
       .select(LESSON_HEADER_FETCH_FIELDS + ', created_at, updated_at')
       .single()
