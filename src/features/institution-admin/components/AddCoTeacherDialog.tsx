@@ -25,29 +25,26 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
-import {
-  useReassignMainTeacherDialog,
-  type TeacherOption,
-} from '../hooks/useReassignMainTeacherDialog'
+import { useAddCoTeacherDialog, type CoTeacherOption } from '../hooks/useAddCoTeacherDialog'
 import { getInitial } from '../utils'
 
-type ReassignMainTeacherDialogProps = {
+type AddCoTeacherDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   classroomId: string | null
   institutionId: string | null
   excludeUserIds: readonly string[]
-  onReassigned: () => void
+  onAdded: () => void
 }
 
-export function ReassignMainTeacherDialog({
+export function AddCoTeacherDialog({
   open,
   onOpenChange,
   classroomId,
   institutionId,
   excludeUserIds,
-  onReassigned,
-}: ReassignMainTeacherDialogProps) {
+  onAdded,
+}: AddCoTeacherDialogProps) {
   const { t } = useTranslation('features.institution-admin')
   const {
     teachers,
@@ -59,16 +56,16 @@ export function ReassignMainTeacherDialog({
     canSubmit,
     reset,
     handleSubmit,
-  } = useReassignMainTeacherDialog({
+  } = useAddCoTeacherDialog({
     classroomId,
     institutionId,
     excludeUserIds,
     open,
-    onReassigned,
+    onAdded,
   })
 
   const teacherById = useMemo(() => {
-    const map = new Map<string, TeacherOption>()
+    const map = new Map<string, CoTeacherOption>()
     for (const teacher of teachers) {
       map.set(teacher.id, teacher)
     }
@@ -98,10 +95,8 @@ export function ReassignMainTeacherDialog({
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t('classrooms.reassignMainTeacherDialog.title')}</DialogTitle>
-          <DialogDescription>
-            {t('classrooms.reassignMainTeacherDialog.description')}
-          </DialogDescription>
+          <DialogTitle>{t('classrooms.addCoTeacherDialog.title')}</DialogTitle>
+          <DialogDescription>{t('classrooms.addCoTeacherDialog.description')}</DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
@@ -118,7 +113,7 @@ export function ReassignMainTeacherDialog({
               <EmptyMedia variant="icon">
                 <UserX className="size-6" />
               </EmptyMedia>
-              <EmptyTitle>{t('classrooms.reassignMainTeacherDialog.empty')}</EmptyTitle>
+              <EmptyTitle>{t('classrooms.addCoTeacherDialog.empty')}</EmptyTitle>
               <EmptyDescription>{t('classrooms.assignDialog.emptyDescription')}</EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -138,11 +133,11 @@ export function ReassignMainTeacherDialog({
               autoHighlight
             >
               <ComboboxInput
-                placeholder={t('classrooms.reassignMainTeacherDialog.searchPlaceholder')}
+                placeholder={t('classrooms.addCoTeacherDialog.searchPlaceholder')}
                 showClear
               />
               <ComboboxContent>
-                <ComboboxEmpty>{t('classrooms.reassignMainTeacherDialog.empty')}</ComboboxEmpty>
+                <ComboboxEmpty>{t('classrooms.addCoTeacherDialog.empty')}</ComboboxEmpty>
                 <ComboboxList>
                   {(item: string) => {
                     const teacher = teacherById.get(item)
@@ -212,7 +207,7 @@ export function ReassignMainTeacherDialog({
             onClick={() => handleClose(false)}
             disabled={isSubmitting}
           >
-            {t('classrooms.reassignMainTeacherDialog.cancel')}
+            {t('classrooms.addCoTeacherDialog.cancel')}
           </Button>
           <Button
             type="button"
@@ -221,8 +216,8 @@ export function ReassignMainTeacherDialog({
             disabled={!canSubmit}
           >
             {isSubmitting
-              ? t('classrooms.reassignMainTeacherDialog.submitting')
-              : t('classrooms.reassignMainTeacherDialog.submit')}
+              ? t('classrooms.addCoTeacherDialog.submitting')
+              : t('classrooms.addCoTeacherDialog.submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

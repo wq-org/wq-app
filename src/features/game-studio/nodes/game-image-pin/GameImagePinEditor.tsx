@@ -80,6 +80,13 @@ export function GameImagePinEditor({
   const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
   const [sceneMetrics, setSceneMetrics] = useState<{ width: number; height: number } | null>(null)
   const [cloudGalleryRefresh, setCloudGalleryRefresh] = useState(0)
+  /**
+   * Local, non-persisted preview shown while the cloud upload is in flight.
+   * Kept out of `nodeData` so the (potentially MB-sized) base64 data URL does
+   * not get autosaved — that was producing a second autosave per file pick.
+   */
+  const [pendingPreviewSrc, setPendingPreviewSrc] = useState<string | null>(null)
+  const displayedImageSrc = pendingPreviewSrc ?? imagePreview
 
   const galleryItems = useMemo(() => projectImageGallery ?? [], [projectImageGallery])
   const { items: cloudGalleryItems, isLoading: cloudGalleryLoading } =
@@ -102,6 +109,7 @@ export function GameImagePinEditor({
   useEffect(() => {
     setSelectedRectId(null)
     setSceneMetrics(null)
+    setPendingPreviewSrc(null)
   }, [imagePreview])
 
   useEffect(() => {
@@ -240,16 +248,24 @@ export function GameImagePinEditor({
           return
         }
 
-        // Show the bitmap immediately (data URL) so the stage is usable while cloud upload runs.
-        await applyImagePreviewFromSrc(dataUrl, { filepath: '' })
+        // Show the bitmap immediately via LOCAL state — do not patch nodeData
+        // with the data URL, otherwise the parent autosave persists a multi-MB
+        // base64 blob and then patches again with the cloud URL (looks like
+        // "upload happens twice" in the network tab).
+        setPendingPreviewSrc(dataUrl)
 
+        // Fallback path: no cloud upload wired in. Persist the data URL once,
+        // then drop the local preview.
         if (!uploadGameImagePinFile) {
+          await applyImagePreviewFromSrc(dataUrl, { filepath: '' })
+          setPendingPreviewSrc(null)
           return
         }
 
         const uploaded = await uploadGameImagePinFile(file)
         if (!uploaded) {
           console.warn('[GameImagePinEditor] Upload failed or returned null')
+          setPendingPreviewSrc(null)
           return
         }
 
@@ -257,10 +273,13 @@ export function GameImagePinEditor({
         const signedUrl = await getFileSignedUrl(uploaded.path, 3600) // 1 hour expiry
         const urlToUse = signedUrl || uploaded.publicUrl
 
+        // Single nodeData patch per upload → single autosave to the DB.
         await applyImagePreviewFromSrc(urlToUse, { filepath: uploaded.path })
+        setPendingPreviewSrc(null)
         setCloudGalleryRefresh((c) => c + 1)
       } catch (error) {
         console.error(error)
+        setPendingPreviewSrc(null)
       }
     },
     [applyImagePreviewFromSrc, uploadGameImagePinFile],
@@ -343,7 +362,7 @@ export function GameImagePinEditor({
 
       <div className="flex w-full flex-col gap-4">
         <div className="flex flex-col gap-4">
-          {!imagePreview ? (
+          {!displayedImageSrc ? (
             <div className={cn('flex flex-col gap-4', imagePinEditorEnterLift)}>
               <FileDropzone
                 accept="image/*"
@@ -353,7 +372,7 @@ export function GameImagePinEditor({
               {galleryBelowDropzone}
             </div>
           ) : null}
-          {imagePreview ? (
+          {displayedImageSrc ? (
             <div className={cn('flex w-full max-w-full flex-col gap-3', imagePinEditorEnterLift)}>
               <div className="flex justify-between gap-2">
                 <div className="flex gap-2">
@@ -412,7 +431,7 @@ export function GameImagePinEditor({
               </div>
 
               <ImagePinRectStage
-                imageSrc={imagePreview}
+                imageSrc={displayedImageSrc}
                 rectangles={rectangles}
                 onRectanglesChange={handleRectanglesChange}
                 selectedRectId={selectedRectId}

@@ -1,9 +1,8 @@
-import { ArrowLeft, Settings, UserRoundPlus, Users } from 'lucide-react'
+import { ArrowLeft, GraduationCap, Settings, UserRoundPlus, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import {
   Breadcrumb,
@@ -14,21 +13,24 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { SelectTabs, type TabItem } from '@/components/shared/tabs/SelectTabs'
 
 import { updateClassroom, withdrawClassroomMember } from '../api/classroomsApi'
-import { AssignClassroomMemberDialog } from '../components/AssignClassroomMemberDialog'
+import { AssignCoTeachersDialog } from '../components/AssignCoTeachersDialog'
+import { AssignStudentsDialog } from '../components/AssignStudentsDialog'
 import { ClassroomMembersTable } from '../components/ClassroomMembersTable'
 import { ClassroomSettings } from '../components/ClassroomSettings'
+import { CoTeachersCard } from '../components/CoTeachersCard'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
+import { MainTeacherCard } from '../components/MainTeacherCard'
 import { ReassignMainTeacherDialog } from '../components/ReassignMainTeacherDialog'
 import { WithdrawFromClassDialog } from '../components/WithdrawFromClassDialog'
 import { useClassroomDetail } from '../hooks/useClassroomDetail'
 import type { ClassroomMember } from '../types/classroom.types'
-import { getInitial } from '../utils'
+import { getCoTeacherExclusions, getMainTeacherExclusions, getStudentExclusions } from '../utils'
 
 const TAB_MEMBERS = 'members'
 const TAB_SETTINGS = 'settings'
@@ -37,7 +39,9 @@ export function ClassroomDetailPage() {
   const { t } = useTranslation('features.institution-admin')
   const navigate = useNavigate()
   const { classroomId } = useParams<{ classroomId: string }>()
-  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false)
+  const [isAssignActionsOpen, setIsAssignActionsOpen] = useState(false)
+  const [isAssignCoTeachersDialogOpen, setIsAssignCoTeachersDialogOpen] = useState(false)
+  const [isAssignStudentsDialogOpen, setIsAssignStudentsDialogOpen] = useState(false)
   const [isReassignDialogOpen, setIsReassignDialogOpen] = useState(false)
   const [memberToKickOut, setMemberToKickOut] = useState<ClassroomMember | null>(null)
   const [activeTabId, setActiveTabId] = useState<string>(TAB_MEMBERS)
@@ -58,14 +62,23 @@ export function ClassroomDetailPage() {
     : t('classrooms.card.statusInactive')
   const primaryTeacher =
     members.find((member) => member.userId === classroom?.primary_teacher_id) ?? null
+  const coTeachers = useMemo(() => {
+    const primaryId = classroom?.primary_teacher_id
+    return members.filter((member) => member.role === 'co_teacher' && member.userId !== primaryId)
+  }, [members, classroom?.primary_teacher_id])
+  const mainTeacherExcludeUserIds = useMemo(
+    () => getMainTeacherExclusions(members, classroom?.primary_teacher_id ?? null),
+    [members, classroom?.primary_teacher_id],
+  )
+  const coTeacherExcludeUserIds = useMemo(
+    () => getCoTeacherExclusions(members, classroom?.primary_teacher_id ?? null),
+    [members, classroom?.primary_teacher_id],
+  )
+  const studentExcludeUserIds = useMemo(() => getStudentExclusions(members), [members])
   const tableMembers = useMemo(() => {
     const primaryId = classroom?.primary_teacher_id
-    if (!primaryId) return members
-    return members.filter((member) => member.userId !== primaryId)
+    return members.filter((member) => member.userId !== primaryId && member.role !== 'co_teacher')
   }, [members, classroom?.primary_teacher_id])
-  const primaryTeacherName = primaryTeacher?.name ?? t('classrooms.detail.mainTeacher.unassigned')
-  const primaryTeacherEmail = primaryTeacher?.email || t('classrooms.detail.mainTeacher.noEmail')
-  const primaryTeacherAvatarUrl = primaryTeacher?.avatarUrl ?? null
 
   const tabs: readonly TabItem[] = [
     { id: TAB_MEMBERS, icon: Users, title: t('classrooms.detail.tabs.members') },
@@ -121,23 +134,31 @@ export function ClassroomDetailPage() {
   return (
     <InstitutionAdminWorkspaceShell>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-2 pb-12 pt-4 animate-in fade-in-0 slide-in-from-bottom-4">
-        <AssignClassroomMemberDialog
-          open={isAssignDialogOpen}
-          onOpenChange={setIsAssignDialogOpen}
-          classroomId={classroom?.id ?? null}
-          institutionId={classroom?.institution_id ?? null}
-          members={members}
-          primaryTeacherId={classroom?.primary_teacher_id ?? null}
-          onAssigned={reload}
-        />
-
         <ReassignMainTeacherDialog
           open={isReassignDialogOpen}
           onOpenChange={setIsReassignDialogOpen}
           classroomId={classroom?.id ?? null}
           institutionId={classroom?.institution_id ?? null}
-          currentMainTeacherId={classroom?.primary_teacher_id ?? null}
+          excludeUserIds={mainTeacherExcludeUserIds}
           onReassigned={reload}
+        />
+
+        <AssignCoTeachersDialog
+          open={isAssignCoTeachersDialogOpen}
+          onOpenChange={setIsAssignCoTeachersDialogOpen}
+          classroomId={classroom?.id ?? null}
+          institutionId={classroom?.institution_id ?? null}
+          excludeUserIds={coTeacherExcludeUserIds}
+          onAssigned={reload}
+        />
+
+        <AssignStudentsDialog
+          open={isAssignStudentsDialogOpen}
+          onOpenChange={setIsAssignStudentsDialogOpen}
+          classroomId={classroom?.id ?? null}
+          institutionId={classroom?.institution_id ?? null}
+          excludeUserIds={studentExcludeUserIds}
+          onAssigned={reload}
         />
 
         <WithdrawFromClassDialog
@@ -255,59 +276,17 @@ export function ClassroomDetailPage() {
 
             {activeTabId === TAB_MEMBERS ? (
               <div className="flex flex-col gap-4">
-                <Card variant="soft">
-                  <CardHeader className="gap-1">
-                    <CardTitle className="text-base font-semibold">
-                      {t('classrooms.detail.mainTeacher.title')}
-                    </CardTitle>
-                    <Text
-                      as="p"
-                      variant="small"
-                      color="muted"
-                    >
-                      {t('classrooms.detail.mainTeacher.description')}
-                    </Text>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-3">
-                      <Avatar size="default">
-                        {primaryTeacherAvatarUrl ? (
-                          <AvatarImage
-                            src={primaryTeacherAvatarUrl}
-                            alt={primaryTeacherName}
-                          />
-                        ) : null}
-                        <AvatarFallback>{getInitial(primaryTeacherName)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <Text
-                          as="p"
-                          variant="body"
-                          className="truncate font-medium"
-                        >
-                          {primaryTeacherName}
-                        </Text>
-                        <Text
-                          as="p"
-                          variant="small"
-                          color="muted"
-                          className="truncate"
-                        >
-                          {primaryTeacherEmail}
-                        </Text>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="darkblue"
-                        size="sm"
-                        className="ml-auto"
-                        onClick={() => setIsReassignDialogOpen(true)}
-                      >
-                        {t('classrooms.detail.mainTeacher.reassign')}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <MainTeacherCard
+                  primaryTeacher={primaryTeacher}
+                  onSelectTeacher={() => setIsReassignDialogOpen(true)}
+                  onRemove={handleUnassignMainTeacher}
+                  isBusy={isSavingSettings}
+                />
+
+                <CoTeachersCard
+                  coTeachers={coTeachers}
+                  onRemove={(member) => setMemberToKickOut(member)}
+                />
 
                 <div className="flex items-center justify-between gap-4">
                   <Text
@@ -317,14 +296,53 @@ export function ClassroomDetailPage() {
                   >
                     {t('classrooms.members.title')}
                   </Text>
-                  <Button
-                    type="button"
-                    variant="darkblue"
-                    onClick={() => setIsAssignDialogOpen(true)}
+                  <Popover
+                    open={isAssignActionsOpen}
+                    onOpenChange={setIsAssignActionsOpen}
                   >
-                    <UserRoundPlus />
-                    {t('classrooms.members.assignUser')}
-                  </Button>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="darkblue"
+                      >
+                        <UserRoundPlus />
+                        {t('classrooms.members.assignUser')}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="end"
+                      className="w-56 p-2"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="justify-start"
+                          onClick={() => {
+                            setIsAssignActionsOpen(false)
+                            setIsAssignCoTeachersDialogOpen(true)
+                          }}
+                        >
+                          <Users className="size-4" />
+                          {t('classrooms.detail.assignActions.assignCoTeachers')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="justify-start"
+                          onClick={() => {
+                            setIsAssignActionsOpen(false)
+                            setIsAssignStudentsDialogOpen(true)
+                          }}
+                        >
+                          <GraduationCap className="size-4" />
+                          {t('classrooms.detail.assignActions.assignStudents')}
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <ClassroomMembersTable
                   members={tableMembers}
@@ -334,12 +352,9 @@ export function ClassroomDetailPage() {
             ) : (
               <ClassroomSettings
                 classroom={classroom}
-                primaryTeacher={primaryTeacher}
                 isSaving={isSavingSettings}
                 saveError={settingsError}
                 onSaveTitle={handleSaveTitle}
-                onUnassignMainTeacher={handleUnassignMainTeacher}
-                onReassignMainTeacher={() => setIsReassignDialogOpen(true)}
               />
             )}
           </>

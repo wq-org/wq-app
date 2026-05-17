@@ -1,42 +1,39 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { updateClassroom } from '../api/classroomsApi'
+import { createClassroomMember } from '../api/classroomsApi'
 import { fetchInstitutionUserDirectory } from '../api/institutionUserInvitesApi'
 
-export type TeacherOption = {
+export type CoTeacherOption = {
   id: string
   name: string
   email: string
   avatarUrl: string | null
 }
 
-type UseReassignMainTeacherDialogParams = {
+type UseAddCoTeacherDialogParams = {
   classroomId: string | null
   institutionId: string | null
-  /**
-   * User ids that must not appear in the picker — typically the current main
-   * teacher (no-op reassignment) plus active co-teachers of the same classroom
-   * (cannot dual-role). Computed in the parent via `getMainTeacherExclusions`.
-   */
+  /** User ids that must not appear in the picker (primary teacher + existing co-teachers). */
   excludeUserIds: readonly string[]
   open: boolean
-  onReassigned: () => void
+  onAdded: () => void
 }
 
-export function useReassignMainTeacherDialog({
+export function useAddCoTeacherDialog({
   classroomId,
   institutionId,
   excludeUserIds,
   open,
-  onReassigned,
-}: UseReassignMainTeacherDialogParams) {
-  const [teachers, setTeachers] = useState<readonly TeacherOption[]>([])
+  onAdded,
+}: UseAddCoTeacherDialogParams) {
+  const [teachers, setTeachers] = useState<readonly CoTeacherOption[]>([])
   const [selectedTeacherId, setSelectedTeacherId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Stable string key so a fresh array reference from the parent doesn't refire the effect.
+  // Stable string key for the excluded set so the effect doesn't re-run on
+  // every render just because the parent passed a fresh array reference.
   const excludeKey = useMemo(() => [...excludeUserIds].sort().join('|'), [excludeUserIds])
 
   useEffect(() => {
@@ -51,7 +48,7 @@ export function useReassignMainTeacherDialog({
         const rows = await fetchInstitutionUserDirectory(institutionId)
         if (cancelled) return
         const excluded = new Set(excludeKey ? excludeKey.split('|') : [])
-        const options: TeacherOption[] = rows
+        const options: CoTeacherOption[] = rows
           .filter((row) => row.rowKind === 'member')
           .filter((row) => row.membership_status === 'active')
           .filter((row) => row.membership_role === 'teacher')
@@ -85,7 +82,7 @@ export function useReassignMainTeacherDialog({
     [selectedTeacherId, teachers],
   )
 
-  const canSubmit = !!classroomId && !!selectedTeacherId && !isSubmitting
+  const canSubmit = !!classroomId && !!institutionId && !!selectedTeacherId && !isSubmitting
 
   const reset = () => {
     setSelectedTeacherId('')
@@ -93,19 +90,22 @@ export function useReassignMainTeacherDialog({
   }
 
   const handleSubmit = async (): Promise<boolean> => {
-    if (!classroomId || !selectedTeacher) return false
+    if (!classroomId || !institutionId || !selectedTeacher) return false
 
     setIsSubmitting(true)
     setError(null)
     try {
-      await updateClassroom({ classroomId, primaryTeacherId: selectedTeacher.id })
-      onReassigned()
+      await createClassroomMember({
+        classroomId,
+        institutionId,
+        userId: selectedTeacher.id,
+        role: 'co_teacher',
+      })
+      onAdded()
       reset()
       return true
     } catch (submitError) {
-      setError(
-        submitError instanceof Error ? submitError.message : 'Failed to reassign main teacher',
-      )
+      setError(submitError instanceof Error ? submitError.message : 'Failed to add co-teacher')
       return false
     } finally {
       setIsSubmitting(false)

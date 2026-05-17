@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 -- 2. INSTITUTIONS
 CREATE TABLE IF NOT EXISTS public.institutions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
   email TEXT,
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS public.teacher_followers (
 
 -- 5. COURSES
 CREATE TABLE IF NOT EXISTS public.courses (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
   teacher_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS public.course_enrollments (
 
 -- 7. TOPICS
 CREATE TABLE IF NOT EXISTS public.topics (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
   course_id UUID NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS public.topics (
 
 -- 8. LESSONS
 CREATE TABLE IF NOT EXISTS public.lessons (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   topic_id UUID NOT NULL REFERENCES public.topics(id) ON DELETE CASCADE,
   content JSONB NOT NULL,
@@ -166,7 +166,7 @@ ALTER TABLE public.lessons
 
 -- 9. GAMES
 CREATE TABLE IF NOT EXISTS public.games (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
   game_type game_type NOT NULL,
@@ -213,7 +213,7 @@ CHECK (theme_id IN ('violet', 'indigo', 'blue', 'cyan', 'teal', 'green', 'lime',
 UPDATE public.lessons
 SET pages = jsonb_build_array(
   jsonb_build_object(
-    'id', uuid_generate_v4()::text,
+    'id', gen_random_uuid()::text,
     'order', 0,
     'content', content
   )

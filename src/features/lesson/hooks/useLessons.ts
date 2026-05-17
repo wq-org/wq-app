@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react'
 import {
   createLesson as createLessonApi,
   deleteLesson as deleteLessonApi,
-  getLessonById as getLessonByIdApi,
-  getLessonsByTopicId,
+  getTeacherLessonById as getTeacherLessonByIdApi,
+  getTeacherLessonsByTopicId,
   updateLesson as updateLessonApi,
 } from '../api/lessonsApi'
 import type { CreateLessonData, Lesson, UpdateLessonData } from '../types/lesson.types'
@@ -19,7 +19,7 @@ export function useLessons() {
     setError(null)
 
     try {
-      const data = await getLessonsByTopicId(topicId)
+      const data = await getTeacherLessonsByTopicId(topicId)
       setLessons(data)
       return data
     } catch (err: unknown) {
@@ -36,7 +36,7 @@ export function useLessons() {
     setError(null)
 
     try {
-      const fetchedLesson = await getLessonByIdApi(lessonId)
+      const fetchedLesson = await getTeacherLessonByIdApi(lessonId)
       setLesson(fetchedLesson)
       return fetchedLesson
     } catch (err: unknown) {

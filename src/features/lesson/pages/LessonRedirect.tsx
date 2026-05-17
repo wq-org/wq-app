@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
-import { getLessonTopicRefById } from '@/features/lesson'
+import { getTeacherLessonTopicRefById } from '@/features/lesson'
 import { getTopicById } from '@/features/topic'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -24,7 +24,7 @@ const LessonRedirect = () => {
 
     async function resolve() {
       try {
-        const lesson = await getLessonTopicRefById(id)
+        const lesson = await getTeacherLessonTopicRefById(id)
         const topic = await getTopicById(lesson.topic_id)
         if (!cancelled && topic) {
           setTarget(`/teacher/course/${topic.course_id}/lesson/${id}`)

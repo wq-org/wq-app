@@ -149,6 +149,40 @@ export async function ensurePrimaryTeacherMembership(input: {
   })
 }
 
+/**
+ * Inverse of `ensurePrimaryTeacherMembership`: when a classroom's primary
+ * teacher is unassigned, soft-withdraw the synthetic `co_teacher` row that
+ * was created for them. Without this the user keeps appearing in the
+ * Co-Teachers card even though the institution admin meant to remove them.
+ *
+ * We soft-withdraw (set `withdrawn_at = now()`) instead of deleting:
+ *  - `listClassroomMembers` already filters `withdrawn_at IS NULL`, so the
+ *    UI hides them immediately.
+ *  - The audit trigger logs `classroom_member.withdrawn` automatically.
+ *  - If the same user is later re-assigned as primary teacher,
+ *    `ensurePrimaryTeacherMembership` reactivates the same row (sets
+ *    `withdrawn_at = NULL`), so no duplicate history is created.
+ */
+async function withdrawPrimaryTeacherMembership(input: {
+  classroomId: string
+  userId: string
+}): Promise<void> {
+  const { error } = await supabase
+    .from('classroom_members')
+    .update({
+      withdrawn_at: new Date().toISOString(),
+      leave_reason: 'primary_teacher_unassigned',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('classroom_id', input.classroomId)
+    .eq('user_id', input.userId)
+    .is('withdrawn_at', null)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
 export async function fetchClassroom(classroomId: string): Promise<ClassroomRecord> {
   const { data, error } = await supabase
     .from('classrooms')
@@ -171,6 +205,21 @@ type UpdateClassroomInput = {
 }
 
 export async function updateClassroom(input: UpdateClassroomInput): Promise<ClassroomRecord> {
+  // When unassigning the primary teacher we need the *previous* id (the
+  // UPDATE-then-RETURN gives us the new row only). Read it first so the
+  // cleanup below knows which membership row to withdraw.
+  let previousPrimaryTeacherId: string | null = null
+  if (input.primaryTeacherId === null) {
+    const { data: existing, error: existingError } = await supabase
+      .from('classrooms')
+      .select('primary_teacher_id')
+      .eq('id', input.classroomId)
+      .single()
+    if (existingError) throw new Error(existingError.message)
+    previousPrimaryTeacherId =
+      (existing as { primary_teacher_id: string | null } | null)?.primary_teacher_id ?? null
+  }
+
   const patch: Record<string, unknown> = {}
   if (input.title !== undefined) patch.title = input.title.trim()
   if (input.primaryTeacherId !== undefined) patch.primary_teacher_id = input.primaryTeacherId
@@ -194,6 +243,16 @@ export async function updateClassroom(input: UpdateClassroomInput): Promise<Clas
       classroomId: updated.id,
       institutionId: updated.institution_id,
       userId: input.primaryTeacherId,
+    })
+  }
+
+  // Symmetric cleanup: unassigning the primary teacher must also clear the
+  // synthetic co_teacher membership row, otherwise the former main teacher
+  // keeps showing up in the Co-Teachers card.
+  if (input.primaryTeacherId === null && previousPrimaryTeacherId !== null) {
+    await withdrawPrimaryTeacherMembership({
+      classroomId: updated.id,
+      userId: previousPrimaryTeacherId,
     })
   }
 

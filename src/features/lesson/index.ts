@@ -10,8 +10,10 @@ export {
   createLesson,
   deleteLesson,
   getLessonById,
-  getLessonTopicRefById,
   getLessonsByTopicId,
+  getTeacherLessonById,
+  getTeacherLessonTopicRefById,
+  getTeacherLessonsByTopicId,
   updateLesson,
 } from './api/lessonsApi'
 export {

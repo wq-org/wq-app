@@ -969,8 +969,42 @@
         "role": "Hauptlehrkraft",
         "unassigned": "Nicht zugewiesen",
         "noEmail": "Keine E-Mail verfügbar",
-        "reassign": "Neu zuweisen"
+        "edit": "Bearbeiten",
+        "assign": "Zuweisen",
+        "reassign": "Neu zuweisen",
+        "remove": "Entfernen"
+      },
+      "coTeachers": {
+        "title": "Co-Lehrkräfte",
+        "description": "Co-Lehrkräfte können die Klassenliste einsehen, Kursverknüpfungen verwalten und Belohnungen oder Punkte in diesem Klassenraum vergeben.",
+        "add": "Co-Lehrkraft hinzufügen",
+        "empty": "Noch keine Co-Lehrkräfte zugewiesen.",
+        "edit": "Bearbeiten",
+        "remove": "Entfernen",
+        "removeNamed": "{{name}} entfernen"
+      },
+      "assignActions": {
+        "assignCoTeachers": "Co-Lehrkräfte zuweisen",
+        "assignStudents": "Schüler zuweisen"
       }
+    },
+    "assignCoTeachersDialog": {
+      "title": "Co-Lehrkräfte zuweisen",
+      "description": "Wählen Sie eine oder mehrere Lehrkräfte Ihrer Institution aus, die als Co-Lehrkräfte für diesen Klassenraum eingesetzt werden sollen.",
+      "searchPlaceholder": "Lehrkräfte suchen",
+      "empty": "Keine geeigneten Lehrkräfte verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Zuweisen",
+      "submitting": "Wird zugewiesen..."
+    },
+    "assignStudentsDialog": {
+      "title": "Schüler zuweisen",
+      "description": "Wählen Sie einen oder mehrere Schüler Ihrer Institution aus, die in diesen Klassenraum eingeschrieben werden sollen.",
+      "searchPlaceholder": "Schüler suchen",
+      "empty": "Keine geeigneten Schüler verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Zuweisen",
+      "submitting": "Wird zugewiesen..."
     },
     "reassignMainTeacherDialog": {
       "title": "Hauptlehrkraft neu zuweisen",
@@ -980,6 +1014,15 @@
       "cancel": "Abbrechen",
       "submit": "Neu zuweisen",
       "submitting": "Wird zugewiesen..."
+    },
+    "addCoTeacherDialog": {
+      "title": "Co-Lehrkraft hinzufügen",
+      "description": "Wählen Sie eine Lehrkraft Ihrer Institution aus, die als Co-Lehrkraft für diesen Klassenraum tätig sein soll.",
+      "searchPlaceholder": "Lehrkräfte suchen",
+      "empty": "Keine geeigneten Lehrkräfte verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Co-Lehrkraft hinzufügen",
+      "submitting": "Wird hinzugefügt..."
     },
     "settings": {
       "titleLabel": "Titel des Klassenraums",

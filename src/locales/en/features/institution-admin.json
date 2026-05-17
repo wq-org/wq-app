@@ -969,8 +969,42 @@
         "role": "Main teacher",
         "unassigned": "Unassigned",
         "noEmail": "No email available",
-        "reassign": "Reassign"
+        "edit": "Edit",
+        "assign": "Assign",
+        "reassign": "Reassign",
+        "remove": "Remove"
+      },
+      "coTeachers": {
+        "title": "Co-teachers",
+        "description": "Co-teachers can read the roster, manage course links, and award rewards or points in this classroom.",
+        "add": "Add Co-Teacher",
+        "empty": "No co-teachers assigned yet.",
+        "edit": "Edit",
+        "remove": "Remove",
+        "removeNamed": "Remove {{name}}"
+      },
+      "assignActions": {
+        "assignCoTeachers": "Assign Co-Teachers",
+        "assignStudents": "Assign Students"
       }
+    },
+    "assignCoTeachersDialog": {
+      "title": "Assign co-teachers",
+      "description": "Pick one or more teachers in your institution to assign as co-teachers for this classroom.",
+      "searchPlaceholder": "Search teachers",
+      "empty": "No eligible teachers available.",
+      "cancel": "Cancel",
+      "submit": "Assign",
+      "submitting": "Assigning..."
+    },
+    "assignStudentsDialog": {
+      "title": "Assign students",
+      "description": "Pick one or more students in your institution to enrol in this classroom.",
+      "searchPlaceholder": "Search students",
+      "empty": "No eligible students available.",
+      "cancel": "Cancel",
+      "submit": "Assign",
+      "submitting": "Assigning..."
     },
     "reassignMainTeacherDialog": {
       "title": "Reassign main teacher",
@@ -980,6 +1014,15 @@
       "cancel": "Cancel",
       "submit": "Reassign",
       "submitting": "Reassigning..."
+    },
+    "addCoTeacherDialog": {
+      "title": "Add co-teacher",
+      "description": "Pick a teacher in your institution to assign as a co-teacher for this classroom.",
+      "searchPlaceholder": "Search teachers",
+      "empty": "No eligible teachers available.",
+      "cancel": "Cancel",
+      "submit": "Add co-teacher",
+      "submitting": "Adding..."
     },
     "settings": {
       "titleLabel": "Classroom title",

@@ -402,7 +402,7 @@ BEGIN
       'authenticated',
       'authenticated',
       'admin@wq-app.de',
-      crypt('wq-app', gen_salt('bf')), -- CHANGE THIS PASSWORD!
+      extensions.crypt('wq-app', extensions.gen_salt('bf')), -- CHANGE THIS PASSWORD!
       NOW(),
       NOW(),
       NOW(),

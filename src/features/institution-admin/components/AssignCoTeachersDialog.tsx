@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { UserX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -7,9 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
-  ComboboxInput,
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
@@ -26,59 +28,56 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
 import {
-  useReassignMainTeacherDialog,
-  type TeacherOption,
-} from '../hooks/useReassignMainTeacherDialog'
+  useAssignCoTeachersDialog,
+  type AssignableTeacherOption,
+} from '../hooks/useAssignCoTeachersDialog'
 import { getInitial } from '../utils'
 
-type ReassignMainTeacherDialogProps = {
+type AssignCoTeachersDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   classroomId: string | null
   institutionId: string | null
   excludeUserIds: readonly string[]
-  onReassigned: () => void
+  onAssigned: () => void
 }
 
-export function ReassignMainTeacherDialog({
+export function AssignCoTeachersDialog({
   open,
   onOpenChange,
   classroomId,
   institutionId,
   excludeUserIds,
-  onReassigned,
-}: ReassignMainTeacherDialogProps) {
+  onAssigned,
+}: AssignCoTeachersDialogProps) {
   const { t } = useTranslation('features.institution-admin')
+  const chipsAnchorRef = useRef<HTMLDivElement>(null)
   const {
     teachers,
-    selectedTeacherId,
-    setSelectedTeacherId,
+    selectedIds,
+    setSelectedIds,
     isLoading,
     isSubmitting,
     error,
     canSubmit,
     reset,
     handleSubmit,
-  } = useReassignMainTeacherDialog({
+  } = useAssignCoTeachersDialog({
     classroomId,
     institutionId,
     excludeUserIds,
     open,
-    onReassigned,
+    onAssigned,
   })
 
-  const teacherById = useMemo(() => {
-    const map = new Map<string, TeacherOption>()
-    for (const teacher of teachers) {
-      map.set(teacher.id, teacher)
-    }
+  const optionsById = useMemo(() => {
+    const map = new Map<string, AssignableTeacherOption>()
+    for (const teacher of teachers) map.set(teacher.id, teacher)
     return map
   }, [teachers])
 
-  const selectedTeacher = selectedTeacherId ? (teacherById.get(selectedTeacherId) ?? null) : null
-
-  const handleSelect = (value: string | null) => {
-    setSelectedTeacherId(value ?? '')
+  const handleValueChange = (next: readonly string[] | null) => {
+    setSelectedIds(Array.isArray(next) ? next : [])
   }
 
   const handleClose = (nextOpen: boolean) => {
@@ -98,9 +97,9 @@ export function ReassignMainTeacherDialog({
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t('classrooms.reassignMainTeacherDialog.title')}</DialogTitle>
+          <DialogTitle>{t('classrooms.assignCoTeachersDialog.title')}</DialogTitle>
           <DialogDescription>
-            {t('classrooms.reassignMainTeacherDialog.description')}
+            {t('classrooms.assignCoTeachersDialog.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -118,35 +117,52 @@ export function ReassignMainTeacherDialog({
               <EmptyMedia variant="icon">
                 <UserX className="size-6" />
               </EmptyMedia>
-              <EmptyTitle>{t('classrooms.reassignMainTeacherDialog.empty')}</EmptyTitle>
+              <EmptyTitle>{t('classrooms.assignCoTeachersDialog.empty')}</EmptyTitle>
               <EmptyDescription>{t('classrooms.assignDialog.emptyDescription')}</EmptyDescription>
             </EmptyHeader>
           </Empty>
         ) : (
           <div className="grid gap-3">
             <Combobox
-              value={selectedTeacherId || null}
-              onValueChange={handleSelect}
+              multiple
+              value={selectedIds as string[]}
+              onValueChange={handleValueChange}
               items={teachers.map((teacher) => teacher.id)}
-              itemToStringLabel={(item) => teacherById.get(String(item))?.name ?? ''}
+              itemToStringLabel={(item) => optionsById.get(String(item))?.name ?? ''}
               filter={(item, query) => {
-                const teacher = teacherById.get(String(item))
-                if (!teacher) return false
-                const haystack = `${teacher.name} ${teacher.email}`.toLowerCase()
+                const option = optionsById.get(String(item))
+                if (!option) return false
+                const haystack = `${option.name} ${option.email}`.toLowerCase()
                 return haystack.includes(query.trim().toLowerCase())
               }}
               autoHighlight
             >
-              <ComboboxInput
-                placeholder={t('classrooms.reassignMainTeacherDialog.searchPlaceholder')}
-                showClear
-              />
-              <ComboboxContent>
-                <ComboboxEmpty>{t('classrooms.reassignMainTeacherDialog.empty')}</ComboboxEmpty>
+              <ComboboxChips
+                ref={chipsAnchorRef}
+                className="w-full min-w-0"
+              >
+                {selectedIds.map((id) => {
+                  const option = optionsById.get(id)
+                  return (
+                    <ComboboxChip
+                      key={id}
+                      showRemove
+                    >
+                      <span className="max-w-[14rem] truncate">{option?.name ?? id}</span>
+                    </ComboboxChip>
+                  )
+                })}
+                <ComboboxChipsInput
+                  placeholder={t('classrooms.assignCoTeachersDialog.searchPlaceholder')}
+                  className="min-h-7 flex-1 py-1 text-base"
+                />
+              </ComboboxChips>
+              <ComboboxContent anchor={chipsAnchorRef}>
+                <ComboboxEmpty>{t('classrooms.assignCoTeachersDialog.empty')}</ComboboxEmpty>
                 <ComboboxList>
                   {(item: string) => {
-                    const teacher = teacherById.get(item)
-                    if (!teacher) return null
+                    const option = optionsById.get(item)
+                    if (!option) return null
                     return (
                       <ComboboxItem
                         key={item}
@@ -154,18 +170,18 @@ export function ReassignMainTeacherDialog({
                       >
                         <div className="flex w-full items-center gap-3">
                           <Avatar size="sm">
-                            {teacher.avatarUrl ? (
+                            {option.avatarUrl ? (
                               <AvatarImage
-                                src={teacher.avatarUrl}
-                                alt={teacher.name}
+                                src={option.avatarUrl}
+                                alt={option.name}
                               />
                             ) : null}
-                            <AvatarFallback>{getInitial(teacher.name)}</AvatarFallback>
+                            <AvatarFallback>{getInitial(option.name)}</AvatarFallback>
                           </Avatar>
                           <div className="flex min-w-0 flex-col">
-                            <span className="truncate font-medium">{teacher.name}</span>
+                            <span className="truncate font-medium">{option.name}</span>
                             <span className="truncate text-xs text-muted-foreground">
-                              {teacher.email}
+                              {option.email}
                             </span>
                           </div>
                           <Badge
@@ -183,23 +199,13 @@ export function ReassignMainTeacherDialog({
               </ComboboxContent>
             </Combobox>
 
-            {selectedTeacher ? (
-              <Text
-                as="p"
-                variant="small"
-                color="muted"
-              >
-                {selectedTeacher.name} · {selectedTeacher.email}
-              </Text>
-            ) : null}
-
             {error ? (
               <Text
                 as="p"
                 variant="small"
                 color="danger"
               >
-                {error}
+                {error === 'partial' ? t('classrooms.assignDialog.partialFailure') : error}
               </Text>
             ) : null}
           </div>
@@ -212,7 +218,7 @@ export function ReassignMainTeacherDialog({
             onClick={() => handleClose(false)}
             disabled={isSubmitting}
           >
-            {t('classrooms.reassignMainTeacherDialog.cancel')}
+            {t('classrooms.assignCoTeachersDialog.cancel')}
           </Button>
           <Button
             type="button"
@@ -221,8 +227,8 @@ export function ReassignMainTeacherDialog({
             disabled={!canSubmit}
           >
             {isSubmitting
-              ? t('classrooms.reassignMainTeacherDialog.submitting')
-              : t('classrooms.reassignMainTeacherDialog.submit')}
+              ? t('classrooms.assignCoTeachersDialog.submitting')
+              : t('classrooms.assignCoTeachersDialog.submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

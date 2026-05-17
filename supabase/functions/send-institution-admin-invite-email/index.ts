@@ -47,16 +47,19 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
-  if (
-    !brevoKey ||
-    !senderEmail ||
-    !senderName ||
-    !publicSiteUrlRaw ||
-    !supabaseUrl ||
-    !supabaseAnonKey
-  ) {
-    console.error('send-institution-admin-invite-email: missing required environment configuration')
-    return jsonResponse({ error: 'Server configuration error' }, 500)
+  const missingConfigFields = [
+    !brevoKey ? 'INSTITUTION_ADMIN_INVITE_KEY' : null,
+    !senderEmail ? 'BREVO_SENDER_EMAIL' : null,
+    !senderName ? 'BREVO_SENDER_NAME' : null,
+    !publicSiteUrlRaw ? 'PUBLIC_SITE_URL' : null,
+    !supabaseUrl ? 'SUPABASE_URL' : null,
+    !supabaseAnonKey ? 'SUPABASE_ANON_KEY' : null,
+  ].filter((field): field is string => Boolean(field))
+
+  if (missingConfigFields.length > 0) {
+    const errorMessage = `Missing required environment configuration: ${missingConfigFields.join(', ')}`
+    console.error(`send-institution-admin-invite-email: ${errorMessage}`)
+    return jsonResponse({ error: errorMessage }, 500)
   }
 
   const publicSiteUrl = publicSiteUrlRaw.replace(/\/$/, '')

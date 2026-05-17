@@ -9,3 +9,8 @@ export {
 } from './institutionAdminUsers'
 export type { InstitutionUserDialogCopyKeys } from './institutionAdminUsers'
 export { parseBulkEmailTokens } from './bulkInviteEmails'
+export {
+  getMainTeacherExclusions,
+  getCoTeacherExclusions,
+  getStudentExclusions,
+} from './classroomAssignmentConstraints'

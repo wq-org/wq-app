@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { getLessonById } from '../api/lessonsApi'
+import { getTeacherLessonById } from '../api/lessonsApi'
 
 /**
  * Returns a stable `prefetchLesson(lessonId)` callback that warms the lesson
@@ -15,6 +15,6 @@ import { getLessonById } from '../api/lessonsApi'
 export function useLessonPrefetch() {
   return useCallback((lessonId: string | undefined) => {
     if (!lessonId) return
-    void getLessonById(lessonId).catch(() => undefined)
+    void getTeacherLessonById(lessonId).catch(() => undefined)
   }, [])
 }

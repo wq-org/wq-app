@@ -3,8 +3,8 @@ import {
   createLesson as createLessonApi,
   deleteLesson as deleteLessonApi,
   updateLesson as updateLessonApi,
-  getLessonById as getLessonByIdApi,
-  getLessonsByTopicId as getLessonsByTopicIdApi,
+  getTeacherLessonById as getTeacherLessonByIdApi,
+  getTeacherLessonsByTopicId as getTeacherLessonsByTopicIdApi,
   type CreateLessonData,
   type Lesson,
   type UpdateLessonData,
@@ -22,7 +22,7 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setListLoading(true)
     setError(null)
     try {
-      const fetchedLessons = await getLessonsByTopicIdApi(topicId)
+      const fetchedLessons = await getTeacherLessonsByTopicIdApi(topicId)
       setLessons(fetchedLessons)
       return fetchedLessons
     } catch (err) {
@@ -40,7 +40,7 @@ export const LessonProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setError(null)
     setLesson(null)
     try {
-      const fetchedLesson = await getLessonByIdApi(lessonId)
+      const fetchedLesson = await getTeacherLessonByIdApi(lessonId)
       setLesson(fetchedLesson)
       return fetchedLesson
     } catch (err) {
