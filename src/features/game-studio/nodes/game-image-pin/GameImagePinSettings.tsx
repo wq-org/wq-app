@@ -210,7 +210,7 @@ export function GameImagePinSettings({
 
       <FieldTextarea
         value={description}
-        rows={3}
+        rows={5}
         placeholder={t('imagePinSettings.gameDescriptionPlaceholder')}
         onValueChange={handleDescriptionChange}
         label={t('imagePinSettings.gameDescriptionLabel')}
