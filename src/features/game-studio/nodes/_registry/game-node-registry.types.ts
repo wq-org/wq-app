@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
-import type { NodeProps } from '@xyflow/react'
+import type { Edge, Node, NodeProps } from '@xyflow/react'
 
 export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
@@ -26,6 +26,12 @@ export type GameNodeDialogProps = {
   onPatchNodeData: (patch: Record<string, unknown>) => void
   onClose: () => void
   onDelete: () => void
+  /** Close the current dialog and open the dialog for a different node by id. */
+  onNavigateToNode?: (nodeId: string) => void
+  /** Current canvas nodes, used by dialogs that need workflow context. */
+  flowNodes?: Node[]
+  /** Current canvas edges, used by dialogs that need workflow context. */
+  flowEdges?: Edge[]
   /**
    * De-duplicated image URLs from Image Pin nodes on the canvas (quick-select).
    * Editors that need it (e.g. Image Pin) read this; others ignore it.

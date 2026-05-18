@@ -825,6 +825,9 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           onPatchNodeData={handlePatchOpenNodeData}
           onClose={() => setOpenDialogNodeId(null)}
           onDelete={handleDeleteOpenNode}
+          onNavigateToNode={(id) => setOpenDialogNodeId(id)}
+          flowNodes={nodes}
+          flowEdges={edges}
           projectImageGallery={projectImageGallery}
         />
       ) : null}

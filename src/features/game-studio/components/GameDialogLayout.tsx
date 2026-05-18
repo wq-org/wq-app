@@ -36,7 +36,7 @@ export function GameLayout({
   ]
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col h-full">
       {/* Tabs */}
       <SelectTabs
         tabs={tabs}
@@ -45,7 +45,7 @@ export function GameLayout({
       />
 
       {/* Tab Content */}
-      <div className="mt-6">
+      <div className="flex-1 min-h-0 mt-6">
         {activeTab === 'editor' && <>{editorContent || children}</>}
         {activeTab === 'preview' && <>{previewContent}</>}
         {activeTab === 'settings' && <>{settingsContent}</>}

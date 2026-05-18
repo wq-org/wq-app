@@ -296,6 +296,22 @@
     "howToPlayResponse": "How to play:\n1. Read the question above the image.\n2. Drag the pin from the slot below onto the image.\n3. Place the whole pin inside the highlighted rectangle.\n4. Click Submit answer to lock your placement.\n5. Correct answers turn the pin blue and show confetti. Wrong answers turn it red.\n6. The next question appears after a short pause.\n\nTip: you can drag the pin back to the slot before you submit."
   },
   "imagePinSettings": {
-    "holdToDeleteNode": "Hold to delete node"
+    "holdToDeleteNode": "Hold to delete node",
+    "pedagogicalTitle": "Pedagogical",
+    "learningFieldLabel": "Select the learning field addressed by this node",
+    "learningFieldButton": "Select learning field",
+    "learningFieldPopoverTitle": "Learning Fields",
+    "learningFieldPopoverDescription": "Select one or more learning fields.",
+    "gameDescriptionLabel": "Game Description",
+    "gameDescriptionPlaceholder": "Describe what this game is about",
+    "gameSettingsTitle": "Game Settings",
+    "maxPointsLabel": "Maximum score for a fully correct run",
+    "pointDeductionLabel": "Score deduction in % per retry",
+    "timeLimitLabel": "Enable optional time limit to challenge advanced players",
+    "adaptiveTitle": "Adaptive Features",
+    "qualityReductionLabel": "Gradually reduce image quality (in %)",
+    "qualitySliderLabel": "Image Quality",
+    "areaExclusionLabel": "Gradually hide image area (in %)",
+    "areaSliderLabel": "Area Exclusion"
   }
 }

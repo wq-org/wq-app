@@ -76,7 +76,8 @@ export function GameImagePinEditor({
   )
 
   const replaceImageInputRef = useRef<HTMLInputElement>(null)
-  /** Ignores cloud upload results if the user picked another image meanwhile. */
+  /** Prevents a second file pick from triggering a new upload while one is in flight. */
+  const isUploadingRef = useRef(false)
   const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
   const [sceneMetrics, setSceneMetrics] = useState<{ width: number; height: number } | null>(null)
   const [cloudGalleryRefresh, setCloudGalleryRefresh] = useState(0)
@@ -93,17 +94,23 @@ export function GameImagePinEditor({
     useImagePinCloudGalleryImages(cloudGalleryRefresh)
 
   const mergedGalleryItems = useMemo(() => {
-    const byUrl = new Map<string, { url: string; title: string; storagePath?: string }>()
+    const seen = new Map<string, { url: string; title: string; storagePath?: string }>()
+
+    function itemKey(item: { url: string; storagePath?: string }): string {
+      return item.storagePath?.trim() || item.url.trim()
+    }
+
     for (const item of galleryItems) {
-      if (item.url.trim()) byUrl.set(item.url.trim(), { ...item })
+      if (!item.url.trim()) continue
+      const key = itemKey(item)
+      if (!seen.has(key)) seen.set(key, { ...item })
     }
     for (const item of cloudGalleryItems) {
-      const key = item.url.trim()
-      if (key && !byUrl.has(key)) byUrl.set(key, item)
+      const key = itemKey(item)
+      if (key && !seen.has(key)) seen.set(key, item)
     }
-    const merged = [...byUrl.values()]
 
-    return merged
+    return [...seen.values()]
   }, [cloudGalleryItems, galleryItems])
 
   useEffect(() => {
@@ -236,27 +243,20 @@ export function GameImagePinEditor({
 
   const handleFileSelected = useCallback(
     async (files: File[]) => {
+      if (isUploadingRef.current) return
       const file = files.find((f) => f.type.startsWith('image/'))
-      if (!file) {
-        console.log('[GameImagePinEditor] No image file selected')
-        return
-      }
+      if (!file) return
 
+      isUploadingRef.current = true
       try {
         const dataUrl = await readFileAsDataUrl(file)
-        if (!dataUrl) {
-          console.warn('[GameImagePinEditor] Failed to read file as data URL')
-          return
-        }
+        if (!dataUrl) return
 
         // Show the bitmap immediately via LOCAL state — do not patch nodeData
         // with the data URL, otherwise the parent autosave persists a multi-MB
-        // base64 blob and then patches again with the cloud URL (looks like
-        // "upload happens twice" in the network tab).
+        // base64 blob and then patches again with the cloud URL.
         setPendingPreviewSrc(dataUrl)
 
-        // Fallback path: no cloud upload wired in. Persist the data URL once,
-        // then drop the local preview.
         if (!uploadGameImagePinFile) {
           await applyImagePreviewFromSrc(dataUrl, { filepath: '' })
           setPendingPreviewSrc(null)
@@ -265,22 +265,21 @@ export function GameImagePinEditor({
 
         const uploaded = await uploadGameImagePinFile(file)
         if (!uploaded) {
-          console.warn('[GameImagePinEditor] Upload failed or returned null')
           setPendingPreviewSrc(null)
           return
         }
 
-        // For private buckets, use signed URL instead of public URL
-        const signedUrl = await getFileSignedUrl(uploaded.path, 3600) // 1 hour expiry
+        const signedUrl = await getFileSignedUrl(uploaded.path, 3600)
         const urlToUse = signedUrl || uploaded.publicUrl
 
-        // Single nodeData patch per upload → single autosave to the DB.
         await applyImagePreviewFromSrc(urlToUse, { filepath: uploaded.path })
         setPendingPreviewSrc(null)
         setCloudGalleryRefresh((c) => c + 1)
       } catch (error) {
         console.error(error)
         setPendingPreviewSrc(null)
+      } finally {
+        isUploadingRef.current = false
       }
     },
     [applyImagePreviewFromSrc, uploadGameImagePinFile],

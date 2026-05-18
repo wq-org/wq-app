@@ -13,13 +13,25 @@ export function GameImagePinDialog({
   nodeId,
   onClose,
   onDelete,
+  onNavigateToNode,
   nodeData,
   onPatchNodeData,
+  flowNodes = [],
+  flowEdges = [],
   projectImageGallery,
 }: GameNodeDialogProps) {
   const { t } = useTranslation('features.gameStudio')
   const { uploadGameImagePinFile } = useGameImagePinImageUpload()
   const gameImagePinNodeData = nodeData as GameImagePinNodeData
+
+  const prevEdge = flowEdges.find((edge) => edge.target === nodeId)
+  const nextEdge = flowEdges.find((edge) => edge.source === nodeId)
+  const prevNode = prevEdge
+    ? { id: prevEdge.source, nodeType: flowNodes.find((node) => node.id === prevEdge.source)?.type }
+    : undefined
+  const nextNode = nextEdge
+    ? { id: nextEdge.target, nodeType: flowNodes.find((node) => node.id === nextEdge.target)?.type }
+    : undefined
 
   return (
     <GameNodeDialogShell
@@ -49,6 +61,11 @@ export function GameImagePinDialog({
           <GameImagePinSettings
             nodeId={nodeId}
             onDelete={onDelete}
+            onClose={onClose}
+            onNavigateToNode={onNavigateToNode}
+            nodeData={gameImagePinNodeData}
+            prevNode={prevNode}
+            nextNode={nextNode}
           />
         }
       />

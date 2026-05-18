@@ -191,7 +191,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col h-full gap-3">
       <Text
         as="p"
         variant="small"
@@ -208,7 +208,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
       >
         <GameChatHistory
           messages={displayMessages}
-          className="h-[390px]"
+          className="flex-1 min-h-0"
           showUserAvatar
           incomingAvatarUrl={userAvatarUrl ?? undefined}
           incomingBubbleVariant="orange"

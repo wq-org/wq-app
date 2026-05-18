@@ -205,6 +205,8 @@ export type AnimatedBeamHubProps = {
   pathOpacity?: number
   gradientStartColor?: ColorId
   gradientStopColor?: ColorId
+  /** Disables all click events and dims the hub with opacity-50. */
+  inactive?: boolean
 }
 
 export const AnimatedBeamHub: React.FC<AnimatedBeamHubProps> = ({
@@ -216,6 +218,7 @@ export const AnimatedBeamHub: React.FC<AnimatedBeamHubProps> = ({
   pathOpacity,
   gradientStartColor,
   gradientStopColor,
+  inactive,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const centerRef = useRef<HTMLDivElement>(null)
@@ -242,7 +245,11 @@ export const AnimatedBeamHub: React.FC<AnimatedBeamHubProps> = ({
   return (
     <div
       ref={containerRef}
-      className={cn('relative grid grid-cols-3 grid-rows-3 place-items-center gap-12', className)}
+      className={cn(
+        'relative grid grid-cols-3 grid-rows-3 place-items-center gap-12',
+        inactive && 'pointer-events-none opacity-50',
+        className,
+      )}
     >
       <div
         ref={centerRef}

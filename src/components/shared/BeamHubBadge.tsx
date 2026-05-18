@@ -8,9 +8,10 @@ type BeamHubBadgeProps = {
   Icon: LucideIcon
   theme: ThemeClassId
   onClick?: () => void
+  className?: string
 }
 
-function BeamHubBadge({ Icon, theme, onClick }: BeamHubBadgeProps) {
+function BeamHubBadge({ Icon, theme, onClick, className }: BeamHubBadgeProps) {
   const themeClasses = getThemeClasses(theme)
   const isClickable = onClick !== undefined
 
@@ -30,6 +31,7 @@ function BeamHubBadge({ Icon, theme, onClick }: BeamHubBadgeProps) {
         themeClasses.text,
         themeClasses.border,
         isClickable && 'cursor-pointer',
+        className,
       )}
     >
       <Icon className="h-6 w-6" />

@@ -296,6 +296,22 @@
     "howToPlayResponse": "So funktioniert es:\n1. Lies die Frage über dem Bild.\n2. Ziehe den Pin aus dem Feld unten auf das Bild.\n3. Platziere den ganzen Pin im markierten Rechteck.\n4. Klicke auf Antwort abgeben, um deine Position festzulegen.\n5. Richtige Antworten machen den Pin blau und zeigen Konfetti. Falsche Antworten machen ihn rot.\n6. Die nächste Frage erscheint nach einer kurzen Pause.\n\nTipp: Du kannst den Pin vor dem Abgeben zurück ins Feld ziehen."
   },
   "imagePinSettings": {
-    "holdToDeleteNode": "Gedrückt halten, um den Knoten zu löschen"
+    "holdToDeleteNode": "Gedrückt halten, um den Knoten zu löschen",
+    "pedagogicalTitle": "Pädagogisch",
+    "learningFieldLabel": "Wähle das Lernfeld, das dieser Knoten adressiert",
+    "learningFieldButton": "Lernfeld auswählen",
+    "learningFieldPopoverTitle": "Lernfelder",
+    "learningFieldPopoverDescription": "Wähle ein oder mehrere Lernfelder aus.",
+    "gameDescriptionLabel": "Spielbeschreibung",
+    "gameDescriptionPlaceholder": "Beschreibe, worum es in diesem Spiel geht",
+    "gameSettingsTitle": "Spieleinstellungen",
+    "maxPointsLabel": "Maximale Punktzahl bei vollständig korrektem Durchlauf",
+    "pointDeductionLabel": "Punktabzug in % bei jedem neuen Versuch",
+    "timeLimitLabel": "Optionales Zeitlimit für starke Spieler aktivieren",
+    "adaptiveTitle": "Adaptive Funktionen",
+    "qualityReductionLabel": "Bildqualität schrittweise reduzieren (in %)",
+    "qualitySliderLabel": "Bildqualität",
+    "areaExclusionLabel": "Bildbereich schrittweise ausblenden (in %)",
+    "areaSliderLabel": "Ausblendung"
   }
 }
