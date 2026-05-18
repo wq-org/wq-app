@@ -63,6 +63,7 @@ export function GameImagePinDialog({
             onDelete={onDelete}
             onClose={onClose}
             onNavigateToNode={onNavigateToNode}
+            onPatchNodeData={onPatchNodeData}
             nodeData={gameImagePinNodeData}
             prevNode={prevNode}
             nextNode={nextNode}

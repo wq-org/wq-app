@@ -1,6 +1,15 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Calculator, MapPin, MessageCircleQuestion, Play, Square, Split, X } from 'lucide-react'
+import {
+  Calculator,
+  MapPin,
+  MessageCircleQuestion,
+  Play,
+  Square,
+  Split,
+  X,
+  FileQuestionMark,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
@@ -41,7 +50,8 @@ const NODE_TYPE_ICONS: Record<string, LucideIcon> = {
 }
 
 function getNodeIcon(type: string | undefined): LucideIcon {
-  return (type && NODE_TYPE_ICONS[type]) ?? MapPin
+  if (!type) return MapPin
+  return NODE_TYPE_ICONS[type] ?? FileQuestionMark
 }
 
 const LEARNING_FIELD_OPTIONS = [
@@ -56,11 +66,17 @@ const LEARNING_FIELD_OPTIONS = [
 
 type LearningFieldId = (typeof LEARNING_FIELD_OPTIONS)[number]['id']
 
+const imagePinSettingsEnterLift =
+  'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
+const imagePinSettingsEnterSubtle =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
+
 export type GameImagePinSettingsProps = {
   nodeId: string
   onDelete: () => void
   onClose: () => void
   onNavigateToNode?: (nodeId: string) => void
+  onPatchNodeData: (patch: Partial<GameImagePinNodeData>) => void
   nodeData: GameImagePinNodeData
   prevNode?: AdjacentNodeInfo
   nextNode?: AdjacentNodeInfo
@@ -70,11 +86,12 @@ export function GameImagePinSettings({
   onDelete,
   onClose,
   onNavigateToNode,
+  onPatchNodeData,
   nodeData,
   prevNode,
   nextNode,
 }: GameImagePinSettingsProps) {
-  const { imagePreview } = nodeData
+  const { description = '', imagePreview } = nodeData
   const { t } = useTranslation('features.gameStudio')
 
   const [qualityOpacity, setQualityOpacity] = useState(50)
@@ -98,13 +115,17 @@ export function GameImagePinSettings({
     setSelectedLearningFieldIds((currentIds) => currentIds.filter((currentId) => currentId !== id))
   }
 
+  function handleDescriptionChange(value: string) {
+    onPatchNodeData({ description: value })
+  }
+
   function handleNavigate(targetNodeId: string) {
     onClose()
     onNavigateToNode?.(targetNodeId)
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className={cn('flex flex-col gap-6', imagePinSettingsEnterLift)}>
       <Text
         as="p"
         bold
@@ -112,7 +133,7 @@ export function GameImagePinSettings({
         {t('imagePinSettings.pedagogicalTitle')}
       </Text>
 
-      <div className="flex flex-col gap-2">
+      <div className={cn('flex flex-col gap-2', imagePinSettingsEnterSubtle)}>
         <Label>{t('imagePinSettings.learningFieldLabel')}</Label>
         <div className="flex flex-col items-start gap-2">
           <Popover
@@ -188,10 +209,10 @@ export function GameImagePinSettings({
       </div>
 
       <FieldTextarea
-        value={''}
+        value={description}
         rows={3}
         placeholder={t('imagePinSettings.gameDescriptionPlaceholder')}
-        onValueChange={() => {}}
+        onValueChange={handleDescriptionChange}
         label={t('imagePinSettings.gameDescriptionLabel')}
       />
 
@@ -204,7 +225,7 @@ export function GameImagePinSettings({
         {t('imagePinSettings.gameSettingsTitle')}
       </Text>
 
-      <div className="flex gap-4 items-center">
+      <div className={cn('flex items-center gap-4', imagePinSettingsEnterSubtle)}>
         <Label className="flex-1">{t('imagePinSettings.maxPointsLabel')}</Label>
         <QuantityStepper
           className="w-44"
@@ -217,7 +238,7 @@ export function GameImagePinSettings({
         />
       </div>
 
-      <div className="flex gap-4 items-center">
+      <div className={cn('flex items-center gap-4', imagePinSettingsEnterSubtle)}>
         <Label className="flex-1">{t('imagePinSettings.pointDeductionLabel')}</Label>
         <QuantityStepper
           className="w-44"
@@ -230,7 +251,7 @@ export function GameImagePinSettings({
         />
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className={cn('flex items-center justify-between gap-4', imagePinSettingsEnterSubtle)}>
         <Text
           as="p"
           variant="small"
@@ -246,7 +267,7 @@ export function GameImagePinSettings({
 
       <Separator />
 
-      <div className="w-full">
+      <div className={cn('w-full', imagePinSettingsEnterSubtle)}>
         <AnimatedBeamHub
           className="h-40 w-full"
           center={
@@ -296,7 +317,7 @@ export function GameImagePinSettings({
         {t('imagePinSettings.adaptiveTitle')}
       </Text>
 
-      <div className="flex gap-4">
+      <div className={cn('flex gap-4', imagePinSettingsEnterSubtle)}>
         <div className="flex flex-col gap-4 flex-1">
           <Text
             as="p"
@@ -335,7 +356,7 @@ export function GameImagePinSettings({
 
       <Separator />
 
-      <div className="flex gap-4">
+      <div className={cn('flex gap-4', imagePinSettingsEnterSubtle)}>
         <div className="flex flex-col gap-4 flex-1">
           <Text
             as="p"
