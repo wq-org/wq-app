@@ -180,7 +180,7 @@ export const FieldTextarea = ({
             <CharacterCounter
               count={remaining}
               max={maxLength}
-              size={20}
+              size="md"
             />
           </div>
         ) : null}

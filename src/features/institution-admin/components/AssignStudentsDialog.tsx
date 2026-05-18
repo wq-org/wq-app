@@ -146,7 +146,7 @@ export function AssignStudentsDialog({
                       key={id}
                       showRemove
                     >
-                      <span className="max-w-[14rem] truncate">{option?.name ?? id}</span>
+                      <span className="max-w-56 truncate">{option?.name ?? id}</span>
                     </ComboboxChip>
                   )
                 })}

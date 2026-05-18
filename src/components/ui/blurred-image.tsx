@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 
 type BlurredImageProps = ImgHTMLAttributes<HTMLImageElement> & {
   isBlurred?: boolean
+  variant?: 'default' | 'avatar'
   containerClassName?: string
   backdropClassName?: string
 }
@@ -11,12 +12,14 @@ export function BlurredImage({
   src,
   alt = '',
   isBlurred = false,
+  variant = 'default',
   className,
   containerClassName,
   backdropClassName,
   ...props
 }: BlurredImageProps) {
-  const imageClassName = cn('h-full w-full object-cover', className)
+  const isAvatar = variant === 'avatar'
+  const imageClassName = cn('h-full w-full object-cover', isAvatar && 'rounded-full', className)
 
   if (!isBlurred) {
     return (
@@ -31,7 +34,11 @@ export function BlurredImage({
 
   return (
     <div
-      className={cn('relative isolate block h-full w-full overflow-visible', containerClassName)}
+      className={cn(
+        'relative isolate block h-full w-full overflow-visible',
+        isAvatar && 'rounded-full',
+        containerClassName,
+      )}
     >
       <img
         src={src}
@@ -39,6 +46,7 @@ export function BlurredImage({
         aria-hidden="true"
         className={cn(
           'pointer-events-none absolute inset-0 z-0 h-full w-full scale-105 object-cover blur-2xl saturate-150 opacity-50',
+          isAvatar && 'rounded-full',
           imageClassName,
           backdropClassName,
         )}

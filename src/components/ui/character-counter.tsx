@@ -2,95 +2,117 @@
 
 import * as React from 'react'
 
+import { cn } from '@/lib/utils'
+
+import {
+  CHARACTER_COUNTER_WARNING_AT,
+  characterCounterVariants,
+  getCharacterCounterColorTokens,
+  getCharacterCounterSizeTokens,
+  type CharacterCounterSize,
+  type CharacterCounterVariant,
+} from '@/components/ui/character-counter-variants'
 import { Separator } from '@/components/ui/separator'
 
 export type CharacterCounterProps = {
   count: number
   max: number
-  size?: number
-  color?: string
+  size?: CharacterCounterSize
+  variant?: CharacterCounterVariant
+  className?: string
 }
 
-const WARN_AT = 20
-const DANGER_AT = 0
-const TRACK_COLOR = '#d9e0e5'
+const COUNTER_FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif"
 
-function getColor(remaining: number, override?: string) {
-  if (override) {
-    return override
+function getCharacterCounterAriaLabel(count: number) {
+  if (count < 0) {
+    return `${Math.abs(count)} characters over limit`
   }
 
-  if (remaining <= DANGER_AT) {
-    return '#f4212e'
-  }
-
-  if (remaining <= WARN_AT) {
-    return '#ff7a00'
-  }
-
-  return '#1d9bf0'
+  return `${count} characters remaining`
 }
 
 export function CharacterCounter({
   count,
   max,
-  size = 20,
-  color: colorOverride,
+  size = 'md',
+  variant = 'default',
+  className,
 }: CharacterCounterProps) {
-  const isWarning = count <= WARN_AT && count >= 0
-  const color = getColor(count, colorOverride)
+  const isExceeded = count < 0
+  const isWarning = count <= CHARACTER_COUNTER_WARNING_AT && count >= 0
 
-  const strokeWidth = size * 0.12
-  const radius = (size - strokeWidth) / 2
-  const circumference = 2 * Math.PI * radius
+  const { containerSize, strokeWidth, fontSize, minLabelWidth } =
+    getCharacterCounterSizeTokens(size)
+  const { ringColor, warningColor, exceedColor, trackColor } =
+    getCharacterCounterColorTokens(variant)
 
+  const activeColor = isExceeded ? exceedColor : isWarning ? warningColor : ringColor
   const safeMax = max > 0 ? max : 1
+  const used = Math.min(safeMax, Math.max(0, safeMax - count))
+  const percentage = Math.min(1, Math.max(0, used / safeMax))
+  const radius = (containerSize - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const dashOffset = circumference * (1 - percentage)
+  const ariaLabel = getCharacterCounterAriaLabel(count)
 
-  const dashOffset = React.useMemo(() => {
-    const used = Math.min(safeMax, safeMax - count)
-    const percentage = Math.min(1, Math.max(0, used / safeMax))
-    return circumference * (1 - percentage)
-  }, [count, circumference, safeMax])
+  const containerStyle = {
+    width: containerSize,
+    height: containerSize,
+  }
 
-  const fontSize = Math.max(9, size * 0.55)
+  const exceededTrackStyle = {
+    stroke: ringColor,
+    opacity: 0.35,
+  }
 
-  if (count < 0) {
+  const textStyle = {
+    fontSize: `${fontSize}px`,
+    fontFamily: COUNTER_FONT_FAMILY,
+    lineHeight: 1,
+    color: activeColor,
+    minWidth: `${minLabelWidth}px`,
+  }
+
+  if (isExceeded) {
     return (
       <div
         role="status"
         aria-live="polite"
-        aria-label={`${Math.abs(count)} characters over limit`}
-        className="relative inline-flex shrink-0 items-center justify-center"
-        style={{
-          width: size,
-          height: size,
-        }}
+        aria-label={ariaLabel}
+        className={cn(characterCounterVariants({ size, variant }), className)}
+        style={containerStyle}
       >
         <svg
-          width={size}
-          height={size}
-          viewBox={`0 0 ${size} ${size}`}
+          width={containerSize}
+          height={containerSize}
+          viewBox={`0 0 ${containerSize} ${containerSize}`}
           className="absolute inset-0 overflow-visible"
           aria-hidden="true"
         >
           <circle
-            cx={size / 2}
-            cy={size / 2}
+            cx={containerSize / 2}
+            cy={containerSize / 2}
             r={radius}
             fill="none"
-            stroke="hsl(var(--destructive))"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            style={exceededTrackStyle}
+          />
+          <circle
+            cx={containerSize / 2}
+            cy={containerSize / 2}
+            r={radius}
+            fill="none"
+            stroke={activeColor}
             strokeWidth={strokeWidth}
             strokeLinecap="round"
           />
         </svg>
 
         <span
-          className="relative z-10 font-medium tabular-nums text-destructive"
-          style={{
-            fontSize: `${fontSize}px`,
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif",
-            lineHeight: 1,
-          }}
+          className="relative z-10 text-center font-medium tabular-nums"
+          style={textStyle}
         >
           {count}
         </span>
@@ -103,47 +125,37 @@ export function CharacterCounter({
       role="meter"
       aria-valuenow={count}
       aria-valuemax={max}
-      aria-label={`${count} characters remaining`}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        width: size,
-        height: size,
-        flexShrink: 0,
-      }}
+      aria-label={ariaLabel}
+      className={cn(characterCounterVariants({ size, variant }), className)}
+      style={containerStyle}
     >
       <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          overflow: 'visible',
-        }}
+        width={containerSize}
+        height={containerSize}
+        viewBox={`0 0 ${containerSize} ${containerSize}`}
+        className="absolute inset-0 overflow-visible"
+        aria-hidden="true"
       >
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={containerSize / 2}
+          cy={containerSize / 2}
           r={radius}
           fill="none"
-          stroke={TRACK_COLOR}
+          stroke={trackColor}
           strokeWidth={strokeWidth}
         />
 
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={containerSize / 2}
+          cy={containerSize / 2}
           r={radius}
           fill="none"
-          stroke={color}
+          stroke={activeColor}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          transform={`rotate(-90 ${containerSize / 2} ${containerSize / 2})`}
           style={{
             transition: 'stroke-dashoffset 0.18s ease, stroke 0.18s ease',
           }}
@@ -152,20 +164,12 @@ export function CharacterCounter({
 
       <span
         aria-hidden="true"
+        className="pointer-events-none relative text-center font-normal tabular-nums select-none"
         style={{
-          position: 'relative',
-          fontSize: `${fontSize}px`,
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif",
-          fontWeight: 400,
-          lineHeight: 1,
-          color,
+          ...textStyle,
           opacity: isWarning ? 1 : 0,
           transform: isWarning ? 'scale(1)' : 'scale(0.6)',
           transition: 'opacity 0.15s ease, transform 0.15s ease, color 0.18s ease',
-          userSelect: 'none',
-          pointerEvents: 'none',
-          minWidth: `${fontSize * 1.6}px`,
-          textAlign: 'center',
         }}
       >
         {count}
@@ -185,7 +189,7 @@ export function CharacterCounterDemo() {
     { label: '10 left', value: 10 },
     { label: 'at limit', value: 0 },
     { label: '-10', value: -10 },
-  ]
+  ] as const
 
   return (
     <div className="rounded-3xl border border-neutral-200 bg-white p-4 text-neutral-900 shadow-sm">
@@ -205,7 +209,7 @@ export function CharacterCounterDemo() {
             <CharacterCounter
               count={remaining}
               max={max}
-              size={20}
+              size="md"
             />
             <Separator
               orientation="vertical"
@@ -230,7 +234,7 @@ export function CharacterCounterDemo() {
               <CharacterCounter
                 count={item.value}
                 max={max}
-                size={26}
+                size="xl"
               />
               <span>{item.label}</span>
             </div>

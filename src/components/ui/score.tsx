@@ -1,0 +1,125 @@
+'use client'
+
+import { cn } from '@/lib/utils'
+
+import {
+  getScoreColorTokens,
+  getScoreSizeTokens,
+  scoreVariants,
+  type ScoreSize,
+  type ScoreVariant,
+} from '@/components/ui/score-variants'
+
+export type ScoreProps = {
+  score: number
+  max: number
+  size?: ScoreSize
+  variant?: ScoreVariant
+  className?: string
+}
+
+const SCORE_FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif"
+
+function formatCompactSegment(value: number, unit: 'k' | 'M') {
+  const compactValue = value.toFixed(1).replace(/\.0$/, '')
+
+  return `${compactValue}${unit}`
+}
+
+function formatScoreValue(score: number) {
+  const absoluteScore = Math.abs(score)
+  const prefix = score < 0 ? '-' : ''
+
+  if (absoluteScore < 1_000) {
+    return `${score}`
+  }
+
+  if (absoluteScore < 1_000_000) {
+    return `${prefix}${formatCompactSegment(absoluteScore / 1_000, 'k')}`
+  }
+
+  return `${prefix}${formatCompactSegment(absoluteScore / 1_000_000, 'M')}`
+}
+
+function getScoreAriaLabel(score: number, max: number) {
+  return `Score ${formatScoreValue(score)} out of ${formatScoreValue(max)}`
+}
+
+export function Score({ score, max, size = 'md', variant = 'default', className }: ScoreProps) {
+  const { containerSize, strokeWidth, fontSize, minLabelWidth } = getScoreSizeTokens(size)
+  const { ringColor, trackColor, labelColor } = getScoreColorTokens(variant)
+
+  const safeMax = max > 0 ? max : 1
+  const clampedScore = Math.min(safeMax, Math.max(0, score))
+  const progress = Math.min(1, Math.max(0, clampedScore / safeMax))
+  const radius = (containerSize - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const dashOffset = circumference * (1 - progress)
+  const label = formatScoreValue(score)
+  const ariaLabel = getScoreAriaLabel(score, max)
+
+  const containerStyle = {
+    width: containerSize,
+    height: containerSize,
+  }
+
+  const labelStyle = {
+    fontSize: `${fontSize}px`,
+    fontFamily: SCORE_FONT_FAMILY,
+    lineHeight: 1,
+    color: labelColor,
+    minWidth: `${minLabelWidth}px`,
+  }
+
+  return (
+    <div
+      role="meter"
+      aria-valuemin={0}
+      aria-valuemax={safeMax}
+      aria-valuenow={clampedScore}
+      aria-label={ariaLabel}
+      className={cn(scoreVariants({ size, variant }), className)}
+      style={containerStyle}
+    >
+      <svg
+        width={containerSize}
+        height={containerSize}
+        viewBox={`0 0 ${containerSize} ${containerSize}`}
+        className="absolute inset-0 overflow-visible"
+        aria-hidden="true"
+      >
+        <circle
+          cx={containerSize / 2}
+          cy={containerSize / 2}
+          r={radius}
+          fill="none"
+          stroke={trackColor}
+          strokeWidth={strokeWidth}
+        />
+        <circle
+          cx={containerSize / 2}
+          cy={containerSize / 2}
+          r={radius}
+          fill="none"
+          stroke={ringColor}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          transform={`rotate(-90 ${containerSize / 2} ${containerSize / 2})`}
+          style={{
+            transition: 'stroke-dashoffset 0.18s ease, stroke 0.18s ease',
+          }}
+        />
+      </svg>
+
+      <span
+        aria-hidden="true"
+        className="pointer-events-none relative text-center font-medium tabular-nums select-none"
+        style={labelStyle}
+      >
+        {label}
+      </span>
+    </div>
+  )
+}

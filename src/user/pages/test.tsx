@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import type { VariantProps } from 'class-variance-authority'
 import { BookOpen, Box, Edit, LockIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
@@ -94,6 +94,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { CharacterCounter, CharacterCounterDemo } from '@/components/ui/character-counter'
+import type {
+  CharacterCounterSize,
+  CharacterCounterVariant,
+} from '@/components/ui/character-counter-variants'
+import { Score } from '@/components/ui/score'
+import type { ScoreSize, ScoreVariant } from '@/components/ui/score-variants'
 import { Label } from '@/components/ui/label'
 import { Tick, TickContent, TickContents, TickTrack, TickZoom, Ticks } from '@/components/ui/tick'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
@@ -128,6 +135,7 @@ import {
   type ChatBubbleVariant,
   type ChatHistoryMessage,
 } from '@/components/shared/chat'
+import { GameHeader } from '@/features/game-studio'
 
 const TEXT_SEMANTIC_VARIANTS = ['h1', 'h2', 'h3', 'body', 'small'] as const
 const TEXT_COLOR_VARIANTS = [
@@ -143,6 +151,43 @@ const TEXT_COLOR_VARIANTS = [
   'darkblue',
   'secondary',
 ] as const
+
+const CHARACTER_COUNTER_VARIANTS = [
+  'default',
+  'darkblue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+] as const satisfies readonly CharacterCounterVariant[]
+
+const CHARACTER_COUNTER_SIZES = [
+  'sm',
+  'md',
+  'lg',
+  'xl',
+] as const satisfies readonly CharacterCounterSize[]
+
+const SCORE_VARIANTS = [
+  'default',
+  'darkblue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+] as const satisfies readonly ScoreVariant[]
+
+const SCORE_SIZES = ['xxs', 'xs', 'sm', 'md', 'lg', 'xl'] as const satisfies readonly ScoreSize[]
 
 const paginationPages = [1, 2, 3, 4]
 
@@ -857,6 +902,184 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="Score (@/components/ui/score) — variants + sizes">
+        <div className="w-full max-w-7xl space-y-6">
+          <div className="rounded-2xl border bg-card p-5">
+            <div className="grid grid-cols-[120px_repeat(6,minmax(0,1fr))] gap-4">
+              <div />
+              {SCORE_SIZES.map((size) => (
+                <div
+                  key={size}
+                  className="text-center font-mono text-xs text-muted-foreground"
+                >
+                  {size}
+                </div>
+              ))}
+
+              {SCORE_VARIANTS.map((variant) => (
+                <Fragment key={variant}>
+                  <div className="flex items-center font-mono text-xs text-muted-foreground">
+                    {variant}
+                  </div>
+                  {SCORE_SIZES.map((size) => (
+                    <div
+                      key={`${variant}-${size}`}
+                      className="flex min-h-16 items-center justify-center rounded-xl border bg-muted/20"
+                    >
+                      <Score
+                        score={72}
+                        max={100}
+                        variant={variant}
+                        size={size}
+                      />
+                    </div>
+                  ))}
+                </Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-4">
+            {[
+              { label: 'empty state', score: 0, max: 100 },
+              { label: 'default state', score: 72, max: 100 },
+              { label: 'full state', score: 100, max: 100 },
+              { label: 'exceeded state', score: 120, max: 100 },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="space-y-3 rounded-2xl border bg-card p-4"
+              >
+                <p className="font-mono text-xs text-muted-foreground">{item.label}</p>
+                <div className="flex flex-wrap gap-4">
+                  {SCORE_VARIANTS.map((variant) => (
+                    <div
+                      key={`${item.label}-${variant}`}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <Score
+                        score={item.score}
+                        max={item.max}
+                        variant={variant}
+                        size="lg"
+                      />
+                      <span className="font-mono text-[10px] text-muted-foreground">{variant}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border bg-card p-5">
+            <div className="flex flex-wrap items-end gap-6">
+              {[
+                { label: '999', score: 999, max: 1000 },
+                { label: '1k', score: 1000, max: 2000 },
+                { label: '990.9k', score: 990900, max: 1000000 },
+                { label: '1.2M', score: 1200000, max: 1500000 },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <Score
+                    score={item.score}
+                    max={item.max}
+                    size="xl"
+                  />
+                  <span className="font-mono text-xs text-muted-foreground">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="GameHeader (@/features/game-studio/components/GameHeader)">
+        <div className="rounded-[2rem] bg-orange-400 p-10">
+          <GameHeader />
+        </div>
+      </Section>
+
+      <Section title="CharacterCounter (@/components/ui/character-counter) — variants + sizes">
+        <div className="w-full max-w-6xl space-y-6">
+          <div className="rounded-2xl border bg-card p-5">
+            <div className="grid grid-cols-[120px_repeat(4,minmax(0,1fr))] gap-4">
+              <div />
+              {CHARACTER_COUNTER_SIZES.map((size) => (
+                <div
+                  key={size}
+                  className="text-center font-mono text-xs text-muted-foreground"
+                >
+                  {size}
+                </div>
+              ))}
+
+              {CHARACTER_COUNTER_VARIANTS.map((variant) => (
+                <Fragment key={variant}>
+                  <div className="flex items-center font-mono text-xs text-muted-foreground">
+                    {variant}
+                  </div>
+                  {CHARACTER_COUNTER_SIZES.map((size) => (
+                    <div
+                      key={`${variant}-${size}`}
+                      className="flex min-h-14 items-center justify-center rounded-xl border bg-muted/20"
+                    >
+                      <CharacterCounter
+                        count={46}
+                        max={100}
+                        variant={variant}
+                        size={size}
+                      />
+                    </div>
+                  ))}
+                </Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              { label: 'default state', count: 46, max: 100 },
+              { label: 'warning state', count: 12, max: 100 },
+              { label: 'exceeded state', count: -8, max: 100 },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="space-y-3 rounded-2xl border bg-card p-4"
+              >
+                <p className="font-mono text-xs text-muted-foreground">{item.label}</p>
+                <div className="flex flex-wrap gap-4">
+                  {CHARACTER_COUNTER_VARIANTS.map((variant) => (
+                    <div
+                      key={`${item.label}-${variant}`}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <CharacterCounter
+                        count={item.count}
+                        max={item.max}
+                        variant={variant}
+                        size="lg"
+                      />
+                      <span className="font-mono text-[10px] text-muted-foreground">{variant}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Section title="CharacterCounter (@/components/ui/character-counter) — standalone">
+        <CharacterCounter
+          count={46}
+          max={1000}
+          size="xl"
+        />
+      </Section>
 
       <Section title="AgentComputerIcon — variants">
         <div className="flex flex-wrap items-center gap-6">
@@ -1980,6 +2203,12 @@ export default function Test() {
               </div>
             ))}
           </div>
+        </div>
+      </Section>
+
+      <Section title="CharacterCounter (@/components/ui/character-counter)">
+        <div className="w-full max-w-3xl">
+          <CharacterCounterDemo />
         </div>
       </Section>
 
