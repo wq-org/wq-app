@@ -45,6 +45,7 @@ export const COLORS = {
 export const COLOR_IDS = ['black', ...THEME_IDS] as const
 
 const ACCENT_IDS = [
+  'default',
   'violet',
   'indigo',
   'blue',
@@ -71,6 +72,8 @@ export const ACCENT_COLORS = [
   { id: 'pink', ...THEME_COLOR_BY_ID.pink },
 ] as const
 
+export type ThemeClassId = ThemeId | 'default'
+
 export function isThemeId(value: unknown): value is ThemeId {
   return typeof value === 'string' && (THEME_IDS as readonly string[]).includes(value)
 }
@@ -95,6 +98,12 @@ export function getColorCss(colorId: ColorId): string {
 }
 
 const THEME_CLASSES_BY_ID = {
+  default: {
+    text: 'text-primary',
+    bg: 'bg-primary/10',
+    border: 'border-primary/20',
+    solidBg: 'bg-primary',
+  },
   violet: {
     text: 'text-violet-500',
     bg: 'bg-violet-500/10',
@@ -155,11 +164,15 @@ const THEME_CLASSES_BY_ID = {
     border: 'border-blue-700/20',
     solidBg: 'bg-blue-700',
   },
-} as const satisfies Record<ThemeId, { text: string; bg: string; border: string; solidBg: string }>
+} as const satisfies Record<
+  ThemeClassId,
+  { text: string; bg: string; border: string; solidBg: string }
+>
 
-export type ThemeClasses = (typeof THEME_CLASSES_BY_ID)[ThemeId]
+export type ThemeClasses = (typeof THEME_CLASSES_BY_ID)[ThemeClassId]
 
 export function getThemeClasses(themeId?: string): ThemeClasses {
+  if (themeId === 'default') return THEME_CLASSES_BY_ID.default
   if (themeId && isThemeId(themeId)) return THEME_CLASSES_BY_ID[themeId]
-  return THEME_CLASSES_BY_ID.blue
+  return THEME_CLASSES_BY_ID.default
 }

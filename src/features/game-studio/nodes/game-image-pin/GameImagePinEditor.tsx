@@ -188,6 +188,9 @@ export function GameImagePinEditor({
     async (src: string, options?: { filepath?: string }) => {
       const trimmed = src.trim()
       if (!trimmed) return
+
+      let nextRects = rectangles
+
       try {
         const { width: newW, height: newH } = await loadImageNaturalSize(trimmed)
 
@@ -198,28 +201,26 @@ export function GameImagePinEditor({
             const cur = await loadImageNaturalSize(imagePreview)
             oldW = cur.width
             oldH = cur.height
-          } catch (e) {
-            console.log('[GameImagePinEditor] Could not load previous image for remapping:', e)
+          } catch {
+            // skip remapping if previous image can't be measured
           }
         }
 
-        let nextRects = rectangles
         if (oldW > 0 && oldH > 0 && newW > 0 && newH > 0 && rectangles.length > 0) {
           nextRects = remapRectsForNewImageSize(rectangles, oldW, oldH, newW, newH)
         }
-
-        console.log('[GameImagePinEditor] Patching node data with image preview:', {
-          filepath: options?.filepath,
-          rectCount: nextRects.length,
-        })
-        onPatchNodeData({
-          imagePreview: trimmed,
-          filepath: options?.filepath ?? '',
-          rectangles: nextRects,
-        })
       } catch (error) {
-        console.error('[GameImagePinEditor] Failed to apply image preview:', error)
+        console.error(
+          '[GameImagePinEditor] Failed to load image dimensions, persisting without remapping:',
+          error,
+        )
       }
+
+      onPatchNodeData({
+        imagePreview: trimmed,
+        filepath: options?.filepath ?? '',
+        rectangles: nextRects,
+      })
     },
     [imagePreview, onPatchNodeData, rectangles, sceneMetrics],
   )
