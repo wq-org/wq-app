@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Calculator,
   MapPin,
+  Sigma,
   MessageCircleQuestion,
   Play,
   Square,
@@ -13,6 +14,12 @@ import {
 import type { LucideIcon } from 'lucide-react'
 
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
@@ -93,6 +100,16 @@ export function GameImagePinSettings({
 }: GameImagePinSettingsProps) {
   const { description = '', imagePreview } = nodeData
   const { t } = useTranslation('features.gameStudio')
+  const maxPoints =
+    typeof nodeData.points === 'number' && Number.isFinite(nodeData.points) && nodeData.points >= 0
+      ? Math.floor(nodeData.points)
+      : 100
+  const retryDeductionPercent =
+    typeof nodeData.retryDeductionPercent === 'number' &&
+    Number.isFinite(nodeData.retryDeductionPercent) &&
+    nodeData.retryDeductionPercent >= 0
+      ? Math.min(100, Math.floor(nodeData.retryDeductionPercent))
+      : 10
 
   const [qualityOpacity, setQualityOpacity] = useState(50)
   const [exclusionOpacity, setExclusionOpacity] = useState(0)
@@ -103,6 +120,43 @@ export function GameImagePinSettings({
   const selectedLearningFields = LEARNING_FIELD_OPTIONS.filter((option) =>
     selectedLearningFieldIds.includes(option.id),
   )
+  const filledQuestionCount = (
+    Array.isArray(nodeData.rectangles) ? nodeData.rectangles : []
+  ).reduce((count, rect) => count + (String(rect.question ?? '').trim() !== '' ? 1 : 0), 0)
+  const pointsPerQuestion =
+    filledQuestionCount > 0 ? Math.floor(maxPoints / filledQuestionCount) : 0
+  const usableScore = pointsPerQuestion * filledQuestionCount
+  const droppedPoints = Math.max(0, maxPoints - usableScore)
+  const questionLabel =
+    filledQuestionCount === 1
+      ? t('imagePinSettings.scoreAccordionQuestionSingular')
+      : t('imagePinSettings.scoreAccordionQuestionPlural')
+  const pointLabel =
+    droppedPoints === 1
+      ? t('imagePinSettings.scoreAccordionPointSingular')
+      : t('imagePinSettings.scoreAccordionPointPlural')
+  const retryScoreRows = [
+    {
+      attempt: 1,
+      label: t('imagePinSettings.retryDeductionAttemptInitial'),
+      points: pointsPerQuestion,
+    },
+    {
+      attempt: 2,
+      label: t('imagePinSettings.retryDeductionAttemptRetry', { count: 1 }),
+      points: Math.max(0, Math.floor(pointsPerQuestion * (1 - retryDeductionPercent / 100))),
+    },
+    {
+      attempt: 3,
+      label: t('imagePinSettings.retryDeductionAttemptRetry', { count: 2 }),
+      points: Math.max(0, Math.floor(pointsPerQuestion * (1 - (retryDeductionPercent * 2) / 100))),
+    },
+    {
+      attempt: 4,
+      label: t('imagePinSettings.retryDeductionAttemptRetry', { count: 3 }),
+      points: 0,
+    },
+  ] as const
 
   function handleLearningFieldSelect(id: LearningFieldId) {
     setSelectedLearningFieldIds((currentIds) =>
@@ -117,6 +171,18 @@ export function GameImagePinSettings({
 
   function handleDescriptionChange(value: string) {
     onPatchNodeData({ description: value })
+  }
+
+  function handleMaxPointsChange(value: number) {
+    const next = Math.max(0, Math.floor(value))
+    if (next === maxPoints) return
+    onPatchNodeData({ points: next })
+  }
+
+  function handleRetryDeductionChange(value: number) {
+    const next = Math.min(100, Math.max(0, Math.floor(value)))
+    if (next === retryDeductionPercent) return
+    onPatchNodeData({ retryDeductionPercent: next })
   }
 
   function handleNavigate(targetNodeId: string) {
@@ -215,6 +281,15 @@ export function GameImagePinSettings({
         onValueChange={handleDescriptionChange}
         label={t('imagePinSettings.gameDescriptionLabel')}
       />
+      <Text
+        as="p"
+        variant="small"
+        muted
+        bold
+        className="-mt-4"
+      >
+        {t('imagePinSettings.gameDescriptionHint')}
+      </Text>
 
       <Separator />
 
@@ -229,27 +304,165 @@ export function GameImagePinSettings({
         <Label className="flex-1">{t('imagePinSettings.maxPointsLabel')}</Label>
         <QuantityStepper
           className="w-44"
-          value={100}
+          value={maxPoints}
           min={0}
           max={999}
           step={1}
-          onChange={() => {}}
+          onChange={handleMaxPointsChange}
           label={t('imagePinSettings.maxPointsLabel')}
         />
       </div>
+
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue="item-1"
+      >
+        <AccordionItem
+          value="item-1"
+          className="border-b-0"
+        >
+          <AccordionTrigger className="py-3">
+            <span className="flex items-center gap-2">
+              <Sigma className="size-4" />
+              <Text
+                variant="small"
+                as="p"
+                muted
+              >
+                {t('imagePinSettings.scoreAccordionTitle')}
+              </Text>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="flex flex-col gap-2 rounded-lg border border-border bg-muted/20 p-4">
+              <Text
+                as="p"
+                variant="small"
+                muted
+              >
+                {t('imagePinSettings.scoreAccordionHint')}
+              </Text>
+
+              {filledQuestionCount > 0 ? (
+                <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                  <li>{t('imagePinSettings.scoreAccordionBulletMaxPoints', { maxPoints })}</li>
+                  <li>
+                    {t('imagePinSettings.scoreAccordionBulletQuestions', {
+                      count: filledQuestionCount,
+                      questionLabel,
+                    })}
+                  </li>
+                  <li>
+                    {t('imagePinSettings.scoreAccordionBulletFormula', {
+                      maxPoints,
+                      filledQuestionCount,
+                      pointsPerQuestion,
+                      questionLabel,
+                    })}
+                  </li>
+                  <li>
+                    {t('imagePinSettings.scoreAccordionBulletRemainder', {
+                      usableScore,
+                      droppedPoints,
+                      pointLabel,
+                    })}
+                  </li>
+                </ul>
+              ) : (
+                <Text
+                  as="p"
+                  variant="small"
+                  muted
+                >
+                  {t('imagePinSettings.scoreAccordionEmpty')}
+                </Text>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className={cn('flex items-center gap-4', imagePinSettingsEnterSubtle)}>
         <Label className="flex-1">{t('imagePinSettings.pointDeductionLabel')}</Label>
         <QuantityStepper
           className="w-44"
-          value={10}
+          value={retryDeductionPercent}
           min={0}
-          max={50}
+          max={100}
           step={1}
-          onChange={() => {}}
+          onChange={handleRetryDeductionChange}
           label={t('imagePinSettings.pointDeductionLabel')}
         />
       </div>
+      <Accordion
+        type="single"
+        collapsible
+        className={imagePinSettingsEnterSubtle}
+      >
+        <AccordionItem
+          value="retry-deduction"
+          className="border-b-0"
+        >
+          <AccordionTrigger className="py-3">
+            <span className="flex items-center gap-2">
+              <Sigma className="size-4" />
+              <Text
+                variant="small"
+                as="p"
+                muted
+              >
+                {t('imagePinSettings.retryDeductionAccordionTitle')}
+              </Text>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="rounded-lg border border-border bg-muted/20 p-4">
+              <Text
+                as="p"
+                variant="small"
+                muted
+                bold
+              >
+                {t('imagePinSettings.retryDeductionHint', {
+                  pointsPerQuestion,
+                  retryDeductionPercent,
+                })}
+              </Text>
+
+              {filledQuestionCount > 0 ? (
+                <div className="mt-3 grid gap-2">
+                  {retryScoreRows.map((row) => (
+                    <div
+                      key={row.attempt}
+                      className="flex items-center justify-between gap-3 rounded-md bg-background/70 px-3 py-2 text-sm"
+                    >
+                      <span className="text-muted-foreground">
+                        {t('imagePinSettings.retryDeductionAttemptLabel', {
+                          attempt: row.attempt,
+                          label: row.label,
+                        })}
+                      </span>
+                      <span className="font-medium">
+                        {t('imagePinSettings.retryDeductionPointsValue', { points: row.points })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Text
+                  as="p"
+                  variant="small"
+                  muted
+                  className="mt-2"
+                >
+                  {t('imagePinSettings.retryDeductionEmpty')}
+                </Text>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className={cn('flex items-center justify-between gap-4', imagePinSettingsEnterSubtle)}>
         <Text

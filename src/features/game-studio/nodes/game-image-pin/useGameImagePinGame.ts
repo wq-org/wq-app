@@ -54,6 +54,10 @@ function getPreviewImageSrc(nodeData: GameImagePinNodeData): string {
   return typeof nodeData.imagePreview === 'string' ? nodeData.imagePreview.trim() : ''
 }
 
+function getPreviewDescription(nodeData: GameImagePinNodeData): string {
+  return typeof nodeData.description === 'string' ? nodeData.description.trim() : ''
+}
+
 function getPreviewQuestions(nodeData: GameImagePinNodeData): PreviewQuestion[] {
   const rectangles = Array.isArray(nodeData.rectangles) ? nodeData.rectangles : []
   return rectangles.flatMap((rect) => {
@@ -82,6 +86,18 @@ function buildPreviewQuestionMessage(
           rect: question.rect,
         }
       : undefined,
+  }
+}
+
+function buildPreviewDescriptionMessage(
+  nodeId: string,
+  description: string,
+): GameChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-description`,
+    text: description,
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
   }
 }
 
@@ -124,11 +140,15 @@ function buildAssistantReplyMessage(
 function buildInitialPreviewMessages(
   nodeId: string,
   imageSrc: string,
+  description: string,
   questions: PreviewQuestion[],
 ): GameChatHistoryMessage[] {
+  const messages: GameChatHistoryMessage[] = description
+    ? [buildPreviewDescriptionMessage(nodeId, description)]
+    : []
   const first = questions[0]
-  if (!first) return []
-  return [buildPreviewQuestionMessage(nodeId, imageSrc, first, 0)]
+  if (!first) return messages
+  return [...messages, buildPreviewQuestionMessage(nodeId, imageSrc, first, 0)]
 }
 
 function getQuestionIndexFromMessageId(messageId: string): number | null {
@@ -153,6 +173,7 @@ function fireCorrectConfetti(): void {
 export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArgs) {
   const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
+  const description = getPreviewDescription(nodeData)
   const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
   const submitAnswerPrompt = t('imagePinGamePreview.submitAnswerPrompt')
   const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')
@@ -160,10 +181,10 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
 
   const initialState = useMemo<PreviewState>(
     () => ({
-      messages: buildInitialPreviewMessages(nodeId, imageSrc, questions),
+      messages: buildInitialPreviewMessages(nodeId, imageSrc, description, questions),
       questionIndex: 0,
     }),
-    [imageSrc, nodeId, questions],
+    [description, imageSrc, nodeId, questions],
   )
 
   const [state, setState] = useState<PreviewState>(() => initialState)

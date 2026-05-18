@@ -4,6 +4,7 @@ import {
   AiPromptBadgeList,
   type Ai02PromptSuggestion,
 } from '@/components/shared/ai-components'
+import { Score } from '@/components/ui/score'
 import { Text } from '@/components/ui/text'
 import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
 import { useUser } from '@/contexts/user'
@@ -137,6 +138,11 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     howToPlayPrompt,
   } = useGameImagePinGame({ nodeId, nodeData })
 
+  const maxScore =
+    typeof nodeData.points === 'number' && Number.isFinite(nodeData.points)
+      ? Math.max(0, Math.floor(nodeData.points))
+      : 100
+
   const prompts = [
     {
       icon: Check,
@@ -228,12 +234,21 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         onPromptClick={handlePromptClick}
       />
 
-      <Ai01
-        placeholder="Submit your answer"
-        showDropDown={false}
-        showMic={false}
-        onSubmit={handleChatInput}
-      />
+      <div className="flex w-full items-center ">
+        <Score
+          score={0}
+          max={maxScore}
+          size="lg"
+          variant="orange"
+        />
+        <Ai01
+          className="min-w-0 flex-1"
+          placeholder="Submit your answer"
+          showDropDown={false}
+          showMic={false}
+          onSubmit={handleChatInput}
+        />
+      </div>
     </div>
   )
 }

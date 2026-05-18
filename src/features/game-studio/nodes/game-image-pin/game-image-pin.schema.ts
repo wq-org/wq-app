@@ -22,6 +22,8 @@ export type GameImagePinNodeData = {
   rectangles?: GameImagePinRect[]
   /** Optional aggregate score for publish / analytics until per-rect scoring exists. */
   points?: number
+  /** Percentage removed from a question's available points on each retry. */
+  retryDeductionPercent?: number
 }
 
 export const GAME_IMAGE_PIN_TYPE = 'gameImagePin' as const
