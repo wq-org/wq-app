@@ -20,6 +20,14 @@ export { SelectAvatarDrawer } from './drawers'
 export type { SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
 export { GridIconBackground } from './GridIconBackground'
 export type { IconEntry } from './GridIconBackground'
+export { AnimatedBeam, AnimatedBeamHub } from './animated-beam'
+export { BeamHubBadge } from './BeamHubBadge'
+export type {
+  AnimatedBeamDirection,
+  AnimatedBeamHubNode,
+  AnimatedBeamHubProps,
+  AnimatedBeamProps,
+} from './animated-beam'
 export {
   FacebookIcon,
   InstagramIcon,

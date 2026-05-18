@@ -90,6 +90,10 @@ export function getThemeBackgroundStyle(themeId?: string): CSSProperties {
   }
 }
 
+export function getColorCss(colorId: ColorId): string {
+  return `oklch(${COLORS[colorId].value})`
+}
+
 const THEME_CLASSES_BY_ID = {
   violet: {
     text: 'text-violet-500',

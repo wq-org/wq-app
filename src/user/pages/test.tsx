@@ -1,10 +1,20 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import type { VariantProps } from 'class-variance-authority'
-import { BookOpen, Box, Edit, LockIcon, PlusIcon, SparklesIcon } from 'lucide-react'
+import {
+  BookOpen,
+  Box,
+  Edit,
+  FlaskConical,
+  Globe,
+  LockIcon,
+  PlusIcon,
+  SparklesIcon,
+} from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
 
 import {
   AccentPicker,
+  AnimatedBeamHub,
   Ai02,
   Ai03,
   GridIconBackground,
@@ -136,6 +146,24 @@ import {
   type ChatHistoryMessage,
 } from '@/components/shared/chat'
 import { GameHeader } from '@/features/game-studio'
+import { getThemeClasses } from '@/lib/themes'
+import { cn } from '@/lib/utils'
+import type { LucideIcon } from 'lucide-react'
+
+function BeamHubBadge({ Icon, theme }: { Icon: LucideIcon; theme: string }) {
+  const themeClasses = getThemeClasses(theme)
+  return (
+    <div
+      className={cn(
+        'flex h-14 w-14 items-center justify-center rounded-full border-2 bg-card shadow-md',
+        themeClasses.text,
+        themeClasses.border,
+      )}
+    >
+      <Icon className="h-6 w-6" />
+    </div>
+  )
+}
 
 const TEXT_SEMANTIC_VARIANTS = ['h1', 'h2', 'h3', 'body', 'small'] as const
 const TEXT_COLOR_VARIANTS = [
@@ -903,6 +931,95 @@ export default function Test() {
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
+      <Section title="AnimatedBeamHub — left + right only">
+        <div className="flex w-full justify-center py-6">
+          <AnimatedBeamHub
+            className="h-40 w-md"
+            center={
+              <BeamHubBadge
+                Icon={SparklesIcon}
+                theme="darkblue"
+              />
+            }
+            nodes={[
+              {
+                direction: 'left',
+                content: (
+                  <BeamHubBadge
+                    Icon={FlaskConical}
+                    theme="lime"
+                  />
+                ),
+                gradientStartColor: 'darkblue',
+                gradientStopColor: 'lime',
+              },
+              {
+                direction: 'right',
+                content: (
+                  <BeamHubBadge
+                    Icon={Globe}
+                    theme="pink"
+                  />
+                ),
+                gradientStartColor: 'pink',
+                gradientStopColor: 'orange',
+                reverse: true,
+              },
+            ]}
+          />
+        </div>
+      </Section>
+
+      <Section title="AnimatedBeamHub — top-left, bottom-left, bottom-right">
+        <div className="flex w-full justify-center py-6">
+          <AnimatedBeamHub
+            className="h-72 w-md"
+            center={
+              <BeamHubBadge
+                Icon={SparklesIcon}
+                theme="darkblue"
+              />
+            }
+            nodes={[
+              {
+                direction: 'top-left',
+                content: (
+                  <BeamHubBadge
+                    Icon={BookOpen}
+                    theme="violet"
+                  />
+                ),
+                gradientStartColor: 'violet',
+                gradientStopColor: 'cyan',
+              },
+              {
+                direction: 'bottom-left',
+                content: (
+                  <BeamHubBadge
+                    Icon={FlaskConical}
+                    theme="teal"
+                  />
+                ),
+                gradientStartColor: 'teal',
+                gradientStopColor: 'lime',
+              },
+              {
+                direction: 'bottom-right',
+                content: (
+                  <BeamHubBadge
+                    Icon={LockIcon}
+                    theme="orange"
+                  />
+                ),
+                gradientStartColor: 'orange',
+                gradientStopColor: 'pink',
+                reverse: true,
+              },
+            ]}
+          />
+        </div>
+      </Section>
+
       <Section title="Score (@/components/ui/score) — variants + sizes">
         <div className="w-full max-w-7xl space-y-6">
           <div className="rounded-2xl border bg-card p-5">
@@ -998,7 +1115,7 @@ export default function Test() {
       </Section>
 
       <Section title="GameHeader (@/features/game-studio/components/GameHeader)">
-        <div className="rounded-[2rem] bg-orange-400 p-10">
+        <div className="rounded-4xl bg-orange-400 p-10">
           <GameHeader />
         </div>
       </Section>

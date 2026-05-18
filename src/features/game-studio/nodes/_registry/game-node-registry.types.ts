@@ -4,7 +4,19 @@ import type { NodeProps } from '@xyflow/react'
 
 export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
-export type GameNodeAccent = 'gray' | 'blue' | 'orange'
+export type GameNodeAccent =
+  | 'gray'
+  | 'darkblue'
+  | 'violet'
+  | 'indigo'
+  | 'blue'
+  | 'cyan'
+  | 'teal'
+  | 'green'
+  | 'lime'
+  | 'orange'
+  | 'red'
+  | 'pink'
 
 export type GameNodeDialogProps = {
   nodeId: string

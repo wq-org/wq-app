@@ -16,6 +16,7 @@ Use when refactoring components, adding features, deciding where code lives, or 
 - Prefer `onClick={handleSave}` over `onClick={() => handleSave()}` when equivalent.
 - **Fallbacks** belong at the UI boundary (`??` for null/undefined; `||` when empty string should fall back). Never use fallbacks to hide broken or invalid data.
 - **Props** callbacks: `onSave`, `onTabChange`. **Local** handlers: `handleSave`, `handleTabChange`.
+- **Color props**: type as `ColorId` / `ThemeId` / `AccentId` from `@/lib/themes` — never raw `string`, hex, or arbitrary CSS color. Resolve at the leaf with `getColorCss(colorId)` (inline CSS) or `getThemeClasses(themeId)` (Tailwind classes). Example: `gradientStartColor?: ColorId` with default `'orange'`, not `gradientStartColor?: string` with default `'#ffaa40'`.
 - Keep JSX **mostly structure**. Move heavy conditionals, formatting, and role checks **above** the `return`.
 - **Compute before render** (e.g. `isTeacher`, `resolvedTabs`, display strings).
 
