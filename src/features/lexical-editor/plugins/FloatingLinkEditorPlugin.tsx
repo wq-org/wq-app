@@ -166,7 +166,7 @@ function FloatingLinkEditor({
         refs.setFloating(el)
       }}
       className={cn(
-        'z-40 flex min-w-[16rem] items-center gap-2 rounded-lg border border-zinc-200 bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:border-zinc-700 dark:bg-zinc-800',
+        'z-40 flex min-w-[16rem] items-center gap-2 rounded-full border border-border bg-popover/95 px-3 py-1.5 text-popover-foreground shadow-xl backdrop-blur supports-backdrop-filter:bg-popover/90',
         !isLink && 'pointer-events-none opacity-0',
       )}
       style={floatingStyles}
@@ -184,6 +184,7 @@ function FloatingLinkEditor({
         type="button"
         variant="ghost"
         size="sm"
+        className="rounded-full"
         onMouseDown={(event) => event.preventDefault()}
         onClick={onRequestLinkDialog}
       >
@@ -193,6 +194,7 @@ function FloatingLinkEditor({
         type="button"
         variant="ghost"
         size="sm"
+        className="rounded-full"
         onMouseDown={(event) => event.preventDefault()}
         onClick={() => editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)}
       >

@@ -123,10 +123,10 @@ const FORMAT_BUTTONS: readonly FormatButton[] = [
 type FormatFlags = Record<FormatFlag, boolean>
 
 const toolbarButtonClassName =
-  'flex h-7 w-7 items-center justify-center rounded-md text-foreground transition-colors hover:bg-muted'
+  'flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted'
 
 const toolbarShellClassName =
-  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-lg border border-border bg-popover/80 p-1 opacity-0 shadow-xl backdrop-blur-xl transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
+  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-full border border-border bg-popover/95 px-1 py-1 opacity-0 text-popover-foreground shadow-xl backdrop-blur transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
 
 type FloatingPopupProps = {
   editor: LexicalEditor
