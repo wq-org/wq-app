@@ -5,7 +5,7 @@ import { getFileSignedUrl } from '@/features/files'
 import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
 import { GameLayout } from '../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
-import type { GameImagePinNodeData } from './game-image-pin.schema'
+import { getMissingGameImagePinDefaults, type GameImagePinNodeData } from './game-image-pin.schema'
 import { GameImagePinEditor } from './GameImagePinEditor'
 import { GameImagePinPreview } from './GameImagePinPreview'
 import { GameImagePinSettings } from './GameImagePinSettings'
@@ -25,6 +25,7 @@ export function GameImagePinDialog({
   const { t } = useTranslation('features.gameStudio')
   const { uploadGameImagePinFile } = useGameImagePinImageUpload()
   const gameImagePinNodeData = nodeData as GameImagePinNodeData
+  const { points, retryDeductionPercent } = gameImagePinNodeData
 
   // Capture mount-time values so the effect closure is stable (key={nodeId} on the
   // parent guarantees one fresh mount per node, so these are always this node's values).
@@ -52,6 +53,13 @@ export function GameImagePinDialog({
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    const defaultPatch = getMissingGameImagePinDefaults({ points, retryDeductionPercent })
+    if (Object.keys(defaultPatch).length === 0) return
+
+    onPatchNodeData(defaultPatch)
+  }, [onPatchNodeData, points, retryDeductionPercent])
 
   const prevEdge = flowEdges.find((edge) => edge.target === nodeId)
   const nextEdge = flowEdges.find((edge) => edge.source === nodeId)

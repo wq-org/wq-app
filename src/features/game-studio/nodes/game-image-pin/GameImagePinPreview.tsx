@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { GameChatHistory } from '../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../components/game-chat.types'
-import type { GameImagePinNodeData } from './game-image-pin.schema'
+import { resolveGameImagePinPoints, type GameImagePinNodeData } from './game-image-pin.schema'
 import { ImagePin } from './ImagePin'
 import {
   DndContext,
@@ -140,10 +140,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     earnedScore,
   } = useGameImagePinGame({ nodeId, nodeData })
 
-  const maxScore =
-    typeof nodeData.points === 'number' && Number.isFinite(nodeData.points)
-      ? Math.max(0, Math.floor(nodeData.points))
-      : 100
+  const maxScore = resolveGameImagePinPoints(nodeData.points)
 
   const prompts = [
     {

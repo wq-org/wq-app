@@ -44,7 +44,11 @@ import {
   SliderSyncedNumberInput,
 } from '@/components/shared'
 import { cn } from '@/lib/utils'
-import type { GameImagePinNodeData } from './game-image-pin.schema'
+import {
+  resolveGameImagePinPoints,
+  resolveGameImagePinRetryDeductionPercent,
+  type GameImagePinNodeData,
+} from './game-image-pin.schema'
 
 type AdjacentNodeInfo = { id: string; nodeType: string | undefined }
 
@@ -101,16 +105,10 @@ export function GameImagePinSettings({
 }: GameImagePinSettingsProps) {
   const { description = '', imagePreview } = nodeData
   const { t } = useTranslation('features.gameStudio')
-  const maxPoints =
-    typeof nodeData.points === 'number' && Number.isFinite(nodeData.points) && nodeData.points >= 0
-      ? Math.floor(nodeData.points)
-      : 100
-  const retryDeductionPercent =
-    typeof nodeData.retryDeductionPercent === 'number' &&
-    Number.isFinite(nodeData.retryDeductionPercent) &&
-    nodeData.retryDeductionPercent >= 0
-      ? Math.min(100, Math.floor(nodeData.retryDeductionPercent))
-      : 10
+  const maxPoints = resolveGameImagePinPoints(nodeData.points)
+  const retryDeductionPercent = resolveGameImagePinRetryDeductionPercent(
+    nodeData.retryDeductionPercent,
+  )
 
   const [qualityOpacity, setQualityOpacity] = useState(50)
   const [exclusionOpacity, setExclusionOpacity] = useState(0)

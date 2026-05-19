@@ -3,7 +3,12 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import confetti from 'canvas-confetti'
 import { useTranslation } from 'react-i18next'
 import type { GameChatHistoryMessage } from '../../components/game-chat.types'
-import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
+import {
+  resolveGameImagePinPoints,
+  resolveGameImagePinRetryDeductionPercent,
+  type GameImagePinNodeData,
+  type GameImagePinRect,
+} from './game-image-pin.schema'
 import { loadImageNaturalSize } from './imagePinRectGeometry'
 import {
   evaluatePinSubmission,
@@ -232,12 +237,8 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
   const submitAnswerPrompt = t('imagePinGamePreview.submitAnswerPrompt')
   const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')
 
-  const maxPoints =
-    typeof nodeData.points === 'number' && nodeData.points > 0 ? Math.floor(nodeData.points) : 100
-  const deductionPercent =
-    typeof nodeData.retryDeductionPercent === 'number'
-      ? Math.min(100, Math.max(0, nodeData.retryDeductionPercent))
-      : 0
+  const maxPoints = resolveGameImagePinPoints(nodeData.points)
+  const deductionPercent = resolveGameImagePinRetryDeductionPercent(nodeData.retryDeductionPercent)
   const pointsPerQuestion = calcPointsPerQuestion(maxPoints, questions.length)
   const howToPlayResponse = buildHowToPlayResponse(
     t('imagePinGamePreview.howToPlayResponse'),
