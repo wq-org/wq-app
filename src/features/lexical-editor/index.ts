@@ -5,17 +5,17 @@ export {
   DEFAULT_PASTE_MAX_CHARS,
   type PasteGuardPluginProps,
   type PasteOverflowInfo,
-} from './components/PasteGuardPlugin'
+} from './plugins/PasteGuardPlugin'
 export {
   ImageNode,
   $createImageNode,
   $isImageNode,
   type ImagePayload,
   type SerializedImageNode,
-} from './components/ImageNode'
+} from './nodes/ImageNode'
 export {
   MentionNode,
   $createMentionNode,
   $isMentionNode,
   type SerializedMentionNode,
-} from './components/MentionNode'
+} from './nodes/MentionNode'

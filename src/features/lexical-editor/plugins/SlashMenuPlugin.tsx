@@ -17,7 +17,8 @@ import * as ReactDOM from 'react-dom'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
-import { BlockOption, getBlockOptions, ICON_URLS } from './blockOptions'
+import { BlockOptionIcon } from './BlockOptionIcon'
+import { BlockOption, getBlockOptions } from './blockOptions'
 
 type SlashMenuPluginProps = {
   registry?: LessonBlockTypeRegistryRow[]
@@ -79,12 +80,7 @@ export function SlashMenuPlugin({ registry }: SlashMenuPluginProps) {
                         selectOptionAndCleanUp(option)
                       }}
                     >
-                      <span
-                        className="inline-block h-4 w-4 shrink-0 bg-contain bg-center bg-no-repeat opacity-70 dark:invert"
-                        style={{
-                          backgroundImage: `url('${ICON_URLS[option.iconKey]}')`,
-                        }}
-                      />
+                      <BlockOptionIcon option={option} />
                       <span className="flex-1">{option.title}</span>
                     </li>
                   ))}

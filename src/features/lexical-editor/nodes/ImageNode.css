@@ -51,7 +51,7 @@
 }
 
 .ImageNode__focused {
-  border-radius: 2px;
+  border-radius: 1rem;
   outline: 2px solid hsl(var(--primary));
   outline-offset: 2px;
 }
@@ -60,7 +60,7 @@
   align-items: center;
   background: hsl(var(--muted));
   border: 1px dashed hsl(var(--border));
-  border-radius: 4px;
+  border-radius: 1rem;
   color: hsl(var(--muted-foreground));
   display: flex;
   font-size: 0.8125rem;
@@ -72,7 +72,7 @@
 .ImageNode__loading {
   animation: ImageNode__pulse 1.5s ease-in-out infinite;
   background: hsl(var(--muted));
-  border-radius: 4px;
+  border-radius: 1rem;
   height: 80px;
   width: 100%;
 }

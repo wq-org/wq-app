@@ -10,9 +10,18 @@ import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lex
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
-import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
+import {
+  $createParagraphNode,
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  type LexicalEditor,
+} from 'lexical'
+import { Image, type LucideIcon } from 'lucide-react'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
+
+import { $createImageNode } from '../nodes/ImageNode'
 
 export const ICON_URLS = {
   bullet: '/img/list-ul.svg',
@@ -27,27 +36,80 @@ export const ICON_URLS = {
 export type IconKey = keyof typeof ICON_URLS
 
 interface BlockOptionConfig {
-  iconKey: IconKey
+  Icon?: LucideIcon
+  iconKey?: IconKey
   keywords?: string[]
   onSelect: () => void
 }
 
 export class BlockOption extends MenuOption {
   title: string
-  iconKey: IconKey
+  Icon?: LucideIcon
+  iconKey?: IconKey
   keywords: string[]
   onSelect: () => void
 
-  constructor(title: string, { iconKey, keywords = [], onSelect }: BlockOptionConfig) {
+  constructor(title: string, { Icon, iconKey, keywords = [], onSelect }: BlockOptionConfig) {
     super(title)
     this.title = title
+    this.Icon = Icon
     this.iconKey = iconKey
     this.keywords = keywords
     this.onSelect = onSelect
   }
 }
 
-export function getBlockOptions(editor: LexicalEditor, registry?: LessonBlockTypeRegistryRow[]): BlockOption[] {
+function insertImageFile(editor: LexicalEditor, file: File) {
+  if (!file.type.startsWith('image/')) {
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    const src = typeof reader.result === 'string' ? reader.result : null
+    if (!src) {
+      return
+    }
+
+    editor.focus(() => {
+      editor.update(() => {
+        const imageNode = $createImageNode({
+          altText: file.name,
+          maxWidth: 720,
+          src,
+        })
+        const selection = $getSelection()
+        if ($isRangeSelection(selection)) {
+          selection.insertNodes([imageNode])
+          return
+        }
+
+        const paragraph = $createParagraphNode()
+        paragraph.append(imageNode)
+        $getRoot().append(paragraph)
+      })
+    })
+  }
+  reader.readAsDataURL(file)
+}
+
+function openImagePicker(editor: LexicalEditor) {
+  const input = document.createElement('input')
+  input.accept = 'image/*'
+  input.type = 'file'
+  input.onchange = () => {
+    const file = input.files?.[0]
+    if (file) {
+      insertImageFile(editor, file)
+    }
+  }
+  input.click()
+}
+
+export function getBlockOptions(
+  editor: LexicalEditor,
+  registry?: LessonBlockTypeRegistryRow[],
+): BlockOption[] {
   const pendingRegistryPlugins =
     registry?.filter((row) => row.plugin_key != null && row.plugin_key !== '').length ?? 0
   void pendingRegistryPlugins
@@ -96,6 +158,11 @@ export function getBlockOptions(editor: LexicalEditor, registry?: LessonBlockTyp
             $setBlocksType(selection, () => $createHeadingNode('h3'))
           }
         }),
+    }),
+    new BlockOption('Image', {
+      Icon: Image,
+      keywords: ['image', 'picture', 'photo', 'media'],
+      onSelect: () => openImagePicker(editor),
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',

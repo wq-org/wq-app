@@ -20,11 +20,11 @@ import {
 import {
   FloatingFormatExtension,
   FloatingTextFormatToolbarPlugin,
-} from '../FloatingTextFormatToolbarPlugin'
-import { ImageNode } from './ImageNode'
-import { LexicalDraggableBlockPlugin } from './LexicalDraggableBlockPlugin'
-import { PasteGuardPlugin, type PasteOverflowInfo } from './PasteGuardPlugin'
-import { SlashMenuPlugin } from './SlashMenuPlugin'
+} from '../plugins/FloatingTextFormatToolbarPlugin'
+import { ImageNode } from '../nodes/ImageNode'
+import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
+import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
+import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
 
 const theme = {
   heading: {

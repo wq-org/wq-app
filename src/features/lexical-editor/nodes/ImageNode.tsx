@@ -12,10 +12,7 @@ import type {
 } from 'lexical'
 import type { JSX } from 'react'
 
-import {
-  $applyNodeReplacement,
-  DecoratorNode,
-} from 'lexical'
+import { $applyNodeReplacement, DecoratorNode } from 'lexical'
 
 import { ImageNodeComponent } from './ImageNodeComponent'
 

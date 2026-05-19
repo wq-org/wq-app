@@ -13,7 +13,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import * as ReactDOM from 'react-dom'
 
 import invariant from '../utils/invariant'
-import { getBlockOptions, ICON_URLS } from './blockOptions'
+import { BlockOptionIcon } from './BlockOptionIcon'
+import { getBlockOptions } from './blockOptions'
 
 const DRAGGABLE_BLOCK_MENU_CLASSNAME = 'draggable-block-menu'
 
@@ -151,12 +152,7 @@ export function LexicalDraggableBlockPlugin() {
                     className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-[#3a3a3c]"
                     onClick={() => selectOption(index)}
                   >
-                    <span
-                      className="inline-block h-4 w-4 shrink-0 bg-contain bg-center bg-no-repeat opacity-70 dark:invert"
-                      style={{
-                        backgroundImage: `url('${ICON_URLS[option.iconKey]}')`,
-                      }}
-                    />
+                    <BlockOptionIcon option={option} />
                     <span>{option.title}</span>
                   </li>
                 ))}

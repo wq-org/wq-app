@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 
+import { toast } from 'sonner'
 import {
   COLLABORATION_TAG,
   HISTORIC_TAG,
@@ -84,9 +85,8 @@ export function useLessonAutosave({
 
       const byteSize = new Blob([serializedDocJson]).size
       if (byteSize > maxDocSizeBytes) {
-        console.warn(
-          `[useLessonAutosave] document ${byteSize}B exceeds limit ${maxDocSizeBytes}B; refusing save`,
-        )
+        const mb = (byteSize / 1_048_576).toFixed(1)
+        toast.error(`Document too large (${mb} MB) — content not saved.`)
         retryCountRef.current = 0
         isSavingRef.current = false
         setStatus('error')
