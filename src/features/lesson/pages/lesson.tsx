@@ -16,9 +16,11 @@ import { useLesson } from '@/contexts/lesson'
 import { LESSON_CONTENT_SCHEMA_VERSION, type SaveStatus } from '@/features/lesson'
 import { Editor, type PasteOverflowInfo } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
+import { LessonSettingsDrawer } from '../components/LessonSettingsDrawer'
 
 const AUTOSAVE_DELAY_MS = 600
 const AUTOSAVE_TOAST_ID = 'lesson-autosave-status'
+const DESCRIPTION_TEXTAREA_ID = 'lesson-description'
 
 export const Lesson = () => {
   const { t } = useTranslation('features.lesson')
@@ -61,6 +63,10 @@ export const Lesson = () => {
 
   const dismissPasteOverflow = useCallback(() => {
     setPasteOverflow(null)
+  }, [])
+
+  const focusDescriptionField = useCallback(() => {
+    document.getElementById(DESCRIPTION_TEXTAREA_ID)?.focus()
   }, [])
 
   const persistSerializedContent = useCallback(
@@ -185,14 +191,25 @@ export const Lesson = () => {
               placeholder={titlePlaceholder}
               className="w-full border-0 bg-transparent py-1 text-4xl leading-[1.15] font-bold tracking-tight outline-none placeholder:text-zinc-400"
             />
-            <div className="mt-2 flex max-w-full items-start gap-2">
-              <TextQuote
-                className="mt-0 self-start size-5 shrink-0 text-muted-foreground opacity-80"
-                strokeWidth={2}
-                aria-hidden
-              />
+            <div className="mt-2 flex max-w-full items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                onClick={focusDescriptionField}
+              >
+                <TextQuote
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                {t('page.actions.description')}
+              </Button>
+
               <FieldTextarea
-                className="min-w-0 flex-1 pb-0 [&_label]:text-muted-foreground [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
+                id={DESCRIPTION_TEXTAREA_ID}
+                className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
                 value={description}
                 onValueChange={setDescription}
                 label={descriptionLabel}
@@ -201,6 +218,14 @@ export const Lesson = () => {
                 hideSeparator
               />
             </div>
+            {lessonId ? (
+              <div className="mt-1 flex flex-col items-start justify-start">
+                <LessonSettingsDrawer
+                  lessonId={lessonId}
+                  lessonTitle={title}
+                />
+              </div>
+            ) : null}
             {pasteOverflow ? (
               <Alert
                 variant="destructive"

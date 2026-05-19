@@ -6,6 +6,8 @@ export { LessonForm } from './components/LessonForm'
 export type { LessonFormProps } from './components/LessonForm'
 export { LessonFilter } from './components/LessonFilter'
 export type { LessonFilterProps } from './components/LessonFilter'
+export { LessonSettingsDrawer } from './components/LessonSettingsDrawer'
+export type { LessonSettingsDrawerProps } from './components/LessonSettingsDrawer'
 export {
   createLesson,
   deleteLesson,

@@ -1,6 +1,7 @@
 {
   "settings": {
     "title": "Lesson Settings",
+    "drawerTitle": "Settings",
     "subtitle": "Manage your lesson details",
     "titleLabel": "Title",
     "descriptionLabel": "Description",
@@ -16,7 +17,8 @@
     "toasts": {
       "saveSuccess": "Changes saved",
       "saveSuccessDescription": "Your lesson details have been updated.",
-      "saveFailed": "Failed to save changes. Please try again."
+      "saveFailed": "Failed to save changes. Please try again.",
+      "deleteSuccess": "Lesson deleted"
     },
     "deleteDialog": {
       "title": "Delete Lesson",
@@ -38,6 +40,7 @@
     "addPage": "Add page",
     "notFound": "Lesson not found",
     "actions": {
+      "description": "Description",
       "smartImport": "Smart Import",
       "help": "Help",
       "tableOfContents": "Show Menu"

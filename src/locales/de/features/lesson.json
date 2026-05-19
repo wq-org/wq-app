@@ -1,6 +1,7 @@
 {
   "settings": {
     "title": "Lektionseinstellungen",
+    "drawerTitle": "Einstellungen",
     "subtitle": "Verwalte die Details deiner Lektion",
     "titleLabel": "Titel",
     "descriptionLabel": "Beschreibung",
@@ -16,7 +17,8 @@
     "toasts": {
       "saveSuccess": "Änderungen gespeichert",
       "saveSuccessDescription": "Deine Lektionsdetails wurden aktualisiert.",
-      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut."
+      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteSuccess": "Lektion gelöscht"
     },
     "deleteDialog": {
       "title": "Lektion löschen",
@@ -38,6 +40,7 @@
     "addPage": "Seite hinzufügen",
     "notFound": "Lektion nicht gefunden",
     "actions": {
+      "description": "Beschreibung",
       "smartImport": "Smart Import",
       "help": "Hilfe",
       "tableOfContents": "Menü anzeigen"
