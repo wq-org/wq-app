@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDisclosure } from '@/hooks/use-disclosure'
 import { useTranslation } from 'react-i18next'
 import {
   Calculator,
@@ -114,7 +115,11 @@ export function GameImagePinSettings({
   const [qualityOpacity, setQualityOpacity] = useState(50)
   const [exclusionOpacity, setExclusionOpacity] = useState(0)
   const [timeLimitEnabled, setTimeLimitEnabled] = useState(false)
-  const [isLearningFieldPopoverOpen, setIsLearningFieldPopoverOpen] = useState(false)
+  const {
+    isOpen: isLearningFieldPopoverOpen,
+    onClose: onLearningFieldPopoverClose,
+    setIsOpen: setIsLearningFieldPopoverOpen,
+  } = useDisclosure()
   const [selectedLearningFieldIds, setSelectedLearningFieldIds] = useState<LearningFieldId[]>([])
 
   const selectedLearningFields = LEARNING_FIELD_OPTIONS.filter((option) =>
@@ -162,7 +167,7 @@ export function GameImagePinSettings({
     setSelectedLearningFieldIds((currentIds) =>
       currentIds.includes(id) ? currentIds : [...currentIds, id],
     )
-    setIsLearningFieldPopoverOpen(false)
+    onLearningFieldPopoverClose()
   }
 
   function handleLearningFieldRemove(id: LearningFieldId) {
