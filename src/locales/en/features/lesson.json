@@ -193,6 +193,19 @@
         }
       }
     },
+    "image": {
+      "replaceImageAria": "Replace image",
+      "uploadToCloudAria": "Upload image to cloud",
+      "uploadingImageAria": "Uploading image",
+      "invalidType": "Please choose a JPEG or PNG image.",
+      "replaceFailed": "Could not load the selected image.",
+      "uploadFailed": "Could not upload image.",
+      "uploadSuccess": "Image uploaded to cloud.",
+      "uploadRequiresContext": "Sign in with an institution to upload images.",
+      "uploadNeedsLocalImage": "Replace the image first, then upload to cloud.",
+      "alreadyInCloud": "This image is already stored in the cloud.",
+      "alreadyExistsInCloud": "This file is already in cloud storage. Choose a different image or rename it."
+    },
     "inlineToolbar": {
       "headings": "Headings",
       "headingOneShort": "H1",

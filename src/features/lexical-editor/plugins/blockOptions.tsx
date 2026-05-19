@@ -22,6 +22,7 @@ import { Image, type LucideIcon } from 'lucide-react'
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
 import { $createImageNode } from '../nodes/ImageNode'
+import { readImageFileAsDataUrl } from '../utils/localImageFile'
 
 export const ICON_URLS = {
   bullet: '/img/list-ul.svg',
@@ -59,38 +60,35 @@ export class BlockOption extends MenuOption {
   }
 }
 
-function insertImageFile(editor: LexicalEditor, file: File) {
+function insertImageWithSrc(editor: LexicalEditor, src: string, altText: string) {
+  editor.focus(() => {
+    editor.update(() => {
+      const imageNode = $createImageNode({
+        altText,
+        maxWidth: 720,
+        src,
+      })
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        selection.insertNodes([imageNode])
+        return
+      }
+
+      const paragraph = $createParagraphNode()
+      paragraph.append(imageNode)
+      $getRoot().append(paragraph)
+    })
+  })
+}
+
+function insertLocalImageFile(editor: LexicalEditor, file: File) {
   if (!file.type.startsWith('image/')) {
     return
   }
 
-  const reader = new FileReader()
-  reader.onload = () => {
-    const src = typeof reader.result === 'string' ? reader.result : null
-    if (!src) {
-      return
-    }
-
-    editor.focus(() => {
-      editor.update(() => {
-        const imageNode = $createImageNode({
-          altText: file.name,
-          maxWidth: 720,
-          src,
-        })
-        const selection = $getSelection()
-        if ($isRangeSelection(selection)) {
-          selection.insertNodes([imageNode])
-          return
-        }
-
-        const paragraph = $createParagraphNode()
-        paragraph.append(imageNode)
-        $getRoot().append(paragraph)
-      })
-    })
-  }
-  reader.readAsDataURL(file)
+  void readImageFileAsDataUrl(file).then((src) => {
+    insertImageWithSrc(editor, src, file.name)
+  })
 }
 
 function openImagePicker(editor: LexicalEditor) {
@@ -100,7 +98,7 @@ function openImagePicker(editor: LexicalEditor) {
   input.onchange = () => {
     const file = input.files?.[0]
     if (file) {
-      insertImageFile(editor, file)
+      insertLocalImageFile(editor, file)
     }
   }
   input.click()

@@ -45,6 +45,7 @@
 }
 
 .ImageNode__image {
+  border-radius: 1rem;
   display: block;
   height: auto;
   max-width: 100%;

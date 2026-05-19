@@ -149,6 +149,18 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return false
   }
 
+  setSrc(src: string): this {
+    const writable = this.getWritable()
+    writable.__src = src
+    return writable
+  }
+
+  setAltText(altText: string): this {
+    const writable = this.getWritable()
+    writable.__altText = altText
+    return writable
+  }
+
   decorate(): JSX.Element {
     return (
       <ImageNodeComponent

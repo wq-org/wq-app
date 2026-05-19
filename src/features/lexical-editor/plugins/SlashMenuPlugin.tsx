@@ -27,7 +27,6 @@ type SlashMenuPluginProps = {
 export function SlashMenuPlugin({ registry }: SlashMenuPluginProps) {
   const [editor] = useLexicalComposerContext()
   const [queryString, setQueryString] = useState<string | null>(null)
-
   const options = useMemo(() => {
     const base = getBlockOptions(editor, registry)
     if (!queryString) {
