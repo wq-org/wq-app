@@ -6,8 +6,8 @@ export function calcPointsPerQuestion(maxPoints: number, questionCount: number):
 
 /**
  * Points earned on attempt N (1-indexed).
- * The factor shrinks by `deductionPercent` for each retry;
- * attempt 4+ always returns 0, matching the settings breakdown table.
+ * The factor shrinks by `deductionPercent` for each retry.
+ * Callers are responsible for enforcing the last-attempt cap (see MAX_ATTEMPTS).
  */
 export function calcAttemptPoints(
   pointsPerQuestion: number,

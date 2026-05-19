@@ -155,6 +155,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
       icon: HandHelping,
       text: t('imagePinGamePreview.badgeHint'),
       prompt: t('imagePinGamePreview.hintPrompt'),
+      disabled: true,
     },
     {
       icon: CircleQuestionMark,

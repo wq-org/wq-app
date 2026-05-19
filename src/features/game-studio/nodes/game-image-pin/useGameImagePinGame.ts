@@ -332,7 +332,6 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
   const isLatestSubmitted = latestSubmission !== null
   const hasActiveQuestion = latestQuestionFromMessage !== null && !isLatestSubmitted
 
-  // Drop the pin back to source whenever a new (unsubmitted) question becomes latest.
   useEffect(() => {
     if (hasActiveQuestion) setCurrentPin(null)
   }, [latestQuestionMessageId, hasActiveQuestion])
@@ -415,9 +414,10 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     setAttemptCounts((prev) => ({ ...prev, [questionId]: thisAttempt }))
 
     if (isSettled) {
-      const earned = isCorrect
-        ? calcAttemptPoints(pointsPerQuestion, thisAttempt, deductionPercent)
-        : 0
+      const earned =
+        isCorrect && !isLastAttempt
+          ? calcAttemptPoints(pointsPerQuestion, thisAttempt, deductionPercent)
+          : 0
 
       if (isCorrect) {
         setEarnedScore((prev) => prev + earned)
