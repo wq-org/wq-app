@@ -6,7 +6,7 @@ import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { buildSuggestedFacultyDescription } from '../utils/facultyDescription'
-import { HelpPopover } from './HelpPopover'
+import { HelpPopover } from '@/components/shared'
 
 type FacultyStepProps = {
   name: string

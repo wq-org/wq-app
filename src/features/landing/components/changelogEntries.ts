@@ -20,6 +20,27 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-19-game-studio-image-pin-settings-and-flow-preview',
+    date: '19 May 2026',
+    title: 'Game Studio Image Pin is easier to set up, preview, and connect in a learning flow',
+    summary:
+      'Teachers get a clearer Image Pin setup experience inside Game Studio. The settings area now explains the learning purpose of a game, lets you mark which learning fields it supports, shows nearby connected nodes in the game flow, and gives a more useful preview of how the activity will look for learners. Students benefit from cleaner previews and more reliable image handling, so Image Pin games feel smoother when teachers prepare them.',
+    bullets: [
+      'Teachers: Image Pin settings now include a dedicated learning-field picker, so you can mark activities with LF-1 through LF-7 instead of leaving the learning goal unclear',
+      'Teachers: you can select several learning fields for one Image Pin activity and remove individual choices with a compact badge control',
+      'Teachers: the settings panel now shows the previous and next connected nodes with their correct icons, making it easier to understand where the Image Pin sits in the game flow',
+      'Teachers: connected-node previews no longer show a red X when a real node is connected, so the flow preview is less confusing',
+      'Teachers: the current Image Pin node stays visually active in the center of the mini flow preview while its settings dialog is open',
+      'Teachers: new settings sections prepare the activity for scoring, retry penalties, optional time limits, and adaptive image difficulty, even though some of those controls are still being wired into gameplay',
+      'Teachers: uploaded Image Pin images are handled more carefully to avoid duplicate uploads and repeated gallery entries',
+      'Teachers: image galleries reuse existing pictures more cleanly, making it faster to build several related Image Pin tasks',
+      'Students: game previews make better use of the dialog space, so chat-style instructions and answers are easier to read',
+      'Students: Image Pin previews can show image quality and hidden-area effects more clearly, helping teachers test how challenging an activity may feel',
+      'Everyone: small visual polish in the Game Studio dialog, animated beam preview, image carousel, and AI-style input bar makes the authoring experience feel smoother and less jumpy',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-05-15-game-studio-image-pin-chat-and-ai-building-blocks',
     date: '15 May 2026',
     title:

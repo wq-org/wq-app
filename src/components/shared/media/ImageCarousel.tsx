@@ -95,7 +95,6 @@ export function ImageCarousel({
                 src={image.url || '/placeholder.svg'}
                 alt={image.title || 'Gallery image'}
                 className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                crossOrigin="anonymous"
               />
             </div>
             {image.title ? (

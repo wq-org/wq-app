@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { CalendarWithPresets } from '@/components/shared'
-import { HelpPopover } from './HelpPopover'
+import { HelpPopover } from '@/components/shared'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 
 type ClassGroupOfferingDraft = {

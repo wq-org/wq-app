@@ -196,6 +196,8 @@ Components render. They do not fetch, transform, or store data. They receive sta
 
 **Align with clean-code-convention:** Keep JSX **mostly structure** — heavy conditionals, formatting, and role checks **above** the `return`. **Compute before render** (`isLoading`, display strings). Prefer `onClick={handleSave}` over wrapping when equivalent. **Props** callbacks: `onSave`, `onTabChange`. **Local** handlers: `handleSave`, `handleTabChange`. Fallbacks (`??` / `||`) at the **UI boundary** only — never to hide invalid data.
 
+**Color props:** Accept a `ColorId` (or `ThemeId` / `AccentId`) from `@/lib/themes` (`'blue'`, `'pink'`, `'darkblue'`, …) — never `string`, hex, or arbitrary CSS color values. Resolve at the leaf via `getColorCss(colorId)` for inline CSS (SVG `stroke`/`fill`, `style`) or `getThemeClasses(themeId)` for Tailwind classes. Keeps theming centralized and prevents off-palette brand drift.
+
 ```tsx
 // features/lesson/components/LessonEditor.tsx
 import { useLessons } from '../hooks/useLessons'

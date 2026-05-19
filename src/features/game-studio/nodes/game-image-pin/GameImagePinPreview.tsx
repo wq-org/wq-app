@@ -4,6 +4,7 @@ import {
   AiPromptBadgeList,
   type Ai02PromptSuggestion,
 } from '@/components/shared/ai-components'
+import { Score } from '@/components/ui/score'
 import { Text } from '@/components/ui/text'
 import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
 import { useUser } from '@/contexts/user'
@@ -131,11 +132,18 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     handleChatInput,
     pinAtSource,
     currentPin,
+    hasActiveQuestion,
     getSubmissionForMessage,
     latestQuestionMessageId,
     submitAnswerPrompt,
     howToPlayPrompt,
+    earnedScore,
   } = useGameImagePinGame({ nodeId, nodeData })
+
+  const maxScore =
+    typeof nodeData.points === 'number' && Number.isFinite(nodeData.points)
+      ? Math.max(0, Math.floor(nodeData.points))
+      : 100
 
   const prompts = [
     {
@@ -180,7 +188,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         </PositionedPin>
       )
     }
-    if (message.id === latestQuestionMessageId && currentPin) {
+    if (message.id === latestQuestionMessageId && currentPin && hasActiveQuestion) {
       return (
         <PositionedPin drop={currentPin.drop}>
           <DraggablePin />
@@ -191,7 +199,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col h-full gap-3">
       <Text
         as="p"
         variant="small"
@@ -208,7 +216,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
       >
         <GameChatHistory
           messages={displayMessages}
-          className="h-[390px]"
+          className="flex-1 min-h-0"
           showUserAvatar
           incomingAvatarUrl={userAvatarUrl ?? undefined}
           incomingBubbleVariant="orange"
@@ -228,12 +236,21 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         onPromptClick={handlePromptClick}
       />
 
-      <Ai01
-        placeholder="Submit your answer"
-        showDropDown={false}
-        showMic={false}
-        onSubmit={handleChatInput}
-      />
+      <div className="flex w-full items-center ">
+        <Score
+          score={earnedScore}
+          max={maxScore}
+          size="lg"
+          variant="orange"
+        />
+        <Ai01
+          className="min-w-0 flex-1"
+          placeholder="Submit your answer"
+          showDropDown={false}
+          showMic={false}
+          onSubmit={handleChatInput}
+        />
+      </div>
     </div>
   )
 }

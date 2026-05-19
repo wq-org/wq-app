@@ -14,7 +14,7 @@ import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 import { CalendarWithPresets } from '@/components/shared'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
-import { HelpPopover } from './HelpPopover'
+import { HelpPopover } from '@/components/shared'
 import { deriveSuggestedTermCode, isValidTermCode, normalizeTermCode } from '../utils/termCode'
 import type { ProgrammeOfferingStatus } from '../types/programme-offering.types'
 

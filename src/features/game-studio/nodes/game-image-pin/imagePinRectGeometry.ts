@@ -39,10 +39,6 @@ export function createDefaultImagePinRectangle(
 export function loadImageNaturalSize(src: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    // Only set crossOrigin for non-data URLs; data URLs don't need CORS headers
-    if (!src.startsWith('data:')) {
-      img.crossOrigin = 'anonymous'
-    }
     img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
     img.onerror = () => reject(new Error(`Failed to load image from: ${src}`))
     img.src = src

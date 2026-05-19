@@ -820,11 +820,15 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
       {openDialog ? (
         <openDialog.Component
+          key={openDialog.nodeId}
           nodeId={openDialog.nodeId}
           nodeData={(openDialog.node.data as Record<string, unknown>) ?? {}}
           onPatchNodeData={handlePatchOpenNodeData}
           onClose={() => setOpenDialogNodeId(null)}
           onDelete={handleDeleteOpenNode}
+          onNavigateToNode={(id) => setOpenDialogNodeId(id)}
+          flowNodes={nodes}
+          flowEdges={edges}
           projectImageGallery={projectImageGallery}
         />
       ) : null}
