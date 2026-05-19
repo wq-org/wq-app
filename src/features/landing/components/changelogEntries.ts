@@ -20,6 +20,26 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-19-lesson-editor-checklists-youtube-and-link-polish',
+    date: '19 May 2026',
+    title: 'Lesson editor adds cleaner checklists, YouTube embeds, and tidier link tools',
+    summary:
+      'Lesson authors get a more complete writing surface for rich content. Checklists now behave like real editor tasks with a clear blue checked state, a visible white checkmark, better focus feedback, and no awkward left-offset click mismatch. The slash menu also gains a YouTube embed action, so teachers can paste a YouTube link or video ID and place a playable video directly in lesson content. Link and embed internals were cleaned up so the editor is easier to maintain and extend.',
+    bullets: [
+      'Teachers: checklist items now show a blue checked box with a visible white checkmark, making completed tasks easier to scan while editing lessons',
+      'Teachers: checklist click targets now line up with the visible box, so checking and unchecking an item no longer feels offset or unreliable',
+      'Teachers: focused checklist items use a clean ring-style focus state instead of a harsh border, keeping keyboard navigation clearer',
+      'Teachers: the lesson slash menu now includes a Todo List option for quickly adding checkable task lists to lesson notes',
+      'Teachers: the lesson slash menu now includes an Embed YouTube option, so you can paste a YouTube URL or video ID and add the video to the lesson',
+      'Teachers: YouTube embeds use the privacy-friendlier youtube-nocookie player URL and keep a consistent responsive video shape inside the editor',
+      'Authors: link dialog naming is clearer, separating lesson links from YouTube links so the editor actions are easier to understand',
+      'Internal: checklist behavior is registered through a dedicated Lexical plugin instead of scattered editor setup code',
+      'Internal: YouTube embeds now have their own Lexical node, insert utility, parser, dialog plugin, and render component for cleaner maintenance',
+      'Internal: decorator block selection and alignment now use the local editor node class consistently, reducing future formatting bugs',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-05-19-game-studio-image-pin-settings-and-flow-preview',
     date: '19 May 2026',
     title:
