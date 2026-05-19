@@ -7,7 +7,7 @@ import type { ImageCarouselImage } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
-import { HelpPopover } from '@/features/institution-admin/components'
+import { HelpPopover } from '@/components/shared'
 import { getFileSignedUrl } from '@/features/files'
 import { cn } from '@/lib/utils'
 

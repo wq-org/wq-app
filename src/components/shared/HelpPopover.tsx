@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 
-type HelpPopoverProps = {
+export type HelpPopoverProps = {
   title: string
   sectionDefinitionLabel: string
   sectionExampleLabel: string
@@ -50,9 +50,9 @@ export function HelpPopover({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-96 max-w-[95vw] p-4 rounded-2xl"
+        className="h-[min(18rem,calc(100vh-2rem))] w-96 max-w-[95vw] overflow-hidden rounded-2xl p-4"
       >
-        <ScrollArea className="h-72 pr-3">
+        <ScrollArea className="h-full pr-3">
           <div className="flex flex-col gap-3">
             <Text
               as="h3"
@@ -106,7 +106,7 @@ export function HelpPopover({
               >
                 {sectionExampleValuesLabel}
               </Text>
-              <ul className="list-disc pl-5 space-y-1">
+              <ul className="list-disc space-y-1 pl-5">
                 {exampleValues.map((value) => (
                   <li key={value}>
                     <Text

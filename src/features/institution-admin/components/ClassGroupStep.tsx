@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Text } from '@/components/ui/text'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { cn } from '@/lib/utils'
-import { HelpPopover } from './HelpPopover'
+import { HelpPopover } from '@/components/shared'
 import { generateClassGroupSuggestions } from '../utils/termCode'
 import { buildSuggestedClassGroupDescription } from '../utils/classGroupDescription'
 

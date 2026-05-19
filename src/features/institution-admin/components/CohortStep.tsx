@@ -5,7 +5,7 @@ import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
 import { AcademicYearCombobox } from './AcademicYearCombobox'
-import { HelpPopover } from './HelpPopover'
+import { HelpPopover } from '@/components/shared'
 
 type CohortStepProps = {
   name: string
