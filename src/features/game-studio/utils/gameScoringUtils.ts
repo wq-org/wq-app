@@ -7,14 +7,17 @@ export function calcPointsPerQuestion(maxPoints: number, questionCount: number):
 /**
  * Points earned on attempt N (1-indexed).
  * The factor shrinks by `deductionPercent` for each retry.
- * Callers are responsible for enforcing the last-attempt cap (see MAX_ATTEMPTS).
+ * The max attempt always settles the question with 0 points.
  */
 export function calcAttemptPoints(
   pointsPerQuestion: number,
   attemptNumber: number,
   deductionPercent: number,
+  maxAttempts: number,
 ): number {
   if (attemptNumber <= 0 || pointsPerQuestion <= 0) return 0
+  if (attemptNumber >= maxAttempts) return 0
+
   const factor = Math.max(0, 1 - ((attemptNumber - 1) * deductionPercent) / 100)
   return Math.max(0, Math.floor(pointsPerQuestion * factor))
 }

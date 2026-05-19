@@ -425,10 +425,9 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     setAttemptCounts((prev) => ({ ...prev, [questionId]: thisAttempt }))
 
     if (isSettled) {
-      const earned =
-        isCorrect && !isLastAttempt
-          ? calcAttemptPoints(pointsPerQuestion, thisAttempt, deductionPercent)
-          : 0
+      const earned = isCorrect
+        ? calcAttemptPoints(pointsPerQuestion, thisAttempt, deductionPercent, MAX_ATTEMPTS)
+        : 0
 
       if (isCorrect) {
         setEarnedScore((prev) => prev + earned)
@@ -492,22 +491,36 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
           }, NEXT_QUESTION_DELAY_MS)
         }, POINTS_REVEAL_DELAY_MS)
       } else {
-        // Wrong settled — show next question after loading delay, no points message
+        // Wrong final attempt — reveal 0 points before moving to the next question.
         advanceTimeoutRef.current = window.setTimeout(() => {
-          advanceTimeoutRef.current = null
+          const pointsSeq = ++msgSeqRef.current
           setState((prev) => {
             const loadingId = `preview-${nodeId}-loading-${prev.questionIndex}`
             const withoutLoading = prev.messages.filter((m) => m.id !== loadingId)
-            const nextQuestion = questions[prev.questionIndex]
-            const nextMessages = nextQuestion
-              ? [
-                  ...withoutLoading,
-                  buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
-                ]
-              : withoutLoading
-            return { ...prev, messages: nextMessages }
+            return {
+              ...prev,
+              messages: [
+                ...withoutLoading,
+                buildPointsEarnedMessage(nodeId, pointsSeq, formatPointsEarned(0)),
+              ],
+            }
           })
-        }, NEXT_QUESTION_DELAY_MS)
+
+          advanceTimeoutRef.current = window.setTimeout(() => {
+            advanceTimeoutRef.current = null
+            setState((prev) => {
+              const nextQuestion = questions[prev.questionIndex]
+              if (!nextQuestion) return prev
+              return {
+                ...prev,
+                messages: [
+                  ...prev.messages,
+                  buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
+                ],
+              }
+            })
+          }, NEXT_QUESTION_DELAY_MS)
+        }, POINTS_REVEAL_DELAY_MS)
       }
     } else {
       // Wrong + retries remaining:
