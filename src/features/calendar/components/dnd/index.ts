@@ -1,5 +1,5 @@
 export { DnDProvider } from './DnDProvider'
-export { CustomDragLayer } from './CustomDragLayer'
-export { DraggableEvent, ItemTypes } from './DraggableEvent'
+export type { CalendarDragItem, CalendarDropTarget } from './DnDProvider'
+export { DraggableEvent } from './DraggableEvent'
 export { DroppableDayCell } from './DroppableDayCell'
 export { DroppableTimeBlock } from './DroppableTimeBlock'

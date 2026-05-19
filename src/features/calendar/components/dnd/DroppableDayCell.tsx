@@ -1,13 +1,10 @@
-import { useDrop } from 'react-dnd'
-import { differenceInMilliseconds, parseISO } from 'date-fns'
-
-import { useUpdateEvent } from '../../hooks/useUpdateEvent'
+import { useDroppable } from '@dnd-kit/core'
 
 import { cn } from '@/lib/utils'
-import { ItemTypes } from './DraggableEvent'
 
 import type { ReactNode } from 'react'
-import type { ICalendarCell, IEvent } from '../../types/calendar.types'
+import type { ICalendarCell } from '../../types/calendar.types'
+import type { CalendarDropTarget } from './DnDProvider'
 
 type DroppableDayCellProps = {
   cell: ICalendarCell
@@ -15,47 +12,16 @@ type DroppableDayCellProps = {
 }
 
 export function DroppableDayCell({ cell, children }: DroppableDayCellProps) {
-  const { updateEvent } = useUpdateEvent()
-
-  const [{ isOver, canDrop }, drop] = useDrop(
-    () => ({
-      accept: ItemTypes.EVENT,
-      drop: (item: { event: IEvent }) => {
-        const droppedEvent = item.event
-
-        const eventStartDate = parseISO(droppedEvent.startDate)
-        const eventEndDate = parseISO(droppedEvent.endDate)
-        const eventDurationMs = differenceInMilliseconds(eventEndDate, eventStartDate)
-
-        const newStartDate = new Date(cell.date)
-        newStartDate.setHours(
-          eventStartDate.getHours(),
-          eventStartDate.getMinutes(),
-          eventStartDate.getSeconds(),
-          eventStartDate.getMilliseconds(),
-        )
-        const newEndDate = new Date(newStartDate.getTime() + eventDurationMs)
-
-        updateEvent({
-          ...droppedEvent,
-          startDate: newStartDate.toISOString(),
-          endDate: newEndDate.toISOString(),
-        })
-
-        return { moved: true }
-      },
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
-    }),
-    [cell.date, updateEvent],
-  )
+  const dropTarget = { kind: 'day', date: cell.date } satisfies CalendarDropTarget
+  const { setNodeRef, isOver } = useDroppable({
+    id: `calendar-day-${cell.date.toISOString()}`,
+    data: { dropTarget },
+  })
 
   return (
     <div
-      ref={drop as unknown as React.RefObject<HTMLDivElement>}
-      className={cn(isOver && canDrop && 'bg-accent/50')}
+      ref={setNodeRef}
+      className={cn(isOver && 'bg-accent/50')}
     >
       {children}
     </div>
