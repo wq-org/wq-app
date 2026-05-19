@@ -27,3 +27,12 @@ export {
 } from './nodes/EmojiNode'
 export { OPEN_EMOJI_PICKER_COMMAND } from './commands/emojiPickerCommands'
 export { FloatingEmojiPickerPlugin } from './plugins/FloatingEmojiPickerPlugin'
+export {
+  YouTubeNode,
+  $createYouTubeNode,
+  $isYouTubeNode,
+  type SerializedYouTubeNode,
+} from './nodes/YouTubeNode'
+export { parseYouTubeVideoId } from './utils/parseYouTubeVideoId'
+export { insertYouTubeEmbed } from './utils/insertYouTubeEmbed'
+export { CheckListPlugin } from './plugins/LexicalCheckListPlugin'

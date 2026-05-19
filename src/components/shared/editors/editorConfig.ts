@@ -2,7 +2,7 @@ import type { InitialConfigType } from '@lexical/react/LexicalComposer'
 import { CodeHighlightNode, CodeNode } from '@lexical/code'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
-import { EmojiNode, ImageNode, MentionNode } from '@/features/lexical-editor'
+import { EmojiNode, ImageNode, MentionNode, YouTubeNode } from '@/features/lexical-editor'
 import { editorTheme } from './editorTheme'
 import { lexicalConfig } from './editorLink'
 
@@ -25,6 +25,7 @@ export const createDocumentEditorInitialConfig = (): InitialConfigType => {
       ImageNode,
       EmojiNode,
       MentionNode,
+      YouTubeNode,
       ...lexicalConfig.nodes,
     ],
   }

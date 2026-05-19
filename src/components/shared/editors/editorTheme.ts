@@ -23,6 +23,10 @@ export const editorTheme: EditorThemeClasses = {
   },
   hashtag: 'editor-hashtag',
   image: 'editor-image',
+  embedBlock: {
+    base: 'editor-embedBlock',
+    focus: 'editor-embedBlock-focus',
+  },
   link: 'editor-link',
   text: {
     bold: 'editor-textBold',

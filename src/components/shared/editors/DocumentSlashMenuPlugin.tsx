@@ -20,9 +20,11 @@ import {
   Link as LinkIcon,
   List,
   ListOrdered,
+  ListTodo,
   Pilcrow,
   Quote,
   SmilePlus,
+  TvMinimalPlay,
   Type,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -32,12 +34,15 @@ import { USER_ROLES, type UserRole } from '@/features/auth'
 import {
   $createImageNode,
   $createMentionNode,
+  insertYouTubeEmbed,
   OPEN_EMOJI_PICKER_COMMAND,
+  parseYouTubeVideoId,
 } from '@/features/lexical-editor'
 import { useUser } from '@/contexts/user/UserContext'
 import { cn } from '@/lib/utils'
 import { applyLinkToSelection, validateUrl } from './editorLink'
 import {
+  applyCheckList,
   applyCodeBlock,
   applyHeading,
   applyParagraph,
@@ -50,6 +55,7 @@ type SlashAction = {
   description: string
   icon: LucideIcon
   key: string
+  keywords?: string[]
   title: string
   onSelect: (editor: LexicalEditor) => void
 }
@@ -246,6 +252,31 @@ export const DocumentSlashMenuPlugin = () => {
         onSelect: () => openImagePicker(),
       },
       {
+        description: 'Embed a video from a YouTube link or video ID.',
+        icon: TvMinimalPlay,
+        key: 'youtube',
+        keywords: ['youtube', 'embed', 'video'],
+        title: 'Embed YouTube',
+        onSelect: (ed) => {
+          const raw = window.prompt('Paste a YouTube URL or video ID')
+          if (raw === null) return
+          const videoId = parseYouTubeVideoId(raw)
+          if (!videoId) {
+            toast.error('Enter a valid YouTube URL or 11-character video ID.')
+            return
+          }
+          insertYouTubeEmbed(ed, videoId)
+        },
+      },
+      {
+        description: 'Track tasks with checkable list items.',
+        icon: ListTodo,
+        key: 'todo',
+        keywords: ['todo', 'checklist', 'task', 'checkbox'],
+        title: 'Todo List',
+        onSelect: (ed) => applyCheckList(ed),
+      },
+      {
         description: 'Insert an emoji at the cursor.',
         icon: SmilePlus,
         key: 'emoji',
@@ -360,10 +391,16 @@ export const DocumentSlashMenuPlugin = () => {
     const base = !normalizedQuery
       ? slashActions
       : slashActions.filter((action) => {
-          return (
-            action.title.toLowerCase().includes(normalizedQuery) ||
-            action.description.toLowerCase().includes(normalizedQuery)
-          )
+          const haystack = [
+            action.key,
+            action.title,
+            action.description,
+            ...(action.keywords ?? []),
+          ]
+            .join(' ')
+            .toLowerCase()
+
+          return haystack.includes(normalizedQuery)
         })
 
     return base.map((action) => new SlashMenuOption(action))

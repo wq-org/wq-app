@@ -3,6 +3,7 @@ import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEdi
 import { $setBlocksType } from '@lexical/selection'
 import {
   $isListNode,
+  INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
   REMOVE_LIST_COMMAND,
@@ -118,6 +119,10 @@ export const applyCodeBlock = (editor: LexicalEditor) => {
       $setBlocksType(selection, () => $createCodeNode())
     }
   })
+}
+
+export const applyCheckList = (editor: LexicalEditor) => {
+  editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
 }
 
 export const toggleList = (

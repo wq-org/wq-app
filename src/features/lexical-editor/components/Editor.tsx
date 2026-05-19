@@ -24,10 +24,13 @@ import {
 } from '../plugins/FloatingTextFormatToolbarPlugin'
 import { EmojiNode } from '../nodes/EmojiNode'
 import { ImageNode } from '../nodes/ImageNode'
+import { YouTubeNode } from '../nodes/YouTubeNode'
+import { CheckListPlugin } from '../plugins/LexicalCheckListPlugin'
 import { FloatingEmojiPickerPlugin } from '../plugins/FloatingEmojiPickerPlugin'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
 import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
+import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
@@ -40,14 +43,20 @@ const theme = {
     h3: 'mt-[0.4rem] mb-[0.1rem] text-[1.1rem] font-semibold leading-[1.35]',
   },
   list: {
-    listitem: 'my-[0.1rem] leading-[1.6]',
-    ol: 'my-[0.2rem] pl-5 list-decimal',
-    ul: 'my-[0.2rem] pl-5 list-disc',
+    listitem: 'editor-listItem',
+    listitemChecked: 'editor-listItemChecked',
+    listitemUnchecked: 'editor-listItemUnchecked',
+    ol: 'editor-list-ol',
+    ul: 'editor-list-ul',
+  },
+  embedBlock: {
+    base: 'my-4 max-w-full overflow-hidden rounded-xl',
+    focus: 'outline outline-2 outline-blue-500/70 outline-offset-2',
   },
   paragraph: 'my-0 py-0.5 leading-[1.6]',
   quote:
     'my-[0.4rem] border-l-[3px] [border-left-style:solid] border-zinc-300 pl-3.5 italic text-zinc-500 dark:border-zinc-700 dark:text-zinc-400',
-  link: 'text-primary underline underline-offset-2 cursor-pointer',
+  link: 'text-blue-500 underline underline-offset-2 cursor-pointer',
   text: {
     bold: 'font-bold',
     code: 'rounded-[3px] bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] dark:bg-white/10',
@@ -71,7 +80,7 @@ const lessonEditorExtension = defineExtension({
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
   theme,
-  nodes: [ImageNode, EmojiNode],
+  nodes: [ImageNode, EmojiNode, YouTubeNode],
 })
 
 export type EditorProps = {
@@ -204,6 +213,7 @@ export function Editor({
       contentEditable={null}
     >
       <LessonEditablePlugin readOnly={readOnly} />
+      <CheckListPlugin />
       <LessonHydrationPlugin
         initialContent={initialContent}
         isLoading={isLoading}
@@ -231,6 +241,7 @@ export function Editor({
         <LexicalDraggableBlockPlugin />
         <SlashMenuPlugin registry={blockTypeRegistry} />
         <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
+        <AddYouTubeLinksDialogPlugin />
         {anchorElem ? (
           <>
             <FloatingTextFormatToolbarPlugin

@@ -8,7 +8,7 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { useState } from 'react'
 
-import { FloatingEmojiPickerPlugin } from '@/features/lexical-editor'
+import { CheckListPlugin, FloatingEmojiPickerPlugin } from '@/features/lexical-editor'
 
 import { DocumentCodeHighlightPlugin } from './DocumentCodeHighlightPlugin'
 import { EditorToolbarPlugin } from './EditorToolbarPlugin'
@@ -50,6 +50,7 @@ export const DocumentEditor = ({ placeholder = 'Enter some text...' }: DocumentE
         <HistoryPlugin />
         <AutoFocusPlugin />
         <ListPlugin />
+        <CheckListPlugin />
         <DocumentCodeHighlightPlugin />
         <LinkPlugin validateUrl={isValidUrl} />
       </div>

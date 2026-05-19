@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 
 import { useDisclosure } from '@/hooks/use-disclosure'
 
-import { LessonLinkDialog } from '../components/LessonLinkDialog'
+import { AddLessonLinkDialog } from '../components/AddLessonLinkDialog'
 import { applyLinkToSelection, getSelectedLinkUrl, normalizeLinkUrl } from '../utils/link'
 
 type LessonLinkDialogPluginProps = {
@@ -52,7 +52,7 @@ export function LessonLinkDialogPlugin({ onReady }: LessonLinkDialogPluginProps)
   }
 
   return (
-    <LessonLinkDialog
+    <AddLessonLinkDialog
       isOpen={isOpen}
       onOpenChange={handleOpenChange}
       url={url}

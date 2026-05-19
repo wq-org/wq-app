@@ -12,7 +12,7 @@ import {
 import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
 
-export type LessonLinkDialogProps = {
+export type AddLessonLinkDialogProps = {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   url: string
@@ -23,7 +23,7 @@ export type LessonLinkDialogProps = {
   onCancel: () => void
 }
 
-export function LessonLinkDialog({
+export function AddLessonLinkDialog({
   isOpen,
   onOpenChange,
   url,
@@ -32,7 +32,7 @@ export function LessonLinkDialog({
   isEditMode,
   onSubmit,
   onCancel,
-}: LessonLinkDialogProps) {
+}: AddLessonLinkDialogProps) {
   const title = isEditMode ? 'Edit link' : 'Add link'
   const description = isEditMode
     ? 'Update the URL for the selected link.'

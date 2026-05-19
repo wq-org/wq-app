@@ -32,8 +32,11 @@ export function SlashMenuPlugin({ registry }: SlashMenuPluginProps) {
     if (!queryString) {
       return base
     }
-    const regex = new RegExp(queryString, 'i')
-    return base.filter((o) => regex.test(o.title) || o.keywords.some((k) => regex.test(k)))
+    const normalizedQuery = queryString.trim().toLowerCase()
+    return base.filter((o) => {
+      const haystack = [o.title, ...o.keywords].join(' ').toLowerCase()
+      return haystack.includes(normalizedQuery)
+    })
   }, [editor, queryString, registry])
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
@@ -64,7 +67,7 @@ export function SlashMenuPlugin({ registry }: SlashMenuPluginProps) {
         anchorRef.current
           ? ReactDOM.createPortal(
               <div className="w-[220px] overflow-hidden rounded-2xl border border-solid border-zinc-200/80 bg-white/80 text-[#1c1e21] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:border-zinc-700/80 dark:bg-[#232325]/80 dark:text-[#e3e3e3] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-                <ul className="m-0 max-h-[220px] list-none overflow-y-auto p-1">
+                <ul className="m-0 max-h-[min(320px,50vh)] list-none overflow-y-auto p-1">
                   {options.map((option, i) => (
                     <li
                       key={option.key}

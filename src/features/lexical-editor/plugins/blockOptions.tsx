@@ -6,7 +6,11 @@
  *
  */
 
-import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
+import {
+  INSERT_CHECK_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+} from '@lexical/list'
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
@@ -17,11 +21,12 @@ import {
   $isRangeSelection,
   type LexicalEditor,
 } from 'lexical'
-import { Image, SmilePlus, type LucideIcon } from 'lucide-react'
+import { Image, ListTodo, SmilePlus, TvMinimalPlay, type LucideIcon } from 'lucide-react'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
 import { OPEN_EMOJI_PICKER_COMMAND } from '../commands/emojiPickerCommands'
+import { OPEN_YOUTUBE_DIALOG_COMMAND } from '../commands/youtubeDialogCommands'
 import { $createImageNode } from '../nodes/ImageNode'
 import { readImageFileAsDataUrl } from '../utils/localImageFile'
 
@@ -167,6 +172,16 @@ export function getBlockOptions(
       Icon: SmilePlus,
       keywords: ['emoji', 'emoticon', 'smile'],
       onSelect: () => editor.dispatchCommand(OPEN_EMOJI_PICKER_COMMAND, undefined),
+    }),
+    new BlockOption('Embed YouTube', {
+      Icon: TvMinimalPlay,
+      keywords: ['youtube', 'embed', 'video'],
+      onSelect: () => editor.dispatchCommand(OPEN_YOUTUBE_DIALOG_COMMAND, undefined),
+    }),
+    new BlockOption('Todo List', {
+      Icon: ListTodo,
+      keywords: ['todo', 'checklist', 'task', 'checkbox'],
+      onSelect: () => editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined),
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',
