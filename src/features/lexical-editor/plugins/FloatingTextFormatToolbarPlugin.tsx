@@ -14,12 +14,22 @@ import {
   SELECTION_CHANGE_COMMAND,
   type LexicalEditor,
 } from 'lexical'
-import { Bold, Code, Italic, Strikethrough, Underline, type LucideIcon } from 'lucide-react'
+import {
+  Bold,
+  Code,
+  Italic,
+  Link,
+  Link2Off,
+  Strikethrough,
+  Underline,
+  type LucideIcon,
+} from 'lucide-react'
 import { useCallback, useEffect, useRef, type JSX } from 'react'
 import { createPortal } from 'react-dom'
 
 import { getDOMRangeRect } from '../utils/getDOMRangeRect'
 import { getSelectedNode } from '../utils/getSelectedNode'
+import { promptAndApplyLink, removeLinkFromSelection } from '../utils/link'
 import { setFloatingElemPosition } from '../utils/setFloatingElemPosition'
 import { useSignalValue } from '../utils/useExtensionHooks'
 
@@ -56,6 +66,7 @@ export const FloatingFormatExtension = defineExtension({
               !rootElement.contains(nativeSelection.anchorNode))
           ) {
             out.isText.value = false
+            out.isLink.value = false
             return
           }
 
@@ -121,13 +132,27 @@ const FORMAT_BUTTONS: readonly FormatButton[] = [
 
 type FormatFlags = Record<FormatFlag, boolean>
 
+const toolbarButtonClassName =
+  'flex h-7 w-7 items-center justify-center rounded-md text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700'
+
+const toolbarShellClassName =
+  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-lg border border-zinc-200 bg-white p-1 opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-opacity will-change-transform dark:border-zinc-700 dark:bg-zinc-800'
+
 type FloatingPopupProps = {
   editor: LexicalEditor
   anchorElem: HTMLElement
   formats: FormatFlags
+  isLink: boolean
+  onLinkEditModeChange: (value: boolean) => void
 }
 
-function FloatingPopup({ editor, anchorElem, formats }: FloatingPopupProps): JSX.Element {
+function FloatingPopup({
+  editor,
+  anchorElem,
+  formats,
+  isLink,
+  onLinkEditModeChange,
+}: FloatingPopupProps): JSX.Element {
   const popupRef = useRef<HTMLDivElement | null>(null)
 
   const updatePosition = useCallback(() => {
@@ -135,19 +160,30 @@ function FloatingPopup({ editor, anchorElem, formats }: FloatingPopupProps): JSX
     if (!popupElem) return
 
     const nativeSelection = getDOMSelection(editor._window)
-    const selection = $getSelection()
     const rootElement = editor.getRootElement()
+    if (nativeSelection === null || rootElement === null) return
+    if (!rootElement.contains(nativeSelection.anchorNode)) return
 
-    if (
-      selection !== null &&
-      nativeSelection !== null &&
-      !nativeSelection.isCollapsed &&
-      rootElement !== null &&
-      rootElement.contains(nativeSelection.anchorNode)
-    ) {
-      const rangeRect = getDOMRangeRect(nativeSelection, rootElement)
-      setFloatingElemPosition(rangeRect, popupElem, anchorElem)
-    }
+    editor.getEditorState().read(() => {
+      const selection = $getSelection()
+      if (!$isRangeSelection(selection)) return
+
+      if (!nativeSelection.isCollapsed) {
+        const rangeRect = getDOMRangeRect(nativeSelection, rootElement)
+        setFloatingElemPosition(rangeRect, popupElem, anchorElem)
+        return
+      }
+
+      const node = getSelectedNode(selection)
+      const parent = node.getParent()
+      const linkNode = $isLinkNode(node) ? node : $isLinkNode(parent) ? parent : null
+      if (!linkNode) return
+
+      const linkElement = editor.getElementByKey(linkNode.getKey())
+      if (!linkElement) return
+
+      setFloatingElemPosition(linkElement.getBoundingClientRect(), popupElem, anchorElem)
+    })
   }, [editor, anchorElem])
 
   useEffect(() => {
@@ -176,10 +212,23 @@ function FloatingPopup({ editor, anchorElem, formats }: FloatingPopupProps): JSX
     )
   }, [editor, updatePosition])
 
+  const handleLinkClick = () => {
+    if (isLink) {
+      onLinkEditModeChange(true)
+      return
+    }
+    promptAndApplyLink(editor)
+  }
+
+  const handleUnlinkClick = () => {
+    removeLinkFromSelection(editor)
+    onLinkEditModeChange(false)
+  }
+
   return (
     <div
       ref={popupRef}
-      className="absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-lg border border-zinc-200 bg-white p-1 opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-opacity will-change-transform dark:border-zinc-700 dark:bg-zinc-800"
+      className={toolbarShellClassName}
     >
       {FORMAT_BUTTONS.map(({ id, Icon, label, flag }) => {
         const active = formats[flag]
@@ -191,22 +240,46 @@ function FloatingPopup({ editor, anchorElem, formats }: FloatingPopupProps): JSX
             aria-label={label}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, id)}
-            className={`flex h-7 w-7 items-center justify-center rounded-md text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700 ${active ? 'bg-zinc-100 dark:bg-zinc-700' : ''}`}
+            className={`${toolbarButtonClassName} ${active ? 'bg-zinc-100 dark:bg-zinc-700' : ''}`}
           >
             <Icon className="h-4 w-4" />
           </button>
         )
       })}
+      <button
+        type="button"
+        title={isLink ? 'Edit link' : 'Add link'}
+        aria-label={isLink ? 'Edit link' : 'Add link'}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={handleLinkClick}
+        className={`${toolbarButtonClassName} ${isLink ? 'bg-zinc-100 dark:bg-zinc-700' : ''}`}
+      >
+        <Link className="h-4 w-4" />
+      </button>
+      {isLink ? (
+        <button
+          type="button"
+          title="Remove link"
+          aria-label="Remove link"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={handleUnlinkClick}
+          className={toolbarButtonClassName}
+        >
+          <Link2Off className="h-4 w-4" />
+        </button>
+      ) : null}
     </div>
   )
 }
 
 type FloatingTextFormatToolbarPluginProps = {
   anchorElem: HTMLElement
+  onLinkEditModeChange: (value: boolean) => void
 }
 
 export function FloatingTextFormatToolbarPlugin({
   anchorElem,
+  onLinkEditModeChange,
 }: FloatingTextFormatToolbarPluginProps): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   const out = useExtensionDependency(FloatingFormatExtension).output
@@ -219,13 +292,15 @@ export function FloatingTextFormatToolbarPlugin({
   const isStrikethrough = useSignalValue(out.isStrikethrough)
   const isCode = useSignalValue(out.isCode)
 
-  if (!isText || isLink) return null
+  if (!isText && !isLink) return null
 
   return createPortal(
     <FloatingPopup
       editor={editor}
       anchorElem={anchorElem}
       formats={{ isBold, isItalic, isUnderline, isStrikethrough, isCode }}
+      isLink={isLink}
+      onLinkEditModeChange={onLinkEditModeChange}
     />,
     anchorElem,
   )

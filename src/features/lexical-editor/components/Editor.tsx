@@ -1,11 +1,12 @@
 import { TabIndentationExtension } from '@lexical/extension'
 import { HistoryExtension } from '@lexical/history'
+import { LinkExtension } from '@lexical/link'
 import { ListExtension } from '@lexical/list'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionComposer'
 import { RichTextExtension } from '@lexical/rich-text'
-import { defineExtension, type SerializedEditorState } from 'lexical'
+import { configExtension, defineExtension, type SerializedEditorState } from 'lexical'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
@@ -22,9 +23,12 @@ import {
   FloatingTextFormatToolbarPlugin,
 } from '../plugins/FloatingTextFormatToolbarPlugin'
 import { ImageNode } from '../nodes/ImageNode'
+import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
+import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
+import { validateUrl } from '../utils/url'
 
 const theme = {
   heading: {
@@ -40,6 +44,7 @@ const theme = {
   paragraph: 'my-0 py-0.5 leading-[1.6]',
   quote:
     'my-[0.4rem] border-l-[3px] [border-left-style:solid] border-zinc-300 pl-3.5 italic text-zinc-500 dark:border-zinc-700 dark:text-zinc-400',
+  link: 'text-primary underline underline-offset-2 cursor-pointer',
   text: {
     bold: 'font-bold',
     code: 'rounded-[3px] bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] dark:bg-white/10',
@@ -57,6 +62,8 @@ const lessonEditorExtension = defineExtension({
     ListExtension,
     TabIndentationExtension,
     FloatingFormatExtension,
+    NodeEditorAutoLinkExtension,
+    configExtension(LinkExtension, { validateUrl, attributes: undefined }),
   ],
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
@@ -162,6 +169,7 @@ export function Editor({
   onPasteOverflow,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false)
 
   const editorPlaceholder = useMemo(
     () => (
@@ -211,7 +219,19 @@ export function Editor({
         />
         <LexicalDraggableBlockPlugin />
         <SlashMenuPlugin registry={blockTypeRegistry} />
-        {anchorElem ? <FloatingTextFormatToolbarPlugin anchorElem={anchorElem} /> : null}
+        {anchorElem ? (
+          <>
+            <FloatingTextFormatToolbarPlugin
+              anchorElem={anchorElem}
+              onLinkEditModeChange={setIsLinkEditMode}
+            />
+            <FloatingLinkEditorPlugin
+              anchorElem={anchorElem}
+              isLinkEditMode={isLinkEditMode}
+              setIsLinkEditMode={setIsLinkEditMode}
+            />
+          </>
+        ) : null}
       </div>
     </LexicalExtensionComposer>
   )
