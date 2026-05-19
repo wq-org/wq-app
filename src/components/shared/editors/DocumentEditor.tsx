@@ -6,6 +6,10 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
+import { useState } from 'react'
+
+import { FloatingEmojiPickerPlugin } from '@/features/lexical-editor'
+
 import { DocumentCodeHighlightPlugin } from './DocumentCodeHighlightPlugin'
 import { EditorToolbarPlugin } from './EditorToolbarPlugin'
 import { DocumentSlashMenuPlugin } from './DocumentSlashMenuPlugin'
@@ -17,13 +21,18 @@ export type DocumentEditorProps = {
 }
 
 export const DocumentEditor = ({ placeholder = 'Enter some text...' }: DocumentEditorProps) => {
+  const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
+
   return (
     <LexicalComposer initialConfig={createDocumentEditorInitialConfig()}>
       <div className="editor-shell">
         <EditorToolbarPlugin />
         <DocumentSlashMenuPlugin />
 
-        <div className="editor-surface">
+        <div
+          ref={setAnchorElem}
+          className="editor-surface relative"
+        >
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -35,6 +44,7 @@ export const DocumentEditor = ({ placeholder = 'Enter some text...' }: DocumentE
             placeholder={<div className="editor-placeholder">{placeholder}</div>}
             ErrorBoundary={LexicalErrorBoundary}
           />
+          {anchorElem ? <FloatingEmojiPickerPlugin anchorElem={anchorElem} /> : null}
         </div>
 
         <HistoryPlugin />

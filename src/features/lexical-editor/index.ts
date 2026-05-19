@@ -19,3 +19,11 @@ export {
   $isMentionNode,
   type SerializedMentionNode,
 } from './nodes/MentionNode'
+export {
+  EmojiNode,
+  $createEmojiNode,
+  $isEmojiNode,
+  type SerializedEmojiNode,
+} from './nodes/EmojiNode'
+export { OPEN_EMOJI_PICKER_COMMAND } from './commands/emojiPickerCommands'
+export { FloatingEmojiPickerPlugin } from './plugins/FloatingEmojiPickerPlugin'

@@ -22,13 +22,18 @@ import {
   ListOrdered,
   Pilcrow,
   Quote,
+  SmilePlus,
   Type,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
 import { USER_ROLES, type UserRole } from '@/features/auth'
-import { $createImageNode, $createMentionNode } from '@/features/lexical-editor'
+import {
+  $createImageNode,
+  $createMentionNode,
+  OPEN_EMOJI_PICKER_COMMAND,
+} from '@/features/lexical-editor'
 import { useUser } from '@/contexts/user/UserContext'
 import { cn } from '@/lib/utils'
 import { applyLinkToSelection, validateUrl } from './editorLink'
@@ -239,6 +244,13 @@ export const DocumentSlashMenuPlugin = () => {
         key: 'image',
         title: 'Image',
         onSelect: () => openImagePicker(),
+      },
+      {
+        description: 'Insert an emoji at the cursor.',
+        icon: SmilePlus,
+        key: 'emoji',
+        title: 'Emoji',
+        onSelect: (ed) => ed.dispatchCommand(OPEN_EMOJI_PICKER_COMMAND, undefined),
       },
       {
         description: 'Insert or wrap text with an https link.',

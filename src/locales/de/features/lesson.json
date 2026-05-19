@@ -193,19 +193,6 @@
         }
       }
     },
-    "image": {
-      "replaceImageAria": "Bild ersetzen",
-      "uploadToCloudAria": "Bild in die Cloud hochladen",
-      "uploadingImageAria": "Bild wird hochgeladen",
-      "invalidType": "Bitte wähle ein JPEG- oder PNG-Bild.",
-      "replaceFailed": "Das ausgewählte Bild konnte nicht geladen werden.",
-      "uploadFailed": "Bild konnte nicht hochgeladen werden.",
-      "uploadSuccess": "Bild wurde in die Cloud hochgeladen.",
-      "uploadRequiresContext": "Melde dich mit einer Institution an, um Bilder hochzuladen.",
-      "uploadNeedsLocalImage": "Ersetze zuerst das Bild, dann lade es in die Cloud hoch.",
-      "alreadyInCloud": "Dieses Bild ist bereits in der Cloud gespeichert.",
-      "alreadyExistsInCloud": "Diese Datei ist bereits im Cloud-Speicher vorhanden. Wähle ein anderes Bild oder benenne es um."
-    },
     "inlineToolbar": {
       "headings": "Titel",
       "headingOneShort": "H1",
@@ -239,6 +226,26 @@
         "pdf": "PDFs",
         "video": "Videos"
       }
+    }
+  },
+  "editor": {
+    "emojiPicker": {
+      "searchPlaceholder": "Emoji suchen",
+      "searchAria": "Emoji suchen",
+      "searchHint": "Tippen, um alle Emojis zu durchsuchen"
+    },
+    "image": {
+      "replaceImageAria": "Bild ersetzen",
+      "uploadToCloudAria": "Bild in die Cloud hochladen",
+      "uploadingImageAria": "Bild wird hochgeladen",
+      "invalidType": "Bitte wähle ein JPEG- oder PNG-Bild.",
+      "replaceFailed": "Das ausgewählte Bild konnte nicht geladen werden.",
+      "uploadFailed": "Bild konnte nicht hochgeladen werden.",
+      "uploadSuccess": "Bild wurde in die Cloud hochgeladen.",
+      "uploadRequiresContext": "Melde dich mit einer Institution an, um Bilder hochzuladen.",
+      "uploadNeedsLocalImage": "Ersetze zuerst das Bild, dann lade es in die Cloud hoch.",
+      "alreadyInCloud": "Dieses Bild ist bereits in der Cloud gespeichert.",
+      "alreadyExistsInCloud": "Diese Datei ist bereits im Cloud-Speicher vorhanden. Wähle ein anderes Bild oder benenne es um."
     }
   },
   "create": {

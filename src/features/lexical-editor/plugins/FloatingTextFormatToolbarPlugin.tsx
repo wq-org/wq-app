@@ -123,10 +123,10 @@ const FORMAT_BUTTONS: readonly FormatButton[] = [
 type FormatFlags = Record<FormatFlag, boolean>
 
 const toolbarButtonClassName =
-  'flex h-7 w-7 items-center justify-center rounded-md text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700'
+  'flex h-7 w-7 items-center justify-center rounded-md text-foreground transition-colors hover:bg-muted'
 
 const toolbarShellClassName =
-  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-lg border border-zinc-200 bg-white p-1 opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-opacity will-change-transform dark:border-zinc-700 dark:bg-zinc-800'
+  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-lg border border-border bg-popover/80 p-1 opacity-0 shadow-xl backdrop-blur-xl transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
 
 type FloatingPopupProps = {
   editor: LexicalEditor
@@ -221,7 +221,7 @@ function FloatingPopup({
             aria-label={label}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, id)}
-            className={`${toolbarButtonClassName} ${active ? 'bg-zinc-100 dark:bg-zinc-700' : ''}`}
+            className={`${toolbarButtonClassName} ${active ? 'bg-muted' : ''}`}
           >
             <Icon className="h-4 w-4" />
           </button>
@@ -233,7 +233,7 @@ function FloatingPopup({
         aria-label={isLink ? 'Edit link' : 'Add link'}
         onMouseDown={(event) => event.preventDefault()}
         onClick={handleLinkClick}
-        className={`${toolbarButtonClassName} ${isLink ? 'bg-zinc-100 dark:bg-zinc-700' : ''}`}
+        className={`${toolbarButtonClassName} ${isLink ? 'bg-muted' : ''}`}
       >
         <Link className="h-4 w-4" />
       </button>

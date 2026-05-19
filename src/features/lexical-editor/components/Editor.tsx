@@ -22,7 +22,9 @@ import {
   FloatingFormatExtension,
   FloatingTextFormatToolbarPlugin,
 } from '../plugins/FloatingTextFormatToolbarPlugin'
+import { EmojiNode } from '../nodes/EmojiNode'
 import { ImageNode } from '../nodes/ImageNode'
+import { FloatingEmojiPickerPlugin } from '../plugins/FloatingEmojiPickerPlugin'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
 import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
@@ -69,7 +71,7 @@ const lessonEditorExtension = defineExtension({
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
   theme,
-  nodes: [ImageNode],
+  nodes: [ImageNode, EmojiNode],
 })
 
 export type EditorProps = {
@@ -239,6 +241,7 @@ export function Editor({
               anchorElem={anchorElem}
               onRequestLinkDialog={handleRequestLinkDialog}
             />
+            <FloatingEmojiPickerPlugin anchorElem={anchorElem} />
           </>
         ) : null}
       </div>

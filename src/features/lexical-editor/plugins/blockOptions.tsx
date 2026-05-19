@@ -17,10 +17,11 @@ import {
   $isRangeSelection,
   type LexicalEditor,
 } from 'lexical'
-import { Image, type LucideIcon } from 'lucide-react'
+import { Image, SmilePlus, type LucideIcon } from 'lucide-react'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
+import { OPEN_EMOJI_PICKER_COMMAND } from '../commands/emojiPickerCommands'
 import { $createImageNode } from '../nodes/ImageNode'
 import { readImageFileAsDataUrl } from '../utils/localImageFile'
 
@@ -161,6 +162,11 @@ export function getBlockOptions(
       Icon: Image,
       keywords: ['image', 'picture', 'photo', 'media'],
       onSelect: () => openImagePicker(editor),
+    }),
+    new BlockOption('Emoji', {
+      Icon: SmilePlus,
+      keywords: ['emoji', 'emoticon', 'smile'],
+      onSelect: () => editor.dispatchCommand(OPEN_EMOJI_PICKER_COMMAND, undefined),
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',
