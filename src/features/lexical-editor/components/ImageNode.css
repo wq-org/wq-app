@@ -49,3 +49,40 @@
   height: auto;
   max-width: 100%;
 }
+
+.ImageNode__focused {
+  border-radius: 2px;
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.ImageNode__broken {
+  align-items: center;
+  background: hsl(var(--muted));
+  border: 1px dashed hsl(var(--border));
+  border-radius: 4px;
+  color: hsl(var(--muted-foreground));
+  display: flex;
+  font-size: 0.8125rem;
+  height: 80px;
+  justify-content: center;
+  width: 100%;
+}
+
+.ImageNode__loading {
+  animation: ImageNode__pulse 1.5s ease-in-out infinite;
+  background: hsl(var(--muted));
+  border-radius: 4px;
+  height: 80px;
+  width: 100%;
+}
+
+@keyframes ImageNode__pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

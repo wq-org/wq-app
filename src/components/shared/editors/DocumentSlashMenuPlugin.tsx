@@ -5,9 +5,25 @@ import {
   MenuOption,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin'
-import { $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
+import {
+  $createParagraphNode,
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  type LexicalEditor,
+} from 'lexical'
 import type { LucideIcon } from 'lucide-react'
-import { AtSign, Code2, Image as ImageIcon, Link as LinkIcon, List, ListOrdered, Pilcrow, Quote, Type } from 'lucide-react'
+import {
+  AtSign,
+  Code2,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
+  Pilcrow,
+  Quote,
+  Type,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
@@ -302,15 +318,19 @@ export const DocumentSlashMenuPlugin = () => {
       }
 
       editor.update(() => {
+        const imageNode = $createImageNode({
+          altText: file.name,
+          maxWidth: 720,
+          src: result.publicUrl!,
+        })
         const selection = $getSelection()
         if ($isRangeSelection(selection)) {
-          selection.insertNodes([
-            $createImageNode({
-              altText: file.name,
-              maxWidth: 720,
-              src: result.publicUrl!,
-            }),
-          ])
+          selection.insertNodes([imageNode])
+        } else {
+          // Selection is lost (e.g. file picker dialog stole focus) — append to end
+          const paragraph = $createParagraphNode()
+          paragraph.append(imageNode)
+          $getRoot().append(paragraph)
         }
       })
     },
@@ -348,29 +368,29 @@ export const DocumentSlashMenuPlugin = () => {
         onChange={handleImageSelected}
       />
       <LexicalTypeaheadMenuPlugin
-      options={options}
-      onQueryChange={(value) => setQuery(value ?? '')}
-      onSelectOption={(option, _textNode, closeMenu) => {
-        option.onSelect(editor)
-        closeMenu()
-      }}
-      triggerFn={triggerMatch}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectOptionAndCleanUp, selectedIndex, setHighlightedIndex },
-        matchingString,
-      ) => (
-        <SlashMenu
-          anchorElementRef={anchorElementRef}
-          options={options}
-          selectOptionAndCleanUp={selectOptionAndCleanUp}
-          selectedIndex={selectedIndex}
-          setHighlightedIndex={setHighlightedIndex as (index: number | null) => void}
-          matchingString={matchingString}
-        />
-      )}
-      preselectFirstItem
-    />
+        options={options}
+        onQueryChange={(value) => setQuery(value ?? '')}
+        onSelectOption={(option, _textNode, closeMenu) => {
+          option.onSelect(editor)
+          closeMenu()
+        }}
+        triggerFn={triggerMatch}
+        menuRenderFn={(
+          anchorElementRef,
+          { selectOptionAndCleanUp, selectedIndex, setHighlightedIndex },
+          matchingString,
+        ) => (
+          <SlashMenu
+            anchorElementRef={anchorElementRef}
+            options={options}
+            selectOptionAndCleanUp={selectOptionAndCleanUp}
+            selectedIndex={selectedIndex}
+            setHighlightedIndex={setHighlightedIndex as (index: number | null) => void}
+            matchingString={matchingString}
+          />
+        )}
+        preselectFirstItem
+      />
     </>
   )
 }
