@@ -187,6 +187,10 @@ function buildPointsEarnedMessage(
   }
 }
 
+function buildHowToPlayResponse(baseResponse: string, scoringResponse: string): string {
+  return `${scoringResponse}\n\n${baseResponse}`
+}
+
 function buildInitialPreviewMessages(
   nodeId: string,
   imageSrc: string,
@@ -227,7 +231,6 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
   const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
   const submitAnswerPrompt = t('imagePinGamePreview.submitAnswerPrompt')
   const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')
-  const howToPlayResponse = t('imagePinGamePreview.howToPlayResponse')
 
   const maxPoints =
     typeof nodeData.points === 'number' && nodeData.points > 0 ? Math.floor(nodeData.points) : 100
@@ -236,6 +239,14 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
       ? Math.min(100, Math.max(0, nodeData.retryDeductionPercent))
       : 0
   const pointsPerQuestion = calcPointsPerQuestion(maxPoints, questions.length)
+  const howToPlayResponse = buildHowToPlayResponse(
+    t('imagePinGamePreview.howToPlayResponse'),
+    t('imagePinGamePreview.howToPlayScoringResponse', {
+      pointsPerQuestion,
+      deductionPercent,
+      maxAttempts: MAX_ATTEMPTS,
+    }),
+  )
   const formatPointsEarned = (points: number) =>
     t('imagePinGamePreview.pointsEarnedMessage', { points })
 

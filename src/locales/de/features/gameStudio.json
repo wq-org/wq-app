@@ -294,6 +294,7 @@
     "submitAnswerPrompt": "Ich habe den Pin auf das Bild gesetzt. Bitte prüfe meine Antwort und sag mir, ob sie richtig ist.",
     "hintPrompt": "Gib mir einen hilfreichen Hinweis, wo ich den Pin platzieren soll, aber verrate nicht die ganze Lösung.",
     "howToPlayPrompt": "Erkläre, wie man dieses Spiel spielt. Sag mir, wie ich die Frage beantworte, indem ich den Pin an die richtige Stelle ziehe.",
+    "howToPlayScoringResponse": "Punkte:\n1. Eine richtige Antwort im ersten Versuch gibt {{pointsPerQuestion}} Punkte.\n2. Jeder weitere Versuch zieht {{deductionPercent}}% von den Punkten dieser Frage ab.\n3. Versuch {{maxAttempts}} gibt immer 0 Punkte, auch wenn die Platzierung richtig ist.",
     "howToPlayResponse": "So funktioniert es:\n1. Lies die Frage über dem Bild.\n2. Ziehe den Pin aus dem Feld unten auf das Bild.\n3. Platziere den ganzen Pin im markierten Rechteck.\n4. Klicke auf Antwort abgeben, um deine Position festzulegen.\n5. Richtige Antworten machen den Pin blau und zeigen Konfetti. Falsche Antworten machen ihn rot.\n6. Die nächste Frage erscheint nach einer kurzen Pause.\n\nTipp: Du kannst den Pin vor dem Abgeben zurück ins Feld ziehen.",
     "wrongRetryMessage": "Falsche Platzierung – noch {{remaining}} Versuch(e).",
     "pointsEarnedMessage": "+{{points}} Pkt."
