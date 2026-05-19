@@ -22,9 +22,10 @@ export const changelogEntries: SiteChangelogEntry[] = [
   {
     id: '2026-05-19-game-studio-image-pin-settings-and-flow-preview',
     date: '19 May 2026',
-    title: 'Game Studio Image Pin is easier to set up, preview, and connect in a learning flow',
+    title:
+      'Game Studio Image Pin is easier to set up, preview, score, and trust in a learning flow',
     summary:
-      'Teachers get a clearer Image Pin setup experience inside Game Studio. The settings area now explains the learning purpose of a game, lets you mark which learning fields it supports, shows nearby connected nodes in the game flow, and gives a more useful preview of how the activity will look for learners. Students benefit from cleaner previews and more reliable image handling, so Image Pin games feel smoother when teachers prepare them.',
+      'Teachers get a clearer and more dependable Image Pin setup experience inside Game Studio. The settings area now explains the learning purpose of a game, lets you mark which learning fields it supports, shows nearby connected nodes in the game flow, and gives a more useful preview of how the activity will look for learners. The game logic is also more robust: learners can see how scoring works, retries are handled consistently, and the final attempt clearly settles the question before moving on. Students benefit from cleaner previews, fairer feedback, and more reliable image handling, so Image Pin games feel smoother when teachers prepare and test them.',
     bullets: [
       'Teachers: Image Pin settings now include a dedicated learning-field picker, so you can mark activities with LF-1 through LF-7 instead of leaving the learning goal unclear',
       'Teachers: you can select several learning fields for one Image Pin activity and remove individual choices with a compact badge control',
@@ -32,10 +33,18 @@ export const changelogEntries: SiteChangelogEntry[] = [
       'Teachers: connected-node previews no longer show a red X when a real node is connected, so the flow preview is less confusing',
       'Teachers: the current Image Pin node stays visually active in the center of the mini flow preview while its settings dialog is open',
       'Teachers: new settings sections prepare the activity for scoring, retry penalties, optional time limits, and adaptive image difficulty, even though some of those controls are still being wired into gameplay',
+      'Teachers: the activity description can be saved and shown as the first learner message, so students start with the context you intended',
+      'Teachers: scoring is now explained inside the learner preview, including points per question, retry deductions, and what happens on the final attempt',
+      'Teachers: score deduction is calculated from the value of one question, rounded down, and shown clearly so grading rules are easier to review before using the game',
+      'Students: the score display now starts at 0 and sits next to the answer input, making progress easier to follow while playing',
+      'Students: correct answers show how many points were earned before the next question starts',
+      'Students: if the final attempt is wrong, the game now shows +0 pts before continuing, so it is clear that the question was settled with no points',
+      'Students: the fourth attempt always gives 0 points, whether the pin is correct or wrong, and the next question then begins predictably',
       'Teachers: uploaded Image Pin images are handled more carefully to avoid duplicate uploads and repeated gallery entries',
       'Teachers: image galleries reuse existing pictures more cleanly, making it faster to build several related Image Pin tasks',
       'Students: game previews make better use of the dialog space, so chat-style instructions and answers are easier to read',
       'Students: Image Pin previews can show image quality and hidden-area effects more clearly, helping teachers test how challenging an activity may feel',
+      'Institutions: stronger scoring and retry behavior makes Image Pin activities easier to explain, review, and use consistently across classrooms',
       'Everyone: small visual polish in the Game Studio dialog, animated beam preview, image carousel, and AI-style input bar makes the authoring experience feel smoother and less jumpy',
     ],
     badges: ['feature', 'improvement', 'fix'],
