@@ -6,6 +6,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionComposer'
 import { RichTextExtension } from '@lexical/rich-text'
+import { TableCellNode, TableExtension, TableNode, TableRowNode } from '@lexical/table'
 import { configExtension, defineExtension, type SerializedEditorState } from 'lexical'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -57,6 +58,13 @@ const theme = {
   quote:
     'my-[0.4rem] border-l-[3px] [border-left-style:solid] border-zinc-300 pl-3.5 italic text-zinc-500 dark:border-zinc-700 dark:text-zinc-400',
   link: 'text-blue-500 underline underline-offset-2 cursor-pointer',
+  table: 'editor-table',
+  tableCell: 'editor-tableCell',
+  tableCellHeader: 'editor-tableCellHeader',
+  tableCellSelected: 'editor-tableCellSelected',
+  tableRow: 'editor-tableRow',
+  tableScrollableWrapper: 'editor-tableScrollableWrapper',
+  tableSelection: 'editor-tableSelection',
   text: {
     bold: 'font-bold',
     code: 'rounded-[3px] bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] dark:bg-white/10',
@@ -72,6 +80,7 @@ const lessonEditorExtension = defineExtension({
     RichTextExtension,
     HistoryExtension,
     ListExtension,
+    TableExtension,
     TabIndentationExtension,
     FloatingFormatExtension,
     NodeEditorAutoLinkExtension,
@@ -80,7 +89,7 @@ const lessonEditorExtension = defineExtension({
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
   theme,
-  nodes: [ImageNode, EmojiNode, YouTubeNode],
+  nodes: [ImageNode, EmojiNode, YouTubeNode, TableCellNode, TableNode, TableRowNode],
 })
 
 export type EditorProps = {

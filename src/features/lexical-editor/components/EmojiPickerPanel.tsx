@@ -51,6 +51,13 @@ export function EmojiPickerPanel({ onSelect, className }: EmojiPickerPanelProps)
     setQuery(event.target.value)
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && visibleItems.length > 0) {
+      event.preventDefault()
+      onSelect(visibleItems[0].emoji)
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -63,6 +70,7 @@ export function EmojiPickerPanel({ onSelect, className }: EmojiPickerPanelProps)
         type="text"
         value={query}
         onChange={handleQueryChange}
+        onKeyDown={handleKeyDown}
         placeholder={t('editor.emojiPicker.searchPlaceholder')}
         autoComplete="off"
         spellCheck={false}
@@ -101,16 +109,11 @@ function EmojiPickerButton({
     onSelect(emoji)
   }
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-  }
-
   return (
     <button
       type="button"
       title={description}
       aria-label={description}
-      onMouseDown={handleMouseDown}
       onClick={handleClick}
       className={emojiButtonVariants({ size: 'sm', selected: false })}
     >

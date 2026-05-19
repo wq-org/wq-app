@@ -595,7 +595,7 @@ body {
 
   .editor-list-ol,
   .editor-list-ul {
-    margin: 0 0 1rem 0;
+    margin: 0 0 1rem 1rem;
     padding: 0;
   }
 
@@ -669,6 +669,39 @@ body {
   .editor-link {
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  .editor-tableScrollableWrapper {
+    margin: 0.75rem 0;
+    overflow-x: auto;
+  }
+
+  .editor-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .editor-tableCell,
+  .editor-tableCellHeader {
+    border: 1px solid var(--border);
+    min-width: 6rem;
+    padding: 0.5rem 0.625rem;
+    position: relative;
+    vertical-align: top;
+  }
+
+  .editor-tableCellHeader {
+    background-color: var(--muted);
+    font-weight: 600;
+  }
+
+  .editor-tableCellSelected {
+    background-color: color-mix(in oklch, var(--color-blue-500) 14%, transparent);
+  }
+
+  .editor-tableSelection {
+    box-shadow: 0 0 0 2px var(--color-blue-500);
   }
 
   .editor-image {

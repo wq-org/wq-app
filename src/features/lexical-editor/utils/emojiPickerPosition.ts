@@ -7,13 +7,17 @@ import { setFloatingElemPosition } from './setFloatingElemPosition'
 export type SavedEditorSelection = BaseSelection | null
 
 export function readSavedEditorSelection(editor: LexicalEditor): SavedEditorSelection {
-  return editor.getEditorState().read(() => {
-    const selection = $getSelection()
-    if (!$isRangeSelection(selection)) {
-      return null
-    }
-    return selection.clone()
-  })
+  try {
+    return editor.getEditorState().read(() => {
+      const selection = $getSelection()
+      if (!$isRangeSelection(selection)) {
+        return null
+      }
+      return selection.clone()
+    })
+  } catch {
+    return null
+  }
 }
 
 export function getSelectionAnchorRect(
@@ -25,16 +29,28 @@ export function getSelectionAnchorRect(
     return null
   }
 
-  const domRange = createDOMRange(
-    editor,
-    selection.anchor.getNode(),
-    selection.anchor.offset,
-    selection.focus.getNode(),
-    selection.focus.offset,
-  )
+  try {
+    const domRange = createDOMRange(
+      editor,
+      selection.anchor.getNode(),
+      selection.anchor.offset,
+      selection.focus.getNode(),
+      selection.focus.offset,
+    )
 
-  if (domRange) {
-    return domRange.getBoundingClientRect()
+    if (domRange) {
+      return domRange.getBoundingClientRect()
+    }
+  } catch {
+    const nativeSelection = window.getSelection()
+    if (
+      nativeSelection !== null &&
+      nativeSelection.rangeCount > 0 &&
+      rootElement.contains(nativeSelection.anchorNode)
+    ) {
+      return getDOMRangeRect(nativeSelection, rootElement)
+    }
+    return null
   }
 
   const nativeSelection = window.getSelection()

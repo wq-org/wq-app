@@ -98,7 +98,7 @@ function FloatingEmojiPicker({
   }, [onClose])
 
   const handleEmojiSelect = (emoji: string) => {
-    insertEmojiAtSelection(editor, emoji, pickerAnchor.selection)
+    insertEmojiAtSelection(editor, emoji)
     onClose()
   }
 

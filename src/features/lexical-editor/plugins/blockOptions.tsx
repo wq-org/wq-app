@@ -14,14 +14,17 @@ import {
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
+import { $createTableNodeWithDimensions } from '@lexical/table'
+import { $insertNodeToNearestRoot } from '@lexical/utils'
 import {
   $createParagraphNode,
   $getRoot,
   $getSelection,
   $isRangeSelection,
+  $isTextNode,
   type LexicalEditor,
 } from 'lexical'
-import { Image, ListTodo, SmilePlus, TvMinimalPlay, type LucideIcon } from 'lucide-react'
+import { Image, ListTodo, SmilePlus, Table2, TvMinimalPlay, type LucideIcon } from 'lucide-react'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
@@ -110,6 +113,16 @@ function openImagePicker(editor: LexicalEditor) {
   input.click()
 }
 
+function insertDefaultTable() {
+  const tableNode = $createTableNodeWithDimensions(3, 3, true)
+  $insertNodeToNearestRoot(tableNode)
+
+  const firstDescendant = tableNode.getFirstDescendant()
+  if ($isTextNode(firstDescendant)) {
+    firstDescendant.select()
+  }
+}
+
 export function getBlockOptions(
   editor: LexicalEditor,
   registry?: LessonBlockTypeRegistryRow[],
@@ -182,6 +195,11 @@ export function getBlockOptions(
       Icon: ListTodo,
       keywords: ['todo', 'checklist', 'task', 'checkbox'],
       onSelect: () => editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined),
+    }),
+    new BlockOption('Table', {
+      Icon: Table2,
+      keywords: ['table', 'tables', 'grid', 'rows', 'columns'],
+      onSelect: insertDefaultTable,
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',
