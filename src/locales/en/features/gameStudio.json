@@ -32,6 +32,7 @@
   "nodeLayout": {
     "overviewTab": "Overview",
     "settingsTab": "Settings",
+    "previewTab": "Preview",
     "noContent": "No content available",
     "deleteHint": "Hold the button below for 3 seconds to delete this node.",
     "overviewAriaLabel": "Show overview tab",

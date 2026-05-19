@@ -32,6 +32,7 @@
   "nodeLayout": {
     "overviewTab": "\u00dcberblick",
     "settingsTab": "Einstellungen",
+    "previewTab": "Vorschau",
     "noContent": "Kein Inhalt verf\u00fcgbar",
     "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu l\u00f6schen.",
     "overviewAriaLabel": "Ubersicht anzeigen",
