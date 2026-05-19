@@ -20,6 +20,27 @@ Use when refactoring components, adding features, deciding where code lives, or 
 - Keep JSX **mostly structure**. Move heavy conditionals, formatting, and role checks **above** the `return`.
 - **Compute before render** (e.g. `isTeacher`, `resolvedTabs`, display strings).
 
+## `useDisclosure` — Toggle State
+
+Use the `useDisclosure` hook (`hooks/use-disclosure.ts`) to manage **boolean open/closed state** for any UI element that toggles between two visibility states.
+
+**Common use cases:** modals & dialogs, drawers & sidebars, dropdowns & popovers, accordions & collapsibles, sheets, toasts/banners.
+
+```tsx
+// ❌ Without useDisclosure — repeated in every component
+const [isOpen, setIsOpen] = useState(false)
+const onOpen = () => setIsOpen(true)
+const onClose = () => setIsOpen(false)
+const onToggle = () => setIsOpen((prev) => !prev)
+
+// ✅ With useDisclosure
+const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
+```
+
+Import it from `@/hooks` — it's available to any component in the app.
+
+---
+
 ## State & Effects
 
 - Store the **minimum** state; **derive** filtered lists, flags, and selections when cheap.

@@ -7,16 +7,16 @@ import { Button } from '@/components/ui/button'
 import { TimeInput } from '@/components/ui/time-input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import type { TimeValue } from 'react-aria-components'
+import type { TimeInputValue } from '@/components/ui/time-input'
 
 export function VisibleHoursInput() {
   const { visibleHours, setVisibleHours } = useCalendar()
 
-  const [from, setFrom] = useState<{ hour: number; minute: number }>({
+  const [from, setFrom] = useState<TimeInputValue>({
     hour: visibleHours.from,
     minute: 0,
   })
-  const [to, setTo] = useState<{ hour: number; minute: number }>({
+  const [to, setTo] = useState<TimeInputValue>({
     hour: visibleHours.to,
     minute: 0,
   })
@@ -53,16 +53,20 @@ export function VisibleHoursInput() {
           id="start-time"
           hourCycle={12}
           granularity="hour"
-          value={from as TimeValue}
-          onChange={setFrom as (value: TimeValue | null) => void}
+          value={from}
+          onChange={(value) => {
+            if (value) setFrom(value)
+          }}
         />
         <p>To</p>
         <TimeInput
           id="end-time"
           hourCycle={12}
           granularity="hour"
-          value={to as TimeValue}
-          onChange={setTo as (value: TimeValue | null) => void}
+          value={to}
+          onChange={(value) => {
+            if (value) setTo(value)
+          }}
         />
       </div>
 

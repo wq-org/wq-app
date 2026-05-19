@@ -40,7 +40,7 @@ import {
 import { eventSchema } from '../../schemas/event.schema'
 
 import type { ReactNode } from 'react'
-import type { TimeValue } from 'react-aria-components'
+import type { TimeInputValue } from '@/components/ui/time-input'
 import type { IEvent } from '../../types/calendar.types'
 import type { TEventFormData } from '../../schemas/event.schema'
 
@@ -208,7 +208,7 @@ export function EditEventDialog({ children, event }: EditEventDialogProps) {
                     <FormLabel>Start Time</FormLabel>
                     <FormControl>
                       <TimeInput
-                        value={field.value as TimeValue}
+                        value={field.value as TimeInputValue}
                         onChange={field.onChange}
                         hourCycle={12}
                         data-invalid={fieldState.invalid}
@@ -248,7 +248,7 @@ export function EditEventDialog({ children, event }: EditEventDialogProps) {
                     <FormLabel>End Time</FormLabel>
                     <FormControl>
                       <TimeInput
-                        value={field.value as TimeValue}
+                        value={field.value as TimeInputValue}
                         onChange={field.onChange}
                         hourCycle={12}
                         data-invalid={fieldState.invalid}

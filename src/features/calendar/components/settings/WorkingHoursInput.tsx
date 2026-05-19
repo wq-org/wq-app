@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch'
 import { TimeInput } from '@/components/ui/time-input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import type { TimeValue } from 'react-aria-components'
+import type { TimeInputValue } from '@/components/ui/time-input'
 
 const DAYS_OF_WEEK = [
   { index: 0, name: 'Sunday' },
@@ -33,7 +33,11 @@ export function WorkingHoursInput() {
     }))
   }
 
-  const handleTimeChange = (dayId: number, timeType: 'from' | 'to', value: TimeValue | null) => {
+  const handleTimeChange = (
+    dayId: number,
+    timeType: 'from' | 'to',
+    value: TimeInputValue | null,
+  ) => {
     if (!value) return
 
     setLocalWorkingHours((prev) => {
@@ -112,7 +116,7 @@ export function WorkingHoursInput() {
                       id={`${day.name.toLowerCase()}-from`}
                       hourCycle={12}
                       granularity="hour"
-                      value={{ hour: localWorkingHours[day.index].from, minute: 0 } as TimeValue}
+                      value={{ hour: localWorkingHours[day.index].from, minute: 0 }}
                       onChange={(value) => handleTimeChange(day.index, 'from', value)}
                     />
                   </div>
@@ -123,7 +127,7 @@ export function WorkingHoursInput() {
                       id={`${day.name.toLowerCase()}-to`}
                       hourCycle={12}
                       granularity="hour"
-                      value={{ hour: localWorkingHours[day.index].to, minute: 0 } as TimeValue}
+                      value={{ hour: localWorkingHours[day.index].to, minute: 0 }}
                       onChange={(value) => handleTimeChange(day.index, 'to', value)}
                     />
                   </div>
