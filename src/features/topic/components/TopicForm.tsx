@@ -28,7 +28,7 @@ export function TopicForm({
   const canCreate = Boolean(title.trim() && description.trim())
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="animate-in fade-in-0 slide-in-from-bottom-2 flex w-full flex-col gap-4 duration-300 ease-out">
       <FieldCard>
         <FieldInput
           value={title}

@@ -63,7 +63,7 @@ export function LessonForm({ topicId, courseId }: LessonFormProps) {
   }
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="animate-in fade-in-0 slide-in-from-bottom-4 flex w-full flex-col gap-4 duration-300 ease-out">
       <div className="flex flex-col gap-2">
         <FieldCard>
           <FieldInput
