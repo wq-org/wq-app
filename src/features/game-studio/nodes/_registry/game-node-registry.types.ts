@@ -4,6 +4,14 @@ import type { Edge, Node, NodeProps } from '@xyflow/react'
 
 export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
+/** Shared scoring contract — all game node data schemas may include these fields. */
+export type GameNodeScoringConfig = {
+  /** Max total score this node can award. */
+  points?: number
+  /** % of per-question points deducted per retry attempt (0–100). */
+  retryDeductionPercent?: number
+}
+
 export type GameNodeAccent =
   | 'gray'
   | 'darkblue'

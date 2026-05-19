@@ -91,6 +91,7 @@ export function GameChatHistory({
                   rounded={incomingBubbleRounded}
                   status={message.status}
                   messageId={message.id}
+                  textBold={message.bold}
                 />
               )}
             </div>

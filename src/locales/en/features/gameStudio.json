@@ -293,7 +293,9 @@
     "submitAnswerPrompt": "I placed the pin on the image. Please check my answer and tell me if it is correct.",
     "hintPrompt": "Give me a helpful hint for where I should place the pin, but do not reveal the full answer.",
     "howToPlayPrompt": "Explain how to play this game. Tell me how to answer the question by dragging the pin to the correct place on the image.",
-    "howToPlayResponse": "How to play:\n1. Read the question above the image.\n2. Drag the pin from the slot below onto the image.\n3. Place the whole pin inside the highlighted rectangle.\n4. Click Submit answer to lock your placement.\n5. Correct answers turn the pin blue and show confetti. Wrong answers turn it red.\n6. The next question appears after a short pause.\n\nTip: you can drag the pin back to the slot before you submit."
+    "howToPlayResponse": "How to play:\n1. Read the question above the image.\n2. Drag the pin from the slot below onto the image.\n3. Place the whole pin inside the highlighted rectangle.\n4. Click Submit answer to lock your placement.\n5. Correct answers turn the pin blue and show confetti. Wrong answers turn it red.\n6. The next question appears after a short pause.\n\nTip: you can drag the pin back to the slot before you submit.",
+    "wrongRetryMessage": "Incorrect placement — {{remaining}} attempt(s) remaining.",
+    "pointsEarnedMessage": "+{{points}} pts"
   },
   "imagePinSettings": {
     "holdToDeleteNode": "Hold to delete node",

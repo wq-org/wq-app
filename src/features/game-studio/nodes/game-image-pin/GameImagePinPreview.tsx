@@ -132,10 +132,12 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     handleChatInput,
     pinAtSource,
     currentPin,
+    hasActiveQuestion,
     getSubmissionForMessage,
     latestQuestionMessageId,
     submitAnswerPrompt,
     howToPlayPrompt,
+    earnedScore,
   } = useGameImagePinGame({ nodeId, nodeData })
 
   const maxScore =
@@ -153,7 +155,6 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
       icon: HandHelping,
       text: t('imagePinGamePreview.badgeHint'),
       prompt: t('imagePinGamePreview.hintPrompt'),
-      disabled: true,
     },
     {
       icon: CircleQuestionMark,
@@ -186,7 +187,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         </PositionedPin>
       )
     }
-    if (message.id === latestQuestionMessageId && currentPin) {
+    if (message.id === latestQuestionMessageId && currentPin && hasActiveQuestion) {
       return (
         <PositionedPin drop={currentPin.drop}>
           <DraggablePin />
@@ -236,7 +237,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
 
       <div className="flex w-full items-center ">
         <Score
-          score={0}
+          score={earnedScore}
           max={maxScore}
           size="lg"
           variant="orange"

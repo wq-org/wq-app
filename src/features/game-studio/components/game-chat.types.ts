@@ -24,6 +24,7 @@ export type GameChatHistoryMessage = {
   direction: 'incoming' | 'receiving'
   image?: GameChatImageDescriptor
   status?: ChatMessageStatus
+  bold?: boolean
 }
 
 export type GameChatMessageBubbleProps = {
@@ -39,4 +40,5 @@ export type GameChatMessageBubbleProps = {
   rounded?: ChatBubbleRounded
   status?: ChatMessageStatus
   messageId?: string
+  textBold?: boolean
 }

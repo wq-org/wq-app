@@ -11,12 +11,16 @@ import {
   type NormalizedPinBounds,
   type NormalizedPinPoint,
 } from './gameImagePinValidation'
+import { calcAttemptPoints, calcPointsPerQuestion } from '../../utils/gameScoringUtils'
 
 export const PIN_SOURCE_DROPPABLE_ID = 'pin-source'
 export const PIN_IMAGE_DROPPABLE_ID = 'image-pin-target'
 export const PIN_DRAGGABLE_ID = 'image-pin'
 
-const NEXT_QUESTION_DELAY_MS = 3000
+const POINTS_REVEAL_DELAY_MS = 500
+const NEXT_QUESTION_DELAY_MS = 1500
+const WRONG_FREEZE_DELAY_MS = 2000
+export const MAX_ATTEMPTS = 4
 
 export type PreviewQuestion = {
   id: string
@@ -89,6 +93,29 @@ function buildPreviewQuestionMessage(
   }
 }
 
+function buildPreviewRetryQuestionMessage(
+  nodeId: string,
+  imageSrc: string,
+  question: PreviewQuestion,
+  index: number,
+  attempt: number,
+): GameChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-question-${index}-${question.id}-retry-${attempt}`,
+    text: question.question,
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
+    image: imageSrc
+      ? {
+          variant: 'image-pin',
+          src: imageSrc,
+          alt: 'Game Image Pin preview image',
+          rect: question.rect,
+        }
+      : undefined,
+  }
+}
+
 function buildPreviewDescriptionMessage(
   nodeId: string,
   description: string,
@@ -137,6 +164,29 @@ function buildAssistantReplyMessage(
   }
 }
 
+function buildWrongRetryMessage(nodeId: string, seq: number, text: string): GameChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-wrong-retry-${seq}`,
+    text,
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
+  }
+}
+
+function buildPointsEarnedMessage(
+  nodeId: string,
+  seq: number,
+  text: string,
+): GameChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-points-${seq}`,
+    text,
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
+    bold: true,
+  }
+}
+
 function buildInitialPreviewMessages(
   nodeId: string,
   imageSrc: string,
@@ -179,6 +229,16 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
   const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')
   const howToPlayResponse = t('imagePinGamePreview.howToPlayResponse')
 
+  const maxPoints =
+    typeof nodeData.points === 'number' && nodeData.points > 0 ? Math.floor(nodeData.points) : 100
+  const deductionPercent =
+    typeof nodeData.retryDeductionPercent === 'number'
+      ? Math.min(100, Math.max(0, nodeData.retryDeductionPercent))
+      : 0
+  const pointsPerQuestion = calcPointsPerQuestion(maxPoints, questions.length)
+  const formatPointsEarned = (points: number) =>
+    t('imagePinGamePreview.pointsEarnedMessage', { points })
+
   const initialState = useMemo<PreviewState>(
     () => ({
       messages: buildInitialPreviewMessages(nodeId, imageSrc, description, questions),
@@ -190,8 +250,12 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
   const [state, setState] = useState<PreviewState>(() => initialState)
   const [currentPin, setCurrentPin] = useState<CurrentPin | null>(null)
   const [submissions, setSubmissions] = useState<Record<string, ImagePinSubmission>>({})
+  const [attemptCounts, setAttemptCounts] = useState<Record<string, number>>({})
+  const [earnedScore, setEarnedScore] = useState(0)
   const [naturalSize, setNaturalSize] = useState<ImageNaturalSize | null>(null)
   const advanceTimeoutRef = useRef<number | null>(null)
+  const wrongFreezeTimeoutRef = useRef<number | null>(null)
+  const msgSeqRef = useRef(0)
 
   const clearAdvanceTimeout = () => {
     if (advanceTimeoutRef.current !== null) {
@@ -200,17 +264,31 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     }
   }
 
+  const clearWrongFreezeTimeout = () => {
+    if (wrongFreezeTimeoutRef.current !== null) {
+      window.clearTimeout(wrongFreezeTimeoutRef.current)
+      wrongFreezeTimeoutRef.current = null
+    }
+  }
+
   // Reset everything when the active node/image swap presents a fresh game.
   useEffect(() => {
     clearAdvanceTimeout()
+    clearWrongFreezeTimeout()
     setState(initialState)
     setCurrentPin(null)
     setSubmissions({})
+    setAttemptCounts({})
+    setEarnedScore(0)
+    msgSeqRef.current = 0
   }, [initialState])
 
-  // Cancel any pending "next question" timer if the component unmounts.
+  // Cancel pending timers on unmount.
   useEffect(() => {
-    return () => clearAdvanceTimeout()
+    return () => {
+      clearAdvanceTimeout()
+      clearWrongFreezeTimeout()
+    }
   }, [])
 
   // Preload the source image to learn its natural size — the rect lives in natural pixel space.
@@ -239,7 +317,7 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     return null
   }, [state.messages])
 
-  // Resolve the question id from the currently-latest message, not from
+  // Resolve the question from the currently-latest message, not from
   // questionIndex — the indexes diverge once we've answered the last one.
   const latestQuestionFromMessage = useMemo(() => {
     if (!latestQuestionMessageId) return null
@@ -248,8 +326,8 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     return questions[idx] ?? null
   }, [latestQuestionMessageId, questions])
 
-  const latestSubmission = latestQuestionFromMessage
-    ? (submissions[latestQuestionFromMessage.id] ?? null)
+  const latestSubmission = latestQuestionMessageId
+    ? (submissions[latestQuestionMessageId] ?? null)
     : null
   const isLatestSubmitted = latestSubmission !== null
   const hasActiveQuestion = latestQuestionFromMessage !== null && !isLatestSubmitted
@@ -269,11 +347,7 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
   }, [state.messages, latestQuestionMessageId, isLatestSubmitted])
 
   const getSubmissionForMessage = (message: GameChatHistoryMessage): ImagePinSubmission | null => {
-    const idx = getQuestionIndexFromMessageId(message.id)
-    if (idx == null) return null
-    const question = questions[idx]
-    if (!question) return null
-    return submissions[question.id] ?? null
+    return submissions[message.id] ?? null
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -331,45 +405,148 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     )
 
     const questionId = latestQuestionFromMessage.id
-    setSubmissions((prev) => ({
-      ...prev,
-      [questionId]: { drop: currentPin.drop, variant },
-    }))
+    const msgId = latestQuestionMessageId! // non-null: hasActiveQuestion guarantees a latest message
+    const prevAttempts = attemptCounts[questionId] ?? 0
+    const thisAttempt = prevAttempts + 1
+    const isLastAttempt = thisAttempt >= MAX_ATTEMPTS
+    const isCorrect = variant === 'correct'
+    const isSettled = isCorrect || isLastAttempt
 
-    if (variant === 'correct') fireCorrectConfetti()
+    setAttemptCounts((prev) => ({ ...prev, [questionId]: thisAttempt }))
 
-    setState((prev) => {
-      const nextQuestionIndex = prev.questionIndex + 1
-      return {
-        questionIndex: nextQuestionIndex,
+    if (isSettled) {
+      const earned = isCorrect
+        ? calcAttemptPoints(pointsPerQuestion, thisAttempt, deductionPercent)
+        : 0
+
+      if (isCorrect) {
+        setEarnedScore((prev) => prev + earned)
+        fireCorrectConfetti()
+      }
+
+      setSubmissions((prev) => ({ ...prev, [msgId]: { drop: currentPin.drop, variant } }))
+
+      const settleSeq = ++msgSeqRef.current
+
+      setState((prev) => {
+        const nextQuestionIndex = prev.questionIndex + 1
+        return {
+          questionIndex: nextQuestionIndex,
+          messages: [
+            ...prev.messages,
+            {
+              id: `preview-${nodeId}-answer-seq-${settleSeq}`,
+              text: submitAnswerPrompt,
+              time: formatPreviewChatTime(),
+              direction: 'receiving' as const,
+            },
+            buildPreviewLoadingMessage(nodeId, nextQuestionIndex),
+          ],
+        }
+      })
+
+      setCurrentPin(null)
+      clearAdvanceTimeout()
+
+      if (isCorrect) {
+        // Phase 1 — replace loading with "+X pts" at T=500ms
+        advanceTimeoutRef.current = window.setTimeout(() => {
+          const pointsSeq = ++msgSeqRef.current
+          setState((prev) => {
+            const loadingId = `preview-${nodeId}-loading-${prev.questionIndex}`
+            const withoutLoading = prev.messages.filter((m) => m.id !== loadingId)
+            return {
+              ...prev,
+              messages: [
+                ...withoutLoading,
+                buildPointsEarnedMessage(nodeId, pointsSeq, formatPointsEarned(earned)),
+              ],
+            }
+          })
+
+          // Phase 2 — show next question at T=500+1500=2000ms
+          advanceTimeoutRef.current = window.setTimeout(() => {
+            advanceTimeoutRef.current = null
+            setState((prev) => {
+              const nextQuestion = questions[prev.questionIndex]
+              if (!nextQuestion) return prev
+              return {
+                ...prev,
+                messages: [
+                  ...prev.messages,
+                  buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
+                ],
+              }
+            })
+          }, NEXT_QUESTION_DELAY_MS)
+        }, POINTS_REVEAL_DELAY_MS)
+      } else {
+        // Wrong settled — show next question after loading delay, no points message
+        advanceTimeoutRef.current = window.setTimeout(() => {
+          advanceTimeoutRef.current = null
+          setState((prev) => {
+            const loadingId = `preview-${nodeId}-loading-${prev.questionIndex}`
+            const withoutLoading = prev.messages.filter((m) => m.id !== loadingId)
+            const nextQuestion = questions[prev.questionIndex]
+            const nextMessages = nextQuestion
+              ? [
+                  ...withoutLoading,
+                  buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
+                ]
+              : withoutLoading
+            return { ...prev, messages: nextMessages }
+          })
+        }, NEXT_QUESTION_DELAY_MS)
+      }
+    } else {
+      // Wrong + retries remaining:
+      // Lock pin at submitted position permanently. After WRONG_FREEZE_DELAY_MS, show retry question.
+      const remaining = MAX_ATTEMPTS - thisAttempt
+      const seq = ++msgSeqRef.current
+      const questionForRetry = latestQuestionFromMessage
+
+      setSubmissions((prev) => ({ ...prev, [msgId]: { drop: currentPin.drop, variant } }))
+
+      setState((prev) => ({
+        ...prev,
         messages: [
           ...prev.messages,
-          buildPreviewAnswerMessage(submitAnswerPrompt, nodeId, prev.questionIndex),
-          buildPreviewLoadingMessage(nodeId, nextQuestionIndex),
+          {
+            id: `preview-${nodeId}-answer-seq-${seq}`,
+            text: submitAnswerPrompt,
+            time: formatPreviewChatTime(),
+            direction: 'receiving' as const,
+          },
         ],
-      }
-    })
+      }))
 
-    setCurrentPin(null)
+      clearWrongFreezeTimeout()
+      wrongFreezeTimeoutRef.current = window.setTimeout(() => {
+        wrongFreezeTimeoutRef.current = null
+        const retrySeq = ++msgSeqRef.current
 
-    // After a brief "thinking" pause, swap the loading bubble for the next
-    // question (or just drop the loader if this was the final question).
-    clearAdvanceTimeout()
-    advanceTimeoutRef.current = window.setTimeout(() => {
-      advanceTimeoutRef.current = null
-      setState((prev) => {
-        const loadingId = `preview-${nodeId}-loading-${prev.questionIndex}`
-        const withoutLoading = prev.messages.filter((m) => m.id !== loadingId)
-        const nextQuestion = questions[prev.questionIndex]
-        const nextMessages = nextQuestion
-          ? [
-              ...withoutLoading,
-              buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
-            ]
-          : withoutLoading
-        return { ...prev, messages: nextMessages }
-      })
-    }, NEXT_QUESTION_DELAY_MS)
+        setCurrentPin(null)
+
+        setState((prev) => ({
+          ...prev,
+          messages: [
+            ...prev.messages,
+            buildWrongRetryMessage(
+              nodeId,
+              retrySeq,
+              t('imagePinGamePreview.wrongRetryMessage', { remaining }),
+            ),
+            buildPreviewRetryQuestionMessage(
+              nodeId,
+              imageSrc,
+              questionForRetry,
+              prev.questionIndex,
+              thisAttempt,
+            ),
+          ],
+        }))
+      }, WRONG_FREEZE_DELAY_MS)
+    }
   }
 
   const handleChatInput = (message: string) => {
@@ -412,7 +589,9 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     howToPlayPrompt,
     pinAtSource,
     currentPin,
+    hasActiveQuestion,
     getSubmissionForMessage,
     latestQuestionMessageId,
+    earnedScore,
   }
 }

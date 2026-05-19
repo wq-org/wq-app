@@ -523,88 +523,102 @@ export function GameImagePinSettings({
 
       <Separator />
 
-      <Text
-        as="p"
-        bold
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue="adaptive-features"
       >
-        {t('imagePinSettings.adaptiveTitle')}
-      </Text>
+        <AccordionItem
+          value="adaptive-features"
+          className="border-b-0"
+        >
+          <AccordionTrigger className="py-3">
+            <Text
+              as="p"
+              variant="h3"
+            >
+              {t('imagePinSettings.adaptiveTitle')}
+            </Text>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className={cn('flex flex-col gap-6', imagePinSettingsEnterSubtle)}>
+              <div className="flex gap-4">
+                <div className="flex flex-1 flex-col gap-4">
+                  <Text
+                    as="p"
+                    variant="small"
+                  >
+                    {t('imagePinSettings.qualityReductionLabel')}
+                  </Text>
+                  <SliderSyncedNumberInput
+                    label={t('imagePinSettings.qualitySliderLabel')}
+                    inputId="quality-opacity-slider"
+                    value={qualityOpacity}
+                    onValueChange={setQualityOpacity}
+                    min={0}
+                    max={100}
+                    step={1}
+                    suffix="%"
+                  />
+                </div>
+                <div className="flex flex-1 items-start justify-center">
+                  <div className="w-32">
+                    <AspectRatio ratio={1}>
+                      {imagePreview ? (
+                        <img
+                          src={imagePreview}
+                          alt=""
+                          className="h-full w-full rounded-md object-cover"
+                          style={{ opacity: qualityOpacity / 100 }}
+                        />
+                      ) : (
+                        <div className="h-full w-full rounded-md bg-muted" />
+                      )}
+                    </AspectRatio>
+                  </div>
+                </div>
+              </div>
 
-      <div className={cn('flex gap-4', imagePinSettingsEnterSubtle)}>
-        <div className="flex flex-col gap-4 flex-1">
-          <Text
-            as="p"
-            variant="small"
-          >
-            {t('imagePinSettings.qualityReductionLabel')}
-          </Text>
-          <SliderSyncedNumberInput
-            label={t('imagePinSettings.qualitySliderLabel')}
-            inputId="quality-opacity-slider"
-            value={qualityOpacity}
-            onValueChange={setQualityOpacity}
-            min={0}
-            max={100}
-            step={1}
-            suffix="%"
-          />
-        </div>
-        <div className="flex-1 flex justify-center items-start">
-          <div className="w-32">
-            <AspectRatio ratio={1}>
-              {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt=""
-                  className="w-full h-full object-cover rounded-md"
-                  style={{ opacity: qualityOpacity / 100 }}
-                />
-              ) : (
-                <div className="w-full h-full rounded-md bg-muted" />
-              )}
-            </AspectRatio>
-          </div>
-        </div>
-      </div>
-
-      <Separator />
-
-      <div className={cn('flex gap-4', imagePinSettingsEnterSubtle)}>
-        <div className="flex flex-col gap-4 flex-1">
-          <Text
-            as="p"
-            variant="small"
-          >
-            {t('imagePinSettings.areaExclusionLabel')}
-          </Text>
-          <SliderSyncedNumberInput
-            label={t('imagePinSettings.areaSliderLabel')}
-            inputId="exclusion-opacity-slider"
-            value={exclusionOpacity}
-            onValueChange={setExclusionOpacity}
-            min={0}
-            max={100}
-            step={1}
-            suffix="%"
-          />
-        </div>
-        <div className="flex-1 flex justify-center items-start">
-          <div className="w-32">
-            <AspectRatio ratio={1}>
-              {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt=""
-                  className="w-full h-full object-cover rounded-md"
-                  style={{ opacity: (100 - exclusionOpacity) / 100 }}
-                />
-              ) : (
-                <div className="w-full h-full rounded-md bg-muted" />
-              )}
-            </AspectRatio>
-          </div>
-        </div>
-      </div>
+              <div className="flex gap-4">
+                <div className="flex flex-1 flex-col gap-4">
+                  <Text
+                    as="p"
+                    variant="small"
+                  >
+                    {t('imagePinSettings.areaExclusionLabel')}
+                  </Text>
+                  <SliderSyncedNumberInput
+                    label={t('imagePinSettings.areaSliderLabel')}
+                    inputId="exclusion-opacity-slider"
+                    value={exclusionOpacity}
+                    onValueChange={setExclusionOpacity}
+                    min={0}
+                    max={100}
+                    step={1}
+                    suffix="%"
+                  />
+                </div>
+                <div className="flex flex-1 items-start justify-center">
+                  <div className="w-32">
+                    <AspectRatio ratio={1}>
+                      {imagePreview ? (
+                        <img
+                          src={imagePreview}
+                          alt=""
+                          className="h-full w-full rounded-md object-cover"
+                          style={{ opacity: (100 - exclusionOpacity) / 100 }}
+                        />
+                      ) : (
+                        <div className="h-full w-full rounded-md bg-muted" />
+                      )}
+                    </AspectRatio>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <Separator />
 
