@@ -14,22 +14,12 @@ import {
   SELECTION_CHANGE_COMMAND,
   type LexicalEditor,
 } from 'lexical'
-import {
-  Bold,
-  Code,
-  Italic,
-  Link,
-  Link2Off,
-  Strikethrough,
-  Underline,
-  type LucideIcon,
-} from 'lucide-react'
+import { Bold, Code, Italic, Link, Strikethrough, Underline, type LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, type JSX } from 'react'
 import { createPortal } from 'react-dom'
 
 import { getDOMRangeRect } from '../utils/getDOMRangeRect'
 import { getSelectedNode } from '../utils/getSelectedNode'
-import { promptAndApplyLink, removeLinkFromSelection } from '../utils/link'
 import { setFloatingElemPosition } from '../utils/setFloatingElemPosition'
 import { useSignalValue } from '../utils/useExtensionHooks'
 
@@ -143,7 +133,7 @@ type FloatingPopupProps = {
   anchorElem: HTMLElement
   formats: FormatFlags
   isLink: boolean
-  onLinkEditModeChange: (value: boolean) => void
+  onRequestLinkDialog: () => void
 }
 
 function FloatingPopup({
@@ -151,7 +141,7 @@ function FloatingPopup({
   anchorElem,
   formats,
   isLink,
-  onLinkEditModeChange,
+  onRequestLinkDialog,
 }: FloatingPopupProps): JSX.Element {
   const popupRef = useRef<HTMLDivElement | null>(null)
 
@@ -213,16 +203,7 @@ function FloatingPopup({
   }, [editor, updatePosition])
 
   const handleLinkClick = () => {
-    if (isLink) {
-      onLinkEditModeChange(true)
-      return
-    }
-    promptAndApplyLink(editor)
-  }
-
-  const handleUnlinkClick = () => {
-    removeLinkFromSelection(editor)
-    onLinkEditModeChange(false)
+    onRequestLinkDialog()
   }
 
   return (
@@ -256,30 +237,18 @@ function FloatingPopup({
       >
         <Link className="h-4 w-4" />
       </button>
-      {isLink ? (
-        <button
-          type="button"
-          title="Remove link"
-          aria-label="Remove link"
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={handleUnlinkClick}
-          className={toolbarButtonClassName}
-        >
-          <Link2Off className="h-4 w-4" />
-        </button>
-      ) : null}
     </div>
   )
 }
 
 type FloatingTextFormatToolbarPluginProps = {
   anchorElem: HTMLElement
-  onLinkEditModeChange: (value: boolean) => void
+  onRequestLinkDialog: () => void
 }
 
 export function FloatingTextFormatToolbarPlugin({
   anchorElem,
-  onLinkEditModeChange,
+  onRequestLinkDialog,
 }: FloatingTextFormatToolbarPluginProps): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   const out = useExtensionDependency(FloatingFormatExtension).output
@@ -300,7 +269,7 @@ export function FloatingTextFormatToolbarPlugin({
       anchorElem={anchorElem}
       formats={{ isBold, isItalic, isUnderline, isStrikethrough, isCode }}
       isLink={isLink}
-      onLinkEditModeChange={onLinkEditModeChange}
+      onRequestLinkDialog={onRequestLinkDialog}
     />,
     anchorElem,
   )

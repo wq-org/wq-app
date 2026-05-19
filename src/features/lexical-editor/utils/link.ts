@@ -1,6 +1,7 @@
-import { TOGGLE_LINK_COMMAND } from '@lexical/link'
-import type { LexicalEditor } from 'lexical'
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link'
+import { $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
 
+import { getSelectedNode } from './getSelectedNode'
 import { sanitizeUrl, validateUrl } from './url'
 
 export function normalizeLinkUrl(raw: string): string | null {
@@ -29,17 +30,24 @@ export function removeLinkFromSelection(editor: LexicalEditor): void {
   editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
 }
 
-export function promptAndApplyLink(editor: LexicalEditor): boolean {
-  const raw = window.prompt('Paste link URL (https://)')
-  if (raw === null) {
-    return false
-  }
+export function getSelectedLinkUrl(editor: LexicalEditor): string {
+  let selectedLinkUrl = ''
 
-  const url = normalizeLinkUrl(raw)
-  if (!url) {
-    return false
-  }
+  editor.getEditorState().read(() => {
+    const selection = $getSelection()
+    if (!$isRangeSelection(selection)) {
+      return
+    }
 
-  applyLinkToSelection(editor, url)
-  return true
+    const node = getSelectedNode(selection)
+    const parent = node.getParent()
+
+    if ($isLinkNode(parent)) {
+      selectedLinkUrl = parent.getURL()
+    } else if ($isLinkNode(node)) {
+      selectedLinkUrl = node.getURL()
+    }
+  })
+
+  return selectedLinkUrl
 }

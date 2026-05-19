@@ -25,6 +25,7 @@ import {
 import { ImageNode } from '../nodes/ImageNode'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
+import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
@@ -169,7 +170,15 @@ export function Editor({
   onPasteOverflow,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
-  const [isLinkEditMode, setIsLinkEditMode] = useState(false)
+  const requestLinkDialogRef = useRef<() => void>(() => {})
+
+  const registerRequestLinkDialog = useCallback((requestLinkDialog: () => void) => {
+    requestLinkDialogRef.current = requestLinkDialog
+  }, [])
+
+  const handleRequestLinkDialog = useCallback(() => {
+    requestLinkDialogRef.current()
+  }, [])
 
   const editorPlaceholder = useMemo(
     () => (
@@ -219,16 +228,16 @@ export function Editor({
         />
         <LexicalDraggableBlockPlugin />
         <SlashMenuPlugin registry={blockTypeRegistry} />
+        <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
         {anchorElem ? (
           <>
             <FloatingTextFormatToolbarPlugin
               anchorElem={anchorElem}
-              onLinkEditModeChange={setIsLinkEditMode}
+              onRequestLinkDialog={handleRequestLinkDialog}
             />
             <FloatingLinkEditorPlugin
               anchorElem={anchorElem}
-              isLinkEditMode={isLinkEditMode}
-              setIsLinkEditMode={setIsLinkEditMode}
+              onRequestLinkDialog={handleRequestLinkDialog}
             />
           </>
         ) : null}
