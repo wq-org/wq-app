@@ -7,19 +7,21 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { useDisclosure } from '@/hooks/use-disclosure'
-import { cn } from '@/lib/utils'
 
 import { EmojiPickerPanel } from '../components/EmojiPickerPanel'
 import { OPEN_EMOJI_PICKER_COMMAND } from '../commands/emojiPickerCommands'
 import {
   getSelectionAnchorRect,
-  positionFloatingElementAtRect,
   readSavedEditorSelection,
   type SavedEditorSelection,
 } from '../utils/emojiPickerPosition'
 import { insertEmojiAtSelection } from '../utils/insertEmoji'
 
-const floatingShellClassName = 'absolute top-0 left-0 z-50 opacity-0 will-change-transform'
+const floatingShellClassName = 'absolute top-0 left-0 z-50 opacity-0 will-change-[top,left]'
+const PICKER_OFFSET = 8
+const VIEWPORT_MARGIN = 12
+const DEFAULT_PICKER_HEIGHT = 320
+const DEFAULT_PICKER_WIDTH = 352
 
 type PickerAnchorState = {
   rect: DOMRect | null
@@ -43,11 +45,27 @@ function FloatingEmojiPicker({
 
   const updatePosition = useCallback(() => {
     const pickerElem = pickerRef.current
-    if (!pickerElem) {
+    const rect = pickerAnchor.rect
+    if (!pickerElem || !rect) {
       return
     }
 
-    positionFloatingElementAtRect(pickerAnchor.rect, pickerElem, anchorElem)
+    const anchorRect = anchorElem.getBoundingClientRect()
+    const pickerHeight = pickerElem.offsetHeight || DEFAULT_PICKER_HEIGHT
+    const pickerWidth = pickerElem.offsetWidth || DEFAULT_PICKER_WIDTH
+
+    const overflowsBottom =
+      rect.bottom + PICKER_OFFSET + pickerHeight > window.innerHeight - VIEWPORT_MARGIN
+    const top = overflowsBottom
+      ? rect.top - anchorRect.top - pickerHeight - PICKER_OFFSET
+      : rect.bottom - anchorRect.top + PICKER_OFFSET
+
+    const rightOverflow = rect.left + pickerWidth - window.innerWidth + VIEWPORT_MARGIN
+    const left = rect.left - anchorRect.left - Math.max(0, rightOverflow)
+
+    pickerElem.style.top = `${top}px`
+    pickerElem.style.left = `${left}px`
+    pickerElem.style.opacity = '1'
   }, [anchorElem, pickerAnchor.rect])
 
   useEffect(() => {
@@ -105,7 +123,7 @@ function FloatingEmojiPicker({
   return (
     <div
       ref={pickerRef}
-      className={cn(floatingShellClassName, 'opacity-100')}
+      className={floatingShellClassName}
     >
       <EmojiPickerPanel onSelect={handleEmojiSelect} />
     </div>
