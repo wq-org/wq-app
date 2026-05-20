@@ -21,6 +21,7 @@ export function ScrollDrivenIndexLink({ item, popoverId, className }: ScrollDriv
       href={href}
       data-slot="scroll-driven-index-link"
       className={cn(className)}
+      title={item.label}
       popoverTarget={popoverId}
       popoverTargetAction="hide"
       onClick={handleClick}

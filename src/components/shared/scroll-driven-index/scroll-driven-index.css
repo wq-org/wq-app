@@ -231,8 +231,7 @@
 
   [data-slot='scroll-driven-index-list'] {
     padding-inline: 0.5rem;
-    padding-left: 2.5rem;
-    list-style: scroll-driven-index-pad;
+    list-style: none;
     display: flex;
     width: 100%;
     margin: 0;
@@ -257,23 +256,38 @@
     }
   }
 
-  [data-slot='scroll-driven-index-list'] li::marker {
-    color: var(--muted-foreground);
+  [data-slot='scroll-driven-index-list-item'] {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
   }
 
-  [data-slot='scroll-driven-index-list'] li:has(a:is(:hover, :focus-visible))::marker {
+  [data-slot='scroll-driven-index-list-number'] {
+    color: var(--muted-foreground);
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    padding-block: 0.5rem;
+  }
+
+  [data-slot='scroll-driven-index-list-item']:has(a:is(:hover, :focus-visible))
+    [data-slot='scroll-driven-index-list-number'] {
     color: var(--foreground);
   }
 
   [data-slot='scroll-driven-index-link'] {
     color: var(--muted-foreground);
+    min-width: 0;
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: break-word;
     padding-block: 0.5rem;
     text-decoration: none;
-    display: inline-block;
+    display: block;
     width: 100%;
+    line-height: 1.5rem;
   }
 
   [data-slot='scroll-driven-index-link']:is(:hover, :focus-visible) {

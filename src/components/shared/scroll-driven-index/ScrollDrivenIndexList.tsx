@@ -9,14 +9,22 @@ export function ScrollDrivenIndexList({ items, popoverId, className }: ScrollDri
       data-slot="scroll-driven-index-list"
       className={cn(className)}
     >
-      {items.map((item) => (
-        <li key={item.id}>
-          <ScrollDrivenIndexLink
-            item={item}
-            popoverId={popoverId}
-          />
-        </li>
-      ))}
+      {items.map((item, index) => {
+        const displayNumber = String(index + 1).padStart(2, '0')
+
+        return (
+          <li
+            key={item.id}
+            data-slot="scroll-driven-index-list-item"
+          >
+            <span data-slot="scroll-driven-index-list-number">{displayNumber}</span>
+            <ScrollDrivenIndexLink
+              item={item}
+              popoverId={popoverId}
+            />
+          </li>
+        )
+      })}
     </ol>
   )
 }
