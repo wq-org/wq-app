@@ -215,6 +215,10 @@ body {
   --oklch-orange: 0.82 0.17 55;
   --oklch-pink: 0.8 0.17 10;
   --oklch-darkblue: 0.45 0.14 254;
+  --oklch-magenta: 0.72 0.22 336; 
+  --oklch-red: 0.63 0.24 27; 
+  --oklch-deep-cyan: 0.52 0.1 200; 
+  --oklch-yellow: 0.85 0.19 95; 
 }
 
 .dark {
@@ -542,6 +546,22 @@ body {
     pointer-events: none;
     position: absolute;
     top: 1.5rem;
+  }
+
+  .editor-comment-mark {
+    background-color: color-mix(in oklch, oklch(var(--oklch-yellow)) 28%, transparent);
+    border-radius: 2px;
+    padding-inline: 1px;
+    cursor: pointer;
+    transition: background-color 120ms ease-out;
+  }
+
+  .editor-comment-mark:hover {
+    background-color: color-mix(in oklch, oklch(var(--oklch-yellow)) 42%, transparent);
+  }
+
+  .editor-comment-mark--overlap {
+    background-color: color-mix(in oklch, oklch(var(--oklch-yellow)) 50%, transparent);
   }
 
   .editor-paragraph {

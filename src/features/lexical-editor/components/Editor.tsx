@@ -2,6 +2,7 @@ import { TabIndentationExtension } from '@lexical/extension'
 import { HistoryExtension } from '@lexical/history'
 import { LinkExtension } from '@lexical/link'
 import { ListExtension } from '@lexical/list'
+import { MarkNode } from '@lexical/mark'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionComposer'
@@ -28,6 +29,7 @@ import { EmojiNode } from '../nodes/EmojiNode'
 import { ImageNode } from '../nodes/ImageNode'
 import { YouTubeNode } from '../nodes/YouTubeNode'
 import { CheckListPlugin } from '../plugins/LexicalCheckListPlugin'
+import { CommentPlugin } from '../plugins/CommentPlugin'
 import { FloatingEmojiPickerPlugin } from '../plugins/FloatingEmojiPickerPlugin'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
@@ -78,6 +80,8 @@ const theme = {
     underline: 'underline',
     underlineStrikethrough: '[text-decoration:underline_line-through]',
   },
+  mark: 'editor-comment-mark',
+  markOverlap: 'editor-comment-mark editor-comment-mark--overlap',
 }
 
 const lessonEditorExtension = defineExtension({
@@ -94,7 +98,7 @@ const lessonEditorExtension = defineExtension({
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
   theme,
-  nodes: [ImageNode, EmojiNode, YouTubeNode, TableCellNode, TableNode, TableRowNode],
+  nodes: [ImageNode, EmojiNode, YouTubeNode, TableCellNode, TableNode, TableRowNode, MarkNode],
 })
 
 export type EditorProps = {
@@ -252,6 +256,7 @@ export function Editor({
         <SlashMenuPlugin registry={blockTypeRegistry} />
         <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
         <AddYouTubeLinksDialogPlugin />
+        <CommentPlugin />
         {anchorElem ? (
           <>
             <FloatingTextFormatToolbarPlugin

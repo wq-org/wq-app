@@ -24,7 +24,7 @@ function scrollToHashTarget(href: string) {
     behavior: 'smooth',
     block: 'center',
   })
-  window.history.pushState(null, '', href)
+  window.history.replaceState(null, '', href)
 
   return true
 }
@@ -45,7 +45,7 @@ export function ScrollDrivenIndexLink({ item, popoverId, className }: ScrollDriv
       href={href}
       data-slot="scroll-driven-index-link"
       className={cn(
-        'block w-full min-w-0 break-words py-2 leading-6 text-muted-foreground no-underline hover:text-foreground focus-visible:text-foreground',
+        'block w-full min-w-0 wrap-break-word py-2 leading-6 text-popover-foreground/80 no-underline transition-colors hover:text-popover-foreground focus-visible:text-popover-foreground',
         className,
       )}
       title={item.label}

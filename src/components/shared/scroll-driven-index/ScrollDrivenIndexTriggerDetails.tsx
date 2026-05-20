@@ -35,7 +35,7 @@ export function ScrollDrivenIndexTriggerDetails({
         className="size-6 shrink-0"
       />
       <span className="flex min-w-0 flex-1 items-center justify-between gap-1 text-left text-sm font-medium">
-        <span className="min-w-0 break-words leading-5">{label}</span>
+        <span className="min-w-0 wrap-break-word leading-5">{label}</span>
         <span className="relative size-[18px] shrink-0 overflow-hidden">
           <ArrowDownLeft
             className={cn(

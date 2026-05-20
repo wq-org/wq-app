@@ -23,7 +23,7 @@ export function ScrollDrivenIndexList({ items, popoverId, className }: ScrollDri
           >
             <span
               data-slot="scroll-driven-index-list-number"
-              className="shrink-0 py-2 text-sm leading-6 tabular-nums text-muted-foreground group-hover:text-foreground group-focus-within:text-foreground"
+              className="shrink-0 py-2 text-sm leading-6 tabular-nums text-popover-foreground/60 transition-colors group-hover:text-popover-foreground group-focus-within:text-popover-foreground"
             >
               {displayNumber}
             </span>

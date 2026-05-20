@@ -182,17 +182,17 @@ export const Lesson = () => {
   const isLessonContentLoading = loading
 
   return (
-    <div className={`-mx-[calc(50vw-50%)] -mt-6 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
+    <div className={`-mx-[calc(50vw-50%)] -mt-70 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
       <div
         className="h-[30vh] w-full"
         style={coverStyle}
       />
-      <div className="mx-auto w-full max-w-[calc(48rem+16rem+2rem)] px-6">
-        <div className="relative flex gap-8">
+      <div className="mx-auto w-full max-w-[calc(32rem+16rem+2rem)]  ">
+        <div className="relative flex">
           {headingItems.length > 0 ? (
             <aside
               aria-label="Table of contents"
-              className="hidden w-64 shrink-0 md:block"
+              className="hidden w-26 shrink-0 md:block"
             >
               <div className="sticky top-24">
                 <ScrollDrivenIndex

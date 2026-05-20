@@ -14,7 +14,18 @@ import {
   SELECTION_CHANGE_COMMAND,
   type LexicalEditor,
 } from 'lexical'
-import { Bold, Code, Italic, Link, Strikethrough, Underline, type LucideIcon } from 'lucide-react'
+import {
+  Bold,
+  Code,
+  Italic,
+  Link,
+  MessageSquareText,
+  Strikethrough,
+  Underline,
+  type LucideIcon,
+} from 'lucide-react'
+
+import { OPEN_COMMENT_DIALOG_COMMAND } from '../commands/commentCommands'
 import { useCallback, useEffect, useRef, type JSX } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -206,6 +217,10 @@ function FloatingPopup({
     onRequestLinkDialog()
   }
 
+  const handleCommentClick = () => {
+    editor.dispatchCommand(OPEN_COMMENT_DIALOG_COMMAND, undefined)
+  }
+
   return (
     <div
       ref={popupRef}
@@ -236,6 +251,16 @@ function FloatingPopup({
         className={`${toolbarButtonClassName} ${isLink ? 'bg-muted' : ''}`}
       >
         <Link className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        title="Add comment"
+        aria-label="Add comment"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={handleCommentClick}
+        className={toolbarButtonClassName}
+      >
+        <MessageSquareText className="h-4 w-4" />
       </button>
     </div>
   )

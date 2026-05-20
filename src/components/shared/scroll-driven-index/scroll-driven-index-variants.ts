@@ -22,7 +22,7 @@ export const scrollDrivenIndexVariants = cva(
 )
 
 export const scrollDrivenIndexTriggerVariants = cva(
-  'fixed bottom-[var(--scroll-driven-index-bottom)] z-[9999999] h-auto min-h-0 w-[var(--scroll-driven-index-trigger-width)] cursor-pointer rounded-[22px] border-0 p-[6px] outline-offset-2 [anchor-name:--scroll-driven-index-opener]',
+  'fixed bottom-[var(--scroll-driven-index-bottom)] z-[2147483000] h-auto min-h-0 w-[var(--scroll-driven-index-trigger-width)] cursor-pointer rounded-full border border-border/70 bg-popover/95 p-2 text-popover-foreground shadow-xl outline-offset-2 backdrop-blur-xl transition-all duration-300 ease-in-out [anchor-name:--scroll-driven-index-opener] [isolation:isolate] supports-[backdrop-filter]:bg-popover/90',
   {
     variants: {
       alignment: {
@@ -31,8 +31,8 @@ export const scrollDrivenIndexTriggerVariants = cva(
         right: 'right-4',
       },
       tone: {
-        default: 'bg-foreground/90 text-background backdrop-blur-md',
-        muted: 'bg-muted/80 text-foreground backdrop-blur-md',
+        default: '',
+        muted: 'text-foreground',
       },
     },
     defaultVariants: {
@@ -43,7 +43,7 @@ export const scrollDrivenIndexTriggerVariants = cva(
 )
 
 export const scrollDrivenIndexPanelVariants = cva(
-  'group fixed bottom-[var(--scroll-driven-index-bottom)] z-[99999999] hidden h-[var(--scroll-driven-index-trigger-height)] max-h-[70vh] w-[var(--scroll-driven-index-trigger-width)] max-w-[calc(100vw-2rem)] overflow-visible rounded-[22px] border-0 bg-transparent p-0 text-foreground transition-[display,overlay,width,height] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [inset:unset] [interpolate-size:allow-keywords] [margin:unset] [position-anchor:--scroll-driven-index-opener] [transition-behavior:allow-discrete] backdrop:animate-in backdrop:bg-black/25 backdrop:backdrop-blur-md backdrop:fade-out-0 backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-300 starting:[&:popover-open]:h-[var(--scroll-driven-index-trigger-height)] starting:[&:popover-open]:w-[var(--scroll-driven-index-trigger-width)] starting:[&:popover-open]:backdrop:opacity-0 [&:popover-open]:flex [&:popover-open]:h-[min(28rem,70vh)] [&:popover-open]:w-[min(600px,calc(100vw-2rem))] [&:popover-open]:backdrop:opacity-100',
+  'group fixed bottom-[var(--scroll-driven-index-bottom)] z-[2147483001] hidden h-[var(--scroll-driven-index-trigger-height)] max-h-[70vh] w-[var(--scroll-driven-index-trigger-width)] max-w-[calc(100vw-2rem)] overflow-visible rounded-[28px] border-0 bg-transparent p-0 text-foreground [isolation:isolate] transition-[display,overlay,width,height,border-radius] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [inset:unset] [interpolate-size:allow-keywords] [margin:unset] [position-anchor:--scroll-driven-index-opener] [transition-behavior:allow-discrete] backdrop:animate-in backdrop:bg-black/25 backdrop:backdrop-blur-md backdrop:fade-out-0 backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-300 starting:[&:popover-open]:h-[var(--scroll-driven-index-trigger-height)] starting:[&:popover-open]:w-[var(--scroll-driven-index-trigger-width)] starting:[&:popover-open]:rounded-[28px] starting:[&:popover-open]:backdrop:opacity-0 [&:popover-open]:flex [&:popover-open]:h-[min(28rem,70vh)] [&:popover-open]:w-[min(600px,calc(100vw-2rem))] [&:popover-open]:rounded-[2rem] [&:popover-open]:backdrop:opacity-100',
   {
     variants: {
       alignment: {
