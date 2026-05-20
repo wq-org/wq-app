@@ -1,6 +1,8 @@
-import { Trash2 } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+import { MessageSquare, Trash2 } from 'lucide-react'
 
 import { Ai01 } from '@/components/shared/ai-components'
+import { ReceivingChatMessageBubble } from '@/components/shared/chat'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -10,7 +12,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { Text } from '@/components/ui/text'
 
 import type { CommentThread } from './comment.types'
 
@@ -30,6 +31,8 @@ export function LessonCommentDetailSheet({
   onDelete,
 }: LessonCommentDetailSheetProps) {
   const hasThread = thread !== null
+  const replies = thread?.replies ?? []
+  const hasReplies = replies.length > 0
 
   const handleOpenChange = (next: boolean) => {
     if (!next) onClose()
@@ -47,34 +50,38 @@ export function LessonCommentDetailSheet({
         <SheetHeader>
           <SheetTitle>Comment thread</SheetTitle>
           <SheetDescription>
-            {hasThread ? `“${thread.quote}”` : 'Select a comment to view details.'}
+            {hasThread
+              ? 'Conversation about the highlighted text.'
+              : 'Select a comment to view details.'}
           </SheetDescription>
         </SheetHeader>
 
-        {hasThread ? (
-          <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4">
-            {thread.comments.map((comment) => (
-              <div
-                key={comment.id}
-                className="rounded-md border bg-muted/30 p-3"
-              >
-                <Text
-                  as="p"
-                  size="sm"
-                  className="whitespace-pre-wrap break-words"
-                >
-                  {comment.body}
-                </Text>
-                <Text
-                  as="span"
-                  size="xs"
-                  muted
-                  className="mt-1 block"
-                >
-                  {new Date(comment.createdAt).toLocaleString()}
-                </Text>
+        {hasThread && thread ? (
+          <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
+            <div className="rounded-lg bg-muted/40 p-4">
+              <div className="mb-2 flex items-start gap-2">
+                <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                <span className="line-clamp-3 text-sm italic text-muted-foreground">
+                  &ldquo;{thread.quotedText}&rdquo;
+                </span>
               </div>
-            ))}
+              <p className="whitespace-pre-wrap wrap-break-word text-base font-medium text-foreground">
+                {thread.body}
+              </p>
+            </div>
+
+            {hasReplies ? (
+              <div className="flex flex-col gap-3">
+                {replies.map((reply) => (
+                  <ReceivingChatMessageBubble
+                    key={reply.id}
+                    variant="default"
+                    text={reply.body}
+                    time={formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : null}
 

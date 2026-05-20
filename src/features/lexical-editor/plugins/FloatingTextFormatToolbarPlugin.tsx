@@ -28,6 +28,7 @@ import {
 import { OPEN_COMMENT_DIALOG_COMMAND } from '../commands/commentCommands'
 import { useCallback, useEffect, useRef, type JSX } from 'react'
 import { createPortal } from 'react-dom'
+import { TextHighlightToolbarButton } from './TextHighlightPlugin/TextHighlightPlugin'
 
 import { getDOMRangeRect } from '../utils/getDOMRangeRect'
 import { getSelectedNode } from '../utils/getSelectedNode'
@@ -137,13 +138,14 @@ const toolbarButtonClassName =
   'flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted'
 
 const toolbarShellClassName =
-  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-full border border-border bg-popover/95 px-1 py-1 opacity-0 text-popover-foreground shadow-xl backdrop-blur transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
+  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-full border border-border bg-popover/95 px-1 py-1 opacity-0 text-popover-foreground shadow-xl backdrop-blur-md transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
 
 type FloatingPopupProps = {
   editor: LexicalEditor
   anchorElem: HTMLElement
   formats: FormatFlags
   isLink: boolean
+  isText: boolean
   onRequestLinkDialog: () => void
 }
 
@@ -152,6 +154,7 @@ function FloatingPopup({
   anchorElem,
   formats,
   isLink,
+  isText,
   onRequestLinkDialog,
 }: FloatingPopupProps): JSX.Element {
   const popupRef = useRef<HTMLDivElement | null>(null)
@@ -262,6 +265,11 @@ function FloatingPopup({
       >
         <MessageSquareText className="h-4 w-4" />
       </button>
+      <TextHighlightToolbarButton
+        editor={editor}
+        className={toolbarButtonClassName}
+        enabled={isText}
+      />
     </div>
   )
 }
@@ -294,6 +302,7 @@ export function FloatingTextFormatToolbarPlugin({
       anchorElem={anchorElem}
       formats={{ isBold, isItalic, isUnderline, isStrikethrough, isCode }}
       isLink={isLink}
+      isText={isText}
       onRequestLinkDialog={onRequestLinkDialog}
     />,
     anchorElem,

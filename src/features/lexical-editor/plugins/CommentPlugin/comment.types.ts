@@ -1,24 +1,20 @@
 export type CommentThreadId = string
 export type CommentId = string
 
-export type CommentAuthor = {
-  id: string
-  name: string
-}
-
-export type Comment = {
+export type CommentReply = {
   id: CommentId
-  threadId: CommentThreadId
   body: string
-  author: CommentAuthor | null
-  createdAt: number
+  authorId: string | null
+  createdAt: string
 }
 
 export type CommentThread = {
   id: CommentThreadId
-  quote: string
-  comments: Comment[]
-  createdAt: number
+  quotedText: string
+  body: string
+  authorId: string | null
+  createdAt: string
+  replies: CommentReply[]
   resolved: boolean
 }
 

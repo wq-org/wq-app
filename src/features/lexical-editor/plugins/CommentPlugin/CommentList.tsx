@@ -34,8 +34,7 @@ export function CommentList({
   return (
     <ul className={cn('flex flex-col gap-2', className)}>
       {threads.map((thread) => {
-        const firstComment = thread.comments[0]
-        const replyCount = thread.comments.length - 1
+        const replyCount = thread.replies.length
         const isActive = selectedThreadId === thread.id
         return (
           <li key={thread.id}>
@@ -49,14 +48,14 @@ export function CommentList({
             >
               <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <MessageSquareText className="size-3.5 shrink-0" />
-                <span className="line-clamp-1 italic">“{thread.quote}”</span>
+                <span className="line-clamp-1 italic">“{thread.quotedText}”</span>
               </div>
               <Text
                 as="p"
                 size="sm"
                 className="line-clamp-3 whitespace-pre-wrap break-words"
               >
-                {firstComment?.body}
+                {thread.body}
               </Text>
               {replyCount > 0 ? (
                 <Text

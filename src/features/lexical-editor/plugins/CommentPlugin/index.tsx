@@ -21,17 +21,117 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useDisclosure } from '@/hooks/use-disclosure'
 
+import { $createCommentMarkNode, $isCommentMarkNode } from '../../nodes/CommentMarkNode'
 import { OPEN_COMMENT_DIALOG_COMMAND } from '../../commands/commentCommands'
 import { CommentDialog } from './CommentDialog'
 import { CommentList } from './CommentList'
-import type { CommentThreadId } from './comment.types'
+import type { CommentReply, CommentThread, CommentThreadId } from './comment.types'
 import { LessonCommentDetailSheet } from './LessonCommentDetailSheet'
-import { useCommentStore } from './useCommentStore'
+
+function createId(prefix: string): string {
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
+}
+
+function createThread(quotedText: string, body: string): CommentThread {
+  return {
+    id: createId('thr'),
+    quotedText,
+    body,
+    authorId: null,
+    createdAt: new Date().toISOString(),
+    replies: [],
+    resolved: false,
+  }
+}
+
+function createReply(body: string): CommentReply {
+  return {
+    id: createId('cmt'),
+    body,
+    authorId: null,
+    createdAt: new Date().toISOString(),
+  }
+}
+
+function cloneThread(thread: CommentThread): CommentThread {
+  return {
+    ...thread,
+    replies: thread.replies.map((reply) => ({ ...reply })),
+  }
+}
+
+function areThreadListsEqual(a: CommentThread[], b: CommentThread[]): boolean {
+  if (a.length !== b.length) return false
+  return a.every((thread, index) => {
+    const other = b[index]
+    return (
+      thread.id === other.id &&
+      thread.quotedText === other.quotedText &&
+      thread.body === other.body &&
+      thread.authorId === other.authorId &&
+      thread.createdAt === other.createdAt &&
+      thread.resolved === other.resolved &&
+      JSON.stringify(thread.replies) === JSON.stringify(other.replies)
+    )
+  })
+}
+
+function toTimestamp(value: string): number {
+  const time = Date.parse(value)
+  return Number.isFinite(time) ? time : 0
+}
+
+function sortThreadsByCreatedAt(threads: CommentThread[]): CommentThread[] {
+  return [...threads].sort((a, b) => toTimestamp(a.createdAt) - toTimestamp(b.createdAt))
+}
+
+function $visitNodes(node: LexicalNode, visitor: (node: LexicalNode) => void): void {
+  visitor(node)
+  if ($isElementNode(node)) {
+    const children = node.getChildren()
+    children.forEach((child) => $visitNodes(child, visitor))
+  }
+}
+
+function $collectThreadsFromMarks(): CommentThread[] {
+  const threadsById = new Map<string, CommentThread>()
+  const root = $getRoot()
+  $visitNodes(root, (node) => {
+    if (!$isCommentMarkNode(node)) return
+    node.getIDs().forEach((threadId) => {
+      const thread = node.getCommentThread(threadId)
+      if (!thread || threadsById.has(threadId)) return
+      threadsById.set(threadId, thread)
+    })
+  })
+  return sortThreadsByCreatedAt(Array.from(threadsById.values()))
+}
+
+function $findThread(threadId: CommentThreadId): CommentThread | null {
+  let thread: CommentThread | null = null
+  const root = $getRoot()
+  $visitNodes(root, (node) => {
+    if (thread || !$isCommentMarkNode(node) || !node.hasID(threadId)) return
+    thread = node.getCommentThread(threadId)
+  })
+  return thread
+}
+
+function $upsertThreadOnMarks(thread: CommentThread): void {
+  const root = $getRoot()
+  $visitNodes(root, (node) => {
+    if (!$isCommentMarkNode(node) || !node.hasID(thread.id)) return
+    node.setCommentThread(thread.id, thread)
+  })
+}
 
 function $removeMarkNodeId(threadId: string): void {
   const root = $getRoot()
   const walk = (node: LexicalNode) => {
     if ($isMarkNode(node) && node.hasID(threadId)) {
+      if ($isCommentMarkNode(node)) {
+        node.removeCommentThread(threadId)
+      }
       node.deleteID(threadId)
       if (node.getIDs().length === 0) {
         $unwrapMarkNode(node)
@@ -47,9 +147,9 @@ function $removeMarkNodeId(threadId: string): void {
 
 export function CommentPlugin() {
   const [editor] = useLexicalComposerContext()
-  const { threads, createThread, addReply, deleteThread } = useCommentStore()
   const dialog = useDisclosure()
   const sheet = useDisclosure()
+  const [threads, setThreads] = useState<CommentThread[]>([])
   const [pendingQuote, setPendingQuote] = useState('')
   const [selectedThreadId, setSelectedThreadId] = useState<CommentThreadId | null>(null)
 
@@ -90,7 +190,10 @@ export function CommentPlugin() {
               ? node
               : (node.getParents().find($isMarkNode) as MarkNode | undefined)
             if (!markAncestor) return null
-            return markAncestor.getIDs()[0] ?? null
+            const markThreadId = markAncestor.getIDs()[0] ?? null
+            if (!markThreadId) return null
+            const thread = $findThread(markThreadId)
+            return thread ? markThreadId : null
           })
           if (!threadId) return false
           setSelectedThreadId(threadId)
@@ -99,6 +202,15 @@ export function CommentPlugin() {
         },
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerUpdateListener(({ editorState }) => {
+        const nextThreads = editorState.read(() => $collectThreadsFromMarks())
+        setThreads((previousThreads) => {
+          if (areThreadListsEqual(previousThreads, nextThreads)) {
+            return previousThreads
+          }
+          return nextThreads
+        })
+      }),
     )
   }, [editor, setIsDialogOpen, setIsSheetOpen])
 
@@ -112,8 +224,13 @@ export function CommentPlugin() {
     editor.update(() => {
       const selection = $getSelection()
       if (!$isRangeSelection(selection)) return
-      $wrapSelectionInMarkNode(selection, selection.isBackward(), thread.id)
+      $wrapSelectionInMarkNode(selection, selection.isBackward(), thread.id, (ids) =>
+        $createCommentMarkNode(ids),
+      )
+      $upsertThreadOnMarks(thread)
     })
+    setSelectedThreadId(thread.id)
+    sheet.onOpen()
     dialog.onClose()
     setPendingQuote('')
   }
@@ -130,7 +247,13 @@ export function CommentPlugin() {
 
   const handleReply = (body: string) => {
     if (!selectedThreadId) return
-    addReply(selectedThreadId, body)
+    editor.update(() => {
+      const existingThread = $findThread(selectedThreadId)
+      if (!existingThread) return
+      const nextThread = cloneThread(existingThread)
+      nextThread.replies = [...nextThread.replies, createReply(body)]
+      $upsertThreadOnMarks(nextThread)
+    })
   }
 
   const handleDeleteThread = () => {
@@ -139,7 +262,6 @@ export function CommentPlugin() {
     editor.update(() => {
       $removeMarkNodeId(threadId)
     })
-    deleteThread(threadId)
     handleCloseSheet()
   }
 

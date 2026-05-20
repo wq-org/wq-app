@@ -28,6 +28,7 @@ import {
 import { EmojiNode } from '../nodes/EmojiNode'
 import { ImageNode } from '../nodes/ImageNode'
 import { YouTubeNode } from '../nodes/YouTubeNode'
+import { CommentMarkNode } from '../nodes/CommentMarkNode'
 import { CheckListPlugin } from '../plugins/LexicalCheckListPlugin'
 import { CommentPlugin } from '../plugins/CommentPlugin'
 import { FloatingEmojiPickerPlugin } from '../plugins/FloatingEmojiPickerPlugin'
@@ -98,7 +99,16 @@ const lessonEditorExtension = defineExtension({
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
   theme,
-  nodes: [ImageNode, EmojiNode, YouTubeNode, TableCellNode, TableNode, TableRowNode, MarkNode],
+  nodes: [
+    ImageNode,
+    EmojiNode,
+    YouTubeNode,
+    TableCellNode,
+    TableNode,
+    TableRowNode,
+    MarkNode,
+    CommentMarkNode,
+  ],
 })
 
 export type EditorProps = {
