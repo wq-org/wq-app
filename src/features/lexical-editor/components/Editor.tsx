@@ -8,7 +8,7 @@ import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionCompose
 import { RichTextExtension } from '@lexical/rich-text'
 import { TableCellNode, TableExtension, TableNode, TableRowNode } from '@lexical/table'
 import { configExtension, defineExtension, type SerializedEditorState } from 'lexical'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   LESSON_HYDRATION_TAG,
@@ -18,6 +18,7 @@ import {
   type LessonDraftState,
   type SaveStatus,
 } from '@/features/lesson'
+import type { ScrollDrivenIndexItem } from '@/components/shared/scroll-driven-index'
 
 import {
   FloatingFormatExtension,
@@ -37,6 +38,8 @@ import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardP
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
 import TableCellResizerPlugin from '../plugins/TableCellResizer'
 import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
+import { HeadingExtractorPlugin } from '../plugins/HeadingExtractorPlugin'
+import { HeadingIdPlugin } from '../plugins/HeadingIdPlugin'
 import { validateUrl } from '../utils/url'
 
 const theme = {
@@ -103,6 +106,7 @@ export type EditorProps = {
   onPersistSerializedContent?: (state: SerializedEditorState) => void | Promise<void>
   onSaveStatusChange?: (status: SaveStatus) => void
   onPasteOverflow?: (info: PasteOverflowInfo) => void
+  onHeadingsChange?: (items: ScrollDrivenIndexItem[]) => void
 }
 
 function LessonEditablePlugin({ readOnly }: { readOnly: boolean }) {
@@ -190,6 +194,7 @@ export function Editor({
   onPersistSerializedContent,
   onSaveStatusChange,
   onPasteOverflow,
+  onHeadingsChange,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
   const requestLinkDialogRef = useRef<() => void>(() => {})
@@ -201,15 +206,6 @@ export function Editor({
   const handleRequestLinkDialog = useCallback(() => {
     requestLinkDialogRef.current()
   }, [])
-
-  const editorPlaceholder = useMemo(
-    () => (
-      <div className="pointer-events-none absolute top-2 left-10 text-[0.95rem] text-zinc-400 select-none">
-        Type &apos;/&apos; for commands...
-      </div>
-    ),
-    [],
-  )
 
   const handlePasteOverflow = useCallback(
     (info: PasteOverflowInfo) => {
@@ -230,6 +226,8 @@ export function Editor({
         isLoading={isLoading}
         lessonId={lessonId}
       />
+      <HeadingIdPlugin />
+      {onHeadingsChange ? <HeadingExtractorPlugin onHeadingsChange={onHeadingsChange} /> : null}
       <TableCellResizerPlugin />
       {!readOnly && onPasteOverflow ? <PasteGuardPlugin onOverflow={handlePasteOverflow} /> : null}
       {!readOnly && !isLoading ? (
@@ -245,10 +243,10 @@ export function Editor({
         className="relative w-full"
       >
         <ContentEditable
-          className="min-h-[200px] py-2 pl-10 outline-none dark:text-zinc-200"
+          className="editor-contentEditable outline-none dark:text-zinc-200"
           aria-label="Rich text editor"
           aria-placeholder="Type '/' for commands..."
-          placeholder={editorPlaceholder}
+          placeholder={<div className="editor-placeholder">Type &apos;/&apos; for commands...</div>}
         />
         <LexicalDraggableBlockPlugin />
         <SlashMenuPlugin registry={blockTypeRegistry} />

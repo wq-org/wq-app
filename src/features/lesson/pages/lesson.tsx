@@ -8,6 +8,11 @@ import {
   LessonTextSkeleton,
   showSaveStatusToast,
 } from '@/components/shared'
+import {
+  SCROLL_DRIVEN_INDEX_SCROLL_CLASS,
+  ScrollDrivenIndex,
+  type ScrollDrivenIndexItem,
+} from '@/components/shared/scroll-driven-index'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
@@ -31,6 +36,7 @@ export const Lesson = () => {
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(true)
   const [pasteOverflow, setPasteOverflow] = useState<PasteOverflowInfo | null>(null)
+  const [headingItems, setHeadingItems] = useState<ScrollDrivenIndexItem[]>([])
   const isHydratedRef = useRef(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isHeaderSaveInFlightRef = useRef(false)
@@ -92,7 +98,18 @@ export const Lesson = () => {
   useEffect(() => {
     isHeaderSaveInFlightRef.current = false
     queuedHeaderPayloadRef.current = null
+    setHeadingItems([])
   }, [lessonId])
+
+  useEffect(() => {
+    document.documentElement.classList.add(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
+    document.body.classList.add(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
+
+    return () => {
+      document.documentElement.classList.remove(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
+      document.body.classList.remove(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
+    }
+  }, [])
 
   const enqueueHeaderSave = useCallback(
     (payload: { title: string; description: string }) => {
@@ -165,105 +182,127 @@ export const Lesson = () => {
   const isLessonContentLoading = loading
 
   return (
-    <div className="-mx-[calc(50vw-50%)] -mt-6 w-screen">
+    <div className={`-mx-[calc(50vw-50%)] -mt-6 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
       <div
         className="h-[30vh] w-full"
         style={coverStyle}
       />
-      <div className="mx-auto w-full max-w-3xl px-6">
-        <div className="-mt-10 mb-6">
-          <div
-            className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
-          >
-            <File
-              className="h-8 w-8 text-white"
-              strokeWidth={2}
-            />
-          </div>
-        </div>
-        {isLessonContentLoading ? (
-          <LessonTextSkeleton />
-        ) : (
-          <>
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder={titlePlaceholder}
-              className="w-full border-0 bg-transparent py-1 text-4xl leading-[1.15] font-bold tracking-tight outline-none placeholder:text-zinc-400"
-            />
-            <div className="mt-2 flex max-w-full items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
-                onClick={focusDescriptionField}
-              >
-                <TextQuote
-                  className="size-4 shrink-0"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                {t('page.actions.description')}
-              </Button>
-
-              <FieldTextarea
-                id={DESCRIPTION_TEXTAREA_ID}
-                className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
-                value={description}
-                onValueChange={setDescription}
-                label={descriptionLabel}
-                placeholder={descriptionPlaceholder}
-                rows={1}
-                hideSeparator
-              />
-            </div>
-            {lessonId ? (
-              <div className="mt-1 flex flex-col items-start justify-start">
-                <LessonSettingsDrawer
-                  lessonId={lessonId}
-                  lessonTitle={title}
+      <div className="mx-auto w-full max-w-[calc(48rem+16rem+2rem)] px-6">
+        <div className="relative flex gap-8">
+          {headingItems.length > 0 ? (
+            <aside
+              aria-label="Table of contents"
+              className="hidden w-64 shrink-0 md:block"
+            >
+              <div className="sticky top-24">
+                <ScrollDrivenIndex
+                  items={headingItems}
+                  label="Content"
+                  tone="muted"
+                  alignment="left"
+                  hideScrollDrivenIndexProgress
                 />
               </div>
-            ) : null}
-            {pasteOverflow ? (
-              <Alert
-                variant="destructive"
-                className="mt-4 ml-10"
+            </aside>
+          ) : null}
+
+          <div className="min-w-0 flex-1">
+            <div className="-mt-10 mb-6">
+              <div
+                className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
               >
-                <AlertTitle>Paste too large</AlertTitle>
-                <AlertDescription>
-                  That&apos;s {pasteOverflow.actualChars.toLocaleString()} characters — the limit is{' '}
-                  {pasteOverflow.limitChars.toLocaleString()} per paste. Try splitting the content
-                  into smaller sections.
+                <File
+                  className="h-8 w-8 text-white"
+                  strokeWidth={2}
+                />
+              </div>
+            </div>
+            {isLessonContentLoading ? (
+              <LessonTextSkeleton />
+            ) : (
+              <>
+                <input
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder={titlePlaceholder}
+                  className="w-full border-0 bg-transparent py-1 text-4xl leading-[1.15] font-bold tracking-tight outline-none placeholder:text-zinc-400"
+                />
+                <div className="mt-2 flex max-w-full items-center gap-2">
                   <Button
-                    aria-label="Dismiss"
-                    className="ml-2 h-6 px-2"
-                    onClick={dismissPasteOverflow}
-                    size="sm"
+                    type="button"
                     variant="ghost"
+                    size="sm"
+                    className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                    onClick={focusDescriptionField}
                   >
-                    <X className="size-3" />
+                    <TextQuote
+                      className="size-4 shrink-0"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                    {t('page.actions.description')}
                   </Button>
-                </AlertDescription>
-              </Alert>
-            ) : null}
-            <div className="mt-2 -ml-10 pb-24">
-              {lessonId && !loading && lesson ? (
-                <div key={lessonId}>
-                  <Editor
-                    initialContent={lesson?.content ?? null}
-                    isLoading={loading}
-                    lessonId={lessonId}
-                    onPersistSerializedContent={persistSerializedContent}
-                    onPasteOverflow={handlePasteOverflow}
-                    onSaveStatusChange={handleSaveStatusChange}
+
+                  <FieldTextarea
+                    id={DESCRIPTION_TEXTAREA_ID}
+                    className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
+                    value={description}
+                    onValueChange={setDescription}
+                    label={descriptionLabel}
+                    placeholder={descriptionPlaceholder}
+                    rows={1}
+                    hideSeparator
                   />
                 </div>
-              ) : null}
-            </div>
-          </>
-        )}
+                {lessonId ? (
+                  <div className="mt-1 flex flex-col items-start justify-start">
+                    <LessonSettingsDrawer
+                      lessonId={lessonId}
+                      lessonTitle={title}
+                    />
+                  </div>
+                ) : null}
+                {pasteOverflow ? (
+                  <Alert
+                    variant="destructive"
+                    className="mt-4 ml-10"
+                  >
+                    <AlertTitle>Paste too large</AlertTitle>
+                    <AlertDescription>
+                      That&apos;s {pasteOverflow.actualChars.toLocaleString()} characters — the
+                      limit is {pasteOverflow.limitChars.toLocaleString()} per paste. Try splitting
+                      the content into smaller sections.
+                      <Button
+                        aria-label="Dismiss"
+                        className="ml-2 h-6 px-2"
+                        onClick={dismissPasteOverflow}
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <X className="size-3" />
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
+                <div className="mt-2 pb-24">
+                  {lessonId && !loading && lesson ? (
+                    <div key={lessonId}>
+                      <Editor
+                        initialContent={lesson?.content ?? null}
+                        isLoading={loading}
+                        lessonId={lessonId}
+                        onHeadingsChange={setHeadingItems}
+                        onPersistSerializedContent={persistSerializedContent}
+                        onPasteOverflow={handlePasteOverflow}
+                        onSaveStatusChange={handleSaveStatusChange}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -36,3 +36,5 @@ export {
 export { parseYouTubeVideoId } from './utils/parseYouTubeVideoId'
 export { insertYouTubeEmbed } from './utils/insertYouTubeEmbed'
 export { CheckListPlugin } from './plugins/LexicalCheckListPlugin'
+export { HeadingExtractorPlugin, type LessonHeadingItem } from './plugins/HeadingExtractorPlugin'
+export { HeadingIdPlugin } from './plugins/HeadingIdPlugin'
