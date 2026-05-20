@@ -114,7 +114,10 @@ function openImagePicker(editor: LexicalEditor) {
 }
 
 function insertDefaultTable() {
-  const tableNode = $createTableNodeWithDimensions(3, 3, true)
+  const tableNode = $createTableNodeWithDimensions(3, 3, {
+    columns: false,
+    rows: true,
+  })
   $insertNodeToNearestRoot(tableNode)
 
   const firstDescendant = tableNode.getFirstDescendant()

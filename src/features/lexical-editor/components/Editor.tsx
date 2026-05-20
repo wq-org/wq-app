@@ -35,6 +35,7 @@ import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlu
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
+import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
 import { validateUrl } from '../utils/url'
 
 const theme = {
@@ -262,6 +263,7 @@ export function Editor({
               onRequestLinkDialog={handleRequestLinkDialog}
             />
             <FloatingEmojiPickerPlugin anchorElem={anchorElem} />
+            <TableInteractionPlugin anchorElem={anchorElem} />
           </>
         ) : null}
       </div>
