@@ -1,6 +1,7 @@
 import {
   $createTableCellNode,
   $createTableRowNode,
+  $isTableCellNode,
   $isTableNode,
   $isTableRowNode,
   TableCellHeaderStates,
@@ -136,27 +137,25 @@ export function toggleHeaderRow(editor: LexicalEditor, tableKey: NodeKey, rowInd
 export function moveRow(
   editor: LexicalEditor,
   tableKey: NodeKey,
-  fromIndex: number,
-  toIndex: number,
+  fromKey: NodeKey,
+  toKey: NodeKey,
+  position: 'before' | 'after',
 ): void {
   editor.update(() => {
-    const tableNode = $getTable(tableKey)
-    if (!tableNode) return
-    const rows = $getRows(tableNode)
-    if (fromIndex < 0 || fromIndex >= rows.length) return
-    if (toIndex < 0 || toIndex >= rows.length) return
-    if (fromIndex === toIndex) return
-    const movingRow = rows[fromIndex]
+    if (!$getTable(tableKey)) return
+    if (fromKey === toKey) return
+    const movingRow = $getNodeByKey(fromKey)
+    const targetRow = $getNodeByKey(toKey)
+    if (!$isTableRowNode(movingRow) || !$isTableRowNode(targetRow)) return
+    const clone = movingRow.getWritable()
     movingRow.remove()
-    const updatedRows = $getRows(tableNode)
-    const target = updatedRows[Math.min(toIndex, updatedRows.length)]
-    if (!target) {
-      tableNode.append(movingRow)
-    } else if (toIndex < fromIndex) {
-      target.insertBefore(movingRow)
-    } else {
-      target.insertAfter(movingRow)
+    const freshTarget = $getNodeByKey(toKey)
+    if (!$isTableRowNode(freshTarget)) return
+    if (position === 'before') {
+      freshTarget.insertBefore(clone)
+      return
     }
+    freshTarget.insertAfter(clone)
   })
 }
 
@@ -290,6 +289,7 @@ export function moveColumn(
   tableKey: NodeKey,
   fromIndex: number,
   toIndex: number,
+  position: 'before' | 'after',
 ): void {
   editor.update(() => {
     const tableNode = $getTable(tableKey)
@@ -303,17 +303,18 @@ export function moveColumn(
     rows.forEach((row) => {
       const cells = row.getChildren() as TableCellNode[]
       const movingCell = cells[fromIndex]
-      if (!movingCell) return
+      const targetCell = cells[toIndex]
+      if (!movingCell || !targetCell) return
+      const targetKey = targetCell.getKey()
+      const writable = movingCell.getWritable()
       movingCell.remove()
-      const updatedCells = row.getChildren() as TableCellNode[]
-      const target = updatedCells[Math.min(toIndex, updatedCells.length)]
-      if (!target) {
-        row.append(movingCell)
-      } else if (toIndex < fromIndex) {
-        target.insertBefore(movingCell)
-      } else {
-        target.insertAfter(movingCell)
+      const freshTarget = $getNodeByKey(targetKey)
+      if (!$isTableCellNode(freshTarget)) return
+      if (position === 'before') {
+        freshTarget.insertBefore(writable)
+        return
       }
+      freshTarget.insertAfter(writable)
     })
   })
 }

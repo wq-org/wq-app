@@ -1,11 +1,12 @@
 import { GripHorizontal } from 'lucide-react'
-import type { JSX } from 'react'
+import type { JSX, PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
 import { moveColumn } from './tableActions'
 import type { LexicalEditor, NodeKey } from 'lexical'
+import { computeDropIndex } from './tableInteractionUtils'
 
 export type ColGripOverlayProps = {
   editor: LexicalEditor
@@ -32,8 +33,8 @@ export function ColGripOverlay({
 }: ColGripOverlayProps): JSX.Element | null {
   const [dragInfo, setDragInfo] = useState<{
     fromIndex: number
-    pointerX: number
-    insertionIndex: number
+    targetIndex: number
+    position: 'before' | 'after'
   } | null>(null)
   const dragStartRef = useRef<{ index: number; startX: number; armed: boolean } | null>(null)
 
@@ -44,31 +45,41 @@ export function ColGripOverlay({
       const deltaX = Math.abs(e.clientX - state.startX)
       if (!state.armed && deltaX < DRAG_THRESHOLD) return
       state.armed = true
-      let insertionIndex = 0
-      for (let i = 0; i < firstRowCellEls.length; i++) {
-        const rect = firstRowCellEls[i].getBoundingClientRect()
-        const mid = rect.left + rect.width / 2
-        if (e.clientX > mid) insertionIndex = i + 1
-      }
-      setDragInfo({ fromIndex: state.index, pointerX: e.clientX, insertionIndex })
+      const midpoints = firstRowCellEls.map((cellEl) => {
+        const rect = cellEl.getBoundingClientRect()
+        return rect.left + rect.width / 2
+      })
+      const dropIndex = computeDropIndex(midpoints, e.clientX, state.index)
+      const lastMidpoint = midpoints[midpoints.length - 1]
+      const isAfterLast = lastMidpoint !== undefined && e.clientX > lastMidpoint
+      setDragInfo({
+        fromIndex: state.index,
+        targetIndex: isAfterLast ? firstRowCellEls.length - 1 : dropIndex,
+        position: isAfterLast ? 'after' : 'before',
+      })
     }
-    const handleUp = (e: PointerEvent) => {
+    const handleUp = () => {
       const state = dragStartRef.current
       dragStartRef.current = null
       if (!state) return
       const wasArmed = state.armed
       setDragInfo((current) => {
         if (current && wasArmed) {
-          let toIndex = current.insertionIndex
-          if (toIndex > current.fromIndex) toIndex -= 1
-          if (toIndex !== current.fromIndex) {
-            moveColumn(editor, tableKey, current.fromIndex, toIndex)
+          if (current.targetIndex !== current.fromIndex) {
+            moveColumn(
+              editor,
+              tableKey,
+              current.fromIndex,
+              current.targetIndex,
+              current.position,
+            )
           }
         } else if (!wasArmed) {
-          const target = e.target as HTMLElement | null
-          const gripEl = target?.closest('[data-col-grip-index]') as HTMLElement | null
-          const rect = gripEl?.getBoundingClientRect() ?? null
-          if (rect) onOpenMenu(state.index, rect)
+          const cellEl = firstRowCellEls[state.index]
+          if (cellEl) {
+            const rect = cellEl.getBoundingClientRect()
+            onOpenMenu(state.index, rect)
+          }
         }
         return null
       })
@@ -81,11 +92,12 @@ export function ColGripOverlay({
     }
   }, [editor, tableKey, firstRowCellEls, onOpenMenu])
 
-  const handlePointerDown = (colIndex: number) => (e: React.PointerEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    dragStartRef.current = { index: colIndex, startX: e.clientX, armed: false }
-  }
+  const handlePointerDown =
+    (colIndex: number) => (e: ReactPointerEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      dragStartRef.current = { index: colIndex, startX: e.clientX, armed: false }
+    }
 
   const anchorRect = anchorElem.getBoundingClientRect()
 
@@ -97,9 +109,9 @@ export function ColGripOverlay({
           hoveredColIndex === index ||
           highlightedColIndex === index ||
           dragInfo?.fromIndex === index
-        const top = cellRect.top - anchorRect.top + anchorElem.scrollTop - 22
+        const top = cellRect.top - anchorRect.top + anchorElem.scrollTop - 14
         const left =
-          cellRect.left - anchorRect.left + anchorElem.scrollLeft + cellRect.width / 2 - 12
+          cellRect.left - anchorRect.left + anchorElem.scrollLeft + cellRect.width / 2 - 14
 
         return (
           <button
@@ -109,8 +121,8 @@ export function ColGripOverlay({
             aria-label={`Column ${index + 1} actions`}
             onPointerDown={handlePointerDown(index)}
             className={cn(
-              'absolute z-30 flex h-5 w-6 cursor-grab items-center justify-center rounded text-muted-foreground transition-opacity hover:bg-accent hover:text-foreground',
-              visible ? 'opacity-100' : 'opacity-0 pointer-events-none',
+              'absolute z-30 flex size-7 cursor-grab items-center justify-center rounded-sm text-muted-foreground transition-opacity hover:bg-blue-100 hover:text-foreground dark:hover:bg-blue-900/40',
+              visible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
               dragInfo?.fromIndex === index && 'cursor-grabbing',
             )}
             style={{ top, left }}
@@ -122,8 +134,9 @@ export function ColGripOverlay({
       {dragInfo && wrapperEl ? (
         <DragInsertionLine
           anchorElem={anchorElem}
-          insertionIndex={dragInfo.insertionIndex}
           cellEls={firstRowCellEls}
+          position={dragInfo.position}
+          targetIndex={dragInfo.targetIndex}
           wrapperEl={wrapperEl}
         />
       ) : null}
@@ -133,27 +146,26 @@ export function ColGripOverlay({
 
 function DragInsertionLine({
   anchorElem,
-  insertionIndex,
   cellEls,
+  position,
+  targetIndex,
   wrapperEl,
 }: {
   anchorElem: HTMLElement
-  insertionIndex: number
   cellEls: HTMLTableCellElement[]
+  position: 'before' | 'after'
+  targetIndex: number
   wrapperEl: HTMLElement
 }) {
   const anchorRect = anchorElem.getBoundingClientRect()
   const wrapperRect = wrapperEl.getBoundingClientRect()
-  let lineX: number
-  if (insertionIndex === 0 && cellEls[0]) {
-    lineX = cellEls[0].getBoundingClientRect().left
-  } else if (insertionIndex >= cellEls.length) {
-    const last = cellEls[cellEls.length - 1]
-    lineX = last ? last.getBoundingClientRect().right : wrapperRect.right
-  } else {
-    const cell = cellEls[insertionIndex]
-    lineX = cell.getBoundingClientRect().left
-  }
+  const cell = cellEls[targetIndex]
+  const cellRect = cell?.getBoundingClientRect()
+  const lineX = cellRect
+    ? position === 'after'
+      ? cellRect.right
+      : cellRect.left
+    : wrapperRect.right
   return (
     <div
       className="pointer-events-none absolute z-40 w-0.5 bg-blue-500"

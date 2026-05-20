@@ -1,20 +1,20 @@
 import { Plus } from 'lucide-react'
-import type { JSX } from 'react'
+import type { JSX, PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef } from 'react'
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
-import { appendRow, deleteRow } from './tableActions'
+import { deleteLastEmptyRow, smartInsertRow } from './tableInteractionUtils'
 import type { LexicalEditor, NodeKey } from 'lexical'
 
 export type AddRowButtonProps = {
   editor: LexicalEditor
   tableKey: NodeKey
   anchorElem: HTMLElement
-  wrapperEl: HTMLElement
+  tableEl: HTMLElement
   visible: boolean
-  getRowCount: () => number
+  getLastRowKey: () => NodeKey | null
 }
 
 const PX_PER_ROW = 40
@@ -23,22 +23,21 @@ export function AddRowButton({
   editor,
   tableKey,
   anchorElem,
-  wrapperEl,
+  tableEl,
   visible,
-  getRowCount,
+  getLastRowKey,
 }: AddRowButtonProps): JSX.Element {
   const dragStateRef = useRef<{
     startY: number
-    initialCount: number
     addedDuringDrag: number
     armed: boolean
   } | null>(null)
 
   const anchorRect = anchorElem.getBoundingClientRect()
-  const wrapperRect = wrapperEl.getBoundingClientRect()
-  const top = wrapperRect.bottom - anchorRect.top + anchorElem.scrollTop + 4
-  const left = wrapperRect.left - anchorRect.left + anchorElem.scrollLeft
-  const width = wrapperRect.width
+  const tableRect = tableEl.getBoundingClientRect()
+  const top = tableRect.bottom - anchorRect.top + anchorElem.scrollTop + 4
+  const left = tableRect.left - anchorRect.left + anchorElem.scrollLeft
+  const width = tableRect.width
 
   useEffect(() => {
     const handleMove = (e: PointerEvent) => {
@@ -49,12 +48,17 @@ export function AddRowButton({
       state.armed = true
       const targetAdded = Math.max(0, Math.floor(deltaY / PX_PER_ROW))
       while (state.addedDuringDrag < targetAdded) {
-        appendRow(editor, tableKey)
+        const lastRowKey = getLastRowKey()
+        if (!lastRowKey) {
+          break
+        }
+        smartInsertRow(editor, tableKey, lastRowKey, 'after')
         state.addedDuringDrag++
       }
       while (state.addedDuringDrag > targetAdded) {
-        const totalRows = getRowCount()
-        deleteRow(editor, tableKey, totalRows - 1)
+        if (!deleteLastEmptyRow(editor, tableKey)) {
+          break
+        }
         state.addedDuringDrag--
       }
     }
@@ -62,7 +66,10 @@ export function AddRowButton({
       const state = dragStateRef.current
       dragStateRef.current = null
       if (state && !state.armed) {
-        appendRow(editor, tableKey)
+        const lastRowKey = getLastRowKey()
+        if (lastRowKey) {
+          smartInsertRow(editor, tableKey, lastRowKey, 'after')
+        }
       }
     }
     document.addEventListener('pointermove', handleMove)
@@ -71,14 +78,13 @@ export function AddRowButton({
       document.removeEventListener('pointermove', handleMove)
       document.removeEventListener('pointerup', handleUp)
     }
-  }, [editor, tableKey, getRowCount])
+  }, [editor, tableKey, getLastRowKey])
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+  const handlePointerDown = (e: ReactPointerEvent<HTMLButtonElement>) => {
     e.preventDefault()
     e.stopPropagation()
     dragStateRef.current = {
       startY: e.clientY,
-      initialCount: getRowCount(),
       addedDuringDrag: 0,
       armed: false,
     }

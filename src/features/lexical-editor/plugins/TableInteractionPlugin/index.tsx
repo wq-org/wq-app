@@ -1,22 +1,41 @@
-import { $getTableCellNodeFromLexicalNode, $isTableCellNode } from '@lexical/table'
+import {
+  $getTableCellNodeFromLexicalNode,
+  $isTableCellNode,
+  $isTableNode,
+  $isTableRowNode,
+} from '@lexical/table'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
   $getSelection,
+  $getNodeByKey,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
   SELECTION_CHANGE_COMMAND,
   type LexicalEditor,
   type NodeKey,
 } from 'lexical'
-import { Eraser, Palette, Plus, Trash2 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Copy,
+  TableProperties,
+  Trash2,
+  X,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { AddColButton } from './AddColButton'
 import { AddRowButton } from './AddRowButton'
 import { ColGripOverlay } from './ColGripOverlay'
 import { RowGripOverlay } from './RowGripOverlay'
-import { TableActionPopover, type PopoverAction } from './TableActionPopover'
+import {
+  TableActionPopover,
+  type TableActionSection,
+  type TableActionToggle,
+} from './TableActionPopover'
 import {
   clearColumnContents,
   clearRowContents,
@@ -24,31 +43,76 @@ import {
   deleteRow,
   duplicateColumn,
   duplicateRow,
-  insertColumnAt,
-  insertRowAt,
   toggleHeaderColumn,
   toggleHeaderRow,
 } from './tableActions'
+import {
+  isTableColumnHeader,
+  isTableRowHeader,
+  smartInsertCol,
+  smartInsertRow,
+} from './tableInteractionUtils'
 import { useTableKeys } from './useTableDOMMap'
 
 const FOCUSED_CELL_CLASS = 'editor-tableCell--focused'
 const SELECTED_ROW_CLASS = 'editor-tableRow--selected'
 const SELECTED_COL_CLASS = 'editor-tableCol--selected'
-const EDGE_REVEAL_DISTANCE = 12
+const EDGE_PROXIMITY_PX = 20
+const ZONE_BUFFER_PX = 40
+const LEAVE_DELAY_MS = 120
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 type OpenMenu =
-  | { kind: 'row'; tableKey: NodeKey; rowIndex: number; anchorRect: DOMRect }
+  | { kind: 'row'; tableKey: NodeKey; rowIndex: number; rowKey: NodeKey; anchorRect: DOMRect }
   | { kind: 'col'; tableKey: NodeKey; colIndex: number; anchorRect: DOMRect }
   | null
 
 export function TableInteractionPlugin({ anchorElem }: { anchorElem: HTMLElement }) {
   const [editor] = useLexicalComposerContext()
   const tableKeys = useTableKeys(editor)
+  const [openPopoverKey, setOpenPopoverKey] = useState<string | null>(null)
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null)
 
   useFocusRing(editor)
 
-  const handleCloseMenu = useCallback(() => setOpenMenu(null), [])
+  const handleCloseMenu = useCallback(() => {
+    setOpenPopoverKey(null)
+    setOpenMenu(null)
+  }, [])
+
+  const handleOpenRowMenu = useCallback(
+    (tableKey: NodeKey, rowIndex: number, rowKey: NodeKey, anchorRect: DOMRect) => {
+      const nextKey = `row:${tableKey}:${rowKey}`
+      if (openPopoverKey === nextKey) {
+        handleCloseMenu()
+        return
+      }
+
+      setOpenPopoverKey(nextKey)
+      setOpenMenu({ kind: 'row', tableKey, rowIndex, rowKey, anchorRect })
+    },
+    [handleCloseMenu, openPopoverKey],
+  )
+
+  const handleOpenColMenu = useCallback(
+    (tableKey: NodeKey, colIndex: number, anchorRect: DOMRect) => {
+      const nextKey = `col:${tableKey}:${colIndex}`
+      if (openPopoverKey === nextKey) {
+        handleCloseMenu()
+        return
+      }
+
+      setOpenPopoverKey(nextKey)
+      setOpenMenu({ kind: 'col', tableKey, colIndex, anchorRect })
+    },
+    [handleCloseMenu, openPopoverKey],
+  )
 
   return (
     <>
@@ -59,7 +123,8 @@ export function TableInteractionPlugin({ anchorElem }: { anchorElem: HTMLElement
           tableKey={tableKey}
           anchorElem={anchorElem}
           openMenu={openMenu?.tableKey === tableKey ? openMenu : null}
-          setOpenMenu={setOpenMenu}
+          onOpenRowMenu={handleOpenRowMenu}
+          onOpenColMenu={handleOpenColMenu}
         />
       ))}
       <TableMenuPortal
@@ -124,7 +189,8 @@ type TableOverlayProps = {
   tableKey: NodeKey
   anchorElem: HTMLElement
   openMenu: OpenMenu
-  setOpenMenu: (menu: OpenMenu) => void
+  onOpenRowMenu: (tableKey: NodeKey, rowIndex: number, rowKey: NodeKey, anchorRect: DOMRect) => void
+  onOpenColMenu: (tableKey: NodeKey, colIndex: number, anchorRect: DOMRect) => void
 }
 
 type TableLayout = {
@@ -147,7 +213,14 @@ function getTableLayout(editor: LexicalEditor, tableKey: NodeKey): TableLayout |
   return { wrapperEl, tableEl, rowEls, firstRowCellEls }
 }
 
-function TableOverlay({ editor, tableKey, anchorElem, openMenu, setOpenMenu }: TableOverlayProps) {
+function TableOverlay({
+  editor,
+  tableKey,
+  anchorElem,
+  openMenu,
+  onOpenRowMenu,
+  onOpenColMenu,
+}: TableOverlayProps) {
   const [tick, setTick] = useState(0)
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null)
   const [hoveredColIndex, setHoveredColIndex] = useState<number | null>(null)
@@ -173,40 +246,75 @@ function TableOverlay({ editor, tableKey, anchorElem, openMenu, setOpenMenu }: T
     [editor, tableKey, tick],
   )
 
+  const leaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const rafIdRef = useRef<number | null>(null)
+
   useEffect(() => {
     if (!layout) return
-    const { wrapperEl, rowEls, firstRowCellEls } = layout
+    const { wrapperEl, tableEl, rowEls, firstRowCellEls } = layout
 
-    const onMove = (e: PointerEvent) => {
-      const rect = wrapperEl.getBoundingClientRect()
-      const insideY = e.clientY >= rect.top && e.clientY <= rect.bottom
-      const insideX = e.clientX >= rect.left && e.clientX <= rect.right
-      const inside = insideX && insideY
+    const dismissAll = () => {
+      setHoveredRowIndex(null)
+      setHoveredColIndex(null)
+      setShowAddRow(false)
+      setShowAddCol(false)
+    }
 
-      const nearBottom =
-        e.clientY >= rect.bottom &&
-        e.clientY <= rect.bottom + EDGE_REVEAL_DISTANCE &&
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right
-      const nearRight =
-        e.clientX >= rect.right &&
-        e.clientX <= rect.right + EDGE_REVEAL_DISTANCE &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
+    const scheduleDismiss = () => {
+      if (leaveTimeoutRef.current !== null) return
+      const delay = prefersReducedMotion() ? 0 : LEAVE_DELAY_MS
+      leaveTimeoutRef.current = setTimeout(() => {
+        leaveTimeoutRef.current = null
+        dismissAll()
+      }, delay)
+    }
 
-      setShowAddRow(inside || nearBottom)
-      setShowAddCol(inside || nearRight)
+    const cancelDismiss = () => {
+      if (leaveTimeoutRef.current !== null) {
+        clearTimeout(leaveTimeoutRef.current)
+        leaveTimeoutRef.current = null
+      }
+    }
 
-      if (!inside) {
-        setHoveredRowIndex(null)
-        setHoveredColIndex(null)
+    const computeFromPointer = (clientX: number, clientY: number) => {
+      const wrapperRect = wrapperEl.getBoundingClientRect()
+      const tableRect = tableEl.getBoundingClientRect()
+      const zone = {
+        left: wrapperRect.left - ZONE_BUFFER_PX,
+        top: wrapperRect.top - ZONE_BUFFER_PX,
+        right: wrapperRect.right,
+        bottom: wrapperRect.bottom,
+      }
+      const inZone =
+        clientX >= zone.left &&
+        clientX <= zone.right &&
+        clientY >= zone.top &&
+        clientY <= zone.bottom
+
+      if (!inZone) {
+        scheduleDismiss()
         return
       }
+
+      cancelDismiss()
+
+      const horizontallyAligned =
+        clientX >= tableRect.left - ZONE_BUFFER_PX && clientX <= tableRect.right + EDGE_PROXIMITY_PX
+      const verticallyAligned =
+        clientY >= tableRect.top - ZONE_BUFFER_PX && clientY <= tableRect.bottom + EDGE_PROXIMITY_PX
+
+      const nearBottom =
+        horizontallyAligned && Math.abs(clientY - tableRect.bottom) <= EDGE_PROXIMITY_PX
+      const nearRight =
+        verticallyAligned && Math.abs(clientX - tableRect.right) <= EDGE_PROXIMITY_PX
+
+      setShowAddRow(nearBottom)
+      setShowAddCol(nearRight)
 
       let rowIndex: number | null = null
       for (let i = 0; i < rowEls.length; i++) {
         const r = rowEls[i].getBoundingClientRect()
-        if (e.clientY >= r.top && e.clientY <= r.bottom) {
+        if (clientY >= r.top && clientY <= r.bottom) {
           rowIndex = i
           break
         }
@@ -214,7 +322,7 @@ function TableOverlay({ editor, tableKey, anchorElem, openMenu, setOpenMenu }: T
       let colIndex: number | null = null
       for (let i = 0; i < firstRowCellEls.length; i++) {
         const c = firstRowCellEls[i].getBoundingClientRect()
-        if (e.clientX >= c.left && e.clientX <= c.right) {
+        if (clientX >= c.left && clientX <= c.right) {
           colIndex = i
           break
         }
@@ -223,72 +331,93 @@ function TableOverlay({ editor, tableKey, anchorElem, openMenu, setOpenMenu }: T
       setHoveredColIndex(colIndex)
     }
 
-    const onLeave = (e: PointerEvent) => {
-      const rect = wrapperEl.getBoundingClientRect()
-      const within =
-        e.clientX >= rect.left - EDGE_REVEAL_DISTANCE &&
-        e.clientX <= rect.right + EDGE_REVEAL_DISTANCE &&
-        e.clientY >= rect.top - EDGE_REVEAL_DISTANCE &&
-        e.clientY <= rect.bottom + EDGE_REVEAL_DISTANCE
-      if (!within) {
-        setHoveredRowIndex(null)
-        setHoveredColIndex(null)
-        setShowAddRow(false)
-        setShowAddCol(false)
-      }
+    const onMove = (e: PointerEvent) => {
+      if (rafIdRef.current !== null) return
+      rafIdRef.current = requestAnimationFrame(() => {
+        rafIdRef.current = null
+        computeFromPointer(e.clientX, e.clientY)
+      })
     }
 
     document.addEventListener('pointermove', onMove)
-    document.addEventListener('pointerleave', onLeave)
     return () => {
       document.removeEventListener('pointermove', onMove)
-      document.removeEventListener('pointerleave', onLeave)
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current)
+        rafIdRef.current = null
+      }
+      cancelDismiss()
     }
   }, [layout])
 
   useEffect(() => {
     if (!layout) return
-    layout.rowEls.forEach((row, index) => {
+    const { rowEls } = layout
+    rowEls.forEach((row, index) => {
       const selected = openMenu?.kind === 'row' && openMenu.rowIndex === index
       row.classList.toggle(SELECTED_ROW_CLASS, selected)
     })
     return () => {
-      layout.rowEls.forEach((row) => row.classList.remove(SELECTED_ROW_CLASS))
+      if (!editor.getElementByKey(tableKey)) return
+      rowEls.forEach((row) => {
+        if (row.isConnected) row.classList.remove(SELECTED_ROW_CLASS)
+      })
     }
-  }, [layout, openMenu])
+  }, [editor, layout, openMenu, tableKey])
 
   useEffect(() => {
     if (!layout) return
+    const { rowEls } = layout
     const colIndex = openMenu?.kind === 'col' ? openMenu.colIndex : -1
-    layout.rowEls.forEach((row) => {
+    rowEls.forEach((row) => {
       Array.from(row.children).forEach((cell, idx) => {
         ;(cell as HTMLElement).classList.toggle(SELECTED_COL_CLASS, idx === colIndex)
       })
     })
     return () => {
-      layout.rowEls.forEach((row) => {
+      if (!editor.getElementByKey(tableKey)) return
+      rowEls.forEach((row) => {
+        if (!row.isConnected) return
         Array.from(row.children).forEach((cell) =>
           (cell as HTMLElement).classList.remove(SELECTED_COL_CLASS),
         )
       })
     }
-  }, [layout, openMenu])
+  }, [editor, layout, openMenu, tableKey])
 
-  const getRowCount = useCallback(() => layout?.rowEls.length ?? 0, [layout])
-  const getColumnCount = useCallback(() => layout?.firstRowCellEls.length ?? 0, [layout])
+  const getColumnCount = useCallback(() => {
+    return editor.getEditorState().read(() => {
+      const node = $getNodeByKey(tableKey)
+      if (!$isTableNode(node)) {
+        return 0
+      }
+      return node.getColumnCount()
+    })
+  }, [editor, tableKey])
 
-  const onOpenRowMenu = useCallback(
-    (rowIndex: number, anchorRect: DOMRect) => {
-      setOpenMenu({ kind: 'row', tableKey, rowIndex, anchorRect })
+  const getLastRowKey = useCallback(() => {
+    return editor.getEditorState().read(() => {
+      const node = $getNodeByKey(tableKey)
+      if (!$isTableNode(node)) {
+        return null
+      }
+      const row = node.getLastChild()
+      return $isTableRowNode(row) ? row.getKey() : null
+    })
+  }, [editor, tableKey])
+
+  const handleOpenRowMenu = useCallback(
+    (rowIndex: number, rowKey: NodeKey, anchorRect: DOMRect) => {
+      onOpenRowMenu(tableKey, rowIndex, rowKey, anchorRect)
     },
-    [setOpenMenu, tableKey],
+    [onOpenRowMenu, tableKey],
   )
 
-  const onOpenColMenu = useCallback(
+  const handleOpenColMenu = useCallback(
     (colIndex: number, anchorRect: DOMRect) => {
-      setOpenMenu({ kind: 'col', tableKey, colIndex, anchorRect })
+      onOpenColMenu(tableKey, colIndex, anchorRect)
     },
-    [setOpenMenu, tableKey],
+    [onOpenColMenu, tableKey],
   )
 
   if (!layout) return null
@@ -303,7 +432,7 @@ function TableOverlay({ editor, tableKey, anchorElem, openMenu, setOpenMenu }: T
         rowEls={layout.rowEls}
         hoveredRowIndex={openMenu ? null : hoveredRowIndex}
         highlightedRowIndex={openMenu?.kind === 'row' ? openMenu.rowIndex : null}
-        onOpenMenu={onOpenRowMenu}
+        onOpenMenu={handleOpenRowMenu}
       />
       <ColGripOverlay
         editor={editor}
@@ -313,21 +442,21 @@ function TableOverlay({ editor, tableKey, anchorElem, openMenu, setOpenMenu }: T
         firstRowCellEls={layout.firstRowCellEls}
         hoveredColIndex={openMenu ? null : hoveredColIndex}
         highlightedColIndex={openMenu?.kind === 'col' ? openMenu.colIndex : null}
-        onOpenMenu={onOpenColMenu}
+        onOpenMenu={handleOpenColMenu}
       />
       <AddRowButton
         editor={editor}
         tableKey={tableKey}
         anchorElem={anchorElem}
-        wrapperEl={layout.wrapperEl}
+        tableEl={layout.tableEl}
         visible={showAddRow && openMenu === null}
-        getRowCount={getRowCount}
+        getLastRowKey={getLastRowKey}
       />
       <AddColButton
         editor={editor}
         tableKey={tableKey}
         anchorElem={anchorElem}
-        wrapperEl={layout.wrapperEl}
+        tableEl={layout.tableEl}
         visible={showAddCol && openMenu === null}
         getColumnCount={getColumnCount}
       />
@@ -343,97 +472,148 @@ type TableMenuPortalProps = {
 }
 
 function TableMenuPortal({ editor, openMenu, onClose }: TableMenuPortalProps) {
-  const actions = useMemo<PopoverAction[]>(() => {
-    if (!openMenu) return []
+  const [headerChecked, setHeaderChecked] = useState(false)
+
+  useEffect(() => {
+    if (!openMenu) {
+      setHeaderChecked(false)
+      return
+    }
+
+    const nextChecked =
+      openMenu.kind === 'row'
+        ? isTableRowHeader(editor, openMenu.tableKey, openMenu.rowIndex)
+        : isTableColumnHeader(editor, openMenu.tableKey, openMenu.colIndex)
+    setHeaderChecked(nextChecked)
+  }, [editor, openMenu])
+
+  const headerToggle = useMemo<TableActionToggle | undefined>(() => {
+    if (!openMenu) {
+      return undefined
+    }
+
+    const label = openMenu.kind === 'row' ? 'Header Row' : 'Header Column'
+    return {
+      label,
+      icon: <TableProperties className="size-3.5" />,
+      checked: headerChecked,
+      onCheckedChange: (nextChecked) => {
+        setHeaderChecked(nextChecked)
+        if (openMenu.kind === 'row') {
+          toggleHeaderRow(editor, openMenu.tableKey, openMenu.rowIndex)
+          return
+        }
+        toggleHeaderColumn(editor, openMenu.tableKey, openMenu.colIndex)
+      },
+    }
+  }, [editor, headerChecked, openMenu])
+
+  const sections = useMemo<TableActionSection[]>(() => {
+    if (!openMenu) {
+      return []
+    }
+
     if (openMenu.kind === 'row') {
-      const { tableKey, rowIndex } = openMenu
+      const { tableKey, rowIndex, rowKey } = openMenu
       return [
         {
-          id: 'toggle-header-row',
-          label: 'Header row',
-          icon: <Palette className="size-3.5" />,
-          onSelect: () => toggleHeaderRow(editor, tableKey, rowIndex),
+          id: 'row-duplicate',
+          items: [
+            {
+              id: 'duplicate',
+              label: 'Duplicate',
+              icon: <Copy className="size-3.5" />,
+              shortcut: '⌘D',
+              onSelect: () => duplicateRow(editor, tableKey, rowIndex),
+            },
+          ],
         },
         {
-          id: 'insert-above',
-          label: 'Insert above',
-          icon: <Plus className="size-3.5" />,
-          onSelect: () => insertRowAt(editor, tableKey, rowIndex, 'above'),
+          id: 'row-insert',
+          items: [
+            {
+              id: 'insert-above',
+              label: 'Insert above',
+              icon: <ArrowUp className="size-3.5" />,
+              onSelect: () => smartInsertRow(editor, tableKey, rowKey, 'before'),
+            },
+            {
+              id: 'insert-below',
+              label: 'Insert below',
+              icon: <ArrowDown className="size-3.5" />,
+              onSelect: () => smartInsertRow(editor, tableKey, rowKey, 'after'),
+            },
+          ],
         },
         {
-          id: 'insert-below',
-          label: 'Insert below',
-          icon: <Plus className="size-3.5" />,
-          onSelect: () => insertRowAt(editor, tableKey, rowIndex, 'below'),
-        },
-        {
-          id: 'duplicate',
-          label: 'Duplicate',
-          shortcut: '⌘D',
-          onSelect: () => duplicateRow(editor, tableKey, rowIndex),
-        },
-        {
-          id: 'clear',
-          label: 'Clear contents',
-          icon: <Eraser className="size-3.5" />,
-          onSelect: () => clearRowContents(editor, tableKey, rowIndex),
-        },
-        {
-          id: 'delete',
-          label: 'Delete',
-          icon: <Trash2 className="size-3.5" />,
-          variant: 'danger',
-          onSelect: () => deleteRow(editor, tableKey, rowIndex),
+          id: 'row-danger',
+          items: [
+            {
+              id: 'clear',
+              label: 'Clear contents',
+              icon: <X className="size-3.5" />,
+              onSelect: () => clearRowContents(editor, tableKey, rowIndex),
+            },
+            {
+              id: 'delete',
+              label: 'Delete',
+              icon: <Trash2 className="size-3.5" />,
+              variant: 'danger',
+              onSelect: () => deleteRow(editor, tableKey, rowIndex),
+            },
+          ],
         },
       ]
     }
+
     const { tableKey, colIndex } = openMenu
     return [
       {
-        id: 'toggle-header-col',
-        label: 'Header column',
-        icon: <Palette className="size-3.5" />,
-        onSelect: () => toggleHeaderColumn(editor, tableKey, colIndex),
+        id: 'col-duplicate',
+        items: [
+          {
+            id: 'duplicate',
+            label: 'Duplicate',
+            icon: <Copy className="size-3.5" />,
+            shortcut: '⌘D',
+            onSelect: () => duplicateColumn(editor, tableKey, colIndex),
+          },
+        ],
       },
       {
-        id: 'color',
-        label: 'Color',
-        icon: <Palette className="size-3.5" />,
-        hasSubmenu: true,
-        onSelect: () => {
-          // TODO: open color submenu
-        },
+        id: 'col-insert',
+        items: [
+          {
+            id: 'insert-left',
+            label: 'Insert left',
+            icon: <ArrowLeft className="size-3.5" />,
+            onSelect: () => smartInsertCol(editor, tableKey, colIndex, 'before'),
+          },
+          {
+            id: 'insert-right',
+            label: 'Insert right',
+            icon: <ArrowRight className="size-3.5" />,
+            onSelect: () => smartInsertCol(editor, tableKey, colIndex, 'after'),
+          },
+        ],
       },
       {
-        id: 'insert-left',
-        label: 'Insert left',
-        icon: <Plus className="size-3.5" />,
-        onSelect: () => insertColumnAt(editor, tableKey, colIndex, 'left'),
-      },
-      {
-        id: 'insert-right',
-        label: 'Insert right',
-        icon: <Plus className="size-3.5" />,
-        onSelect: () => insertColumnAt(editor, tableKey, colIndex, 'right'),
-      },
-      {
-        id: 'duplicate',
-        label: 'Duplicate',
-        shortcut: '⌘D',
-        onSelect: () => duplicateColumn(editor, tableKey, colIndex),
-      },
-      {
-        id: 'clear',
-        label: 'Clear contents',
-        icon: <Eraser className="size-3.5" />,
-        onSelect: () => clearColumnContents(editor, tableKey, colIndex),
-      },
-      {
-        id: 'delete',
-        label: 'Delete',
-        icon: <Trash2 className="size-3.5" />,
-        variant: 'danger',
-        onSelect: () => deleteColumn(editor, tableKey, colIndex),
+        id: 'col-danger',
+        items: [
+          {
+            id: 'clear',
+            label: 'Clear contents',
+            icon: <X className="size-3.5" />,
+            onSelect: () => clearColumnContents(editor, tableKey, colIndex),
+          },
+          {
+            id: 'delete',
+            label: 'Delete',
+            icon: <Trash2 className="size-3.5" />,
+            variant: 'danger',
+            onSelect: () => deleteColumn(editor, tableKey, colIndex),
+          },
+        ],
       },
     ]
   }, [editor, openMenu])
@@ -445,7 +625,8 @@ function TableMenuPortal({ editor, openMenu, onClose }: TableMenuPortalProps) {
         if (!open) onClose()
       }}
       anchorRect={openMenu?.anchorRect ?? null}
-      actions={actions}
+      headerToggle={headerToggle}
+      sections={sections}
       side={openMenu?.kind === 'row' ? 'right' : 'bottom'}
     />
   )

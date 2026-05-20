@@ -35,6 +35,7 @@ import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlu
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
+import TableCellResizerPlugin from '../plugins/TableCellResizer'
 import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
 import { validateUrl } from '../utils/url'
 
@@ -229,6 +230,7 @@ export function Editor({
         isLoading={isLoading}
         lessonId={lessonId}
       />
+      <TableCellResizerPlugin />
       {!readOnly && onPasteOverflow ? <PasteGuardPlugin onOverflow={handlePasteOverflow} /> : null}
       {!readOnly && !isLoading ? (
         <LessonAutosaveBridge

@@ -1,26 +1,37 @@
 import type { JSX } from 'react'
-import { ChevronRight } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
-import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 
-export type PopoverAction = {
+export type TableActionItem = {
   id: string
   label: string
   icon?: JSX.Element
   shortcut?: string
-  hasSubmenu?: boolean
   variant?: 'default' | 'danger'
   onSelect: () => void
+}
+
+export type TableActionSection = {
+  id: string
+  items: TableActionItem[]
+}
+
+export type TableActionToggle = {
+  label: string
+  icon: JSX.Element
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
 }
 
 export type TableActionPopoverProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   anchorRect: DOMRect | null
-  actions: PopoverAction[]
+  headerToggle?: TableActionToggle
+  sections: TableActionSection[]
   side?: 'top' | 'right' | 'bottom' | 'left'
 }
 
@@ -28,75 +39,22 @@ export function TableActionPopover({
   open,
   onOpenChange,
   anchorRect,
-  actions,
+  headerToggle,
+  sections,
   side = 'right',
 }: TableActionPopoverProps) {
-  const [query, setQuery] = useState('')
-  const [activeIndex, setActiveIndex] = useState(0)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
-
-  const filtered = useSearchFilter(actions, query, ['label'] as const)
-
-  useEffect(() => {
-    if (open) {
-      setQuery('')
-      setActiveIndex(0)
-      requestAnimationFrame(() => {
-        inputRef.current?.focus({ preventScroll: true })
-      })
-    }
-  }, [open])
-
-  useEffect(() => {
-    setActiveIndex(0)
-  }, [query])
-
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-    const item = listRef.current?.querySelector<HTMLElement>(`[data-action-index="${activeIndex}"]`)
-    item?.scrollIntoView({ block: 'nearest' })
-  }, [activeIndex, open])
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      setActiveIndex((prev) => (filtered.length === 0 ? 0 : (prev + 1) % filtered.length))
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      setActiveIndex((prev) =>
-        filtered.length === 0 ? 0 : (prev - 1 + filtered.length) % filtered.length,
-      )
-    } else if (event.key === 'Enter') {
-      event.preventDefault()
-      const action = filtered[activeIndex]
-      if (action) {
-        action.onSelect()
-        onOpenChange(false)
-      }
-    } else if (event.key === 'Escape') {
-      event.preventDefault()
-      onOpenChange(false)
-    }
-  }
-
-  const virtualAnchor = useMemo(() => {
-    if (!anchorRect) return null
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          left: anchorRect.left,
-          top: anchorRect.top,
-          width: anchorRect.width,
-          height: anchorRect.height,
-          pointerEvents: 'none',
-        }}
-      />
-    )
-  }, [anchorRect])
+  const virtualAnchor = anchorRect ? (
+    <div
+      style={{
+        position: 'fixed',
+        left: anchorRect.left,
+        top: anchorRect.top,
+        width: anchorRect.width,
+        height: anchorRect.height,
+        pointerEvents: 'none',
+      }}
+    />
+  ) : null
 
   return (
     <Popover
@@ -108,63 +66,113 @@ export function TableActionPopover({
         side={side}
         align="start"
         sideOffset={6}
-        className="w-64 p-1"
+        className="w-72 p-2"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          placeholder="Search actions..."
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={handleKeyDown}
-          className="mb-1 w-full rounded-md bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-muted-foreground"
-          aria-label="Search table actions"
-        />
-        <div
-          ref={listRef}
-          className="max-h-72 overflow-y-auto"
-          role="listbox"
-        >
-          {filtered.length === 0 ? (
-            <div className="px-2 py-3 text-xs text-muted-foreground">No actions</div>
-          ) : (
-            filtered.map((action, index) => (
-              <button
-                key={action.id}
-                type="button"
-                role="option"
-                aria-selected={index === activeIndex}
-                data-action-index={index}
-                onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => {
-                  action.onSelect()
-                  onOpenChange(false)
-                }}
-                onMouseDown={(event) => event.preventDefault()}
-                className={cn(
-                  'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm',
-                  index === activeIndex && 'bg-accent text-accent-foreground',
-                  action.variant === 'danger' && 'text-destructive',
-                )}
-              >
-                <span className="flex items-center gap-2">
-                  {action.icon ? (
-                    <span className="inline-flex size-4 items-center justify-center text-muted-foreground">
-                      {action.icon}
-                    </span>
-                  ) : null}
-                  <span>{action.label}</span>
-                </span>
-                <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                  {action.shortcut ? <kbd className="font-sans">{action.shortcut}</kbd> : null}
-                  {action.hasSubmenu ? <ChevronRight className="size-3.5" /> : null}
-                </span>
-              </button>
-            ))
-          )}
+        <div className="space-y-1">
+          {headerToggle ? (
+            <>
+              <ToggleRow
+                icon={headerToggle.icon}
+                label={headerToggle.label}
+                checked={headerToggle.checked}
+                onCheckedChange={headerToggle.onCheckedChange}
+              />
+              {sections.length > 0 ? <Separator className="my-1" /> : null}
+            </>
+          ) : null}
+
+          {sections.map((section, sectionIndex) => (
+            <div
+              key={section.id}
+              className="space-y-1"
+            >
+              {section.items.map((item) => (
+                <ActionRow
+                  key={item.id}
+                  item={item}
+                  onClose={() => onOpenChange(false)}
+                />
+              ))}
+              {sectionIndex < sections.length - 1 ? <Separator className="my-1" /> : null}
+            </div>
+          ))}
         </div>
       </PopoverContent>
     </Popover>
+  )
+}
+
+function ToggleRow({
+  icon,
+  label,
+  checked,
+  onCheckedChange,
+}: TableActionToggle): JSX.Element {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onCheckedChange(!checked)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onCheckedChange(!checked)
+        }
+      }}
+      onMouseDown={(event) => event.preventDefault()}
+      className={cn(
+        'flex items-center justify-between gap-3 rounded-md px-2 py-2 text-sm transition-colors',
+        'hover:bg-accent hover:text-accent-foreground',
+      )}
+    >
+      <span className="flex items-center gap-2">
+        <span className="inline-flex size-4 items-center justify-center text-muted-foreground">
+          {icon}
+        </span>
+        <span>{label}</span>
+      </span>
+      <Switch
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        onClick={(event) => event.stopPropagation()}
+      />
+    </div>
+  )
+}
+
+function ActionRow({
+  item,
+  onClose,
+}: {
+  item: TableActionItem
+  onClose: () => void
+}): JSX.Element {
+  return (
+    <button
+      type="button"
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={() => {
+        item.onSelect()
+        onClose()
+      }}
+      className={cn(
+        'flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors',
+        'hover:bg-accent hover:text-accent-foreground',
+        item.variant === 'danger' && 'text-destructive hover:text-destructive',
+      )}
+    >
+      <span className="flex items-center gap-2">
+        {item.icon ? (
+          <span className="inline-flex size-4 items-center justify-center text-muted-foreground">
+            {item.icon}
+          </span>
+        ) : null}
+        <span>{item.label}</span>
+      </span>
+      <span className="flex items-center gap-2 text-xs text-muted-foreground">
+        {item.shortcut ? <kbd className="font-sans">{item.shortcut}</kbd> : null}
+      </span>
+    </button>
   )
 }

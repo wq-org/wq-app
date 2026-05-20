@@ -674,6 +674,8 @@ body {
   .editor-tableScrollableWrapper {
     margin: 0.75rem 0;
     overflow-x: auto;
+    padding-right: 28px;
+    padding-bottom: 28px;
   }
 
   .editor-table {

@@ -1,44 +1,44 @@
 import { Plus } from 'lucide-react'
-import type { JSX } from 'react'
+import type { JSX, PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef } from 'react'
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
-import { appendColumn, deleteColumn } from './tableActions'
+import { deleteLastEmptyColumn, smartInsertCol } from './tableInteractionUtils'
 import type { LexicalEditor, NodeKey } from 'lexical'
 
 export type AddColButtonProps = {
   editor: LexicalEditor
   tableKey: NodeKey
   anchorElem: HTMLElement
-  wrapperEl: HTMLElement
+  tableEl: HTMLElement
   visible: boolean
   getColumnCount: () => number
 }
 
 const PX_PER_COL = 60
+const CORNER_RESERVED_PX = 20
 
 export function AddColButton({
   editor,
   tableKey,
   anchorElem,
-  wrapperEl,
+  tableEl,
   visible,
   getColumnCount,
 }: AddColButtonProps): JSX.Element {
   const dragStateRef = useRef<{
     startX: number
-    initialCount: number
     addedDuringDrag: number
     armed: boolean
   } | null>(null)
 
   const anchorRect = anchorElem.getBoundingClientRect()
-  const wrapperRect = wrapperEl.getBoundingClientRect()
-  const left = wrapperRect.right - anchorRect.left + anchorElem.scrollLeft + 4
-  const top = wrapperRect.top - anchorRect.top + anchorElem.scrollTop
-  const height = wrapperRect.height
+  const tableRect = tableEl.getBoundingClientRect()
+  const left = tableRect.right - anchorRect.left + anchorElem.scrollLeft + 4
+  const top = tableRect.top - anchorRect.top + anchorElem.scrollTop
+  const height = Math.max(0, tableRect.height - CORNER_RESERVED_PX)
 
   useEffect(() => {
     const handleMove = (e: PointerEvent) => {
@@ -49,12 +49,17 @@ export function AddColButton({
       state.armed = true
       const targetAdded = Math.max(0, Math.floor(deltaX / PX_PER_COL))
       while (state.addedDuringDrag < targetAdded) {
-        appendColumn(editor, tableKey)
+        const columnCount = getColumnCount()
+        if (columnCount <= 0) {
+          break
+        }
+        smartInsertCol(editor, tableKey, columnCount - 1, 'after')
         state.addedDuringDrag++
       }
       while (state.addedDuringDrag > targetAdded) {
-        const total = getColumnCount()
-        deleteColumn(editor, tableKey, total - 1)
+        if (!deleteLastEmptyColumn(editor, tableKey)) {
+          break
+        }
         state.addedDuringDrag--
       }
     }
@@ -62,7 +67,10 @@ export function AddColButton({
       const state = dragStateRef.current
       dragStateRef.current = null
       if (state && !state.armed) {
-        appendColumn(editor, tableKey)
+        const columnCount = getColumnCount()
+        if (columnCount > 0) {
+          smartInsertCol(editor, tableKey, columnCount - 1, 'after')
+        }
       }
     }
     document.addEventListener('pointermove', handleMove)
@@ -73,12 +81,11 @@ export function AddColButton({
     }
   }, [editor, tableKey, getColumnCount])
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+  const handlePointerDown = (e: ReactPointerEvent<HTMLButtonElement>) => {
     e.preventDefault()
     e.stopPropagation()
     dragStateRef.current = {
       startX: e.clientX,
-      initialCount: getColumnCount(),
       addedDuringDrag: 0,
       armed: false,
     }
