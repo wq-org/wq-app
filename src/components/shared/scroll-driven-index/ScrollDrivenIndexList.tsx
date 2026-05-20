@@ -7,7 +7,10 @@ export function ScrollDrivenIndexList({ items, popoverId, className }: ScrollDri
   return (
     <ol
       data-slot="scroll-driven-index-list"
-      className={cn(className)}
+      className={cn(
+        'm-0 flex w-full list-none flex-col px-2 opacity-100 motion-safe:transition-opacity',
+        className,
+      )}
     >
       {items.map((item, index) => {
         const displayNumber = String(index + 1).padStart(2, '0')
@@ -16,8 +19,14 @@ export function ScrollDrivenIndexList({ items, popoverId, className }: ScrollDri
           <li
             key={item.id}
             data-slot="scroll-driven-index-list-item"
+            className="group grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-2"
           >
-            <span data-slot="scroll-driven-index-list-number">{displayNumber}</span>
+            <span
+              data-slot="scroll-driven-index-list-number"
+              className="shrink-0 py-2 text-sm leading-6 tabular-nums text-muted-foreground group-hover:text-foreground group-focus-within:text-foreground"
+            >
+              {displayNumber}
+            </span>
             <ScrollDrivenIndexLink
               item={item}
               popoverId={popoverId}

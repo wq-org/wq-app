@@ -2,12 +2,16 @@ import { useId } from 'react'
 
 type ScrollDrivenIndexIconProps = {
   className?: string
+  progress?: number
 }
 
-export function ScrollDrivenIndexIcon({ className }: ScrollDrivenIndexIconProps) {
+export function ScrollDrivenIndexIcon({ className, progress }: ScrollDrivenIndexIconProps) {
   const uid = useId().replace(/:/g, '')
   const maskBaseId = `scroll-driven-index-mask-base-${uid}`
   const maskLinesId = `scroll-driven-index-mask-lines-${uid}`
+  const clampedProgress = Math.min(Math.max(progress ?? 0, 0), 100)
+  const pathLength = 1.025
+  const strokeDashoffset = pathLength - (pathLength * clampedProgress) / 100
 
   return (
     <svg
@@ -51,13 +55,12 @@ export function ScrollDrivenIndexIcon({ className }: ScrollDrivenIndexIconProps)
         height="20"
       >
         <path
-          className="scroll-driven-index__lines"
           d="M3 6.75L19.0541 6.75L21.027 6.75H23.0135L23 3.5L1 3.5L1 12L23 12L23.0135 21L1 21L1 17.25L13 17.25"
           stroke="white"
           strokeWidth="2.5"
-          pathLength={1.025}
-          strokeDasharray="1.025"
-          strokeDashoffset="1.025"
+          pathLength={pathLength}
+          strokeDasharray={pathLength}
+          strokeDashoffset={strokeDashoffset}
         />
       </mask>
       <g mask={`url(#${maskLinesId})`}>

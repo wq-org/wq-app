@@ -1,9 +1,7 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import type { VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
-
-import './scroll-driven-index.css'
 
 import { ScrollDrivenIndexPanel } from './ScrollDrivenIndexPanel'
 import { ScrollDrivenIndexTrigger } from './ScrollDrivenIndexTrigger'
@@ -12,7 +10,7 @@ import type { ScrollDrivenIndexProps } from './scroll-driven-index.types'
 import { useScrollProgress } from './use-scroll-progress'
 
 /** Apply to the scrollable article container (sets `scroll-timeline: --content`). */
-export const SCROLL_DRIVEN_INDEX_SCROLL_CLASS = 'scroll-driven-index__scroll'
+export const SCROLL_DRIVEN_INDEX_SCROLL_CLASS = '[scroll-timeline:--content]'
 
 export function ScrollDrivenIndex({
   items,
@@ -28,6 +26,7 @@ export function ScrollDrivenIndex({
   const generatedId = useId().replace(/:/g, '')
   const popoverId = popoverIdProp ?? `scroll-driven-index-${generatedId}`
   const progress = useScrollProgress(scrollContainerSelector)
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div
@@ -39,15 +38,20 @@ export function ScrollDrivenIndex({
       <ScrollDrivenIndexTrigger
         label={label}
         popoverId={popoverId}
+        alignment={alignment}
         tone={tone}
         progress={progress}
         hideScrollDrivenIndexProgress={hideScrollDrivenIndexProgress}
+        isOpen={isOpen}
       />
       <ScrollDrivenIndexPanel
         popoverId={popoverId}
         label={label}
         items={items}
+        alignment={alignment}
         hideScrollDrivenIndexProgress={hideScrollDrivenIndexProgress}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
       />
       {children}
     </div>

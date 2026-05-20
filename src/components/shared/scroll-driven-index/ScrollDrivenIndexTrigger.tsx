@@ -10,15 +10,17 @@ export function ScrollDrivenIndexTrigger({
   label,
   popoverId,
   className,
+  alignment = 'center',
   tone = 'default',
   progress,
   hideScrollDrivenIndexProgress = false,
+  isOpen = false,
 }: ScrollDrivenIndexTriggerProps & VariantProps<typeof scrollDrivenIndexTriggerVariants>) {
   return (
     <button
       type="button"
       data-slot="scroll-driven-index-trigger"
-      className={cn(scrollDrivenIndexTriggerVariants({ tone }), className)}
+      className={cn(scrollDrivenIndexTriggerVariants({ alignment, tone }), className)}
       popoverTarget={popoverId}
       popoverTargetAction="toggle"
     >
@@ -26,6 +28,7 @@ export function ScrollDrivenIndexTrigger({
         label={label}
         progress={progress}
         hideScrollDrivenIndexProgress={hideScrollDrivenIndexProgress}
+        isOpen={isOpen}
       />
     </button>
   )

@@ -11,7 +11,10 @@ export function ScrollDrivenIndexProgress({ value, className }: ScrollDrivenInde
   return (
     <span
       data-slot="scroll-driven-index-progress"
-      className={cn('scroll-driven-index__progress', className)}
+      className={cn(
+        'rounded-full bg-secondary px-2.5 py-1 text-xs leading-none font-medium tabular-nums text-secondary-foreground',
+        className,
+      )}
     >
       {hasValue ? `${value}%` : null}
     </span>

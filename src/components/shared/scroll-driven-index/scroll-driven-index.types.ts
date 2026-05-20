@@ -27,18 +27,23 @@ export type ScrollDrivenIndexProps = {
 export type ScrollDrivenIndexTriggerProps = {
   label: string
   popoverId: string
+  alignment?: ScrollDrivenIndexAlignment
   tone?: ScrollDrivenIndexTone
   className?: string
   progress?: number
   hideScrollDrivenIndexProgress?: boolean
+  isOpen?: boolean
 }
 
 export type ScrollDrivenIndexPanelProps = {
   popoverId: string
   label: string
   items: ScrollDrivenIndexItem[]
+  alignment?: ScrollDrivenIndexAlignment
   className?: string
   hideScrollDrivenIndexProgress?: boolean
+  isOpen?: boolean
+  onOpenChange?: (isOpen: boolean) => void
 }
 
 export type ScrollDrivenIndexListProps = {
