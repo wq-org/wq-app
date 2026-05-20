@@ -234,6 +234,7 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
           replaceAriaLabel={t('editor.image.replaceImageAria')}
           uploadAriaLabel={t('editor.image.uploadToCloudAria')}
           uploadingAriaLabel={t('editor.image.uploadingImageAria')}
+          isSelected={isSelected}
         />
       ) : null}
     </div>

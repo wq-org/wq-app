@@ -18,6 +18,7 @@ export type ImageNodeControlsProps = {
   replaceAriaLabel: string
   uploadAriaLabel: string
   uploadingAriaLabel: string
+  isSelected?: boolean
 }
 
 export function ImageNodeControls({
@@ -28,9 +29,16 @@ export function ImageNodeControls({
   replaceAriaLabel,
   uploadAriaLabel,
   uploadingAriaLabel,
+  isSelected = false,
 }: ImageNodeControlsProps) {
   return (
-    <div className="absolute top-2 right-2 z-10 flex items-center gap-1 mix-blend-difference">
+    <div
+      className={cn(
+        'absolute top-2 right-2 z-10 flex items-center gap-1 mix-blend-difference',
+        'opacity-0 transition-opacity duration-150 group-hover/image:opacity-100',
+        isSelected && 'opacity-100',
+      )}
+    >
       <input
         ref={replaceImageInputRef}
         type="file"
