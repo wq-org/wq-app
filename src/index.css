@@ -215,10 +215,10 @@ body {
   --oklch-orange: 0.82 0.17 55;
   --oklch-pink: 0.8 0.17 10;
   --oklch-darkblue: 0.45 0.14 254;
-  --oklch-magenta: 0.72 0.22 336; 
-  --oklch-red: 0.63 0.24 27; 
-  --oklch-deep-cyan: 0.52 0.1 200; 
-  --oklch-yellow: 0.85 0.19 95; 
+  --oklch-magenta: 0.72 0.22 336;
+  --oklch-red: 0.63 0.24 27;
+  --oklch-deep-cyan: 0.52 0.1 200;
+  --oklch-yellow: 0.85 0.19 95;
 }
 
 .dark {
@@ -615,8 +615,10 @@ body {
 
   .editor-list-ol,
   .editor-list-ul {
-    margin: 0 0 1rem 1rem;
+    margin: 0 0 1rem;
+    margin-inline-start: 0;
     padding: 0;
+    padding-inline-start: 0;
   }
 
   .editor-list-ol {
@@ -637,24 +639,28 @@ body {
 
   .editor-listItemChecked,
   .editor-listItemUnchecked {
+    align-items: center;
+    display: flex;
     list-style: none;
     margin: 0.25rem 0;
+    margin-inline: 0;
     outline: none;
-    padding-left: 1.75rem;
+    min-height: 1.5rem;
+    padding-inline: 0;
     position: relative;
   }
 
   .editor-listItemUnchecked::before,
   .editor-listItemChecked::before {
+    align-self: center;
     border: 1.5px solid var(--border);
     border-radius: 0.25rem;
     content: '';
     cursor: pointer;
     display: block;
+    flex: 0 0 1rem;
     height: 1rem;
-    left: 0;
-    position: absolute;
-    top: 0.2rem;
+    margin-right: 0.75rem;
     width: 1rem;
     transition: all 150ms ease-out;
   }

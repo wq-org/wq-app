@@ -257,7 +257,7 @@ export function Editor({
         className="relative w-full"
       >
         <ContentEditable
-          className="editor-contentEditable outline-none dark:text-zinc-200"
+          className="editor-contentEditable px-0! outline-none dark:text-zinc-200"
           aria-label="Rich text editor"
           aria-placeholder="Type '/' for commands..."
           placeholder={<div className="editor-placeholder">Type &apos;/&apos; for commands...</div>}
