@@ -182,7 +182,7 @@ export const Lesson = () => {
   const isLessonContentLoading = loading
 
   return (
-    <div className={`-mx-[calc(50vw-50%)] -mt-70 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
+    <div className={`-mx-[calc(50vw-50%)] -mt-20 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
       <div
         className="h-[30vh] w-full"
         style={coverStyle}
