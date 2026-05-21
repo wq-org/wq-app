@@ -8,8 +8,8 @@ export { ChatImageList } from './ChatImageList'
 export { ChatInput } from './ChatInput'
 export { ChatMessages } from './ChatMessages'
 export { ChatUserCard } from './ChatUserCard'
-export { IncomingChatMessageBubble } from './IncomingChatMessageBubble'
 export { ReceivingChatMessageBubble } from './ReceivingChatMessageBubble'
+export { SendingChatMessageBubble } from './SendingChatMessageBubble'
 export {
   chatBubbleEnterAnimation,
   chatBubbleVariants,

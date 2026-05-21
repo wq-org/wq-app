@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { IncomingChatMessageBubble } from '@/components/shared/chat/IncomingChatMessageBubble'
 import { ReceivingChatMessageBubble } from '@/components/shared/chat/ReceivingChatMessageBubble'
+import { SendingChatMessageBubble } from '@/components/shared/chat/SendingChatMessageBubble'
 import type {
   ChatBubbleRounded,
   ChatBubbleVariant,
@@ -61,11 +61,11 @@ export function ChatHistory({
               key={message.id}
               className={cn(
                 'flex',
-                message.direction === 'receiving' ? 'justify-end' : 'justify-start',
+                message.direction === 'sending' ? 'justify-end' : 'justify-start',
               )}
             >
-              {message.direction === 'receiving' ? (
-                <ReceivingChatMessageBubble
+              {message.direction === 'sending' ? (
+                <SendingChatMessageBubble
                   text={message.text}
                   time={message.time}
                   images={message.images}
@@ -77,7 +77,7 @@ export function ChatHistory({
                   messageId={message.id}
                 />
               ) : (
-                <IncomingChatMessageBubble
+                <ReceivingChatMessageBubble
                   text={message.text}
                   time={message.time}
                   images={message.images}

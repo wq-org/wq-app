@@ -15,8 +15,9 @@ export function ReceivingChatMessageBubble({
   images,
   className,
   avatarUrl,
-  avatarFallback = '/favicon.ico',
-  variant = 'dark',
+  avatarFallback = 'U',
+  hideAvatar = false,
+  variant = 'default',
   rounded = 'lg',
   status,
   messageId,
@@ -27,8 +28,28 @@ export function ReceivingChatMessageBubble({
   const showImages = Boolean(images?.length) && resolvedStatus !== 'loading'
 
   return (
-    <div className={cn('flex max-w-[88%] items-end justify-end gap-2', className)}>
-      <div className="flex min-w-0 max-w-[78%] flex-col items-end">
+    <div className={cn('flex max-w-[88%] items-end gap-2', className)}>
+      {hideAvatar ? (
+        <div
+          aria-hidden="true"
+          className="mb-1 size-7 shrink-0"
+        />
+      ) : (
+        <Avatar
+          size="sm"
+          className="mb-1 shrink-0 border border-neutral-300/80"
+        >
+          <AvatarImage
+            src={avatarUrl}
+            alt="Received message avatar"
+          />
+          <AvatarFallback className="bg-neutral-200 text-[11px] text-neutral-600">
+            {avatarFallback}
+          </AvatarFallback>
+        </Avatar>
+      )}
+
+      <div className="flex min-w-0 max-w-[78%] flex-col items-start">
         {showImages ? (
           <ChatImageList
             images={images}
@@ -50,26 +71,11 @@ export function ReceivingChatMessageBubble({
           ) : (
             <>
               <p>{text}</p>
-              <p className="mt-1 text-right text-[10px] opacity-70">{time}</p>
+              <p className="mt-1 text-[10px] opacity-70">{time}</p>
             </>
           )}
         </div>
       </div>
-
-      {avatarUrl ? (
-        <Avatar
-          size="sm"
-          className="mb-1 shrink-0 border border-neutral-300/80"
-        >
-          <AvatarImage
-            src={avatarUrl}
-            alt="Receiving user avatar"
-          />
-          <AvatarFallback className="bg-neutral-200 text-[11px] text-neutral-600">
-            {avatarFallback}
-          </AvatarFallback>
-        </Avatar>
-      ) : null}
     </div>
   )
 }

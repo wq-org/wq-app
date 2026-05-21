@@ -1,4 +1,4 @@
-import { IncomingChatMessageBubble, ReceivingChatMessageBubble } from '@/components/shared/chat'
+import { ReceivingChatMessageBubble, SendingChatMessageBubble } from '@/components/shared/chat'
 import type { GameChatTurn } from './useGameChatSession'
 
 export type GameChatMessageProps = {
@@ -10,7 +10,7 @@ export type GameChatMessageProps = {
 export function GameChatMessage({ turn, avatarUrl, avatarFallback }: GameChatMessageProps) {
   if (turn.role === 'player') {
     return (
-      <ReceivingChatMessageBubble
+      <SendingChatMessageBubble
         text={turn.text}
         time={turn.time}
         variant="darkblue-on-blue"
@@ -18,7 +18,7 @@ export function GameChatMessage({ turn, avatarUrl, avatarFallback }: GameChatMes
     )
   }
   return (
-    <IncomingChatMessageBubble
+    <ReceivingChatMessageBubble
       text={turn.text}
       time={turn.time}
       variant={turn.role === 'system' ? 'blue-on-gray' : 'default'}

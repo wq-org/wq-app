@@ -40,7 +40,7 @@ export type ChatBubbleVariants = VariantProps<typeof chatBubbleVariants>
 export type ChatBubbleVariant = NonNullable<ChatBubbleVariants['variant']>
 export type ChatBubbleRounded = NonNullable<ChatBubbleVariants['rounded']>
 
-const tailIncomingByRounded: Record<ChatBubbleRounded, string> = {
+const tailReceivingByRounded: Record<ChatBubbleRounded, string> = {
   sm: 'rounded-bl-sm',
   md: 'rounded-bl-md',
   lg: 'rounded-bl-md',
@@ -48,7 +48,7 @@ const tailIncomingByRounded: Record<ChatBubbleRounded, string> = {
   pill: '',
 }
 
-const tailReceivingByRounded: Record<ChatBubbleRounded, string> = {
+const tailSendingByRounded: Record<ChatBubbleRounded, string> = {
   sm: 'rounded-br-sm',
   md: 'rounded-br-md',
   lg: 'rounded-br-md',
@@ -57,10 +57,10 @@ const tailReceivingByRounded: Record<ChatBubbleRounded, string> = {
 }
 
 export function getChatBubbleTailClass(
-  direction: 'incoming' | 'receiving',
+  direction: 'receiving' | 'sending',
   rounded: ChatBubbleRounded = 'lg',
 ) {
-  return direction === 'incoming' ? tailIncomingByRounded[rounded] : tailReceivingByRounded[rounded]
+  return direction === 'receiving' ? tailReceivingByRounded[rounded] : tailSendingByRounded[rounded]
 }
 
 /** Subtle entrance when a bubble mounts or switches from loading to content. */

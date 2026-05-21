@@ -2,7 +2,7 @@ import type { ChatBubbleRounded, ChatBubbleVariant } from './chat-bubble-variant
 
 export type ChatMessageStatus = 'loading' | 'ready'
 
-export type ChatHistoryMessageDirection = 'incoming' | 'receiving'
+export type ChatHistoryMessageDirection = 'receiving' | 'sending'
 
 export type ChatImageItem =
   | string
@@ -29,6 +29,8 @@ export type ChatMessageBubbleProps = {
   className?: string
   avatarUrl?: string
   avatarFallback?: string
+  /** Suppress the avatar and render a same-width spacer instead. Use for consecutive messages from the same user. */
+  hideAvatar?: boolean
   variant?: ChatBubbleVariant
   rounded?: ChatBubbleRounded
   status?: ChatMessageStatus

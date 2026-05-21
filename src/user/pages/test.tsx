@@ -139,8 +139,8 @@ import { CalendarHeatmap } from '@/components/shared/calendar'
 import {
   ChatHistory,
   ChatImageCarousel,
-  IncomingChatMessageBubble,
   ReceivingChatMessageBubble,
+  SendingChatMessageBubble,
   type ChatBubbleRounded,
   type ChatBubbleVariant,
   type ChatHistoryMessage,
@@ -386,19 +386,19 @@ const chatHistoryColorDemoMessages: ChatHistoryMessage[] = [
     id: 'demo-in-1',
     text: 'Incoming message — left side.',
     time: '10:22',
-    direction: 'incoming',
+    direction: 'receiving',
   },
   {
     id: 'demo-out-1',
     text: 'Receiving message — right side.',
     time: '10:23',
-    direction: 'receiving',
+    direction: 'sending',
   },
   {
     id: 'demo-in-2',
     text: 'Another incoming line for contrast.',
     time: '10:24',
-    direction: 'incoming',
+    direction: 'receiving',
   },
 ]
 
@@ -408,7 +408,7 @@ const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
     id: 'demo-default-blue-in-1',
     text: 'Incoming with one image (rendered via ChatImageList).',
     time: '10:22',
-    direction: 'incoming',
+    direction: 'receiving',
     images: [
       {
         src: CHAT_DEMO_MAC_BOOK_NEO_IMAGE,
@@ -420,13 +420,13 @@ const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
     id: 'demo-default-blue-out-1',
     text: 'Receiving message — right side.',
     time: '10:23',
-    direction: 'receiving',
+    direction: 'sending',
   },
   {
     id: 'demo-default-blue-in-2',
     text: 'Another incoming line for contrast.',
     time: '10:24',
-    direction: 'incoming',
+    direction: 'receiving',
   },
 ]
 
@@ -2193,7 +2193,7 @@ export default function Test() {
               <p className="font-mono text-xs text-muted-foreground">
                 variant=&quot;{variant}&quot;
               </p>
-              <IncomingChatMessageBubble
+              <ReceivingChatMessageBubble
                 text={`Incoming bubble — ${variant}`}
                 time="10:24"
                 variant={variant}
@@ -2214,7 +2214,7 @@ export default function Test() {
               <p className="self-start font-mono text-xs text-muted-foreground">
                 variant=&quot;{variant}&quot;
               </p>
-              <ReceivingChatMessageBubble
+              <SendingChatMessageBubble
                 text={`Receiving bubble — ${variant}`}
                 time="10:25"
                 variant={variant}
@@ -2236,7 +2236,7 @@ export default function Test() {
                 rounded=&quot;{rounded}&quot;
               </p>
               <div className="flex flex-col gap-2">
-                <IncomingChatMessageBubble
+                <ReceivingChatMessageBubble
                   text={`blue-on-gray ${rounded}`}
                   time="10:24"
                   variant="blue-on-gray"
@@ -2244,7 +2244,7 @@ export default function Test() {
                   messageId={`test-rounded-in-${rounded}`}
                 />
                 <div className="flex justify-end">
-                  <ReceivingChatMessageBubble
+                  <SendingChatMessageBubble
                     text={`darkblue-on-blue ${rounded}`}
                     time="10:25"
                     variant="darkblue-on-blue"

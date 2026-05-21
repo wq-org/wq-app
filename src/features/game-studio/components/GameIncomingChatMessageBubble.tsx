@@ -58,7 +58,7 @@ export function GameIncomingChatMessageBubble({
           key={bubbleStateKey}
           className={cn(
             chatBubbleVariants({ variant, rounded }),
-            getChatBubbleTailClass('incoming', rounded),
+            getChatBubbleTailClass('receiving', rounded),
             chatBubbleEnterAnimation,
           )}
         >
