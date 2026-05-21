@@ -1,7 +1,6 @@
 import {
   $createTableCellNode,
   $createTableRowNode,
-  $isTableCellNode,
   $isTableNode,
   $isTableRowNode,
   TableCellHeaderStates,
@@ -36,6 +35,15 @@ function $createRowWithCells(columnCount: number, headerState: number): TableRow
     row.append(cell)
   }
   return row
+}
+
+function getInsertionIndexAfterRemoval(
+  fromIndex: number,
+  toIndex: number,
+  position: 'before' | 'after',
+): number {
+  const targetIndexAfterRemoval = fromIndex < toIndex ? toIndex - 1 : toIndex
+  return position === 'before' ? targetIndexAfterRemoval : targetIndexAfterRemoval + 1
 }
 
 export function insertRowAt(
@@ -142,20 +150,27 @@ export function moveRow(
   position: 'before' | 'after',
 ): void {
   editor.update(() => {
-    if (!$getTable(tableKey)) return
+    const tableNode = $getTable(tableKey)
+    if (!tableNode) return
     if (fromKey === toKey) return
     const movingRow = $getNodeByKey(fromKey)
     const targetRow = $getNodeByKey(toKey)
     if (!$isTableRowNode(movingRow) || !$isTableRowNode(targetRow)) return
-    const clone = movingRow.getWritable()
+    const colWidths = tableNode.getColWidths()
+    const colWidthsSnapshot = colWidths ? [...colWidths] : null
+
     movingRow.remove()
     const freshTarget = $getNodeByKey(toKey)
     if (!$isTableRowNode(freshTarget)) return
     if (position === 'before') {
-      freshTarget.insertBefore(clone)
-      return
+      freshTarget.insertBefore(movingRow)
+    } else {
+      freshTarget.insertAfter(movingRow)
     }
-    freshTarget.insertAfter(clone)
+
+    if (colWidthsSnapshot) {
+      tableNode.setColWidths(colWidthsSnapshot)
+    }
   })
 }
 
@@ -300,21 +315,38 @@ export function moveColumn(
     if (fromIndex < 0 || fromIndex >= columnCount) return
     if (toIndex < 0 || toIndex >= columnCount) return
     if (fromIndex === toIndex) return
+
+    const insertionIndex = getInsertionIndexAfterRemoval(fromIndex, toIndex, position)
     rows.forEach((row) => {
+      const rowKey = row.getKey()
       const cells = row.getChildren() as TableCellNode[]
       const movingCell = cells[fromIndex]
-      const targetCell = cells[toIndex]
-      if (!movingCell || !targetCell) return
-      const targetKey = targetCell.getKey()
-      const writable = movingCell.getWritable()
+      if (!movingCell) return
+
       movingCell.remove()
-      const freshTarget = $getNodeByKey(targetKey)
-      if (!$isTableCellNode(freshTarget)) return
-      if (position === 'before') {
-        freshTarget.insertBefore(writable)
-        return
+
+      const freshRow = $getNodeByKey(rowKey)
+      if (!$isTableRowNode(freshRow)) return
+
+      const freshCells = freshRow.getChildren() as TableCellNode[]
+      const boundedInsertionIndex = Math.max(0, Math.min(insertionIndex, freshCells.length))
+      const insertionTarget = freshCells[boundedInsertionIndex]
+      if (insertionTarget) {
+        insertionTarget.insertBefore(movingCell)
+      } else {
+        freshRow.append(movingCell)
       }
-      freshTarget.insertAfter(writable)
     })
+
+    const colWidths = tableNode.getColWidths()
+    if (colWidths && fromIndex < colWidths.length && toIndex < colWidths.length) {
+      const reorderedWidths = [...colWidths]
+      const [movingWidth] = reorderedWidths.splice(fromIndex, 1)
+      const boundedInsertionIndex = Math.max(0, Math.min(insertionIndex, reorderedWidths.length))
+      if (movingWidth !== undefined) {
+        reorderedWidths.splice(boundedInsertionIndex, 0, movingWidth)
+        tableNode.setColWidths(reorderedWidths)
+      }
+    }
   })
 }

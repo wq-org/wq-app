@@ -24,7 +24,6 @@ import { useDisclosure } from '@/hooks/use-disclosure'
 import { $createCommentMarkNode, $isCommentMarkNode } from '../../nodes/CommentMarkNode'
 import { OPEN_COMMENT_DIALOG_COMMAND } from '../../commands/commentCommands'
 import { CommentDialog } from './CommentDialog'
-import { CommentList } from './CommentList'
 import type { CommentReply, CommentThread, CommentThreadId } from './comment.types'
 import { LessonCommentDetailSheet } from './LessonCommentDetailSheet'
 
@@ -235,11 +234,6 @@ export function CommentPlugin() {
     setPendingQuote('')
   }
 
-  const handleSelectThread = (threadId: CommentThreadId) => {
-    setSelectedThreadId(threadId)
-    sheet.onOpen()
-  }
-
   const handleCloseSheet = () => {
     sheet.onClose()
     setSelectedThreadId(null)
@@ -280,19 +274,6 @@ export function CommentPlugin() {
         onReply={handleReply}
         onDelete={handleDeleteThread}
       />
-      {threads.length > 0 ? (
-        <aside
-          aria-label="Comments"
-          className="mt-6 rounded-lg border bg-card p-4"
-        >
-          <h3 className="mb-3 text-sm font-semibold">Comments</h3>
-          <CommentList
-            threads={threads}
-            selectedThreadId={selectedThreadId}
-            onSelectThread={handleSelectThread}
-          />
-        </aside>
-      ) : null}
     </>
   )
 }

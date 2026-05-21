@@ -24,7 +24,17 @@ import {
   $isTextNode,
   type LexicalEditor,
 } from 'lexical'
-import { Image, ListTodo, SmilePlus, Table2, TvMinimalPlay, type LucideIcon } from 'lucide-react'
+import {
+  Heading1,
+  Heading2,
+  Heading3,
+  Image,
+  ListTodo,
+  SmilePlus,
+  Table2,
+  TvMinimalPlay,
+  type LucideIcon,
+} from 'lucide-react'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
@@ -147,7 +157,7 @@ export function getBlockOptions(
         }),
     }),
     new BlockOption('Heading 1', {
-      iconKey: 'h1',
+      Icon: Heading1,
       keywords: ['heading', 'title', 'h1'],
       onSelect: () =>
         editor.update(() => {
@@ -158,7 +168,7 @@ export function getBlockOptions(
         }),
     }),
     new BlockOption('Heading 2', {
-      iconKey: 'h2',
+      Icon: Heading2,
       keywords: ['heading', 'subtitle', 'h2'],
       onSelect: () =>
         editor.update(() => {
@@ -169,7 +179,7 @@ export function getBlockOptions(
         }),
     }),
     new BlockOption('Heading 3', {
-      iconKey: 'h3',
+      Icon: Heading3,
       keywords: ['heading', 'h3'],
       onSelect: () =>
         editor.update(() => {
