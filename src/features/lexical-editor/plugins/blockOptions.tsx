@@ -14,14 +14,11 @@ import {
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
-import { $createTableNodeWithDimensions } from '@lexical/table'
-import { $insertNodeToNearestRoot } from '@lexical/utils'
 import {
   $createParagraphNode,
   $getRoot,
   $getSelection,
   $isRangeSelection,
-  $isTextNode,
   type LexicalEditor,
 } from 'lexical'
 import {
@@ -59,6 +56,7 @@ interface BlockOptionConfig {
   Icon?: LucideIcon
   iconKey?: IconKey
   keywords?: string[]
+  isDisabled?: boolean
   onSelect: () => void
 }
 
@@ -67,14 +65,19 @@ export class BlockOption extends MenuOption {
   Icon?: LucideIcon
   iconKey?: IconKey
   keywords: string[]
+  isDisabled: boolean
   onSelect: () => void
 
-  constructor(title: string, { Icon, iconKey, keywords = [], onSelect }: BlockOptionConfig) {
+  constructor(
+    title: string,
+    { Icon, iconKey, keywords = [], isDisabled = false, onSelect }: BlockOptionConfig,
+  ) {
     super(title)
     this.title = title
     this.Icon = Icon
     this.iconKey = iconKey
     this.keywords = keywords
+    this.isDisabled = isDisabled
     this.onSelect = onSelect
   }
 }
@@ -121,19 +124,6 @@ function openImagePicker(editor: LexicalEditor) {
     }
   }
   input.click()
-}
-
-function insertDefaultTable() {
-  const tableNode = $createTableNodeWithDimensions(3, 3, {
-    columns: false,
-    rows: true,
-  })
-  $insertNodeToNearestRoot(tableNode)
-
-  const firstDescendant = tableNode.getFirstDescendant()
-  if ($isTextNode(firstDescendant)) {
-    firstDescendant.select()
-  }
 }
 
 export function getBlockOptions(
@@ -212,7 +202,8 @@ export function getBlockOptions(
     new BlockOption('Table', {
       Icon: Table2,
       keywords: ['table', 'tables', 'grid', 'rows', 'columns'],
-      onSelect: insertDefaultTable,
+      isDisabled: true,
+      onSelect: () => {},
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',

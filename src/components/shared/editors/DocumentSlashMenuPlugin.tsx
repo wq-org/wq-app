@@ -24,6 +24,7 @@ import {
   Pilcrow,
   Quote,
   SmilePlus,
+  Table,
   TvMinimalPlay,
   Type,
 } from 'lucide-react'
@@ -57,6 +58,7 @@ type SlashAction = {
   key: string
   keywords?: string[]
   title: string
+  isDisabled?: boolean
   onSelect: (editor: LexicalEditor) => void
 }
 
@@ -79,6 +81,7 @@ function roleForUpload(role: UserRole | null): string | null {
 class SlashMenuOption extends MenuOption {
   description: string
   iconComponent: LucideIcon
+  isDisabled: boolean
   onSelect: (editor: LexicalEditor) => void
   title: string
 
@@ -86,6 +89,7 @@ class SlashMenuOption extends MenuOption {
     super(action.key)
     this.description = action.description
     this.iconComponent = action.icon
+    this.isDisabled = action.isDisabled ?? false
     this.onSelect = action.onSelect
     this.title = action.title
   }
@@ -110,19 +114,25 @@ const SlashMenuItem = ({
   option,
 }: SlashMenuItemProps) => {
   const Icon = option.iconComponent
+  const { isDisabled } = option
+  const handleClick = isDisabled ? undefined : onClick
+  const handleMouseEnter = isDisabled ? undefined : onMouseEnter
 
   return (
     <li
       key={option.key}
       tabIndex={-1}
       aria-selected={isSelected}
+      aria-disabled={isDisabled}
       className={cn(
-        'flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors',
-        isSelected ? 'bg-muted text-foreground' : 'hover:bg-muted/70',
+        'flex items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors',
+        isDisabled
+          ? 'cursor-not-allowed opacity-50'
+          : cn('cursor-pointer', isSelected ? 'bg-muted text-foreground' : 'hover:bg-muted/70'),
       )}
       id={`slash-item-${index}`}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
       role="option"
       ref={option.setRefElement}
     >
@@ -277,6 +287,15 @@ export const DocumentSlashMenuPlugin = () => {
         onSelect: (ed) => applyCheckList(ed),
       },
       {
+        description: 'Insert a table (coming soon).',
+        icon: Table,
+        key: 'table',
+        keywords: ['table', 'grid', 'rows', 'columns'],
+        title: 'Table',
+        isDisabled: true,
+        onSelect: () => {},
+      },
+      {
         description: 'Insert an emoji at the cursor.',
         icon: SmilePlus,
         key: 'emoji',
@@ -420,6 +439,7 @@ export const DocumentSlashMenuPlugin = () => {
         options={options}
         onQueryChange={(value) => setQuery(value ?? '')}
         onSelectOption={(option, _textNode, closeMenu) => {
+          if (option.isDisabled) return
           option.onSelect(editor)
           closeMenu()
         }}
