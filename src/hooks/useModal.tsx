@@ -10,7 +10,7 @@ import type { JSX } from 'react'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import Modal from '@/components/ui/Modal'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 export default function useModal(): [
   JSX.Element | null,
@@ -32,20 +32,34 @@ export default function useModal(): [
     }
     const { title, content, closeOnClickOutside } = modalContent
     return (
-      <Modal
-        onClose={onClose}
-        title={title}
-        closeOnClickOutside={closeOnClickOutside}
+      <Dialog
+        open
+        onOpenChange={(open) => {
+          if (!open) {
+            onClose()
+          }
+        }}
       >
-        {content}
-      </Modal>
+        <DialogContent
+          onInteractOutside={(event) => {
+            if (!closeOnClickOutside) {
+              event.preventDefault()
+            }
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
+          {content}
+        </DialogContent>
+      </Dialog>
     )
   }, [modalContent, onClose])
 
   const showModal = useCallback(
     (
       title: string,
-       
+
       getContent: (onClose: () => void) => JSX.Element,
       closeOnClickOutside = false,
     ) => {

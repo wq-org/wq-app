@@ -2,6 +2,7 @@ import {
   $createParagraphNode,
   $getRoot,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   type LexicalEditor,
 } from 'lexical'
@@ -20,8 +21,16 @@ export function insertEmojiAtSelection(editor: LexicalEditor, emoji: string): vo
       const root = $getRoot()
       const lastChild = root.getLastChild()
 
-      if (lastChild && lastChild.getLastChild()) {
-        lastChild.getLastChild()?.insertAfter($createEmojiNode(emoji))
+      if ($isElementNode(lastChild)) {
+        const nestedLastChild = lastChild.getLastChild()
+
+        if (nestedLastChild) {
+          nestedLastChild.insertAfter($createEmojiNode(emoji))
+        } else {
+          lastChild.append($createEmojiNode(emoji))
+        }
+      } else if (lastChild) {
+        lastChild.insertAfter($createEmojiNode(emoji))
       } else {
         const paragraph = $createParagraphNode()
         paragraph.append($createEmojiNode(emoji))

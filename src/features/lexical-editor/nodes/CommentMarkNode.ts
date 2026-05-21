@@ -72,22 +72,22 @@ export class CommentMarkNode extends MarkNode {
   }
 
   getCommentThreads(): Record<string, CommentThread> {
-    return cloneThreads(this.getLatest<CommentMarkNode>().__commentThreads)
+    return cloneThreads(this.getLatest().__commentThreads)
   }
 
   getCommentThread(threadId: string): CommentThread | null {
-    const thread = this.getLatest<CommentMarkNode>().__commentThreads[threadId]
+    const thread = this.getLatest().__commentThreads[threadId]
     return thread ? cloneThread(thread) : null
   }
 
   setCommentThreads(commentThreads: Record<string, CommentThread>): this {
-    const writable = this.getWritable<CommentMarkNode>()
+    const writable = this.getWritable()
     writable.__commentThreads = cloneThreads(commentThreads)
     return writable
   }
 
   setCommentThread(threadId: string, thread: CommentThread): this {
-    const writable = this.getWritable<CommentMarkNode>()
+    const writable = this.getWritable()
     writable.__commentThreads = {
       ...writable.__commentThreads,
       [threadId]: cloneThread(thread),
@@ -96,7 +96,7 @@ export class CommentMarkNode extends MarkNode {
   }
 
   removeCommentThread(threadId: string): this {
-    const writable = this.getWritable<CommentMarkNode>()
+    const writable = this.getWritable()
     if (!(threadId in writable.__commentThreads)) {
       return writable
     }
