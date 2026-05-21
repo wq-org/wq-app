@@ -61,7 +61,7 @@ export function LexicalDraggableBlockPlugin() {
           ref={menuRef}
           className={cn(
             DRAGGABLE_BLOCK_MENU_CLASSNAME,
-            'absolute top-0 -left-15 z-20 flex items-center gap-1 rounded p-0.5 opacity-0 transition-[transform,opacity] duration-150 ease-in-out',
+            'absolute top-0 -left-19 z-20 flex items-center gap-1 rounded p-0.5 opacity-0 transition-[transform,opacity] duration-150 ease-in-out',
           )}
         >
           <Button
