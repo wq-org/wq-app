@@ -22,6 +22,8 @@ export type SerializedImageNode = Spread<
     height?: number
     maxWidth: number
     src: string
+    filepath: string | null
+    cloudFileId: string | null
     width?: number
   },
   SerializedLexicalNode
@@ -33,6 +35,8 @@ export type ImagePayload = {
   key?: NodeKey
   maxWidth?: number
   src: string
+  filepath?: string | null
+  cloudFileId?: string | null
   width?: number
 }
 
@@ -64,6 +68,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   __maxWidth: number
   __width: 'inherit' | number
   __height: 'inherit' | number
+  __filepath: string | null
+  __cloudFileId: string | null
 
   static getType(): string {
     return 'image'
@@ -76,18 +82,22 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       node.__maxWidth,
       node.__width,
       node.__height,
+      node.__filepath,
+      node.__cloudFileId,
       node.__key,
     )
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, maxWidth, src, width } = serializedNode
+    const { altText, height, maxWidth, src, width, filepath, cloudFileId } = serializedNode
     return $createImageNode({
       altText,
       height,
       maxWidth,
       src,
       width,
+      filepath: filepath ?? null,
+      cloudFileId: cloudFileId ?? null,
     }).updateFromJSON(serializedNode)
   }
 
@@ -97,6 +107,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     maxWidth: number,
     width: 'inherit' | number = 'inherit',
     height: 'inherit' | number = 'inherit',
+    filepath: string | null = null,
+    cloudFileId: string | null = null,
     key?: NodeKey,
   ) {
     super(key)
@@ -105,6 +117,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     this.__maxWidth = maxWidth
     this.__width = width
     this.__height = height
+    this.__filepath = filepath
+    this.__cloudFileId = cloudFileId
   }
 
   exportJSON(): SerializedImageNode {
@@ -115,6 +129,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       maxWidth: this.__maxWidth,
       src: this.__src,
       width: this.__width === 'inherit' ? undefined : this.__width,
+      filepath: this.__filepath,
+      cloudFileId: this.__cloudFileId,
     }
   }
 
@@ -161,6 +177,21 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return writable
   }
 
+  setCloudReference(filepath: string | null, cloudFileId: string | null): this {
+    const writable = this.getWritable()
+    writable.__filepath = filepath
+    writable.__cloudFileId = cloudFileId
+    return writable
+  }
+
+  getCloudFileId(): string | null {
+    return this.__cloudFileId
+  }
+
+  getFilepath(): string | null {
+    return this.__filepath
+  }
+
   decorate(): JSX.Element {
     return (
       <ImageNodeComponent
@@ -181,12 +212,23 @@ export function $createImageNode({
   maxWidth = 720,
   src,
   width,
+  filepath = null,
+  cloudFileId = null,
   key,
 }: ImagePayload): ImageNode {
   const resolvedWidth = width === undefined ? 'inherit' : width
   const resolvedHeight = height === undefined ? 'inherit' : height
   return $applyNodeReplacement(
-    new ImageNode(src, altText, maxWidth, resolvedWidth, resolvedHeight, key),
+    new ImageNode(
+      src,
+      altText,
+      maxWidth,
+      resolvedWidth,
+      resolvedHeight,
+      filepath,
+      cloudFileId,
+      key,
+    ),
   )
 }
 

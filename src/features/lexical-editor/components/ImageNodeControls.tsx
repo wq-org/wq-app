@@ -1,4 +1,4 @@
-import { CloudUpload, Repeat } from 'lucide-react'
+import { Loader2, Repeat } from 'lucide-react'
 import type { ChangeEvent, RefObject } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -13,10 +13,8 @@ const controlIconClassName = 'size-4 text-white mix-blend-difference'
 export type ImageNodeControlsProps = {
   replaceImageInputRef: RefObject<HTMLInputElement | null>
   onReplaceInputChange: (event: ChangeEvent<HTMLInputElement>) => void
-  onUploadClick: () => void
   isUploading: boolean
   replaceAriaLabel: string
-  uploadAriaLabel: string
   uploadingAriaLabel: string
   isSelected?: boolean
 }
@@ -24,10 +22,8 @@ export type ImageNodeControlsProps = {
 export function ImageNodeControls({
   replaceImageInputRef,
   onReplaceInputChange,
-  onUploadClick,
   isUploading,
   replaceAriaLabel,
-  uploadAriaLabel,
   uploadingAriaLabel,
   isSelected = false,
 }: ImageNodeControlsProps) {
@@ -48,35 +44,33 @@ export function ImageNodeControls({
         aria-hidden
         onChange={onReplaceInputChange}
       />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onMouseDown={(event) => event.preventDefault()}
-        onClick={() => replaceImageInputRef.current?.click()}
-        className={controlButtonClassName}
-        aria-label={replaceAriaLabel}
-      >
-        <Repeat
-          className={controlIconClassName}
-          aria-hidden
-        />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        disabled={isUploading}
-        onMouseDown={(event) => event.preventDefault()}
-        onClick={onUploadClick}
-        className={cn(controlButtonClassName, isUploading && 'opacity-70')}
-        aria-label={isUploading ? uploadingAriaLabel : uploadAriaLabel}
-      >
-        <CloudUpload
-          className={controlIconClassName}
-          aria-hidden
-        />
-      </Button>
+      {isUploading ? (
+        <span
+          role="status"
+          aria-label={uploadingAriaLabel}
+          className={cn(controlButtonClassName, 'flex size-9 items-center justify-center')}
+        >
+          <Loader2
+            className={cn(controlIconClassName, 'animate-spin')}
+            aria-hidden
+          />
+        </span>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => replaceImageInputRef.current?.click()}
+          className={controlButtonClassName}
+          aria-label={replaceAriaLabel}
+        >
+          <Repeat
+            className={controlIconClassName}
+            aria-hidden
+          />
+        </Button>
+      )}
     </div>
   )
 }

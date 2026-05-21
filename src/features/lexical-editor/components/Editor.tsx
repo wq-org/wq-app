@@ -38,6 +38,7 @@ import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
 import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
+import { SelectionHandles } from './SelectionHandles'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
 import TableCellResizerPlugin from '../plugins/TableCellResizer'
 import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
@@ -257,11 +258,12 @@ export function Editor({
         className="relative w-full"
       >
         <ContentEditable
-          className="editor-contentEditable px-0! outline-none dark:text-zinc-200"
+          className="editor-contentEditable px-0! outline-none caret-blue-500 selection:bg-blue-100 selection:text-slate-900 dark:text-zinc-200 dark:selection:bg-blue-900 dark:selection:text-white"
           aria-label="Rich text editor"
           aria-placeholder="Type '/' for commands..."
           placeholder={<div className="editor-placeholder">Type &apos;/&apos; for commands...</div>}
         />
+        <SelectionHandles container={anchorElem} />
         <LexicalDraggableBlockPlugin />
         <SlashMenuPlugin registry={blockTypeRegistry} />
         <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />

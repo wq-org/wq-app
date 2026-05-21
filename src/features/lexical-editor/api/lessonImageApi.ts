@@ -1,5 +1,6 @@
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
+import { supabase } from '@/lib/supabase'
 
 export type LessonImageUploadContext = {
   institutionId: string
@@ -9,6 +10,8 @@ export type LessonImageUploadContext = {
 
 export type LessonImageUploadResult = {
   publicUrl: string
+  filepath: string
+  cloudFileId: string
 }
 
 export type LessonImageUploadErrorCode =
@@ -29,6 +32,52 @@ function isDuplicateUploadError(message: string): boolean {
 export type LessonImageUploadResponse =
   | { ok: true; data: LessonImageUploadResult }
   | { ok: false; error: string; code: LessonImageUploadErrorCode }
+
+async function resolveCloudFileId(
+  storageObjectName: string,
+  institutionId: string,
+  userId: string,
+  mimeType: string,
+  sizeBytes: number,
+  originalName: string,
+): Promise<string | null> {
+  const { data: existing, error: lookupError } = await supabase
+    .from('cloud_files')
+    .select('id')
+    .eq('storage_object_name', storageObjectName)
+    .maybeSingle()
+
+  if (lookupError) {
+    console.error('[lessonImageApi] cloud_files lookup failed', lookupError)
+  }
+
+  if (existing?.id) {
+    return existing.id as string
+  }
+
+  const { data: inserted, error: insertError } = await supabase
+    .from('cloud_files')
+    .insert({
+      institution_id: institutionId,
+      owner_user_id: userId,
+      bucket: 'cloud',
+      storage_object_name: storageObjectName,
+      scope: 'personal',
+      mime_type: mimeType,
+      size_bytes: sizeBytes,
+      original_name: originalName,
+      status: 'active',
+    })
+    .select('id')
+    .single()
+
+  if (insertError) {
+    console.error('[lessonImageApi] cloud_files insert failed', insertError)
+    return null
+  }
+
+  return (inserted?.id as string | undefined) ?? null
+}
 
 export async function uploadLessonImage(
   file: File,
@@ -62,7 +111,7 @@ export async function uploadLessonImage(
     role,
   })
 
-  if (!result.success || !result.publicUrl) {
+  if (!result.success || !result.publicUrl || !result.path) {
     const errorMessage = result.error ?? 'Could not upload image.'
     if (isDuplicateUploadError(errorMessage)) {
       return {
@@ -78,8 +127,29 @@ export async function uploadLessonImage(
     }
   }
 
+  const cloudFileId = await resolveCloudFileId(
+    result.path,
+    institutionId,
+    userId,
+    file.type,
+    file.size,
+    file.name,
+  )
+
+  if (!cloudFileId) {
+    return {
+      ok: false,
+      code: 'upload_failed',
+      error: 'Could not register uploaded image.',
+    }
+  }
+
   return {
     ok: true,
-    data: { publicUrl: result.publicUrl },
+    data: {
+      publicUrl: result.publicUrl,
+      filepath: result.path,
+      cloudFileId,
+    },
   }
 }

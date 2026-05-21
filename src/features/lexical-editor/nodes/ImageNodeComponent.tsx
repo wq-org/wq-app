@@ -17,12 +17,8 @@ import { cn } from '@/lib/utils'
 
 import { ImageNodeControls } from '../components/ImageNodeControls'
 import { useLessonImageUpload } from '../hooks/useLessonImageUpload'
-import {
-  fileFromDataUrl,
-  isCloudImageSrc,
-  isLocalImageSrc,
-  readImageFileAsDataUrl,
-} from '../utils/localImageFile'
+import type { LessonImageUploadResult } from '../api/lessonImageApi'
+import { fileFromDataUrl, isLocalImageSrc, readImageFileAsDataUrl } from '../utils/localImageFile'
 import { preloadImageSrc, suspenseImage } from '../utils/imageLoadCache'
 import { $isImageNode } from './ImageNode'
 
@@ -81,11 +77,34 @@ function LazyImage({
   )
 }
 
-async function applyImageSrc(
+async function applyCloudUpload(
+  editor: LexicalEditor,
+  nodeKey: NodeKey,
+  upload: LessonImageUploadResult,
+): Promise<boolean> {
+  try {
+    await preloadImageSrc(upload.publicUrl)
+  } catch {
+    return false
+  }
+
+  editor.update(() => {
+    const node = $getNodeByKey(nodeKey)
+    if (!$isImageNode(node)) {
+      return
+    }
+    node.setSrc(upload.publicUrl)
+    node.setCloudReference(upload.filepath, upload.cloudFileId)
+  })
+
+  return true
+}
+
+async function applyLocalReplacement(
   editor: LexicalEditor,
   nodeKey: NodeKey,
   nextSrc: string,
-  altText?: string,
+  altText: string,
 ): Promise<boolean> {
   try {
     await preloadImageSrc(nextSrc)
@@ -99,9 +118,8 @@ async function applyImageSrc(
       return
     }
     node.setSrc(nextSrc)
-    if (altText !== undefined) {
-      node.setAltText(altText)
-    }
+    node.setAltText(altText)
+    node.setCloudReference(null, null)
   })
 
   return true
@@ -113,6 +131,7 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
   const imageRef = useRef<HTMLImageElement | null>(null)
   const replaceImageInputRef = useRef<HTMLInputElement>(null)
   const pendingFileRef = useRef<File | null>(null)
+  const autoUploadAttemptedRef = useRef<string | null>(null)
   const { isUploading, uploadLessonImageFile } = useLessonImageUpload()
   const { t } = useTranslation('features.lesson')
 
@@ -149,12 +168,13 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
 
       try {
         const dataUrl = await readImageFileAsDataUrl(file)
-        const applied = await applyImageSrc(editor, nodeKey, dataUrl, file.name)
+        const applied = await applyLocalReplacement(editor, nodeKey, dataUrl, file.name)
         if (!applied) {
           toast.error(t('editor.image.replaceFailed'))
           return
         }
         pendingFileRef.current = file
+        autoUploadAttemptedRef.current = null
       } catch {
         toast.error(t('editor.image.replaceFailed'))
       }
@@ -162,48 +182,53 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
     [editor, nodeKey, t],
   )
 
-  const handleUploadToCloud = useCallback(async () => {
-    if (isCloudImageSrc(src) && !pendingFileRef.current) {
-      toast.info(t('editor.image.alreadyInCloud'))
-      return
-    }
-
-    const pendingFile = pendingFileRef.current
-    let fileToUpload = pendingFile
-
-    if (!fileToUpload && isLocalImageSrc(src)) {
-      try {
-        fileToUpload = await fileFromDataUrl(src, altText || 'lesson-image')
-      } catch {
-        toast.error(t('editor.image.uploadFailed'))
-        return
-      }
-    }
-
-    if (!fileToUpload) {
-      toast.error(t('editor.image.uploadNeedsLocalImage'))
-      return
-    }
-
-    const result = await uploadLessonImageFile(fileToUpload)
-    if (!result) {
-      return
-    }
-
-    const applied = await applyImageSrc(editor, nodeKey, result.publicUrl)
-    if (!applied) {
-      toast.error(t('editor.image.uploadFailed'))
-      return
-    }
-
-    pendingFileRef.current = null
-  }, [altText, editor, nodeKey, src, t, uploadLessonImageFile])
-
   useEffect(() => {
     if (!isLocalImageSrc(src)) {
       pendingFileRef.current = null
+      autoUploadAttemptedRef.current = null
+      return
     }
-  }, [src])
+
+    if (!isEditable || isUploading) {
+      return
+    }
+
+    if (autoUploadAttemptedRef.current === src) {
+      return
+    }
+    autoUploadAttemptedRef.current = src
+
+    let cancelled = false
+
+    void (async () => {
+      let file = pendingFileRef.current
+      if (!file) {
+        try {
+          file = await fileFromDataUrl(src, altText || 'lesson-image')
+        } catch {
+          if (!cancelled) toast.error(t('editor.image.uploadFailed'))
+          return
+        }
+      }
+
+      const result = await uploadLessonImageFile(file)
+      if (cancelled || !result) {
+        return
+      }
+
+      const applied = await applyCloudUpload(editor, nodeKey, result)
+      if (cancelled) return
+      if (!applied) {
+        toast.error(t('editor.image.uploadFailed'))
+        return
+      }
+      pendingFileRef.current = null
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [altText, editor, isEditable, isUploading, nodeKey, src, t, uploadLessonImageFile])
 
   useEffect(() => {
     return mergeRegister(
@@ -229,10 +254,8 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
         <ImageNodeControls
           replaceImageInputRef={replaceImageInputRef}
           onReplaceInputChange={handleReplaceImageInputChange}
-          onUploadClick={handleUploadToCloud}
           isUploading={isUploading}
           replaceAriaLabel={t('editor.image.replaceImageAria')}
-          uploadAriaLabel={t('editor.image.uploadToCloudAria')}
           uploadingAriaLabel={t('editor.image.uploadingImageAria')}
           isSelected={isSelected}
         />

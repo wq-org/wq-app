@@ -18,8 +18,9 @@ import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
+import { useUser } from '@/contexts/user/UserContext'
 import { LESSON_CONTENT_SCHEMA_VERSION, type SaveStatus } from '@/features/lesson'
-import { Editor, type PasteOverflowInfo } from '@/features/lexical-editor'
+import { Editor, syncLessonImageLinks, type PasteOverflowInfo } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 import { LessonSettingsDrawer } from '../components/LessonSettingsDrawer'
 
@@ -32,6 +33,7 @@ export const Lesson = () => {
   const { lessonId } = useParams<{ lessonId: string }>()
   const { lesson, fetchLessonById, updateLesson } = useLesson()
   const { selectedCourse } = useCourse()
+  const { getUserInstitutionId } = useUser()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(true)
@@ -87,12 +89,22 @@ export const Lesson = () => {
           },
           lessonId,
         )
+        const institutionId = getUserInstitutionId()
+        if (institutionId) {
+          await syncLessonImageLinks({
+            lessonId,
+            institutionId,
+            state: serializedState,
+          }).catch((error) => {
+            console.error('[lesson] syncLessonImageLinks failed', error)
+          })
+        }
       } catch (error) {
         console.error(error)
         showAutosaveError()
       }
     },
-    [lesson?.contentSchemaVersion, lessonId, showAutosaveError, updateLesson],
+    [getUserInstitutionId, lesson?.contentSchemaVersion, lessonId, showAutosaveError, updateLesson],
   )
 
   useEffect(() => {

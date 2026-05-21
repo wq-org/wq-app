@@ -618,7 +618,7 @@ body {
     margin: 0 0 1rem;
     margin-inline-start: 0;
     padding: 0;
-    padding-inline-start: 0;
+    padding-inline-start: 1rem;
   }
 
   .editor-list-ol {

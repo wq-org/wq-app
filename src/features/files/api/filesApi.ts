@@ -123,8 +123,25 @@ export async function getFileBlobUrl(path: string): Promise<string | null> {
   }
 }
 
+type CloudFileLinkRow = {
+  link_entity_type: string
+}
+
+function summarizeLinkUsage(links: CloudFileLinkRow[]): string {
+  const counts = links.reduce<Record<string, number>>((acc, link) => {
+    acc[link.link_entity_type] = (acc[link.link_entity_type] ?? 0) + 1
+    return acc
+  }, {})
+  return Object.entries(counts)
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
+    .join(', ')
+}
+
 /**
- * Deletes a file from Supabase storage
+ * Deletes a file from Supabase storage. Hard-blocks the delete when any
+ * `cloud_file_links` rows reference the underlying `cloud_files` row — those
+ * lessons / games / messages still embed the asset. Callers receive a
+ * user-friendly summary so the UI can surface it without a 404 surprise.
  *
  * @param path - Storage path of the file to delete (e.g., "teacher/{teacher_id}/filename.ext")
  * @returns Promise with success status and optional error message
@@ -138,7 +155,35 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
       }
     }
 
-    console.log('Deleting file:', path)
+    const { data: cloudFile, error: cloudFileError } = await supabase
+      .from('cloud_files')
+      .select('id')
+      .eq('storage_object_name', path)
+      .maybeSingle()
+
+    if (cloudFileError) {
+      console.error('[deleteFile] cloud_files lookup failed', cloudFileError)
+    }
+
+    const cloudFileId = cloudFile?.id as string | undefined
+
+    if (cloudFileId) {
+      const { data: links, error: linksError } = await supabase
+        .from('cloud_file_links')
+        .select('link_entity_type')
+        .eq('cloud_file_id', cloudFileId)
+
+      if (linksError) {
+        console.error('[deleteFile] cloud_file_links lookup failed', linksError)
+      }
+
+      if (links && links.length > 0) {
+        return {
+          success: false,
+          error: `Used in ${summarizeLinkUsage(links as CloudFileLinkRow[])}. Remove it from content first.`,
+        }
+      }
+    }
 
     const { error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).remove([path])
 
@@ -150,7 +195,13 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
       }
     }
 
-    console.log('File deleted successfully:', path)
+    if (cloudFileId) {
+      const { error: rowError } = await supabase.from('cloud_files').delete().eq('id', cloudFileId)
+      if (rowError) {
+        console.error('[deleteFile] cloud_files delete failed', rowError)
+      }
+    }
+
     return {
       success: true,
     }
