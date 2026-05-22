@@ -57,20 +57,17 @@ export function CardInstantPreviewVideoGridTeaser({
 export type CardInstantPreviewVideoExpandedProps = {
   videoSrc: string
   fileName: string
-  isFullscreen?: boolean
 }
 
 /** @deprecated Prefer `CardInstantPreviewExpandedVideo` from `./CardInstantPreviewExpandedMedia`. */
 export function CardInstantPreviewVideoExpanded({
   videoSrc,
   fileName,
-  isFullscreen = false,
 }: CardInstantPreviewVideoExpandedProps) {
   return (
     <CardInstantPreviewExpandedVideo
       videoSrc={videoSrc}
       fileName={fileName}
-      isFullscreen={isFullscreen}
     />
   )
 }

@@ -10,7 +10,12 @@ import type {
   CardInstantPreviewCardProps,
   CardInstantPreviewImagePosition,
 } from './card-instant-preview.types'
-import { getCardInstantPreviewMediaVariant } from './card-instant-preview.utils'
+import {
+  getCardInstantPreviewMediaVariant,
+  isCardInstantPreviewImageCard,
+  isCardInstantPreviewPdfCard,
+  isCardInstantPreviewVideoCard,
+} from './card-instant-preview.utils'
 
 type CardInstantPreviewExpandedImageProps = {
   imageSrc: string
@@ -91,8 +96,10 @@ export function CardInstantPreviewExpandedMedia({
 
   switch (media) {
     case CARD_INSTANT_PREVIEW_MEDIA.pdf:
+      if (!isCardInstantPreviewPdfCard(card)) return null
       return <CardInstantPreviewExpandedPdf pdfSrc={card.pdfSrc} />
     case CARD_INSTANT_PREVIEW_MEDIA.video:
+      if (!isCardInstantPreviewVideoCard(card)) return null
       return (
         <CardInstantPreviewExpandedVideo
           videoSrc={card.videoSrc}
@@ -100,6 +107,7 @@ export function CardInstantPreviewExpandedMedia({
         />
       )
     case CARD_INSTANT_PREVIEW_MEDIA.image:
+      if (!isCardInstantPreviewImageCard(card)) return null
       return (
         <CardInstantPreviewExpandedImage
           imageSrc={card.imageSrc}

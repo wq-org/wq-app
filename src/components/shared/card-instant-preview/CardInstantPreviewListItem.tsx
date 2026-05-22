@@ -20,7 +20,12 @@ import type {
   CardInstantPreviewListItemProps,
 } from './card-instant-preview.types'
 import { CARD_INSTANT_PREVIEW_MEDIA } from './card-instant-preview.constants'
-import { getCardInstantPreviewMediaVariant } from './card-instant-preview.utils'
+import {
+  getCardInstantPreviewMediaVariant,
+  isCardInstantPreviewImageCard,
+  isCardInstantPreviewPdfCard,
+  isCardInstantPreviewVideoCard,
+} from './card-instant-preview.utils'
 
 type CardInstantPreviewListItemInteractionProps = Pick<
   CardInstantPreviewListItemProps,
@@ -302,12 +307,14 @@ export function CardInstantPreviewListItem(props: CardInstantPreviewListItemProp
 
   switch (media) {
     case CARD_INSTANT_PREVIEW_MEDIA.pdf:
+      if (!isCardInstantPreviewPdfCard(props)) return null
       return listVariant === 'compact' ? (
         <CardInstantPreviewListItemCompactPdf {...props} />
       ) : (
         <CardInstantPreviewListItemDefaultPdf {...props} />
       )
     case CARD_INSTANT_PREVIEW_MEDIA.video:
+      if (!isCardInstantPreviewVideoCard(props)) return null
       return (
         <CardInstantPreviewListItemVideo
           {...props}
@@ -315,6 +322,7 @@ export function CardInstantPreviewListItem(props: CardInstantPreviewListItemProp
         />
       )
     case CARD_INSTANT_PREVIEW_MEDIA.image:
+      if (!isCardInstantPreviewImageCard(props)) return null
       return listVariant === 'compact' ? (
         <CardInstantPreviewListItemCompact {...props} />
       ) : (

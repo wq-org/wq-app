@@ -39,7 +39,8 @@ export async function printPdfDocument(
 ) {
   if (pdfDocumentProxy) {
     const data = await pdfDocumentProxy.getData()
-    const blob = new Blob([data], { type: 'application/pdf' })
+    const pdfBytes = new Uint8Array(data)
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' })
     const objectUrl = URL.createObjectURL(blob)
     const iframe = document.createElement('iframe')
     iframe.className = 'fixed inset-0 h-0 w-0 border-0 opacity-0 pointer-events-none'
