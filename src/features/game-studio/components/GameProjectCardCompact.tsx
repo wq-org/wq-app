@@ -5,6 +5,7 @@ import { SplinePointer } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
+import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import type { GameProjectCardCompactProps } from '../types/game-studio.types'
 
@@ -79,7 +80,11 @@ export function GameProjectCardCompact({
             aria-hidden
           />
         </div>
-        <CardTitle className=" font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+        <CardTitle
+          clampLines={2}
+          title={resolvedTitle}
+          className="font-semibold"
+        >
           {resolvedTitle}
         </CardTitle>
       </CardHeader>
@@ -87,7 +92,7 @@ export function GameProjectCardCompact({
         <Text
           variant="small"
           muted
-          className="line-clamp-2 overflow-hidden text-ellipsis flex-1 min-w-0"
+          className={lineClampClassName(2, { flex: true })}
         >
           {resolvedDescription}
         </Text>

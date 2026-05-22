@@ -55,5 +55,12 @@ export function useTeacherCloudFiles() {
     [load],
   )
 
-  return { cloudFiles, fileItems, loading, error, refetch: load, renameFileItem }
+  const refetch = useCallback(async () => {
+    await load()
+    // Storage listing can lag right after upload; one short retry keeps the gallery current.
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    await load()
+  }, [load])
+
+  return { cloudFiles, fileItems, loading, error, refetch, renameFileItem }
 }

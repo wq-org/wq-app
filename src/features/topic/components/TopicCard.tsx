@@ -35,7 +35,11 @@ export function TopicCard({ id, title, description, themeId, ctaLabel, onView }:
       <CardContent className="flex flex-col p-6">
         <Tooltip>
           <TooltipTrigger asChild>
-            <CardTitle className="line-clamp-1 min-w-0 flex-1 overflow-hidden text-ellipsis text-xl font-semibold">
+            <CardTitle
+              clampLines={2}
+              title={title}
+              className="text-xl font-semibold"
+            >
               {title}
             </CardTitle>
           </TooltipTrigger>

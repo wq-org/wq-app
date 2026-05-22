@@ -10,8 +10,15 @@ export type {
   CardInstantPreviewVideoCardProps,
   CardInstantPreviewProps,
 } from './card-instant-preview'
-export { isCardInstantPreviewPdfCard, isCardInstantPreviewVideoCard } from './card-instant-preview'
+export {
+  CARD_INSTANT_PREVIEW_MEDIA,
+  getCardInstantPreviewMediaVariant,
+  isCardInstantPreviewImageCard,
+  isCardInstantPreviewPdfCard,
+  isCardInstantPreviewVideoCard,
+} from './card-instant-preview'
 export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
+export type { CardInstantPreviewMediaVariant } from './card-instant-preview'
 export { BasicPdfViewer, configurePdfJsWorker } from './pdf-viewer'
 export type { BasicPdfViewerProps } from './pdf-viewer'
 export { AccentPicker } from './AccentPicker'

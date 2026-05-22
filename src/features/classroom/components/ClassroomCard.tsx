@@ -39,7 +39,11 @@ export function ClassroomCard({
           className="w-4 h-4 text-white"
           strokeWidth={1.5}
         />
-        <CardTitle className=" font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+        <CardTitle
+          clampLines={2}
+          title={name}
+          className="font-semibold"
+        >
           {name}
         </CardTitle>
       </CardHeader>

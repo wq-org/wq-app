@@ -4,6 +4,7 @@ import { BookOpen } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
+import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import type { CourseCardProps } from '../types/course.types'
 
@@ -74,7 +75,11 @@ export function CourseCardCompact({
             aria-hidden
           />
         </div>
-        <CardTitle className=" font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+        <CardTitle
+          clampLines={2}
+          title={title}
+          className="font-semibold"
+        >
           {title}
         </CardTitle>
       </CardHeader>
@@ -82,7 +87,7 @@ export function CourseCardCompact({
         <Text
           variant="small"
           muted
-          className="line-clamp-2 overflow-hidden text-ellipsis flex-1 min-w-0"
+          className={lineClampClassName(2, { flex: true })}
         >
           {description}
         </Text>

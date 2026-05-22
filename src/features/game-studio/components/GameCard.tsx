@@ -70,7 +70,11 @@ export function GameCard({
           )}
           <Tooltip>
             <TooltipTrigger asChild>
-              <CardTitle className="line-clamp-1 min-w-0 cursor-default text-xl font-semibold">
+              <CardTitle
+                clampLines={2}
+                title={title}
+                className="cursor-default text-xl font-semibold"
+              >
                 {title}
               </CardTitle>
             </TooltipTrigger>

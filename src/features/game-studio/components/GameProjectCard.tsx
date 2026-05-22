@@ -54,7 +54,11 @@ export function GameProjectCard({
           <div className="flex items-center gap-2 flex-wrap">
             <Tooltip>
               <TooltipTrigger asChild>
-                <CardTitle className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+                <CardTitle
+                  clampLines={2}
+                  title={resolvedTitle}
+                  className="text-xl font-semibold"
+                >
                   {resolvedTitle}
                 </CardTitle>
               </TooltipTrigger>

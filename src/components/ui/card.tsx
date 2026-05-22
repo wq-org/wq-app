@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { VariantProps } from 'class-variance-authority'
 
+import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import { cardVariants } from './card-variants'
 
@@ -43,11 +44,22 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
+type CardTitleProps = React.ComponentProps<'div'> & {
+  /** Clamp title lines and show ellipsis; sets `title` tooltip when provided. */
+  clampLines?: 1 | 2 | 3
+}
+
+function CardTitle({ className, clampLines, title, ...props }: CardTitleProps) {
   return (
     <div
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn(
+        'font-semibold',
+        !clampLines && 'leading-none',
+        clampLines && lineClampClassName(clampLines, { flex: true }),
+        className,
+      )}
+      title={title}
       {...props}
     />
   )

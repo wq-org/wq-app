@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { cn } from '@/lib/utils'
+import { CLOUD_GALLERY_REFETCH_EVENT } from '../constants/cloudGalleryEvents'
 import { useTeacherCloudFiles } from '../hooks/useTeacherCloudFiles'
 import type { FileItem } from '../types/files.types'
 import { buildCloudGalleryItems, isGalleryFile } from '../utils/buildCloudGalleryItems'
@@ -36,8 +37,19 @@ export function CloudGallery({
   const [query, setQuery] = useState('')
 
   useEffect(() => {
-    onRefetchReady?.(refetch)
+    onRefetchReady?.(() => {
+      void refetch()
+    })
   }, [onRefetchReady, refetch])
+
+  useEffect(() => {
+    const handleGalleryRefetch = () => {
+      void refetch()
+    }
+
+    window.addEventListener(CLOUD_GALLERY_REFETCH_EVENT, handleGalleryRefetch)
+    return () => window.removeEventListener(CLOUD_GALLERY_REFETCH_EVENT, handleGalleryRefetch)
+  }, [refetch])
 
   useEffect(() => {
     if (error) {

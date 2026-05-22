@@ -1,26 +1,23 @@
 import type { ReactNode } from 'react'
-import { FileText, Video } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { IconPreviewCardSquare, IconPreviewCardWide } from '../IconPreviewCard'
 import { cn } from '@/lib/utils'
 import { getColorCss } from '@/lib/themes'
 import type { CardInstantPreviewImagePosition } from './card-instant-preview.types'
-import { CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID } from './card-instant-preview.types'
+import { CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID } from './card-instant-preview.constants'
 import {
   cardInstantPreviewTitleId,
   cardInstantPreviewTitleClampClassName,
 } from './card-instant-preview.utils'
 
 const PDF_TEASER_BACKGROUND = getColorCss('blue')
-const VIDEO_TEASER_BACKGROUND = getColorCss('orange')
 
 const GRID_IMAGE_HEIGHT = CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID
-const EXPANDED_IMAGE_HEIGHT = 'min(42vh, 360px)'
 
 type CardInstantPreviewImageProps = {
   imageSrc: string
   imageAlt: string
   imagePosition?: CardInstantPreviewImagePosition
-  mode: 'grid' | 'expanded'
   gridImageHeight?: number
   className?: string
 }
@@ -29,11 +26,10 @@ export function CardInstantPreviewImage({
   imageSrc,
   imageAlt,
   imagePosition,
-  mode,
   gridImageHeight = GRID_IMAGE_HEIGHT,
   className,
 }: CardInstantPreviewImageProps) {
-  const height = mode === 'grid' ? gridImageHeight : EXPANDED_IMAGE_HEIGHT
+  const height = gridImageHeight
 
   return (
     <div
@@ -106,51 +102,6 @@ type CardInstantPreviewPdfGridTeaserProps = {
   className?: string
 }
 
-type CardInstantPreviewVideoGridTeaserProps = {
-  videoSrc: string
-  videoAlt: string
-  mode: 'grid' | 'compact'
-  gridImageHeight?: number
-  className?: string
-}
-
-export function CardInstantPreviewVideoGridTeaser({
-  videoSrc,
-  videoAlt,
-  mode,
-  gridImageHeight = GRID_IMAGE_HEIGHT,
-  className,
-}: CardInstantPreviewVideoGridTeaserProps) {
-  if (mode === 'compact') {
-    return (
-      <div className={cn('absolute inset-0', className)}>
-        <IconPreviewCardSquare
-          icon={Video}
-          backgroundColor={VIDEO_TEASER_BACKGROUND}
-          blurred={false}
-          className="size-full rounded-none"
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className={cn('relative w-full shrink-0 overflow-hidden bg-muted', className)}
-      style={{ height: gridImageHeight }}
-    >
-      <video
-        src={videoSrc}
-        muted
-        playsInline
-        preload="metadata"
-        aria-label={videoAlt}
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-    </div>
-  )
-}
-
 export function CardInstantPreviewPdfGridTeaser({
   mode,
   gridImageHeight = GRID_IMAGE_HEIGHT,
@@ -187,17 +138,28 @@ export function CardInstantPreviewPdfGridTeaser({
 type CardInstantPreviewExpandedBodyProps = {
   description: string
   content?: ReactNode
+  className?: string
 }
 
 export function CardInstantPreviewExpandedBody({
   description,
   content,
+  className,
 }: CardInstantPreviewExpandedBodyProps) {
+  const showDescription = Boolean(description.trim()) && !content
+
   return (
-    <div className="flex flex-col gap-4 rounded-b-[28px] bg-card px-6 py-6 text-card-foreground">
-      <p className="text-[15px] leading-relaxed text-muted-foreground">{description}</p>
+    <div
+      className={cn(
+        'flex flex-col gap-4 rounded-b-[28px] bg-card px-6 py-6 text-card-foreground',
+        className,
+      )}
+    >
+      {showDescription ? (
+        <p className="text-[15px] leading-relaxed text-muted-foreground">{description}</p>
+      ) : null}
       {content ? (
-        <div className="text-[15px] leading-relaxed text-muted-foreground">{content}</div>
+        <div className="min-w-0 text-[15px] leading-relaxed text-muted-foreground">{content}</div>
       ) : null}
     </div>
   )

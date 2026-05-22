@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react'
 
 import { AppShell } from '@/components/layout'
 import { CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID } from '@/components/shared/card-instant-preview'
-import { CloudGallery } from '@/features/cloud'
+import { CloudGallery, requestCloudGalleryRefetch } from '@/features/cloud'
 
 /** Matches `gap-5` on `CardInstantPreviewList`. */
 const CLOUD_GALLERY_CARD_ROW_GAP_PX = 20
@@ -21,6 +21,7 @@ export function TeacherCloudPage() {
   }, [])
 
   const handleFilesUploaded = useCallback(() => {
+    requestCloudGalleryRefetch()
     void refetchGalleryRef.current()
   }, [])
 

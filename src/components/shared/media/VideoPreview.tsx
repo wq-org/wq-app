@@ -1,13 +1,17 @@
+import { cn } from '@/lib/utils'
+
 type VideoPreviewProps = {
   videoUrl: string
   fileName?: string
+  className?: string
 }
 
-export function VideoPreview({ videoUrl, fileName = 'video' }: VideoPreviewProps) {
+export function VideoPreview({ videoUrl, fileName = 'video', className }: VideoPreviewProps) {
   return (
     <video
       controls
-      className="w-full h-auto max-h-[80vh] rounded"
+      playsInline
+      className={cn('h-auto w-auto max-w-full rounded object-contain', className)}
       preload="metadata"
       title={fileName}
     >

@@ -4,8 +4,8 @@ import {
   CardInstantPreviewHeader,
   CardInstantPreviewImage,
   CardInstantPreviewPdfGridTeaser,
-  CardInstantPreviewVideoGridTeaser,
 } from './CardInstantPreviewShared'
+import { CardInstantPreviewListItemVideo } from './CardInstantPreviewListItemVideo'
 import {
   cardInstantPreviewTitleClampClassName,
   cardInstantPreviewTitleId,
@@ -14,16 +14,13 @@ import {
   CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID,
   CARD_INSTANT_PREVIEW_CARD_WIDTH_GRID,
   CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID,
-} from './card-instant-preview.types'
+} from './card-instant-preview.constants'
 import type {
   CardInstantPreviewImageCardProps,
   CardInstantPreviewListItemProps,
-  CardInstantPreviewVideoCardProps,
 } from './card-instant-preview.types'
-import {
-  isCardInstantPreviewPdfCard,
-  isCardInstantPreviewVideoCard,
-} from './card-instant-preview.utils'
+import { CARD_INSTANT_PREVIEW_MEDIA } from './card-instant-preview.constants'
+import { getCardInstantPreviewMediaVariant } from './card-instant-preview.utils'
 
 type CardInstantPreviewListItemInteractionProps = Pick<
   CardInstantPreviewListItemProps,
@@ -31,9 +28,6 @@ type CardInstantPreviewListItemInteractionProps = Pick<
 >
 
 type CardInstantPreviewListItemImageProps = CardInstantPreviewImageCardProps &
-  CardInstantPreviewListItemInteractionProps
-
-type CardInstantPreviewListItemVideoProps = CardInstantPreviewVideoCardProps &
   CardInstantPreviewListItemInteractionProps
 
 const cardInstantPreviewListItemButtonClassName = cn(
@@ -72,7 +66,7 @@ function CardInstantPreviewListItemCompact({
       data-card-instant-preview-card
       data-card-id={id}
       data-card-variant="compact"
-      data-card-media="image"
+      data-card-media={CARD_INSTANT_PREVIEW_MEDIA.image}
       className={cn('list-none max-w-full shrink-0', className)}
       style={listItemStyle}
     >
@@ -147,7 +141,7 @@ function CardInstantPreviewListItemCompactPdf({
       data-card-instant-preview-card
       data-card-id={id}
       data-card-variant="compact"
-      data-card-media="pdf"
+      data-card-media={CARD_INSTANT_PREVIEW_MEDIA.pdf}
       className={cn('list-none max-w-full shrink-0', className)}
       style={listItemStyle}
     >
@@ -219,7 +213,7 @@ function CardInstantPreviewListItemDefault({
       data-card-instant-preview-card
       data-card-id={id}
       data-card-variant="default"
-      data-card-media="image"
+      data-card-media={CARD_INSTANT_PREVIEW_MEDIA.image}
       className={cn('list-none max-w-full shrink-0', className)}
       style={listItemStyle}
     >
@@ -240,133 +234,6 @@ function CardInstantPreviewListItemDefault({
           imageSrc={imageSrc}
           imageAlt={title}
           imagePosition={imagePosition}
-          mode="grid"
-          gridImageHeight={CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID}
-        />
-        <CardInstantPreviewHeader
-          cardId={id}
-          subtitle={subtitle}
-          title={title}
-          mode="grid"
-          titleClassName="text-[22px]"
-        />
-      </button>
-    </li>
-  )
-}
-
-function CardInstantPreviewListItemCompactVideo({
-  id,
-  subtitle,
-  title,
-  videoSrc,
-  isExpanded,
-  onSelect,
-  className,
-}: CardInstantPreviewListItemVideoProps) {
-  const titleId = cardInstantPreviewTitleId(id)
-
-  return (
-    <li
-      data-card-instant-preview-card
-      data-card-id={id}
-      data-card-variant="compact"
-      data-card-media="video"
-      className={cn('list-none max-w-full shrink-0', className)}
-      style={listItemStyle}
-    >
-      <button
-        type="button"
-        data-card-instant-preview-trigger={id}
-        aria-expanded={isExpanded}
-        aria-controls={`card-instant-preview-dialog-${id}`}
-        aria-labelledby={titleId}
-        onClick={(event) => onSelect(id, event.currentTarget)}
-        className={cn('relative w-full', cardInstantPreviewListItemButtonClassName)}
-        style={{ height: CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID }}
-      >
-        <div className="relative isolate h-full overflow-hidden rounded-[28px]">
-          <CardInstantPreviewVideoGridTeaser
-            videoSrc={videoSrc}
-            videoAlt={title}
-            mode="compact"
-          />
-
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
-          />
-
-          <div
-            aria-hidden
-            className="absolute inset-x-0 top-[30%] bottom-0 z-[1] bg-black/15 backdrop-blur-xl"
-            style={{
-              maskImage:
-                'linear-gradient(to top, black 0%, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.45) 50%, transparent 100%)',
-              WebkitMaskImage:
-                'linear-gradient(to top, black 0%, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.45) 50%, transparent 100%)',
-            }}
-          />
-
-          <div className="absolute inset-x-0 bottom-0 z-10 flex min-w-0 flex-col gap-1 px-5 pb-5 pt-8">
-            <span
-              id={titleId}
-              className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/80"
-            >
-              {subtitle}
-            </span>
-            <h2
-              className={cn(
-                'text-[22px] font-bold leading-[1.12] tracking-tight text-white',
-                cardInstantPreviewTitleClampClassName,
-              )}
-            >
-              {title}
-            </h2>
-          </div>
-        </div>
-      </button>
-    </li>
-  )
-}
-
-function CardInstantPreviewListItemDefaultVideo({
-  id,
-  subtitle,
-  title,
-  videoSrc,
-  isExpanded,
-  onSelect,
-  className,
-}: CardInstantPreviewListItemVideoProps) {
-  const titleId = cardInstantPreviewTitleId(id)
-
-  return (
-    <li
-      data-card-instant-preview-card
-      data-card-id={id}
-      data-card-variant="default"
-      data-card-media="video"
-      className={cn('list-none max-w-full shrink-0', className)}
-      style={listItemStyle}
-    >
-      <button
-        type="button"
-        data-card-instant-preview-trigger={id}
-        aria-expanded={isExpanded}
-        aria-controls={`card-instant-preview-dialog-${id}`}
-        aria-labelledby={titleId}
-        onClick={(event) => onSelect(id, event.currentTarget)}
-        className={cn(
-          'flex h-[var(--card-instant-preview-grid-height)] w-full min-w-0 flex-col overflow-hidden bg-card text-card-foreground',
-          cardInstantPreviewListItemButtonClassName,
-        )}
-        style={gridCardStyle}
-      >
-        <CardInstantPreviewVideoGridTeaser
-          videoSrc={videoSrc}
-          videoAlt={title}
-          mode="grid"
           gridImageHeight={CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID}
         />
         <CardInstantPreviewHeader
@@ -396,7 +263,7 @@ function CardInstantPreviewListItemDefaultPdf({
       data-card-instant-preview-card
       data-card-id={id}
       data-card-variant="default"
-      data-card-media="pdf"
+      data-card-media={CARD_INSTANT_PREVIEW_MEDIA.pdf}
       className={cn('list-none max-w-full shrink-0', className)}
       style={listItemStyle}
     >
@@ -430,23 +297,28 @@ function CardInstantPreviewListItemDefaultPdf({
 }
 
 export function CardInstantPreviewListItem(props: CardInstantPreviewListItemProps) {
-  if (isCardInstantPreviewPdfCard(props)) {
-    if (props.variant === 'compact') {
-      return <CardInstantPreviewListItemCompactPdf {...props} />
-    }
-    return <CardInstantPreviewListItemDefaultPdf {...props} />
-  }
+  const media = getCardInstantPreviewMediaVariant(props)
+  const listVariant = props.variant ?? 'default'
 
-  if (isCardInstantPreviewVideoCard(props)) {
-    if (props.variant === 'compact') {
-      return <CardInstantPreviewListItemCompactVideo {...props} />
-    }
-    return <CardInstantPreviewListItemDefaultVideo {...props} />
+  switch (media) {
+    case CARD_INSTANT_PREVIEW_MEDIA.pdf:
+      return listVariant === 'compact' ? (
+        <CardInstantPreviewListItemCompactPdf {...props} />
+      ) : (
+        <CardInstantPreviewListItemDefaultPdf {...props} />
+      )
+    case CARD_INSTANT_PREVIEW_MEDIA.video:
+      return (
+        <CardInstantPreviewListItemVideo
+          {...props}
+          variant={listVariant}
+        />
+      )
+    case CARD_INSTANT_PREVIEW_MEDIA.image:
+      return listVariant === 'compact' ? (
+        <CardInstantPreviewListItemCompact {...props} />
+      ) : (
+        <CardInstantPreviewListItemDefault {...props} />
+      )
   }
-
-  if (props.variant === 'compact') {
-    return <CardInstantPreviewListItemCompact {...props} />
-  }
-
-  return <CardInstantPreviewListItemDefault {...props} />
 }

@@ -76,7 +76,11 @@ export function CourseCard({
           <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
             <Tooltip>
               <TooltipTrigger asChild>
-                <CardTitle className="text-xl font-semibold line-clamp-1 overflow-hidden text-ellipsis flex-1 min-w-0">
+                <CardTitle
+                  clampLines={2}
+                  title={title}
+                  className="text-xl font-semibold"
+                >
                   {title}
                 </CardTitle>
               </TooltipTrigger>

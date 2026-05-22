@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { CardInstantPreviewExpanded } from './CardInstantPreviewExpanded'
 import { CardInstantPreviewList } from './CardInstantPreviewList'
 import type { CardInstantPreviewProps } from './card-instant-preview.types'
-import { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview.types'
+import { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview.constants'
 
 export function CardInstantPreview({
   heading,
@@ -74,8 +74,8 @@ export function CardInstantPreview({
       }
     }
 
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => window.removeEventListener('keydown', onKeyDown, true)
   }, [handleClose, isOpen])
 
   useEffect(() => {

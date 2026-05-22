@@ -7,6 +7,7 @@ import {
   useFileValidation,
 } from '@/components/shared/upload-files'
 import type { UploadedFile } from '@/components/shared/upload-files'
+import { requestCloudGalleryRefetch, resolveCloudFileId } from '@/features/cloud'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -138,7 +139,26 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
       const failedCount = results.filter((r) => !r.success).length
 
       if (successCount > 0) {
+        await Promise.all(
+          results.map(async (result, index) => {
+            if (!result.success || !result.path) return
+
+            const file = uploadedFiles[index]?.file
+            if (!file) return
+
+            await resolveCloudFileId({
+              storageObjectName: result.path,
+              institutionId,
+              userId,
+              mimeType: file.type,
+              sizeBytes: file.size,
+              originalName: file.name,
+            })
+          }),
+        )
+
         toast.success(t('upload.toasts.successSummary', { successCount, failedCount }))
+        requestCloudGalleryRefetch()
         onSuccess?.()
       }
 

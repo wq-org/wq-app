@@ -1,3 +1,7 @@
+export {
+  CLOUD_GALLERY_REFETCH_EVENT,
+  requestCloudGalleryRefetch,
+} from './constants/cloudGalleryEvents'
 export { CloudGallery } from './components/CloudGallery'
 export type { CloudGalleryProps } from './components/CloudGallery'
 export type { CloudFileItem, CloudFileKind, FileItem, FileTypeConfig } from './types/files.types'
