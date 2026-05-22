@@ -149,6 +149,28 @@ export async function unpublishGame(gameId: string): Promise<GameForStudio> {
 /**
  * Get a single game by ID (full row including game_content for loading canvas).
  */
+/**
+ * Draft row for `cloud_file_links` (`link_entity_type = 'game_version'`).
+ * Studio saves `games.game_content`; the DB trigger mirrors content onto this draft version.
+ */
+export async function getCurrentGameDraftVersionId(gameId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('game_versions')
+    .select('id')
+    .eq('game_id', gameId)
+    .eq('status', 'draft')
+    .order('version_no', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[getCurrentGameDraftVersionId] lookup failed', error)
+    return null
+  }
+
+  return (data?.id as string | undefined) ?? null
+}
+
 export async function getGameForStudio(gameId: string): Promise<GameForStudio | null> {
   const { data, error } = await supabase.from('games').select('*').eq('id', gameId).single()
 

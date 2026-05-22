@@ -19,6 +19,8 @@ export type GameImagePinNodeData = {
   description?: string
   imagePreview?: string
   filepath?: string
+  /** `cloud_files.id` for inline_media usage tracking and delete guards. */
+  cloudFileId?: string | null
   rectangles?: GameImagePinRect[]
   /** Optional aggregate score for publish / analytics until per-rect scoring exists. */
   points?: number

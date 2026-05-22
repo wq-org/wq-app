@@ -32,6 +32,7 @@ export function GameImagePinDialog({
   const initRef = useRef({
     filepath: gameImagePinNodeData.filepath ?? '',
     imagePreview: gameImagePinNodeData.imagePreview ?? '',
+    cloudFileId: gameImagePinNodeData.cloudFileId ?? null,
     onPatchNodeData,
   })
 
@@ -44,7 +45,13 @@ export function GameImagePinDialog({
     getFileSignedUrl(storagePath, 3600)
       .then((freshUrl) => {
         if (!cancelled && freshUrl && freshUrl !== imagePreview) {
-          patch({ imagePreview: freshUrl, filepath: storagePath })
+          queueMicrotask(() =>
+            patch({
+              imagePreview: freshUrl,
+              filepath: storagePath,
+              cloudFileId: initRef.current.cloudFileId,
+            }),
+          )
         }
       })
       .catch(console.error)
@@ -54,11 +61,14 @@ export function GameImagePinDialog({
     }
   }, [])
 
+  const defaultsAppliedRef = useRef(false)
+
   useEffect(() => {
+    if (defaultsAppliedRef.current) return
     const defaultPatch = getMissingGameImagePinDefaults({ points, retryDeductionPercent })
     if (Object.keys(defaultPatch).length === 0) return
-
-    onPatchNodeData(defaultPatch)
+    defaultsAppliedRef.current = true
+    queueMicrotask(() => onPatchNodeData(defaultPatch))
   }, [onPatchNodeData, points, retryDeductionPercent])
 
   const prevEdge = flowEdges.find((edge) => edge.target === nodeId)

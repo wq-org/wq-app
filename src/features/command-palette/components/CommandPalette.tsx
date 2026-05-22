@@ -295,7 +295,9 @@ export function CommandPalette({
           }}
           orientation="horizontal"
           aria-label={
-            chunkIndex === 0 ? 'Primary command actions' : `Primary command actions ${chunkIndex + 1}`
+            chunkIndex === 0
+              ? 'Primary command actions'
+              : `Primary command actions ${chunkIndex + 1}`
           }
           className="flex items-center gap-3"
         >
@@ -333,8 +335,8 @@ export function CommandPalette({
   }
 
   const handleItemClick = (item: CommandBarItem) => {
-    // Dispatch custom event for pan/select actions
-    if (item.actionId === 'pan' || item.actionId === 'select' || item.actionId === 'home') {
+    // Dispatch custom event for canvas tools (game-studio editor listens for pan/select)
+    if (item.actionId === 'pan' || item.actionId === 'select') {
       window.dispatchEvent(
         new CustomEvent('command-action', {
           detail: { actionId: item.actionId },

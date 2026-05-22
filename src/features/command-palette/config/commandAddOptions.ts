@@ -97,7 +97,7 @@ export const VIEW_COMMAND_ITEMS: Record<CommandBarView, readonly CommandBarItem[
       id: 'home',
       labelKey: 'actions.dashboard',
       icon: Home,
-      actionId: 'home',
+      to: '/teacher/dashboard',
     },
     {
       id: 'pan',

@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
+import { resolveCloudFileId } from '@/features/files/api/resolveCloudFileId'
 import { useUser } from '@/contexts/user/UserContext'
 
 import { mapUserRoleToCloudPathRole } from './gameImagePinCloudRole'
@@ -11,6 +12,7 @@ import { mapUserRoleToCloudPathRole } from './gameImagePinCloudRole'
 export type GameImagePinCloudUploadResult = {
   publicUrl: string
   path: string
+  cloudFileId: string
 }
 
 /**
@@ -52,8 +54,22 @@ export function useGameImagePinImageUpload() {
         return null
       }
 
+      const cloudFileId = await resolveCloudFileId({
+        storageObjectName: result.path,
+        institutionId: institutionId.trim(),
+        userId: userId.trim(),
+        mimeType: file.type,
+        sizeBytes: file.size,
+        originalName: file.name,
+      })
+
+      if (!cloudFileId) {
+        toast.error(t('imagePinEditor.toastUploadFailed'))
+        return null
+      }
+
       toast.success(t('imagePinEditor.toastUploadSuccess'))
-      return { publicUrl: result.publicUrl, path: result.path }
+      return { publicUrl: result.publicUrl, path: result.path, cloudFileId }
     },
     [getRole, getUserId, getUserInstitutionId, t],
   )

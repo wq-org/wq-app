@@ -9,6 +9,7 @@ import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 import { HelpPopover } from '@/components/shared'
 import { getFileSignedUrl } from '@/features/files'
+import { lookupCloudFileIdByStoragePath } from '@/features/files/api/resolveCloudFileId'
 import { cn } from '@/lib/utils'
 
 import { ImagePinRectStage } from './ImagePinRectStage'
@@ -17,6 +18,7 @@ import {
   loadImageNaturalSize,
   remapRectsForNewImageSize,
 } from './imagePinRectGeometry'
+import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
 import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
 import type { GameImagePinCloudUploadResult } from './useGameImagePinImageUpload'
 import { useImagePinCloudGalleryImages } from './useImagePinCloudGalleryImages'
@@ -36,7 +38,6 @@ function readFileAsDataUrl(file: File): Promise<string> {
         reject(new Error('Failed to read file as data URL'))
         return
       }
-      console.log('[readFileAsDataUrl] Data URL created, length:', dataUrl.length)
       resolve(dataUrl)
     }
     reader.onerror = () => {
@@ -49,7 +50,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 
 export type GameImagePinEditorProps = {
   nodeData: Record<string, unknown>
-  onPatchNodeData: (patch: Record<string, unknown>) => void
+  onPatchNodeData: (patch: GameNodeDataPatch) => void
   /** Thumbnails from other Image Pin nodes on the same canvas (from `GameEditorCanvas`). */
   projectImageGallery?: readonly { url: string; title: string; storagePath?: string }[]
   /**
@@ -93,6 +94,10 @@ export function GameImagePinEditor({
   const { items: cloudGalleryItems, isLoading: cloudGalleryLoading } =
     useImagePinCloudGalleryImages(cloudGalleryRefresh)
 
+  const handleSceneMetrics = useCallback((metrics: { width: number; height: number }) => {
+    setSceneMetrics(metrics)
+  }, [])
+
   const mergedGalleryItems = useMemo(() => {
     const seen = new Map<string, { url: string; title: string; storagePath?: string }>()
 
@@ -134,65 +139,78 @@ export function GameImagePinEditor({
 
   const patchRectQuestion = useCallback(
     (id: string, question: string) => {
-      onPatchNodeData({
-        rectangles: rectangles.map((r) => (r.id === id ? { ...r, question } : r)),
+      onPatchNodeData((current) => {
+        const currentRects = Array.isArray(current.rectangles)
+          ? (current.rectangles as GameImagePinRect[])
+          : []
+        return {
+          rectangles: currentRects.map((r) => (r.id === id ? { ...r, question } : r)),
+        }
       })
     },
-    [onPatchNodeData, rectangles],
+    [onPatchNodeData],
   )
 
   const handleDeleteRectRow = useCallback(
     (id: string) => {
-      onPatchNodeData({ rectangles: rectangles.filter((r) => r.id !== id) })
+      onPatchNodeData((current) => {
+        const currentRects = Array.isArray(current.rectangles)
+          ? (current.rectangles as GameImagePinRect[])
+          : []
+        return { rectangles: currentRects.filter((r) => r.id !== id) }
+      })
       if (selectedRectId === id) setSelectedRectId(null)
     },
-    [onPatchNodeData, rectangles, selectedRectId],
+    [onPatchNodeData, selectedRectId],
   )
 
   const handleAddRect = useCallback(() => {
     if (!sceneMetrics) return
     const next = createDefaultImagePinRectangle(sceneMetrics.width, sceneMetrics.height)
-    onPatchNodeData({ rectangles: [...rectangles, next] })
+    onPatchNodeData((current) => {
+      const currentRects = Array.isArray(current.rectangles)
+        ? (current.rectangles as GameImagePinRect[])
+        : []
+      return { rectangles: [...currentRects, next] }
+    })
     setSelectedRectId(next.id)
-  }, [onPatchNodeData, rectangles, sceneMetrics])
+  }, [onPatchNodeData, sceneMetrics])
 
   const handleDeleteSelectedRect = useCallback(() => {
     if (!selectedRectId) return
-    onPatchNodeData({ rectangles: rectangles.filter((r) => r.id !== selectedRectId) })
+    onPatchNodeData((current) => {
+      const currentRects = Array.isArray(current.rectangles)
+        ? (current.rectangles as GameImagePinRect[])
+        : []
+      return { rectangles: currentRects.filter((r) => r.id !== selectedRectId) }
+    })
     setSelectedRectId(null)
-  }, [onPatchNodeData, rectangles, selectedRectId])
+  }, [onPatchNodeData, selectedRectId])
 
   const handleImageLoadFailed = useCallback(
     (failedSrc: string) => {
-      console.warn(
-        '[GameImagePinEditor] Image load failed, attempting refresh:',
-        failedSrc.substring(0, 50) + (failedSrc.length > 50 ? '...' : ''),
-      )
-
-      // If cloud image with filepath, try refreshing signed URL
       const filepath = typeof pin.filepath === 'string' ? pin.filepath.trim() : ''
-      if (filepath) {
-        getFileSignedUrl(filepath, 3600)
-          .then((newUrl) => {
-            if (newUrl && newUrl !== failedSrc) {
-              console.log('[GameImagePinEditor] Refreshed signed URL successfully')
-              onPatchNodeData({
-                imagePreview: newUrl,
-                filepath,
-                rectangles,
-              })
-            }
+      if (!filepath) return
+
+      void getFileSignedUrl(filepath, 3600)
+        .then((newUrl) => {
+          if (!newUrl || newUrl === failedSrc) return
+          onPatchNodeData({
+            imagePreview: newUrl,
+            filepath,
+            cloudFileId: pin.cloudFileId ?? null,
+            rectangles,
           })
-          .catch((error) => {
-            console.error('[GameImagePinEditor] Failed to refresh signed URL:', error)
-          })
-      }
+        })
+        .catch((error) => {
+          console.error('[GameImagePinEditor] Failed to refresh signed URL:', error)
+        })
     },
-    [pin.filepath, onPatchNodeData, rectangles],
+    [pin.cloudFileId, pin.filepath, rectangles, onPatchNodeData],
   )
 
   const applyImagePreviewFromSrc = useCallback(
-    async (src: string, options?: { filepath?: string }) => {
+    async (src: string, options?: { filepath?: string; cloudFileId?: string | null }) => {
       const trimmed = src.trim()
       if (!trimmed) return
 
@@ -223,13 +241,20 @@ export function GameImagePinEditor({
         )
       }
 
+      let cloudFileId = options?.cloudFileId ?? pin.cloudFileId ?? null
+      const storagePath = (options?.filepath ?? '').trim()
+      if (!cloudFileId && storagePath) {
+        cloudFileId = await lookupCloudFileIdByStoragePath(storagePath)
+      }
+
       onPatchNodeData({
         imagePreview: trimmed,
-        filepath: options?.filepath ?? '',
+        filepath: storagePath,
+        cloudFileId,
         rectangles: nextRects,
       })
     },
-    [imagePreview, onPatchNodeData, rectangles, sceneMetrics],
+    [imagePreview, pin.cloudFileId, rectangles, sceneMetrics, onPatchNodeData],
   )
 
   const handleGallerySelect = useCallback(
@@ -272,7 +297,10 @@ export function GameImagePinEditor({
         const signedUrl = await getFileSignedUrl(uploaded.path, 3600)
         const urlToUse = signedUrl || uploaded.publicUrl
 
-        await applyImagePreviewFromSrc(urlToUse, { filepath: uploaded.path })
+        await applyImagePreviewFromSrc(urlToUse, {
+          filepath: uploaded.path,
+          cloudFileId: uploaded.cloudFileId,
+        })
         setPendingPreviewSrc(null)
         setCloudGalleryRefresh((c) => c + 1)
       } catch (error) {
@@ -286,7 +314,12 @@ export function GameImagePinEditor({
   )
 
   const handleClearImage = useCallback(() => {
-    onPatchNodeData({ imagePreview: '', filepath: '', rectangles: [] })
+    onPatchNodeData({
+      imagePreview: '',
+      filepath: '',
+      cloudFileId: null,
+      rectangles: [],
+    })
   }, [onPatchNodeData])
 
   const handleReplaceImageInputChange = useCallback(
@@ -436,7 +469,7 @@ export function GameImagePinEditor({
                 onRectanglesChange={handleRectanglesChange}
                 selectedRectId={selectedRectId}
                 onSelectedRectIdChange={setSelectedRectId}
-                onSceneMetrics={setSceneMetrics}
+                onSceneMetrics={handleSceneMetrics}
                 onImageLoadFailed={handleImageLoadFailed}
               />
 

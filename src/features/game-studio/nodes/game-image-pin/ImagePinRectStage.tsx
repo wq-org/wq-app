@@ -82,34 +82,17 @@ export function ImagePinRectStage({
   const hasImage = image && status === 'loaded'
   const isImageFailed = status === 'failed'
 
-  // Log image loading status for debugging
   useEffect(() => {
-    if (typeof window !== 'undefined' && import.meta.env.DEV) {
-      if (status === 'loading') {
-        console.log(
-          '[ImagePinRectStage] Image loading:',
-          imageSrc.substring(0, 50) + (imageSrc.length > 50 ? '...' : ''),
-        )
-      } else if (status === 'loaded') {
-        console.log('[ImagePinRectStage] Image loaded successfully:', {
-          width: image?.naturalWidth,
-          height: image?.naturalHeight,
-        })
-        // Reset failure state when image loads successfully
-        setImageFailureReported(false)
-      } else if (status === 'failed') {
-        console.error('[ImagePinRectStage] Failed to load image:', {
-          imageSrc: imageSrc.substring(0, 50) + (imageSrc.length > 50 ? '...' : ''),
-        })
-      }
+    if (status === 'loaded') {
+      setImageFailureReported(false)
     }
-  }, [status, image, imageSrc])
+  }, [status])
 
-  // Call onImageLoadFailed callback when image fails to load
   useEffect(() => {
     if (isImageFailed && !imageFailureReported && onImageLoadFailed) {
       setImageFailureReported(true)
-      onImageLoadFailed(imageSrc)
+      const src = imageSrc
+      queueMicrotask(() => onImageLoadFailed(src))
     }
   }, [isImageFailed, imageFailureReported, onImageLoadFailed, imageSrc])
 
@@ -138,7 +121,8 @@ export function ImagePinRectStage({
   useEffect(() => {
     if (!onSceneMetrics) return
     if (!image?.naturalWidth || !image?.naturalHeight) return
-    onSceneMetrics({ width: image.naturalWidth, height: image.naturalHeight })
+    const metrics = { width: image.naturalWidth, height: image.naturalHeight }
+    queueMicrotask(() => onSceneMetrics(metrics))
   }, [image, onSceneMetrics])
 
   const [stageScale, setStageScale] = useState(1)
@@ -165,9 +149,23 @@ export function ImagePinRectStage({
     transformerRef.current.getLayer()?.batchDraw()
   }, [selectedRectId, rectangles])
 
+  const notifyRectanglesChange = useCallback(
+    (next: GameImagePinRect[]) => {
+      queueMicrotask(() => onRectanglesChange(next))
+    },
+    [onRectanglesChange],
+  )
+
+  const notifySelectedRectIdChange = useCallback(
+    (id: string | null) => {
+      queueMicrotask(() => onSelectedRectIdChange(id))
+    },
+    [onSelectedRectIdChange],
+  )
+
   const patchRect = useCallback(
     (id: string, patch: Partial<GameImagePinRect>) => {
-      onRectanglesChange(
+      notifyRectanglesChange(
         rectangles.map((rect) => {
           if (rect.id !== id) return rect
           const merged = { ...rect, ...patch }
@@ -183,7 +181,7 @@ export function ImagePinRectStage({
         }),
       )
     },
-    [onRectanglesChange, rectangles, sceneSize.height, sceneSize.width],
+    [notifyRectanglesChange, rectangles, sceneSize.height, sceneSize.width],
   )
 
   const draftShape = useMemo(() => (draft ? normalizeDraft(draft) : null), [draft])
@@ -202,7 +200,7 @@ export function ImagePinRectStage({
 
       const sx = Math.max(0, Math.min(pos.x, sceneSize.width))
       const sy = Math.max(0, Math.min(pos.y, sceneSize.height))
-      onSelectedRectIdChange(null)
+      notifySelectedRectIdChange(null)
 
       const onMove = (ev: MouseEvent) => {
         const st = stageRef.current
@@ -229,8 +227,11 @@ export function ImagePinRectStage({
             sceneSize.height,
           )
           const id = crypto.randomUUID()
-          onRectanglesChange([...rectanglesRef.current, { id, ...clamped, question: '' }])
-          onSelectedRectIdChange(id)
+          const newRect: GameImagePinRect = { id, ...clamped, question: '' }
+          queueMicrotask(() => {
+            notifyRectanglesChange([...rectanglesRef.current, newRect])
+            notifySelectedRectIdChange(id)
+          })
           return null
         })
       }
@@ -239,7 +240,7 @@ export function ImagePinRectStage({
       document.addEventListener('mouseup', onUp)
       setDraft({ sx, sy, cx: sx, cy: sy })
     },
-    [image, onRectanglesChange, onSelectedRectIdChange, sceneSize.height, sceneSize.width],
+    [image, notifyRectanglesChange, notifySelectedRectIdChange, sceneSize.height, sceneSize.width],
   )
 
   return (
@@ -292,8 +293,8 @@ export function ImagePinRectStage({
                   strokeWidth={2}
                   dash={RECT_DASH}
                   draggable
-                  onClick={() => onSelectedRectIdChange(rect.id)}
-                  onTap={() => onSelectedRectIdChange(rect.id)}
+                  onClick={() => notifySelectedRectIdChange(rect.id)}
+                  onTap={() => notifySelectedRectIdChange(rect.id)}
                   onDragEnd={(event) => {
                     const node = event.target
                     const c = clampRectToImage(

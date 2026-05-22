@@ -51,10 +51,6 @@ export function useImagePinCloudGalleryImages(
         if (cancelled) return
 
         if (!res.success || !res.files?.length) {
-          console.log('[ImagePinGallery] No files found:', {
-            success: res.success,
-            fileCount: res.files?.length,
-          })
           setItems([])
           return
         }
@@ -75,13 +71,6 @@ export function useImagePinCloudGalleryImages(
           next.push({ url, title: f.name, storagePath: path })
         }
 
-        console.log(
-          '[ImagePinGallery] Loaded images:',
-          next.length,
-          next
-            .slice(0, 2)
-            .map((img) => ({ title: img.title, url: img.url.substring(0, 50) + '...' })),
-        )
         setItems(next)
       } finally {
         setIsLoading(false)

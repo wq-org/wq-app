@@ -40,7 +40,7 @@ import {
   updateGameForStudio,
 } from '../api/gameStudioApi'
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
-import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
+import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
 import { GamePreviewDialog } from '../components/GamePreviewDialog'
 import { GamePublishDrawer } from '../components/GamePublishDrawer'
@@ -50,6 +50,7 @@ import { GameEditorToolbar } from './GameEditorToolbar'
 import { isInstitutionFeatureEnabledForKey } from '../utils/isInstitutionFeatureEnabledForKey'
 
 const DEFAULT_TITLE = 'Untitled game'
+const AUTOSAVE_DEBOUNCE_MS = 1200
 
 const initialNodes: Node[] = [
   {
@@ -142,6 +143,16 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const isDroppingRef = useRef(false)
   const isSyncingRef = useRef(false)
+  const institutionIdRef = useRef<string | null>(null)
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isAutosavingRef = useRef(false)
+  const skipNextAutosaveRef = useRef(true)
+  const projectIdRef = useRef<string | undefined>(projectId)
+  const nodesRef = useRef<Node[]>(nodes)
+  const edgesRef = useRef<Edge[]>(edges)
+  const gameTitleRef = useRef<string>(gameTitle)
+  const gameThemeIdRef = useRef<ThemeId>(gameThemeId)
+  const loadStateRef = useRef(loadState)
 
   // ---- Load project ----
   useEffect(() => {
@@ -186,6 +197,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         setGameTitle(game.title || DEFAULT_TITLE)
         setGameThemeId(game.theme_id || 'blue')
         setProjectVersion(game.version ?? 1)
+        institutionIdRef.current = game.institution_id ?? null
         setLoadState('loaded')
       })
       .catch((err) => {
@@ -475,6 +487,37 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   )
 
   // ---- Save / publish ----
+  const flushAutosave = useCallback(async () => {
+    const id = projectIdRef.current
+    if (!id || loadStateRef.current !== 'loaded') return
+    if (isAutosavingRef.current) return
+
+    isAutosavingRef.current = true
+    try {
+      await saveGameStudioDraft({
+        projectId: id,
+        nodes: nodesRef.current,
+        edges: edgesRef.current,
+        gameTitle: gameTitleRef.current,
+        gameThemeId: gameThemeIdRef.current,
+        institutionId: institutionIdRef.current,
+      })
+    } catch (err) {
+      console.error('[GameEditorCanvas] autosave failed:', err)
+    } finally {
+      isAutosavingRef.current = false
+    }
+  }, [])
+
+  const scheduleAutosave = useCallback(() => {
+    if (!projectIdRef.current || loadStateRef.current !== 'loaded') return
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+    autosaveTimerRef.current = setTimeout(() => {
+      autosaveTimerRef.current = null
+      void flushAutosave()
+    }, AUTOSAVE_DEBOUNCE_MS)
+  }, [flushAutosave])
+
   const persist = useCallback(
     async (status: 'save' | 'publish') => {
       if (!projectId) {
@@ -486,19 +529,20 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         toast.error('You must be signed in to save.')
         return
       }
-      const gameConfig = serializeFlowGameConfig(nodes, edges)
-      const description =
-        (
-          nodes.find((n) => n.type === GAME_START_TYPE)?.data as
-            | { description?: string }
-            | undefined
-        )?.description ?? ''
-      await updateGameForStudio(projectId, {
-        title: gameTitle,
-        description,
-        theme_id: gameThemeId,
-        game_content: gameConfig,
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current)
+        autosaveTimerRef.current = null
+      }
+
+      await saveGameStudioDraft({
+        projectId,
+        nodes,
+        edges,
+        gameTitle,
+        gameThemeId,
+        institutionId: institutionIdRef.current,
       })
+
       if (status === 'publish') {
         await publishGame(projectId)
         setIsPublished(true)
@@ -610,16 +654,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // ---- Auto-save on unmount / URL change ----
-  // Track latest persistable values in refs so the cleanup below sees current
-  // data rather than the stale closure captured at mount.
-  const projectIdRef = useRef<string | undefined>(projectId)
-  const nodesRef = useRef<Node[]>(nodes)
-  const edgesRef = useRef<Edge[]>(edges)
-  const gameTitleRef = useRef<string>(gameTitle)
-  const gameThemeIdRef = useRef<ThemeId>(gameThemeId)
-  const loadStateRef = useRef(loadState)
-
+  // ---- Auto-save: keep refs current; debounce on canvas changes; flush on unmount ----
   useEffect(() => {
     projectIdRef.current = projectId
   }, [projectId])
@@ -637,31 +672,46 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [gameThemeId])
   useEffect(() => {
     loadStateRef.current = loadState
+    if (loadState === 'loading') {
+      skipNextAutosaveRef.current = true
+    }
   }, [loadState])
+
+  // Debounced autosave when canvas structure or node data changes (e.g. drop from sidebar).
+  useEffect(() => {
+    if (loadState !== 'loaded' || !projectId) return
+    if (skipNextAutosaveRef.current) {
+      skipNextAutosaveRef.current = false
+      return
+    }
+    scheduleAutosave()
+  }, [nodes, edges, loadState, projectId, scheduleAutosave])
 
   useEffect(() => {
     return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current)
+        autosaveTimerRef.current = null
+      }
+
       const id = projectIdRef.current
       if (!id) return
-      // Skip save if the project never finished loading — would overwrite
-      // server state with the empty initial nodes.
       if (loadStateRef.current !== 'loaded') return
-      const gameConfig = serializeFlowGameConfig(nodesRef.current, edgesRef.current)
-      const startNode = nodesRef.current.find((n) => n.type === GAME_START_TYPE)
-      const description =
-        (startNode?.data as { description?: string } | undefined)?.description ?? ''
-      updateGameForStudio(id, {
-        title: gameTitleRef.current,
-        description,
-        theme_id: gameThemeIdRef.current,
-        game_content: gameConfig,
+
+      void saveGameStudioDraft({
+        projectId: id,
+        nodes: nodesRef.current,
+        edges: edgesRef.current,
+        gameTitle: gameTitleRef.current,
+        gameThemeId: gameThemeIdRef.current,
+        institutionId: institutionIdRef.current,
       }).catch((err) => {
         console.error('Auto-save on unmount failed:', err)
       })
     }
   }, [])
 
-  // ---- Command bar listener (pan / select / home) ----
+  // ---- Command bar listener (pan / select) ----
   useEffect(() => {
     const handler = (event: Event) => {
       const detail = (event as CustomEvent).detail as { actionId?: string } | undefined
@@ -671,8 +721,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       } else if (detail?.actionId === 'select') {
         setInteractionMode('select')
         toast.success('Select mode activated')
-      } else if (detail?.actionId === 'home') {
-        navigate('/teacher/game-studio')
       }
     }
     window.addEventListener('command-action', handler)
@@ -697,14 +745,19 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [nodes, openDialogNodeId])
 
   const handlePatchOpenNodeData = useCallback(
-    (patch: Record<string, unknown>) => {
+    (
+      patch:
+        | Record<string, unknown>
+        | ((current: Record<string, unknown>) => Record<string, unknown>),
+    ) => {
       if (!openDialogNodeId) return
       setNodes((prev) =>
-        prev.map((n) =>
-          n.id === openDialogNodeId
-            ? { ...n, data: { ...(n.data as Record<string, unknown>), ...patch } }
-            : n,
-        ),
+        prev.map((n) => {
+          if (n.id !== openDialogNodeId) return n
+          const current = (n.data as Record<string, unknown>) ?? {}
+          const nextPatch = typeof patch === 'function' ? patch(current) : patch
+          return { ...n, data: { ...current, ...nextPatch } }
+        }),
       )
     },
     [openDialogNodeId],
