@@ -14,13 +14,7 @@ import {
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
-import {
-  $createParagraphNode,
-  $getRoot,
-  $getSelection,
-  $isRangeSelection,
-  type LexicalEditor,
-} from 'lexical'
+import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
 import {
   Heading1,
   Heading2,
@@ -36,9 +30,8 @@ import {
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
 import { OPEN_EMOJI_PICKER_COMMAND } from '../commands/emojiPickerCommands'
+import { OPEN_IMAGE_PICKER_COMMAND } from '../commands/imagePickerCommands'
 import { OPEN_YOUTUBE_DIALOG_COMMAND } from '../commands/youtubeDialogCommands'
-import { $createImageNode } from '../nodes/ImageNode'
-import { readImageFileAsDataUrl } from '../utils/localImageFile'
 
 export const ICON_URLS = {
   bullet: '/img/list-ul.svg',
@@ -80,50 +73,6 @@ export class BlockOption extends MenuOption {
     this.isDisabled = isDisabled
     this.onSelect = onSelect
   }
-}
-
-function insertImageWithSrc(editor: LexicalEditor, src: string, altText: string) {
-  editor.focus(() => {
-    editor.update(() => {
-      const imageNode = $createImageNode({
-        altText,
-        maxWidth: 720,
-        src,
-      })
-      const selection = $getSelection()
-      if ($isRangeSelection(selection)) {
-        selection.insertNodes([imageNode])
-        return
-      }
-
-      const paragraph = $createParagraphNode()
-      paragraph.append(imageNode)
-      $getRoot().append(paragraph)
-    })
-  })
-}
-
-function insertLocalImageFile(editor: LexicalEditor, file: File) {
-  if (!file.type.startsWith('image/')) {
-    return
-  }
-
-  void readImageFileAsDataUrl(file).then((src) => {
-    insertImageWithSrc(editor, src, file.name)
-  })
-}
-
-function openImagePicker(editor: LexicalEditor) {
-  const input = document.createElement('input')
-  input.accept = 'image/*'
-  input.type = 'file'
-  input.onchange = () => {
-    const file = input.files?.[0]
-    if (file) {
-      insertLocalImageFile(editor, file)
-    }
-  }
-  input.click()
 }
 
 export function getBlockOptions(
@@ -182,7 +131,7 @@ export function getBlockOptions(
     new BlockOption('Image', {
       Icon: Image,
       keywords: ['image', 'picture', 'photo', 'media'],
-      onSelect: () => openImagePicker(editor),
+      onSelect: () => editor.dispatchCommand(OPEN_IMAGE_PICKER_COMMAND, undefined),
     }),
     new BlockOption('Emoji', {
       Icon: SmilePlus,

@@ -58,33 +58,7 @@
     0 0 0 4px hsl(var(--secondary));
 }
 
-.ImageNode__broken {
-  align-items: center;
-  background: hsl(var(--muted));
-  border: 1px dashed hsl(var(--border));
-  border-radius: 1rem;
-  color: hsl(var(--muted-foreground));
-  display: flex;
-  font-size: 0.8125rem;
-  height: 80px;
-  justify-content: center;
-  width: 100%;
-}
-
-.ImageNode__loading {
-  animation: ImageNode__pulse 1.5s ease-in-out infinite;
-  background: hsl(var(--muted));
-  border-radius: 1rem;
-  height: 80px;
-  width: 100%;
-}
-
-@keyframes ImageNode__pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
+/* Loading/error shells use ImageNodeFrame (Tailwind); keep class for theme hooks if needed. */
+.ImageNode__frame {
+  box-sizing: border-box;
 }

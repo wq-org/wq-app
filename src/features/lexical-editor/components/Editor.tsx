@@ -27,11 +27,13 @@ import {
 } from '../plugins/FloatingTextFormatToolbarPlugin'
 import { EmojiNode } from '../nodes/EmojiNode'
 import { ImageNode } from '../nodes/ImageNode'
+import { ImagePlaceholderNode } from '../nodes/ImagePlaceholderNode'
 import { YouTubeNode } from '../nodes/YouTubeNode'
 import { CommentMarkNode } from '../nodes/CommentMarkNode'
 import { CheckListPlugin } from '../plugins/LexicalCheckListPlugin'
 import { CommentPlugin } from '../plugins/CommentPlugin'
 import { FloatingEmojiPickerPlugin } from '../plugins/FloatingEmojiPickerPlugin'
+import { FloatingImagePickerPlugin } from '../plugins/FloatingImagePickerPlugin'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
 import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
@@ -102,6 +104,7 @@ const lessonEditorExtension = defineExtension({
   theme,
   nodes: [
     ImageNode,
+    ImagePlaceholderNode,
     EmojiNode,
     YouTubeNode,
     TableCellNode,
@@ -253,36 +256,41 @@ export function Editor({
           readOnly={readOnly}
         />
       ) : null}
-      <div
-        ref={setAnchorElem}
-        className="relative w-full"
-      >
-        <ContentEditable
-          className="editor-contentEditable px-0! outline-none caret-blue-500 selection:bg-blue-100 selection:text-slate-900 dark:text-zinc-200 dark:selection:bg-blue-900 dark:selection:text-white"
-          aria-label="Rich text editor"
-          aria-placeholder="Type '/' for commands..."
-          placeholder={<div className="editor-placeholder">Type &apos;/&apos; for commands...</div>}
-        />
-        <SelectionHandles container={anchorElem} />
-        <LexicalDraggableBlockPlugin />
-        <SlashMenuPlugin registry={blockTypeRegistry} />
-        <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
-        <AddYouTubeLinksDialogPlugin />
-        <CommentPlugin />
-        {anchorElem ? (
-          <>
-            <FloatingTextFormatToolbarPlugin
-              anchorElem={anchorElem}
-              onRequestLinkDialog={handleRequestLinkDialog}
-            />
-            <FloatingLinkEditorPlugin
-              anchorElem={anchorElem}
-              onRequestLinkDialog={handleRequestLinkDialog}
-            />
-            <FloatingEmojiPickerPlugin anchorElem={anchorElem} />
-            <TableInteractionPlugin anchorElem={anchorElem} />
-          </>
-        ) : null}
+      <div className="relative w-full min-h-[20rem]">
+        <div
+          ref={setAnchorElem}
+          className="relative w-full"
+        >
+          <ContentEditable
+            className="editor-contentEditable px-0! outline-none caret-blue-500 selection:bg-blue-100 selection:text-slate-900 dark:text-zinc-200 dark:selection:bg-blue-900 dark:selection:text-white"
+            aria-label="Rich text editor"
+            aria-placeholder="Type '/' for commands..."
+            placeholder={
+              <div className="editor-placeholder">Type &apos;/&apos; for commands...</div>
+            }
+          />
+          <SelectionHandles container={anchorElem} />
+          <LexicalDraggableBlockPlugin />
+          <SlashMenuPlugin registry={blockTypeRegistry} />
+          <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
+          <AddYouTubeLinksDialogPlugin />
+          <CommentPlugin />
+          {anchorElem ? (
+            <>
+              <FloatingTextFormatToolbarPlugin
+                anchorElem={anchorElem}
+                onRequestLinkDialog={handleRequestLinkDialog}
+              />
+              <FloatingLinkEditorPlugin
+                anchorElem={anchorElem}
+                onRequestLinkDialog={handleRequestLinkDialog}
+              />
+              <FloatingEmojiPickerPlugin anchorElem={anchorElem} />
+              <FloatingImagePickerPlugin anchorElem={anchorElem} />
+              <TableInteractionPlugin anchorElem={anchorElem} />
+            </>
+          ) : null}
+        </div>
       </div>
     </LexicalExtensionComposer>
   )

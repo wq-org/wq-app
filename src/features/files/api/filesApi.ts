@@ -196,7 +196,9 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
     }
 
     if (cloudFileId) {
-      const { error: rowError } = await supabase.from('cloud_files').delete().eq('id', cloudFileId)
+      const { error: rowError } = await supabase.rpc('delete_cloud_file_with_audit', {
+        p_cloud_file_id: cloudFileId,
+      })
       if (rowError) {
         console.error('[deleteFile] cloud_files delete failed', rowError)
       }
@@ -299,6 +301,31 @@ export async function renameFile(
   }
 }
 
+const CLOUD_FILE_SIGNED_URL_TTL_SECONDS = 60 * 60
+
+async function buildSignedUrlMap(paths: string[]): Promise<Map<string, string>> {
+  const result = new Map<string, string>()
+  if (paths.length === 0) {
+    return result
+  }
+
+  const { data, error } = await supabase.storage
+    .from(STORAGE_BUCKETS.cloud)
+    .createSignedUrls(paths, CLOUD_FILE_SIGNED_URL_TTL_SECONDS)
+
+  if (error) {
+    console.error('Error creating signed URLs for cloud files:', error)
+    return result
+  }
+
+  for (const entry of data ?? []) {
+    if (entry.path && entry.signedUrl) {
+      result.set(entry.path, entry.signedUrl)
+    }
+  }
+  return result
+}
+
 export async function listCloudFiles(
   institutionId: string,
   role: UserRole,
@@ -319,7 +346,7 @@ export async function listCloudFiles(
     throw error
   }
 
-  return (data || [])
+  const items = (data || [])
     .filter((item) => typeof item.name === 'string' && item.name.trim() !== '')
     .map((item) => {
       const metadata =
@@ -339,4 +366,10 @@ export async function listCloudFiles(
         updatedAt: typeof item.updated_at === 'string' ? item.updated_at : null,
       }
     })
+
+  const signedUrls = await buildSignedUrlMap(items.map((item) => item.path))
+  return items.map((item) => ({
+    ...item,
+    url: signedUrls.get(item.path) ?? null,
+  }))
 }

@@ -239,10 +239,18 @@
       "uploadingImageAria": "Bild wird hochgeladen",
       "invalidType": "Bitte wähle ein JPEG- oder PNG-Bild.",
       "replaceFailed": "Das ausgewählte Bild konnte nicht geladen werden.",
+      "loadFailed": "Bild konnte nicht geladen werden",
+      "loadFailedAria": "Bild konnte nicht geladen werden",
+      "loadingAria": "Bild wird geladen",
       "uploadFailed": "Bild konnte nicht hochgeladen werden.",
       "uploadSuccess": "Bild in deiner Cloud gespeichert.",
       "uploadRequiresContext": "Melde dich mit einer Institution an, um Bilder hochzuladen.",
-      "alreadyExistsInCloud": "Diese Datei ist bereits im Cloud-Speicher vorhanden. Wähle ein anderes Bild oder benenne es um."
+      "alreadyExistsInCloud": "Diese Datei ist bereits im Cloud-Speicher vorhanden. Wähle ein anderes Bild oder benenne es um.",
+      "chooseImageUpload": "Bild zum Hochladen auswählen",
+      "searchCloud": "Bilder suchen…",
+      "searchCloudAria": "Cloud-Bilder durchsuchen",
+      "noResults": "Keine Bilder gefunden.",
+      "noCloudImages": "Noch keine Bilder in deiner Cloud."
     }
   },
   "create": {

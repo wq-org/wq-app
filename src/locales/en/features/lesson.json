@@ -239,10 +239,18 @@
       "uploadingImageAria": "Uploading image",
       "invalidType": "Please choose a JPEG or PNG image.",
       "replaceFailed": "Could not load the selected image.",
+      "loadFailed": "Failed to load image",
+      "loadFailedAria": "Image failed to load",
+      "loadingAria": "Loading image",
       "uploadFailed": "Could not upload image.",
       "uploadSuccess": "Image saved to your cloud.",
       "uploadRequiresContext": "Sign in with an institution to upload images.",
-      "alreadyExistsInCloud": "This file is already in cloud storage. Choose a different image or rename it."
+      "alreadyExistsInCloud": "This file is already in cloud storage. Choose a different image or rename it.",
+      "chooseImageUpload": "Choose image to upload",
+      "searchCloud": "Search images…",
+      "searchCloudAria": "Search cloud images",
+      "noResults": "No images match your search.",
+      "noCloudImages": "No images in your cloud yet."
     }
   },
   "create": {

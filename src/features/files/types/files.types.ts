@@ -27,6 +27,7 @@ export type CloudFileItem = {
   path: string
   size: number | null
   updatedAt: string | null
+  url: string | null
 }
 
 export interface FileTypeConfig {

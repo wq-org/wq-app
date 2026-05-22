@@ -1,6 +1,7 @@
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
-import { supabase } from '@/lib/supabase'
+import { getFileSignedUrl } from '@/features/files'
+import { resolveCloudFileId } from '@/features/files/api/resolveCloudFileId'
 
 export type LessonImageUploadContext = {
   institutionId: string
@@ -9,6 +10,7 @@ export type LessonImageUploadContext = {
 }
 
 export type LessonImageUploadResult = {
+  /** Browser-displayable URL (signed when the cloud bucket is private). */
   publicUrl: string
   filepath: string
   cloudFileId: string
@@ -32,52 +34,6 @@ function isDuplicateUploadError(message: string): boolean {
 export type LessonImageUploadResponse =
   | { ok: true; data: LessonImageUploadResult }
   | { ok: false; error: string; code: LessonImageUploadErrorCode }
-
-async function resolveCloudFileId(
-  storageObjectName: string,
-  institutionId: string,
-  userId: string,
-  mimeType: string,
-  sizeBytes: number,
-  originalName: string,
-): Promise<string | null> {
-  const { data: existing, error: lookupError } = await supabase
-    .from('cloud_files')
-    .select('id')
-    .eq('storage_object_name', storageObjectName)
-    .maybeSingle()
-
-  if (lookupError) {
-    console.error('[lessonImageApi] cloud_files lookup failed', lookupError)
-  }
-
-  if (existing?.id) {
-    return existing.id as string
-  }
-
-  const { data: inserted, error: insertError } = await supabase
-    .from('cloud_files')
-    .insert({
-      institution_id: institutionId,
-      owner_user_id: userId,
-      bucket: 'cloud',
-      storage_object_name: storageObjectName,
-      scope: 'personal',
-      mime_type: mimeType,
-      size_bytes: sizeBytes,
-      original_name: originalName,
-      status: 'active',
-    })
-    .select('id')
-    .single()
-
-  if (insertError) {
-    console.error('[lessonImageApi] cloud_files insert failed', insertError)
-    return null
-  }
-
-  return (inserted?.id as string | undefined) ?? null
-}
 
 export async function uploadLessonImage(
   file: File,
@@ -127,14 +83,14 @@ export async function uploadLessonImage(
     }
   }
 
-  const cloudFileId = await resolveCloudFileId(
-    result.path,
+  const cloudFileId = await resolveCloudFileId({
+    storageObjectName: result.path,
     institutionId,
     userId,
-    file.type,
-    file.size,
-    file.name,
-  )
+    mimeType: file.type,
+    sizeBytes: file.size,
+    originalName: file.name,
+  })
 
   if (!cloudFileId) {
     return {
@@ -144,10 +100,20 @@ export async function uploadLessonImage(
     }
   }
 
+  const signedUrl = await getFileSignedUrl(result.path, 3600)
+  const displayUrl = signedUrl ?? result.publicUrl
+  if (!displayUrl) {
+    return {
+      ok: false,
+      code: 'upload_failed',
+      error: 'Could not resolve image URL after upload.',
+    }
+  }
+
   return {
     ok: true,
     data: {
-      publicUrl: result.publicUrl,
+      publicUrl: displayUrl,
       filepath: result.path,
       cloudFileId,
     },

@@ -1,9 +1,15 @@
 'use client'
 
-import { useRef } from 'react'
-import { cn } from '@/lib/utils'
-import { Text } from '@/components/ui/text'
+import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Spinner } from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
+
+import {
+  imageCarouselItemVariants,
+  imageCarouselTitleVariants,
+  type ImageCarouselSize,
+} from './image-carousel-variants'
 
 export type ImageCarouselImage = {
   url: string
@@ -25,6 +31,8 @@ export type ImageCarouselProps = {
   titleMaxLength?: number
   /** Show loading spinner while fetching images. */
   isLoading?: boolean
+  /** Thumbnail size. Defaults to `md`. */
+  size?: ImageCarouselSize
 }
 
 function normalizeImages(images: ImageCarouselItem[]): ImageCarouselImage[] {
@@ -47,9 +55,11 @@ export function ImageCarousel({
   className,
   titleMaxLength = 40,
   isLoading = false,
+  size = 'md',
 }: ImageCarouselProps) {
-  const scrollRef = useRef<HTMLDivElement>(null)
   const normalized = normalizeImages(images)
+  const itemClassName = imageCarouselItemVariants({ size })
+  const titleClassName = imageCarouselTitleVariants({ size })
 
   // Show spinner while loading
   if (isLoading) {
@@ -73,22 +83,21 @@ export function ImageCarousel({
   }
 
   return (
-    <div
+    <BlurredScrollArea
+      scrollbars="horizontal"
       className={cn(
-        'w-full min-w-0 max-w-[700px] overflow-hidden animate-in fade-in-0 slide-in-from-bottom-4',
+        'w-full min-w-0 max-w-[700px] animate-in fade-in-0 slide-in-from-bottom-4',
         className,
       )}
+      viewportClassName="scroll-smooth"
     >
-      <div
-        ref={scrollRef}
-        className="flex -ml-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-      >
+      <div className="flex -ml-2">
         {normalized.map((image, index) => (
           <button
             key={`${image.url}-${index}`}
             type="button"
             onClick={() => onSelect?.(image)}
-            className="shrink-0 pl-2 w-[calc(25%-6px)] min-w-[calc(25%-6px)] sm:w-[calc(20%-6px)] sm:min-w-[calc(20%-6px)] md:w-[calc(16.666%-6px)] md:min-w-[calc(16.666%-6px)] lg:w-[calc(12.5%-6px)] lg:min-w-[calc(12.5%-6px)] text-left cursor-pointer group"
+            className={itemClassName}
           >
             <div className="overflow-hidden rounded-md">
               <img
@@ -101,7 +110,7 @@ export function ImageCarousel({
               <Text
                 as="p"
                 variant="body"
-                className="mt-1 text-xs font-medium text-foreground truncate min-w-0 max-w-full"
+                className={titleClassName}
                 title={image.title}
               >
                 {truncateTitle(image.title, titleMaxLength)}
@@ -110,6 +119,6 @@ export function ImageCarousel({
           </button>
         ))}
       </div>
-    </div>
+    </BlurredScrollArea>
   )
 }

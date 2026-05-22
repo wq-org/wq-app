@@ -3,6 +3,7 @@ import {
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   type LexicalEditor,
+  type LexicalNode,
   type NodeKey,
 } from 'lexical'
 import { Suspense, useCallback, useEffect, useRef } from 'react'
@@ -15,12 +16,17 @@ import { toast } from 'sonner'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
 import { cn } from '@/lib/utils'
 
+import { ImageNodeFrame } from '../components/ImageNodeFrame'
 import { ImageNodeControls } from '../components/ImageNodeControls'
 import { useLessonImageUpload } from '../hooks/useLessonImageUpload'
 import type { LessonImageUploadResult } from '../api/lessonImageApi'
 import { fileFromDataUrl, isLocalImageSrc, readImageFileAsDataUrl } from '../utils/localImageFile'
 import { preloadImageSrc, suspenseImage } from '../utils/imageLoadCache'
-import { $isImageNode } from './ImageNode'
+import type { ImageNode } from './ImageNode'
+
+function isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
+  return node != null && node.getType() === 'image'
+}
 
 export type ImageNodeComponentProps = {
   altText: string
@@ -48,16 +54,17 @@ function LazyImage({
   src: string
   width: 'inherit' | number
 }) {
+  const { t } = useTranslation('features.lesson')
   const status = suspenseImage(src)
 
   if (status === 'error') {
     return (
-      <div
-        className="ImageNode__broken"
-        style={{ maxWidth }}
-      >
-        Failed to load image
-      </div>
+      <ImageNodeFrame
+        variant="error"
+        maxWidth={maxWidth}
+        message={t('editor.image.loadFailed')}
+        ariaLabel={t('editor.image.loadFailedAria')}
+      />
     )
   }
 
@@ -90,7 +97,7 @@ async function applyCloudUpload(
 
   editor.update(() => {
     const node = $getNodeByKey(nodeKey)
-    if (!$isImageNode(node)) {
+    if (!isImageNode(node)) {
       return
     }
     node.setSrc(upload.publicUrl)
@@ -114,7 +121,7 @@ async function applyLocalReplacement(
 
   editor.update(() => {
     const node = $getNodeByKey(nodeKey)
-    if (!$isImageNode(node)) {
+    if (!isImageNode(node)) {
       return
     }
     node.setSrc(nextSrc)
@@ -264,16 +271,20 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
   )
 }
 
+function ImageNodeLoadingFallback({ maxWidth }: { maxWidth: number }) {
+  const { t } = useTranslation('features.lesson')
+  return (
+    <ImageNodeFrame
+      variant="loading"
+      maxWidth={maxWidth}
+      ariaLabel={t('editor.image.loadingAria')}
+    />
+  )
+}
+
 export function ImageNodeComponent(props: ImageNodeComponentProps) {
   return (
-    <Suspense
-      fallback={
-        <div
-          className="ImageNode__loading"
-          style={{ maxWidth: props.maxWidth }}
-        />
-      }
-    >
+    <Suspense fallback={<ImageNodeLoadingFallback maxWidth={props.maxWidth} />}>
       <ImageContent {...props} />
     </Suspense>
   )
