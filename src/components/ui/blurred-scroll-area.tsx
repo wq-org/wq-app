@@ -14,6 +14,8 @@ type BlurredScrollAreaProps = React.ComponentPropsWithoutRef<typeof ScrollAreaPr
   /** Visually hides the horizontal scrollbar (`opacity-0 pointer-events-none`); viewport scrolling is unchanged. */
   hideHorizontalScrollBar?: boolean
   shadowSize?: number
+  /** Receives the scroll viewport element — useful as `root` for IntersectionObserver. */
+  viewportRef?: React.Ref<HTMLDivElement | null>
 }
 
 type ShadowState = {
@@ -58,10 +60,23 @@ export function BlurredScrollArea({
   hideScrollBar = false,
   hideHorizontalScrollBar = true,
   shadowSize = 40,
+  viewportRef: externalViewportRef,
   ...props
 }: BlurredScrollAreaProps) {
   const resolvedScrollbars = scrollbars ?? orientation
   const viewportRef = React.useRef<HTMLDivElement>(null)
+
+  const handleViewportRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      viewportRef.current = node
+      if (typeof externalViewportRef === 'function') {
+        externalViewportRef(node)
+      } else if (externalViewportRef) {
+        ;(externalViewportRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+      }
+    },
+    [externalViewportRef],
+  )
   const [shadowState, setShadowState] = React.useState<ShadowState>({
     start: false,
     end: false,
@@ -162,7 +177,7 @@ export function BlurredScrollArea({
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
-        ref={viewportRef}
+        ref={handleViewportRef}
         data-slot="blurred-scroll-area-viewport"
         style={viewportMaskStyle}
         className={cn(

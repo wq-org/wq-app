@@ -326,6 +326,95 @@ async function buildSignedUrlMap(paths: string[]): Promise<Map<string, string>> 
   return result
 }
 
+type StorageListObject = {
+  name: string
+  metadata?: Record<string, unknown> | null
+  created_at?: string
+  updated_at?: string
+}
+
+function buildTeacherStoragePrefix(institutionId: string, role: UserRole, userId: string): string {
+  return `${institutionId}/${resolveStorageRole(role)}/${userId}`
+}
+
+function mapStorageObjectsToCloudItems(
+  entries: readonly StorageListObject[],
+  storagePathPrefix: string,
+): Omit<CloudFileItem, 'url' | 'cloudFileId'>[] {
+  return entries
+    .filter((item) => typeof item.name === 'string' && item.name.trim() !== '')
+    .map((item) => {
+      const metadata =
+        typeof item.metadata === 'object' && item.metadata != null ? item.metadata : {}
+      const mimeType = typeof metadata.mimetype === 'string' ? metadata.mimetype : null
+      const size = typeof metadata.size === 'number' ? metadata.size : null
+
+      return {
+        name: item.name,
+        path: `${storagePathPrefix}/${item.name}`,
+        mimeType,
+        size,
+        kind: inferCloudFileKind(item.name, mimeType),
+        createdAt: typeof item.created_at === 'string' ? item.created_at : null,
+        updatedAt: typeof item.updated_at === 'string' ? item.updated_at : null,
+      }
+    })
+}
+
+async function enrichCloudFileItems(
+  items: Omit<CloudFileItem, 'url' | 'cloudFileId'>[],
+): Promise<CloudFileItem[]> {
+  const signedUrls = await buildSignedUrlMap(items.map((item) => item.path))
+  const withUrls = items.map((item) => ({
+    ...item,
+    url: signedUrls.get(item.path) ?? null,
+  }))
+  return attachCloudFileIds(withUrls)
+}
+
+export type CloudFilesStoragePage = {
+  items: CloudFileItem[]
+  /** Next list offset, or `null` when the listing is exhausted. */
+  nextOffset: number | null
+}
+
+/**
+ * Paginated listing from Supabase Storage (teacher folder). Shows every uploaded
+ * object in the bucket path, not only rows already present in `cloud_files`.
+ */
+export async function listCloudFilesStoragePage(args: {
+  institutionId: string
+  role: UserRole
+  userId: string
+  offset: number
+  pageSize?: number
+}): Promise<CloudFilesStoragePage> {
+  const { institutionId, role, userId, offset } = args
+  const pageSize = args.pageSize ?? CLOUD_GALLERY_PAGE_SIZE
+
+  if (!institutionId || !userId) {
+    return { items: [], nextOffset: null }
+  }
+
+  const storagePath = buildTeacherStoragePrefix(institutionId, role, userId)
+  const { data, error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).list(storagePath, {
+    limit: pageSize,
+    offset,
+    sortBy: { column: 'created_at', order: 'desc' },
+  })
+
+  if (error) {
+    console.error('[listCloudFilesStoragePage] storage list failed', error)
+    throw error
+  }
+
+  const entries = (data ?? []) as StorageListObject[]
+  const items = await enrichCloudFileItems(mapStorageObjectsToCloudItems(entries, storagePath))
+  const nextOffset = entries.length === pageSize ? offset + entries.length : null
+
+  return { items, nextOffset }
+}
+
 export async function listCloudFiles(
   institutionId: string,
   role: UserRole,
@@ -335,45 +424,92 @@ export async function listCloudFiles(
     return []
   }
 
-  const storagePath = `${institutionId}/${resolveStorageRole(role)}/${userId}`
-  const { data, error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).list(storagePath, {
-    limit: 100,
-    sortBy: { column: 'name', order: 'asc' },
+  const page = await listCloudFilesStoragePage({
+    institutionId,
+    role,
+    userId,
+    offset: 0,
+    pageSize: 100,
   })
+  return page.items
+}
 
-  if (error) {
-    console.error('Error listing cloud files:', error)
-    throw error
+type CloudFilesPageRow = {
+  id: string
+  storage_object_name: string
+  mime_type: string | null
+  size_bytes: number | null
+  original_name: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type CloudFilesPage = {
+  items: CloudFileItem[]
+  nextCursor: string | null
+}
+
+export const CLOUD_GALLERY_PAGE_SIZE = 24
+
+/**
+ * Cursor-paginated list of cloud files owned by a user, ordered by created_at DESC.
+ * Reads from `public.cloud_files` (so it requires registered files; an upload that
+ * hasn't called `resolveCloudFileId` won't appear). The cursor is the `created_at`
+ * of the last row in the previous page; pass `null` for the first page.
+ */
+export async function listCloudFilesPage(args: {
+  institutionId: string
+  ownerUserId: string
+  cursor: string | null
+  pageSize?: number
+}): Promise<CloudFilesPage> {
+  const { institutionId, ownerUserId, cursor } = args
+  const pageSize = args.pageSize ?? CLOUD_GALLERY_PAGE_SIZE
+
+  if (!institutionId || !ownerUserId) {
+    return { items: [], nextCursor: null }
   }
 
-  const items = (data || [])
-    .filter((item) => typeof item.name === 'string' && item.name.trim() !== '')
-    .map((item) => {
-      const metadata =
-        typeof item.metadata === 'object' && item.metadata != null
-          ? (item.metadata as Record<string, unknown>)
-          : {}
-      const mimeType = typeof metadata.mimetype === 'string' ? metadata.mimetype : null
-      const size = typeof metadata.size === 'number' ? metadata.size : null
+  let query = supabase
+    .from('cloud_files')
+    .select('id, storage_object_name, mime_type, size_bytes, original_name, created_at, updated_at')
+    .eq('institution_id', institutionId)
+    .eq('owner_user_id', ownerUserId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(pageSize)
 
-      return {
-        name: item.name,
-        path: `${storagePath}/${item.name}`,
-        mimeType,
-        size,
-        kind: inferCloudFileKind(item.name, mimeType),
-        createdAt: typeof item.created_at === 'string' ? item.created_at : null,
-        updatedAt: typeof item.updated_at === 'string' ? item.updated_at : null,
-      }
-    })
+  if (cursor) {
+    query = query.lt('created_at', cursor)
+  }
 
-  const signedUrls = await buildSignedUrlMap(items.map((item) => item.path))
-  const withUrls = items.map((item) => ({
-    ...item,
-    url: signedUrls.get(item.path) ?? null,
-  }))
+  const { data, error } = await query
+  if (error) {
+    console.error('[listCloudFilesPage] query failed', error)
+    throw new Error(error.message)
+  }
 
-  return attachCloudFileIds(withUrls)
+  const rows = (data ?? []) as CloudFilesPageRow[]
+  const signedUrls = await buildSignedUrlMap(rows.map((row) => row.storage_object_name))
+
+  const items: CloudFileItem[] = rows.map((row) => {
+    const fallbackName = row.storage_object_name.split('/').pop() ?? row.storage_object_name
+    const displayName = row.original_name?.trim() ? row.original_name : fallbackName
+    return {
+      cloudFileId: row.id,
+      createdAt: row.created_at,
+      kind: inferCloudFileKind(displayName, row.mime_type),
+      mimeType: row.mime_type,
+      name: displayName,
+      path: row.storage_object_name,
+      size: row.size_bytes,
+      updatedAt: row.updated_at,
+      url: signedUrls.get(row.storage_object_name) ?? null,
+    }
+  })
+
+  const nextCursor = rows.length === pageSize ? rows[rows.length - 1].created_at : null
+  return { items, nextCursor }
 }
 
 async function attachCloudFileIds(

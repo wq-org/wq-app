@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { FileText } from 'lucide-react'
 import { IconPreviewCardSquare, IconPreviewCardWide } from '../IconPreviewCard'
 import { cn } from '@/lib/utils'
@@ -30,19 +30,47 @@ export function CardInstantPreviewImage({
   className,
 }: CardInstantPreviewImageProps) {
   const height = gridImageHeight
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Reset fade-in state whenever the source changes (e.g. signed-URL refresh).
+  useEffect(() => {
+    setIsLoaded(false)
+  }, [imageSrc])
+
+  // Cached images may already be `complete` before React attaches the `load` handler.
+  useEffect(() => {
+    const img = imgRef.current
+    if (img?.complete && img.naturalWidth > 0) {
+      setIsLoaded(true)
+    }
+  }, [imageSrc])
 
   return (
     <div
       className={cn('relative w-full shrink-0 overflow-hidden bg-muted', className)}
       style={{ height }}
     >
+      <div
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute inset-0 bg-muted transition-opacity duration-300 ease-out',
+          isLoaded ? 'opacity-0' : 'animate-pulse opacity-100',
+        )}
+      />
       <img
+        ref={imgRef}
         src={imageSrc}
         alt={imageAlt}
         loading="lazy"
         decoding="async"
         draggable={false}
-        className="absolute inset-0 h-full w-full object-cover"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setIsLoaded(true)}
+        className={cn(
+          'absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out motion-reduce:transition-none',
+          isLoaded ? 'opacity-100' : 'opacity-0',
+        )}
         style={{ objectPosition: imagePosition ?? 'center center' }}
       />
     </div>

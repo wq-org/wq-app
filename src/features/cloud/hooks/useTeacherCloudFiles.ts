@@ -1,46 +1,93 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useUser } from '@/contexts/user'
+import type { UserRole } from '@/features/auth'
 
-import { listCloudFiles, renameFile } from '../api/filesApi'
+import { CLOUD_GALLERY_PAGE_SIZE, listCloudFilesStoragePage, renameFile } from '../api/filesApi'
 import type { CloudFileItem } from '../types/files.types'
 import { mapCloudFilesToFileItems } from '../utils/mapCloudFilesToFileItems'
 
 export function useTeacherCloudFiles() {
   const { profile } = useUser()
   const [cloudFiles, setCloudFiles] = useState<CloudFileItem[]>([])
+  const [nextOffset, setNextOffset] = useState<number | null>(0)
   const [loading, setLoading] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<Error | null>(null)
+  const fetchTokenRef = useRef(0)
 
   const institutionId = profile?.userInstitutionId ?? null
   const userId = profile?.user_id ?? null
-  const role = profile?.role
+  const role = profile?.role as UserRole | undefined
   const fetchEnabled = Boolean(institutionId && userId && role === 'teacher')
 
-  const load = useCallback(async () => {
-    if (!fetchEnabled || !institutionId || !userId || role !== 'teacher') {
+  const loadInitial = useCallback(async () => {
+    if (!fetchEnabled || !institutionId || !userId || !role) {
       setCloudFiles([])
+      setNextOffset(null)
       setError(null)
       setLoading(false)
       return
     }
 
+    const token = ++fetchTokenRef.current
     setLoading(true)
     setError(null)
     try {
-      const data = await listCloudFiles(institutionId, role, userId)
-      setCloudFiles(data)
+      const page = await listCloudFilesStoragePage({
+        institutionId,
+        role,
+        userId,
+        offset: 0,
+        pageSize: CLOUD_GALLERY_PAGE_SIZE,
+      })
+      if (token !== fetchTokenRef.current) return
+      setCloudFiles(page.items)
+      setNextOffset(page.nextOffset)
     } catch (e) {
+      if (token !== fetchTokenRef.current) return
       setCloudFiles([])
+      setNextOffset(null)
       setError(e instanceof Error ? e : new Error('Failed to load cloud files'))
     } finally {
-      setLoading(false)
+      if (token === fetchTokenRef.current) {
+        setLoading(false)
+      }
     }
-  }, [fetchEnabled, institutionId, userId, role])
+  }, [fetchEnabled, institutionId, role, userId])
+
+  const loadMore = useCallback(async () => {
+    if (!fetchEnabled || !institutionId || !userId || !role) return
+    if (nextOffset === null || isLoadingMore || loading) return
+
+    const token = fetchTokenRef.current
+    setIsLoadingMore(true)
+    try {
+      const page = await listCloudFilesStoragePage({
+        institutionId,
+        role,
+        userId,
+        offset: nextOffset,
+        pageSize: CLOUD_GALLERY_PAGE_SIZE,
+      })
+      if (token !== fetchTokenRef.current) return
+      setCloudFiles((prev) => {
+        const seen = new Set(prev.map((item) => item.path))
+        const additions = page.items.filter((item) => !seen.has(item.path))
+        return additions.length === 0 ? prev : [...prev, ...additions]
+      })
+      setNextOffset(page.nextOffset)
+    } catch (e) {
+      if (token !== fetchTokenRef.current) return
+      setError(e instanceof Error ? e : new Error('Failed to load more cloud files'))
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [fetchEnabled, institutionId, role, userId, nextOffset, isLoadingMore, loading])
 
   useEffect(() => {
-    void load()
-  }, [load])
+    void loadInitial()
+  }, [loadInitial])
 
   const fileItems = useMemo(() => mapCloudFilesToFileItems(cloudFiles), [cloudFiles])
 
@@ -48,19 +95,28 @@ export function useTeacherCloudFiles() {
     async (storagePath: string, nextFilename: string) => {
       const result = await renameFile(storagePath, nextFilename)
       if (result.success) {
-        await load()
+        await loadInitial()
       }
       return result
     },
-    [load],
+    [loadInitial],
   )
 
   const refetch = useCallback(async () => {
-    await load()
-    // Storage listing can lag right after upload; one short retry keeps the gallery current.
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    await load()
-  }, [load])
+    await loadInitial()
+  }, [loadInitial])
 
-  return { cloudFiles, fileItems, loading, error, refetch, renameFileItem }
+  const hasMore = nextOffset !== null
+
+  return {
+    cloudFiles,
+    fileItems,
+    loading,
+    error,
+    refetch,
+    renameFileItem,
+    hasMore,
+    isLoadingMore,
+    loadMore,
+  }
 }

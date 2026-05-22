@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import { CardInstantPreview } from '@/components/shared'
+import { CardInstantPreview, InfiniteScrollSentinel } from '@/components/shared'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { FieldInput } from '@/components/ui/field-input'
 import { GridPattern } from '@/components/ui/grid-pattern'
@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { cn } from '@/lib/utils'
+import { CLOUD_GALLERY_PAGE_SIZE } from '../api/filesApi'
 import { CLOUD_GALLERY_REFETCH_EVENT } from '../constants/cloudGalleryEvents'
 import { useTeacherCloudFiles } from '../hooks/useTeacherCloudFiles'
 import type { FileItem } from '../types/files.types'
@@ -17,6 +18,7 @@ import { buildCloudGalleryItems, isGalleryFile } from '../utils/buildCloudGaller
 import { CloudFileCardContent } from './CloudFileCardContent'
 
 const SEARCH_FIELDS = ['filename', 'type'] as const satisfies readonly (keyof FileItem)[]
+const INFINITE_SCROLL_ROOT_MARGIN = '400px'
 
 export type CloudGalleryProps = {
   className?: string
@@ -33,8 +35,10 @@ export function CloudGallery({
 }: CloudGalleryProps) {
   const { t } = useTranslation('features.cloud')
   const { t: tTeacher } = useTranslation('features.teacher')
-  const { fileItems, loading, error, refetch, renameFileItem } = useTeacherCloudFiles()
+  const { fileItems, loading, error, refetch, renameFileItem, hasMore, isLoadingMore, loadMore } =
+    useTeacherCloudFiles()
   const [query, setQuery] = useState('')
+  const [scrollViewport, setScrollViewport] = useState<HTMLDivElement | null>(null)
 
   useEffect(() => {
     onRefetchReady?.(() => {
@@ -63,6 +67,10 @@ export function CloudGallery({
   const handleDeleted = useCallback(() => {
     void refetch()
   }, [refetch])
+
+  const handleLoadMore = useCallback(() => {
+    void loadMore()
+  }, [loadMore])
 
   const handleItemTitleChange = useCallback(
     async (id: string, nextTitle: string) => {
@@ -110,6 +118,61 @@ export function CloudGallery({
   const showSpinner = loading
   const showEmpty = !loading && items.length === 0
   const showGrid = !loading && items.length > 0
+  // Pause infinite scroll while the user is searching — `useSearchFilter` is local,
+  // so fetching more pages won't surface additional matches and just burns requests.
+  const isSearching = query.trim().length > 0
+  const canLoadMore = hasMore && !isSearching
+
+  useEffect(() => {
+    if (!canLoadMore || loading || isLoadingMore) return
+
+    const scrollNotFilled =
+      scrollViewport != null &&
+      scrollViewport.scrollHeight <= scrollViewport.clientHeight + INFINITE_SCROLL_ROOT_MARGIN
+    const galleryBatchSparse = items.length < CLOUD_GALLERY_PAGE_SIZE
+
+    if (scrollNotFilled || galleryBatchSparse) {
+      void loadMore()
+    }
+  }, [
+    canLoadMore,
+    galleryScrollHeight,
+    items.length,
+    loadMore,
+    loading,
+    isLoadingMore,
+    scrollViewport,
+  ])
+
+  const gridContent = (
+    <div className="flex w-full min-w-0 flex-col">
+      <CardInstantPreview
+        items={items}
+        onItemTitleChange={handleItemTitleChange}
+      />
+      {canLoadMore ? (
+        <InfiniteScrollSentinel
+          onLoadMore={handleLoadMore}
+          hasMore={canLoadMore}
+          isLoading={isLoadingMore}
+          root={galleryScrollHeight != null ? scrollViewport : null}
+          rootMargin={INFINITE_SCROLL_ROOT_MARGIN}
+          className="shrink-0 basis-full"
+        />
+      ) : null}
+      {isLoadingMore ? (
+        <div
+          aria-live="polite"
+          className="flex shrink-0 justify-center py-4"
+        >
+          <Spinner
+            variant="gray"
+            size="sm"
+          />
+        </div>
+      ) : null}
+    </div>
+  )
 
   return (
     <section className={cn('relative isolate w-full', className)}>
@@ -172,17 +235,12 @@ export function CloudGallery({
               className="w-full"
               style={{ height: galleryScrollHeight }}
               viewportClassName="overflow-x-hidden"
+              viewportRef={setScrollViewport}
             >
-              <CardInstantPreview
-                items={items}
-                onItemTitleChange={handleItemTitleChange}
-              />
+              {gridContent}
             </BlurredScrollArea>
           ) : (
-            <CardInstantPreview
-              items={items}
-              onItemTitleChange={handleItemTitleChange}
-            />
+            gridContent
           )
         ) : null}
       </div>
