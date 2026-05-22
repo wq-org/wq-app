@@ -20,6 +20,26 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-23-teacher-cloud-gallery-and-expanded-file-preview',
+    date: '23 May 2026',
+    title: 'Teacher Cloud gallery previews files more clearly and stays easier to browse',
+    summary:
+      'The teacher Cloud page now behaves like a real media library instead of a cramped list. Images, PDFs, and videos open in a large preview with file details and hold-to-delete at the bottom, uploads from the command palette show up without reloading the page, and long filenames truncate cleanly with an ellipsis so card titles stay readable. Fullscreen expand grows from the center of the screen without jumping, and tall photos or vertical videos no longer push metadata off-screen.',
+    bullets: [
+      'Teachers: browse images, PDFs, and MP4 videos in the Cloud gallery with the same card grid used elsewhere in the app',
+      'Teachers: tap a file to open an expanded preview with type, size, upload date, MIME type, and hold-to-delete in one place',
+      'Teachers: use the arrow button to expand preview to full screen from the center of the dialog, then collapse back without the panel sliding downward',
+      'Teachers: PDFs and videos stay inside the preview area with internal scrolling; footer details and delete stay fully visible on every file type',
+      'Teachers: upload through the command palette and see new files appear in the gallery shortly after upload finishes',
+      'Teachers: rename files from the expanded title when your cloud hook supports it',
+      'Teachers: long filenames show up to two lines with "…" at the end and a hover tooltip with the full name',
+      'Everyone: card titles across courses, topics, classrooms, and game projects use the same reliable truncation pattern',
+      'Internal: shared line-clamp utility and CardTitle clampLines prop reduce one-off ellipsis CSS across the app',
+      'Internal: expanded preview media uses a single flex layout for images, video, and PDF so layout bugs are easier to prevent',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-05-19-lesson-editor-checklists-youtube-and-link-polish',
     date: '19 May 2026',
     title: 'Lesson editor adds cleaner checklists, YouTube embeds, and tidier link tools',
