@@ -6,11 +6,12 @@ import { cn } from '@/lib/utils'
 import { CardInstantPreviewEditableTitle } from './CardInstantPreviewEditableTitle'
 import { CardInstantPreviewExpandedMedia } from './CardInstantPreviewExpandedMedia'
 import { CardInstantPreviewExpandedBody } from './CardInstantPreviewShared'
-import type { CardInstantPreviewCardProps } from './card-instant-preview.types'
 import {
-  CARD_INSTANT_PREVIEW_EXPANDED_FOOTER_MAX_HEIGHT,
-  CARD_INSTANT_PREVIEW_EXPANDED_FOOTER_MAX_HEIGHT_FULLSCREEN,
+  cardInstantPreviewExpandedShellBaseClassName,
+  cardInstantPreviewExpandedShellFullscreenClassName,
+  cardInstantPreviewExpandedShellModalClassName,
 } from './card-instant-preview.constants'
+import type { CardInstantPreviewCardProps } from './card-instant-preview.types'
 import {
   cardInstantPreviewTitleId,
   getCardInstantPreviewMediaVariant,
@@ -40,10 +41,6 @@ export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProp
   const [editedTitle, setEditedTitle] = useState(title)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const mediaVariant = getCardInstantPreviewMediaVariant(props)
-  const footerMaxHeight = isFullscreen
-    ? CARD_INSTANT_PREVIEW_EXPANDED_FOOTER_MAX_HEIGHT_FULLSCREEN
-    : CARD_INSTANT_PREVIEW_EXPANDED_FOOTER_MAX_HEIGHT
-
   useEffect(() => {
     setEditedTitle(title)
   }, [id, title])
@@ -86,19 +83,11 @@ export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProp
       aria-labelledby={titleId}
       tabIndex={-1}
       className={cn(
-        'pointer-events-auto fixed z-[201] flex min-h-0 flex-col overflow-hidden',
-        'bg-card text-card-foreground shadow-2xl duration-300',
+        cardInstantPreviewExpandedShellBaseClassName,
         isFullscreen
-          ? 'inset-0 h-screen w-screen max-h-none max-w-none rounded-none'
-          : [
-              'inset-x-4 bottom-4 top-auto mx-auto w-full max-w-[min(720px,calc(100vw-2rem))]',
-              'max-h-[min(calc(100dvh-2rem),820px)] rounded-[28px]',
-              'sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-h-[min(90vh,820px)]',
-              'sm:w-[min(720px,calc(100vw-48px))] sm:-translate-x-1/2 sm:-translate-y-1/2',
-            ],
-        isClosing
-          ? 'animate-out fade-out-0 slide-out-to-bottom-4'
-          : 'animate-in fade-in-0 slide-in-from-bottom-4',
+          ? cardInstantPreviewExpandedShellFullscreenClassName
+          : cardInstantPreviewExpandedShellModalClassName,
+        isClosing ? 'animate-out fade-out-0' : 'animate-in fade-in-0',
       )}
       onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => {
@@ -155,27 +144,17 @@ export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProp
         />
       </div>
 
-      <div
-        className="flex min-h-0 flex-1 flex-col overflow-hidden"
-        style={
-          {
-            '--card-instant-preview-footer-max-h': footerMaxHeight,
-          } as React.CSSProperties
-        }
-      >
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <CardInstantPreviewExpandedMedia
           card={props}
           editedTitle={editedTitle}
           imagePosition={imagePosition}
-          isFullscreen={isFullscreen}
         />
 
         <CardInstantPreviewExpandedBody
           description={description}
           content={content}
-          className={cn(
-            'shrink-0 min-h-0 max-h-[var(--card-instant-preview-footer-max-h)] overflow-y-auto',
-          )}
+          className="shrink-0"
         />
       </div>
     </div>

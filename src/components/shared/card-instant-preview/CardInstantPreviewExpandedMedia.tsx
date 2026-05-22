@@ -1,7 +1,7 @@
 import { BasicPdfViewer } from '@/components/shared/pdf-viewer'
 import {
   CARD_INSTANT_PREVIEW_MEDIA,
-  cardInstantPreviewExpandedNaturalMediaClassName,
+  cardInstantPreviewExpandedImageConstrainedClassName,
   cardInstantPreviewExpandedPdfViewerClassName,
   cardInstantPreviewExpandedVideoConstrainedClassName,
 } from './card-instant-preview.constants'
@@ -16,24 +16,22 @@ type CardInstantPreviewExpandedImageProps = {
   imageSrc: string
   imageAlt: string
   imagePosition?: CardInstantPreviewImagePosition
-  isFullscreen: boolean
 }
 
 export function CardInstantPreviewExpandedImage({
   imageSrc,
   imageAlt,
   imagePosition,
-  isFullscreen,
 }: CardInstantPreviewExpandedImageProps) {
   return (
-    <CardInstantPreviewExpandedMediaFrame isFullscreen={isFullscreen}>
+    <CardInstantPreviewExpandedMediaFrame>
       <img
         src={imageSrc}
         alt={imageAlt}
         loading="lazy"
         decoding="async"
         draggable={false}
-        className={cardInstantPreviewExpandedNaturalMediaClassName}
+        className={cardInstantPreviewExpandedImageConstrainedClassName}
         style={{ objectPosition: imagePosition ?? 'center center' }}
       />
     </CardInstantPreviewExpandedMediaFrame>
@@ -43,19 +41,14 @@ export function CardInstantPreviewExpandedImage({
 type CardInstantPreviewExpandedVideoProps = {
   videoSrc: string
   fileName: string
-  isFullscreen: boolean
 }
 
 export function CardInstantPreviewExpandedVideo({
   videoSrc,
   fileName,
-  isFullscreen,
 }: CardInstantPreviewExpandedVideoProps) {
   return (
-    <CardInstantPreviewExpandedMediaFrame
-      isFullscreen={isFullscreen}
-      layout="constrained"
-    >
+    <CardInstantPreviewExpandedMediaFrame>
       <video
         src={videoSrc}
         controls
@@ -70,18 +63,11 @@ export function CardInstantPreviewExpandedVideo({
 
 type CardInstantPreviewExpandedPdfProps = {
   pdfSrc: string
-  isFullscreen: boolean
 }
 
-export function CardInstantPreviewExpandedPdf({
-  pdfSrc,
-  isFullscreen,
-}: CardInstantPreviewExpandedPdfProps) {
+export function CardInstantPreviewExpandedPdf({ pdfSrc }: CardInstantPreviewExpandedPdfProps) {
   return (
-    <CardInstantPreviewExpandedMediaFrame
-      isFullscreen={isFullscreen}
-      layout="constrained"
-    >
+    <CardInstantPreviewExpandedMediaFrame>
       <BasicPdfViewer
         source={pdfSrc}
         className={cardInstantPreviewExpandedPdfViewerClassName}
@@ -94,31 +80,23 @@ type CardInstantPreviewExpandedMediaProps = {
   card: CardInstantPreviewCardProps
   editedTitle: string
   imagePosition?: CardInstantPreviewImagePosition
-  isFullscreen: boolean
 }
 
 export function CardInstantPreviewExpandedMedia({
   card,
   editedTitle,
   imagePosition,
-  isFullscreen,
 }: CardInstantPreviewExpandedMediaProps) {
   const media = getCardInstantPreviewMediaVariant(card)
 
   switch (media) {
     case CARD_INSTANT_PREVIEW_MEDIA.pdf:
-      return (
-        <CardInstantPreviewExpandedPdf
-          pdfSrc={card.pdfSrc}
-          isFullscreen={isFullscreen}
-        />
-      )
+      return <CardInstantPreviewExpandedPdf pdfSrc={card.pdfSrc} />
     case CARD_INSTANT_PREVIEW_MEDIA.video:
       return (
         <CardInstantPreviewExpandedVideo
           videoSrc={card.videoSrc}
           fileName={editedTitle}
-          isFullscreen={isFullscreen}
         />
       )
     case CARD_INSTANT_PREVIEW_MEDIA.image:
@@ -127,7 +105,6 @@ export function CardInstantPreviewExpandedMedia({
           imageSrc={card.imageSrc}
           imageAlt={editedTitle}
           imagePosition={imagePosition}
-          isFullscreen={isFullscreen}
         />
       )
   }
