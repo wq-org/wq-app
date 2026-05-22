@@ -24,6 +24,9 @@ const INSTITUTION_TYPES = [
   'other',
 ] as const
 
+/** Radix Select requires a defined value; maps to empty `type` in form state. */
+const EMPTY_INSTITUTION_TYPE_VALUE = '__none__'
+
 type NewInstitutionWizardIdentityStepProps = {
   control: Control<NewInstitutionWizardFormValues>
   errors: FieldErrors<NewInstitutionWizardFormValues>
@@ -104,13 +107,18 @@ function NewInstitutionWizardIdentityStep({
           control={control}
           render={({ field }) => (
             <Select
-              value={field.value || undefined}
-              onValueChange={field.onChange}
+              value={field.value || EMPTY_INSTITUTION_TYPE_VALUE}
+              onValueChange={(value) => {
+                field.onChange(value === EMPTY_INSTITUTION_TYPE_VALUE ? '' : value)
+              }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('form.fields.typePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value={EMPTY_INSTITUTION_TYPE_VALUE}>
+                  {t('form.fields.typePlaceholder')}
+                </SelectItem>
                 {INSTITUTION_TYPES.map((type) => (
                   <SelectItem
                     key={type}

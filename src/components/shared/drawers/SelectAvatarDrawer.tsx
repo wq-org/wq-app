@@ -119,6 +119,7 @@ export interface SelectAvatarDrawerProps {
   drawerDescription: string
   triggerAriaLabel: string
   closeLabel: string
+  emptyLabel: string
   getSelectAvatarLabel: (avatarName: string) => string
   onAvatarSelect: (avatarPath: string) => void
 }
@@ -133,9 +134,11 @@ export function SelectAvatarDrawer({
   drawerDescription,
   triggerAriaLabel,
   closeLabel,
+  emptyLabel,
   getSelectAvatarLabel,
   onAvatarSelect,
 }: SelectAvatarDrawerProps) {
+  const hasAvatarOptions = avatarOptions.length > 0
   const [isOpen, setIsOpen] = useState(false)
   const [triggerImageFailed, setTriggerImageFailed] = useState(false)
   const { url: signedTriggerAvatarUrl } = useAvatarUrl(avatarPath)
@@ -165,6 +168,7 @@ export function SelectAvatarDrawer({
           variant="ghost"
           className="relative h-auto cursor-pointer p-0 hover:bg-transparent"
           aria-label={triggerAriaLabel}
+          onClick={(event) => event.currentTarget.blur()}
         >
           <Avatar
             size="xl"
@@ -202,17 +206,29 @@ export function SelectAvatarDrawer({
           <DrawerDescription>{drawerDescription}</DrawerDescription>
         </DrawerHeader>
         <ScrollArea className="min-h-0 flex-1 basis-0 px-4 pb-6">
-          <div className="flex flex-wrap items-start gap-3 py-1 pr-2">
-            {avatarOptions.map((avatar) => (
-              <AvatarOptionItem
-                key={avatar.src}
-                avatar={avatar}
-                isSelected={selectedAvatarPath === avatar.src}
-                getSelectAvatarLabel={getSelectAvatarLabel}
-                onSelect={handleAvatarSelect}
-              />
-            ))}
-          </div>
+          {hasAvatarOptions ? (
+            <div className="flex flex-wrap items-start gap-3 py-1 pr-2">
+              {avatarOptions.map((avatar) => (
+                <AvatarOptionItem
+                  key={avatar.src}
+                  avatar={avatar}
+                  isSelected={selectedAvatarPath === avatar.src}
+                  getSelectAvatarLabel={getSelectAvatarLabel}
+                  onSelect={handleAvatarSelect}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center py-12">
+              <Text
+                as="p"
+                variant="body"
+                className="text-sm text-muted-foreground"
+              >
+                {emptyLabel}
+              </Text>
+            </div>
+          )}
         </ScrollArea>
       </DrawerContent>
     </Drawer>

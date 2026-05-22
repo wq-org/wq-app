@@ -77,6 +77,38 @@
       "action": "Aktion",
       "viewDetails": "Details anzeigen"
     },
+    "actions": {
+      "menu": "Aktionen",
+      "viewDetails": "Details anzeigen",
+      "changeRole": "Rolle ändern",
+      "transferOwnership": "Eigentum übertragen"
+    },
+    "roles": {
+      "institution_admin": "Institutions-Admin",
+      "teacher": "Lehrkraft",
+      "student": "Schüler:in"
+    },
+    "changeRoleDialog": {
+      "title": "Rolle ändern",
+      "description": "Profil- und Mitgliedschaftsrolle des aktiven Institutions-Admins für {{name}} aktualisieren.",
+      "userLabel": "Nutzer:in",
+      "emailLabel": "E-Mail",
+      "currentRoleLabel": "Aktuelle Rolle",
+      "newRoleLabel": "Neue Rolle",
+      "noAdmin": "Kein aktiver Institutions-Admin für diese Institution gefunden.",
+      "loadError": "Institutions-Admin konnte nicht geladen werden",
+      "cancel": "Abbrechen",
+      "confirmHold": "Zum Bestätigen gedrückt halten",
+      "success": "Rolle aktualisiert",
+      "successDescription": "{{email}} ist jetzt {{role}}.",
+      "error": "Rolle konnte nicht aktualisiert werden"
+    },
+    "transferOwnershipDialog": {
+      "title": "Eigentum übertragen",
+      "description": "Eigentum von {{name}} auf eine andere Person übertragen. Dieser Ablauf ist noch nicht verfügbar.",
+      "cancel": "Abbrechen",
+      "transfer": "Übertragen"
+    },
     "empty": {
       "title": "Noch keine Institutionen",
       "description": "Erstelle deine erste Institution, um loszulegen.",

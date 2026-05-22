@@ -339,6 +339,72 @@ BESONDERE PFLICHT:
 
 ---
 
+### 4.9 `public.cloud_files`
+
+Geltungsbereich: jede Datei, die in der zentralen `cloud_files`-Tabelle registriert ist
+(Avatare, Lehrmaterial, Schüler-Uploads, Spiel-Assets, Chat-Anhänge etc.).
+
+```
+✅ ERLAUBT im Audit:
+  event_type:        cloud_file.created
+                     | cloud_file.deleted           (Status-Wechsel → 'deleted'
+                                                     ODER Hard-Delete via RPC-Wrapper)
+                     | cloud_file.status_changed   (alle anderen Statuswechsel,
+                                                     z.B. 'active' → 'archived')
+  subject_id:        cloud_file UUID
+  actor_user_id:     auth.uid() (intern via audit.log_event — niemals als Caller-Param)
+  institution_id:    UUID
+  scope:             Enum-Code aus public.cloud_file_scope:
+                     'personal' | 'institution' | 'classroom' | 'course' |
+                     'lesson'   | 'task'        | 'game'      | 'chat'
+  mime_type:         MIME-Typ-String — z.B. "image/png", "application/pdf"
+  size_bytes:        Integer — Aggregatwert, kein Personenbezug
+  old_status / new_status:  public.cloud_file_status Enum-Code
+                            ('active' | 'deleted' | 'archived')
+  folder_id:         UUID (optionaler Kontext, in metadata.context)
+  Scope-Anker als UUIDs (in metadata.context, nur falls scope sie erfordert):
+    classroom_id, course_id, lesson_id, task_id, conversation_id, game_version_id
+
+❌ VERBOTEN:
+  original_name      — Freitext, §2.3 DSGVO-Verbot. Kann PII enthalten
+                       (Patientennamen, Diagnose-Hinweise, persönliche Dateititel).
+  storage_object_name — interner Speicher-Pfad. Kein Audit-Nutzen,
+                        Sicherheitsrisiko (Pfadrekonstruktion).
+  bucket             — interne Infrastruktur-Information; nicht im Audit.
+  owner_user_id im Payload — subject_id + actor_user_id sind ausreichend;
+                              Dopplung der Personenkennung vermeiden.
+  Dateiinhalt / Binärdaten — niemals.
+  Signed URL / presigned URL — niemals (kurzlebige Credentials, §2.2).
+  Virenscan-Ergebnis — security log only, nicht in audit.events.
+  Vorschau-Thumbnails — wären selbst Datei-Daten, niemals.
+
+Schutzklassen-Verschärfung (Kreiskliniken / Bismarckschule):
+  mime_type ist generell erlaubt, ABER:
+    - DICOM-MIME (application/dicom, image/x.application-dicom) niemals loggen,
+      da der bloße Hinweis "Patientendaten verarbeitet" Art. 9 berührt.
+    - Bei Verdacht auf klinische Bildmaterialien: mime_type weglassen oder
+      auf eine institutionsspezifische Allowlist beschränken
+      ('image/png', 'image/jpeg', 'application/pdf' für Schulungsmaterial).
+  Scope-Anker (z.B. classroom_id) ist akzeptabel — er identifiziert kein Patientenobjekt.
+
+BESONDERE PFLICHT — Soft- vs. Hard-Delete:
+  Soft-Delete:  UPDATE cloud_files SET status='deleted'. Der AFTER-UPDATE-Trigger
+                emittiert event_type='cloud_file.deleted' mit subject_id = NEW.id.
+  Hard-Delete:  DELETE FROM cloud_files. KEIN AFTER-DELETE-Trigger im Standardpfad,
+                weil auth.uid() in CASCADE-Kontexten nicht zuverlässig ist.
+                Hard-Deletes MÜSSEN über public.delete_cloud_file_with_audit(uuid)
+                gehen — dieser RPC-Wrapper emittiert das Audit-Event in der gleichen
+                Transaktion vor dem DELETE. Direkter Client-DELETE auf cloud_files
+                ist verboten.
+  CASCADE-Delete (z.B. wenn eine Lesson gelöscht wird und cloud_files.lesson_id
+                CASCADE auslöst): wird bewusst NICHT auditiert auf cloud_files-Ebene.
+                Das auslösende Parent-Event (z.B. lesson.deleted) deckt den Vorgang ab.
+
+metadata.visibility_level: immer 'institution_admin'.
+```
+
+---
+
 ## 5. Rollen-Sichtbarkeit Matrix
 
 | Datenfeld / Event-Typ       | Institution Admin       | Super Admin        | Security-Rolle (nur bei Incident) |
@@ -398,6 +464,57 @@ AND institution_id = [mandant];
 ✅ Separate Aufbewahrung von IP-/Sicherheitslogs (getrennte Tabelle)
 ✅ Integritätsschutz: Hash-Verfahren oder append-only Tabelle
 ✅ Hetzner Falkenstein (DE): kein Drittlandtransfer
+```
+
+### 6.4 Canonical `audit.log_event` Signature — DO NOT CHANGE
+
+Source of truth: `supabase/migrations/2026032100000104_super_admin_04_functions_rpcs.sql`.
+
+```sql
+audit.log_event(
+  p_event_type     text,                    -- e.g. 'membership.created'
+  p_subject_type   text   DEFAULT NULL,     -- canonical entity name, e.g. 'institution_membership'
+  p_subject_id     uuid   DEFAULT NULL,
+  p_institution_id uuid   DEFAULT NULL,
+  p_payload        jsonb  DEFAULT NULL,
+  p_metadata       jsonb  DEFAULT NULL
+) RETURNS uuid
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = ''                        -- empty: every reference must be schema-qualified
+```
+
+**Security-critical properties — DO NOT regress:**
+
+- `actor_user_id` is resolved via `auth.uid()` **inside** the SECURITY DEFINER body. It is never a caller-provided parameter. This makes actor un-spoofable: a malicious caller cannot impersonate another user.
+- `search_path = ''` (empty) forces fully-qualified schema references inside the function body — prevents object-masking attacks (`db_principles.md` §"Security-definer functions and safe SQL").
+- `RETURNS uuid` (the inserted `audit.events.id`), not `void`. Callers may chain on the returned id.
+- Direct `INSERT/UPDATE/DELETE` on `audit.events` is `REVOKE`d from `authenticated` and `anon` roles
+  (`supabase/migrations/2026032100000107_super_admin_07_rls_policies.sql`). The function is the only write path.
+
+**Forbidden parameter names — `audit.log_event` does NOT accept these:**
+
+- `p_actor_id` — actor is resolved server-side, not caller-provided.
+- `p_entity_type` / `p_entity_id` — use `p_subject_type` / `p_subject_id`.
+
+If a migration proposes to add a `p_actor_id` parameter, add an overloaded `p_entity_type` shim,
+change `search_path` away from `''`, or change `RETURNS uuid` to `RETURNS void`: reject the change.
+None of these are improvements; all of them are regressions vs the current signature.
+
+**Canonical caller pattern (all 25+ trigger functions follow this):**
+
+```sql
+PERFORM audit.log_event(
+  p_event_type     := 'membership.created',
+  p_subject_type   := 'institution_membership',
+  p_subject_id     := NEW.id,
+  p_institution_id := NEW.institution_id,
+  p_payload        := jsonb_build_object('status', NEW.status::text /* allowlist fields only */),
+  p_metadata       := jsonb_build_object(
+    'visibility_level', 'institution_admin',
+    'context', jsonb_build_object('membership_id', NEW.id, 'user_id', NEW.user_id)
+  )
+);
 ```
 
 ---

@@ -30,6 +30,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { InstitutionRowActionsPopover } from '../components/InstitutionRowActionsPopover'
 import { useInstitutions } from '../hooks/useInstitutions'
 import type { Institution } from '../types/institution.types'
 import { STATUS_VARIANT } from '../config/institutionFormOptions'
@@ -173,14 +174,8 @@ const AdminInstitution = () => {
                         '—'
                       )}
                     </TableCell>
-                    <TableCell className="flex items-center gap-2">
-                      <Button
-                        variant="darkblue"
-                        size="sm"
-                        onClick={() => handleOpenDetails(inst)}
-                      >
-                        {t('institutions.table.viewDetails')}
-                      </Button>
+                    <TableCell className="text-right">
+                      <InstitutionRowActionsPopover institution={inst} />
                     </TableCell>
                   </TableRow>
                 ))}

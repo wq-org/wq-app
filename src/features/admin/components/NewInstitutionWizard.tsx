@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronRight, PartyPopper } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -124,20 +124,6 @@ function NewInstitutionWizard({
     { title: t('wizard.steps.review') },
   ] as const
 
-  const successDecoration = (
-    <div className="flex justify-center sm:justify-start">
-      <div
-        className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary"
-        aria-hidden
-      >
-        <PartyPopper
-          className="size-8"
-          strokeWidth={1.75}
-        />
-      </div>
-    </div>
-  )
-
   return (
     <>
       <FieldCard className="w-full max-w-2xl animate-in fade-in-0 slide-in-from-bottom-4 rounded-xl border-border px-0 py-0 shadow-sm">
@@ -206,19 +192,14 @@ function NewInstitutionWizard({
               className="gap-2"
             >
               {isSubmitting ? (
-                <>
-                  <Spinner
-                    variant="darkblue"
-                    size="xs"
-                  />
-                  {t('wizard.actions.creating')}
-                </>
+                <Spinner
+                  variant="darkblue"
+                  size="xs"
+                />
               ) : (
-                <>
-                  {t('wizard.actions.create')}
-                  <ChevronRight className="size-4" />
-                </>
+                <ChevronRight className="size-4" />
               )}
+              {t('wizard.actions.create')}
             </Button>
           )}
         </div>
@@ -231,11 +212,7 @@ function NewInstitutionWizard({
         description={t('wizard.success.description', { email: successAdminEmail })}
         buttonDescription={t('wizard.success.done')}
         path={successRedirectPath}
-        decoration={successDecoration}
-        contentClassName="sm:max-w-md sm:text-left"
-        headerClassName="gap-4 text-center sm:text-left"
-        footerClassName="sm:justify-center"
-        primaryButtonClassName="w-full sm:w-auto"
+        showConfetti
       />
     </>
   )

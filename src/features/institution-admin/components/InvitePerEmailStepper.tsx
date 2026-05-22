@@ -8,6 +8,7 @@ import { SelectTabs, StepperProgressBarTitles, type TabItem } from '@/components
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 
@@ -316,15 +317,24 @@ export function InvitePerEmailStepper({ onExit }: InvitePerEmailStepperProps) {
                   <Button
                     type="button"
                     variant="darkblue"
+                    className="gap-2"
                     disabled={disableSend}
                     onClick={
                       failedInvites.length > 0 ? handleRetryFailedOnly : handleSendAllFromReview
                     }
                   >
-                    <Send
-                      className="size-4 shrink-0"
-                      aria-hidden
-                    />
+                    {isSending ? (
+                      <Spinner
+                        variant="darkblue"
+                        size="xs"
+                        speed={1750}
+                      />
+                    ) : (
+                      <Send
+                        className="size-4 shrink-0"
+                        aria-hidden
+                      />
+                    )}
                     {failedInvites.length > 0
                       ? t('inviteUsers.emailWizard.retryFailedButton')
                       : t('inviteUsers.emailWizard.sendButton')}

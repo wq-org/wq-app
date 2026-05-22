@@ -62,9 +62,7 @@ export function RevokeInstitutionInviteDialog({
             disabled={isRevoking}
             onDelete={onConfirmRevoke}
           >
-            {isRevoking
-              ? t('institutionInvites.revokeDialog.revoking', { defaultValue: 'Revoking…' })
-              : t('institutionInvites.revokeDialog.hold', { defaultValue: 'Hold to revoke' })}
+            {t('institutionInvites.revokeDialog.hold', { defaultValue: 'Hold to revoke' })}
           </HoldToDeleteButton>
         </DialogFooter>
       </DialogContent>

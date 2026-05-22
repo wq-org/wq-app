@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
 
@@ -60,6 +61,8 @@ export function SuccessDialog({
   footerClassName,
   primaryButtonClassName,
 }: SuccessDialogProps) {
+  const { t: tCommon } = useTranslation('common')
+  const appName = tCommon('app.name')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -87,12 +90,13 @@ export function SuccessDialog({
       <DialogContent
         className={cn('sm:max-w-md text-center', contentClassName)}
         showCloseButton={showCloseButton}
+        aria-label={`${title} — ${appName}`}
       >
         {decoration !== undefined ? decoration : <DefaultDecoration />}
 
-        <DialogHeader className={headerClassName}>
+        <DialogHeader className={cn('items-center text-center sm:text-center', headerClassName)}>
           <DialogTitle className="text-2xl font-light">{title}</DialogTitle>
-          <DialogDescription className="text-base mt-2">{description}</DialogDescription>
+          <DialogDescription className="mt-2 text-base">{description}</DialogDescription>
         </DialogHeader>
 
         <div className={cn('flex justify-center pt-4', footerClassName)}>

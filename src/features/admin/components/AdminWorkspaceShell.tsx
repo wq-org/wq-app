@@ -85,6 +85,9 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
     }
   }
 
+  const accountDisplayName = profile?.display_name?.trim() || profile?.username?.trim() || '—'
+  const accountEmail = profile?.email?.trim() || '—'
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -100,11 +103,15 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center justify-between px-2 py-3">
+        <SidebarHeader className="min-w-0">
+          <div className="flex min-w-0 w-full px-2 py-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex gap-2 items-center">
+                <button
+                  type="button"
+                  className="flex min-w-0 w-full items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={t('planFeatures.accountMenu', { defaultValue: 'Account menu' })}
+                >
                   <Avatar
                     size="sm"
                     className="shrink-0 overflow-hidden rounded-full bg-transparent after:hidden"
@@ -122,25 +129,27 @@ export function AdminWorkspaceShell({ children }: AdminWorkspaceShellProps) {
                       />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0 flex-1 text-left">
+                  <div className="min-w-0 flex-1 overflow-hidden text-left">
                     <Text
                       as="p"
                       variant="small"
-                      className="truncate font-semibold text-xs"
+                      title={accountDisplayName}
+                      className="block w-full truncate text-xs font-semibold"
                     >
-                      {profile?.display_name?.trim() || profile?.username?.trim() || '—'}
+                      {accountDisplayName}
                     </Text>
                     <Text
                       as="p"
                       variant="small"
                       color="muted"
-                      className="truncate text-xs"
+                      title={accountEmail}
+                      className="block w-full truncate text-xs"
                     >
-                      {profile?.email?.trim() || '—'}
+                      {accountEmail}
                     </Text>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 shrink-0 text-muted-foreground" />
-                </div>
+                  <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="min-w-48 rounded-lg"

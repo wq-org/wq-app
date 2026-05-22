@@ -4,6 +4,7 @@ export {
   buildInitialsFromDisplayName,
   getInitial,
   institutionUserRoleTranslationKey,
+  isPlatformStaffProfile,
   withdrawFromClassDialogTranslationKeys,
   removeFromInstitutionDialogTranslationKeys,
 } from './institutionAdminUsers'

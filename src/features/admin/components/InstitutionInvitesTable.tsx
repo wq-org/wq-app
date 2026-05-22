@@ -6,6 +6,7 @@ import type { VariantProps } from 'class-variance-authority'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import {
   Table,
@@ -140,54 +141,74 @@ export function InstitutionInvitesTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invites.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="max-w-[200px] truncate font-medium">{row.email}</TableCell>
-                <TableCell>
-                  <Badge variant={membershipRoleVariant(row.membershipRole)}>
-                    {row.membershipRole}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    {!row.acceptedAtIso && onResend && (
+            {invites.map((row) => {
+              const isResending = resendingId === row.institutionId
+              const isRevokingRow = isRevoking && revokeTarget?.id === row.id
+
+              return (
+                <TableRow key={row.id}>
+                  <TableCell className="max-w-[200px] truncate font-medium">{row.email}</TableCell>
+                  <TableCell>
+                    <Badge variant={membershipRoleVariant(row.membershipRole)}>
+                      {row.membershipRole}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      {!row.acceptedAtIso && onResend && (
+                        <Button
+                          type="button"
+                          variant="darkblue"
+                          size="sm"
+                          className="gap-2"
+                          onClick={(e) => void handleResendInvite(e, row.institutionId)}
+                          disabled={isResending || isRevokingRow}
+                        >
+                          {isResending ? (
+                            <Spinner
+                              variant="darkblue"
+                              size="xs"
+                            />
+                          ) : (
+                            <MailPlus className="size-4" />
+                          )}
+                          {t('institutionInvites.table.resend')}
+                        </Button>
+                      )}
+                      {!row.acceptedAtIso && onRevoke && (
+                        <Button
+                          type="button"
+                          variant="delete"
+                          size="sm"
+                          className="gap-2"
+                          onClick={(e) => handleRevokeRequest(e, row)}
+                          disabled={isRevokingRow}
+                        >
+                          {isRevokingRow ? (
+                            <Spinner
+                              variant="red"
+                              size="xs"
+                            />
+                          ) : (
+                            <Trash2 className="size-4" />
+                          )}
+                          {t('institutionInvites.table.revoke', { defaultValue: 'Revoke' })}
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         variant="darkblue"
                         size="sm"
-                        onClick={(e) => void handleResendInvite(e, row.institutionId)}
-                        disabled={resendingId === row.institutionId}
+                        onClick={() => handleOpenDetails(row)}
                       >
-                        <MailPlus className="size-4" />
-                        {resendingId === row.institutionId
-                          ? t('institutionInvites.table.sending')
-                          : t('institutionInvites.table.resend')}
+                        {t('institutionInvites.table.openDetails')}
+                        <ChevronRight className="ml-1 size-4" />
                       </Button>
-                    )}
-                    {!row.acceptedAtIso && onRevoke && (
-                      <Button
-                        type="button"
-                        variant="delete"
-                        size="sm"
-                        onClick={(e) => handleRevokeRequest(e, row)}
-                      >
-                        <Trash2 className="size-4" />
-                        {t('institutionInvites.table.revoke', { defaultValue: 'Revoke' })}
-                      </Button>
-                    )}
-                    <Button
-                      type="button"
-                      variant="darkblue"
-                      size="sm"
-                      onClick={() => handleOpenDetails(row)}
-                    >
-                      {t('institutionInvites.table.openDetails')}
-                      <ChevronRight className="ml-1 size-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </div>

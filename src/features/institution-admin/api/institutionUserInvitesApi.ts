@@ -2,6 +2,7 @@ import { FunctionsHttpError } from '@supabase/supabase-js'
 
 import { supabase } from '@/lib/supabase'
 
+import { isPlatformStaffProfile } from '../utils/institutionAdminUsers'
 import type { InstitutionDirectoryRow } from '../types/institution-users.types'
 
 export type InviteTeacherStudentRole = 'teacher' | 'student'
@@ -156,12 +157,16 @@ type MembershipRowDb = {
         display_name: string | null
         username: string | null
         avatar_url: string | null
+        role: string | null
+        is_super_admin: boolean | null
       }
     | {
         email: string | null
         display_name: string | null
         username: string | null
         avatar_url: string | null
+        role: string | null
+        is_super_admin: boolean | null
       }[]
     | null
 }
@@ -171,6 +176,8 @@ type MembershipProfileDb = {
   display_name: string | null
   username: string | null
   avatar_url: string | null
+  role: string | null
+  is_super_admin: boolean | null
 }
 
 function pickMembershipProfile(
@@ -204,7 +211,9 @@ export async function fetchInstitutionUserDirectory(
             email,
             display_name,
             username,
-            avatar_url
+            avatar_url,
+            role,
+            is_super_admin
           )
         `,
         )
@@ -227,6 +236,8 @@ export async function fetchInstitutionUserDirectory(
 
   for (const row of (membershipRows ?? []) as MembershipRowDb[]) {
     const prof = pickMembershipProfile(row.profiles)
+    if (isPlatformStaffProfile(prof)) continue
+
     const emailLower = prof?.email?.toLowerCase().trim() ?? ''
     if (emailLower) memberEmails.add(emailLower)
 
