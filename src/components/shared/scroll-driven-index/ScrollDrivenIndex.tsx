@@ -9,9 +9,6 @@ import { scrollDrivenIndexVariants } from './scroll-driven-index-variants'
 import type { ScrollDrivenIndexProps } from './scroll-driven-index.types'
 import { useScrollProgress } from './use-scroll-progress'
 
-/** Apply to the scrollable article container (sets `scroll-timeline: --content`). */
-export const SCROLL_DRIVEN_INDEX_SCROLL_CLASS = '[scroll-timeline:--content]'
-
 export function ScrollDrivenIndex({
   items,
   label = 'Index',

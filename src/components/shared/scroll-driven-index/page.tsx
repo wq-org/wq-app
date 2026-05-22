@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 
-import { SCROLL_DRIVEN_INDEX_SCROLL_CLASS, ScrollDrivenIndex } from './ScrollDrivenIndex'
+import { SCROLL_DRIVEN_INDEX_SCROLL_CLASS } from './scroll-driven-index.constants'
+import { ScrollDrivenIndex } from './ScrollDrivenIndex'
 import type { ScrollDrivenIndexItem } from './scroll-driven-index.types'
 
 const INDEX_ITEMS: ScrollDrivenIndexItem[] = [

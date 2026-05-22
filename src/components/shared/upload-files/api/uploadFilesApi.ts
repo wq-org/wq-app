@@ -46,10 +46,6 @@ export async function uploadFile({
   title,
   role,
 }: FileUploadOptions): Promise<FileUploadResult> {
-  console.log('current role :>>', role)
-  console.log('typeof role :>> ', typeof role)
-  console.log('institutionId :>> ', institutionId)
-
   try {
     // Validate inputs
     if (!institutionId || !institutionId.trim()) {
@@ -94,19 +90,6 @@ export async function uploadFile({
     // Construct storage path: {institution_id}/{role}/{user_id}/filename.filetype
     const storagePath = `${institutionId}/${pathRole(role)}/${teacherId}/${sanitizedFileName}`
 
-    console.log('Uploading file:', {
-      originalFileName: file.name,
-      title,
-      sanitizedFileName,
-      storagePath,
-      fileSize: file.size,
-      fileType: file.type,
-      institutionId,
-      teacherId,
-    })
-
-    // Upload file to Supabase storage
-    // Note: Supabase automatically creates folders if they don't exist
     let uploadPath = storagePath
     const { data, error } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
@@ -126,11 +109,13 @@ export async function uploadFile({
           })
 
         if (upsertError) {
-          // Object is already in the bucket; callers resolve a signed URL when needed.
-          uploadPath = storagePath
-        } else {
-          uploadPath = upsertData?.path ?? storagePath
+          return {
+            success: false,
+            error: upsertError.message || 'The resource already exists',
+            fileName: file.name,
+          }
         }
+        uploadPath = upsertData?.path ?? storagePath
       } else {
         console.error('Supabase upload error:', error)
         return {
@@ -153,11 +138,6 @@ export async function uploadFile({
     // Note: If bucket is private, getPublicUrl() returns an invalid URL.
     // For private buckets, use getFileSignedUrl() instead (see filesApi.ts).
     const publicUrl = publicUrlForStoragePath(uploadPath)
-
-    console.log('[uploadFile] Upload result:', {
-      path: data.path,
-      publicUrl: publicUrl?.substring(0, 80) + (publicUrl && publicUrl.length > 80 ? '...' : ''),
-    })
 
     return {
       success: true,
@@ -192,14 +172,11 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
       ]
     }
 
-    console.log(`Starting upload of ${options.length} file(s)...`)
-
     // Upload files sequentially to avoid overwhelming the storage
     const results: FileUploadResult[] = []
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i]
-      console.log('options :>> ', options)
 
       // Update progress if callback provided
       if (option.onProgress) {
@@ -209,10 +186,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
       const result = await uploadFile(option)
       results.push(result)
 
-      // Log each result
-      if (result.success) {
-        console.log(`File ${i + 1}/${options.length} uploaded:`, result.path)
-      } else {
+      if (!result.success) {
         console.error(`File ${i + 1}/${options.length} failed:`, result.error)
       }
     }
@@ -222,9 +196,6 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
     if (lastOption?.onProgress) {
       lastOption.onProgress(100)
     }
-
-    const successCount = results.filter((r) => r.success).length
-    console.log(`Upload complete: ${successCount}/${options.length} files uploaded successfully`)
 
     return results
   } catch (error) {
@@ -278,16 +249,6 @@ export async function uploadFilesWithMetadata(
       }))
     }
 
-    console.log('Uploading files with metadata:', {
-      fileCount: files.length,
-      institutionId,
-      teacherId,
-      files: files.map((f) => ({
-        fileName: f.file.name,
-        title: f.title,
-      })),
-    })
-
     const uploadOptions: FileUploadOptions[] = files.map((uploadedFile, index) => ({
       institutionId,
       teacherId,
@@ -329,8 +290,6 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
       }
     }
 
-    console.log('Deleting file:', path)
-
     const { error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).remove([path])
 
     if (error) {
@@ -341,7 +300,6 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
       }
     }
 
-    console.log('File deleted successfully:', path)
     return {
       success: true,
     }
@@ -446,11 +404,6 @@ export async function renameFile(
       // This is not ideal but we'll return success since the rename "worked"
       console.warn('Warning: New file created but old file could not be deleted')
     }
-
-    console.log('File renamed successfully:', {
-      oldPath,
-      newPath: uploadData.path,
-    })
 
     return {
       success: true,

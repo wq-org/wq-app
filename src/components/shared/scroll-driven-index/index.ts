@@ -1,4 +1,5 @@
-export { ScrollDrivenIndex, SCROLL_DRIVEN_INDEX_SCROLL_CLASS } from './ScrollDrivenIndex'
+export { SCROLL_DRIVEN_INDEX_SCROLL_CLASS } from './scroll-driven-index.constants'
+export { ScrollDrivenIndex } from './ScrollDrivenIndex'
 export { ScrollDrivenIndexIcon } from './ScrollDrivenIndexIcon'
 export { ScrollDrivenIndexLink } from './ScrollDrivenIndexLink'
 export { ScrollDrivenIndexList } from './ScrollDrivenIndexList'

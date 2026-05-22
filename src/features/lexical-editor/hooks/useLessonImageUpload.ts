@@ -18,7 +18,7 @@ function toastForUploadError(
 ): void {
   switch (code) {
     case 'already_exists':
-      toast.warning(t('editor.image.alreadyExistsInCloud'))
+      toast.info(fallbackMessage || t('editor.image.alreadyExistsInCloud'))
       return
     case 'missing_context':
       toast.error(t('editor.image.uploadRequiresContext'))
