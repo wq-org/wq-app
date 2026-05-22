@@ -16,6 +16,22 @@ function pathRole(role: string): string {
   return r
 }
 
+/** Supabase storage returns 400 when `upsert: false` and the object key already exists. */
+function isStorageObjectAlreadyExistsError(message: string | undefined): boolean {
+  if (!message) return false
+  const normalized = message.toLowerCase()
+  return (
+    normalized.includes('already exists') ||
+    normalized.includes('resource already exists') ||
+    normalized.includes('duplicate')
+  )
+}
+
+function publicUrlForStoragePath(storagePath: string): string | undefined {
+  const { data } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(storagePath)
+  return data?.publicUrl
+}
+
 /**
  * Uploads a single file to Supabase storage
  * Path structure: {institution_id}/{role}/{user_id}/filename.filetype
@@ -91,36 +107,52 @@ export async function uploadFile({
 
     // Upload file to Supabase storage
     // Note: Supabase automatically creates folders if they don't exist
+    let uploadPath = storagePath
     const { data, error } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .upload(storagePath, file, {
         cacheControl: '3600',
-        upsert: false, // Set to true if you want to overwrite existing files
+        upsert: false,
       })
 
     if (error) {
-      console.error('Supabase upload error:', error)
-      return {
-        success: false,
-        error: error.message || 'Failed to upload file',
-        fileName: file.name,
-      }
-    }
+      if (isStorageObjectAlreadyExistsError(error.message)) {
+        // Re-picking the same filename (e.g. lesson image after reload) must succeed, not 400.
+        const { data: upsertData, error: upsertError } = await supabase.storage
+          .from(STORAGE_BUCKETS.cloud)
+          .upload(storagePath, file, {
+            cacheControl: '3600',
+            upsert: true,
+          })
 
-    if (!data?.path) {
+        if (upsertError) {
+          // Object is already in the bucket; callers resolve a signed URL when needed.
+          uploadPath = storagePath
+        } else {
+          uploadPath = upsertData?.path ?? storagePath
+        }
+      } else {
+        console.error('Supabase upload error:', error)
+        return {
+          success: false,
+          error: error.message || 'Failed to upload file',
+          fileName: file.name,
+        }
+      }
+    } else if (!data?.path) {
       return {
         success: false,
         error: 'Upload succeeded but no path returned',
         fileName: file.name,
       }
+    } else {
+      uploadPath = data.path
     }
 
     // Get public URL for the uploaded file
     // Note: If bucket is private, getPublicUrl() returns an invalid URL.
     // For private buckets, use getFileSignedUrl() instead (see filesApi.ts).
-    const { data: urlData } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(data.path)
-
-    const publicUrl = urlData?.publicUrl
+    const publicUrl = publicUrlForStoragePath(uploadPath)
 
     console.log('[uploadFile] Upload result:', {
       path: data.path,
@@ -129,7 +161,7 @@ export async function uploadFile({
 
     return {
       success: true,
-      path: data.path,
+      path: uploadPath,
       publicUrl,
       fileName: file.name,
     }

@@ -67,18 +67,11 @@ export async function uploadLessonImage(
     role,
   })
 
-  if (!result.success || !result.publicUrl || !result.path) {
+  if (!result.success || !result.path) {
     const errorMessage = result.error ?? 'Could not upload image.'
-    if (isDuplicateUploadError(errorMessage)) {
-      return {
-        ok: false,
-        code: 'already_exists',
-        error: errorMessage,
-      }
-    }
     return {
       ok: false,
-      code: 'upload_failed',
+      code: isDuplicateUploadError(errorMessage) ? 'already_exists' : 'upload_failed',
       error: errorMessage,
     }
   }
@@ -101,7 +94,7 @@ export async function uploadLessonImage(
   }
 
   const signedUrl = await getFileSignedUrl(result.path, 3600)
-  const displayUrl = signedUrl ?? result.publicUrl
+  const displayUrl = signedUrl ?? result.publicUrl ?? null
   if (!displayUrl) {
     return {
       ok: false,

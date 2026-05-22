@@ -287,7 +287,11 @@ const App = () => {
                 />
                 <Route
                   path="institution/new-institution"
-                  element={<NewInstitution />}
+                  element={
+                    <RequireAuth>
+                      <NewInstitution />
+                    </RequireAuth>
+                  }
                 />
                 <Route
                   path="institution/institution-invites"

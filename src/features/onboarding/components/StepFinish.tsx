@@ -20,6 +20,8 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
   const [showSuccess, setShowSuccess] = useState(false)
   const [completedRole, setCompletedRole] = useState<string | null>(null)
   const { t } = useTranslation('features.onboarding')
+  const { t: tCommon } = useTranslation('common')
+  const appName = tCommon('app.name')
 
   // Generate signed URL for displaying avatar (accountData.avatar.src is just the path)
   const { url: signedAvatarUrl } = useAvatarUrl(accountData.avatar.src)
@@ -87,7 +89,7 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
       <SuccessDialog
         open={showSuccess}
         onOpenChange={handleSuccessOpenChange}
-        title={t('finish.successDialog.title')}
+        title={t('finish.successDialog.title', { appName })}
         description={t('finish.successDialog.description')}
         buttonDescription={t('finish.successDialog.button')}
         path={successPath}
