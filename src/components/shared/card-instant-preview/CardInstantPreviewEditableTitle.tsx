@@ -11,14 +11,14 @@ export type CardInstantPreviewEditableTitleProps = {
 }
 
 const editableTitleFieldClassName = cn(
-  'w-full min-w-0 rounded border border-blue-500 bg-transparent px-1 -mx-1',
-  'font-bold leading-[1.12] tracking-tight text-neutral-900 outline-none',
-  'focus-visible:ring-2 focus-visible:ring-blue-500/30',
+  'w-full min-w-0 rounded border border-ring bg-transparent px-1 -mx-1',
+  'font-bold leading-[1.12] tracking-tight text-foreground outline-none',
+  'focus-visible:ring-2 focus-visible:ring-ring/30',
 )
 
 const editableTitleDisplayClassName = cn(
   'cursor-text rounded border border-transparent px-1 -mx-1 transition-colors',
-  'hover:border-blue-500',
+  'text-foreground hover:border-ring',
 )
 
 export function CardInstantPreviewEditableTitle({

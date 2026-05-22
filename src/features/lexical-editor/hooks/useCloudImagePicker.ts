@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { useTeacherCloudFiles } from '@/features/files'
+import { useTeacherCloudFiles } from '@/features/cloud'
 import type { ImageCarouselImage } from '@/components/shared/media/ImageCarousel'
 
 export type UseCloudImagePickerReturn = {

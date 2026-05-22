@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { CardInstantPreviewExpanded } from './CardInstantPreviewExpanded'
 import { CardInstantPreviewList } from './CardInstantPreviewList'
@@ -8,13 +7,12 @@ import type { CardInstantPreviewProps } from './card-instant-preview.types'
 import { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview.types'
 
 export function CardInstantPreview({
-  heading = 'Today',
-  avatarSrc,
-  avatarAlt = 'Profile',
+  heading,
   items,
   className,
   onOpen,
   onClose,
+  onItemTitleChange,
 }: CardInstantPreviewProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isClosing, setIsClosing] = useState(false)
@@ -55,6 +53,14 @@ export function CardInstantPreview({
       closeTimerRef.current = null
     }, CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS)
   }, [activeId, clearCloseTimer, isClosing, onClose])
+
+  const handleItemTitleChange = useCallback(
+    (title: string) => {
+      if (!activeItem) return
+      onItemTitleChange?.(activeItem.id, title)
+    },
+    [activeItem, onItemTitleChange],
+  )
 
   useEffect(() => () => clearCloseTimer(), [clearCloseTimer])
 
@@ -97,6 +103,7 @@ export function CardInstantPreview({
               {...activeItem}
               isClosing={isClosing}
               onClose={handleClose}
+              onTitleChange={onItemTitleChange ? handleItemTitleChange : undefined}
             />
           </>,
           document.body,
@@ -104,23 +111,12 @@ export function CardInstantPreview({
       : null
 
   return (
-    <div className={cn('relative mx-auto w-full max-w-[990px] px-6', className)}>
-      <header className="mb-8 flex items-center justify-between">
-        <h1 className="text-[42px] font-bold tracking-tight text-neutral-900">{heading}</h1>
-        {avatarSrc ? (
-          <Avatar className="h-10 w-10">
-            <AvatarImage
-              src={avatarSrc}
-              alt={avatarAlt}
-            />
-            <AvatarFallback>{avatarAlt.slice(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        ) : (
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-neutral-200 text-neutral-600">WQ</AvatarFallback>
-          </Avatar>
-        )}
-      </header>
+    <div className={cn(className)}>
+      {heading ? (
+        <header className="mb-8">
+          <h1 className="text-[42px] font-bold tracking-tight text-foreground">{heading}</h1>
+        </header>
+      ) : null}
 
       <CardInstantPreviewList
         items={items}

@@ -1,0 +1,42 @@
+{
+  "heading": {
+    "lineOne": "deine",
+    "lineTwo": "cloud."
+  },
+  "search": {
+    "label": "Suchen",
+    "placeholder": "Nach Name oder Typ suchen"
+  },
+  "empty": {
+    "title": "Noch nichts hier",
+    "description": "Lade PDFs oder Bilder hoch, damit sie in deiner Cloud erscheinen."
+  },
+  "card": {
+    "subtitle": {
+      "pdf": "PDF",
+      "image": "Bild"
+    },
+    "metadata": {
+      "type": "Typ",
+      "size": "Größe",
+      "uploaded": "Hochgeladen"
+    }
+  },
+  "rename": {
+    "successToast": "Datei umbenannt",
+    "errorToast": "Datei konnte nicht umbenannt werden"
+  },
+  "delete": {
+    "trigger": "Löschen",
+    "holdToDelete": "Zum Löschen halten",
+    "confirmTitle": "Datei löschen?",
+    "confirmBody": "\"{{filename}}\" wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirmCta": "Löschen",
+    "cancel": "Abbrechen",
+    "blockedTitle": "Datei kann nicht gelöscht werden",
+    "blockedFallback": "Diese Datei wird verwendet. Entferne sie zuerst aus dem Inhalt.",
+    "close": "Schließen",
+    "successToast": "Datei gelöscht",
+    "errorToast": "Datei konnte nicht gelöscht werden"
+  }
+}

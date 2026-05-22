@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
-import { resolveCloudFileId } from '@/features/files/api/resolveCloudFileId'
+import { resolveCloudFileId } from '@/features/cloud'
 import { useUser } from '@/contexts/user/UserContext'
 
 import { mapUserRoleToCloudPathRole } from './gameImagePinCloudRole'

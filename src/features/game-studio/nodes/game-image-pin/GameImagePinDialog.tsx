@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { getFileSignedUrl } from '@/features/files'
+import { getFileSignedUrl } from '@/features/cloud'
 import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
 import { GameLayout } from '../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'

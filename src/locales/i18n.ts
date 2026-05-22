@@ -21,7 +21,7 @@ import featuresAdminDE from './de/features/admin.json'
 import featuresAuthDE from './de/features/auth.json'
 import featuresCommandPaletteDE from './de/features/commandPalette.json'
 import featuresCourseDE from './de/features/course.json'
-import featuresFilesDE from './de/features/files.json'
+import featuresCloudDE from './de/features/cloud.json'
 import featuresGameStudioDE from './de/features/gameStudio.json'
 import featuresInstitutionDE from './de/features/institution.json'
 import featuresInstitutionAdminDE from './de/features/institution-admin.json'
@@ -52,7 +52,7 @@ import sharedLanguageSwitcherEN from './en/shared/languageSwitcher.json'
 // EN imports - Features (alphabetically ordered to match directory structure)
 import featuresAdminEN from './en/features/admin.json'
 import featuresCourseEN from './en/features/course.json'
-import featuresFilesEN from './en/features/files.json'
+import featuresCloudEN from './en/features/cloud.json'
 import featuresGameStudioEN from './en/features/gameStudio.json'
 import featuresInstitutionEN from './en/features/institution.json'
 import featuresInstitutionAdminEN from './en/features/institution-admin.json'
@@ -106,8 +106,8 @@ i18n.use(initReactI18next).init({
       'features.admin': featuresAdminEN,
       'features.auth': featuresAuthEN,
       'features.commandPalette': featuresCommandPaletteEN,
+      'features.cloud': featuresCloudEN,
       'features.course': featuresCourseEN,
-      'features.files': featuresFilesEN,
       'features.gameStudio': featuresGameStudioEN,
       'features.institution': featuresInstitutionEN,
       'features.institution-admin': featuresInstitutionAdminEN,
@@ -137,8 +137,8 @@ i18n.use(initReactI18next).init({
       'features.admin': featuresAdminDE,
       'features.auth': featuresAuthDE,
       'features.commandPalette': featuresCommandPaletteDE,
+      'features.cloud': featuresCloudDE,
       'features.course': featuresCourseDE,
-      'features.files': featuresFilesDE,
       'features.gameStudio': featuresGameStudioDE,
       'features.institution': featuresInstitutionDE,
       'features.institution-admin': featuresInstitutionAdminDE,
@@ -171,8 +171,8 @@ i18n.use(initReactI18next).init({
     'features.admin',
     'features.auth',
     'features.commandPalette',
+    'features.cloud',
     'features.course',
-    'features.files',
     'features.gameStudio',
     'features.institution',
     'features.institution-admin',

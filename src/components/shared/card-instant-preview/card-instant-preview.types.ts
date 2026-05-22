@@ -49,12 +49,12 @@ export type CardInstantPreviewListItemProps = CardInstantPreviewCardProps & {
 
 export type CardInstantPreviewProps = {
   heading?: string
-  avatarSrc?: string
-  avatarAlt?: string
   items: CardInstantPreviewCardProps[]
   className?: string
   onOpen?: (id: string) => void
   onClose?: () => void
+  /** Persist renamed title when user commits inline edit in the expanded card. */
+  onItemTitleChange?: (id: string, title: string) => void
 }
 
 export const CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS = 300

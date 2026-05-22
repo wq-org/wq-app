@@ -1,7 +1,7 @@
 import { uploadFile } from '@/components/shared/upload-files/api/uploadFilesApi'
 import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
-import { getFileSignedUrl } from '@/features/files'
-import { resolveCloudFileId } from '@/features/files/api/resolveCloudFileId'
+import { getFileSignedUrl } from '@/features/cloud'
+import { resolveCloudFileId } from '@/features/cloud'
 
 export type LessonImageUploadContext = {
   institutionId: string

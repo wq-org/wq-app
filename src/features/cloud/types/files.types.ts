@@ -14,7 +14,10 @@ export interface FileItem {
   description: string
   type: 'Word' | 'PPT' | 'Exl' | 'PDF' | 'Image' | 'Video'
   size: string
-  storagePath?: string // Full storage path for API operations (e.g., "teachers/{user_id}/filename.ext")
+  storagePath?: string
+  url?: string | null
+  createdAt?: string | null
+  mimeType?: string | null
 }
 
 export type CloudFileKind = 'file' | 'image' | 'pdf' | 'video'

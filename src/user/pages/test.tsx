@@ -1033,7 +1033,10 @@ export default function Test() {
 
       <Section title="CardInstantPreview (@/components/shared) — App Store Today">
         <div className="relative w-full basis-full overflow-visible rounded-2xl border bg-white py-8">
-          <CardInstantPreview items={MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS} />
+          <CardInstantPreview
+            heading="Today"
+            items={MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS}
+          />
         </div>
       </Section>
 

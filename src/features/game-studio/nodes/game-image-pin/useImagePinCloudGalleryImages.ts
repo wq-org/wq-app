@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { fetchFilesByRole } from '@/components/shared/upload-files/api'
-import { getFileSignedUrl } from '@/features/files/api/filesApi'
+import { getFileSignedUrl } from '@/features/cloud'
 import { useUser } from '@/contexts/user/UserContext'
 
 import { buildCloudUserObjectPrefix, mapUserRoleToCloudPathRole } from './gameImagePinCloudRole'

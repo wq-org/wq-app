@@ -26,6 +26,7 @@ export type {
   CardInstantPreviewListItemVariant,
   CardInstantPreviewProps,
 } from './card-instant-preview.types'
+export { cardInstantPreviewTitleClampClassName } from './card-instant-preview.utils'
 export {
   CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS,
   CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID,

@@ -5,10 +5,14 @@ import {
   CardInstantPreviewImage,
   CardInstantPreviewPdfGridTeaser,
 } from './CardInstantPreviewShared'
-import { cardInstantPreviewTitleId } from './card-instant-preview.utils'
+import {
+  cardInstantPreviewTitleClampClassName,
+  cardInstantPreviewTitleId,
+} from './card-instant-preview.utils'
 import {
   CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID,
   CARD_INSTANT_PREVIEW_CARD_WIDTH_GRID,
+  CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID,
 } from './card-instant-preview.types'
 import type { CardInstantPreviewListItemProps } from './card-instant-preview.types'
 import { isCardInstantPreviewPdfCard } from './card-instant-preview.utils'
@@ -16,15 +20,21 @@ import { isCardInstantPreviewPdfCard } from './card-instant-preview.utils'
 const cardInstantPreviewListItemButtonClassName = cn(
   'overflow-hidden rounded-[28px] text-left shadow-sm',
   'border border-transparent',
-  'transition-[box-shadow,border-color,transform] duration-200 ease-out',
-  'hover:border-secondary hover:shadow-xl hover:-translate-y-0.5',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2',
+  'transition-[box-shadow,border-color] duration-200 ease-out',
+  'hover:border-secondary hover:shadow-md',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
 )
 
 const listItemStyle = {
   width: CARD_INSTANT_PREVIEW_CARD_WIDTH_GRID,
   maxWidth: '100%',
 } as const
+
+const gridCardStyle = {
+  width: CARD_INSTANT_PREVIEW_CARD_WIDTH_GRID,
+  maxWidth: '100%',
+  '--card-instant-preview-grid-height': `${CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID}px`,
+} as CSSProperties
 
 function CardInstantPreviewListItemCompact({
   id,
@@ -81,14 +91,19 @@ function CardInstantPreviewListItemCompact({
             }}
           />
 
-          <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1 px-5 pb-5 pt-8">
+          <div className="absolute inset-x-0 bottom-0 z-10 flex min-w-0 flex-col gap-1 px-5 pb-5 pt-8">
             <span
               id={titleId}
               className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/80"
             >
               {subtitle}
             </span>
-            <h2 className="text-[22px] font-bold leading-[1.12] tracking-tight text-white break-words">
+            <h2
+              className={cn(
+                'text-[22px] font-bold leading-[1.12] tracking-tight text-white',
+                cardInstantPreviewTitleClampClassName,
+              )}
+            >
               {title}
             </h2>
           </div>
@@ -146,14 +161,19 @@ function CardInstantPreviewListItemCompactPdf({
             }}
           />
 
-          <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1 px-5 pb-5 pt-8">
+          <div className="absolute inset-x-0 bottom-0 z-10 flex min-w-0 flex-col gap-1 px-5 pb-5 pt-8">
             <span
               id={titleId}
               className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/80"
             >
               {subtitle}
             </span>
-            <h2 className="text-[22px] font-bold leading-[1.12] tracking-tight text-white break-words">
+            <h2
+              className={cn(
+                'text-[22px] font-bold leading-[1.12] tracking-tight text-white',
+                cardInstantPreviewTitleClampClassName,
+              )}
+            >
               {title}
             </h2>
           </div>
@@ -192,27 +212,24 @@ function CardInstantPreviewListItemDefault({
         aria-labelledby={titleId}
         onClick={(event) => onSelect(id, event.currentTarget)}
         className={cn(
-          'flex w-full min-w-0 flex-col bg-white',
+          'flex h-[var(--card-instant-preview-grid-height)] w-full min-w-0 flex-col overflow-hidden bg-card text-card-foreground',
           cardInstantPreviewListItemButtonClassName,
         )}
-        style={
-          {
-            '--card-instant-preview-grid-height': `${CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID}px`,
-            minHeight: 'var(--card-instant-preview-grid-height)',
-          } as CSSProperties
-        }
+        style={gridCardStyle}
       >
         <CardInstantPreviewImage
           imageSrc={imageSrc}
           imageAlt={title}
           imagePosition={imagePosition}
           mode="grid"
+          gridImageHeight={CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID}
         />
         <CardInstantPreviewHeader
           cardId={id}
           subtitle={subtitle}
           title={title}
           mode="grid"
+          titleClassName="text-[22px]"
         />
       </button>
     </li>
@@ -246,22 +263,21 @@ function CardInstantPreviewListItemDefaultPdf({
         aria-labelledby={titleId}
         onClick={(event) => onSelect(id, event.currentTarget)}
         className={cn(
-          'flex w-full min-w-0 flex-col bg-white',
+          'flex h-[var(--card-instant-preview-grid-height)] w-full min-w-0 flex-col overflow-hidden bg-card text-card-foreground',
           cardInstantPreviewListItemButtonClassName,
         )}
-        style={
-          {
-            '--card-instant-preview-grid-height': `${CARD_INSTANT_PREVIEW_CARD_HEIGHT_GRID}px`,
-            minHeight: 'var(--card-instant-preview-grid-height)',
-          } as CSSProperties
-        }
+        style={gridCardStyle}
       >
-        <CardInstantPreviewPdfGridTeaser mode="grid" />
+        <CardInstantPreviewPdfGridTeaser
+          mode="grid"
+          gridImageHeight={CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID}
+        />
         <CardInstantPreviewHeader
           cardId={id}
           subtitle={subtitle}
           title={title}
           mode="grid"
+          titleClassName="text-[22px]"
         />
       </button>
     </li>

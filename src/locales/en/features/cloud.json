@@ -1,0 +1,42 @@
+{
+  "heading": {
+    "lineOne": "your",
+    "lineTwo": "cloud."
+  },
+  "search": {
+    "label": "Search",
+    "placeholder": "Search by name or type"
+  },
+  "empty": {
+    "title": "Nothing here yet",
+    "description": "Upload PDFs or images and they'll appear in your cloud."
+  },
+  "card": {
+    "subtitle": {
+      "pdf": "PDF",
+      "image": "Image"
+    },
+    "metadata": {
+      "type": "Type",
+      "size": "Size",
+      "uploaded": "Uploaded"
+    }
+  },
+  "rename": {
+    "successToast": "File renamed",
+    "errorToast": "Could not rename file"
+  },
+  "delete": {
+    "trigger": "Delete",
+    "holdToDelete": "Hold to delete",
+    "confirmTitle": "Delete file?",
+    "confirmBody": "\"{{filename}}\" will be removed permanently. This action cannot be undone.",
+    "confirmCta": "Delete",
+    "cancel": "Cancel",
+    "blockedTitle": "Can't delete this file",
+    "blockedFallback": "This file is in use somewhere. Remove it from content first.",
+    "close": "Close",
+    "successToast": "File deleted",
+    "errorToast": "Could not delete file"
+  }
+}

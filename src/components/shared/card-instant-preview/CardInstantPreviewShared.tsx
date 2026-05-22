@@ -5,15 +5,22 @@ import { cn } from '@/lib/utils'
 import { getColorCss } from '@/lib/themes'
 import type { CardInstantPreviewImagePosition } from './card-instant-preview.types'
 import { CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID } from './card-instant-preview.types'
-import { cardInstantPreviewTitleId } from './card-instant-preview.utils'
+import {
+  cardInstantPreviewTitleId,
+  cardInstantPreviewTitleClampClassName,
+} from './card-instant-preview.utils'
 
 const PDF_TEASER_BACKGROUND = getColorCss('blue')
+
+const GRID_IMAGE_HEIGHT = CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID
+const EXPANDED_IMAGE_HEIGHT = 'min(42vh, 360px)'
 
 type CardInstantPreviewImageProps = {
   imageSrc: string
   imageAlt: string
   imagePosition?: CardInstantPreviewImagePosition
   mode: 'grid' | 'expanded'
+  gridImageHeight?: number
   className?: string
 }
 
@@ -22,24 +29,26 @@ export function CardInstantPreviewImage({
   imageAlt,
   imagePosition,
   mode,
+  gridImageHeight = GRID_IMAGE_HEIGHT,
   className,
 }: CardInstantPreviewImageProps) {
+  const height = mode === 'grid' ? gridImageHeight : EXPANDED_IMAGE_HEIGHT
+
   return (
     <div
-      className={cn(
-        'w-full shrink-0 overflow-hidden bg-neutral-200',
-        mode === 'grid' ? 'h-[200px]' : 'h-[min(42vh,360px)]',
-        className,
-      )}
-      style={{
-        backgroundImage: `url(${imageSrc})`,
-        backgroundSize: 'cover',
-        backgroundPosition: imagePosition ?? 'center center',
-        backgroundRepeat: 'no-repeat',
-      }}
-      role="img"
-      aria-label={imageAlt}
-    />
+      className={cn('relative w-full shrink-0 overflow-hidden bg-muted', className)}
+      style={{ height }}
+    >
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition: imagePosition ?? 'center center' }}
+      />
+    </div>
   )
 }
 
@@ -48,6 +57,7 @@ type CardInstantPreviewHeaderProps = {
   subtitle: string
   title: string
   mode: 'grid' | 'expanded'
+  titleClassName?: string
   className?: string
 }
 
@@ -56,6 +66,7 @@ export function CardInstantPreviewHeader({
   subtitle,
   title,
   mode,
+  titleClassName,
   className,
 }: CardInstantPreviewHeaderProps) {
   const titleId = cardInstantPreviewTitleId(cardId)
@@ -63,23 +74,24 @@ export function CardInstantPreviewHeader({
   return (
     <div
       className={cn(
-        'flex min-w-0 flex-col gap-1 bg-white text-neutral-900',
-        mode === 'grid' ? 'px-5 py-4' : 'rounded-t-[28px] px-6 pb-4 pt-5',
+        'flex min-w-0 flex-col gap-1 bg-card text-card-foreground',
+        mode === 'grid' ? 'shrink-0 px-5 py-4' : 'rounded-t-[28px] px-6 pb-4 pt-5',
         className,
       )}
     >
       <span
         id={titleId}
-        className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500"
+        className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground"
       >
         {subtitle}
       </span>
       <h2
         className={cn(
-          'font-bold leading-[1.12] tracking-tight text-neutral-900',
-          mode === 'grid' ? 'text-[22px]' : 'text-[28px]',
-          'break-words',
+          'font-bold leading-[1.12] tracking-tight text-foreground',
+          mode === 'grid' ? titleClassName : 'text-[28px]',
+          mode === 'grid' && cardInstantPreviewTitleClampClassName,
         )}
+        title={mode === 'grid' ? title : undefined}
       >
         {title}
       </h2>
@@ -89,11 +101,13 @@ export function CardInstantPreviewHeader({
 
 type CardInstantPreviewPdfGridTeaserProps = {
   mode: 'grid' | 'compact'
+  gridImageHeight?: number
   className?: string
 }
 
 export function CardInstantPreviewPdfGridTeaser({
   mode,
+  gridImageHeight = GRID_IMAGE_HEIGHT,
   className,
 }: CardInstantPreviewPdfGridTeaserProps) {
   if (mode === 'compact') {
@@ -112,7 +126,7 @@ export function CardInstantPreviewPdfGridTeaser({
   return (
     <div
       className={cn('w-full shrink-0 overflow-hidden', className)}
-      style={{ height: CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID }}
+      style={{ height: gridImageHeight }}
     >
       <IconPreviewCardWide
         icon={FileText}
@@ -134,10 +148,10 @@ export function CardInstantPreviewExpandedBody({
   content,
 }: CardInstantPreviewExpandedBodyProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-b-[28px] bg-white px-6 py-6">
-      <p className="text-[15px] leading-relaxed text-neutral-600">{description}</p>
+    <div className="flex flex-col gap-4 rounded-b-[28px] bg-card px-6 py-6 text-card-foreground">
+      <p className="text-[15px] leading-relaxed text-muted-foreground">{description}</p>
       {content ? (
-        <div className="text-[15px] leading-relaxed text-neutral-600">{content}</div>
+        <div className="text-[15px] leading-relaxed text-muted-foreground">{content}</div>
       ) : null}
     </div>
   )
