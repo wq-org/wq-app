@@ -1,8 +1,8 @@
+import { useTranslation } from 'react-i18next'
 import { SelectAvatarDrawer } from '@/components/shared'
 import { FieldCard } from '@/components/ui/field-card'
 import { Text } from '@/components/ui/text'
 import type { AvatarOption } from '@/features/onboarding'
-import { useTranslation } from 'react-i18next'
 
 type SettingsAvatarSectionProps = {
   avatarPath: string
@@ -56,6 +56,7 @@ export function SettingsAvatarSection({
             drawerDescription={t('profile.avatarDrawer.description')}
             triggerAriaLabel={t('profile.avatarDrawer.triggerAriaLabel')}
             closeLabel={t('profile.avatarDrawer.close')}
+            emptyLabel={t('profile.avatarDrawer.empty')}
             getSelectAvatarLabel={(avatarName) =>
               t('profile.avatarDrawer.selectAriaLabel', { avatarName })
             }

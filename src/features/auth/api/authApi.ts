@@ -157,8 +157,8 @@ export async function logoutUser(): Promise<void> {
     // Sign out from Supabase (clears Supabase session and cookies)
     await supabase.auth.signOut()
 
-    // Clear sessionStorage
     sessionStorage.clear()
+    localStorage.clear()
   } catch (error) {
     console.error('Error during logout:', error)
     // Even if there's an error, try to clear local storage
@@ -271,7 +271,7 @@ export async function validateInviteToken(
  */
 export async function verifyEmail(token: string): Promise<void> {
   // TODO: Implement Supabase email verification
-  console.log('Verify email with token:', token)
+  void token
 }
 
 /**
@@ -538,7 +538,8 @@ export const createInstitution = async ({
   description: string
 }) => {
   // Replace with actual institution creation logic/API call
-  console.log('Creating Institution', { title, description })
+  void title
+  void description
   // Simulate API delay
   return Promise.resolve({ ok: true, id: Math.random().toString(36).substring(2) })
 }

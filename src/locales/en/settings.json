@@ -32,7 +32,8 @@
       "description": "Select the avatar shown on your profile and in game stats.",
       "triggerAriaLabel": "Change avatar",
       "close": "Close avatar drawer",
-      "selectAriaLabel": "Select {{avatarName}} avatar"
+      "selectAriaLabel": "Select {{avatarName}} avatar",
+      "empty": "No avatars available yet."
     },
     "fields": {
       "name": {

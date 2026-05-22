@@ -32,7 +32,8 @@
       "description": "Wähle den Avatar für dein Profil und die Spielstatistiken aus.",
       "triggerAriaLabel": "Avatar ändern",
       "close": "Avatar-Auswahl schließen",
-      "selectAriaLabel": "Avatar {{avatarName}} auswählen"
+      "selectAriaLabel": "Avatar {{avatarName}} auswählen",
+      "empty": "Noch keine Avatare verfügbar."
     },
     "fields": {
       "name": {
