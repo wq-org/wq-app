@@ -11,7 +11,6 @@ import {
   SparklesIcon,
 } from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
-import lectorDemoPdfUrl from '../../../docs/example_pdf.pdf?url'
 
 import {
   AccentPicker,
@@ -61,7 +60,6 @@ import {
   TwoColumnDialog,
   type AgentComputerIconVariant,
   type Ai03MenuActionId,
-  BasicPdfViewer,
   CardInstantPreview,
   type CardInstantPreviewCardProps,
 } from '@/components/shared'
@@ -386,17 +384,6 @@ const CHAT_DEMO_MAC_BOOK_NEO_IMAGE =
   'https://is1-ssl.mzstatic.com/image/thumb/za7Mqkp-OSK_2BHWq8AtSQ/1960x1102.jpg'
 
 const MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS: CardInstantPreviewCardProps[] = [
-  {
-    id: 'example-pdf',
-    media: 'pdf',
-    pdfSrc: lectorDemoPdfUrl,
-    variant: 'default',
-    subtitle: 'Documents',
-    title: 'Example PDF',
-    description:
-      'Open to read the full document with page navigation, text selection, and annotations.',
-    content: <p>Grid card shows a PDF icon teaser; the viewer loads on expand.</p>,
-  },
   {
     id: 'ai',
     subtitle: 'Highlights',
@@ -1015,9 +1002,11 @@ export default function Test() {
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
 
       <Section title="Lector PDF Viewer (@anaralabs/lector)">
-        <p className="mb-4 text-sm text-muted-foreground">
-          Renders{' '}
-          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">docs/example_pdf.pdf</code> via{' '}
+        <p className="text-sm text-muted-foreground">
+          PDF demo is disabled on this page (no bundled sample file). Pass a hosted{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">source</code> URL to{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">BasicPdfViewer</code> or use
+          teacher Cloud gallery PDF cards. See{' '}
           <a
             href="https://lector-weld.vercel.app/docs/installation"
             className="text-primary underline-offset-4 hover:underline"
@@ -1028,7 +1017,6 @@ export default function Test() {
           </a>
           .
         </p>
-        <BasicPdfViewer source={lectorDemoPdfUrl} />
       </Section>
 
       <Section title="CardInstantPreview (@/components/shared) — App Store Today">
