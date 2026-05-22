@@ -42,7 +42,7 @@ export function ScrollDrivenIndexPanel({
       data-slot="scroll-driven-index-panel"
       className={cn(scrollDrivenIndexPanelVariants({ alignment }), className)}
     >
-      <div className="flex h-full w-full flex-col-reverse overflow-hidden rounded-[28px] border border-border/70 bg-popover/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl transition-[padding,opacity,filter,border-radius] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] supports-[backdrop-filter]:bg-popover/90 group-[:popover-open]:rounded-[2rem] group-[:popover-open]:p-4 starting:group-[:popover-open]:rounded-[28px] starting:group-[:popover-open]:p-2">
+      <div className="flex h-full w-full flex-col-reverse overflow-hidden rounded-[28px] border border-border/70 bg-popover/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl transition-[padding,opacity,filter,border-radius] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] supports-backdrop-filter:bg-popover/90 group-[:popover-open]:rounded-4xl group-[:popover-open]:p-4 starting:group-[:popover-open]:rounded-[28px] starting:group-[:popover-open]:p-2">
         <button
           type="button"
           className="cursor-pointer border-0 bg-transparent p-0 text-inherit"

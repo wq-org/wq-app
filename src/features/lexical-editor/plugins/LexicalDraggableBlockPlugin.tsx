@@ -157,7 +157,7 @@ export function LexicalDraggableBlockPlugin() {
           data-block-gutter
           className={cn(
             DRAGGABLE_BLOCK_MENU_CLASSNAME,
-            'absolute top-0 -left-19 z-[60] flex items-center gap-1 rounded p-0.5 opacity-0 transition-[transform,opacity] duration-150 ease-in-out',
+            'absolute top-0 -left-19 z-60 flex items-center gap-1 rounded p-0.5 opacity-0 transition-[transform,opacity] duration-150 ease-in-out',
           )}
         >
           <Button
@@ -190,7 +190,7 @@ export function LexicalDraggableBlockPlugin() {
       targetLineComponent={
         <div
           ref={targetLineRef}
-          className="pointer-events-none absolute top-0 left-0 z-[60] h-1 bg-sky-500 opacity-0"
+          className="pointer-events-none absolute top-0 left-0 z-60 h-1 bg-sky-500 opacity-0"
         />
       }
       isOnMenu={isOnMenu}

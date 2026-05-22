@@ -256,7 +256,7 @@ export function Editor({
           readOnly={readOnly}
         />
       ) : null}
-      <div className="relative w-full min-h-[20rem]">
+      <div className="relative w-full min-h-80">
         <div
           ref={setAnchorElem}
           className="relative w-full"

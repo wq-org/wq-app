@@ -22,15 +22,24 @@ export type AdminSetInstitutionMemberRoleResult = {
   new_role: string
 }
 
+type MembershipProfile = {
+  email: string | null
+  display_name: string | null
+  role: string | null
+  is_super_admin: boolean | null
+}
+
 type MembershipProfileRow = {
   user_id: string
   membership_role: string
-  profiles: {
-    email: string | null
-    display_name: string | null
-    role: string | null
-    is_super_admin: boolean | null
-  } | null
+  profiles: MembershipProfile | MembershipProfile[] | null
+}
+
+function pickMembershipProfile(
+  profileOrProfiles: MembershipProfileRow['profiles'],
+): MembershipProfile | null {
+  if (Array.isArray(profileOrProfiles)) return profileOrProfiles[0] ?? null
+  return profileOrProfiles
 }
 
 /** Active institution_admin member for an institution (first match). */
@@ -57,8 +66,8 @@ export async function fetchInstitutionAdminMember(
 
   if (!data) return null
 
-  const row = data as MembershipProfileRow
-  const profile = row.profiles
+  const row = data as unknown as MembershipProfileRow
+  const profile = pickMembershipProfile(row.profiles)
   if (profile?.is_super_admin || profile?.role === 'super_admin') return null
 
   return {

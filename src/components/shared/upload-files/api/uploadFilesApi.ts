@@ -124,14 +124,16 @@ export async function uploadFile({
           fileName: file.name,
         }
       }
-    } else if (!data?.path) {
-      return {
-        success: false,
-        error: 'Upload succeeded but no path returned',
-        fileName: file.name,
-      }
     } else {
-      uploadPath = data.path
+      const uploadedPath = data?.path
+      if (!uploadedPath) {
+        return {
+          success: false,
+          error: 'Upload succeeded but no path returned',
+          fileName: file.name,
+        }
+      }
+      uploadPath = uploadedPath
     }
 
     // Get public URL for the uploaded file

@@ -48,9 +48,10 @@ export async function fetchAvatars(): Promise<AvatarOption[]> {
 
   // baseName → signedUrl lookup
   const urlMap = new Map<string, string>(
-    signedData
-      .filter((s) => Boolean(s.signedUrl))
-      .map((s) => [s.path.replace('faces/', '').replace('.png', ''), s.signedUrl]),
+    signedData.flatMap((s) => {
+      if (!s.path || !s.signedUrl) return []
+      return [[s.path.replace('faces/', '').replace('.png', ''), s.signedUrl] as const]
+    }),
   )
 
   // ── Step 3: list & download JSON metadata files (non-fatal if missing) ────
