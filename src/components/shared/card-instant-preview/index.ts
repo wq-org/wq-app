@@ -4,15 +4,22 @@ export type { CardInstantPreviewListProps } from './CardInstantPreviewList'
 export { CardInstantPreviewListItem } from './CardInstantPreviewListItem'
 export type {
   CardInstantPreviewCardProps,
+  CardInstantPreviewImageCardProps,
   CardInstantPreviewListItemProps,
+  CardInstantPreviewMediaType,
+  CardInstantPreviewPdfCardProps,
 } from './card-instant-preview.types'
 export { CardInstantPreviewExpanded } from './CardInstantPreviewExpanded'
 export {
   CardInstantPreviewExpandedBody,
   CardInstantPreviewHeader,
   CardInstantPreviewImage,
+  CardInstantPreviewPdfGridTeaser,
 } from './CardInstantPreviewShared'
-export { cardInstantPreviewTitleId } from './card-instant-preview.utils'
+export {
+  cardInstantPreviewTitleId,
+  isCardInstantPreviewPdfCard,
+} from './card-instant-preview.utils'
 export type {
   CardInstantPreviewImagePosition,
   CardInstantPreviewLayout,

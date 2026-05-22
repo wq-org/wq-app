@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
+import { BasicPdfViewer } from '@/components/shared/pdf-viewer'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { CardInstantPreviewEditableTitle } from './CardInstantPreviewEditableTitle'
 import { CardInstantPreviewExpandedBody, CardInstantPreviewImage } from './CardInstantPreviewShared'
-import { cardInstantPreviewTitleId } from './card-instant-preview.utils'
 import type { CardInstantPreviewCardProps } from './card-instant-preview.types'
+import {
+  cardInstantPreviewTitleId,
+  isCardInstantPreviewPdfCard,
+} from './card-instant-preview.utils'
 
 type CardInstantPreviewExpandedProps = CardInstantPreviewCardProps & {
   isClosing: boolean
@@ -13,21 +17,23 @@ type CardInstantPreviewExpandedProps = CardInstantPreviewCardProps & {
   onTitleChange?: (title: string) => void
 }
 
-export function CardInstantPreviewExpanded({
-  id,
-  subtitle,
-  title,
-  imageSrc,
-  description,
-  content,
-  imagePosition,
-  isClosing,
-  onClose,
-  onTitleChange,
-}: CardInstantPreviewExpandedProps) {
+export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProps) {
+  const {
+    id,
+    subtitle,
+    title,
+    description,
+    content,
+    imagePosition,
+    isClosing,
+    onClose,
+    onTitleChange,
+  } = props
+
   const dialogRef = useRef<HTMLDivElement>(null)
   const titleId = cardInstantPreviewTitleId(id)
   const [editedTitle, setEditedTitle] = useState(title)
+  const isPdf = isCardInstantPreviewPdfCard(props)
 
   useEffect(() => {
     setEditedTitle(title)
@@ -51,6 +57,7 @@ export function CardInstantPreviewExpanded({
     <div
       ref={dialogRef}
       data-expanded-root={id}
+      data-expanded-media={isPdf ? 'pdf' : 'image'}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -87,12 +94,21 @@ export function CardInstantPreviewExpanded({
           className="text-[28px]"
         />
       </div>
-      <CardInstantPreviewImage
-        imageSrc={imageSrc}
-        imageAlt={editedTitle}
-        imagePosition={imagePosition}
-        mode="expanded"
-      />
+
+      {isPdf ? (
+        <BasicPdfViewer
+          source={props.pdfSrc}
+          className="h-[min(42vh,360px)] shrink-0 rounded-none border-0 bg-transparent"
+        />
+      ) : (
+        <CardInstantPreviewImage
+          imageSrc={props.imageSrc}
+          imageAlt={editedTitle}
+          imagePosition={imagePosition}
+          mode="expanded"
+        />
+      )}
+
       <CardInstantPreviewExpandedBody
         description={description}
         content={content}

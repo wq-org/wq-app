@@ -1,7 +1,13 @@
 import type { ReactNode } from 'react'
+import { FileText } from 'lucide-react'
+import { IconPreviewCardSquare, IconPreviewCardWide } from '../IconPreviewCard'
 import { cn } from '@/lib/utils'
+import { getColorCss } from '@/lib/themes'
 import type { CardInstantPreviewImagePosition } from './card-instant-preview.types'
+import { CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID } from './card-instant-preview.types'
 import { cardInstantPreviewTitleId } from './card-instant-preview.utils'
+
+const PDF_TEASER_BACKGROUND = getColorCss('blue')
 
 type CardInstantPreviewImageProps = {
   imageSrc: string
@@ -77,6 +83,43 @@ export function CardInstantPreviewHeader({
       >
         {title}
       </h2>
+    </div>
+  )
+}
+
+type CardInstantPreviewPdfGridTeaserProps = {
+  mode: 'grid' | 'compact'
+  className?: string
+}
+
+export function CardInstantPreviewPdfGridTeaser({
+  mode,
+  className,
+}: CardInstantPreviewPdfGridTeaserProps) {
+  if (mode === 'compact') {
+    return (
+      <div className={cn('absolute inset-0', className)}>
+        <IconPreviewCardSquare
+          icon={FileText}
+          backgroundColor={PDF_TEASER_BACKGROUND}
+          blurred={false}
+          className="size-full rounded-none"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className={cn('w-full shrink-0 overflow-hidden', className)}
+      style={{ height: CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID }}
+    >
+      <IconPreviewCardWide
+        icon={FileText}
+        backgroundColor={PDF_TEASER_BACKGROUND}
+        blurred
+        className="h-full rounded-none"
+      />
     </div>
   )
 }

@@ -4,24 +4,42 @@ export type CardInstantPreviewImagePosition = string
 
 export type CardInstantPreviewLayout = 'wide' | 'narrow'
 
-/** Grid list item presentation — expanded view is unchanged. */
+/** Grid list item layout */
 export type CardInstantPreviewListItemVariant = 'default' | 'compact'
 
-/** Universal card fields — grid teaser and expanded detail share these. */
-export type CardInstantPreviewCardProps = {
+/** Expanded + grid media */
+export type CardInstantPreviewMediaType = 'image' | 'pdf'
+
+type CardInstantPreviewCardBase = {
   id: string
   subtitle: string
   title: string
-  imageSrc: string
   description: string
   /** Extra expanded content below the description (forms, lists, CTAs, etc.). */
   content?: ReactNode
-  /** CSS background-position, e.g. `center top` or `center 20%` */
+  /** CSS background-position for image cards, e.g. `center top` */
   imagePosition?: CardInstantPreviewImagePosition
   layout?: CardInstantPreviewLayout
-  /** Grid teaser layout; `compact` fills the card with image + overlaid text. */
+  /** Grid teaser layout */
   variant?: CardInstantPreviewListItemVariant
 }
+
+/** Image card — `media` omitted or `'image'` */
+export type CardInstantPreviewImageCardProps = CardInstantPreviewCardBase & {
+  media?: 'image'
+  imageSrc: string
+}
+
+/** PDF card — real PDF only in expanded view; grid shows icon teaser */
+export type CardInstantPreviewPdfCardProps = CardInstantPreviewCardBase & {
+  media: 'pdf'
+  pdfSrc: string
+}
+
+/** Universal card fields — grid teaser and expanded detail share these */
+export type CardInstantPreviewCardProps =
+  | CardInstantPreviewImageCardProps
+  | CardInstantPreviewPdfCardProps
 
 export type CardInstantPreviewListItemProps = CardInstantPreviewCardProps & {
   isExpanded: boolean

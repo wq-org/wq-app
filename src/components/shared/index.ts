@@ -1,12 +1,18 @@
 export { CardInstantPreview } from './card-instant-preview'
 export type {
   CardInstantPreviewCardProps,
+  CardInstantPreviewImageCardProps,
   CardInstantPreviewImagePosition,
   CardInstantPreviewLayout,
   CardInstantPreviewListItemProps,
+  CardInstantPreviewMediaType,
+  CardInstantPreviewPdfCardProps,
   CardInstantPreviewProps,
 } from './card-instant-preview'
+export { isCardInstantPreviewPdfCard } from './card-instant-preview'
 export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
+export { BasicPdfViewer, configurePdfJsWorker } from './pdf-viewer'
+export type { BasicPdfViewerProps } from './pdf-viewer'
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
 export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
