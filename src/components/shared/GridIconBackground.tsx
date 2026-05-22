@@ -13,13 +13,13 @@
  * IconEntry shape:
  *   { icon: LucideIcon, color: string, bgColor: string, borderColor: string }
  *
- * When no icons prop is passed → single default blue BookOpen icon.
+ * When no icons prop is passed (or empty array) → grid only, no floating icons.
  *
  * Deps: lucide-react, Tailwind CSS, cn helper
  */
 
 import * as React from 'react'
-import { BookOpen, type LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GridPattern } from '../ui/grid-pattern'
 
@@ -41,17 +41,6 @@ export interface GridIconBackgroundProps {
   /** Grid cell size in px. Default: 40 */
   gridSize?: number
 }
-
-// ─── Default icon ─────────────────────────────────────────────────────────────
-
-const DEFAULT_ICONS: IconEntry[] = [
-  {
-    icon: BookOpen,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/20',
-  },
-]
 
 const GRID_BACKGROUND_MASK =
   'radial-gradient(ellipse 72% 62% at 50% 50%, transparent 18%, color-mix(in srgb, var(--background) 35%, transparent) 62%, var(--background) 100%)'
@@ -135,16 +124,18 @@ function IconChip({ entry, zoneIndex }: IconChipProps) {
 // ─── GridIconBackground ───────────────────────────────────────────────────────
 
 export function GridIconBackground({
-  icons = DEFAULT_ICONS,
+  icons = [],
   className,
   children,
   gridSize = 40,
 }: GridIconBackgroundProps) {
-  React.useEffect(() => {
-    ensureCSS()
-  }, [])
+  const entries = icons
 
-  const entries = icons.length > 0 ? icons : DEFAULT_ICONS
+  React.useEffect(() => {
+    if (entries.length > 0) {
+      ensureCSS()
+    }
+  }, [entries.length])
 
   return (
     <div className={cn('relative w-full overflow-hidden', className)}>

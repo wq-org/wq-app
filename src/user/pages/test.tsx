@@ -60,6 +60,8 @@ import {
   TwoColumnDialog,
   type AgentComputerIconVariant,
   type Ai03MenuActionId,
+  CardInstantPreview,
+  type CardInstantPreviewCardProps,
 } from '@/components/shared'
 import {
   CompactSettingsTableSwitches,
@@ -380,6 +382,74 @@ const chatBubbleRoundedList: ChatBubbleRounded[] = ['sm', 'md', 'lg', 'xl', 'pil
 
 const CHAT_DEMO_MAC_BOOK_NEO_IMAGE =
   'https://is1-ssl.mzstatic.com/image/thumb/za7Mqkp-OSK_2BHWq8AtSQ/1960x1102.jpg'
+
+const MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS: CardInstantPreviewCardProps[] = [
+  {
+    id: 'ai',
+    subtitle: 'Highlights',
+    title: 'Built for Apple Intelligence',
+    imageSrc:
+      'https://www.apple.com/v/macbook-neo/a/images/overview/highlights/highlights_ai__cfrukhyww2nm_large_2x.jpg',
+    imagePosition: 'center 30%',
+    variant: 'compact',
+    layout: 'wide',
+    description:
+      'MacBook Neo brings Apple Intelligence to more people — helping you write, express yourself, and get things done effortlessly.',
+    content: (
+      <p>
+        On-device models keep your personal context private while still delivering fast, helpful
+        suggestions across apps.
+      </p>
+    ),
+  },
+  {
+    id: 'ecosystem',
+    subtitle: 'Highlights',
+    title: 'Mac and iPhone, Perfect Together',
+    imageSrc:
+      'https://www.apple.com/v/macbook-neo/a/images/overview/highlights/highlights_mac_iphone__b5emh4vjjnyq_medium_2x.jpg',
+    imagePosition: 'center bottom',
+    layout: 'narrow',
+    description:
+      'Start something on iPhone and finish it on Mac without missing a beat — messages, files, and clipboard flow between devices instantly.',
+    content: (
+      <p>
+        Continuity Camera, Handoff, and Universal Clipboard make the Neo feel like an extension of
+        your phone.
+      </p>
+    ),
+  },
+  {
+    id: 'battery',
+    subtitle: 'Highlights',
+    title: 'All-Day Battery Life',
+    imageSrc:
+      'https://www.apple.com/v/macbook-neo/a/images/overview/highlights/highlights_battery__fu65vu9o4te2_medium_2x.jpg',
+    imagePosition: 'center 70%',
+    layout: 'narrow',
+    description:
+      'Efficient Apple silicon stretches battery life so you can work, stream, and create away from an outlet for hours longer than before.',
+    content: <p>Fast charging gets you back to full productivity when you do need to plug in.</p>,
+  },
+  {
+    id: 'camera',
+    subtitle: 'Product Stories',
+    title: 'Display, Camera, and Audio',
+    imageSrc:
+      'https://www.apple.com/euro/macbook-neo/a/screens_alt/images/overview/product-stories/display-camera-audio/dca_camera__bmfj0hk3imnm_large_2x.png',
+    imagePosition: 'center center',
+    variant: 'compact',
+    layout: 'wide',
+    description:
+      'A brilliant Liquid Retina display, improved camera, and immersive speakers make video calls and media feel closer and clearer.',
+    content: (
+      <p>
+        Whether you are presenting or watching, MacBook Neo keeps picture and sound in sync with the
+        rest of your workflow.
+      </p>
+    ),
+  },
+]
 
 const chatHistoryColorDemoMessages: ChatHistoryMessage[] = [
   {
@@ -930,6 +1000,12 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="CardInstantPreview (@/components/shared) — App Store Today">
+        <div className="relative w-full basis-full overflow-visible rounded-2xl border bg-white py-8">
+          <CardInstantPreview items={MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS} />
+        </div>
+      </Section>
 
       <Section title="AnimatedBeamHub — left + right only">
         <div className="flex w-full justify-center py-6">

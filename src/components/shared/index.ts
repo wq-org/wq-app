@@ -1,3 +1,12 @@
+export { CardInstantPreview } from './card-instant-preview'
+export type {
+  CardInstantPreviewCardProps,
+  CardInstantPreviewImagePosition,
+  CardInstantPreviewLayout,
+  CardInstantPreviewListItemProps,
+  CardInstantPreviewProps,
+} from './card-instant-preview'
+export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
 export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
