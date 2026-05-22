@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { FileDropzone, FileStepperForm } from '@/components/shared'
-
-import { useFileValidation } from '@/components/shared'
-import { uploadFilesWithMetadata } from '@/components/shared'
+import {
+  FileDropzone,
+  FileStepperForm,
+  uploadFilesWithMetadata,
+  useFileValidation,
+} from '@/components/shared/upload-files'
+import type { UploadedFile } from '@/components/shared/upload-files'
 import { useUser } from '@/contexts/user'
-import type { UploadedFile } from '@/components/shared'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { Text } from '@/components/ui/text'
@@ -137,6 +139,7 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
 
       if (successCount > 0) {
         toast.success(t('upload.toasts.successSummary', { successCount, failedCount }))
+        onSuccess?.()
       }
 
       if (failedCount > 0) {
@@ -148,14 +151,9 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
         })
       }
 
-      // Reset state only if all uploads succeeded
       if (failedCount === 0) {
         setUploadedFiles([])
         setShowStepper(false)
-        // Call onSuccess callback to reload files
-        if (onSuccess) {
-          onSuccess()
-        }
       }
     } catch (error) {
       console.error('Unexpected error during upload:', error)

@@ -8,7 +8,7 @@ export type CardInstantPreviewLayout = 'wide' | 'narrow'
 export type CardInstantPreviewListItemVariant = 'default' | 'compact'
 
 /** Expanded + grid media */
-export type CardInstantPreviewMediaType = 'image' | 'pdf'
+export type CardInstantPreviewMediaType = 'image' | 'pdf' | 'video'
 
 type CardInstantPreviewCardBase = {
   id: string
@@ -36,10 +36,17 @@ export type CardInstantPreviewPdfCardProps = CardInstantPreviewCardBase & {
   pdfSrc: string
 }
 
+/** Video card — `VideoPreview` in expanded view; grid shows muted poster frame */
+export type CardInstantPreviewVideoCardProps = CardInstantPreviewCardBase & {
+  media: 'video'
+  videoSrc: string
+}
+
 /** Universal card fields — grid teaser and expanded detail share these */
 export type CardInstantPreviewCardProps =
   | CardInstantPreviewImageCardProps
   | CardInstantPreviewPdfCardProps
+  | CardInstantPreviewVideoCardProps
 
 export type CardInstantPreviewListItemProps = CardInstantPreviewCardProps & {
   isExpanded: boolean

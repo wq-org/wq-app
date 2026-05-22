@@ -22,6 +22,10 @@ export type StepperSegmentedProgressBarProps = {
   onValueChange?: (value: number) => void
   className?: string
   renderContent?: (step: number) => React.ReactNode
+  /** Renders only the segmented progress bar (no panel, counter, or footer actions). */
+  progressOnly?: boolean
+  /** Step counter row (`1 / 4`) below the bar; only used when `progressOnly` is true. */
+  showStepCounter?: boolean
 }
 
 export function StepperSegmentedProgressBar({
@@ -31,6 +35,8 @@ export function StepperSegmentedProgressBar({
   onValueChange,
   className,
   renderContent = (step) => `Step ${step} content`,
+  progressOnly = false,
+  showStepCounter = false,
 }: StepperSegmentedProgressBarProps) {
   const [internalStep, setInternalStep] = useState(defaultValue)
   const currentStep = value ?? internalStep
@@ -42,30 +48,53 @@ export function StepperSegmentedProgressBar({
     onValueChange?.(nextStep)
   }
 
+  const segmentedNav = (
+    <StepperNav>
+      {steps.map((step) => (
+        <StepperItem
+          key={step}
+          step={step}
+          className="flex-1 overflow-hidden transition-all duration-300 first:rounded-s-full last:rounded-e-full"
+        >
+          <StepperTrigger
+            className="w-full flex-col items-start gap-2"
+            asChild
+          >
+            <StepperIndicator className="h-2 w-full rounded-none! bg-border">
+              <span className="sr-only">{step}</span>
+            </StepperIndicator>
+          </StepperTrigger>
+        </StepperItem>
+      ))}
+    </StepperNav>
+  )
+
+  if (progressOnly) {
+    return (
+      <div className={cn('w-full', className)}>
+        <Stepper
+          value={currentStep}
+          onValueChange={handleStepChange}
+        >
+          {segmentedNav}
+        </Stepper>
+        {showStepCounter ? (
+          <div className="mt-2 text-end text-sm font-medium">
+            <span className="text-foreground">{currentStep}</span>{' '}
+            <span className="text-muted-foreground/60">/ {steps.length}</span>
+          </div>
+        ) : null}
+      </div>
+    )
+  }
+
   return (
     <div className={cn('w-full max-w-md', className)}>
       <Stepper
         value={currentStep}
         onValueChange={handleStepChange}
       >
-        <StepperNav>
-          {steps.map((step) => (
-            <StepperItem
-              key={step}
-              step={step}
-              className="first:rounded-s-full last:rounded-e-full flex-1 overflow-hidden transition-all duration-300"
-            >
-              <StepperTrigger
-                className="w-full flex-col items-start gap-2"
-                asChild
-              >
-                <StepperIndicator className="bg-border h-2 w-full rounded-none!">
-                  <span className="sr-only">{step}</span>
-                </StepperIndicator>
-              </StepperTrigger>
-            </StepperItem>
-          ))}
-        </StepperNav>
+        {segmentedNav}
 
         <div className="flex items-center justify-between gap-2.5 py-1">
           <Button

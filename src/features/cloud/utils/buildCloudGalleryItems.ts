@@ -3,12 +3,12 @@ import type { CardInstantPreviewCardProps } from '@/components/shared'
 import type { FileItem } from '../types/files.types'
 
 export function isGalleryFile(file: FileItem): boolean {
-  return file.type === 'PDF' || file.type === 'Image'
+  return file.type === 'PDF' || file.type === 'Image' || file.type === 'Video'
 }
 
 type BuildCloudGalleryItemsArgs = {
   files: readonly FileItem[]
-  subtitleLabels: { pdf: string; image: string }
+  subtitleLabels: { pdf: string; image: string; video: string }
   renderContent: (file: FileItem) => ReactNode
 }
 
@@ -24,29 +24,43 @@ export function buildCloudGalleryItems({
     if (!file.url) continue
 
     const id = file.storagePath ?? String(file.id)
-    const subtitle = file.type === 'PDF' ? subtitleLabels.pdf : subtitleLabels.image
     const description = file.size
+    const content = renderContent(file)
 
     if (file.type === 'PDF') {
       items.push({
         id,
-        subtitle,
+        subtitle: subtitleLabels.pdf,
         title: file.filename,
         description,
         media: 'pdf',
         pdfSrc: file.url,
-        content: renderContent(file),
+        content,
       })
-    } else {
+      continue
+    }
+
+    if (file.type === 'Video') {
       items.push({
         id,
-        subtitle,
+        subtitle: subtitleLabels.video,
         title: file.filename,
         description,
-        imageSrc: file.url,
-        content: renderContent(file),
+        media: 'video',
+        videoSrc: file.url,
+        content,
       })
+      continue
     }
+
+    items.push({
+      id,
+      subtitle: subtitleLabels.image,
+      title: file.filename,
+      description,
+      imageSrc: file.url,
+      content,
+    })
   }
 
   return items

@@ -15,6 +15,8 @@ export interface FileItem {
   type: 'Word' | 'PPT' | 'Exl' | 'PDF' | 'Image' | 'Video'
   size: string
   storagePath?: string
+  /** `cloud_files.id` when registered; used for usage checks and delete guards. */
+  cloudFileId?: string | null
   url?: string | null
   createdAt?: string | null
   mimeType?: string | null
@@ -23,6 +25,7 @@ export interface FileItem {
 export type CloudFileKind = 'file' | 'image' | 'pdf' | 'video'
 
 export type CloudFileItem = {
+  cloudFileId: string | null
   createdAt: string | null
   kind: CloudFileKind
   mimeType: string | null

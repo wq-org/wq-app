@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Text } from '@/components/ui/text'
 import { deleteFile } from '../api/filesApi'
+import { useFileUsageCheck } from '../hooks/useFileUsageCheck'
 import type { FileItem } from '../types/files.types'
 
 export type CloudFileCardContentProps = {
@@ -26,11 +27,20 @@ function formatUploadedDate(value: string | null | undefined): string | null {
 export function CloudFileCardContent({ file, onDeleted }: CloudFileCardContentProps) {
   const { t } = useTranslation('features.cloud')
   const [isDeleting, setIsDeleting] = useState(false)
+  const { isUsed, isChecking } = useFileUsageCheck(file.cloudFileId, file.storagePath)
 
   const uploadedLabel = formatUploadedDate(file.createdAt)
-  const typeLabel = file.type === 'PDF' ? t('card.subtitle.pdf') : t('card.subtitle.image')
+  const typeLabel =
+    file.type === 'PDF'
+      ? t('card.subtitle.pdf')
+      : file.type === 'Video'
+        ? t('card.subtitle.video')
+        : t('card.subtitle.image')
+  const deleteBlocked = isChecking || isUsed
 
   const handleDelete = async () => {
+    if (deleteBlocked) return
+
     if (!file.storagePath) {
       toast.error(t('delete.errorToast'))
       return
@@ -75,10 +85,20 @@ export function CloudFileCardContent({ file, onDeleted }: CloudFileCardContentPr
         </Text>
       ) : null}
 
-      <div className="flex justify-end pt-2">
+      <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+        {isUsed ? (
+          <Text
+            variant="orange"
+            className="text-sm text-right"
+          >
+            {t('delete.usedInLessonHint')}
+          </Text>
+        ) : null}
         <HoldToDeleteButton
           type="button"
           loading={isDeleting}
+          disabled={deleteBlocked}
+          title={isUsed ? t('delete.usedInLessonTitle') : undefined}
           onDelete={handleDelete}
         >
           {t('delete.holdToDelete')}

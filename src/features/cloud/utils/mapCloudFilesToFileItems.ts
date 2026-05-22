@@ -45,6 +45,7 @@ export function mapCloudFileToFileItem(item: CloudFileItem): FileItem {
     type: cloudKindToFileType(item.kind),
     size: formatFileSize(item.size),
     storagePath: item.path,
+    cloudFileId: item.cloudFileId,
     url: item.url,
     createdAt: item.createdAt,
     mimeType: item.mimeType,

@@ -368,8 +368,36 @@ export async function listCloudFiles(
     })
 
   const signedUrls = await buildSignedUrlMap(items.map((item) => item.path))
-  return items.map((item) => ({
+  const withUrls = items.map((item) => ({
     ...item,
     url: signedUrls.get(item.path) ?? null,
+  }))
+
+  return attachCloudFileIds(withUrls)
+}
+
+async function attachCloudFileIds(
+  items: Omit<CloudFileItem, 'cloudFileId'>[],
+): Promise<CloudFileItem[]> {
+  if (items.length === 0) return []
+
+  const paths = items.map((item) => item.path)
+  const { data, error } = await supabase
+    .from('cloud_files')
+    .select('id, storage_object_name')
+    .in('storage_object_name', paths)
+
+  if (error) {
+    console.error('[listCloudFiles] cloud_files id lookup failed', error)
+    return items.map((item) => ({ ...item, cloudFileId: null }))
+  }
+
+  const idByPath = new Map(
+    (data ?? []).map((row) => [row.storage_object_name as string, row.id as string]),
+  )
+
+  return items.map((item) => ({
+    ...item,
+    cloudFileId: idByPath.get(item.path) ?? null,
   }))
 }

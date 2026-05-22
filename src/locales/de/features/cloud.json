@@ -9,12 +9,13 @@
   },
   "empty": {
     "title": "Noch nichts hier",
-    "description": "Lade PDFs oder Bilder hoch, damit sie in deiner Cloud erscheinen."
+    "description": "Lade PDFs, Bilder oder Videos hoch, damit sie in deiner Cloud erscheinen."
   },
   "card": {
     "subtitle": {
       "pdf": "PDF",
-      "image": "Bild"
+      "image": "Bild",
+      "video": "Video"
     },
     "metadata": {
       "type": "Typ",
@@ -29,6 +30,8 @@
   "delete": {
     "trigger": "Löschen",
     "holdToDelete": "Zum Löschen halten",
+    "usedInLessonHint": "In einer Lektion verwendet — zuerst aus dem Lektionsinhalt entfernen.",
+    "usedInLessonTitle": "Löschen nicht möglich — in einer Lektion verwendet",
     "confirmTitle": "Datei löschen?",
     "confirmBody": "\"{{filename}}\" wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
     "confirmCta": "Löschen",

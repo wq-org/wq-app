@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useUser } from '@/contexts/user'
 
-import { listCloudFiles } from '../api/filesApi'
+import { listCloudFiles, renameFile } from '../api/filesApi'
 import type { CloudFileItem } from '../types/files.types'
 import { mapCloudFilesToFileItems } from '../utils/mapCloudFilesToFileItems'
 
@@ -44,5 +44,16 @@ export function useTeacherCloudFiles() {
 
   const fileItems = useMemo(() => mapCloudFilesToFileItems(cloudFiles), [cloudFiles])
 
-  return { cloudFiles, fileItems, loading, error, refetch: load }
+  const renameFileItem = useCallback(
+    async (storagePath: string, nextFilename: string) => {
+      const result = await renameFile(storagePath, nextFilename)
+      if (result.success) {
+        await load()
+      }
+      return result
+    },
+    [load],
+  )
+
+  return { cloudFiles, fileItems, loading, error, refetch: load, renameFileItem }
 }

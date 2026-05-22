@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
+import { VideoPreview } from '@/components/shared/media'
 import { BasicPdfViewer } from '@/components/shared/pdf-viewer'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -9,6 +10,7 @@ import type { CardInstantPreviewCardProps } from './card-instant-preview.types'
 import {
   cardInstantPreviewTitleId,
   isCardInstantPreviewPdfCard,
+  isCardInstantPreviewVideoCard,
 } from './card-instant-preview.utils'
 
 type CardInstantPreviewExpandedProps = CardInstantPreviewCardProps & {
@@ -34,6 +36,8 @@ export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProp
   const titleId = cardInstantPreviewTitleId(id)
   const [editedTitle, setEditedTitle] = useState(title)
   const isPdf = isCardInstantPreviewPdfCard(props)
+  const isVideo = isCardInstantPreviewVideoCard(props)
+  const expandedMedia = isPdf ? 'pdf' : isVideo ? 'video' : 'image'
 
   useEffect(() => {
     setEditedTitle(title)
@@ -57,7 +61,7 @@ export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProp
     <div
       ref={dialogRef}
       data-expanded-root={id}
-      data-expanded-media={isPdf ? 'pdf' : 'image'}
+      data-expanded-media={expandedMedia}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -103,6 +107,13 @@ export function CardInstantPreviewExpanded(props: CardInstantPreviewExpandedProp
           source={props.pdfSrc}
           className="h-[min(42vh,360px)] shrink-0 rounded-none border-0 bg-transparent"
         />
+      ) : isVideo ? (
+        <div className="flex h-[min(42vh,360px)] w-full shrink-0 items-center justify-center bg-muted px-4">
+          <VideoPreview
+            videoUrl={props.videoSrc}
+            fileName={editedTitle}
+          />
+        </div>
       ) : (
         <CardInstantPreviewImage
           imageSrc={props.imageSrc}

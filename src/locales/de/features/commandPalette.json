@@ -145,7 +145,10 @@
     "dropzone": {
       "uploadButton": "Dateien hochladen",
       "title": "Dateien auswählen oder hier per Drag & Drop ablegen.",
-      "description": "Bilder (außer WebP), PDF, MP4-Videos (max. 60s), Word (docx), PowerPoint (pptx/ppt). Max. 20 MB pro Datei."
+      "description": "JPEG-, JPG- oder PNG-Bilder, PDF und MP4-Videos (max. 60s). Max. 20 MB pro Datei."
+    },
+    "validation": {
+      "fileTypeNotAllowed": "„{{fileType}}“ ist nicht erlaubt. Erlaubt: JPEG-, JPG- oder PNG-Bilder, PDF oder MP4-Video (max. {{maxDuration}}s)."
     },
     "stepper": {
       "filenameLabel": "Dateiname *",

@@ -9,12 +9,13 @@
   },
   "empty": {
     "title": "Nothing here yet",
-    "description": "Upload PDFs or images and they'll appear in your cloud."
+    "description": "Upload PDFs, images, or videos and they'll appear in your cloud."
   },
   "card": {
     "subtitle": {
       "pdf": "PDF",
-      "image": "Image"
+      "image": "Image",
+      "video": "Video"
     },
     "metadata": {
       "type": "Type",
@@ -29,6 +30,8 @@
   "delete": {
     "trigger": "Delete",
     "holdToDelete": "Hold to delete",
+    "usedInLessonHint": "Used in a lesson — remove it from lesson content first.",
+    "usedInLessonTitle": "Cannot delete — used in a lesson",
     "confirmTitle": "Delete file?",
     "confirmBody": "\"{{filename}}\" will be removed permanently. This action cannot be undone.",
     "confirmCta": "Delete",

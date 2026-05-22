@@ -8,6 +8,7 @@ export type {
   CardInstantPreviewListItemProps,
   CardInstantPreviewMediaType,
   CardInstantPreviewPdfCardProps,
+  CardInstantPreviewVideoCardProps,
 } from './card-instant-preview.types'
 export { CardInstantPreviewExpanded } from './CardInstantPreviewExpanded'
 export {
@@ -15,10 +16,12 @@ export {
   CardInstantPreviewHeader,
   CardInstantPreviewImage,
   CardInstantPreviewPdfGridTeaser,
+  CardInstantPreviewVideoGridTeaser,
 } from './CardInstantPreviewShared'
 export {
   cardInstantPreviewTitleId,
   isCardInstantPreviewPdfCard,
+  isCardInstantPreviewVideoCard,
 } from './card-instant-preview.utils'
 export type {
   CardInstantPreviewImagePosition,

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { FileText } from 'lucide-react'
+import { FileText, Video } from 'lucide-react'
 import { IconPreviewCardSquare, IconPreviewCardWide } from '../IconPreviewCard'
 import { cn } from '@/lib/utils'
 import { getColorCss } from '@/lib/themes'
@@ -11,6 +11,7 @@ import {
 } from './card-instant-preview.utils'
 
 const PDF_TEASER_BACKGROUND = getColorCss('blue')
+const VIDEO_TEASER_BACKGROUND = getColorCss('orange')
 
 const GRID_IMAGE_HEIGHT = CARD_INSTANT_PREVIEW_IMAGE_HEIGHT_GRID
 const EXPANDED_IMAGE_HEIGHT = 'min(42vh, 360px)'
@@ -103,6 +104,51 @@ type CardInstantPreviewPdfGridTeaserProps = {
   mode: 'grid' | 'compact'
   gridImageHeight?: number
   className?: string
+}
+
+type CardInstantPreviewVideoGridTeaserProps = {
+  videoSrc: string
+  videoAlt: string
+  mode: 'grid' | 'compact'
+  gridImageHeight?: number
+  className?: string
+}
+
+export function CardInstantPreviewVideoGridTeaser({
+  videoSrc,
+  videoAlt,
+  mode,
+  gridImageHeight = GRID_IMAGE_HEIGHT,
+  className,
+}: CardInstantPreviewVideoGridTeaserProps) {
+  if (mode === 'compact') {
+    return (
+      <div className={cn('absolute inset-0', className)}>
+        <IconPreviewCardSquare
+          icon={Video}
+          backgroundColor={VIDEO_TEASER_BACKGROUND}
+          blurred={false}
+          className="size-full rounded-none"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className={cn('relative w-full shrink-0 overflow-hidden bg-muted', className)}
+      style={{ height: gridImageHeight }}
+    >
+      <video
+        src={videoSrc}
+        muted
+        playsInline
+        preload="metadata"
+        aria-label={videoAlt}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    </div>
+  )
 }
 
 export function CardInstantPreviewPdfGridTeaser({

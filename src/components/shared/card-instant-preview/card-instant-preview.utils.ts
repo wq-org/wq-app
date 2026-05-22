@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils'
 import type {
   CardInstantPreviewCardProps,
   CardInstantPreviewPdfCardProps,
+  CardInstantPreviewVideoCardProps,
 } from './card-instant-preview.types'
 
 export function cardInstantPreviewTitleId(id: string) {
@@ -12,6 +13,12 @@ export function isCardInstantPreviewPdfCard(
   card: CardInstantPreviewCardProps,
 ): card is CardInstantPreviewPdfCardProps {
   return card.media === 'pdf'
+}
+
+export function isCardInstantPreviewVideoCard(
+  card: CardInstantPreviewCardProps,
+): card is CardInstantPreviewVideoCardProps {
+  return card.media === 'video'
 }
 
 /**

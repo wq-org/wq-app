@@ -7,9 +7,10 @@ export type {
   CardInstantPreviewListItemProps,
   CardInstantPreviewMediaType,
   CardInstantPreviewPdfCardProps,
+  CardInstantPreviewVideoCardProps,
   CardInstantPreviewProps,
 } from './card-instant-preview'
-export { isCardInstantPreviewPdfCard } from './card-instant-preview'
+export { isCardInstantPreviewPdfCard, isCardInstantPreviewVideoCard } from './card-instant-preview'
 export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
 export { BasicPdfViewer, configurePdfJsWorker } from './pdf-viewer'
 export type { BasicPdfViewerProps } from './pdf-viewer'
@@ -224,7 +225,7 @@ export {
 } from './upload-files'
 export type {
   ALL_ALLOWED_TYPES,
-  ALLOWED_FILE_TYPES,
+  ALLOWED_DOCUMENT_TYPES,
   ALLOWED_IMAGE_TYPES,
   ALLOWED_VIDEO_TYPES,
   MAX_VIDEO_DURATION,

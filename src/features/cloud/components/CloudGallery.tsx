@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { CardInstantPreview } from '@/components/shared'
-import { renameFile } from '../api/filesApi'
+import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { FieldInput } from '@/components/ui/field-input'
 import { GridPattern } from '@/components/ui/grid-pattern'
 import { Spinner } from '@/components/ui/spinner'
@@ -19,13 +19,25 @@ const SEARCH_FIELDS = ['filename', 'type'] as const satisfies readonly (keyof Fi
 
 export type CloudGalleryProps = {
   className?: string
+  /** Fixed viewport height (px) for the card grid; content scrolls vertically when taller. */
+  galleryScrollHeight?: number
+  /** Registers the gallery refetch fn (e.g. wire to command-palette upload success). */
+  onRefetchReady?: (refetch: () => void) => void
 }
 
-export function CloudGallery({ className }: CloudGalleryProps) {
+export function CloudGallery({
+  className,
+  galleryScrollHeight,
+  onRefetchReady,
+}: CloudGalleryProps) {
   const { t } = useTranslation('features.cloud')
   const { t: tTeacher } = useTranslation('features.teacher')
-  const { fileItems, loading, error, refetch } = useTeacherCloudFiles()
+  const { fileItems, loading, error, refetch, renameFileItem } = useTeacherCloudFiles()
   const [query, setQuery] = useState('')
+
+  useEffect(() => {
+    onRefetchReady?.(refetch)
+  }, [onRefetchReady, refetch])
 
   useEffect(() => {
     if (error) {
@@ -48,20 +60,23 @@ export function CloudGallery({ className }: CloudGalleryProps) {
       const trimmed = nextTitle.trim()
       if (!trimmed || trimmed === file.filename) return
 
-      const result = await renameFile(file.storagePath, trimmed)
+      const result = await renameFileItem(file.storagePath, trimmed)
       if (!result.success) {
         toast.error(t('rename.errorToast'))
         return
       }
 
       toast.success(t('rename.successToast'))
-      void refetch()
     },
-    [galleryFiles, refetch, t],
+    [galleryFiles, renameFileItem, t],
   )
 
   const subtitleLabels = useMemo(
-    () => ({ pdf: t('card.subtitle.pdf'), image: t('card.subtitle.image') }),
+    () => ({
+      pdf: t('card.subtitle.pdf'),
+      image: t('card.subtitle.image'),
+      video: t('card.subtitle.video'),
+    }),
     [t],
   )
 
@@ -86,7 +101,7 @@ export function CloudGallery({ className }: CloudGalleryProps) {
 
   return (
     <section className={cn('relative isolate w-full', className)}>
-      <GridPattern className="absolute inset-0 -z-10 h-full w-full opacity-60 [mask-image:radial-gradient(ellipse_at_top,white,transparent_75%)]" />
+      <GridPattern className="absolute inset-0 -z-10 h-full w-full opacity-75 [mask-image:radial-gradient(ellipse_at_top,white,transparent_70%)]" />
 
       <div className="relative flex flex-col gap-10 px-4 py-12 sm:px-8">
         <header className="flex flex-col gap-2">
@@ -137,10 +152,26 @@ export function CloudGallery({ className }: CloudGalleryProps) {
         ) : null}
 
         {showGrid ? (
-          <CardInstantPreview
-            items={items}
-            onItemTitleChange={handleItemTitleChange}
-          />
+          galleryScrollHeight != null ? (
+            <BlurredScrollArea
+              orientation="vertical"
+              scrollbars="vertical"
+              hideScrollBar
+              className="w-full"
+              style={{ height: galleryScrollHeight }}
+              viewportClassName="overflow-x-hidden"
+            >
+              <CardInstantPreview
+                items={items}
+                onItemTitleChange={handleItemTitleChange}
+              />
+            </BlurredScrollArea>
+          ) : (
+            <CardInstantPreview
+              items={items}
+              onItemTitleChange={handleItemTitleChange}
+            />
+          )
         ) : null}
       </div>
     </section>
