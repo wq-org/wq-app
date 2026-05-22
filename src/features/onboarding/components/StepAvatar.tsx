@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { BlurredImage } from '@/components/ui/blurred-image'
@@ -10,11 +10,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel'
-import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { fetchAvatars } from '../api/onboardingApi'
+import { createDefaultOnboardingAvatar, DEFAULT_ONBOARDING_AVATAR_SRC } from '../constants'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import type {
   AvatarDisplayAttributes,
@@ -75,8 +74,8 @@ function AvatarSlide({ avatar, isSelected, onSelect }: AvatarSlideProps) {
   }, [avatar.src, signedAvatarUrl])
 
   const imageSrc = imageFailed
-    ? DEFAULT_INSTITUTION_IMAGE
-    : signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE
+    ? DEFAULT_ONBOARDING_AVATAR_SRC
+    : signedAvatarUrl || DEFAULT_ONBOARDING_AVATAR_SRC
 
   return (
     <CarouselItem className="basis-[40%] sm:basis-[32%] md:basis-[24%]">
@@ -92,14 +91,11 @@ function AvatarSlide({ avatar, isSelected, onSelect }: AvatarSlideProps) {
         aria-label={`Select ${avatar.name}`}
       >
         <div className="mx-auto aspect-square w-full max-w-28 overflow-hidden rounded-full">
-          <BlurredImage
+          <img
             src={imageSrc}
             alt={avatar.name}
-            isBlurred
             onError={() => setImageFailed(true)}
             className="h-full w-full rounded-full object-cover"
-            containerClassName="h-full w-full overflow-hidden rounded-full"
-            backdropClassName="rounded-full object-cover opacity-30 blur-2xl scale-110"
           />
         </div>
       </button>
@@ -109,29 +105,47 @@ function AvatarSlide({ avatar, isSelected, onSelect }: AvatarSlideProps) {
 
 export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps) {
   const { t } = useTranslation('features.onboarding')
+  const defaultAvatar = useMemo(
+    () =>
+      createDefaultOnboardingAvatar(
+        t('avatarStep.default.name'),
+        t('avatarStep.default.description'),
+      ),
+    [t],
+  )
   const [api, setApi] = useState<CarouselApi>()
-  const [avatars, setAvatars] = useState<AvatarOption[]>([])
+  const [avatars, setAvatars] = useState<AvatarOption[]>([defaultAvatar])
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
   const [heroImageFailed, setHeroImageFailed] = useState(false)
-  const selectedAvatar = avatars[selectedIndex]
-  const { url: selectedAvatarUrl } = useAvatarUrl(selectedAvatar?.src)
+  const selectedAvatar = avatars[selectedIndex] ?? defaultAvatar
+  const { url: selectedAvatarUrl } = useAvatarUrl(selectedAvatar.src)
 
   useEffect(() => {
+    let cancelled = false
+
     async function loadAvatars() {
       try {
         const fetchedAvatars = await fetchAvatars()
-        setAvatars(fetchedAvatars)
+        if (cancelled) {
+          return
+        }
+
+        setAvatars(fetchedAvatars.length > 0 ? fetchedAvatars : [defaultAvatar])
       } catch (error) {
         console.error('Error loading avatars:', error)
-        setAvatars([])
-      } finally {
-        setIsLoading(false)
+        if (!cancelled) {
+          setAvatars([defaultAvatar])
+        }
       }
     }
 
+    setAvatars([defaultAvatar])
     void loadAvatars()
-  }, [])
+
+    return () => {
+      cancelled = true
+    }
+  }, [defaultAvatar])
 
   useEffect(() => {
     if (avatars.length === 0) {
@@ -172,11 +186,11 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
 
   useEffect(() => {
     setHeroImageFailed(false)
-  }, [selectedAvatar?.src, selectedAvatarUrl])
+  }, [selectedAvatar.src, selectedAvatarUrl])
 
   const heroImageSrc = heroImageFailed
-    ? DEFAULT_INSTITUTION_IMAGE
-    : selectedAvatarUrl || DEFAULT_INSTITUTION_IMAGE
+    ? DEFAULT_ONBOARDING_AVATAR_SRC
+    : selectedAvatarUrl || DEFAULT_ONBOARDING_AVATAR_SRC
 
   const handleSelectAvatar = (index: number) => {
     setSelectedIndex(index)
@@ -184,23 +198,7 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
   }
 
   const handleContinue = () => {
-    if (!selectedAvatar) {
-      return
-    }
-
     onNext(selectedAvatar)
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[420px] items-center justify-center">
-        <Spinner
-          variant="light"
-          size="xl"
-          speed={1750}
-        />
-      </div>
-    )
   }
 
   return (
@@ -223,65 +221,49 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
           </Text>
         </div>
 
-        {selectedAvatar ? (
-          <>
-            <div className="flex w-full max-w-sm flex-col items-center gap-4">
-              <div className="aspect-square w-full max-w-62 overflow-hidden rounded-full">
-                <BlurredImage
-                  src={heroImageSrc}
-                  alt={selectedAvatar.name}
-                  isBlurred
-                  onError={() => setHeroImageFailed(true)}
-                  className="h-full w-full rounded-full object-cover"
-                  containerClassName="h-full w-full overflow-hidden rounded-full"
-                  backdropClassName="rounded-full object-cover opacity-35 blur-3xl scale-110"
-                />
-              </div>
-              <AvatarMetaText
-                avatar={selectedAvatar}
-                centered
-              />
-            </div>
-
-            <div className="w-full max-w-xl px-10">
-              <Carousel
-                className="w-full"
-                opts={{ align: 'center', loop: avatars.length > 2 }}
-                setApi={setApi}
-              >
-                <CarouselContent className="py-3">
-                  {avatars.map((avatar, index) => (
-                    <AvatarSlide
-                      key={avatar.src}
-                      avatar={avatar}
-                      isSelected={index === selectedIndex}
-                      onSelect={() => handleSelectAvatar(index)}
-                    />
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="-left-3 bg-background/80 backdrop-blur-sm" />
-                <CarouselNext className="-right-3 bg-background/80 backdrop-blur-sm" />
-              </Carousel>
-            </div>
-          </>
-        ) : (
-          <div className="flex min-h-[280px] w-full flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border px-6 py-12 text-center">
-            <Text
-              as="p"
-              variant="body"
-              className="font-medium"
-            >
-              {t('avatarStep.emptyTitle')}
-            </Text>
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('avatarStep.emptyDescription')}
-            </Text>
+        <div className="flex w-full max-w-sm flex-col items-center gap-4">
+          <div
+            key={heroImageSrc}
+            className="relative mx-auto aspect-square w-full max-w-62 shrink-0 animate-in fade-in-0 slide-in-from-bottom-4 rounded-full border border-border/60 bg-background duration-300 ease-out"
+          >
+            <BlurredImage
+              src={heroImageSrc}
+              alt={selectedAvatar.name}
+              isBlurred
+              onError={() => setHeroImageFailed(true)}
+              className="h-full w-full rounded-full object-cover"
+              containerClassName="h-full w-full overflow-visible"
+              backdropClassName="rounded-full scale-125 opacity-75"
+            />
           </div>
-        )}
+          <AvatarMetaText
+            avatar={selectedAvatar}
+            centered
+          />
+        </div>
+
+        {avatars.length > 1 ? (
+          <div className="w-full max-w-xl px-10">
+            <Carousel
+              className="w-full"
+              opts={{ align: 'center', loop: avatars.length > 2 }}
+              setApi={setApi}
+            >
+              <CarouselContent className="py-3">
+                {avatars.map((avatar, index) => (
+                  <AvatarSlide
+                    key={avatar.src}
+                    avatar={avatar}
+                    isSelected={index === selectedIndex}
+                    onSelect={() => handleSelectAvatar(index)}
+                  />
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-3 bg-background/80 backdrop-blur-sm" />
+              <CarouselNext className="-right-3 bg-background/80 backdrop-blur-sm" />
+            </Carousel>
+          </div>
+        ) : null}
       </div>
 
       <div className="flex justify-between gap-4 py-11">
@@ -296,7 +278,6 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
           type="button"
           variant="darkblue"
           onClick={handleContinue}
-          disabled={!selectedAvatar}
         >
           {t('avatarStep.actions.continue')}
         </Button>

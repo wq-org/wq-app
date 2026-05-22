@@ -2,75 +2,104 @@ import { supabase } from '@/lib/supabase'
 import type { AvatarOption } from '../types/onboarding.types'
 
 /**
- * Fetch all available avatars from Supabase storage
- * Returns an array of avatar options with metadata
+ * Fetch all available avatars from Supabase storage.
+ *
+ * Strategy (3 round-trips instead of N+2):
+ *  1. List PNG files from `faces/`.
+ *  2. Batch-sign all image URLs in ONE createSignedUrls call.
+ *  3. List + download JSON metadata files and merge by base name.
+ *
+ * Returns [] on any storage failure so callers can show an empty state
+ * rather than a misleading single hardcoded fallback avatar.
  */
 export async function fetchAvatars(): Promise<AvatarOption[]> {
-  try {
-    const { data: files, error } = await supabase.storage.from('avatars').list('meta_data', {
-      limit: 100,
-      offset: 0,
-    })
+  // ── Step 1: list PNG image files ──────────────────────────────────────────
+  const { data: imageFiles, error: listError } = await supabase.storage
+    .from('avatars')
+    .list('faces', { limit: 200, offset: 0, sortBy: { column: 'name', order: 'asc' } })
 
-    if (error || !files) {
-      console.error('Error fetching avatars:', error)
-      // Return fallback avatar
-      return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
-    }
+  if (listError) {
+    console.error('[fetchAvatars] Failed to list avatars/faces:', listError)
+    return []
+  }
 
-    // Filter for JSON metadata files only
-    const jsonFiles = files.filter((file) => file.name.endsWith('.json'))
+  if (!imageFiles?.length) {
+    console.error('[fetchAvatars] No files found in avatars/faces/')
+    return []
+  }
 
-    if (jsonFiles.length === 0) {
-      console.error('No JSON metadata files found in avatars/meta_data/')
-      return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
-    }
+  const pngFiles = imageFiles.filter((f) => f.name.endsWith('.png'))
 
-    // Fetch metadata and pair with PNG images
-    const avatarPromises = jsonFiles.map(async (jsonFile) => {
-      try {
-        // Download and parse the JSON metadata
-        const { data: fileData, error: downloadError } = await supabase.storage
-          .from('avatars')
-          .download(`meta_data/${jsonFile.name}`)
+  if (pngFiles.length === 0) {
+    console.error('[fetchAvatars] No PNG files found in avatars/faces/')
+    return []
+  }
 
-        if (downloadError || !fileData) {
-          console.error(`Error downloading ${jsonFile.name}:`, downloadError)
-          return null
+  // ── Step 2: batch-sign all image URLs (1 network call) ────────────────────
+  const paths = pngFiles.map((f) => `faces/${f.name}`)
+  const { data: signedData, error: signError } = await supabase.storage
+    .from('avatars')
+    .createSignedUrls(paths, 3600)
+
+  if (signError || !signedData) {
+    console.error('[fetchAvatars] Failed to create signed URLs:', signError)
+    return []
+  }
+
+  // baseName → signedUrl lookup
+  const urlMap = new Map<string, string>(
+    signedData
+      .filter((s) => Boolean(s.signedUrl))
+      .map((s) => [s.path.replace('faces/', '').replace('.png', ''), s.signedUrl]),
+  )
+
+  // ── Step 3: list & download JSON metadata files (non-fatal if missing) ────
+  const metaMap = new Map<string, { name: string; emoji: string; description: string }>()
+
+  const { data: metaFiles } = await supabase.storage
+    .from('avatars')
+    .list('meta_data', { limit: 200, offset: 0, sortBy: { column: 'name', order: 'asc' } })
+
+  if (metaFiles && metaFiles.length > 0) {
+    const jsonFiles = metaFiles.filter((f) => f.name.endsWith('.json'))
+    await Promise.all(
+      jsonFiles.map(async (jsonFile) => {
+        try {
+          const { data: fileData, error: downloadError } = await supabase.storage
+            .from('avatars')
+            .download(`meta_data/${jsonFile.name}`)
+          if (downloadError || !fileData) return
+          const metadata = JSON.parse(await fileData.text()) as Record<string, string>
+          const baseName = jsonFile.name.replace('.json', '')
+          metaMap.set(baseName, {
+            name: metadata['name'] ?? baseName,
+            emoji: metadata['emoji'] ?? '🌿',
+            description: metadata['description'] ?? '',
+          })
+        } catch {
+          // Non-fatal — image still appears with a derived name
         }
+      }),
+    )
+  }
 
-        const text = await fileData.text()
-        const metadata = JSON.parse(text)
+  // ── Step 4: assemble AvatarOption list ────────────────────────────────────
+  return pngFiles
+    .map((pngFile): AvatarOption | null => {
+      const baseName = pngFile.name.replace('.png', '')
+      const signedUrl = urlMap.get(baseName)
+      // Skip any image whose signed URL could not be generated
+      if (!signedUrl) return null
 
-        // Get the corresponding PNG file (same name, different extension)
-        const imageName = jsonFile.name.replace('.json', '.png')
-
-        // Store just the path, not the signed URL
-        // We'll create signed URLs when displaying
-        return {
-          name: metadata.name || imageName,
-          src: `faces/${imageName}`, // ← just the path
-          emoji: metadata.emoji || '🎉',
-          description: metadata.description || '',
-        } as AvatarOption
-      } catch (parseError) {
-        console.error(`Error parsing ${jsonFile.name}:`, parseError)
-        return null
+      const meta = metaMap.get(baseName)
+      return {
+        name: meta?.name ?? baseName,
+        // Use the already-signed URL directly — useAvatarUrl will detect it
+        // as a direct URL (starts with https://) and skip a second signing.
+        src: signedUrl,
+        emoji: meta?.emoji ?? '🌿',
+        description: meta?.description ?? '',
       }
     })
-
-    const avatarResults = await Promise.all(avatarPromises)
-    // Filter out any nulls from failed parses
-    const validAvatars = avatarResults.filter((avatar): avatar is AvatarOption => avatar !== null)
-
-    if (validAvatars.length === 0) {
-      console.error('No valid avatars could be loaded')
-      return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
-    }
-
-    return validAvatars
-  } catch (err) {
-    console.error('Error loading avatars:', err)
-    return [{ name: 'Willfryd', src: '/favicon.ico', emoji: '🎉', description: '' }]
-  }
+    .filter((a): a is AvatarOption => a !== null)
 }

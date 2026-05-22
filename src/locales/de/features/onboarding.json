@@ -22,6 +22,10 @@
       "title": "Wähle deinen Avatar",
       "subtitle": "Such dir den Stil aus, der dich bei WQ Health repräsentiert."
     },
+    "default": {
+      "name": "Standard",
+      "description": ""
+    },
     "emptyTitle": "Keine Avatare verfügbar.",
     "emptyDescription": "Bitte prüfe deinen Supabase-Storage-Bucket: avatars/meta_data/ und avatars/faces/",
     "actions": {
