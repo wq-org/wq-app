@@ -121,11 +121,15 @@ export function AppNavigation({
                       aria-label={t('profile.openMenu')}
                     >
                       <div className="relative w-fit">
-                        <Avatar>
+                        <Avatar
+                          size="default"
+                          className="shrink-0 after:hidden"
+                        >
                           {avatarImageUrl ? (
                             <AvatarImage
                               src={avatarImageUrl}
                               alt={avatarLabel}
+                              className="object-cover"
                             />
                           ) : null}
                           <AvatarFallback className="text-xs font-semibold">
