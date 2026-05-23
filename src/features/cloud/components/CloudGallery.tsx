@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { CardInstantPreview, InfiniteScrollSentinel } from '@/components/shared'
+import { Button } from '@/components/ui/button'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { FieldInput } from '@/components/ui/field-input'
 import { GridPattern } from '@/components/ui/grid-pattern'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { requestOpenCommandUploadDialog } from '@/features/command-palette'
 import { cn } from '@/lib/utils'
 import { CLOUD_GALLERY_PAGE_SIZE } from '../api/filesApi'
 import { CLOUD_GALLERY_REFETCH_EVENT } from '../constants/cloudGalleryEvents'
@@ -206,13 +209,27 @@ export function CloudGallery({
           </Text>
         </header>
 
-        <div className="max-w-md">
-          <FieldInput
-            label={t('search.label')}
-            placeholder={t('search.placeholder')}
-            value={query}
-            onValueChange={setQuery}
-          />
+        <div className="flex w-full flex-col gap-4  w-full">
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="darkblue"
+              size="lg"
+              onClick={requestOpenCommandUploadDialog}
+              className="w-fit gap-2"
+            >
+              <Upload className="size-4" />
+              {t('empty.uploadCta')}
+            </Button>
+          </div>
+          <div className="w-full max-w-md">
+            <FieldInput
+              label={t('search.label')}
+              placeholder={t('search.placeholder')}
+              value={query}
+              onValueChange={setQuery}
+            />
+          </div>
         </div>
 
         {showSpinner ? (
