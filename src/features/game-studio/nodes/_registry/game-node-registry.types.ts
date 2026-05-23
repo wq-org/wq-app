@@ -76,7 +76,7 @@ export type GameNodeRegistryEntry = {
   allowMultiple: boolean
   /** Whether this node may be dragged from the sidebar (false hides it from sidebar) */
   isDraggable: boolean
-  /** Whether this node should render as disabled in the sidebar */
+  /** Permanent off switch (prefer `featureKey` + institution entitlements for product gating). */
   disabled?: boolean
   /** When set, sidebar drag + canvas drop require this institution feature key. */
   featureKey?: string

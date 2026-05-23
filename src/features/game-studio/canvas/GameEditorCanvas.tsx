@@ -47,7 +47,7 @@ import { GamePublishDrawer } from '../components/GamePublishDrawer'
 import { deleteGame } from '@/features/command-palette'
 import { GameEditorSidebar } from './GameEditorSidebar'
 import { GameEditorToolbar } from './GameEditorToolbar'
-import { isInstitutionFeatureEnabledForKey } from '../utils/isInstitutionFeatureEnabledForKey'
+import { isGameNodeRegistryEntryEnabled } from '../utils/isInstitutionFeatureEnabledForKey'
 
 const DEFAULT_TITLE = 'Untitled game'
 const AUTOSAVE_DEBOUNCE_MS = 1200
@@ -400,10 +400,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           isDroppingRef.current = false
           return
         }
-        if (
-          entry.featureKey &&
-          !isInstitutionFeatureEnabledForKey(institutionFeatures, entry.featureKey)
-        ) {
+        if (!isGameNodeRegistryEntryEnabled(entry, institutionFeatures)) {
           toast.error('This node type is not enabled for your institution')
           isDroppingRef.current = false
           return

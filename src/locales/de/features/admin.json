@@ -352,7 +352,8 @@
       "notFound": "Diese Funktionsdefinition wurde nicht gefunden.",
       "dangerZone": "Gefahrenbereich",
       "deleteHint": "Beim Löschen wird der Katalogeintrag entfernt. Das schlägt fehl, wenn ein Plan oder Override noch darauf verweist.",
-      "holdToDelete": "Zum Löschen halten"
+      "holdToDelete": "Zum Löschen halten",
+      "delete": "Funktion löschen"
     },
     "empty": {
       "title": "Noch keine Funktionen",
@@ -390,6 +391,9 @@
       "key": "Schlüssel",
       "keyPlaceholder": "z. B. custom_reports",
       "keyReadOnlyHint": "Der Schlüssel bleibt fest, damit bestehende Planzeilen stabil referenzieren können.",
+      "keyCopyAria": "Funktionsschlüssel in die Zwischenablage kopieren",
+      "keyCopySuccess": "Funktionsschlüssel kopiert",
+      "keyCopyError": "Schlüssel konnte nicht kopiert werden",
       "storedKey": "Gespeicherter Schlüssel:",
       "name": "Anzeigename",
       "namePlaceholder": "Menschenlesbare Bezeichnung",

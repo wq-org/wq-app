@@ -5,6 +5,7 @@ import {
   BellElectric,
   Blocks,
   BookOpen,
+  Calculator,
   Calendar,
   CalendarRange,
   Gauge,
@@ -47,6 +48,8 @@ const FEATURE_ICON_BY_KEY: Readonly<Record<string, LucideIcon>> = {
   multiplayer: UsersRound,
   openquestion: BadgeQuestionMark,
   open_question: BadgeQuestionMark,
+  drag_drop_math: Calculator,
+  game_image_pin: Pin,
   image_pin: Pin,
 }
 

@@ -11,7 +11,7 @@ import type {
   GameNodeCategory,
   GameNodeRegistryEntry,
 } from '../nodes/_registry/game-node-registry.types'
-import { isInstitutionFeatureEnabledForKey } from '../utils/isInstitutionFeatureEnabledForKey'
+import { isGameNodeRegistryEntryEnabled } from '../utils/isInstitutionFeatureEnabledForKey'
 
 const accentTileClasses: Record<GameNodeAccent, string> = {
   gray: 'border-gray-500/20 bg-gray-500/10 text-gray-500 dark:border-gray-400/30 dark:bg-gray-400/10 dark:text-gray-300',
@@ -69,10 +69,8 @@ function SidebarSection({
       <div className="space-y-1">
         {entries.map((entry) => {
           const Icon = entry.Icon
-          const gated = Boolean(entry.featureKey)
-          const enabled =
-            !gated || isInstitutionFeatureEnabledForKey(features, entry.featureKey as string)
-          const isDisabled = entry.disabled === true || !enabled
+          const enabled = isGameNodeRegistryEntryEnabled(entry, features)
+          const isDisabled = !enabled
           return (
             <div
               key={entry.type}

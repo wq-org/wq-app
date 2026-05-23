@@ -60,7 +60,10 @@ export {
   GAME_FEATURE_KEY_GAME_IMAGE_PIN,
   GAME_FEATURE_KEY_OPEN_QUESTION,
 } from './constants/gameFeatureKeys'
-export { isInstitutionFeatureEnabledForKey } from './utils/isInstitutionFeatureEnabledForKey'
+export {
+  isGameNodeRegistryEntryEnabled,
+  isInstitutionFeatureEnabledForKey,
+} from './utils/isInstitutionFeatureEnabledForKey'
 
 // ---- Player runtime ----
 export {

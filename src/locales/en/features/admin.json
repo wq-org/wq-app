@@ -352,7 +352,8 @@
       "notFound": "This feature definition could not be found.",
       "dangerZone": "Danger zone",
       "deleteHint": "Deleting removes the catalog row. This fails if a plan or override still references it.",
-      "holdToDelete": "Hold to delete"
+      "holdToDelete": "Hold to delete",
+      "delete": "Delete feature"
     },
     "empty": {
       "title": "No features yet",
@@ -390,6 +391,9 @@
       "key": "Key",
       "keyPlaceholder": "e.g. custom_reports",
       "keyReadOnlyHint": "The key is fixed so existing plan rows keep a stable reference.",
+      "keyCopyAria": "Copy feature key to clipboard",
+      "keyCopySuccess": "Feature key copied to clipboard",
+      "keyCopyError": "Could not copy the feature key",
       "storedKey": "Stored key:",
       "name": "Display name",
       "namePlaceholder": "Human-readable label",

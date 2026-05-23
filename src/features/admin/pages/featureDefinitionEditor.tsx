@@ -5,7 +5,6 @@ import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import {
   Dialog,
   DialogContent,
@@ -16,7 +15,6 @@ import {
 } from '@/components/ui/dialog'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
-import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
@@ -185,12 +183,13 @@ const AdminFeatureDefinitionEditor = () => {
                   {t('featureDefinitions.editor.deleteHint')}
                 </Text>
                 <div className="mt-4">
-                  <HoldToDeleteButton
-                    variant="outline"
-                    onDelete={handleOpenDeleteDialog}
+                  <Button
+                    type="button"
+                    variant="delete"
+                    onClick={handleOpenDeleteDialog}
                   >
-                    {t('featureDefinitions.editor.holdToDelete')}
-                  </HoldToDeleteButton>
+                    {t('featureDefinitions.editor.delete')}
+                  </Button>
                 </div>
               </div>
             ) : null}
@@ -214,26 +213,18 @@ const AdminFeatureDefinitionEditor = () => {
               <p className="mb-3 text-sm text-muted-foreground">
                 {t('featureDefinitions.deleteDialog.confirmLabel', { key: feature.key })}
               </p>
-              <div className="flex flex-col gap-2">
-                <Label
-                  htmlFor={deleteConfirmInputId}
-                  className="text-sm font-medium leading-none"
-                >
-                  {t('featureDefinitions.deleteDialog.confirmFieldLabel')}
-                </Label>
-                <FieldInput
-                  id={deleteConfirmInputId}
-                  label={t('featureDefinitions.deleteDialog.confirmInputAria')}
-                  placeholder={feature.key}
-                  value={confirmKey}
-                  onValueChange={setConfirmKey}
-                  autoComplete="off"
-                  disabled={deleting}
-                />
-              </div>
+              <FieldInput
+                id={deleteConfirmInputId}
+                label={t('featureDefinitions.deleteDialog.confirmFieldLabel')}
+                placeholder={feature.key}
+                value={confirmKey}
+                onValueChange={setConfirmKey}
+                autoComplete="off"
+                disabled={deleting}
+              />
             </FieldCard>
           ) : null}
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -244,7 +235,7 @@ const AdminFeatureDefinitionEditor = () => {
             </Button>
             <Button
               type="button"
-              variant="destructive"
+              variant="delete"
               disabled={deleting || !feature || confirmKey !== feature.key}
               onClick={() => void handleDelete()}
             >
