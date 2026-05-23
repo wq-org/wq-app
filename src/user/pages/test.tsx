@@ -148,6 +148,7 @@ import {
   type ChatHistoryMessage,
 } from '@/components/shared/chat'
 import { GameHeader } from '@/features/game-studio'
+import { MathNodeDemo } from '@/features/game-studio/nodes/drag-drop-math/MathNodeDemo'
 import { getThemeClasses } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
@@ -1000,6 +1001,10 @@ export default function Test() {
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="MathNode (@/features/game-studio/nodes/drag-drop-math)">
+        <MathNodeDemo />
+      </Section>
 
       <Section title="Lector PDF Viewer (@anaralabs/lector)">
         <p className="text-sm text-muted-foreground">

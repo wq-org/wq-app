@@ -257,7 +257,12 @@
   },
   "dragDropMathEditor": {
     "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Describe the math task, context, and what learners should do…"
+    "descriptionPlaceholder": "Describe the math task, context, and what learners should do…",
+    "exerciseTitleLabel": "Exercise title",
+    "exerciseTitlePlaceholder": "Enter exercise title",
+    "paletteLabel": "Drag tokens onto the canvas",
+    "paletteDragAriaLabel": "Drag {{variant}} math token to canvas",
+    "canvasEmptyHint": "Drag math nodes here to place them anywhere on the canvas."
   },
   "imagePinDialog": {
     "title": "Image Pin",

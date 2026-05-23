@@ -183,3 +183,102 @@ export function getThemeClasses(themeId?: string): ThemeClasses {
   if (themeId && isThemeId(themeId)) return THEME_CLASSES_BY_ID[themeId]
   return THEME_CLASSES_BY_ID.default
 }
+
+/** Warm neutral surfaces for authoring UIs (game composition canvas, rich editors). */
+export const COMPOSITION_WORKSPACE_SURFACE_IDS = [
+  'background',
+  'surface',
+  'surface-elevated',
+  'surface-offset',
+  'border',
+  'divider',
+] as const
+
+export type CompositionWorkspaceSurfaceId = (typeof COMPOSITION_WORKSPACE_SURFACE_IDS)[number]
+
+const COMPOSITION_WORKSPACE_CSS_VAR_BY_ID = {
+  background: '--composition-workspace-background',
+  surface: '--composition-workspace-surface',
+  'surface-elevated': '--composition-workspace-surface-elevated',
+  'surface-offset': '--composition-workspace-surface-offset',
+  border: '--composition-workspace-border',
+  divider: '--composition-workspace-divider',
+} as const satisfies Record<CompositionWorkspaceSurfaceId, string>
+
+export const COMPOSITION_WORKSPACE_SURFACES = {
+  background: {
+    label: 'Composition workspace background',
+    cssVar: `var(${COMPOSITION_WORKSPACE_CSS_VAR_BY_ID.background})`,
+  },
+  surface: {
+    label: 'Composition workspace surface',
+    cssVar: `var(${COMPOSITION_WORKSPACE_CSS_VAR_BY_ID.surface})`,
+  },
+  'surface-elevated': {
+    label: 'Composition workspace elevated surface',
+    cssVar: `var(${COMPOSITION_WORKSPACE_CSS_VAR_BY_ID['surface-elevated']})`,
+  },
+  'surface-offset': {
+    label: 'Composition workspace offset surface',
+    cssVar: `var(${COMPOSITION_WORKSPACE_CSS_VAR_BY_ID['surface-offset']})`,
+  },
+  border: {
+    label: 'Composition workspace border',
+    cssVar: `var(${COMPOSITION_WORKSPACE_CSS_VAR_BY_ID.border})`,
+  },
+  divider: {
+    label: 'Composition workspace divider',
+    cssVar: `var(${COMPOSITION_WORKSPACE_CSS_VAR_BY_ID.divider})`,
+  },
+} as const satisfies Record<CompositionWorkspaceSurfaceId, { label: string; cssVar: string }>
+
+export type CompositionWorkspaceSurfaceClasses = {
+  bg: string
+  border: string
+  divide: string
+}
+
+const COMPOSITION_WORKSPACE_SURFACE_CLASSES_BY_ID = {
+  background: {
+    bg: 'bg-composition-workspace-background',
+    border: 'border-composition-workspace-border',
+    divide: 'divide-composition-workspace-divider',
+  },
+  surface: {
+    bg: 'bg-composition-workspace-surface',
+    border: 'border-composition-workspace-border',
+    divide: 'divide-composition-workspace-divider',
+  },
+  'surface-elevated': {
+    bg: 'bg-composition-workspace-surface-elevated',
+    border: 'border-composition-workspace-border',
+    divide: 'divide-composition-workspace-divider',
+  },
+  'surface-offset': {
+    bg: 'bg-composition-workspace-surface-offset',
+    border: 'border-composition-workspace-border',
+    divide: 'divide-composition-workspace-divider',
+  },
+  border: {
+    bg: 'bg-composition-workspace-surface',
+    border: 'border-composition-workspace-border',
+    divide: 'divide-composition-workspace-divider',
+  },
+  divider: {
+    bg: 'bg-composition-workspace-surface',
+    border: 'border-composition-workspace-border',
+    divide: 'divide-composition-workspace-divider',
+  },
+} as const satisfies Record<CompositionWorkspaceSurfaceId, CompositionWorkspaceSurfaceClasses>
+
+export function getCompositionWorkspaceSurfaceCss(
+  surfaceId: CompositionWorkspaceSurfaceId,
+): string {
+  return COMPOSITION_WORKSPACE_SURFACES[surfaceId].cssVar
+}
+
+export function getCompositionWorkspaceSurfaceClasses(
+  surfaceId: CompositionWorkspaceSurfaceId,
+): CompositionWorkspaceSurfaceClasses {
+  return COMPOSITION_WORKSPACE_SURFACE_CLASSES_BY_ID[surfaceId]
+}

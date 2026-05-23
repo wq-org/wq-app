@@ -257,7 +257,12 @@
   },
   "dragDropMathEditor": {
     "descriptionLabel": "Beschreibung",
-    "descriptionPlaceholder": "Beschreibe die Mathe-Aufgabe, den Kontext und was Lernende tun sollen…"
+    "descriptionPlaceholder": "Beschreibe die Mathe-Aufgabe, den Kontext und was Lernende tun sollen…",
+    "exerciseTitleLabel": "Aufgabentitel",
+    "exerciseTitlePlaceholder": "Aufgabentitel eingeben",
+    "paletteLabel": "Bausteine auf die Fläche ziehen",
+    "paletteDragAriaLabel": "{{variant}}-Mathebaustein auf die Fläche ziehen",
+    "canvasEmptyHint": "Mathebausteine hierher ziehen und beliebig auf der Fläche platzieren."
   },
   "imagePinDialog": {
     "title": "Bild und Pins",

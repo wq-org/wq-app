@@ -137,6 +137,13 @@ body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Warm neutral stack for authoring surfaces (composition canvas, rich editors). */
+  --color-composition-workspace-background: var(--composition-workspace-background);
+  --color-composition-workspace-surface: var(--composition-workspace-surface);
+  --color-composition-workspace-surface-elevated: var(--composition-workspace-surface-elevated);
+  --color-composition-workspace-surface-offset: var(--composition-workspace-surface-offset);
+  --color-composition-workspace-border: var(--composition-workspace-border);
+  --color-composition-workspace-divider: var(--composition-workspace-divider);
 
   /* Motion — Tailwind utilities: ease-out-quint, ease-in-out-cubic, … (also var(--ease-*) in CSS).
      tw-animate enter/exit: add [--tw-ease:var(--ease-out-quint)] with duration-* on the same element. */
@@ -203,6 +210,14 @@ body {
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  /* Composition workspace — warm paper neutrals (rich-text-editor-demo light theme). */
+  --composition-workspace-background: #f5f4f0;
+  --composition-workspace-surface: #fafaf8;
+  --composition-workspace-surface-elevated: #ffffff;
+  --composition-workspace-surface-offset: #ededea;
+  --composition-workspace-border: #d6d4cf;
+  --composition-workspace-divider: #e0ded9;
+
   /* https://oklch.fyi/ */
   --oklch-violet: 0.76 0.18 305;
   --oklch-black: 0 0 0;
@@ -261,6 +276,13 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --composition-workspace-background: oklch(0.17 0.006 85);
+  --composition-workspace-surface: oklch(0.21 0.006 85);
+  --composition-workspace-surface-elevated: oklch(0.25 0.006 85);
+  --composition-workspace-surface-offset: oklch(0.19 0.006 85);
+  --composition-workspace-border: oklch(0.34 0.008 85);
+  --composition-workspace-divider: oklch(0.28 0.008 85);
 }
 
 [data-accent='violet'] {

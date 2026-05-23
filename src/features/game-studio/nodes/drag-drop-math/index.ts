@@ -28,4 +28,16 @@ export const gameDragDropMathEntry: GameNodeRegistryEntry = {
 
 export { GameDragDropMathDialog } from './GameDragDropMathDialog'
 export { GameDragDropMathNode } from './GameDragDropMathNode'
-export type { GameDragDropMathNodeData } from './drag-drop-math.schema'
+export { MathNode } from './MathNode'
+export { MathNodeDemo } from './MathNodeDemo'
+export { MathNodeSingleLineShell } from './MathNodeSingleLineShell'
+export { MathNodeInlineSentence, MathNodeSentenceText } from './MathNodeInlineSentence'
+export type { MathNodeProps, MathNodeVariant } from './MathNode'
+export type { MathNodeSingleLineShellProps } from './MathNodeSingleLineShell'
+export type {
+  MathNodeInlineSentenceProps,
+  MathNodeSentenceTextProps,
+} from './MathNodeInlineSentence'
+export type { DragDropMathCanvasToken, GameDragDropMathNodeData } from './drag-drop-math.schema'
+export { DraggableMathNode } from './DraggableMathNode'
+export { DragDropCanvas } from './DragDropCanvas'
