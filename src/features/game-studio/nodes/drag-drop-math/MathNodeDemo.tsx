@@ -1,35 +1,52 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
+import { DropMathNode } from './DropMathNode'
+import { DropTextNode } from './DropTextNode'
 import { MathNode } from './MathNode'
 import { MathNodeInlineSentence, MathNodeSentenceText } from './MathNodeInlineSentence'
+import { MathTextNode } from './MathTextNode'
 
 export function MathNodeDemo() {
-  const [quick, setQuick] = useState('quick')
-  const [over, setOver] = useState('over')
-  const [defaultSlot, setDefaultSlot] = useState('quick')
-  const [ghostSlot, setGhostSlot] = useState('over')
+  const { t } = useTranslation('features.gameStudio')
+  const [textSlot, setTextSlot] = useState('quick')
+  const [mathSlot, setMathSlot] = useState(t('dragDropMathEditor.mathNodeDefaultValue'))
+  const [mathCanvas, setMathCanvas] = useState('10km + 20€')
+  const [textCanvas, setTextCanvas] = useState('× 50')
 
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8">
       <div className="space-y-2">
         <p className="font-mono text-xs text-muted-foreground">
-          Inline sentence — ghost (bold, no fill) + default (secondary badge). Click a node to edit;
-          press Enter to finish. Badges stay on one line (no mid-word breaks).
+          Palette chips (inactive) and canvas drop nodes (default / editing / disabled).
         </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <MathNode
+            value=""
+            onValueChange={() => {}}
+            editable={false}
+            showPaletteTemplate
+            paletteTemplateLabel={t('dragDropMathEditor.mathBlockLabel')}
+          />
+          <MathTextNode
+            value={t('dragDropMathEditor.textBlockLabel')}
+            onValueChange={() => {}}
+            editable={false}
+            showPaletteIcon
+          />
+        </div>
         <MathNodeInlineSentence>
           <MathNodeSentenceText>The </MathNodeSentenceText>
-          <MathNode
-            variant="ghost"
-            value={quick}
-            onValueChange={setQuick}
-            editAriaLabel="Edit ghost math node"
+          <DropTextNode
+            value={textSlot}
+            onValueChange={setTextSlot}
+            editAriaLabel="Edit text node"
           />
           <MathNodeSentenceText> brown fox jumps </MathNodeSentenceText>
-          <MathNode
-            variant="default"
-            value={over}
-            onValueChange={setOver}
-            editAriaLabel="Edit default math node"
+          <DropMathNode
+            value={mathSlot}
+            onValueChange={setMathSlot}
+            editAriaLabel="Edit math node"
           />
           <MathNodeSentenceText> the lazy dog.</MathNodeSentenceText>
         </MathNodeInlineSentence>
@@ -37,25 +54,24 @@ export function MathNodeDemo() {
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2 rounded-xl border bg-card p-4">
-          <p className="font-mono text-xs text-muted-foreground">variant=&quot;default&quot;</p>
-          <MathNodeInlineSentence>
-            <MathNodeSentenceText>The </MathNodeSentenceText>
-            <MathNode
-              variant="default"
-              value={defaultSlot}
-              onValueChange={setDefaultSlot}
-            />
-            <MathNodeSentenceText> brown fox.</MathNodeSentenceText>
-          </MathNodeInlineSentence>
+          <p className="font-mono text-xs text-muted-foreground">DropMathNode</p>
+          <DropMathNode
+            value={mathCanvas}
+            onValueChange={setMathCanvas}
+          />
+          <DropMathNode
+            value={mathCanvas}
+            onValueChange={() => {}}
+            disabled
+          />
         </div>
         <div className="space-y-2 rounded-xl border bg-card p-4">
-          <p className="font-mono text-xs text-muted-foreground">variant=&quot;ghost&quot;</p>
+          <p className="font-mono text-xs text-muted-foreground">DropTextNode</p>
           <MathNodeInlineSentence>
             <MathNodeSentenceText>Jumps </MathNodeSentenceText>
-            <MathNode
-              variant="ghost"
-              value={ghostSlot}
-              onValueChange={setGhostSlot}
+            <DropTextNode
+              value={textCanvas}
+              onValueChange={setTextCanvas}
             />
             <MathNodeSentenceText> the lazy dog.</MathNodeSentenceText>
           </MathNodeInlineSentence>

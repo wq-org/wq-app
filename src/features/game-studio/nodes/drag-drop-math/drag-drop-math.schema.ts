@@ -1,6 +1,6 @@
 import type { SerializedEditorState } from 'lexical'
 
-import type { MathNodeVariant } from './MathNode'
+import type { MathNodeVariant } from './math-node.types'
 
 export type DragDropMathCanvasToken = {
   id: string
@@ -10,6 +10,8 @@ export type DragDropMathCanvasToken = {
   x: number
   /** Normalized vertical position on the canvas (0–1). */
   y: number
+  /** Frozen on canvas: not editable or draggable. */
+  disabled?: boolean
 }
 
 export type GameDragDropMathNodeData = {

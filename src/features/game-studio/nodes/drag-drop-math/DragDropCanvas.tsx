@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
 
-import { DraggableMathNode } from './DraggableMathNode'
+import { DraggableDropNode } from './DraggableDropNode'
 import {
   DRAG_DROP_MATH_CANVAS_DROP_ID,
   getMathNodeCanvasDragId,
@@ -25,6 +25,12 @@ function PositionedCanvasToken({
   onTokenValueChange: (tokenId: string, value: string) => void
   onTokenRemove: (tokenId: string) => void
 }) {
+  const { t } = useTranslation('features.gameStudio')
+  const editAriaLabel =
+    token.variant === 'math'
+      ? t('dragDropMathEditor.editMathTokenAriaLabel')
+      : t('dragDropMathEditor.editTextTokenAriaLabel')
+
   return (
     <div
       className="absolute z-10"
@@ -34,14 +40,15 @@ function PositionedCanvasToken({
         transform: 'translate(-50%, -50%)',
       }}
     >
-      <DraggableMathNode
+      <DraggableDropNode
         dragId={getMathNodeCanvasDragId(token.id)}
         dragData={{ source: 'canvas', tokenId: token.id }}
         variant={token.variant}
         value={token.value}
         onValueChange={(next) => onTokenValueChange(token.id, next)}
         onRemove={() => onTokenRemove(token.id)}
-        editAriaLabel="Edit math token on canvas"
+        disabled={token.disabled}
+        editAriaLabel={editAriaLabel}
       />
     </div>
   )

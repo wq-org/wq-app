@@ -17,10 +17,13 @@ import { Label } from '@/components/ui/label'
 
 import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
 import { DragDropCanvas } from './DragDropCanvas'
-import { DraggableMathNode } from './DraggableMathNode'
+import { DropMathNode } from './DropMathNode'
+import { DropTextNode } from './DropTextNode'
+import { DraggableDropNode } from './DraggableDropNode'
 import type { DragDropMathCanvasToken, GameDragDropMathNodeData } from './drag-drop-math.schema'
 import { MATH_NODE_PALETTE_DRAG_IDS, getMathNodeCanvasDragId } from './drag-drop-math-dnd.constants'
 import { MathNodePalette } from './MathNodePalette'
+import { resolveDropNodeDefaultValue } from './math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from './math-node-palette.constants'
 import { snapCenterToCursor } from './snapCenterToCursor'
 import { useDragDropMathCanvasDnd } from './useDragDropMathCanvasDnd'
@@ -43,6 +46,11 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
+  const resolveDropValue = useCallback(
+    (variant: 'math' | 'text', value: string) => resolveDropNodeDefaultValue(variant, value, t),
+    [t],
+  )
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -59,6 +67,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
   const { handleDragEnd: handleCanvasDragEnd } = useDragDropMathCanvasDnd({
     tokens: canvasTokens,
     onTokensChange: patchCanvasTokens,
+    resolveDropValue,
   })
 
   const handleDescriptionChange = useCallback(
@@ -114,19 +123,21 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
       (item) => MATH_NODE_PALETTE_DRAG_IDS[item.variant] === activeDragId,
     )
     if (palettePreset) {
+      const dropValue = resolveDropValue(palettePreset.variant, palettePreset.value)
+
+      if (palettePreset.variant === 'math') {
+        return (
+          <DropMathNode
+            value={dropValue}
+            onValueChange={() => {}}
+          />
+        )
+      }
+
       return (
-        <DraggableMathNode
-          dragId={activeDragId}
-          dragData={{
-            source: 'palette',
-            variant: palettePreset.variant,
-            value: palettePreset.value,
-          }}
-          variant={palettePreset.variant}
-          value={palettePreset.value}
+        <DropTextNode
+          value={dropValue}
           onValueChange={() => {}}
-          editable={false}
-          isDragOverlay
         />
       )
     }
@@ -137,17 +148,17 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     if (!canvasToken) return null
 
     return (
-      <DraggableMathNode
+      <DraggableDropNode
         dragId={activeDragId}
         dragData={{ source: 'canvas', tokenId: canvasToken.id }}
         variant={canvasToken.variant}
         value={canvasToken.value}
         onValueChange={() => {}}
-        editable={false}
+        disabled={canvasToken.disabled}
         isDragOverlay
       />
     )
-  }, [activeDragId, canvasTokens])
+  }, [activeDragId, canvasTokens, resolveDropValue])
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">

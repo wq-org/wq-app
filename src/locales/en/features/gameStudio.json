@@ -262,6 +262,12 @@
     "exerciseTitlePlaceholder": "Enter exercise title",
     "paletteLabel": "Drag tokens onto the canvas",
     "paletteDragAriaLabel": "Drag {{variant}} math token to canvas",
+    "mathBlockLabel": "Math Block",
+    "textBlockLabel": "Text Block",
+    "mathNodeDefaultValue": "6 • 18,50 €",
+    "textNodeDefaultValue": "Describe what you are calculating",
+    "editMathTokenAriaLabel": "Edit math token on canvas",
+    "editTextTokenAriaLabel": "Edit text token on canvas",
     "canvasEmptyHint": "Drag math nodes here to place them anywhere on the canvas."
   },
   "imagePinDialog": {

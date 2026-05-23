@@ -1,55 +1,44 @@
 import { cn } from '@/lib/utils'
 
 import { dropNodeEditableVariants, mathNodeShellVariants } from './drop-node-variants'
-import { MathNodeMathChrome } from './MathNodeMathChrome'
 import { MathNodeSingleLineShell } from './MathNodeSingleLineShell'
 import { useDropNodeEditor } from './useDropNodeEditor'
 
-export type MathNodeProps = {
+export type DropMathNodeProps = {
   value: string
   onValueChange: (value: string) => void
   className?: string
-  /** Palette strip: cuboid icon + label instead of value. */
-  showPaletteTemplate?: boolean
-  paletteTemplateLabel?: string
-  /** When false, palette drag source (inactive, no inline edit). */
-  editable?: boolean
+  disabled?: boolean
   editAriaLabel?: string
+  useGrabCursor?: boolean
+  onRemove?: () => void
 }
 
-/** Palette math chip — inactive visual with optional static template. */
-export function MathNode({
+/** Canvas math token — no icon; default / editing / disabled states. */
+export function DropMathNode({
   value,
   onValueChange,
   className,
-  showPaletteTemplate = false,
-  paletteTemplateLabel = 'Math Block',
-  editable = false,
-  editAriaLabel = 'Edit math node',
-}: MathNodeProps) {
-  const inactive = !editable || showPaletteTemplate
+  disabled = false,
+  editAriaLabel = 'Edit math token on canvas',
+  useGrabCursor = false,
+  onRemove,
+}: DropMathNodeProps) {
   const editor = useDropNodeEditor({
     value,
     onValueChange,
-    editable,
-    inactive,
+    editable: !disabled,
+    disabled,
+    onRemove,
   })
 
-  const shellClassName = cn(mathNodeShellVariants({ state: editor.visualState }), className)
-
-  if (showPaletteTemplate) {
-    return (
-      <MathNodeSingleLineShell>
-        <span
-          className={shellClassName}
-          data-node="math"
-          data-state={editor.visualState}
-        >
-          <MathNodeMathChrome label={paletteTemplateLabel} />
-        </span>
-      </MathNodeSingleLineShell>
-    )
-  }
+  const shellClassName = cn(
+    mathNodeShellVariants({ state: editor.visualState }),
+    !editor.isEditing && !disabled && useGrabCursor && 'cursor-grab active:cursor-grabbing',
+    !editor.isEditing && !disabled && !useGrabCursor && 'cursor-text',
+    editor.isEditing && 'cursor-text',
+    className,
+  )
 
   return (
     <MathNodeSingleLineShell>
@@ -57,6 +46,7 @@ export function MathNode({
         className={shellClassName}
         data-node="math"
         data-state={editor.visualState}
+        onClick={editor.canEdit && !editor.isEditing ? editor.handleClick : undefined}
       >
         <span
           ref={editor.nodeRef}

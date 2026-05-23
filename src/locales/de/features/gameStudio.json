@@ -262,6 +262,12 @@
     "exerciseTitlePlaceholder": "Aufgabentitel eingeben",
     "paletteLabel": "Bausteine auf die Fläche ziehen",
     "paletteDragAriaLabel": "{{variant}}-Mathebaustein auf die Fläche ziehen",
+    "mathBlockLabel": "Mathe Block",
+    "textBlockLabel": "Textbaustein",
+    "mathNodeDefaultValue": "6 • 18,50 €",
+    "textNodeDefaultValue": "Beschreibe, was du gerade berechnest",
+    "editMathTokenAriaLabel": "Mathebaustein auf der Fläche bearbeiten",
+    "editTextTokenAriaLabel": "Textbaustein auf der Fläche bearbeiten",
     "canvasEmptyHint": "Mathebausteine hierher ziehen und beliebig auf der Fläche platzieren."
   },
   "imagePinDialog": {

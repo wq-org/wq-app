@@ -1,4 +1,4 @@
-import type { MathNodeVariant } from './MathNode'
+import { isMathNodeVariant, type MathNodeVariant } from './math-node.types'
 
 export type MathNodePaletteDragData = {
   source: 'palette'
@@ -23,7 +23,7 @@ export function getMathNodeDragData(activeData: unknown): MathNodeDragData | nul
   if (source === 'palette') {
     const variant = (payload as { variant?: unknown }).variant
     const value = (payload as { value?: unknown }).value
-    if ((variant === 'default' || variant === 'ghost') && typeof value === 'string') {
+    if (isMathNodeVariant(variant) && typeof value === 'string') {
       return { source: 'palette', variant, value }
     }
     return null

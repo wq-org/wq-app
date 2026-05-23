@@ -1,9 +1,13 @@
-import type { MathNodeVariant } from './MathNode'
+import type { MathNodeVariant } from './math-node.types'
 
-export const MATH_NODE_PALETTE_PRESETS: ReadonlyArray<{
+export type MathNodePalettePreset = {
   variant: MathNodeVariant
   value: string
-}> = [
-  { variant: 'default', value: '10km + 20€' },
-  { variant: 'ghost', value: '× 50' },
+  /** Palette-only: render static math chip instead of value. */
+  showPaletteTemplate?: boolean
+}
+
+export const MATH_NODE_PALETTE_PRESETS: readonly MathNodePalettePreset[] = [
+  { variant: 'math', value: '', showPaletteTemplate: true },
+  { variant: 'text', value: '' },
 ]
