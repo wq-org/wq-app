@@ -1,6 +1,10 @@
+import type { SerializedEditorState } from 'lexical'
+
 export type GameDragDropMathNodeData = {
   label?: string
   title?: string
+  /** Rich description (Lexical JSON), autosaved on the canvas node. */
+  descriptionContent?: SerializedEditorState | null
 }
 
 export const GAME_DRAG_DROP_MATH_TYPE = 'gameDragDropMath' as const

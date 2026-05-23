@@ -68,6 +68,12 @@ export {
 } from './icons'
 export { IconPreviewCardSquare, IconPreviewCardWide } from './IconPreviewCard'
 export {
+  LexicalTextarea,
+  emptyLexicalEditorState,
+  normalizeLexicalEditorState,
+} from './lexical-textarea'
+export type { LexicalTextareaProps } from './lexical-textarea'
+export {
   AdvancedPasswordStrengthIndicatorProgress,
   ClearableInput,
   InputBottomBorderOnly,

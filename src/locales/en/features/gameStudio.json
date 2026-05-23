@@ -255,6 +255,10 @@
   "helpDrawer": {
     "title": "Game Studio Help"
   },
+  "dragDropMathEditor": {
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe the math task, context, and what learners should do…"
+  },
   "imagePinDialog": {
     "title": "Image Pin",
     "description": "Upload an image, draw regions, and set a question for each area."

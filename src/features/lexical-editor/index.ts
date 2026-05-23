@@ -1,4 +1,12 @@
 export { Editor, type EditorProps } from './components/Editor'
+export { useLexicalNodeEditor } from './hooks/useLexicalNodeEditor'
+export {
+  DEFAULT_FLOATING_TOOLBAR_FEATURES,
+  EMBEDDED_FLOATING_TOOLBAR_FEATURES,
+  resolveFloatingToolbarFeatures,
+  type FloatingToolbarFeatureKey,
+  type FloatingToolbarFeatures,
+} from './types/floatingToolbarFeatures'
 export {
   PasteGuardPlugin,
   DEFAULT_PASTE_MAX_BYTES,

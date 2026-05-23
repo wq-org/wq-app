@@ -9,7 +9,9 @@ import { LexicalExtensionComposer } from '@lexical/react/LexicalExtensionCompose
 import { RichTextExtension } from '@lexical/rich-text'
 import { TableCellNode, TableExtension, TableNode, TableRowNode } from '@lexical/table'
 import { configExtension, defineExtension, type SerializedEditorState } from 'lexical'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
+
+import { cn } from '@/lib/utils'
 
 import {
   LESSON_HYDRATION_TAG,
@@ -47,6 +49,11 @@ import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
 import { HeadingExtractorPlugin } from '../plugins/HeadingExtractorPlugin'
 import { HeadingIdPlugin } from '../plugins/HeadingIdPlugin'
 import { validateUrl } from '../utils/url'
+import {
+  EMBEDDED_FLOATING_TOOLBAR_FEATURES,
+  resolveFloatingToolbarFeatures,
+  type FloatingToolbarFeatures,
+} from '../types/floatingToolbarFeatures'
 
 const theme = {
   heading: {
@@ -125,7 +132,32 @@ export type EditorProps = {
   onSaveStatusChange?: (status: SaveStatus) => void
   onPasteOverflow?: (info: PasteOverflowInfo) => void
   onHeadingsChange?: (items: ScrollDrivenIndexItem[]) => void
+  /**
+   * How to normalize `initialContent` before hydrate.
+   * Default: lesson draft normalizer (applies onboarding starter when blank).
+   */
+  normalizeInitialContent?: (content: LessonDraftState | null | undefined) => LessonDraftState
+  /** `lesson` = full lesson page; `embedded` = compact surfaces (e.g. game node description). */
+  variant?: 'lesson' | 'embedded'
+  surfaceClassName?: string
+  /** Extra classes on embedded `ContentEditable` (e.g. padding aligned with placeholder). */
+  embeddedEditableClassName?: string
+  minHeightClassName?: string
+  ariaLabel?: string
+  /** Visual placeholder (`ContentEditable` requires `JSX.Element`, not plain strings). */
+  placeholder?: EditorPlaceholder | null
+  /**
+   * Accessible placeholder text (required by Lexical when `placeholder` is set).
+   * Defaults to `ariaLabel`, then the lesson fallback copy.
+   */
+  placeholderAriaLabel?: string
+  /** Per-button toggles for the floating format toolbar (merged with embedded defaults). */
+  floatingToolbarFeatures?: Partial<FloatingToolbarFeatures>
 }
+
+export type EditorPlaceholder = JSX.Element | ((isEditable: boolean) => JSX.Element | null)
+
+const LESSON_PLACEHOLDER_ARIA = "Type '/' for commands"
 
 function LessonEditablePlugin({ readOnly }: { readOnly: boolean }) {
   const [editor] = useLexicalComposerContext()
@@ -141,10 +173,12 @@ function LessonHydrationPlugin({
   lessonId,
   initialContent,
   isLoading,
+  normalizeInitialContent,
 }: {
   lessonId: string
   initialContent?: LessonDraftState | null
   isLoading: boolean
+  normalizeInitialContent: (content: LessonDraftState | null | undefined) => LessonDraftState
 }) {
   const [editor] = useLexicalComposerContext()
   const hydratedLessonIdRef = useRef<string | null>(null)
@@ -163,10 +197,10 @@ function LessonHydrationPlugin({
     }
 
     hydratedLessonIdRef.current = lessonId
-    const normalized = normalizeLessonDraftState(initialContent)
+    const normalized = normalizeInitialContent(initialContent)
     const nextState = editor.parseEditorState(JSON.stringify(normalized))
     editor.setEditorState(nextState, { tag: LESSON_HYDRATION_TAG })
-  }, [editor, initialContent, isLoading, lessonId])
+  }, [editor, initialContent, isLoading, lessonId, normalizeInitialContent])
 
   return null
 }
@@ -213,9 +247,24 @@ export function Editor({
   onSaveStatusChange,
   onPasteOverflow,
   onHeadingsChange,
+  normalizeInitialContent = normalizeLessonDraftState,
+  variant = 'lesson',
+  surfaceClassName,
+  embeddedEditableClassName,
+  minHeightClassName = 'min-h-80',
+  ariaLabel = 'Rich text editor',
+  placeholder,
+  placeholderAriaLabel,
+  floatingToolbarFeatures: floatingToolbarFeaturesPartial,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
   const requestLinkDialogRef = useRef<() => void>(() => {})
+  const isEmbedded = variant === 'embedded'
+  const floatingToolbarFeatures = resolveFloatingToolbarFeatures(
+    isEmbedded
+      ? { ...EMBEDDED_FLOATING_TOOLBAR_FEATURES, ...floatingToolbarFeaturesPartial }
+      : floatingToolbarFeaturesPartial,
+  )
 
   const registerRequestLinkDialog = useCallback((requestLinkDialog: () => void) => {
     requestLinkDialogRef.current = requestLinkDialog
@@ -232,8 +281,23 @@ export function Editor({
     [onPasteOverflow],
   )
 
+  const resolvedPlaceholder =
+    placeholder ??
+    (isEmbedded ? null : (
+      <div className="editor-placeholder">Type &apos;/&apos; for commands...</div>
+    ))
+
+  const contentEditablePlaceholderProps =
+    resolvedPlaceholder != null
+      ? {
+          placeholder: resolvedPlaceholder,
+          'aria-placeholder': placeholderAriaLabel ?? ariaLabel ?? LESSON_PLACEHOLDER_ARIA,
+        }
+      : {}
+
   return (
     <LexicalExtensionComposer
+      key={lessonId}
       extension={lessonEditorExtension}
       contentEditable={null}
     >
@@ -243,9 +307,12 @@ export function Editor({
         initialContent={initialContent}
         isLoading={isLoading}
         lessonId={lessonId}
+        normalizeInitialContent={normalizeInitialContent}
       />
-      <HeadingIdPlugin />
-      {onHeadingsChange ? <HeadingExtractorPlugin onHeadingsChange={onHeadingsChange} /> : null}
+      {!isEmbedded ? <HeadingIdPlugin /> : null}
+      {!isEmbedded && onHeadingsChange ? (
+        <HeadingExtractorPlugin onHeadingsChange={onHeadingsChange} />
+      ) : null}
       <TableCellResizerPlugin />
       {!readOnly && onPasteOverflow ? <PasteGuardPlugin onOverflow={handlePasteOverflow} /> : null}
       {!readOnly && !isLoading ? (
@@ -256,34 +323,41 @@ export function Editor({
           readOnly={readOnly}
         />
       ) : null}
-      <div className="relative w-full min-h-80">
+      <div className={cn('relative w-full', minHeightClassName)}>
         <div
           ref={setAnchorElem}
-          className="relative w-full"
+          className={cn('editor-surface relative w-full', surfaceClassName)}
         >
           <ContentEditable
-            className="editor-contentEditable px-0! outline-none caret-blue-500 selection:bg-blue-100 selection:text-slate-900 dark:text-zinc-200 dark:selection:bg-blue-900 dark:selection:text-white"
-            aria-label="Rich text editor"
-            aria-placeholder="Type '/' for commands..."
-            placeholder={
-              <div className="editor-placeholder">Type &apos;/&apos; for commands...</div>
-            }
+            className={cn(
+              'editor-contentEditable outline-none caret-blue-500 selection:bg-blue-100 selection:text-slate-900 dark:text-zinc-200 dark:selection:bg-blue-900 dark:selection:text-white focus:outline-none focus-visible:outline-none focus-visible:ring-0',
+              isEmbedded
+                ? cn('min-h-0! text-base leading-relaxed md:text-sm', embeddedEditableClassName)
+                : 'px-0!',
+            )}
+            aria-label={ariaLabel}
+            {...contentEditablePlaceholderProps}
           />
-          <SelectionHandles container={anchorElem} />
-          <LexicalDraggableBlockPlugin />
-          <SlashMenuPlugin registry={blockTypeRegistry} />
+          {!isEmbedded ? <SelectionHandles container={anchorElem} /> : null}
+          {!isEmbedded ? <LexicalDraggableBlockPlugin /> : null}
+          <SlashMenuPlugin
+            registry={blockTypeRegistry}
+            portalMenuToDocumentBody={isEmbedded}
+          />
           <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
           <AddYouTubeLinksDialogPlugin />
-          <CommentPlugin />
+          {!isEmbedded ? <CommentPlugin /> : null}
           {anchorElem ? (
             <>
               <FloatingTextFormatToolbarPlugin
                 anchorElem={anchorElem}
                 onRequestLinkDialog={handleRequestLinkDialog}
+                features={floatingToolbarFeatures}
               />
               <FloatingLinkEditorPlugin
                 anchorElem={anchorElem}
                 onRequestLinkDialog={handleRequestLinkDialog}
+                enabled={floatingToolbarFeatures.link}
               />
               <FloatingEmojiPickerPlugin anchorElem={anchorElem} />
               <FloatingImagePickerPlugin anchorElem={anchorElem} />

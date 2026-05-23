@@ -6,7 +6,7 @@ import { DragDropMathPreview } from './DragDropMathPreview'
 import { DragDropMathSettings } from './DragDropMathSettings'
 
 export function GameDragDropMathDialog(props: GameNodeDialogProps) {
-  const { nodeId, onClose, onDelete } = props
+  const { nodeId, nodeData, onPatchNodeData, onClose, onDelete } = props
   return (
     <GameNodeDialogShell
       open
@@ -16,7 +16,13 @@ export function GameDragDropMathDialog(props: GameNodeDialogProps) {
       title="Drag & drop math"
     >
       <GameLayout
-        editorContent={<DragDropMathEditor nodeId={nodeId} />}
+        editorContent={
+          <DragDropMathEditor
+            nodeId={nodeId}
+            nodeData={nodeData}
+            onPatchNodeData={onPatchNodeData}
+          />
+        }
         previewContent={<DragDropMathPreview nodeId={nodeId} />}
         settingsContent={
           <DragDropMathSettings

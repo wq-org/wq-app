@@ -34,6 +34,10 @@ import { getDOMRangeRect } from '../utils/getDOMRangeRect'
 import { getSelectedNode } from '../utils/getSelectedNode'
 import { setFloatingElemPosition } from '../utils/setFloatingElemPosition'
 import { useSignalValue } from '../utils/useExtensionHooks'
+import {
+  DEFAULT_FLOATING_TOOLBAR_FEATURES,
+  type FloatingToolbarFeatures,
+} from '../types/floatingToolbarFeatures'
 
 export const FloatingFormatExtension = defineExtension({
   build() {
@@ -144,6 +148,7 @@ type FloatingPopupProps = {
   editor: LexicalEditor
   anchorElem: HTMLElement
   formats: FormatFlags
+  features: FloatingToolbarFeatures
   isLink: boolean
   isText: boolean
   onRequestLinkDialog: () => void
@@ -153,6 +158,7 @@ function FloatingPopup({
   editor,
   anchorElem,
   formats,
+  features,
   isLink,
   isText,
   onRequestLinkDialog,
@@ -229,7 +235,7 @@ function FloatingPopup({
       ref={popupRef}
       className={toolbarShellClassName}
     >
-      {FORMAT_BUTTONS.map(({ id, Icon, label, flag }) => {
+      {FORMAT_BUTTONS.filter(({ id }) => features[id]).map(({ id, Icon, label, flag }) => {
         const active = formats[flag]
         return (
           <button
@@ -245,31 +251,37 @@ function FloatingPopup({
           </button>
         )
       })}
-      <button
-        type="button"
-        title={isLink ? 'Edit link' : 'Add link'}
-        aria-label={isLink ? 'Edit link' : 'Add link'}
-        onMouseDown={(event) => event.preventDefault()}
-        onClick={handleLinkClick}
-        className={`${toolbarButtonClassName} ${isLink ? 'bg-muted' : ''}`}
-      >
-        <Link className="h-4 w-4" />
-      </button>
-      <button
-        type="button"
-        title="Add comment"
-        aria-label="Add comment"
-        onMouseDown={(event) => event.preventDefault()}
-        onClick={handleCommentClick}
-        className={toolbarButtonClassName}
-      >
-        <MessageSquareText className="h-4 w-4" />
-      </button>
-      <TextHighlightToolbarButton
-        editor={editor}
-        className={toolbarButtonClassName}
-        enabled={isText}
-      />
+      {features.link ? (
+        <button
+          type="button"
+          title={isLink ? 'Edit link' : 'Add link'}
+          aria-label={isLink ? 'Edit link' : 'Add link'}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={handleLinkClick}
+          className={`${toolbarButtonClassName} ${isLink ? 'bg-muted' : ''}`}
+        >
+          <Link className="h-4 w-4" />
+        </button>
+      ) : null}
+      {features.comment ? (
+        <button
+          type="button"
+          title="Add comment"
+          aria-label="Add comment"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={handleCommentClick}
+          className={toolbarButtonClassName}
+        >
+          <MessageSquareText className="h-4 w-4" />
+        </button>
+      ) : null}
+      {features.highlight ? (
+        <TextHighlightToolbarButton
+          editor={editor}
+          className={toolbarButtonClassName}
+          enabled={isText}
+        />
+      ) : null}
     </div>
   )
 }
@@ -277,11 +289,13 @@ function FloatingPopup({
 type FloatingTextFormatToolbarPluginProps = {
   anchorElem: HTMLElement
   onRequestLinkDialog: () => void
+  features?: FloatingToolbarFeatures
 }
 
 export function FloatingTextFormatToolbarPlugin({
   anchorElem,
   onRequestLinkDialog,
+  features = DEFAULT_FLOATING_TOOLBAR_FEATURES,
 }: FloatingTextFormatToolbarPluginProps): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   const out = useExtensionDependency(FloatingFormatExtension).output
@@ -301,6 +315,7 @@ export function FloatingTextFormatToolbarPlugin({
       editor={editor}
       anchorElem={anchorElem}
       formats={{ isBold, isItalic, isUnderline, isStrikethrough, isCode }}
+      features={features}
       isLink={isLink}
       isText={isText}
       onRequestLinkDialog={onRequestLinkDialog}

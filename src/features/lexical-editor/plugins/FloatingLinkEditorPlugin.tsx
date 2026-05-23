@@ -309,10 +309,15 @@ function useFloatingLinkEditorToolbar(
 export function FloatingLinkEditorPlugin({
   anchorElem,
   onRequestLinkDialog,
+  enabled = true,
 }: {
   anchorElem: HTMLElement
   onRequestLinkDialog: () => void
+  /** When false, the floating link editor is not mounted (e.g. embedded game nodes). */
+  enabled?: boolean
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
-  return useFloatingLinkEditorToolbar(editor, anchorElem, onRequestLinkDialog)
+  const toolbar = useFloatingLinkEditorToolbar(editor, anchorElem, onRequestLinkDialog)
+  if (!enabled) return null
+  return toolbar
 }
