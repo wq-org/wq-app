@@ -16,6 +16,8 @@ export type ImageCarouselImage = {
   title: string
   /** Optional storage path for selecting from fetched files; passed to onSelect. */
   storagePath?: string
+  /** `cloud_files.id` when the image comes from teacher cloud. */
+  cloudFileId?: string | null
 }
 
 export type ImageCarouselItem = string | ImageCarouselImage
@@ -39,7 +41,12 @@ function normalizeImages(images: ImageCarouselItem[]): ImageCarouselImage[] {
   return images.map((item) =>
     typeof item === 'string'
       ? { url: item, title: '' }
-      : { url: item.url, title: item.title ?? '', storagePath: item.storagePath },
+      : {
+          url: item.url,
+          title: item.title ?? '',
+          storagePath: item.storagePath,
+          cloudFileId: item.cloudFileId,
+        },
   )
 }
 

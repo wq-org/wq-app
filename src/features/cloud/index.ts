@@ -16,7 +16,5 @@ export {
 } from './api/filesApi'
 export { lookupCloudFileIdByStoragePath, resolveCloudFileId } from './api/resolveCloudFileId'
 export type { ResolveCloudFileIdParams } from './api/resolveCloudFileId'
-export { isFileUsedInLesson } from './api/checkFileUsage'
-export { useFileUsageCheck } from './hooks/useFileUsageCheck'
 export { useTeacherCloudFiles } from './hooks/useTeacherCloudFiles'
 export { mapCloudFileToFileItem, mapCloudFilesToFileItems } from './utils/mapCloudFilesToFileItems'

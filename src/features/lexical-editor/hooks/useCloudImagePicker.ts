@@ -27,6 +27,7 @@ export function useCloudImagePicker(): UseCloudImagePickerReturn {
       url: file.url ?? '',
       title: file.name,
       storagePath: file.path,
+      cloudFileId: file.cloudFileId,
     }))
   }, [cloudFiles, query])
 

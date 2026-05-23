@@ -5,7 +5,6 @@ import { toast } from 'sonner'
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Text } from '@/components/ui/text'
 import { deleteFile } from '../api/filesApi'
-import { useFileUsageCheck } from '../hooks/useFileUsageCheck'
 import type { FileItem } from '../types/files.types'
 
 export type CloudFileCardContentProps = {
@@ -27,7 +26,6 @@ function formatUploadedDate(value: string | null | undefined): string | null {
 export function CloudFileCardContent({ file, onDeleted }: CloudFileCardContentProps) {
   const { t } = useTranslation('features.cloud')
   const [isDeleting, setIsDeleting] = useState(false)
-  const { isUsed, isChecking } = useFileUsageCheck(file.cloudFileId, file.storagePath)
 
   const uploadedLabel = formatUploadedDate(file.createdAt)
   const typeLabel =
@@ -36,27 +34,26 @@ export function CloudFileCardContent({ file, onDeleted }: CloudFileCardContentPr
       : file.type === 'Video'
         ? t('card.subtitle.video')
         : t('card.subtitle.image')
-  const deleteBlocked = isChecking || isUsed
 
   const handleDelete = async () => {
-    if (deleteBlocked) return
-
     if (!file.storagePath) {
       toast.error(t('delete.errorToast'))
       return
     }
 
     setIsDeleting(true)
-    const result = await deleteFile(file.storagePath)
-    setIsDeleting(false)
+    try {
+      const result = await deleteFile(file.storagePath)
+      if (!result.success) {
+        toast.error(result.error ?? t('delete.blockedFallback'))
+        return
+      }
 
-    if (!result.success) {
-      toast.error(result.error ?? t('delete.blockedFallback'))
-      return
+      toast.success(t('delete.successToast'))
+      onDeleted()
+    } finally {
+      setIsDeleting(false)
     }
-
-    toast.success(t('delete.successToast'))
-    onDeleted()
   }
 
   return (
@@ -86,19 +83,10 @@ export function CloudFileCardContent({ file, onDeleted }: CloudFileCardContentPr
       ) : null}
 
       <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
-        {isUsed ? (
-          <Text
-            variant="orange"
-            className="text-sm text-right"
-          >
-            {t('delete.usedInLessonHint')}
-          </Text>
-        ) : null}
         <HoldToDeleteButton
           type="button"
           loading={isDeleting}
-          disabled={deleteBlocked}
-          title={isUsed ? t('delete.usedInLessonTitle') : undefined}
+          disabled={isDeleting}
           onDelete={handleDelete}
         >
           {t('delete.holdToDelete')}

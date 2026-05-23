@@ -119,7 +119,7 @@ export function CloudImagePickerPanel({
       src: image.url,
       altText: image.title ?? '',
       filepath: image.storagePath ?? null,
-      cloudFileId: null,
+      cloudFileId: image.cloudFileId ?? null,
     })
   }
 

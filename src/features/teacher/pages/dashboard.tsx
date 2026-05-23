@@ -75,10 +75,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (institutionFlagsLoading) return
-    console.log('[TeacherDashboard] institution feature flags', {
-      planCode: institutionPlanCode,
-      features: institutionFeatureFlags,
-    })
   }, [institutionFlagsLoading, institutionPlanCode, institutionFeatureFlags])
   const { courses, loading: coursesLoading, error: coursesError, fetchCourses } = useCourses()
 
