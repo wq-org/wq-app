@@ -166,11 +166,22 @@
     "toasts": {
       "fileValidationError": "File \"{{fileName}}\" failed validation",
       "userIdMissing": "User ID not found. Please log in again.",
+      "institutionIdIdMissing": "Institution not found. Please log in again.",
       "userRoleMissing": "User role not found. Please log in again.",
       "noFiles": "No files to upload",
       "successSummary": "Successfully uploaded {{successCount}} file(s). Failed: {{failedCount}}",
       "failedSummary": "Failed to upload {{failedCount}} file(s)",
       "unexpectedError": "An unexpected error occurred during upload"
+    },
+    "summary": {
+      "title": "Upload summary",
+      "stats": "{{successCount}} uploaded · {{failedCount}} failed",
+      "succeededSection": "Uploaded files",
+      "failedSection": "Failed files",
+      "succeededHeading": "Uploaded",
+      "failedHeading": "Failed",
+      "done": "Done",
+      "closeAria": "Close upload dialog"
     }
   }
 }

@@ -5,6 +5,7 @@ export type {
   CardInstantPreviewImagePosition,
   CardInstantPreviewLayout,
   CardInstantPreviewListItemProps,
+  CardInstantPreviewListItemVariant,
   CardInstantPreviewMediaType,
   CardInstantPreviewPdfCardProps,
   CardInstantPreviewVideoCardProps,

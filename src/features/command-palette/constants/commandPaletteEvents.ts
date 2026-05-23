@@ -11,3 +11,9 @@ export function requestOpenCommandAddDialog(detail?: OpenCommandAddEventDetail):
     new CustomEvent<OpenCommandAddEventDetail>(OPEN_COMMAND_ADD_EVENT, { detail }),
   )
 }
+
+export const OPEN_COMMAND_UPLOAD_EVENT = 'wq:open-command-upload' as const
+
+export function requestOpenCommandUploadDialog(): void {
+  window.dispatchEvent(new CustomEvent(OPEN_COMMAND_UPLOAD_EVENT))
+}

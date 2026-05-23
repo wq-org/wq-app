@@ -166,11 +166,22 @@
     "toasts": {
       "fileValidationError": "Datei \"{{fileName}}\" ist ungültig",
       "userIdMissing": "Benutzer-ID nicht gefunden. Bitte melde dich erneut an.",
+      "institutionIdIdMissing": "Institution nicht gefunden. Bitte melde dich erneut an.",
       "userRoleMissing": "Benutzerrolle nicht gefunden. Bitte melde dich erneut an.",
       "noFiles": "Keine Dateien zum Hochladen",
       "successSummary": "{{successCount}} Datei(en) erfolgreich hochgeladen. Fehlgeschlagen: {{failedCount}}",
       "failedSummary": "{{failedCount}} Datei(en) konnten nicht hochgeladen werden",
       "unexpectedError": "Beim Upload ist ein unerwarteter Fehler aufgetreten"
+    },
+    "summary": {
+      "title": "Upload-Übersicht",
+      "stats": "{{successCount}} hochgeladen · {{failedCount}} fehlgeschlagen",
+      "succeededSection": "Hochgeladene Dateien",
+      "failedSection": "Fehlgeschlagene Dateien",
+      "succeededHeading": "Hochgeladen",
+      "failedHeading": "Fehlgeschlagen",
+      "done": "Fertig",
+      "closeAria": "Upload-Dialog schließen"
     }
   }
 }

@@ -9,7 +9,12 @@
   },
   "empty": {
     "title": "Nothing here yet",
-    "description": "Upload PDFs, images, or videos and they'll appear in your cloud."
+    "description": "Upload PDFs, images, or videos and they'll appear in your cloud.",
+    "uploadCta": "Upload files",
+    "searchEmpty": {
+      "title": "No files match your search",
+      "description": "Try a different name or file type."
+    }
   },
   "card": {
     "subtitle": {

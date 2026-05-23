@@ -13,6 +13,7 @@ export function useTeacherCloudFiles() {
   const [nextOffset, setNextOffset] = useState<number | null>(0)
   const [loading, setLoading] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [autoPrefetchBlocked, setAutoPrefetchBlocked] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const fetchTokenRef = useRef(0)
 
@@ -33,6 +34,7 @@ export function useTeacherCloudFiles() {
     const token = ++fetchTokenRef.current
     setLoading(true)
     setError(null)
+    setAutoPrefetchBlocked(false)
     try {
       const page = await listCloudFilesStoragePage({
         institutionId,
@@ -71,11 +73,16 @@ export function useTeacherCloudFiles() {
         pageSize: CLOUD_GALLERY_PAGE_SIZE,
       })
       if (token !== fetchTokenRef.current) return
+      let newItemCount = 0
       setCloudFiles((prev) => {
         const seen = new Set(prev.map((item) => item.path))
         const additions = page.items.filter((item) => !seen.has(item.path))
+        newItemCount = additions.length
         return additions.length === 0 ? prev : [...prev, ...additions]
       })
+      if (newItemCount === 0) {
+        setAutoPrefetchBlocked(true)
+      }
       setNextOffset(page.nextOffset)
     } catch (e) {
       if (token !== fetchTokenRef.current) return
@@ -117,6 +124,7 @@ export function useTeacherCloudFiles() {
     renameFileItem,
     hasMore,
     isLoadingMore,
+    autoPrefetchBlocked,
     loadMore,
   }
 }

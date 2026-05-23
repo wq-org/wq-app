@@ -16,9 +16,13 @@ import { useTeacherCloudFiles } from '../hooks/useTeacherCloudFiles'
 import type { FileItem } from '../types/files.types'
 import { buildCloudGalleryItems, isGalleryFile } from '../utils/buildCloudGalleryItems'
 import { CloudFileCardContent } from './CloudFileCardContent'
+import { CloudGalleryEmptyView } from './CloudGalleryEmptyView'
+import { CloudGallerySearchEmptyView } from './CloudGallerySearchEmptyView'
 
 const SEARCH_FIELDS = ['filename', 'type'] as const satisfies readonly (keyof FileItem)[]
-const INFINITE_SCROLL_ROOT_MARGIN = '400px'
+/** Prefetch distance (px) for sentinel observer and scroll-fill checks. */
+const INFINITE_SCROLL_PREFETCH_PX = 400
+const INFINITE_SCROLL_ROOT_MARGIN = `${INFINITE_SCROLL_PREFETCH_PX}px`
 
 export type CloudGalleryProps = {
   className?: string
@@ -35,8 +39,17 @@ export function CloudGallery({
 }: CloudGalleryProps) {
   const { t } = useTranslation('features.cloud')
   const { t: tTeacher } = useTranslation('features.teacher')
-  const { fileItems, loading, error, refetch, renameFileItem, hasMore, isLoadingMore, loadMore } =
-    useTeacherCloudFiles()
+  const {
+    fileItems,
+    loading,
+    error,
+    refetch,
+    renameFileItem,
+    hasMore,
+    isLoadingMore,
+    autoPrefetchBlocked,
+    loadMore,
+  } = useTeacherCloudFiles()
   const [query, setQuery] = useState('')
   const [scrollViewport, setScrollViewport] = useState<HTMLDivElement | null>(null)
 
@@ -115,30 +128,32 @@ export function CloudGallery({
     [filtered, subtitleLabels, handleDeleted],
   )
 
+  const isSearching = query.trim().length > 0
   const showSpinner = loading
-  const showEmpty = !loading && items.length === 0
+  const showLibraryEmpty = !loading && galleryFiles.length === 0
+  const showSearchEmpty = !loading && isSearching && galleryFiles.length > 0 && items.length === 0
   const showGrid = !loading && items.length > 0
   // Pause infinite scroll while the user is searching — `useSearchFilter` is local,
   // so fetching more pages won't surface additional matches and just burns requests.
-  const isSearching = query.trim().length > 0
   const canLoadMore = hasMore && !isSearching
+  const canAutoPrefetch = canLoadMore && !autoPrefetchBlocked
 
   useEffect(() => {
-    if (!canLoadMore || loading || isLoadingMore) return
+    if (!canAutoPrefetch || loading || isLoadingMore) return
 
     const scrollNotFilled =
       scrollViewport != null &&
-      scrollViewport.scrollHeight <= scrollViewport.clientHeight + INFINITE_SCROLL_ROOT_MARGIN
+      scrollViewport.scrollHeight <= scrollViewport.clientHeight + INFINITE_SCROLL_PREFETCH_PX
     const galleryBatchSparse = items.length < CLOUD_GALLERY_PAGE_SIZE
 
     if (scrollNotFilled || galleryBatchSparse) {
-      void loadMore()
+      handleLoadMore()
     }
   }, [
-    canLoadMore,
+    canAutoPrefetch,
     galleryScrollHeight,
+    handleLoadMore,
     items.length,
-    loadMore,
     loading,
     isLoadingMore,
     scrollViewport,
@@ -209,22 +224,9 @@ export function CloudGallery({
           </div>
         ) : null}
 
-        {showEmpty ? (
-          <div className="flex flex-col items-start gap-2 rounded-2xl border border-dashed border-border bg-background/60 p-8">
-            <Text
-              as="h3"
-              variant="h3"
-            >
-              {t('empty.title')}
-            </Text>
-            <Text
-              variant="body"
-              muted
-            >
-              {t('empty.description')}
-            </Text>
-          </div>
-        ) : null}
+        {showLibraryEmpty ? <CloudGalleryEmptyView /> : null}
+
+        {showSearchEmpty ? <CloudGallerySearchEmptyView /> : null}
 
         {showGrid ? (
           galleryScrollHeight != null ? (

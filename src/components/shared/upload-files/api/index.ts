@@ -9,6 +9,7 @@ export {
 
 // Re-export types from upload.types.ts
 export type {
+  FileUploadErrorCode,
   FileUploadResult,
   FileUploadOptions,
   FileListItem,

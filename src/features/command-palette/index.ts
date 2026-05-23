@@ -5,7 +5,9 @@ export { CommandFeedbackForm } from './components/CommandFeedbackDialog'
 export { CommandList } from './components/CommandList'
 export {
   OPEN_COMMAND_ADD_EVENT,
+  OPEN_COMMAND_UPLOAD_EVENT,
   requestOpenCommandAddDialog,
+  requestOpenCommandUploadDialog,
 } from './constants/commandPaletteEvents'
 export { CommandPalette } from './components/CommandPalette'
 export { CommandSearch } from './components/CommandSearchDialog'

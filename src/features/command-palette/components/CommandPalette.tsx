@@ -7,7 +7,9 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { X } from 'lucide-react'
 import { gsap } from 'gsap'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type {
   CommandBarItem,
@@ -28,6 +30,7 @@ import { CommandAddDialog } from './CommandAddDialog'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
 import {
   OPEN_COMMAND_ADD_EVENT,
+  OPEN_COMMAND_UPLOAD_EVENT,
   type OpenCommandAddEventDetail,
 } from '../constants/commandPaletteEvents'
 
@@ -174,8 +177,16 @@ export function CommandPalette({
       setAddInitialType(customEvent.detail?.initialType)
       setOpen(true)
     }
+    const onOpenUpload = () => {
+      setActiveDialog('upload')
+      setOpen(true)
+    }
     window.addEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
-    return () => window.removeEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
+    window.addEventListener(OPEN_COMMAND_UPLOAD_EVENT, onOpenUpload)
+    return () => {
+      window.removeEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
+      window.removeEventListener(OPEN_COMMAND_UPLOAD_EVENT, onOpenUpload)
+    }
   }, [])
 
   // School (students) and Todos tabs commented out in dashboard-config.ts for teacher + student
@@ -436,29 +447,50 @@ export function CommandPalette({
       >
         <Dialog.Portal>
           <Dialog.Content
-            className={
-              'fixed bottom-30 left-1/2 z-50 flex w-full max-w-lg -translate-x-1/2 flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-xl'
-            }
+            className={cn(
+              'fixed bottom-30 left-1/2 z-50 flex w-[calc(100vw-2rem)] -translate-x-1/2 flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-md supports-backdrop-filter:bg-popover/90',
+              activeDialog === 'upload' ? 'max-w-md' : 'max-w-lg',
+            )}
           >
             <Dialog.Title className="sr-only">Command Palette</Dialog.Title>
             <Dialog.Description className="sr-only">
               Quick access to search, upload, feedback, and other actions
             </Dialog.Description>
-            <ScrollArea className="flex-1 max-h-[min(70vh,560px)] rounded-4xl">
-              <div className="px-4 py-2">
-                {activeDialog === 'search' && <CommandSearch />}
-                {activeDialog === 'upload' && <CommandUploadDialog onSuccess={onFilesUploaded} />}
-                {activeDialog === 'feedback' && <CommandFeedbackForm />}
-                {activeDialog === 'add' && (
-                  <CommandAddDialog
-                    role={roleForGroups}
-                    onCourseCreated={onCourseCreated}
-                    onRequestClose={handleCloseOverlayDialog}
-                    initialType={addInitialType}
-                  />
-                )}
+            {activeDialog === 'upload' ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute right-2 top-2 z-20 h-7 w-7 shrink-0 rounded-full text-muted-foreground hover:text-foreground"
+                onClick={handleCloseOverlayDialog}
+                aria-label={t('upload.summary.closeAria')}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            ) : null}
+            {activeDialog === 'upload' ? (
+              <div className="max-h-[min(70vh,560px)] min-w-0 overflow-hidden px-4 py-2 pt-9">
+                <CommandUploadDialog
+                  isActive={open && activeDialog === 'upload'}
+                  onSuccess={onFilesUploaded}
+                />
               </div>
-            </ScrollArea>
+            ) : (
+              <ScrollArea className="max-h-[min(70vh,560px)] flex-1 rounded-4xl">
+                <div className="min-w-0 px-4 py-2">
+                  {activeDialog === 'search' && <CommandSearch />}
+                  {activeDialog === 'feedback' && <CommandFeedbackForm />}
+                  {activeDialog === 'add' && (
+                    <CommandAddDialog
+                      role={roleForGroups}
+                      onCourseCreated={onCourseCreated}
+                      onRequestClose={handleCloseOverlayDialog}
+                      initialType={addInitialType}
+                    />
+                  )}
+                </div>
+              </ScrollArea>
+            )}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

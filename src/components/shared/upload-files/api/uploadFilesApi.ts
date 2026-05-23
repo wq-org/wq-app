@@ -16,20 +16,66 @@ function pathRole(role: string): string {
   return r
 }
 
-/** Supabase storage returns 400 when `upsert: false` and the object key already exists. */
-function isStorageObjectAlreadyExistsError(message: string | undefined): boolean {
+type StorageClientError = {
+  message?: string
+  statusCode?: number | string
+  error?: string
+}
+
+/** Supabase storage duplicate: HTTP 409 and/or message "The resource already exists". */
+function isStorageDuplicateError(error: StorageClientError | null | undefined): boolean {
+  if (!error) return false
+
+  const statusCode = error.statusCode
+  if (statusCode === 409 || statusCode === '409') return true
+
+  if (typeof error.error === 'string' && error.error.toLowerCase() === 'duplicate') {
+    return true
+  }
+
+  const message = error.message
   if (!message) return false
+
   const normalized = message.toLowerCase()
   return (
     normalized.includes('already exists') ||
     normalized.includes('resource already exists') ||
+    normalized.includes('"error":"duplicate"') ||
     normalized.includes('duplicate')
   )
+}
+
+function duplicateBatchResult(fileName: string): FileUploadResult {
+  return {
+    success: false,
+    error: 'Skipped: another file in this upload already uses this name.',
+    fileName,
+    code: 'duplicate',
+  }
 }
 
 function publicUrlForStoragePath(storagePath: string): string | undefined {
   const { data } = supabase.storage.from(STORAGE_BUCKETS.cloud).getPublicUrl(storagePath)
   return data?.publicUrl
+}
+
+/** Builds the object key under the cloud bucket (no leading slash). */
+export function buildCloudFileStoragePath({
+  institutionId,
+  teacherId,
+  file,
+  title,
+  role,
+}: Pick<FileUploadOptions, 'institutionId' | 'teacherId' | 'file' | 'title' | 'role'>): string {
+  const baseFileName = title || file.name.split('.')[0]
+  const fileExtension = file.name.split('.').pop() || ''
+  const safeBaseName = baseFileName.replace(/[\\/]/g, '-').trim()
+  const safeFileNameWithoutExtension = safeBaseName || file.name.split('.')[0] || 'file'
+  const sanitizedFileName = fileExtension
+    ? `${safeFileNameWithoutExtension}.${fileExtension}`
+    : safeFileNameWithoutExtension
+
+  return `${institutionId}/${pathRole(role)}/${teacherId}/${sanitizedFileName}`
 }
 
 /**
@@ -45,13 +91,14 @@ export async function uploadFile({
   file,
   title,
   role,
+  batchPathsClaimed,
 }: FileUploadOptions): Promise<FileUploadResult> {
   try {
-    // Validate inputs
     if (!institutionId || !institutionId.trim()) {
       return {
         success: false,
         error: 'Institution ID is required',
+        code: 'validation',
       }
     }
 
@@ -59,6 +106,7 @@ export async function uploadFile({
       return {
         success: false,
         error: 'Teacher ID is required',
+        code: 'validation',
       }
     }
 
@@ -66,6 +114,7 @@ export async function uploadFile({
       return {
         success: false,
         error: 'File is required',
+        code: 'validation',
       }
     }
 
@@ -73,22 +122,21 @@ export async function uploadFile({
       return {
         success: false,
         error: 'Role is required',
+        code: 'validation',
       }
     }
 
-    // Use title if provided, otherwise use original filename
-    const baseFileName = title || file.name.split('.')[0]
-    const fileExtension = file.name.split('.').pop() || ''
+    const storagePath = buildCloudFileStoragePath({
+      institutionId,
+      teacherId,
+      file,
+      title,
+      role,
+    })
 
-    // Keep user-provided names as-is and only guard path separators.
-    const safeBaseName = baseFileName.replace(/[\\/]/g, '-').trim()
-    const safeFileNameWithoutExtension = safeBaseName || file.name.split('.')[0] || 'file'
-    const sanitizedFileName = fileExtension
-      ? `${safeFileNameWithoutExtension}.${fileExtension}`
-      : safeFileNameWithoutExtension
-
-    // Construct storage path: {institution_id}/{role}/{user_id}/filename.filetype
-    const storagePath = `${institutionId}/${pathRole(role)}/${teacherId}/${sanitizedFileName}`
+    if (batchPathsClaimed?.has(storagePath)) {
+      return duplicateBatchResult(file.name)
+    }
 
     let uploadPath = storagePath
     const { data, error } = await supabase.storage
@@ -99,8 +147,12 @@ export async function uploadFile({
       })
 
     if (error) {
-      if (isStorageObjectAlreadyExistsError(error.message)) {
-        // Re-picking the same filename (e.g. lesson image after reload) must succeed, not 400.
+      if (isStorageDuplicateError(error)) {
+        if (batchPathsClaimed?.has(storagePath)) {
+          return duplicateBatchResult(file.name)
+        }
+
+        // Re-picking the same filename (e.g. lesson image after reload) must succeed, not 409.
         const { data: upsertData, error: upsertError } = await supabase.storage
           .from(STORAGE_BUCKETS.cloud)
           .upload(storagePath, file, {
@@ -113,6 +165,7 @@ export async function uploadFile({
             success: false,
             error: upsertError.message || 'The resource already exists',
             fileName: file.name,
+            code: isStorageDuplicateError(upsertError) ? 'duplicate' : 'storage',
           }
         }
         uploadPath = upsertData?.path ?? storagePath
@@ -122,6 +175,7 @@ export async function uploadFile({
           success: false,
           error: error.message || 'Failed to upload file',
           fileName: file.name,
+          code: 'storage',
         }
       }
     } else {
@@ -131,14 +185,14 @@ export async function uploadFile({
           success: false,
           error: 'Upload succeeded but no path returned',
           fileName: file.name,
+          code: 'storage',
         }
       }
       uploadPath = uploadedPath
     }
 
-    // Get public URL for the uploaded file
-    // Note: If bucket is private, getPublicUrl() returns an invalid URL.
-    // For private buckets, use getFileSignedUrl() instead (see filesApi.ts).
+    batchPathsClaimed?.add(uploadPath)
+
     const publicUrl = publicUrlForStoragePath(uploadPath)
 
     return {
@@ -153,6 +207,7 @@ export async function uploadFile({
       success: false,
       error: error instanceof Error ? error.message : 'An unexpected error occurred',
       fileName: file?.name,
+      code: 'unknown',
     }
   }
 }
@@ -170,30 +225,36 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
         {
           success: false,
           error: 'No files provided for upload',
+          code: 'validation',
         },
       ]
     }
 
-    // Upload files sequentially to avoid overwhelming the storage
+    const batchPathsClaimed = new Set<string>()
     const results: FileUploadResult[] = []
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i]
 
-      // Update progress if callback provided
       if (option.onProgress) {
         option.onProgress((i / options.length) * 100)
       }
 
-      const result = await uploadFile(option)
+      const result = await uploadFile({
+        ...option,
+        batchPathsClaimed,
+      })
       results.push(result)
 
       if (!result.success) {
-        console.error(`File ${i + 1}/${options.length} failed:`, result.error)
+        console.warn(
+          `Batch upload skipped/failed file ${i + 1}/${options.length}:`,
+          result.error,
+          result.code,
+        )
       }
     }
 
-    // Final progress update
     const lastOption = options[options.length - 1]
     if (lastOption?.onProgress) {
       lastOption.onProgress(100)
@@ -206,6 +267,7 @@ export async function uploadFiles(options: FileUploadOptions[]): Promise<FileUpl
       success: false,
       error: error instanceof Error ? error.message : 'An unexpected error occurred',
       fileName: option.file?.name,
+      code: 'unknown' as const,
     }))
   }
 }
@@ -233,6 +295,7 @@ export async function uploadFilesWithMetadata(
         {
           success: false,
           error: 'No files provided for upload',
+          code: 'validation',
         },
       ]
     }
@@ -241,6 +304,7 @@ export async function uploadFilesWithMetadata(
       return files.map(() => ({
         success: false,
         error: 'Institution ID is required',
+        code: 'validation' as const,
       }))
     }
 
@@ -248,6 +312,7 @@ export async function uploadFilesWithMetadata(
       return files.map(() => ({
         success: false,
         error: 'Teacher ID is required',
+        code: 'validation' as const,
       }))
     }
 
@@ -259,7 +324,6 @@ export async function uploadFilesWithMetadata(
       role,
       onProgress: onProgress
         ? (progress: number) => {
-            // Calculate overall progress across all files
             const fileProgress = (index / files.length) * 100 + progress / files.length
             onProgress(Math.min(fileProgress, 100))
           }
@@ -273,6 +337,7 @@ export async function uploadFilesWithMetadata(
       success: false,
       error: error instanceof Error ? error.message : 'An unexpected error occurred',
       fileName: file.file.name,
+      code: 'unknown' as const,
     }))
   }
 }
@@ -361,12 +426,10 @@ export async function renameFile(
       }
     }
 
-    // Extract directory from old path (e.g., "teachers/{user_id}/" from "teachers/{user_id}/oldname.ext")
     const pathParts = oldPath.split('/')
     const directory = pathParts.slice(0, -1).join('/')
     const newPath = `${directory}/${newFilename}`
 
-    // Download the file
     const { data: fileData, error: downloadError } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .download(oldPath)
@@ -379,7 +442,6 @@ export async function renameFile(
       }
     }
 
-    // Upload with new name
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .upload(newPath, fileData, {
@@ -395,15 +457,12 @@ export async function renameFile(
       }
     }
 
-    // Delete old file
     const { error: deleteError } = await supabase.storage
       .from(STORAGE_BUCKETS.cloud)
       .remove([oldPath])
 
     if (deleteError) {
       console.error('Supabase delete error during rename:', deleteError)
-      // Note: New file was created but old one wasn't deleted
-      // This is not ideal but we'll return success since the rename "worked"
       console.warn('Warning: New file created but old file could not be deleted')
     }
 
@@ -437,7 +496,6 @@ export async function fetchFilesByRole(
   options?: FetchFilesOptions,
 ): Promise<FetchFilesResult> {
   try {
-    // Validate inputs
     if (!institutionId || !institutionId.trim()) {
       return {
         success: false,
@@ -459,10 +517,8 @@ export async function fetchFilesByRole(
       }
     }
 
-    // Construct storage path: {institution_id}/{role}/{user_id}/ (role singular for storage)
     const storagePath = `${institutionId}/${pathRole(role)}/${userId}/`
 
-    // Fetch files from Supabase storage
     const { data, error } = await supabase.storage.from(STORAGE_BUCKETS.cloud).list(storagePath, {
       limit: options?.limit || 100,
       sortBy: options?.sortBy || { column: 'name', order: 'asc' },

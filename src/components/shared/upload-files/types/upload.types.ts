@@ -31,12 +31,15 @@ export const ALL_ALLOWED_TYPES: string[] = [
 export const MAX_VIDEO_DURATION = 60 // seconds
 
 // File upload types
+export type FileUploadErrorCode = 'duplicate' | 'validation' | 'storage' | 'unknown'
+
 export interface FileUploadResult {
   success: boolean
   path?: string
   publicUrl?: string
   error?: string
   fileName?: string
+  code?: FileUploadErrorCode
 }
 
 export interface FileUploadOptions {
@@ -46,6 +49,11 @@ export interface FileUploadOptions {
   title?: string
   role: string // Role for storage path (e.g., 'teachers', 'students', 'institutionAdmins', 'superAdmins')
   onProgress?: (progress: number) => void
+  /**
+   * When set (batch uploads), storage paths in this set are skipped without upsert so one
+   * collision does not overwrite another file in the same batch.
+   */
+  batchPathsClaimed?: Set<string>
 }
 
 // File list types

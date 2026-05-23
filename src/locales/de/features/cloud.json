@@ -9,7 +9,12 @@
   },
   "empty": {
     "title": "Noch nichts hier",
-    "description": "Lade PDFs, Bilder oder Videos hoch, damit sie in deiner Cloud erscheinen."
+    "description": "Lade PDFs, Bilder oder Videos hoch, damit sie in deiner Cloud erscheinen.",
+    "uploadCta": "Dateien hochladen",
+    "searchEmpty": {
+      "title": "Keine Dateien passen zu deiner Suche",
+      "description": "Probiere einen anderen Namen oder Dateityp."
+    }
   },
   "card": {
     "subtitle": {
