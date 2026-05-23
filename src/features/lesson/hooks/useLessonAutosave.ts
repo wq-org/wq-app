@@ -136,6 +136,13 @@ export function useLessonAutosave({
     [isReadOnly, lessonId, maxDocSizeBytes, setStatus],
   )
 
+  /**
+   * Latest pending editor state from the debounced listener.
+   * Kept separate from `pendingStateRef` (which is the queued-while-saving slot)
+   * so unmount can flush even when no save is currently in flight.
+   */
+  const pendingDebouncedStateRef = useRef<EditorState | null>(null)
+
   useEffect(() => {
     if (isReadOnly || !lessonId) {
       return
@@ -151,11 +158,15 @@ export function useLessonAutosave({
         return
       }
 
+      pendingDebouncedStateRef.current = editorState
+
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
       }
 
       debounceTimerRef.current = setTimeout(() => {
+        debounceTimerRef.current = null
+        pendingDebouncedStateRef.current = null
         void attemptSave(editorState)
       }, debounceMs)
     })
@@ -165,6 +176,14 @@ export function useLessonAutosave({
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
       if (retryTimerRef.current) clearTimeout(retryTimerRef.current)
+
+      const pending = pendingDebouncedStateRef.current
+      pendingDebouncedStateRef.current = null
+      if (pending) {
+        // Fire and forget: the parent has already removed this subtree, so we can't
+        // await — but the save call still completes and persists the latest edit.
+        void attemptSave(pending)
+      }
     }
-  }, [])
+  }, [attemptSave])
 }

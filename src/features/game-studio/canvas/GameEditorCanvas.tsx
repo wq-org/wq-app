@@ -515,6 +515,19 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }, AUTOSAVE_DEBOUNCE_MS)
   }, [flushAutosave])
 
+  /**
+   * Cancel the pending debounce and persist the latest snapshot immediately.
+   * Called when a node dialog closes so edits made within the debounce window
+   * (e.g. math equation commit, title edit) are not lost.
+   */
+  const flushAutosaveNow = useCallback(async () => {
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current)
+      autosaveTimerRef.current = null
+    }
+    await flushAutosave()
+  }, [flushAutosave])
+
   const persist = useCallback(
     async (status: 'save' | 'publish') => {
       if (!projectId) {
@@ -760,6 +773,15 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     [openDialogNodeId],
   )
 
+  /**
+   * Close the open node dialog, flushing the autosave debounce first so any
+   * pending edits (math equation, title, description) persist before unmount.
+   */
+  const handleCloseOpenDialog = useCallback(() => {
+    setOpenDialogNodeId(null)
+    void flushAutosaveNow()
+  }, [flushAutosaveNow])
+
   // ---- Delete node from dialog (respects registry isDeletable) ----
   const handleDeleteOpenNode = useCallback(() => {
     if (!openDialogNodeId) return
@@ -874,7 +896,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           nodeId={openDialog.nodeId}
           nodeData={(openDialog.node.data as Record<string, unknown>) ?? {}}
           onPatchNodeData={handlePatchOpenNodeData}
-          onClose={() => setOpenDialogNodeId(null)}
+          onClose={handleCloseOpenDialog}
           onDelete={handleDeleteOpenNode}
           onNavigateToNode={(id) => setOpenDialogNodeId(id)}
           flowNodes={nodes}

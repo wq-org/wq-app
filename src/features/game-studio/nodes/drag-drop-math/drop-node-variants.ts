@@ -47,9 +47,9 @@ export const textNodeShellVariants = cva(dropNodeShellBase, {
 })
 
 /** Tighter chips on the canvas when no drag session is active. */
-export const canvasDropNodeCompactMathClass = 'px-2.5! py-1! text-sm leading-snug'
-export const canvasDropNodeCompactTextClass = 'px-2! py-0.5! text-sm leading-snug'
-export const canvasDropNodeCompactGhostClass = 'px-2! py-1! text-sm leading-snug'
+export const canvasDropNodeCompactMathClass = 'px-3.5! py-1.5! text-base leading-normal'
+export const canvasDropNodeCompactTextClass = 'px-3! py-1! text-base leading-normal'
+export const canvasDropNodeCompactGhostClass = 'px-3! py-1.5! text-base leading-normal'
 
 export const dropNodeEditableVariants = cva('min-w-[1ch] outline-none', {
   variants: {
