@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import { useCallback, useMemo, useState, type ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   DndContext,
@@ -7,7 +7,6 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-  type DragMoveEvent,
   type DragStartEvent,
 } from '@dnd-kit/core'
 import type { SerializedEditorState } from 'lexical'
@@ -19,7 +18,7 @@ import { Label } from '@/components/ui/label'
 import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
 import {
   DragDropMathCanvas,
-  createCanvasCollisionDetection,
+  canvasCollisionDetection,
   getCanvasTokenIdFromSortableId,
   useDragDropMathCanvasRows,
 } from './canvas'
@@ -62,12 +61,6 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
   const canvasRows = useMemo(() => resolveCanvasRows(pin), [pin])
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
-  const lastStableOverIdRef = useRef<string | number | null>(null)
-
-  const collisionDetection = useMemo(
-    () => createCanvasCollisionDetection(() => lastStableOverIdRef.current),
-    [],
-  )
 
   const resolveDropValue = useCallback(
     (variant: 'math' | 'text', value: string) => resolveDropNodeDefaultValue(variant, value, t),
@@ -113,19 +106,11 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
   )
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    lastStableOverIdRef.current = null
     setActiveDragId(String(event.active.id))
-  }, [])
-
-  const handleDragMove = useCallback((event: DragMoveEvent) => {
-    if (event.over) {
-      lastStableOverIdRef.current = event.over.id
-    }
   }, [])
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      lastStableOverIdRef.current = null
       setActiveDragId(null)
       handleCanvasDragEnd(event)
     },
@@ -133,7 +118,6 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
   )
 
   const handleDragCancel = useCallback(() => {
-    lastStableOverIdRef.current = null
     setActiveDragId(null)
   }, [])
 
@@ -205,9 +189,8 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
 
       <DndContext
         sensors={sensors}
-        collisionDetection={collisionDetection}
+        collisionDetection={canvasCollisionDetection}
         onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >

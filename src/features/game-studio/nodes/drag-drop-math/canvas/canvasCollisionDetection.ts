@@ -15,11 +15,13 @@ import {
 type CanvasDropTargetKind = 'token' | 'row' | 'empty' | 'gap' | 'unknown'
 
 const DROP_TARGET_PRIORITY: Record<CanvasDropTargetKind, number> = {
+  // Token > row > gap > empty. When the pointer's rect overlaps multiple
+  // targets (e.g. row padding touches the gap below), we always prefer the
+  // most specific one. Row > gap means moving the cursor through row padding
+  // never accidentally creates a "new row" drop; gap > empty keeps the
+  // dashed-row hint from being swallowed by the empty-canvas backdrop.
   token: 40,
   row: 30,
-  // Gap must outrank empty: the empty backdrop wraps every gap rect, so when the
-  // pointer is purely inside a gap, pointerWithin returns [gap, empty]. If empty
-  // wins, isOver on the gap never fires and the dashed blue hint never shows.
   gap: 20,
   empty: 10,
   unknown: 0,
@@ -56,38 +58,21 @@ function sortCollisionsByDropPriority(collisions: Collision[]): Collision[] {
 }
 
 /**
- * When the pointer still overlaps a row/token and a between-row gap, keep favoring the
- * row line so quick vertical moves do not flip to "new row" by accident.
+ * Canvas collision detection: strictly pointer-driven.
+ *
+ * 1. Use `pointerWithin` so only rects that actually contain the cursor count.
+ * 2. Fall back to `closestCenter` when the pointer isn't inside any rect
+ *    (e.g. the cursor is at the canvas edge during a fast flick).
+ * 3. Sort by drop-target priority so a row whose rect contains the pointer
+ *    always beats a gap whose rect also contains the pointer, but a gap
+ *    whose rect contains the pointer always beats a row that does NOT.
+ *
+ * No "sticky last-over" carry-over — the moment the pointer leaves a row,
+ * its `isOver` flips to false in the same frame so visual feedback stays in
+ * sync with the actual cursor position.
  */
-function applyStickyRowPreference(
-  sorted: Collision[],
-  lastStableOverId: string | number | null,
-): Collision[] {
-  if (!lastStableOverId || sorted.length < 2) return sorted
-
-  const topKind = getCanvasDropTargetKind(sorted[0])
-  if (topKind !== 'gap') return sorted
-
-  const stableHit = sorted.find((collision) => collision.id === lastStableOverId)
-  if (!stableHit) return sorted
-
-  const stableKind = getCanvasDropTargetKind(stableHit)
-  if (stableKind !== 'row' && stableKind !== 'token') return sorted
-
-  return [stableHit, ...sorted.filter((collision) => collision.id !== lastStableOverId)]
-}
-
-/**
- * Canvas collision detection: pointer hits first, then closest center.
- * Token/row targets outrank thin between-row gaps and the empty-canvas backdrop.
- */
-export function createCanvasCollisionDetection(
-  getLastStableOverId: () => string | number | null,
-): CollisionDetection {
-  return (args) => {
-    const pointerHits = pointerWithin(args)
-    const baseHits = pointerHits.length > 0 ? pointerHits : closestCenter(args)
-    const sorted = sortCollisionsByDropPriority(baseHits)
-    return applyStickyRowPreference(sorted, getLastStableOverId())
-  }
+export const canvasCollisionDetection: CollisionDetection = (args) => {
+  const pointerHits = pointerWithin(args)
+  const baseHits = pointerHits.length > 0 ? pointerHits : closestCenter(args)
+  return sortCollisionsByDropPriority(baseHits)
 }

@@ -1,6 +1,6 @@
 export { DragDropMathCanvas } from './DragDropMathCanvas'
 export type { DragDropMathCanvasProps } from './DragDropMathCanvas'
-export { createCanvasCollisionDetection } from './canvasCollisionDetection'
+export { canvasCollisionDetection } from './canvasCollisionDetection'
 export { useDragDropMathCanvasRows } from './useDragDropMathCanvasRows'
 export type { UseDragDropMathCanvasRowsArgs } from './useDragDropMathCanvasRows'
 export { getCanvasTokenIdFromSortableId } from './canvas-dnd.constants'
