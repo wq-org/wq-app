@@ -27,9 +27,9 @@ export function BetweenRowZone({ position, rowId }: BetweenRowZoneProps) {
       ref={setNodeRef}
       className={cn(
         'relative w-full transition-all duration-150',
-        !isTokenLikeDrag && 'my-1 h-3',
-        isTokenLikeDrag && !isOver && 'my-2 h-12',
-        isTokenLikeDrag && isOver && 'my-2 h-16',
+        !isTokenLikeDrag && 'my-0.5 h-1',
+        isTokenLikeDrag && !isOver && 'my-1.5 h-10',
+        isTokenLikeDrag && isOver && 'my-1.5 h-14',
       )}
     >
       <RowGhostHint

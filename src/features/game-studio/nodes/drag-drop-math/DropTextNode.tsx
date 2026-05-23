@@ -1,6 +1,10 @@
 import { cn } from '@/lib/utils'
 
-import { dropNodeEditableVariants, textNodeShellVariants } from './drop-node-variants'
+import {
+  canvasDropNodeCompactTextClass,
+  dropNodeEditableVariants,
+  textNodeShellVariants,
+} from './drop-node-variants'
 import { MathNodeSingleLineShell } from './MathNodeSingleLineShell'
 import { useDropNodeEditor } from './useDropNodeEditor'
 
@@ -12,6 +16,7 @@ export type DropTextNodeProps = {
   editAriaLabel?: string
   useGrabCursor?: boolean
   onRemove?: () => void
+  compact?: boolean
 }
 
 /** Canvas text token — no icon; default / editing / disabled states. */
@@ -23,6 +28,7 @@ export function DropTextNode({
   editAriaLabel = 'Edit text token on canvas',
   useGrabCursor = false,
   onRemove,
+  compact = false,
 }: DropTextNodeProps) {
   const editor = useDropNodeEditor({
     value,
@@ -34,6 +40,7 @@ export function DropTextNode({
 
   const shellClassName = cn(
     textNodeShellVariants({ state: editor.visualState }),
+    compact && canvasDropNodeCompactTextClass,
     !editor.isEditing && !disabled && useGrabCursor && 'cursor-grab active:cursor-grabbing',
     !editor.isEditing && !disabled && !useGrabCursor && 'cursor-text',
     editor.isEditing && 'cursor-text',

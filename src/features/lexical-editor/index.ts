@@ -61,5 +61,6 @@ export {
   syncLessonImageLinks,
   extractCloudFileIdsFromLexicalState,
 } from './utils/syncLessonImageLinks'
+export { refreshCloudImagesInEditor } from './utils/refreshCloudImagesInEditor'
 export { HeadingExtractorPlugin, type LessonHeadingItem } from './plugins/HeadingExtractorPlugin'
 export { HeadingIdPlugin } from './plugins/HeadingIdPlugin'

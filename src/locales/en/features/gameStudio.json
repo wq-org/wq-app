@@ -269,7 +269,8 @@
     "editMathTokenAriaLabel": "Edit math token on canvas",
     "editTextTokenAriaLabel": "Edit text token on canvas",
     "canvasEmptyHint": "Drag math nodes here to place them anywhere on the canvas.",
-    "reorderRowAriaLabel": "Reorder row"
+    "reorderRowAriaLabel": "Reorder row",
+    "duplicateResultAriaLabel": "Drag result {{value}} into a new row to keep calculating"
   },
   "imagePinDialog": {
     "title": "Image Pin",

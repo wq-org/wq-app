@@ -38,6 +38,8 @@ export { MathNodeInlineSentence, MathNodeSentenceText } from './MathNodeInlineSe
 export type { MathNodeProps } from './MathNode'
 export type { MathTextNodeProps } from './MathTextNode'
 export type { DropMathNodeProps } from './DropMathNode'
+export type { MathTokenCommitPayload } from './useMathDropNodeEditor'
+export type { MathTokenShellState } from './math-token-shell.types'
 export type { DropTextNodeProps } from './DropTextNode'
 export type { MathNodeVariant } from './math-node.types'
 export type { DropNodeVisualState } from './drop-node.types'

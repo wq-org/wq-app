@@ -7,10 +7,10 @@ export type MathNodeMathChromeProps = {
   className?: string
 }
 
-/** Static palette chip: cuboid icon + “Mathe Block” on equation pill colors. */
+/** Static palette chip: cuboid icon + label; UI chrome uses Satoshi, not equation font. */
 export function MathNodeMathChrome({ label, className }: MathNodeMathChromeProps) {
   return (
-    <span className={cn('inline-flex items-center gap-2', className)}>
+    <span className={cn('inline-flex items-center gap-2 font-satoshi', className)}>
       <Cuboid
         className="size-4 shrink-0"
         aria-hidden

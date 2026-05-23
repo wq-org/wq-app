@@ -7,13 +7,13 @@ import {
 } from './canvas.types'
 import type { DragDropMathCanvasRow } from '../drag-drop-math.schema'
 import type { MathNodeVariant } from '../math-node.types'
+import { rowHasEquationToken } from '../utils/mathEquationRow'
 import { findRowIndexById, findTokenLocation } from './canvasDnd.utils'
 
 /**
- * Hard cap of tokens per canvas row. Drops exceeding the cap spill into a fresh row
- * directly below the target.
+ * Hard cap per row: one equation + `=` + result (see {@link applyMathEquationCommitToRow}).
  */
-export const CANVAS_ROW_MAX_TOKENS = 2
+export const CANVAS_ROW_MAX_TOKENS = 3
 
 export type ResolveCanvasDropInsertTargetArgs = {
   overId: string | number
@@ -21,6 +21,10 @@ export type ResolveCanvasDropInsertTargetArgs = {
   rows: readonly DragDropMathCanvasRow[]
   /** Used to enforce the homogeneous-row constraint: math pills only sit in math rows, etc. */
   tokenVariant: MathNodeVariant
+  /** Tokens moved together (equation + suffix badges). */
+  incomingTokenCount?: number
+  /** When reordering within the source row, capacity checks are skipped. */
+  sourceRowId?: string | null
 }
 
 /**
@@ -48,12 +52,31 @@ function enforceHomogeneousRow(
 function enforceRowCapacity(
   target: CanvasTokenInsertTarget,
   rows: readonly DragDropMathCanvasRow[],
+  incomingTokenCount: number,
+  sourceRowId: string | null,
 ): CanvasTokenInsertTarget {
   if (target.kind !== 'row-end' && target.kind !== 'row-at') return target
+  if (sourceRowId === target.rowId) return target
   const rowIndex = findRowIndexById(rows, target.rowId)
   if (rowIndex < 0) return target
   const targetRow = rows[rowIndex]
-  if (targetRow.tokens.length < CANVAS_ROW_MAX_TOKENS) return target
+  if (targetRow.tokens.length + incomingTokenCount <= CANVAS_ROW_MAX_TOKENS) return target
+  return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
+}
+
+/** At most one editable equation per math row (evaluated rows use all three slots). */
+function enforceOneEquationPerRow(
+  target: CanvasTokenInsertTarget,
+  rows: readonly DragDropMathCanvasRow[],
+  tokenVariant: MathNodeVariant,
+  sourceRowId: string | null,
+): CanvasTokenInsertTarget {
+  if (tokenVariant !== 'math') return target
+  if (target.kind !== 'row-end' && target.kind !== 'row-at') return target
+  if (sourceRowId === target.rowId) return target
+  const rowIndex = findRowIndexById(rows, target.rowId)
+  if (rowIndex < 0) return target
+  if (!rowHasEquationToken(rows[rowIndex])) return target
   return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
 }
 
@@ -66,7 +89,21 @@ export function resolveCanvasDropInsertTarget({
   overData,
   rows,
   tokenVariant,
+  incomingTokenCount = 1,
+  sourceRowId = null,
 }: ResolveCanvasDropInsertTargetArgs): CanvasTokenInsertTarget | null {
+  const applyConstraints = (target: CanvasTokenInsertTarget) =>
+    enforceRowCapacity(
+      enforceOneEquationPerRow(
+        enforceHomogeneousRow(target, rows, tokenVariant),
+        rows,
+        tokenVariant,
+        sourceRowId,
+      ),
+      rows,
+      incomingTokenCount,
+      sourceRowId,
+    )
   if (overId === CANVAS_EMPTY_DROP_ID) {
     return { kind: 'first-row' }
   }
@@ -86,16 +123,44 @@ export function resolveCanvasDropInsertTarget({
     const baseTarget: CanvasTokenInsertTarget = location
       ? { kind: 'row-at', rowId: overToken.rowId, index: location.tokenIndex }
       : { kind: 'row-end', rowId: overToken.rowId }
-    return enforceRowCapacity(enforceHomogeneousRow(baseTarget, rows, tokenVariant), rows)
+    return applyConstraints(baseTarget)
   }
 
   const overRow = getCanvasRowSortablePayload(overData)
   if (overRow) {
-    return enforceRowCapacity(
-      enforceHomogeneousRow({ kind: 'row-end', rowId: overRow.rowId }, rows, tokenVariant),
-      rows,
-    )
+    return applyConstraints({ kind: 'row-end', rowId: overRow.rowId })
   }
 
   return null
+}
+
+export type ResolveResultDuplicateInsertTargetArgs = {
+  overId: string | number
+  overData: unknown
+  rows: readonly DragDropMathCanvasRow[]
+}
+
+/**
+ * Result-duplicate gesture: a ghost result chip can only spawn a new row.
+ * Inline drops (over rows, tokens) and unknown targets resolve to `null`,
+ * so the drop is rejected silently.
+ */
+export function resolveResultDuplicateInsertTarget({
+  overId,
+  overData,
+  rows,
+}: ResolveResultDuplicateInsertTargetArgs): CanvasTokenInsertTarget | null {
+  if (overId === CANVAS_EMPTY_DROP_ID) {
+    return { kind: 'first-row' }
+  }
+
+  const gapPayload = getCanvasGapDroppablePayload(overData)
+  if (!gapPayload) return null
+  if (findRowIndexById(rows, gapPayload.rowId) < 0) return null
+
+  return {
+    kind: 'new-row',
+    position: gapPayload.position,
+    referenceRowId: gapPayload.rowId,
+  }
 }

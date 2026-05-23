@@ -1,6 +1,7 @@
 import { Reorder } from 'motion/react'
 
 import type { DragDropMathCanvasRow } from '../drag-drop-math.schema'
+import type { MathTokenCommitPayload } from '../useMathDropNodeEditor'
 import { BetweenRowZone } from './BetweenRowZone'
 import { CanvasRowItem } from './CanvasRowItem'
 
@@ -8,6 +9,7 @@ export type CanvasRowListProps = {
   rows: readonly DragDropMathCanvasRow[]
   onRowsReorder: (nextRows: DragDropMathCanvasRow[]) => void
   onTokenValueChange: (tokenId: string, value: string) => void
+  onMathTokenCommit: (tokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
 }
 
@@ -20,6 +22,7 @@ export function CanvasRowList({
   rows,
   onRowsReorder,
   onTokenValueChange,
+  onMathTokenCommit,
   onTokenRemove,
 }: CanvasRowListProps) {
   return (
@@ -43,6 +46,7 @@ export function CanvasRowList({
             key={row.id}
             row={row}
             onTokenValueChange={onTokenValueChange}
+            onMathTokenCommit={onMathTokenCommit}
             onTokenRemove={onTokenRemove}
           />
         ))}

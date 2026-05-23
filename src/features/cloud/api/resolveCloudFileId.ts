@@ -63,3 +63,22 @@ export async function lookupCloudFileIdByStoragePath(
 
   return (data?.id as string | undefined) ?? null
 }
+
+export async function lookupStoragePathByCloudFileId(cloudFileId: string): Promise<string | null> {
+  const id = cloudFileId.trim()
+  if (!id) return null
+
+  const { data, error } = await supabase
+    .from('cloud_files')
+    .select('storage_object_name')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[lookupStoragePathByCloudFileId] lookup failed', error)
+    return null
+  }
+
+  const path = data?.storage_object_name
+  return typeof path === 'string' && path.trim() ? path.trim() : null
+}

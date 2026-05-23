@@ -4,16 +4,28 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import { getMathNodeDragData } from '../drag-drop-math-dnd.types'
 import type { DragDropMathCanvasRow, DragDropMathCanvasToken } from '../drag-drop-math.schema'
 import type { MathNodeVariant } from '../math-node.types'
-import { resolveCanvasDropInsertTarget } from './canvasDropTarget.utils'
+import {
+  applyMathEquationCommitToRows,
+  collectEquationGroupTokenIds,
+  createMathEquationFromResult,
+  extractEquationGroupTokens,
+  isEditableEquationToken,
+  type MathEquationCommitPayload,
+} from '../utils/mathEquationRow'
+import {
+  resolveCanvasDropInsertTarget,
+  resolveResultDuplicateInsertTarget,
+} from './canvasDropTarget.utils'
 import {
   createCanvasTokenId,
   findTokenLocation,
   insertTokenAt,
+  insertTokenGroupAt,
   pruneEmptyRows,
   removeTokenById,
   reorderTokenWithinRow,
 } from './canvasDnd.utils'
-import { getCanvasTokenSortablePayload } from './canvas.types'
+import { getCanvasResultDuplicatePayload, getCanvasTokenSortablePayload } from './canvas.types'
 
 export type UseDragDropMathCanvasRowsArgs = {
   rows: readonly DragDropMathCanvasRow[]
@@ -36,7 +48,25 @@ function buildPaletteToken(
     id: createCanvasTokenId(),
     value: resolveDropValue(variant, value),
     variant,
+    mathRole: variant === 'math' ? 'equation' : undefined,
   }
+}
+
+function removeTokenGroup(
+  rows: readonly DragDropMathCanvasRow[],
+  equationTokenId: string,
+): DragDropMathCanvasRow[] {
+  for (const row of rows) {
+    const groupIds = collectEquationGroupTokenIds(row, equationTokenId)
+    if (groupIds.length === 0) continue
+    const idSet = new Set(groupIds)
+    const next = rows.map((candidate) => ({
+      ...candidate,
+      tokens: candidate.tokens.filter((token) => !idSet.has(token.id)),
+    }))
+    return pruneEmptyRows(next)
+  }
+  return pruneEmptyRows(removeTokenById(rows, equationTokenId))
 }
 
 /**
@@ -54,6 +84,19 @@ export function useDragDropMathCanvasRows({
       const { active, over } = event
       if (!over) return
 
+      const resultDuplicate = getCanvasResultDuplicatePayload(active.data.current)
+      if (resultDuplicate) {
+        const target = resolveResultDuplicateInsertTarget({
+          overId: over.id,
+          overData: over.data.current,
+          rows,
+        })
+        if (!target) return
+        const spawned = createMathEquationFromResult(resultDuplicate.value)
+        onRowsChange(pruneEmptyRows(insertTokenAt(rows, spawned, target)))
+        return
+      }
+
       const activeToken = getCanvasTokenSortablePayload(active.data.current)
       const overToken = getCanvasTokenSortablePayload(over.data.current)
       if (activeToken && overToken && activeToken.rowId === overToken.rowId) {
@@ -69,15 +112,27 @@ export function useDragDropMathCanvasRows({
 
       const paletteData = getMathNodeDragData(active.data.current)
       let working = cloneRowsWithTokens(rows)
-      let token: DragDropMathCanvasToken
+      let tokensToInsert: DragDropMathCanvasToken[]
+      let sourceRowId: string | null = null
 
       if (paletteData?.source === 'palette') {
-        token = buildPaletteToken(paletteData.variant, paletteData.value, resolveDropValue)
+        tokensToInsert = [
+          buildPaletteToken(paletteData.variant, paletteData.value, resolveDropValue),
+        ]
       } else if (activeToken) {
         const location = findTokenLocation(working, activeToken.tokenId)
         if (!location) return
-        token = working[location.rowIndex].tokens[location.tokenIndex]
-        working = removeTokenById(working, activeToken.tokenId)
+        sourceRowId = activeToken.rowId
+        const sourceRow = working[location.rowIndex]
+        const activeCanvasToken = sourceRow.tokens[location.tokenIndex]
+        if (!isEditableEquationToken(activeCanvasToken)) return
+
+        tokensToInsert = extractEquationGroupTokens(working, activeToken.tokenId)
+        const removeIds = new Set(collectEquationGroupTokenIds(sourceRow, activeToken.tokenId))
+        working = working.map((row) => ({
+          ...row,
+          tokens: row.tokens.filter((token) => !removeIds.has(token.id)),
+        }))
       } else {
         return
       }
@@ -86,11 +141,13 @@ export function useDragDropMathCanvasRows({
         overId: over.id,
         overData: over.data.current,
         rows: working,
-        tokenVariant: token.variant,
+        tokenVariant: tokensToInsert[0].variant,
+        incomingTokenCount: tokensToInsert.length,
+        sourceRowId,
       })
       if (!insertTarget) return
 
-      onRowsChange(pruneEmptyRows(insertTokenAt(working, token, insertTarget)))
+      onRowsChange(pruneEmptyRows(insertTokenGroupAt(working, tokensToInsert, insertTarget)))
     },
     [onRowsChange, resolveDropValue, rows],
   )
@@ -114,12 +171,23 @@ export function useDragDropMathCanvasRows({
     [onRowsChange, rows],
   )
 
-  const removeToken = useCallback(
-    (tokenId: string) => {
-      onRowsChange(pruneEmptyRows(removeTokenById(rows, tokenId)))
+  const commitMathEquation = useCallback(
+    (equationTokenId: string, payload: MathEquationCommitPayload) => {
+      if (payload.kind === 'empty') {
+        onRowsChange(removeTokenGroup(rows, equationTokenId))
+        return
+      }
+      onRowsChange(applyMathEquationCommitToRows(rows, equationTokenId, payload))
     },
     [onRowsChange, rows],
   )
 
-  return { handleDragEnd, reorderRows, updateTokenValue, removeToken }
+  const removeToken = useCallback(
+    (tokenId: string) => {
+      onRowsChange(removeTokenGroup(rows, tokenId))
+    },
+    [onRowsChange, rows],
+  )
+
+  return { handleDragEnd, reorderRows, updateTokenValue, commitMathEquation, removeToken }
 }

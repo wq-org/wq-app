@@ -14,7 +14,11 @@ export {
   renameFile,
   listCloudFiles,
 } from './api/filesApi'
-export { lookupCloudFileIdByStoragePath, resolveCloudFileId } from './api/resolveCloudFileId'
+export {
+  lookupCloudFileIdByStoragePath,
+  lookupStoragePathByCloudFileId,
+  resolveCloudFileId,
+} from './api/resolveCloudFileId'
 export type { ResolveCloudFileIdParams } from './api/resolveCloudFileId'
 export { useTeacherCloudFiles } from './hooks/useTeacherCloudFiles'
 export { mapCloudFileToFileItem, mapCloudFilesToFileItems } from './utils/mapCloudFilesToFileItems'

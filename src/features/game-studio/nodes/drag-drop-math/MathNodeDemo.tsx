@@ -11,7 +11,9 @@ export function MathNodeDemo() {
   const { t } = useTranslation('features.gameStudio')
   const [textSlot, setTextSlot] = useState('quick')
   const [mathSlot, setMathSlot] = useState(t('dragDropMathEditor.mathNodeDefaultValue'))
-  const [mathCanvas, setMathCanvas] = useState('10km + 20€')
+  const [mathCanvas, setMathCanvas] = useState('(4 + 6) * 3')
+  const [mathExpression, setMathExpression] = useState<string | undefined>()
+  const [mathShell, setMathShell] = useState<'default' | 'ghost' | 'error'>('default')
   const [textCanvas, setTextCanvas] = useState('× 50')
 
   return (
@@ -45,7 +47,18 @@ export function MathNodeDemo() {
           <MathNodeSentenceText> brown fox jumps </MathNodeSentenceText>
           <DropMathNode
             value={mathSlot}
-            onValueChange={setMathSlot}
+            expression={mathSlot}
+            onCommit={(payload) => {
+              if (payload.kind === 'success') {
+                setMathSlot(payload.expression)
+                setMathExpression(payload.expression)
+                setMathShell('default')
+              } else if (payload.kind === 'error') {
+                setMathSlot(payload.raw)
+                setMathExpression(payload.raw)
+                setMathShell('error')
+              }
+            }}
             editAriaLabel="Edit math node"
           />
           <MathNodeSentenceText> the lazy dog.</MathNodeSentenceText>
@@ -57,11 +70,23 @@ export function MathNodeDemo() {
           <p className="font-mono text-xs text-muted-foreground">DropMathNode</p>
           <DropMathNode
             value={mathCanvas}
-            onValueChange={setMathCanvas}
+            expression={mathExpression}
+            mathShell={mathShell}
+            onCommit={(payload) => {
+              if (payload.kind === 'success') {
+                setMathCanvas(payload.expression)
+                setMathExpression(payload.expression)
+                setMathShell('default')
+              } else if (payload.kind === 'error') {
+                setMathCanvas(payload.raw)
+                setMathExpression(payload.raw)
+                setMathShell('error')
+              }
+            }}
           />
           <DropMathNode
             value={mathCanvas}
-            onValueChange={() => {}}
+            onCommit={() => {}}
             disabled
           />
         </div>

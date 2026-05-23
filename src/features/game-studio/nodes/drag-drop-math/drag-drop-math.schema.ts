@@ -1,13 +1,21 @@
 import type { SerializedEditorState } from 'lexical'
 
 import type { MathNodeVariant } from './math-node.types'
+import type { MathTokenRole } from './math-token-role.types'
+import type { MathTokenShellState } from './math-token-shell.types'
 
 export type DragDropMathCanvasToken = {
   id: string
   value: string
   variant: MathNodeVariant
+  /** Math row layout: equation (editable) · equals · result (fixed). */
+  mathRole?: MathTokenRole
   /** Frozen on canvas: not editable or draggable. */
   disabled?: boolean
+  /** Math tokens only: `error` on equation; `ghost` on result badge. */
+  mathShell?: MathTokenShellState
+  /** Equation token: last committed expression (re-shown when editing). */
+  expression?: string
 }
 
 export type DragDropMathCanvasRow = {

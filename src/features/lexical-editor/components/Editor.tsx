@@ -48,6 +48,7 @@ import TableCellResizerPlugin from '../plugins/TableCellResizer'
 import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
 import { HeadingExtractorPlugin } from '../plugins/HeadingExtractorPlugin'
 import { HeadingIdPlugin } from '../plugins/HeadingIdPlugin'
+import { LexicalCloudImageHydrationPlugin } from '../plugins/LexicalCloudImageHydrationPlugin'
 import { validateUrl } from '../utils/url'
 import {
   EMBEDDED_FLOATING_TOOLBAR_FEATURES,
@@ -174,11 +175,13 @@ function LessonHydrationPlugin({
   initialContent,
   isLoading,
   normalizeInitialContent,
+  onHydrated,
 }: {
   lessonId: string
   initialContent?: LessonDraftState | null
   isLoading: boolean
   normalizeInitialContent: (content: LessonDraftState | null | undefined) => LessonDraftState
+  onHydrated: () => void
 }) {
   const [editor] = useLexicalComposerContext()
   const hydratedLessonIdRef = useRef<string | null>(null)
@@ -200,9 +203,39 @@ function LessonHydrationPlugin({
     const normalized = normalizeInitialContent(initialContent)
     const nextState = editor.parseEditorState(JSON.stringify(normalized))
     editor.setEditorState(nextState, { tag: LESSON_HYDRATION_TAG })
-  }, [editor, initialContent, isLoading, lessonId, normalizeInitialContent])
+    onHydrated()
+  }, [editor, initialContent, isLoading, lessonId, normalizeInitialContent, onHydrated])
 
   return null
+}
+
+function CloudImageHydrationBridge({
+  enabled,
+  hydrationGeneration,
+  onPersistSerializedContent,
+}: {
+  enabled: boolean
+  hydrationGeneration: number
+  onPersistSerializedContent?: (state: SerializedEditorState) => void | Promise<void>
+}) {
+  const [editor] = useLexicalComposerContext()
+  const persistRef = useRef(onPersistSerializedContent)
+  persistRef.current = onPersistSerializedContent
+
+  const handleAfterRefresh = useCallback(() => {
+    const persist = persistRef.current
+    if (!persist) return
+    const serialized = editor.getEditorState().toJSON()
+    void Promise.resolve(persist(serialized))
+  }, [editor])
+
+  return (
+    <LexicalCloudImageHydrationPlugin
+      enabled={enabled}
+      hydrationGeneration={hydrationGeneration}
+      onAfterRefresh={onPersistSerializedContent ? handleAfterRefresh : undefined}
+    />
+  )
 }
 
 function LessonAutosaveBridge({
@@ -258,7 +291,11 @@ export function Editor({
   floatingToolbarFeatures: floatingToolbarFeaturesPartial,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
+  const [imageHydrationGeneration, setImageHydrationGeneration] = useState(0)
   const requestLinkDialogRef = useRef<() => void>(() => {})
+  const handleEditorHydrated = useCallback(() => {
+    setImageHydrationGeneration((n) => n + 1)
+  }, [])
   const isEmbedded = variant === 'embedded'
   const floatingToolbarFeatures = resolveFloatingToolbarFeatures(
     isEmbedded
@@ -308,6 +345,12 @@ export function Editor({
         isLoading={isLoading}
         lessonId={lessonId}
         normalizeInitialContent={normalizeInitialContent}
+        onHydrated={handleEditorHydrated}
+      />
+      <CloudImageHydrationBridge
+        enabled={!isLoading}
+        hydrationGeneration={imageHydrationGeneration}
+        onPersistSerializedContent={onPersistSerializedContent}
       />
       {!isEmbedded ? <HeadingIdPlugin /> : null}
       {!isEmbedded && onHeadingsChange ? (

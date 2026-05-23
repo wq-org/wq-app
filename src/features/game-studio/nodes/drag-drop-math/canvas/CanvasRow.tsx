@@ -10,15 +10,39 @@ import { cn } from '@/lib/utils'
 import { getMathNodeDragData } from '../drag-drop-math-dnd.types'
 import type { DragDropMathCanvasRow } from '../drag-drop-math.schema'
 import type { MathNodeVariant } from '../math-node.types'
+import type { DragDropMathCanvasToken } from '../drag-drop-math.schema'
+import {
+  collectEquationGroupTokenIds,
+  isFixedMathSuffixToken,
+  rowHasEquationToken,
+} from '../utils/mathEquationRow'
+
+/**
+ * Force result chips to remount on every successful re-evaluation so the
+ * `animate-in` entrance plays each time the result value changes. Equation
+ * and `=` chips keep a stable id-keyed identity.
+ */
+function getCanvasRowNodeReactKey(token: DragDropMathCanvasToken): string {
+  if (token.mathRole === 'result') return `${token.id}:${token.value}`
+  return token.id
+}
+import type { MathTokenCommitPayload } from '../useMathDropNodeEditor'
 import { CanvasRowNode } from './CanvasRowNode'
 import { CANVAS_ROW_MAX_TOKENS } from './canvasDropTarget.utils'
 import { getCanvasRowSortableId, getCanvasTokenSortableId } from './canvas-dnd.constants'
-import { CANVAS_ROW_SORTABLE_DATA_KEY, getCanvasTokenSortablePayload } from './canvas.types'
+import {
+  CANVAS_ROW_SORTABLE_DATA_KEY,
+  getCanvasResultDuplicatePayload,
+  getCanvasTokenSortablePayload,
+} from './canvas.types'
 
 type ActiveCanvasDrag = {
   variant: MathNodeVariant
   /** null when the active drag originates from the palette. */
   sourceRowId: string | null
+  incomingTokenCount: number
+  /** Result-badge duplicate gesture: row bodies must never accept inline. */
+  isResultDuplicate: boolean
 }
 
 export type CanvasRowProps = {
@@ -26,6 +50,7 @@ export type CanvasRowProps = {
   /** Framer Motion drag controls owned by the wrapping Reorder.Item. */
   dragControls: DragControls
   onTokenValueChange: (tokenId: string, value: string) => void
+  onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
 }
 
@@ -37,6 +62,7 @@ export function CanvasRow({
   row,
   dragControls,
   onTokenValueChange,
+  onMathTokenCommit,
   onTokenRemove,
 }: CanvasRowProps) {
   const { t } = useTranslation('features.gameStudio')
@@ -52,38 +78,67 @@ export function CanvasRow({
 
   const activeDrag = useMemo<ActiveCanvasDrag | null>(() => {
     if (!active) return null
+    const resultDuplicate = getCanvasResultDuplicatePayload(active.data.current)
+    if (resultDuplicate) {
+      return {
+        variant: 'math',
+        sourceRowId: null,
+        incomingTokenCount: 1,
+        isResultDuplicate: true,
+      }
+    }
     const paletteData = getMathNodeDragData(active.data.current)
     if (paletteData) {
-      return { variant: paletteData.variant, sourceRowId: null }
+      return {
+        variant: paletteData.variant,
+        sourceRowId: null,
+        incomingTokenCount: 1,
+        isResultDuplicate: false,
+      }
     }
     const tokenPayload = getCanvasTokenSortablePayload(active.data.current)
     if (tokenPayload) {
-      return { variant: tokenPayload.variant, sourceRowId: tokenPayload.rowId }
+      const incomingTokenCount =
+        tokenPayload.rowId === row.id
+          ? collectEquationGroupTokenIds(row, tokenPayload.tokenId).length
+          : CANVAS_ROW_MAX_TOKENS
+      return {
+        variant: tokenPayload.variant,
+        sourceRowId: tokenPayload.rowId,
+        incomingTokenCount: Math.max(1, incomingTokenCount),
+        isResultDuplicate: false,
+      }
     }
     return null
-  }, [active])
+  }, [active, row])
 
   // A drop into this row creates a new row (instead of landing inline) when
   // the dragged variant doesn't match this row, or the row already holds the
   // maximum number of tokens. Same-row reorders are always allowed.
   const wouldRejectInline = useMemo(() => {
     if (!activeDrag) return false
+    if (activeDrag.isResultDuplicate) return true
     if (activeDrag.sourceRowId === row.id) return false
     if (activeDrag.variant !== row.variant) return true
-    return row.tokens.length >= CANVAS_ROW_MAX_TOKENS
-  }, [activeDrag, row.id, row.tokens.length, row.variant])
+    if (activeDrag.variant === 'math' && rowHasEquationToken(row)) return true
+    return row.tokens.length + activeDrag.incomingTokenCount > CANVAS_ROW_MAX_TOKENS
+  }, [activeDrag, row])
 
   const showRejectFeedback = isOver && wouldRejectInline
   const showAcceptFeedback = isOver && !wouldRejectInline
+  const isDragSession = active != null
+  const isCompactLayout = !isDragSession
 
-  const tokenSortableIds = row.tokens.map((token) => getCanvasTokenSortableId(token.id))
+  const tokenSortableIds = row.tokens
+    .filter((token) => !token.disabled && !isFixedMathSuffixToken(token))
+    .map((token) => getCanvasTokenSortableId(token.id))
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        'group/canvas-row relative flex w-full items-start gap-2 rounded-md px-2 py-3',
-        'min-h-14 border-2 border-dashed border-transparent transition-colors duration-150',
+        'group/canvas-row relative flex w-full items-center gap-1.5 rounded-md border-2 border-dashed border-transparent px-2 transition-[min-height,padding,colors] duration-150',
+        isCompactLayout ? 'min-h-0 py-1' : 'min-h-14 py-2.5',
         showAcceptFeedback && 'border-blue-400/60 bg-blue-500/10',
         showRejectFeedback && 'border-red-500/70 bg-red-500/10',
       )}
@@ -92,10 +147,11 @@ export function CanvasRow({
         type="button"
         aria-label={t('dragDropMathEditor.reorderRowAriaLabel')}
         className={cn(
-          'mt-1 flex h-7 w-5 shrink-0 items-center justify-center rounded text-muted-foreground/60',
+          'flex shrink-0 items-center justify-center rounded text-muted-foreground/60',
           'opacity-0 transition-opacity duration-150',
           'group-hover/canvas-row:opacity-100 focus-visible:opacity-100',
           'cursor-grab touch-none hover:text-foreground active:cursor-grabbing',
+          isCompactLayout ? 'h-6 w-4' : 'mt-0.5 h-7 w-5',
         )}
         onPointerDown={(event) => {
           event.stopPropagation()
@@ -111,13 +167,20 @@ export function CanvasRow({
         items={tokenSortableIds}
         strategy={horizontalListSortingStrategy}
       >
-        <div className="flex min-h-12 min-w-0 flex-1 flex-wrap content-start items-center gap-2">
+        <div
+          className={cn(
+            'flex min-w-0 flex-1 flex-wrap items-center',
+            isCompactLayout ? 'min-h-0 gap-1' : 'min-h-12 gap-1.5 sm:gap-2',
+          )}
+        >
           {row.tokens.map((token) => (
             <CanvasRowNode
-              key={token.id}
+              key={getCanvasRowNodeReactKey(token)}
               rowId={row.id}
               token={token}
-              onValueChange={onTokenValueChange}
+              compact={isCompactLayout}
+              onTokenValueChange={onTokenValueChange}
+              onMathTokenCommit={onMathTokenCommit}
               onRemove={onTokenRemove}
             />
           ))}

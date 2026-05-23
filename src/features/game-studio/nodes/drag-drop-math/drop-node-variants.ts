@@ -6,7 +6,10 @@ const dropNodeShellBase = [
   'focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:ring-offset-background',
 ].join(' ')
 
-export const mathNodeShellVariants = cva(dropNodeShellBase, {
+/** Math chips use Libertinus Math for equation-like typography; text chips keep Satoshi. */
+const mathNodeShellBase = [dropNodeShellBase, 'font-libertinus-math'].join(' ')
+
+export const mathNodeShellVariants = cva(mathNodeShellBase, {
   variants: {
     state: {
       default: 'gap-2 rounded-full px-3.5 py-2 font-medium bg-secondary text-primary',
@@ -16,6 +19,9 @@ export const mathNodeShellVariants = cva(dropNodeShellBase, {
         'gap-2 rounded-full px-3.5 py-2 font-medium bg-blue-100 text-blue-600 dark:bg-blue-950/80 dark:text-blue-400',
       disabled:
         'gap-2 rounded-full px-3.5 py-2 font-medium bg-secondary text-primary opacity-50 cursor-not-allowed',
+      ghost: 'gap-2 rounded-full px-3.5 py-2 font-medium bg-transparent text-primary',
+      error:
+        'gap-2 rounded-full border border-red-500/20 px-3.5 py-2 font-medium bg-red-500/10 text-red-500 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-300',
     },
   },
   defaultVariants: {
@@ -40,6 +46,11 @@ export const textNodeShellVariants = cva(dropNodeShellBase, {
   },
 })
 
+/** Tighter chips on the canvas when no drag session is active. */
+export const canvasDropNodeCompactMathClass = 'px-2.5! py-1! text-sm leading-snug'
+export const canvasDropNodeCompactTextClass = 'px-2! py-0.5! text-sm leading-snug'
+export const canvasDropNodeCompactGhostClass = 'px-2! py-1! text-sm leading-snug'
+
 export const dropNodeEditableVariants = cva('min-w-[1ch] outline-none', {
   variants: {
     state: {
@@ -51,6 +62,8 @@ export const dropNodeEditableVariants = cva('min-w-[1ch] outline-none', {
       ].join(' '),
       inactive: '',
       disabled: 'pointer-events-none',
+      ghost: '',
+      error: '',
     },
   },
   defaultVariants: {

@@ -102,6 +102,26 @@ export function pruneEmptyRows(rows: readonly DragDropMathCanvasRow[]): DragDrop
   return rows.filter((row) => row.tokens.length > 0)
 }
 
+/** Inserts multiple tokens in order at a drop target (equation groups). */
+export function insertTokenGroupAt(
+  rows: readonly DragDropMathCanvasRow[],
+  tokens: readonly DragDropMathCanvasToken[],
+  target: CanvasTokenInsertTarget,
+): DragDropMathCanvasRow[] {
+  if (tokens.length === 0) return [...rows]
+  let next = insertTokenAt(rows, tokens[0], target)
+  const anchorId = tokens[0].id
+
+  for (let index = 1; index < tokens.length; index += 1) {
+    const location = findTokenLocation(next, anchorId)
+    if (!location) break
+    const rowId = next[location.rowIndex].id
+    next = insertTokenAt(next, tokens[index], { kind: 'row-end', rowId })
+  }
+
+  return next
+}
+
 /**
  * Reorders a token within a single row (horizontal sortable).
  * Returns null when the move is a no-op or indices are invalid.

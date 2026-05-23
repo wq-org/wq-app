@@ -4,9 +4,12 @@ import type { DragDropMathCanvasRow } from '../drag-drop-math.schema'
 import { BetweenRowZone } from './BetweenRowZone'
 import { CanvasRow } from './CanvasRow'
 
+import type { MathTokenCommitPayload } from '../useMathDropNodeEditor'
+
 export type CanvasRowItemProps = {
   row: DragDropMathCanvasRow
   onTokenValueChange: (tokenId: string, value: string) => void
+  onMathTokenCommit: (tokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
 }
 
@@ -14,7 +17,12 @@ export type CanvasRowItemProps = {
  * One reorderable row. Hosts its own Framer Motion drag controls so the grip
  * button inside {@link CanvasRow} can start the reorder gesture programmatically.
  */
-export function CanvasRowItem({ row, onTokenValueChange, onTokenRemove }: CanvasRowItemProps) {
+export function CanvasRowItem({
+  row,
+  onTokenValueChange,
+  onMathTokenCommit,
+  onTokenRemove,
+}: CanvasRowItemProps) {
   const dragControls = useDragControls()
 
   return (
@@ -29,6 +37,7 @@ export function CanvasRowItem({ row, onTokenValueChange, onTokenRemove }: Canvas
         row={row}
         dragControls={dragControls}
         onTokenValueChange={onTokenValueChange}
+        onMathTokenCommit={onMathTokenCommit}
         onTokenRemove={onTokenRemove}
       />
       <BetweenRowZone

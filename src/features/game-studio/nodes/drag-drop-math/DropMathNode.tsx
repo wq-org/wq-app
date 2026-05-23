@@ -1,39 +1,53 @@
 import { cn } from '@/lib/utils'
 
-import { dropNodeEditableVariants, mathNodeShellVariants } from './drop-node-variants'
+import {
+  canvasDropNodeCompactMathClass,
+  dropNodeEditableVariants,
+  mathNodeShellVariants,
+} from './drop-node-variants'
 import { MathNodeSingleLineShell } from './MathNodeSingleLineShell'
-import { useDropNodeEditor } from './useDropNodeEditor'
+import type { MathTokenShellState } from './math-token-shell.types'
+import { useMathDropNodeEditor, type MathTokenCommitPayload } from './useMathDropNodeEditor'
 
 export type DropMathNodeProps = {
   value: string
-  onValueChange: (value: string) => void
+  expression?: string
+  mathShell?: MathTokenShellState
+  onCommit: (payload: MathTokenCommitPayload) => void
   className?: string
   disabled?: boolean
   editAriaLabel?: string
   useGrabCursor?: boolean
   onRemove?: () => void
+  /** Smaller padding when the canvas is in rest (non-drag) layout. */
+  compact?: boolean
 }
 
-/** Canvas math token — no icon; default / editing / disabled states. */
+/** Canvas equation token — evaluates on Enter; row adds `=` + result badges. */
 export function DropMathNode({
   value,
-  onValueChange,
+  expression,
+  mathShell = 'default',
+  onCommit,
   className,
   disabled = false,
   editAriaLabel = 'Edit math token on canvas',
   useGrabCursor = false,
   onRemove,
+  compact = false,
 }: DropMathNodeProps) {
-  const editor = useDropNodeEditor({
+  const editor = useMathDropNodeEditor({
     value,
-    onValueChange,
-    editable: !disabled,
+    expression,
+    mathShell,
+    onCommit,
     disabled,
     onRemove,
   })
 
   const shellClassName = cn(
     mathNodeShellVariants({ state: editor.visualState }),
+    compact && canvasDropNodeCompactMathClass,
     !editor.isEditing && !disabled && useGrabCursor && 'cursor-grab active:cursor-grabbing',
     !editor.isEditing && !disabled && !useGrabCursor && 'cursor-text',
     editor.isEditing && 'cursor-text',
@@ -46,6 +60,7 @@ export function DropMathNode({
         className={shellClassName}
         data-node="math"
         data-state={editor.visualState}
+        data-math-shell={mathShell}
         onClick={editor.canEdit && !editor.isEditing ? editor.handleClick : undefined}
       >
         <span

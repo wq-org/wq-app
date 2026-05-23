@@ -269,7 +269,8 @@
     "editMathTokenAriaLabel": "Mathebaustein auf der Fläche bearbeiten",
     "editTextTokenAriaLabel": "Textbaustein auf der Fläche bearbeiten",
     "canvasEmptyHint": "Mathebausteine hierher ziehen und beliebig auf der Fläche platzieren.",
-    "reorderRowAriaLabel": "Reihe neu anordnen"
+    "reorderRowAriaLabel": "Reihe neu anordnen",
+    "duplicateResultAriaLabel": "Ergebnis {{value}} in eine neue Reihe ziehen, um weiterzurechnen"
   },
   "imagePinDialog": {
     "title": "Bild und Pins",

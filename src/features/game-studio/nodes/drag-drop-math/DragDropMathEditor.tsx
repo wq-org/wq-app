@@ -23,13 +23,16 @@ import {
   useDragDropMathCanvasRows,
 } from './canvas'
 import { DropMathNode } from './DropMathNode'
+import { DropMathStaticNode } from './DropMathStaticNode'
 import { DropTextNode } from './DropTextNode'
+import { collectEquationGroupTokenIds, isFixedMathSuffixToken } from './utils/mathEquationRow'
 import type { DragDropMathCanvasRow, GameDragDropMathNodeData } from './drag-drop-math.schema'
 import { MATH_NODE_PALETTE_DRAG_IDS } from './drag-drop-math-dnd.constants'
 import { MathNodePalette } from './MathNodePalette'
 import { resolveDropNodeDefaultValue } from './math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from './math-node-palette.constants'
 import { snapCenterToCursor } from './snapCenterToCursor'
+import { Separator } from '@/components/ui/separator'
 
 export type DragDropMathEditorProps = {
   nodeId: string
@@ -52,6 +55,10 @@ function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string
     if (token) return token
   }
   return null
+}
+
+function findRowForToken(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
+  return rows.find((row) => row.tokens.some((candidate) => candidate.id === tokenId)) ?? null
 }
 
 export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDropMathEditorProps) {
@@ -84,6 +91,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     handleDragEnd: handleCanvasDragEnd,
     reorderRows,
     updateTokenValue,
+    commitMathEquation,
     removeToken,
   } = useDragDropMathCanvasRows({
     rows: canvasRows,
@@ -133,7 +141,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         return (
           <DropMathNode
             value={dropValue}
-            onValueChange={() => {}}
+            onCommit={() => {}}
           />
         )
       }
@@ -147,26 +155,65 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
 
     const tokenId = getCanvasTokenIdFromSortableId(activeDragId)
     if (tokenId) {
+      const sourceRow = findRowForToken(canvasRows, tokenId)
       const canvasToken = findTokenInRows(canvasRows, tokenId)
-      if (!canvasToken) return null
-      const overlayProps = {
-        value: canvasToken.value,
-        onValueChange: () => {},
-        disabled: canvasToken.disabled,
-        useGrabCursor: !canvasToken.disabled,
+      if (!canvasToken || !sourceRow) return null
+
+      const renderCanvasToken = (token: (typeof canvasRows)[number]['tokens'][number]) => {
+        if (token.variant === 'math') {
+          if (isFixedMathSuffixToken(token)) {
+            return (
+              <DropMathStaticNode
+                key={token.id}
+                value={token.value}
+                mathShell={token.mathRole === 'equals' ? 'ghost' : token.mathShell}
+                compact={token.mathRole === 'equals'}
+              />
+            )
+          }
+          return (
+            <DropMathNode
+              key={token.id}
+              value={token.value}
+              expression={token.expression}
+              mathShell={token.mathShell}
+              onCommit={() => {}}
+              disabled={token.disabled}
+              useGrabCursor={!token.disabled}
+            />
+          )
+        }
+        return (
+          <DropTextNode
+            key={token.id}
+            value={token.value}
+            onValueChange={() => {}}
+            disabled={token.disabled}
+            useGrabCursor={!token.disabled}
+          />
+        )
       }
-      return canvasToken.variant === 'math' ? (
-        <DropMathNode {...overlayProps} />
-      ) : (
-        <DropTextNode {...overlayProps} />
-      )
+
+      const groupIds = collectEquationGroupTokenIds(sourceRow, tokenId)
+      if (groupIds.length > 1) {
+        const groupTokens = groupIds
+          .map((id) => sourceRow.tokens.find((candidate) => candidate.id === id))
+          .filter((token): token is NonNullable<typeof token> => token != null)
+        return (
+          <div className="flex flex-wrap items-center gap-2">
+            {groupTokens.map(renderCanvasToken)}
+          </div>
+        )
+      }
+
+      return renderCanvasToken(canvasToken)
     }
 
     return null
   }, [activeDragId, canvasRows, resolveDropValue])
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <LexicalTextarea
         id={`drag-drop-math-description-${nodeId}`}
         label={t('dragDropMathEditor.descriptionLabel')}
@@ -187,6 +234,8 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         placeholder={t('dragDropMathEditor.exerciseTitlePlaceholder')}
       />
 
+      <Separator />
+
       <DndContext
         sensors={sensors}
         collisionDetection={canvasCollisionDetection}
@@ -199,6 +248,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
           rows={canvasRows}
           onRowsReorder={reorderRows}
           onTokenValueChange={updateTokenValue}
+          onMathTokenCommit={commitMathEquation}
           onTokenRemove={removeToken}
         />
         <DragOverlay
