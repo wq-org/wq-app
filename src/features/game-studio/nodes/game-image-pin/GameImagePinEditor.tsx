@@ -261,6 +261,7 @@ export function GameImagePinEditor({
     (image: ImageCarouselImage) => {
       void applyImagePreviewFromSrc(image.url, {
         filepath: image.storagePath ?? '',
+        cloudFileId: image.cloudFileId ?? null,
       })
     },
     [applyImagePreviewFromSrc],

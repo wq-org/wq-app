@@ -6,10 +6,10 @@ import type { LessonDraftState } from '../types/lesson.types'
 
 export const LESSON_CONTENT_SCHEMA_VERSION = 1 as const
 
-function createTextNode(text: string): SerializedTextNode {
+function createTextNode(text: string, format = 0): SerializedTextNode {
   return {
     detail: 0,
-    format: 0,
+    format,
     mode: 'normal',
     style: '',
     text,
@@ -18,9 +18,9 @@ function createTextNode(text: string): SerializedTextNode {
   }
 }
 
-function createParagraphNode(text: string): SerializedParagraphNode {
+function createParagraphNode(...children: SerializedTextNode[]): SerializedParagraphNode {
   return {
-    children: [createTextNode(text)],
+    children,
     direction: null,
     format: '',
     indent: 0,
@@ -56,7 +56,7 @@ function createQuoteNode(text: string): SerializedQuoteNode {
 
 function createListItemNode(text: string): SerializedListItemNode {
   return {
-    children: [createParagraphNode(text)],
+    children: [createParagraphNode(createTextNode(text))],
     checked: undefined,
     direction: null,
     format: '',
@@ -84,32 +84,63 @@ function createListNode(
   }
 }
 
+function createYouTubeNode(videoId: string) {
+  return {
+    type: 'youtube',
+    version: 1,
+    format: '',
+    videoID: videoId,
+  }
+}
+
+/** Keep in sync with `supabase/seed/default_lesson_starter_lexical.json` and `app.default_lesson_starter_lexical_state()`. */
 const DEFAULT_LESSON_LEXICAL_STATE = {
   root: {
     children: [
+      createHeadingNode('h1', 'Welcome to WQ Edu 👋'),
       createParagraphNode(
-        'Start writing your lesson content here. Add goals, context, and the key learning outcome for this lesson.',
+        createTextNode('Type '),
+        createTextNode('/', 1),
+        createTextNode(
+          ' anywhere to open the block menu - pick headings, images, lists, videos, and more. ',
+        ),
+        createTextNode('Select any text', 1),
+        createTextNode(
+          ' and a floating toolbar appears for bold, links, and quick edits. Your lesson saves automatically as you write.',
+        ),
       ),
-      createHeadingNode('h1', 'Lesson overview'),
-      createParagraphNode(
-        'Serious Games can help learners explore complex topics through interaction, repetition, and feedback.',
-      ),
-      createHeadingNode('h2', 'Learning objectives'),
-      createParagraphNode(
-        'Use Serious Games in this lesson to connect theory with practice and improve learner engagement.',
-      ),
-      createHeadingNode('h3', 'Key points'),
-      createListNode('bullet', [
-        'Introduce the topic clearly',
-        'Guide learners through the activity',
-        'Summarize the expected outcome',
-      ]),
+      createHeadingNode('h2', 'Get started in three steps'),
       createListNode('number', [
-        'Explain the task',
-        'Let learners interact with the content',
-        'Review the result together',
+        'Click in the lesson and type / to see all block types.',
+        'Highlight text to format it from the floating toolbar.',
+        'Replace this starter page with your own lesson content.',
       ]),
-      createQuoteNode('Good learning design combines clarity, structure, and interaction.'),
+      createYouTubeNode('FXIrojSK3Jo'),
+      createHeadingNode('h2', 'Blocks you can use'),
+      createListNode('bullet', [
+        'Text - everyday lesson writing. Press Enter for a new paragraph.',
+        'Headings (H1, H2, H3) - titles and sections. Use H1 once for the lesson title, then H2 and H3 to structure the page.',
+        'Image - upload a file or choose one from Cloud.',
+        'Emoji - add emoji inside a sentence.',
+        'YouTube video - paste a link to embed a video (see the example above).',
+        'To-do list - checkboxes for your own planning notes.',
+        'Bulleted and numbered lists - steps, key points, or summaries.',
+        'Quote - citations or highlighted remarks.',
+      ]),
+      createHeadingNode('h2', 'Saving your work'),
+      createParagraphNode(
+        createTextNode(
+          'After you stop typing for a moment, your draft is saved for you. When you publish, learners see a stable snapshot of that version.',
+        ),
+      ),
+      createQuoteNode(
+        'Inspired by Notion - thank you for showing how a notes app can feel simple and right. https://www.notion.so/',
+      ),
+      createParagraphNode(
+        createTextNode(
+          'Tip: Delete or edit any block on this page - it is only here to help you learn the editor.',
+        ),
+      ),
     ],
     direction: null,
     format: '',

@@ -1,11 +1,13 @@
 import type { Node } from '@xyflow/react'
 
+import { lookupCloudFileIdByStoragePath } from '@/features/cloud'
 import { supabase } from '@/lib/supabase'
 
 import {
   GAME_IMAGE_PIN_TYPE,
   type GameImagePinNodeData,
 } from '../nodes/game-image-pin/game-image-pin.schema'
+import { resolveGameImagePinStoragePath } from './gameImagePinStoragePath'
 
 export function extractCloudFileIdsFromImagePinNodes(nodes: readonly Node[]): string[] {
   const found = new Set<string>()
@@ -21,6 +23,31 @@ export function extractCloudFileIdsFromImagePinNodes(nodes: readonly Node[]): st
   return Array.from(found)
 }
 
+/** Collects cloud file ids from pins, resolving storage paths when `cloudFileId` is missing. */
+export async function collectCloudFileIdsFromImagePinNodes(
+  nodes: readonly Node[],
+): Promise<string[]> {
+  const found = new Set<string>()
+
+  for (const node of nodes) {
+    if (node.type !== GAME_IMAGE_PIN_TYPE) continue
+    const data = node.data as GameImagePinNodeData
+    const explicitId = data.cloudFileId?.trim()
+    if (explicitId) {
+      found.add(explicitId)
+      continue
+    }
+
+    const storagePath = resolveGameImagePinStoragePath(data)
+    if (!storagePath) continue
+
+    const resolvedId = await lookupCloudFileIdByStoragePath(storagePath)
+    if (resolvedId) found.add(resolvedId)
+  }
+
+  return Array.from(found)
+}
+
 export async function syncGameImageLinks(params: {
   gameVersionId: string
   institutionId: string
@@ -29,7 +56,7 @@ export async function syncGameImageLinks(params: {
   const { gameVersionId, institutionId, nodes } = params
   if (!gameVersionId || !institutionId) return
 
-  const cloudFileIds = extractCloudFileIdsFromImagePinNodes(nodes)
+  const cloudFileIds = await collectCloudFileIdsFromImagePinNodes(nodes)
 
   const { error: deleteError } = await supabase.from('cloud_file_links').delete().match({
     link_entity_type: 'game_version',

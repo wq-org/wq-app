@@ -13,14 +13,15 @@ import { mergeRegister } from '@lexical/utils'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
 import { cn } from '@/lib/utils'
 
+import { OPEN_IMAGE_REPLACE_PICKER_COMMAND } from '../commands/imagePickerCommands'
+import { snapshotDomRect } from '../utils/emojiPickerPosition'
 import { ImageNodeFrame } from '../components/ImageNodeFrame'
 import { ImageNodeControls } from '../components/ImageNodeControls'
 import { useLessonImageUpload } from '../hooks/useLessonImageUpload'
 import type { LessonImageUploadResult } from '../api/lessonImageApi'
-import { fileFromDataUrl, isLocalImageSrc, readImageFileAsDataUrl } from '../utils/localImageFile'
+import { fileFromDataUrl, isLocalImageSrc } from '../utils/localImageFile'
 import { preloadImageSrc, suspenseImage } from '../utils/imageLoadCache'
 import type { ImageNode } from './ImageNode'
 
@@ -107,36 +108,10 @@ async function applyCloudUpload(
   return true
 }
 
-async function applyLocalReplacement(
-  editor: LexicalEditor,
-  nodeKey: NodeKey,
-  nextSrc: string,
-  altText: string,
-): Promise<boolean> {
-  try {
-    await preloadImageSrc(nextSrc)
-  } catch {
-    return false
-  }
-
-  editor.update(() => {
-    const node = $getNodeByKey(nodeKey)
-    if (!isImageNode(node)) {
-      return
-    }
-    node.setSrc(nextSrc)
-    node.setAltText(altText)
-    node.setCloudReference(null, null)
-  })
-
-  return true
-}
-
 function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageNodeComponentProps) {
   const [editor] = useLexicalComposerContext()
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey)
   const imageRef = useRef<HTMLImageElement | null>(null)
-  const replaceImageInputRef = useRef<HTMLInputElement>(null)
   const pendingFileRef = useRef<File | null>(null)
   const autoUploadAttemptedRef = useRef<string | null>(null)
   const { isUploading, uploadLessonImageFile } = useLessonImageUpload()
@@ -160,33 +135,14 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
     [clearSelection, isSelected, setSelected],
   )
 
-  const handleReplaceImageInputChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0]
-      event.target.value = ''
-      if (!file) {
-        return
-      }
-
-      if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
-        toast.error(t('editor.image.invalidType'))
-        return
-      }
-
-      try {
-        const dataUrl = await readImageFileAsDataUrl(file)
-        const applied = await applyLocalReplacement(editor, nodeKey, dataUrl, file.name)
-        if (!applied) {
-          toast.error(t('editor.image.replaceFailed'))
-          return
-        }
-        pendingFileRef.current = file
-        autoUploadAttemptedRef.current = null
-      } catch {
-        toast.error(t('editor.image.replaceFailed'))
-      }
+  const handleReplaceClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      editor.dispatchCommand(OPEN_IMAGE_REPLACE_PICKER_COMMAND, {
+        nodeKey,
+        anchorRect: snapshotDomRect(event.currentTarget.getBoundingClientRect()),
+      })
     },
-    [editor, nodeKey, t],
+    [editor, nodeKey],
   )
 
   useEffect(() => {
@@ -259,8 +215,7 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
       />
       {isEditable ? (
         <ImageNodeControls
-          replaceImageInputRef={replaceImageInputRef}
-          onReplaceInputChange={handleReplaceImageInputChange}
+          onReplaceClick={handleReplaceClick}
           isUploading={isUploading}
           replaceAriaLabel={t('editor.image.replaceImageAria')}
           uploadingAriaLabel={t('editor.image.uploadingImageAria')}

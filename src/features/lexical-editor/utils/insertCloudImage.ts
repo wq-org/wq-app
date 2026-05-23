@@ -10,7 +10,9 @@ import {
 } from 'lexical'
 
 import type { ImagePayload } from '../nodes/ImageNode'
+import { $isImageNode } from '../nodes/ImageNode'
 import { $createImagePlaceholderNode, $isImagePlaceholderNode } from '../nodes/ImagePlaceholderNode'
+import { preloadImageSrc } from './imageLoadCache'
 import { $createEditorImageNode } from './createEditorImageNode'
 
 export type InsertCloudImagePayload = Pick<
@@ -110,4 +112,28 @@ export function removeImagePlaceholder(editor: LexicalEditor, placeholderKey: No
     }
     placeholder.remove()
   })
+}
+
+export async function replaceImageNodeWithCloudImage(
+  editor: LexicalEditor,
+  nodeKey: NodeKey,
+  payload: InsertCloudImagePayload,
+): Promise<boolean> {
+  try {
+    await preloadImageSrc(payload.src)
+  } catch {
+    return false
+  }
+
+  editor.update(() => {
+    const node = $getNodeByKey(nodeKey)
+    if (!$isImageNode(node)) {
+      return
+    }
+    node.setSrc(payload.src)
+    node.setAltText(payload.altText)
+    node.setCloudReference(payload.filepath ?? null, payload.cloudFileId ?? null)
+  })
+
+  return true
 }

@@ -1,8 +1,7 @@
 import { Loader2, Repeat } from 'lucide-react'
-import type { ChangeEvent, RefObject } from 'react'
+import type { MouseEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/upload.types'
 import { cn } from '@/lib/utils'
 
 const controlButtonClassName =
@@ -11,8 +10,7 @@ const controlButtonClassName =
 const controlIconClassName = 'size-4 text-white mix-blend-difference'
 
 export type ImageNodeControlsProps = {
-  replaceImageInputRef: RefObject<HTMLInputElement | null>
-  onReplaceInputChange: (event: ChangeEvent<HTMLInputElement>) => void
+  onReplaceClick: (event: MouseEvent<HTMLButtonElement>) => void
   isUploading: boolean
   replaceAriaLabel: string
   uploadingAriaLabel: string
@@ -20,8 +18,7 @@ export type ImageNodeControlsProps = {
 }
 
 export function ImageNodeControls({
-  replaceImageInputRef,
-  onReplaceInputChange,
+  onReplaceClick,
   isUploading,
   replaceAriaLabel,
   uploadingAriaLabel,
@@ -35,15 +32,6 @@ export function ImageNodeControls({
         isSelected && 'opacity-100',
       )}
     >
-      <input
-        ref={replaceImageInputRef}
-        type="file"
-        accept={ALLOWED_IMAGE_TYPES.join(',')}
-        className="sr-only"
-        tabIndex={-1}
-        aria-hidden
-        onChange={onReplaceInputChange}
-      />
       {isUploading ? (
         <span
           role="status"
@@ -61,7 +49,7 @@ export function ImageNodeControls({
           variant="ghost"
           size="icon"
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => replaceImageInputRef.current?.click()}
+          onClick={onReplaceClick}
           className={controlButtonClassName}
           aria-label={replaceAriaLabel}
         >

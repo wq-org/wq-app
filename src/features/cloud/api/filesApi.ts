@@ -137,6 +137,42 @@ function summarizeLinkUsage(links: CloudFileLinkRow[]): string {
     .join(', ')
 }
 
+async function getDeleteBlockerMessage(
+  path: string,
+  cloudFileId: string | undefined,
+): Promise<string | null> {
+  const { data: blockerMessage, error: blockerError } = await supabase.rpc(
+    'get_cloud_file_delete_blocker_message',
+    { p_storage_object_name: path.trim() },
+  )
+
+  if (!blockerError) {
+    return typeof blockerMessage === 'string' && blockerMessage.trim()
+      ? blockerMessage.trim()
+      : null
+  }
+
+  console.error('[deleteFile] usage guard RPC failed', blockerError)
+
+  if (!cloudFileId) return null
+
+  const { data: links, error: linksError } = await supabase
+    .from('cloud_file_links')
+    .select('link_entity_type')
+    .eq('cloud_file_id', cloudFileId)
+
+  if (linksError) {
+    console.error('[deleteFile] cloud_file_links lookup failed', linksError)
+    return null
+  }
+
+  if (links && links.length > 0) {
+    return `Used in ${summarizeLinkUsage(links as CloudFileLinkRow[])}. Remove it from content first.`
+  }
+
+  return null
+}
+
 /**
  * Deletes a file from Supabase storage. Hard-blocks the delete when any
  * `cloud_file_links` rows reference the underlying `cloud_files` row — those
@@ -167,21 +203,11 @@ export async function deleteFile(path: string): Promise<{ success: boolean; erro
 
     const cloudFileId = cloudFile?.id as string | undefined
 
-    if (cloudFileId) {
-      const { data: links, error: linksError } = await supabase
-        .from('cloud_file_links')
-        .select('link_entity_type')
-        .eq('cloud_file_id', cloudFileId)
-
-      if (linksError) {
-        console.error('[deleteFile] cloud_file_links lookup failed', linksError)
-      }
-
-      if (links && links.length > 0) {
-        return {
-          success: false,
-          error: `Used in ${summarizeLinkUsage(links as CloudFileLinkRow[])}. Remove it from content first.`,
-        }
+    const blockerMessage = await getDeleteBlockerMessage(path, cloudFileId)
+    if (blockerMessage) {
+      return {
+        success: false,
+        error: blockerMessage,
       }
     }
 

@@ -44,10 +44,21 @@ export function GameImagePinDialog({
     let cancelled = false
     getFileSignedUrl(storagePath, 3600)
       .then((freshUrl) => {
-        if (!cancelled && freshUrl && freshUrl !== imagePreview) {
+        if (cancelled) return
+        if (freshUrl && freshUrl !== imagePreview) {
           queueMicrotask(() =>
             patch({
               imagePreview: freshUrl,
+              filepath: storagePath,
+              cloudFileId: initRef.current.cloudFileId,
+            }),
+          )
+          return
+        }
+        if (!freshUrl) {
+          queueMicrotask(() =>
+            patch({
+              imagePreview: '',
               filepath: storagePath,
               cloudFileId: initRef.current.cloudFileId,
             }),

@@ -86,7 +86,10 @@ function normalizeLessonTopicRefRow(row: Record<string, unknown>): LessonTopicRe
 
 function buildCreateLessonPayload(data: CreateLessonData) {
   return {
-    content: resolveLessonDraftState(data.content),
+    content:
+      data.content === undefined || data.content === null
+        ? null
+        : resolveLessonDraftState(data.content),
     contentSchemaVersion: data.contentSchemaVersion ?? LESSON_CONTENT_SCHEMA_VERSION,
     title: data.title.trim(),
     description: data.description || '',

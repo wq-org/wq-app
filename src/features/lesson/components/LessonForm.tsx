@@ -10,10 +10,7 @@ import { Text } from '@/components/ui/text'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
-import {
-  createDefaultLessonLexicalState,
-  LESSON_CONTENT_SCHEMA_VERSION,
-} from '../utils/createDefaultLessonLexicalState'
+import { LESSON_CONTENT_SCHEMA_VERSION } from '../utils/createDefaultLessonLexicalState'
 
 export type LessonFormProps = {
   topicId?: string
@@ -39,7 +36,6 @@ export function LessonForm({ topicId, courseId }: LessonFormProps) {
     setLoading(true)
     try {
       const createdLesson = await createLesson({
-        content: createDefaultLessonLexicalState(),
         contentSchemaVersion: LESSON_CONTENT_SCHEMA_VERSION,
         title: newLesson.trim(),
         description: description.trim(),

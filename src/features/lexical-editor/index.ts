@@ -26,7 +26,12 @@ export {
   type SerializedEmojiNode,
 } from './nodes/EmojiNode'
 export { OPEN_EMOJI_PICKER_COMMAND } from './commands/emojiPickerCommands'
-export { OPEN_IMAGE_PICKER_COMMAND } from './commands/imagePickerCommands'
+export {
+  OPEN_IMAGE_PICKER_COMMAND,
+  OPEN_IMAGE_REPLACE_PICKER_COMMAND,
+  type DomRectSnapshot,
+  type OpenImageReplacePickerPayload,
+} from './commands/imagePickerCommands'
 export { FloatingEmojiPickerPlugin } from './plugins/FloatingEmojiPickerPlugin'
 export { FloatingImagePickerPlugin } from './plugins/FloatingImagePickerPlugin'
 export {
