@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ChangeEvent } from 'react'
+import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   DndContext,
@@ -7,6 +7,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragMoveEvent,
   type DragStartEvent,
 } from '@dnd-kit/core'
 import type { SerializedEditorState } from 'lexical'
@@ -16,17 +17,22 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
-import { DragDropCanvas } from './DragDropCanvas'
+import {
+  DragDropMathCanvas,
+  createCanvasCollisionDetection,
+  getCanvasTokenIdFromSortableId,
+  isCanvasRowSortableId,
+  restrictToVerticalAxis,
+  useDragDropMathCanvasRows,
+} from './canvas'
 import { DropMathNode } from './DropMathNode'
 import { DropTextNode } from './DropTextNode'
-import { DraggableDropNode } from './DraggableDropNode'
-import type { DragDropMathCanvasToken, GameDragDropMathNodeData } from './drag-drop-math.schema'
-import { MATH_NODE_PALETTE_DRAG_IDS, getMathNodeCanvasDragId } from './drag-drop-math-dnd.constants'
+import type { DragDropMathCanvasRow, GameDragDropMathNodeData } from './drag-drop-math.schema'
+import { MATH_NODE_PALETTE_DRAG_IDS } from './drag-drop-math-dnd.constants'
 import { MathNodePalette } from './MathNodePalette'
 import { resolveDropNodeDefaultValue } from './math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from './math-node-palette.constants'
 import { snapCenterToCursor } from './snapCenterToCursor'
-import { useDragDropMathCanvasDnd } from './useDragDropMathCanvasDnd'
 
 export type DragDropMathEditorProps = {
   nodeId: string
@@ -34,17 +40,43 @@ export type DragDropMathEditorProps = {
   onPatchNodeData: (patch: GameNodeDataPatch) => void
 }
 
-function resolveCanvasTokens(nodeData: GameDragDropMathNodeData): DragDropMathCanvasToken[] {
-  return Array.isArray(nodeData.canvasTokens) ? nodeData.canvasTokens : []
+function resolveCanvasRows(nodeData: GameDragDropMathNodeData): DragDropMathCanvasRow[] {
+  if (!Array.isArray(nodeData.canvasRows)) return []
+  return nodeData.canvasRows.map((row) => {
+    if (row.variant) return row
+    const inferredVariant = row.tokens[0]?.variant ?? 'math'
+    return { ...row, variant: inferredVariant }
+  })
+}
+
+function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
+  for (const row of rows) {
+    const token = row.tokens.find((candidate) => candidate.id === tokenId)
+    if (token) return token
+  }
+  return null
 }
 
 export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDropMathEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameDragDropMathNodeData
   const descriptionContent = pin.descriptionContent ?? null
-  const canvasTokens = useMemo(() => resolveCanvasTokens(pin), [pin])
+  const canvasRows = useMemo(() => resolveCanvasRows(pin), [pin])
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  const lastStableOverIdRef = useRef<string | number | null>(null)
+
+  const collisionDetection = useMemo(
+    () => createCanvasCollisionDetection(() => lastStableOverIdRef.current),
+    [],
+  )
+
+  const isDraggingRow = activeDragId !== null && isCanvasRowSortableId(activeDragId)
+
+  const dndContextModifiers = useMemo(
+    () => (isDraggingRow ? [restrictToVerticalAxis] : []),
+    [isDraggingRow],
+  )
 
   const resolveDropValue = useCallback(
     (variant: 'math' | 'text', value: string) => resolveDropNodeDefaultValue(variant, value, t),
@@ -57,16 +89,20 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     }),
   )
 
-  const patchCanvasTokens = useCallback(
-    (nextTokens: DragDropMathCanvasToken[]) => {
-      onPatchNodeData({ canvasTokens: nextTokens })
+  const patchCanvasRows = useCallback(
+    (nextRows: DragDropMathCanvasRow[]) => {
+      onPatchNodeData({ canvasRows: nextRows })
     },
     [onPatchNodeData],
   )
 
-  const { handleDragEnd: handleCanvasDragEnd } = useDragDropMathCanvasDnd({
-    tokens: canvasTokens,
-    onTokensChange: patchCanvasTokens,
+  const {
+    handleDragEnd: handleCanvasDragEnd,
+    updateTokenValue,
+    removeToken,
+  } = useDragDropMathCanvasRows({
+    rows: canvasRows,
+    onRowsChange: patchCanvasRows,
     resolveDropValue,
   })
 
@@ -84,28 +120,20 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     [onPatchNodeData],
   )
 
-  const handleTokenValueChange = useCallback(
-    (tokenId: string, value: string) => {
-      patchCanvasTokens(
-        canvasTokens.map((token) => (token.id === tokenId ? { ...token, value } : token)),
-      )
-    },
-    [canvasTokens, patchCanvasTokens],
-  )
-
-  const handleTokenRemove = useCallback(
-    (tokenId: string) => {
-      patchCanvasTokens(canvasTokens.filter((token) => token.id !== tokenId))
-    },
-    [canvasTokens, patchCanvasTokens],
-  )
-
   const handleDragStart = useCallback((event: DragStartEvent) => {
+    lastStableOverIdRef.current = null
     setActiveDragId(String(event.active.id))
+  }, [])
+
+  const handleDragMove = useCallback((event: DragMoveEvent) => {
+    if (event.over) {
+      lastStableOverIdRef.current = event.over.id
+    }
   }, [])
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
+      lastStableOverIdRef.current = null
       setActiveDragId(null)
       handleCanvasDragEnd(event)
     },
@@ -113,6 +141,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
   )
 
   const handleDragCancel = useCallback(() => {
+    lastStableOverIdRef.current = null
     setActiveDragId(null)
   }, [])
 
@@ -124,7 +153,6 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     )
     if (palettePreset) {
       const dropValue = resolveDropValue(palettePreset.variant, palettePreset.value)
-
       if (palettePreset.variant === 'math') {
         return (
           <DropMathNode
@@ -133,7 +161,6 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
           />
         )
       }
-
       return (
         <DropTextNode
           value={dropValue}
@@ -142,23 +169,25 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
       )
     }
 
-    const canvasToken = canvasTokens.find(
-      (token) => getMathNodeCanvasDragId(token.id) === activeDragId,
-    )
-    if (!canvasToken) return null
+    const tokenId = getCanvasTokenIdFromSortableId(activeDragId)
+    if (tokenId) {
+      const canvasToken = findTokenInRows(canvasRows, tokenId)
+      if (!canvasToken) return null
+      const overlayProps = {
+        value: canvasToken.value,
+        onValueChange: () => {},
+        disabled: canvasToken.disabled,
+        useGrabCursor: !canvasToken.disabled,
+      }
+      return canvasToken.variant === 'math' ? (
+        <DropMathNode {...overlayProps} />
+      ) : (
+        <DropTextNode {...overlayProps} />
+      )
+    }
 
-    return (
-      <DraggableDropNode
-        dragId={activeDragId}
-        dragData={{ source: 'canvas', tokenId: canvasToken.id }}
-        variant={canvasToken.variant}
-        value={canvasToken.value}
-        onValueChange={() => {}}
-        disabled={canvasToken.disabled}
-        isDragOverlay
-      />
-    )
-  }, [activeDragId, canvasTokens, resolveDropValue])
+    return null
+  }, [activeDragId, canvasRows, resolveDropValue])
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
@@ -184,18 +213,25 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
 
       <DndContext
         sensors={sensors}
-        modifiers={[snapCenterToCursor]}
+        collisionDetection={collisionDetection}
+        modifiers={dndContextModifiers}
         onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
         <MathNodePalette />
-        <DragDropCanvas
-          tokens={canvasTokens}
-          onTokenValueChange={handleTokenValueChange}
-          onTokenRemove={handleTokenRemove}
+        <DragDropMathCanvas
+          rows={canvasRows}
+          onTokenValueChange={updateTokenValue}
+          onTokenRemove={removeToken}
         />
-        <DragOverlay dropAnimation={null}>{activeDragPreview}</DragOverlay>
+        <DragOverlay
+          dropAnimation={null}
+          modifiers={[snapCenterToCursor]}
+        >
+          {activeDragPreview}
+        </DragOverlay>
       </DndContext>
     </div>
   )

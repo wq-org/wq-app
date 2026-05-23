@@ -268,7 +268,8 @@
     "textNodeDefaultValue": "Describe what you are calculating",
     "editMathTokenAriaLabel": "Edit math token on canvas",
     "editTextTokenAriaLabel": "Edit text token on canvas",
-    "canvasEmptyHint": "Drag math nodes here to place them anywhere on the canvas."
+    "canvasEmptyHint": "Drag math nodes here to place them anywhere on the canvas.",
+    "reorderRowAriaLabel": "Reorder row"
   },
   "imagePinDialog": {
     "title": "Image Pin",

@@ -6,12 +6,15 @@ export type DragDropMathCanvasToken = {
   id: string
   value: string
   variant: MathNodeVariant
-  /** Normalized horizontal position on the canvas (0–1). */
-  x: number
-  /** Normalized vertical position on the canvas (0–1). */
-  y: number
   /** Frozen on canvas: not editable or draggable. */
   disabled?: boolean
+}
+
+export type DragDropMathCanvasRow = {
+  id: string
+  /** Rows are homogeneous: every token in `tokens` shares this variant. */
+  variant: MathNodeVariant
+  tokens: DragDropMathCanvasToken[]
 }
 
 export type GameDragDropMathNodeData = {
@@ -19,8 +22,8 @@ export type GameDragDropMathNodeData = {
   title?: string
   /** Rich description (Lexical JSON), autosaved on the canvas node. */
   descriptionContent?: SerializedEditorState | null
-  /** Tokens placed on the drag-drop math canvas. */
-  canvasTokens?: DragDropMathCanvasToken[]
+  /** Token rows placed on the drag-drop math canvas. */
+  canvasRows?: DragDropMathCanvasRow[]
 }
 
 export const GAME_DRAG_DROP_MATH_TYPE = 'gameDragDropMath' as const
@@ -28,7 +31,7 @@ export const GAME_DRAG_DROP_MATH_TYPE = 'gameDragDropMath' as const
 export const gameDragDropMathDefaultConfig: GameDragDropMathNodeData = {
   label: 'Drag & drop math',
   title: '',
-  canvasTokens: [],
+  canvasRows: [],
 }
 
 /** Shell node — validation deferred until authoring UI exists. */

@@ -268,7 +268,8 @@
     "textNodeDefaultValue": "Beschreibe, was du gerade berechnest",
     "editMathTokenAriaLabel": "Mathebaustein auf der Fläche bearbeiten",
     "editTextTokenAriaLabel": "Textbaustein auf der Fläche bearbeiten",
-    "canvasEmptyHint": "Mathebausteine hierher ziehen und beliebig auf der Fläche platzieren."
+    "canvasEmptyHint": "Mathebausteine hierher ziehen und beliebig auf der Fläche platzieren.",
+    "reorderRowAriaLabel": "Reihe neu anordnen"
   },
   "imagePinDialog": {
     "title": "Bild und Pins",

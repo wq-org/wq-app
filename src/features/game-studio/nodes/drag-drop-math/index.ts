@@ -47,6 +47,9 @@ export type {
   MathNodeInlineSentenceProps,
   MathNodeSentenceTextProps,
 } from './MathNodeInlineSentence'
-export type { DragDropMathCanvasToken, GameDragDropMathNodeData } from './drag-drop-math.schema'
-export { DraggableDropNode } from './DraggableDropNode'
-export { DragDropCanvas } from './DragDropCanvas'
+export type {
+  DragDropMathCanvasRow,
+  DragDropMathCanvasToken,
+  GameDragDropMathNodeData,
+} from './drag-drop-math.schema'
+export { DragDropMathCanvas } from './canvas'
