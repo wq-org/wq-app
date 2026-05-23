@@ -144,6 +144,8 @@ body {
   --color-composition-workspace-surface-offset: var(--composition-workspace-surface-offset);
   --color-composition-workspace-border: var(--composition-workspace-border);
   --color-composition-workspace-divider: var(--composition-workspace-divider);
+  --color-math-node-equation-bg: var(--math-node-equation-bg);
+  --color-math-node-equation-fg: var(--math-node-equation-fg);
 
   /* Motion — Tailwind utilities: ease-out-quint, ease-in-out-cubic, … (also var(--ease-*) in CSS).
      tw-animate enter/exit: add [--tw-ease:var(--ease-out-quint)] with duration-* on the same element. */
@@ -218,6 +220,10 @@ body {
   --composition-workspace-border: #d6d4cf;
   --composition-workspace-divider: #e0ded9;
 
+  /* Drag-drop math — equation pill (rich-text-editor-demo search chip). */
+  --math-node-equation-bg: hsl(203 95% 91%);
+  --math-node-equation-fg: rgb(25 141 234);
+
   /* https://oklch.fyi/ */
   --oklch-violet: 0.76 0.18 305;
   --oklch-black: 0 0 0;
@@ -283,6 +289,9 @@ body {
   --composition-workspace-surface-offset: oklch(0.19 0.006 85);
   --composition-workspace-border: oklch(0.34 0.008 85);
   --composition-workspace-divider: oklch(0.28 0.008 85);
+
+  --math-node-equation-bg: hsl(203 35% 22%);
+  --math-node-equation-fg: rgb(96 165 250);
 }
 
 [data-accent='violet'] {

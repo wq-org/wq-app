@@ -20,7 +20,3 @@ export function getCanvasTokenIdFromSortableId(sortableId: string): string | nul
   if (!sortableId.startsWith(CANVAS_TOKEN_SORTABLE_ID_PREFIX)) return null
   return sortableId.slice(CANVAS_TOKEN_SORTABLE_ID_PREFIX.length)
 }
-
-export function isCanvasRowSortableId(sortableId: string): boolean {
-  return sortableId.startsWith(CANVAS_ROW_SORTABLE_ID_PREFIX)
-}

@@ -21,8 +21,6 @@ import {
   DragDropMathCanvas,
   createCanvasCollisionDetection,
   getCanvasTokenIdFromSortableId,
-  isCanvasRowSortableId,
-  restrictToVerticalAxis,
   useDragDropMathCanvasRows,
 } from './canvas'
 import { DropMathNode } from './DropMathNode'
@@ -71,13 +69,6 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     [],
   )
 
-  const isDraggingRow = activeDragId !== null && isCanvasRowSortableId(activeDragId)
-
-  const dndContextModifiers = useMemo(
-    () => (isDraggingRow ? [restrictToVerticalAxis] : []),
-    [isDraggingRow],
-  )
-
   const resolveDropValue = useCallback(
     (variant: 'math' | 'text', value: string) => resolveDropNodeDefaultValue(variant, value, t),
     [t],
@@ -98,6 +89,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
 
   const {
     handleDragEnd: handleCanvasDragEnd,
+    reorderRows,
     updateTokenValue,
     removeToken,
   } = useDragDropMathCanvasRows({
@@ -214,7 +206,6 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
       <DndContext
         sensors={sensors}
         collisionDetection={collisionDetection}
-        modifiers={dndContextModifiers}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
@@ -223,6 +214,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         <MathNodePalette />
         <DragDropMathCanvas
           rows={canvasRows}
+          onRowsReorder={reorderRows}
           onTokenValueChange={updateTokenValue}
           onTokenRemove={removeToken}
         />

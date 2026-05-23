@@ -29,7 +29,11 @@ export function CanvasRowNode({ rowId, token, onValueChange, onRemove }: CanvasR
     id: getCanvasTokenSortableId(token.id),
     disabled: token.disabled,
     data: {
-      [CANVAS_TOKEN_SORTABLE_DATA_KEY]: { rowId, tokenId: token.id },
+      [CANVAS_TOKEN_SORTABLE_DATA_KEY]: {
+        rowId,
+        tokenId: token.id,
+        variant: token.variant,
+      },
     },
   })
 

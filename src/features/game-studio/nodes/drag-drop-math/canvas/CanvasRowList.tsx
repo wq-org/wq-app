@@ -1,46 +1,52 @@
-import { Fragment } from 'react'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { Reorder } from 'motion/react'
 
 import type { DragDropMathCanvasRow } from '../drag-drop-math.schema'
 import { BetweenRowZone } from './BetweenRowZone'
-import { CanvasRow } from './CanvasRow'
-import { getCanvasRowSortableId } from './canvas-dnd.constants'
+import { CanvasRowItem } from './CanvasRowItem'
 
 export type CanvasRowListProps = {
   rows: readonly DragDropMathCanvasRow[]
+  onRowsReorder: (nextRows: DragDropMathCanvasRow[]) => void
   onTokenValueChange: (tokenId: string, value: string) => void
   onTokenRemove: (tokenId: string) => void
 }
 
-export function CanvasRowList({ rows, onTokenValueChange, onTokenRemove }: CanvasRowListProps) {
-  const rowSortableIds = rows.map((row) => getCanvasRowSortableId(row.id))
-
+/**
+ * Vertical list of canvas rows. Row order is animated by Framer Motion's
+ * {@link Reorder.Group}; token drops still flow through dnd-kit on the row body
+ * and the {@link BetweenRowZone} drop targets.
+ */
+export function CanvasRowList({
+  rows,
+  onRowsReorder,
+  onTokenValueChange,
+  onTokenRemove,
+}: CanvasRowListProps) {
   return (
-    <SortableContext
-      items={rowSortableIds}
-      strategy={verticalListSortingStrategy}
-    >
-      <div className="flex w-full flex-col">
-        {rows.map((row, index) => (
-          <Fragment key={row.id}>
-            {index === 0 ? (
-              <BetweenRowZone
-                position="before"
-                rowId={row.id}
-              />
-            ) : null}
-            <CanvasRow
-              row={row}
-              onTokenValueChange={onTokenValueChange}
-              onTokenRemove={onTokenRemove}
-            />
-            <BetweenRowZone
-              position="after"
-              rowId={row.id}
-            />
-          </Fragment>
+    <div className="flex w-full flex-col">
+      {rows.length > 0 ? (
+        <BetweenRowZone
+          position="before"
+          rowId={rows[0].id}
+        />
+      ) : null}
+
+      <Reorder.Group
+        as="div"
+        axis="y"
+        values={[...rows]}
+        onReorder={onRowsReorder}
+        className="flex w-full flex-col"
+      >
+        {rows.map((row) => (
+          <CanvasRowItem
+            key={row.id}
+            row={row}
+            onTokenValueChange={onTokenValueChange}
+            onTokenRemove={onTokenRemove}
+          />
         ))}
-      </div>
-    </SortableContext>
+      </Reorder.Group>
+    </div>
   )
 }

@@ -7,15 +7,13 @@ import type { MathNodeVariant } from '../math-node.types'
 import { resolveCanvasDropInsertTarget } from './canvasDropTarget.utils'
 import {
   createCanvasTokenId,
-  findRowIndexById,
   findTokenLocation,
   insertTokenAt,
   pruneEmptyRows,
   removeTokenById,
-  reorderRowsByIndex,
   reorderTokenWithinRow,
 } from './canvasDnd.utils'
-import { getCanvasRowSortablePayload, getCanvasTokenSortablePayload } from './canvas.types'
+import { getCanvasTokenSortablePayload } from './canvas.types'
 
 export type UseDragDropMathCanvasRowsArgs = {
   rows: readonly DragDropMathCanvasRow[]
@@ -23,10 +21,12 @@ export type UseDragDropMathCanvasRowsArgs = {
   resolveDropValue: (variant: MathNodeVariant, value: string) => string
 }
 
+/** Shallow-clones rows so subsequent mutations never alias caller state. */
 function cloneRowsWithTokens(rows: readonly DragDropMathCanvasRow[]): DragDropMathCanvasRow[] {
   return rows.map((row) => ({ ...row, tokens: [...row.tokens] }))
 }
 
+/** Builds a brand-new canvas token from a palette drag payload. */
 function buildPaletteToken(
   variant: MathNodeVariant,
   value: string,
@@ -40,7 +40,9 @@ function buildPaletteToken(
 }
 
 /**
- * Owns canvas row state mutations for palette drops, row gaps, and in-row pill moves.
+ * Owns canvas row state mutations for palette drops, gap drops, in-row pill moves,
+ * row reorder, value edits, and token removal. dnd-kit handles all *token* drags;
+ * row order is handled by Framer Motion's Reorder.Group (see {@link CanvasRowList}).
  */
 export function useDragDropMathCanvasRows({
   rows,
@@ -51,17 +53,6 @@ export function useDragDropMathCanvasRows({
     (event: DragEndEvent) => {
       const { active, over } = event
       if (!over) return
-
-      const activeRow = getCanvasRowSortablePayload(active.data.current)
-      if (activeRow) {
-        const overRow = getCanvasRowSortablePayload(over.data.current)
-        if (!overRow || activeRow.rowId === overRow.rowId) return
-        const oldIndex = findRowIndexById(rows, activeRow.rowId)
-        const newIndex = findRowIndexById(rows, overRow.rowId)
-        if (oldIndex < 0 || newIndex < 0) return
-        onRowsChange(reorderRowsByIndex(rows, oldIndex, newIndex))
-        return
-      }
 
       const activeToken = getCanvasTokenSortablePayload(active.data.current)
       const overToken = getCanvasTokenSortablePayload(over.data.current)
@@ -104,6 +95,14 @@ export function useDragDropMathCanvasRows({
     [onRowsChange, resolveDropValue, rows],
   )
 
+  /** Replaces the row order with the array produced by Framer Reorder. */
+  const reorderRows = useCallback(
+    (nextRows: DragDropMathCanvasRow[]) => {
+      onRowsChange(nextRows)
+    },
+    [onRowsChange],
+  )
+
   const updateTokenValue = useCallback(
     (tokenId: string, value: string) => {
       const next = rows.map((row) => ({
@@ -122,5 +121,5 @@ export function useDragDropMathCanvasRows({
     [onRowsChange, rows],
   )
 
-  return { handleDragEnd, updateTokenValue, removeToken }
+  return { handleDragEnd, reorderRows, updateTokenValue, removeToken }
 }

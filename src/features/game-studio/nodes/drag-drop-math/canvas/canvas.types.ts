@@ -1,5 +1,11 @@
+import { isMathNodeVariant, type MathNodeVariant } from '../math-node.types'
+
 export type CanvasRowSortablePayload = { rowId: string }
-export type CanvasTokenSortablePayload = { rowId: string; tokenId: string }
+export type CanvasTokenSortablePayload = {
+  rowId: string
+  tokenId: string
+  variant: MathNodeVariant
+}
 export type CanvasGapDroppablePayload = { position: 'before' | 'after'; rowId: string }
 
 export const CANVAS_ROW_SORTABLE_DATA_KEY = 'canvasRowSortable' as const
@@ -24,7 +30,8 @@ export function getCanvasTokenSortablePayload(data: unknown): CanvasTokenSortabl
   if (!payload || typeof payload.rowId !== 'string' || typeof payload.tokenId !== 'string') {
     return null
   }
-  return { rowId: payload.rowId, tokenId: payload.tokenId }
+  if (!isMathNodeVariant(payload.variant)) return null
+  return { rowId: payload.rowId, tokenId: payload.tokenId, variant: payload.variant }
 }
 
 export function getCanvasGapDroppablePayload(data: unknown): CanvasGapDroppablePayload | null {

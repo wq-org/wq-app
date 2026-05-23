@@ -9,12 +9,14 @@ import { CanvasRowList } from './CanvasRowList'
 
 export type DragDropMathCanvasProps = {
   rows: readonly DragDropMathCanvasRow[]
+  onRowsReorder: (nextRows: DragDropMathCanvasRow[]) => void
   onTokenValueChange: (tokenId: string, value: string) => void
   onTokenRemove: (tokenId: string) => void
 }
 
 export function DragDropMathCanvas({
   rows,
+  onRowsReorder,
   onTokenValueChange,
   onTokenRemove,
 }: DragDropMathCanvasProps) {
@@ -38,6 +40,7 @@ export function DragDropMathCanvas({
       ) : (
         <CanvasRowList
           rows={rows}
+          onRowsReorder={onRowsReorder}
           onTokenValueChange={onTokenValueChange}
           onTokenRemove={onTokenRemove}
         />

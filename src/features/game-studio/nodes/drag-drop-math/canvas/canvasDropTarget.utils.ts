@@ -9,6 +9,12 @@ import type { DragDropMathCanvasRow } from '../drag-drop-math.schema'
 import type { MathNodeVariant } from '../math-node.types'
 import { findRowIndexById, findTokenLocation } from './canvasDnd.utils'
 
+/**
+ * Hard cap of tokens per canvas row. Drops exceeding the cap spill into a fresh row
+ * directly below the target.
+ */
+export const CANVAS_ROW_MAX_TOKENS = 2
+
 export type ResolveCanvasDropInsertTargetArgs = {
   overId: string | number
   overData: unknown
@@ -31,6 +37,23 @@ function enforceHomogeneousRow(
   if (rowIndex < 0) return target
   const targetRow = rows[rowIndex]
   if (targetRow.variant === tokenVariant) return target
+  return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
+}
+
+/**
+ * Rewrites a same-row insert to a new row when the target already holds
+ * {@link CANVAS_ROW_MAX_TOKENS} tokens. Prevents authors from cramming more than
+ * two pills onto a single line.
+ */
+function enforceRowCapacity(
+  target: CanvasTokenInsertTarget,
+  rows: readonly DragDropMathCanvasRow[],
+): CanvasTokenInsertTarget {
+  if (target.kind !== 'row-end' && target.kind !== 'row-at') return target
+  const rowIndex = findRowIndexById(rows, target.rowId)
+  if (rowIndex < 0) return target
+  const targetRow = rows[rowIndex]
+  if (targetRow.tokens.length < CANVAS_ROW_MAX_TOKENS) return target
   return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
 }
 
@@ -63,12 +86,15 @@ export function resolveCanvasDropInsertTarget({
     const baseTarget: CanvasTokenInsertTarget = location
       ? { kind: 'row-at', rowId: overToken.rowId, index: location.tokenIndex }
       : { kind: 'row-end', rowId: overToken.rowId }
-    return enforceHomogeneousRow(baseTarget, rows, tokenVariant)
+    return enforceRowCapacity(enforceHomogeneousRow(baseTarget, rows, tokenVariant), rows)
   }
 
   const overRow = getCanvasRowSortablePayload(overData)
   if (overRow) {
-    return enforceHomogeneousRow({ kind: 'row-end', rowId: overRow.rowId }, rows, tokenVariant)
+    return enforceRowCapacity(
+      enforceHomogeneousRow({ kind: 'row-end', rowId: overRow.rowId }, rows, tokenVariant),
+      rows,
+    )
   }
 
   return null

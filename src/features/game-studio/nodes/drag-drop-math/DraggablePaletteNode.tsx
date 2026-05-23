@@ -23,12 +23,22 @@ export function DraggablePaletteNode({
     data: { [MATH_NODE_DRAG_DATA_KEY]: dragData },
   })
 
+  const variantOutlineClassName =
+    dragData.variant === 'math' ? 'outline-blue-400/70' : 'outline-muted-foreground/50'
+
   return (
     <div
       ref={setNodeRef}
+      data-dragging={isDragging ? 'true' : 'false'}
       className={cn(
-        'touch-none cursor-grab active:cursor-grabbing',
-        isDragging && 'cursor-grabbing opacity-0',
+        'touch-none cursor-grab rounded-full transition-[outline-color,opacity] duration-150 active:cursor-grabbing',
+        // Keep the source chip in place (just dimmed slightly) and outline it in
+        // the dragged variant's accent color so authors see what's being moved.
+        isDragging && [
+          'cursor-grabbing opacity-60',
+          'outline-2 outline-dashed outline-offset-4',
+          variantOutlineClassName,
+        ],
         className,
       )}
       {...listeners}
