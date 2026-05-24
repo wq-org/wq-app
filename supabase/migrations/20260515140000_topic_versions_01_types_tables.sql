@@ -3,7 +3,7 @@
 -- Immutable topic metadata shells (title, description, order, gates) per
 -- canonical topics.id; version_major aligns with course_versions.version_no
 -- for snapshot baselines; patches increment version_patch within that major.
--- docs/architecture/db_principles.md: tenant-scoped rows (institution_id), UUID PKs,
+-- docs/architecture/principle_database.md: tenant-scoped rows (institution_id), UUID PKs,
 -- comments on published-version tables.
 -- =============================================================================
 

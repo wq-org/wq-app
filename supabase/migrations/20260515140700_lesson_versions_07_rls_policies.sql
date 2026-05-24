@@ -1,7 +1,7 @@
 -- =============================================================================
 -- LESSON VERSIONS — 07_rls_policies
 -- Row-level security for public.lesson_versions.
--- docs/architecture/db_principles.md: ENABLE + FORCE RLS; institution_id scoping;
+-- docs/architecture/principle_database.md: ENABLE + FORCE RLS; institution_id scoping;
 -- wrap stable JWT helpers in scalar subqueries where applicable.
 -- =============================================================================
 
@@ -75,5 +75,5 @@ CREATE POLICY lesson_versions_select_student_via_delivery ON public.lesson_versi
 -- - Institution_id is indexed for filter performance (see 03_indexes)
 -- - Teacher policy uses app.teacher_can_manage_lesson() (SECURITY DEFINER helper)
 -- - Student policy is read-only and scoped to lesson versions in accessible deliveries
--- - Pre-implementation checklist (db_principles.md): avoid policy/helper recursion
+-- - Pre-implementation checklist (principle_database.md): avoid policy/helper recursion
 -- =============================================================================

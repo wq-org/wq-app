@@ -45,7 +45,7 @@ COMMENT ON TABLE public.notification_events IS
   'Canonical notification fact; per-user read state lives on notification_deliveries.';
 COMMENT ON COLUMN public.notification_events.id IS 'Primary key.';
 COMMENT ON COLUMN public.notification_events.institution_id IS
-  'Tenant boundary (institution_id; aligns with platform-wide institution-scoped tenancy per db_design_principles).';
+  'Tenant boundary (institution_id; aligns with platform-wide institution-scoped tenancy per principle_database.md).';
 COMMENT ON COLUMN public.notification_events.event_type IS 'Fine-grained code (e.g. task_due_soon); not the user-facing category bucket.';
 COMMENT ON COLUMN public.notification_events.category IS 'UI bucket: learning | task | reward | social | system.';
 COMMENT ON COLUMN public.notification_events.actor_user_id IS 'User who caused the event, if any.';

@@ -10,7 +10,7 @@
 -- scoped strictly by p_lesson_id and (SELECT auth.uid()). Same recipe as
 -- 20260424120000_classrooms_rls_break_recursion.sql and
 -- 20260504000000_games_rls_break_recursion_with_game_versions.sql.
--- See docs/architecture/db_principles.md (Pre-implementation checklist —
+-- See docs/architecture/principle_database.md (Pre-implementation checklist —
 -- RLS recursion and helper traps).
 -- =============================================================================
 

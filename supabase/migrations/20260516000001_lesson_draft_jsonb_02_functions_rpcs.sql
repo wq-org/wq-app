@@ -1,7 +1,7 @@
 -- =============================================================================
 -- LESSON DRAFT JSONB — 02_functions_rpcs
 -- Retarget publish flow to lessons.content instead of lesson_blocks.
--- Follows docs/architecture/db_principles.md (SECURITY DEFINER + pinned search_path;
+-- Follows docs/architecture/principle_database.md (SECURITY DEFINER + pinned search_path;
 -- audit envelope on publish).
 -- =============================================================================
 

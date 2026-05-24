@@ -487,7 +487,7 @@ SET search_path = ''                        -- empty: every reference must be sc
 **Security-critical properties — DO NOT regress:**
 
 - `actor_user_id` is resolved via `auth.uid()` **inside** the SECURITY DEFINER body. It is never a caller-provided parameter. This makes actor un-spoofable: a malicious caller cannot impersonate another user.
-- `search_path = ''` (empty) forces fully-qualified schema references inside the function body — prevents object-masking attacks (`db_principles.md` §"Security-definer functions and safe SQL").
+- `search_path = ''` (empty) forces fully-qualified schema references inside the function body — prevents object-masking attacks (`principle_database.md` §"Security-definer functions and safe SQL").
 - `RETURNS uuid` (the inserted `audit.events.id`), not `void`. Callers may chain on the returned id.
 - Direct `INSERT/UPDATE/DELETE` on `audit.events` is `REVOKE`d from `authenticated` and `anon` roles
   (`supabase/migrations/2026032100000107_super_admin_07_rls_policies.sql`). The function is the only write path.

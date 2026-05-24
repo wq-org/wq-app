@@ -10,7 +10,7 @@
 -- breaking the cycle. Scoped tightly to auth.uid() and the classroom_id param.
 --
 -- Pattern: SECURITY DEFINER + SET search_path = '' + fully qualified objects.
--- See docs/architecture/db_principles.md.
+-- See docs/architecture/principle_database.md.
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION app.auth_is_co_teacher_of_classroom(p_classroom_id uuid)

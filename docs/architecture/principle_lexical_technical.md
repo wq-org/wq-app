@@ -216,17 +216,17 @@ Lexical has no built-in callout node in the official packages or playground. The
 Recommended wq-health model:
 
 ```typescript
-export type CalloutKind = 'info' | 'warning' | 'success' | 'clinical';
+export type CalloutKind = 'info' | 'warning' | 'success' | 'clinical'
 
 export type SerializedCalloutNode = {
-  children: Array<unknown>;
-  direction: 'ltr' | 'rtl' | null;
-  format: string;
-  indent: number;
-  kind?: CalloutKind;
-  type: 'callout';
-  version: 1;
-};
+  children: Array<unknown>
+  direction: 'ltr' | 'rtl' | null
+  format: string
+  indent: number
+  kind?: CalloutKind
+  type: 'callout'
+  version: 1
+}
 ```
 
 Implementation steps:
@@ -258,17 +258,17 @@ Links use `LinkNode` and `AutoLinkNode` from `@lexical/link`; React apps use `Li
 Recommended validation:
 
 ```typescript
-const SAFE_PROTOCOLS = new Set(['https:', 'mailto:']);
+const SAFE_PROTOCOLS = new Set(['https:', 'mailto:'])
 
 export const isSafeUrl = (value: string): boolean => {
   try {
-    const url = new URL(value);
+    const url = new URL(value)
 
-    return SAFE_PROTOCOLS.has(url.protocol);
+    return SAFE_PROTOCOLS.has(url.protocol)
   } catch {
-    return false;
+    return false
   }
-};
+}
 ```
 
 Security implication: links are a primary XSS and phishing surface. Reject `javascript:`, `data:`, and untrusted custom protocols, set `rel="noopener noreferrer"` for external links, and consider an allowlist for institutional domains. Performance impact: auto-linking runs pattern matching while editing, so keep matchers efficient and avoid large regex backtracking. UX recommendation: use a floating link editor with optimistic preview and clear invalid URL messages.
@@ -300,19 +300,17 @@ The standard React pattern is to place custom plugins inside `LexicalComposer`, 
 Recommended editor config:
 
 ```typescript
-import { AutoLinkNode, LinkNode } from '@lexical/link';
-import { ListItemNode, ListNode } from '@lexical/list';
-import { HeadingNode, QuoteNode } from '@lexical/rich-text';
-import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
-import type { InitialConfigType } from '@lexical/react/LexicalComposer';
+import { AutoLinkNode, LinkNode } from '@lexical/link'
+import { ListItemNode, ListNode } from '@lexical/list'
+import { HeadingNode, QuoteNode } from '@lexical/rich-text'
+import { TableCellNode, TableNode, TableRowNode } from '@lexical/table'
+import type { InitialConfigType } from '@lexical/react/LexicalComposer'
 
-import { CalloutNode } from './nodes/CalloutNode';
-import { ImageNode } from './nodes/ImageNode';
-import { editorTheme } from './theme/editorTheme';
+import { CalloutNode } from './nodes/CalloutNode'
+import { ImageNode } from './nodes/ImageNode'
+import { editorTheme } from './theme/editorTheme'
 
-export const createLessonEditorConfig = (
-  initialEditorState: string | null,
-): InitialConfigType => ({
+export const createLessonEditorConfig = (initialEditorState: string | null): InitialConfigType => ({
   namespace: 'wq-health-lesson-editor',
   editorState: initialEditorState,
   nodes: [
@@ -329,10 +327,10 @@ export const createLessonEditorConfig = (
     TableRowNode,
   ],
   onError(error: Error): void {
-    throw error;
+    throw error
   },
   theme: editorTheme,
-});
+})
 ```
 
 Security implication: namespace separation helps clipboard behavior between editors but is not an access-control boundary. Performance impact: registering image, table, and code tooling only when needed reduces initial bundle size. UX recommendation: wrap heavy plugins in lazy imports and show toolbar skeletons while advanced tools load.
@@ -344,52 +342,48 @@ Lexical update listeners receive the latest `editorState`, previous state, and u
 Example autosave plugin:
 
 ```typescript
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useEffect, useMemo } from 'react';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { useEffect, useMemo } from 'react'
 
-type SaveEditorState = (payload: {
-  lexicalState: unknown;
-  plainText: string;
-}) => Promise<void>;
+type SaveEditorState = (payload: { lexicalState: unknown; plainText: string }) => Promise<void>
 
 const debounce = <TArgs extends Array<unknown>>(
   callback: (...args: TArgs) => void,
   delayMs: number,
 ) => {
-  let timeoutId: number | undefined;
+  let timeoutId: number | undefined
 
   return (...args: TArgs): void => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => callback(...args), delayMs);
-  };
-};
+    window.clearTimeout(timeoutId)
+    timeoutId = window.setTimeout(() => callback(...args), delayMs)
+  }
+}
 
-export const AutosavePlugin = ({
-  onSave,
-}: {
-  onSave: SaveEditorState;
-}): null => {
-  const [editor] = useLexicalComposerContext();
+export const AutosavePlugin = ({ onSave }: { onSave: SaveEditorState }): null => {
+  const [editor] = useLexicalComposerContext()
 
   const saveDebounced = useMemo(
-    () => debounce((lexicalState: unknown, plainText: string) => {
-      void onSave({ lexicalState, plainText });
-    }, 900),
+    () =>
+      debounce((lexicalState: unknown, plainText: string) => {
+        void onSave({ lexicalState, plainText })
+      }, 900),
     [onSave],
-  );
+  )
 
-  useEffect(() => (
-    editor.registerUpdateListener(({ editorState }) => {
-      const lexicalState = editorState.toJSON();
+  useEffect(
+    () =>
+      editor.registerUpdateListener(({ editorState }) => {
+        const lexicalState = editorState.toJSON()
 
-      editorState.read(() => {
-        saveDebounced(lexicalState, editor.getRootElement()?.textContent ?? '');
-      });
-    })
-  ), [editor, saveDebounced]);
+        editorState.read(() => {
+          saveDebounced(lexicalState, editor.getRootElement()?.textContent ?? '')
+        })
+      }),
+    [editor, saveDebounced],
+  )
 
-  return null;
-};
+  return null
+}
 ```
 
 Security implication: autosave writes must go through RLS and should audit publish actions separately from ordinary draft saves. Performance impact: debounce saves and avoid serializing massive documents on every keystroke if large image captions, tables, or embedded nodes exist. UX recommendation: display `saving`, `saved`, and `offline` states, and use optimistic local state with retry queues for unstable classroom networks.
@@ -414,17 +408,17 @@ Security implication: Lexical helps structure authoring content, but GDPR compli
 
 ## Decision matrix for the requested blocks
 
-| Block | Lexical representation | Required package or custom node | Persisted JSON fidelity | Production recommendation |
-| --- | --- | --- | --- | --- |
-| Bulleted list | `ListNode` plus `ListItemNode`, `listType: "bullet"` | `@lexical/list`, `ListPlugin` or `ListExtension` | High | Enable markdown shortcut and strict indent if nested lists matter |
-| Numbered list | `ListNode` plus `ListItemNode`, `listType: "number"`, `start` | `@lexical/list` | High | Decide preserve-numbering behavior deliberately |
-| To-do list | `ListNode` plus `ListItemNode`, `listType: "check"`, checked state | `@lexical/list`, `CheckListPlugin` or `CheckListExtension` | High | Use only for authoring tasks unless learner completion is stored separately |
-| Callout | Custom `ElementNode` or fork of collapsible pattern | Custom node | High if `exportJSON` and `importJSON` are implemented | Build as semantic `aside` with `kind` and immutable publish auditing |
-| Quote | `QuoteNode` | `@lexical/rich-text` | High | Use for quotations, not safety warnings |
-| Table | `TableNode`, `TableRowNode`, `TableCellNode` | `@lexical/table` plus React table UI plugins | High | Lazy-load heavy table UI and reject nested tables |
-| Link | `LinkNode`, `AutoLinkNode` | `@lexical/link` | High | Enforce URL validation and safe external attributes |
-| Image | Custom `DecoratorNode` | Custom node, playground reference | High if nested caption is serialized | Store binaries in Supabase Storage, not JSONB |
-| Code | `CodeNode`, `CodeHighlightNode` | `@lexical/code-core`, optional Prism or Shiki | High | Lazy-load one highlighter and render code as inert text |
+| Block         | Lexical representation                                             | Required package or custom node                            | Persisted JSON fidelity                               | Production recommendation                                                   |
+| ------------- | ------------------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| Bulleted list | `ListNode` plus `ListItemNode`, `listType: "bullet"`               | `@lexical/list`, `ListPlugin` or `ListExtension`           | High                                                  | Enable markdown shortcut and strict indent if nested lists matter           |
+| Numbered list | `ListNode` plus `ListItemNode`, `listType: "number"`, `start`      | `@lexical/list`                                            | High                                                  | Decide preserve-numbering behavior deliberately                             |
+| To-do list    | `ListNode` plus `ListItemNode`, `listType: "check"`, checked state | `@lexical/list`, `CheckListPlugin` or `CheckListExtension` | High                                                  | Use only for authoring tasks unless learner completion is stored separately |
+| Callout       | Custom `ElementNode` or fork of collapsible pattern                | Custom node                                                | High if `exportJSON` and `importJSON` are implemented | Build as semantic `aside` with `kind` and immutable publish auditing        |
+| Quote         | `QuoteNode`                                                        | `@lexical/rich-text`                                       | High                                                  | Use for quotations, not safety warnings                                     |
+| Table         | `TableNode`, `TableRowNode`, `TableCellNode`                       | `@lexical/table` plus React table UI plugins               | High                                                  | Lazy-load heavy table UI and reject nested tables                           |
+| Link          | `LinkNode`, `AutoLinkNode`                                         | `@lexical/link`                                            | High                                                  | Enforce URL validation and safe external attributes                         |
+| Image         | Custom `DecoratorNode`                                             | Custom node, playground reference                          | High if nested caption is serialized                  | Store binaries in Supabase Storage, not JSONB                               |
+| Code          | `CodeNode`, `CodeHighlightNode`                                    | `@lexical/code-core`, optional Prism or Shiki              | High                                                  | Lazy-load one highlighter and render code as inert text                     |
 
 ## Key takeaways
 

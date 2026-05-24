@@ -4,7 +4,7 @@
 -- =============================================================================
 -- Deterministic seed of the 13 Lexical core block types. Idempotent via ON
 -- CONFLICT. Adding new block types in future migrations follows the same
--- pattern (no schema change required). Per db_principles §10 data seeds live
+-- pattern (no schema change required). Per principle_database.md §10 data seeds live
 -- in their own file, separate from schema.
 -- =============================================================================
 

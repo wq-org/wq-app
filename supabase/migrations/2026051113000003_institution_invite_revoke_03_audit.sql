@@ -1,7 +1,7 @@
 -- =============================================================================
 -- INSTITUTION INVITE REVOKE — audit trigger
 -- Replaces the fragile expires_at-watching branch with a canonical revoked_at
--- transition rule. The DSGVO doc (docs/architecture/dsgvo-audit-datendefinition.md)
+-- transition rule. The DSGVO doc (docs/architecture/principle_dsgvo_audit_datendefinition.md)
 -- already lists `invite.revoked` — this migration wires it to a real column.
 --
 -- Requires:

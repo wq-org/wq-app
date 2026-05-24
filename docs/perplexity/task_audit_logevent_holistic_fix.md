@@ -1,7 +1,7 @@
 # 🛠️ Holistic Fix — `audit.log_event` + Cloud Upload + RLS
 
 **Priority:** 🔴 Critical — blocks image upload, cloud file operations, and all downstream audit triggers  
-**Reference:** `docs/architecture/dsgvo-audit-datendefinition.md` (Version 1.0, April 2026)  
+**Reference:** `docs/architecture/principle_dsgvo_audit_datendefinition.md` (Version 1.0, April 2026)  
 **Goal:** Make the full stack work end-to-end — avatar upload, `cloud_files` INSERT, `institution_memberships` — with zero backfill, zero data loss, and full DSGVO compliance.
 
 ---
@@ -83,7 +83,7 @@ The `42883` error means one of:
 
 ### 2b. Canonical function — deploy this as the single audit writer
 
-This is the only permitted write path to `audit.events` per `dsgvo-audit-datendefinition.md §6.3`.
+This is the only permitted write path to `audit.events` per `principle_dsgvo_audit_datendefinition.md §6.3`.
 
 ```sql
 CREATE OR REPLACE FUNCTION audit.log_event(
@@ -196,7 +196,7 @@ PERFORM audit.log_event(
 
 ## Step 3 — DSGVO Payload Compliance Check
 
-Every trigger payload must pass the allowlist from `dsgvo-audit-datendefinition.md §2` and `§3` **before merging**.
+Every trigger payload must pass the allowlist from `principle_dsgvo_audit_datendefinition.md §2` and `§3` **before merging**.
 
 ### Allowlist — what MAY go into `audit.events.payload`
 
@@ -311,12 +311,12 @@ DROP FUNCTION IF EXISTS audit.log_event(
 
 ## DSGVO Compliance Constraints (Art. 32 TOM — Non-Negotiable)
 
-Per `dsgvo-audit-datendefinition.md §6.3`:
+Per `principle_dsgvo_audit_datendefinition.md §6.3`:
 
 - `audit.events` is **append-only** — no `UPDATE` or `DELETE` by authenticated roles, ever
 - Writes only via `audit.log_event` `SECURITY DEFINER` — no direct `INSERT` from the application layer
 - Institution Admin sees only rows matching their own `institution_id` — RLS must enforce this
 - IP addresses, device IDs, stack traces: stored separately in a **security log table**, never in `audit.events`
-- Retention + pseudonymisation after expiry: enforced per institution tier per `dsgvo-audit-datendefinition.md §6.1`
+- Retention + pseudonymisation after expiry: enforced per institution tier per `principle_dsgvo_audit_datendefinition.md §6.1`
 - For Kreiskliniken Reutlingen (KRITISCH) and Bismarckschule (HOCH): no clinical context, no Art. 9 data, ever — even as a field name in `changed_fields`
 - For Neckar-Realschule (Minderjährige): no individual pupil learning progress, disability, VKL status, or guardian contact in any log

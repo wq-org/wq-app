@@ -3,7 +3,7 @@
 **Status:** 🟡 Ready to implement — prerequisites met  
 **Depends on:** `audit-logevent-holistic-fix.md` (Step 1 + Step 2 fully resolved)  
 **Blocks:** Institution-Admin audit log completeness for cloud file lifecycle  
-**DSGVO gate:** This task MUST add `§4.9 public.cloud_files` to `dsgvo-audit-datendefinition.md` **before** the migration is merged. No trigger without an approved §4.x allowlist entry.
+**DSGVO gate:** This task MUST add `§4.9 public.cloud_files` to `principle_dsgvo_audit_datendefinition.md` **before** the migration is merged. No trigger without an approved §4.x allowlist entry.
 
 ---
 
@@ -11,7 +11,7 @@
 
 The gap-fix sprint was scoped to "fix broken infrastructure only — no new audit coverage." `cloud_files` was deliberately excluded because:
 
-1. `dsgvo-audit-datendefinition.md` has **no §4.x entry** for `public.cloud_files` yet. Per `db_principles.md` §"Review gate": _any migration that adds/changes audit triggers or audit payload fields must be reviewed against `dsgvo-audit-datendefinition.md` allowlist/forbidden lists before merge._ Shipping a trigger without a §4.x entry would be a compliance violation, not a gap fix.
+1. `principle_dsgvo_audit_datendefinition.md` has **no §4.x entry** for `public.cloud_files` yet. Per `principle_database.md` §"Review gate": _any migration that adds/changes audit triggers or audit payload fields must be reviewed against `principle_dsgvo_audit_datendefinition.md` allowlist/forbidden lists before merge._ Shipping a trigger without a §4.x entry would be a compliance violation, not a gap fix.
 
 2. `file_name` is a free-text field. Per DSGVO §2.3, free-text fields are **forbidden** in `audit.events` (data minimisation, Art. 5 Abs. 1 lit. c DSGVO). A `cloud_files` trigger that naively logs `file_name` would introduce a §2.3 violation into the audit log on day one.
 
@@ -19,10 +19,10 @@ The gap-fix sprint was scoped to "fix broken infrastructure only — no new audi
 
 ---
 
-## Step 1 — Add §4.9 to `dsgvo-audit-datendefinition.md`
+## Step 1 — Add §4.9 to `principle_dsgvo_audit_datendefinition.md`
 
 Insert the following section **after §4.8** (`public.data_subject_requests`) in  
-`docs/architecture/dsgvo-audit-datendefinition.md`:
+`docs/architecture/principle_dsgvo_audit_datendefinition.md`:
 
 ```markdown
 ### 4.9 `public.cloud_files`
@@ -63,7 +63,7 @@ Hard-delete: kein Trigger möglich — muss via RPC-Wrapper sichergestellt werde
 
 ```
 
-**This section must be committed to `docs/architecture/dsgvo-audit-datendefinition.md` and reviewed before the migration in Step 3 is merged.**
+**This section must be committed to `docs/architecture/principle_dsgvo_audit_datendefinition.md` and reviewed before the migration in Step 3 is merged.**
 
 ---
 
@@ -91,7 +91,7 @@ The `scope` is populated by the existing `normalize_cloud_file_from_folder` trig
 
 ## Step 3 — Migration
 
-**File naming convention** (matching project pattern from `db_principles.md` and existing migrations):
+**File naming convention** (matching project pattern from `principle_database.md` and existing migrations):
 
 ```
 20260522XXXXXX_cloud_files_audit_trigger.sql
@@ -121,7 +121,7 @@ Suggested filename: **`20260522120000_cloud_files_audit_trigger.sql`**
 --     so NEW.scope is already populated when this AFTER trigger fires
 --
 -- DSGVO compliance gate
---   - Payload follows dsgvo-audit-datendefinition.md §4.9 allowlist
+--   - Payload follows principle_dsgvo_audit_datendefinition.md §4.9 allowlist
 --   - file_name is NEVER logged (§2.3 Freitext-Verbot)
 --   - storage_path is NEVER logged (security risk)
 --   - owner_user_id is NEVER logged in payload (actor_user_id via auth.uid() sufficient)
@@ -308,7 +308,7 @@ ROLLBACK;
 
 ## Definition of Done
 
-- [ ] `dsgvo-audit-datendefinition.md §4.9` added, reviewed, and committed
+- [ ] `principle_dsgvo_audit_datendefinition.md §4.9` added, reviewed, and committed
 - [ ] Migration `20260522120000_cloud_files_audit_trigger.sql` applied cleanly
 - [ ] `audit_cloud_files` trigger bound to `public.cloud_files` (INSERT + UPDATE)
 - [ ] Smoke test: `cloud_file.created` event emitted on INSERT

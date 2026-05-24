@@ -4,7 +4,7 @@
 > `Input` search, same keyboard contract. Replace the emoji grid with two tabs
 > (`SelectTabs`) that split **Upload** and **Cloud** image flows.
 >
-> **Rules:** `fe_principles.md` · `clean_code_principles.md`
+> **Rules:** `principle_frontend.md` · `principle_clean_code.md`
 
 ---
 

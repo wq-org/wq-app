@@ -20,7 +20,7 @@
 --   CASCADE deletes from parent rows are intentionally not audited here —
 --   the parent's own audit event (e.g. lesson.deleted) covers the action.
 --
--- DSGVO compliance — payload follows dsgvo-audit-datendefinition.md §4.9
+-- DSGVO compliance — payload follows principle_dsgvo_audit_datendefinition.md §4.9
 --   ❌ original_name     never logged (free text, §2.3 Freitext-Verbot)
 --   ❌ storage_object_name never logged (security: path reconstruction)
 --   ❌ bucket            never logged (internal infrastructure detail)
@@ -31,7 +31,7 @@
 --   ✅ metadata.visibility_level = 'institution_admin'
 --
 -- Canonical audit.log_event signature (do not regress — see
--- dsgvo-audit-datendefinition.md §6.4)
+-- principle_dsgvo_audit_datendefinition.md §6.4)
 --   p_event_type, p_subject_type, p_subject_id, p_institution_id,
 --   p_payload, p_metadata; actor resolved via auth.uid() inside SECURITY DEFINER.
 --

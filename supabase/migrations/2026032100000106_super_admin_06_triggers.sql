@@ -5,7 +5,7 @@
 --
 -- Audit trigger functions in this file emit events into `audit.events` via
 -- `audit.log_event(...)`. They follow the binding contract in
--- `docs/architecture/dsgvo-audit-datendefinition.md`:
+-- `docs/architecture/principle_dsgvo_audit_datendefinition.md`:
 --   * canonical envelope (event_type, subject_type/id, institution_id, actor)
 --   * `metadata.visibility_level` ∈ {institution_admin | super_admin | security_only}
 --   * `metadata.context` carries only allowlisted IDs (no free-text, no tokens,

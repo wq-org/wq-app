@@ -1,7 +1,7 @@
 # Canvas DnD — Row-based Layout Plan
 
 > dnd kit · React 19 · TypeScript  
-> Follows: `clean_code_principles.md` · `fe_principles.md`
+> Follows: `principle_clean_code.md` · `principle_frontend.md`
 
 ---
 

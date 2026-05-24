@@ -9,7 +9,7 @@
 --   42501 permission denied for schema app
 -- when inserting topics, lessons, or any row whose policies call app.*.
 --
--- Aligns with docs/architecture/db_principles.md (explicit schema boundaries).
+-- Aligns with docs/architecture/principle_database.md (explicit schema boundaries).
 -- =============================================================================
 
 GRANT USAGE ON SCHEMA app TO authenticated;

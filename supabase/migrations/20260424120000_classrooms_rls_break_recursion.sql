@@ -6,7 +6,7 @@
 -- who is also a member), causing infinite recursion (42P17).
 --
 -- Pattern: SECURITY DEFINER + SET search_path = '' + SET row_security = off;
--- scoped by auth.uid() / row ids only. See docs/architecture/db_principles.md.
+-- scoped by auth.uid() / row ids only. See docs/architecture/principle_database.md.
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION app.auth_has_active_classroom_membership(p_classroom_id uuid)

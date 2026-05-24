@@ -1,4 +1,4 @@
-# task_formular.md
+# principle_task_template.md
 
 > **Universal guide for AI coding agents (Codex, Cursor, Claude Code, etc.) to formulate feature ideas, tasks, and questions into precise, developer-ready specifications.**
 

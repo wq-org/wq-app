@@ -80,7 +80,7 @@ Allow users to browse a staggered “Today”-style card grid and open any card 
 
 **Title:** Task specification document
 
-**Acceptance Criteria:** `docs/architecture/card-instant-preview-task.md` exists with all seven core keywords filled and numbered lists.
+**Acceptance Criteria:** `docs/perplexity/task_card_instant_preview.md` exists with all seven core keywords filled and numbered lists.
 
 ## Question 2 / Subtask 2
 

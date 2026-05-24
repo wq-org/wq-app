@@ -194,14 +194,11 @@ async function syncGameImageLinks(
     .map((n) => n.data.cloudFileId as string | undefined)
     .filter((id): id is string => Boolean(id))
 
-  await supabase
-    .from('cloud_file_links')
-    .delete()
-    .match({
-      link_entity_type: 'game_version',
-      entity_id: gameVersionId,
-      link_purpose: 'inline_media',
-    })
+  await supabase.from('cloud_file_links').delete().match({
+    link_entity_type: 'game_version',
+    entity_id: gameVersionId,
+    link_purpose: 'inline_media',
+  })
 
   if (cloudFileIds.length > 0) {
     await supabase.from('cloud_file_links').upsert(

@@ -7,7 +7,7 @@ Scope: institution-scoped; personal notes are owner-only; collaborative notes ar
 
 Notes are where students capture and develop ideas. Personal notes are private — linked optionally to lesson slides for in-context learning. Collaborative notes are provisioned automatically per task group and serve as the shared workspace for group assignments. The same block-based editor surface powers both; only the access model and sync behaviour differ.
 
-**Alignment with lessons:** course lessons now persist Lexical content as normalized `lesson_blocks` rows plus a `lesson_block_type_registry` (see [17_lesson_authoring.md](./17_lesson_authoring.md)). Future work should migrate `notes.content` off monolithic JSONB toward the same registry + row-per-block pattern for consistent plugin extensibility and RLS.
+**Alignment with lessons:** course lessons persist Lexical content in `lessons.content` (JSONB draft); block-level telemetry uses `learning_events.block_index` / `block_type` (see [17_lesson_authoring.md](./17_lesson_authoring.md)). Notes still use monolithic `notes.content` JSONB; future work may align storage patterns without reintroducing retired `lesson_blocks` tables.
 
 **Scope:** personal notes — owner only; collaborative notes — task group members + teacher read
 **Accountability:** block-level content authoring, real-time group co-editing, lesson-slide context linking

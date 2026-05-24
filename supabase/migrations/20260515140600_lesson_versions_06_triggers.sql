@@ -1,7 +1,7 @@
 -- =============================================================================
 -- LESSON VERSIONS — 06_triggers
 -- Updated_at trigger, immutability enforcement, course pending marker, audit.
--- docs/architecture/db_principles.md: triggers for integrity; SECURITY DEFINER
+-- docs/architecture/principle_database.md: triggers for integrity; SECURITY DEFINER
 -- functions use pinned search_path; audit.events uses binding contract fields.
 -- =============================================================================
 
@@ -67,7 +67,7 @@ SECURITY DEFINER
 SET search_path = public, audit, pg_temp
 AS $$
 BEGIN
-  -- Append-only audit (docs/architecture/dsgvo-audit-datendefinition.md envelope).
+  -- Append-only audit (docs/architecture/principle_dsgvo_audit_datendefinition.md envelope).
   INSERT INTO public.audit.events (
     event_type,
     occurred_at,
@@ -100,7 +100,7 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.audit_lesson_version_disabled() IS
-  'SECURITY DEFINER audit trigger: writes audit.events with actor_user_id, institution_id, subject_*, metadata.context (dsgvo-audit-datendefinition.md).';
+  'SECURITY DEFINER audit trigger: writes audit.events with actor_user_id, institution_id, subject_*, metadata.context (principle_dsgvo_audit_datendefinition.md).';
 
 -- =============================================================================
 -- Triggers on public.lesson_versions

@@ -203,7 +203,7 @@ This is a project requirement derived from accountability, minimization, and bre
 
 ### Audit Event Contract (MANDATORY)
 
-All audit work must follow `docs/architecture/dsgvo-audit-datendefinition.md` as a binding contract, not guidance.
+All audit work must follow `docs/architecture/principle_dsgvo_audit_datendefinition.md` as a binding contract, not guidance.
 
 Required contract rules:
 
@@ -219,7 +219,7 @@ Required contract rules:
 
 Review gate:
 
-- Any migration that adds/changes audit triggers, audit RPCs, or audit payload fields must be reviewed against `dsgvo-audit-datendefinition.md` allowlist/forbidden lists before merge.
+- Any migration that adds/changes audit triggers, audit RPCs, or audit payload fields must be reviewed against `principle_dsgvo_audit_datendefinition.md` allowlist/forbidden lists before merge.
 
 **Layer 2: database-level session/object auditing (in logs)**  
 For compliance and forensics, you may need to audit actual SQL activity. `pgaudit` provides detailed session/object audit logging via PostgreSQL's standard logging facility, and Supabase documents it as an auditing extension you can enable/selectively configure.

@@ -2,7 +2,7 @@
 -- LESSON DRAFT JSONB — 03_backfill (data only)
 -- Deterministic data migration: reconstruct lessons.content, seed v1 versions,
 -- copy legacy block analytics into learning_events.
--- Per docs/architecture/db_principles.md: data backfills isolated from DDL;
+-- Per docs/architecture/principle_database.md: data backfills isolated from DDL;
 -- legacy retirement: 20260516000003_lesson_draft_jsonb_04_retire_legacy_blocks.sql.
 -- =============================================================================
 

@@ -37,7 +37,7 @@ npm run lint:sql
 # same as: python3 scripts/check_sql_naming.py
 ```
 
-Optional SQL formatting ([SQLFluff](https://docs.sqlfluff.com/en/stable/)): `pip install -r requirements-dev.txt`, then `npm run format:sql`. See [docs/architecture/db_design_principles.md](docs/architecture/db_design_principles.md).
+Optional SQL formatting ([SQLFluff](https://docs.sqlfluff.com/en/stable/)): `pip install -r requirements-dev.txt`, then `npm run format:sql`. See [docs/architecture/principle_database.md](docs/architecture/principle_database.md).
 
 # Docs
 
@@ -45,43 +45,48 @@ Optional SQL formatting ([SQLFluff](https://docs.sqlfluff.com/en/stable/)): `pip
 
 Product and feature documentation that describes what the system is meant to do.
 
-- [Super Admin](domain/01_super_admin.md)
-- [Institution](domain/02_institution.md)
-- [Teacher](domain/03_teacher.md)
-- [Student](domain/04_student.md)
-- [Classroom](domain/05_classroom.md)
-- [Notes](domain/06_note.md)
-- [Course](domain/07_course.md)
-- [Game Studio](domain/08_game_studio.md)
-- [Task](domain/09_task.md)
-- [Reward System](domain/10_reward_system.md)
-- [Chat](domain/11_chat.md)
-- [Notification](domain/12_notification.md)
-- [Hetzner Infra](domain/13_hetzner_infra.md)
-- [Subscription Entitlements](domain/14_subscription_entitlements.md)
-- [Platform Roles Schema Map](domain/15_platform_roles_schema_map.md)
-- [Cloud Storage](domain/16_cloud_storage.md)
+- [Super Admin](docs/domain/01_super_admin.md)
+- [Institution](docs/domain/02_institution.md)
+- [Teacher](docs/domain/03_teacher.md)
+- [Student](docs/domain/04_student.md)
+- [Classroom](docs/domain/05_classroom.md)
+- [Notes](docs/domain/06_note.md)
+- [Course](docs/domain/07_course.md)
+- [Game Studio](docs/domain/08_game_studio.md)
+- [Task](docs/domain/09_task.md)
+- [Reward System](docs/domain/10_reward_system.md)
+- [Chat](docs/domain/11_chat.md)
+- [Notification](docs/domain/12_notification.md)
+- [Hetzner Infra](docs/domain/13_hetzner_infra.md)
+- [Subscription Entitlements](docs/domain/14_subscription_entitlements.md)
+- [Platform Roles Schema Map](docs/domain/15_platform_roles_schema_map.md)
+- [Cloud Storage](docs/domain/16_cloud_storage.md)
+- [Lesson Authoring](docs/domain/17_lesson_authoring.md)
+- [Game Image Pin Notes](docs/domain/18_game_image_pin_notes.md)
 
 ## Architecture
 
-Implementation and system design notes that explain how the product is built.
+Implementation and system design notes. Full index: [docs/README.md](docs/README.md).
 
-- [DB Principles](architecture/db_principles.md)
-- [Feature Flow Principles](architecture/flow_principles.md)
-- [Clean Code Principles](architecture/clean_code_principles.md)
-- [Hooks Principles](architecture/hooks_principles.md)
-- [Form Validation Principles](architecture/form_validation_principles.md)
-- [Animation Principles](architecture/animation_principles.md)
-- [Frontend Principles](architecture/fe_principles.md)
-- [DSGVO Audit Datendefinition](architecture/dsgvo-audit-datendefinition.md)
-- [Institution Hierarchy Deliveries](architecture/Institution_hirachy_deliveries.md)
-- [Commercial Access Graph](architecture/commercial_access_graph.md)
+- [Database](docs/architecture/principle_database.md)
+- [Data Flow / RLS](docs/architecture/principle_data_flow.md)
+- [Clean Code](docs/architecture/principle_clean_code.md)
+- [Hooks](docs/architecture/principle_hooks.md)
+- [Form Validation](docs/architecture/principle_form_validation.md)
+- [Animation](docs/architecture/principle_animation.md)
+- [Frontend](docs/architecture/principle_frontend.md)
+- [DSGVO Audit](docs/architecture/principle_dsgvo_audit_datendefinition.md)
+- [Institution Hierarchy Deliveries](docs/architecture/principle_institution_hierarchy_deliveries.md)
+- [Commercial Access Graph](docs/architecture/principle_commercial_access_graph.md)
 
 ## HTML Mockups
 
 Static HTML references used as visual notes.
 
-- [Mock Super Admin Dashboard](html/mock_super_admin_dashboard.html)
-- [Mock Institution Dashboard](html/mock_institution_dashboard.html)
-- [Mock Teacher Dashboard](html/mock_teacher_dashboard.html)
-- [Mock Student Dashboard](html/mock_student_dashboard.html)
+- [Mock Super Admin Dashboard](docs/html/mock_super_admin_dashboard.html)
+- [Mock Institution Dashboard](docs/html/mock_institution_dashboard.html)
+- [Mock Teacher Dashboard](docs/html/mock_teacher_dashboard.html)
+- [Mock Student Dashboard](docs/html/mock_student_dashboard.html)
+- [Lexical state preview](docs/html/lexical_state_preview.html)
+- [Lexical starter preview](docs/html/lexical_starter_preview.html)
+- [Rich text editor demo](docs/html/rich_text_editor_demo.html)

@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.lesson_versions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  -- Per db_principles.md: multi-tenant uniqueness includes institution_id
+  -- Per principle_database.md: multi-tenant uniqueness includes institution_id
   UNIQUE (institution_id, lesson_id, version_major, version_patch)
 );
 

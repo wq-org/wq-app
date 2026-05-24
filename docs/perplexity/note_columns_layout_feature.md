@@ -7,7 +7,7 @@
 > **Reference UI:** Screenshots show the default Lexical playground dialog.
 > We port the logic 1:1 but replace ALL playground UI with wq design tokens.
 >
-> **Rules:** `fe_principles.md` · `clean_code_principles.md`
+> **Rules:** `principle_frontend.md` · `principle_clean_code.md`
 
 ---
 

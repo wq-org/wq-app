@@ -28,7 +28,7 @@
 --   20260427162000_institution_remaining_audit_triggers.sql) already routes
 --   every INSERT/UPDATE/DELETE on public.institution_memberships through
 --   audit.log_event() with the DSGVO-allowlist payload defined in
---   docs/architecture/dsgvo-audit-datendefinition.md. The row inserted by
+--   docs/architecture/principle_dsgvo_audit_datendefinition.md. The row inserted by
 --   the trigger below is therefore audited automatically as
 --   "membership.created" — no separate audit hook in this file.
 --

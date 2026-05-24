@@ -1,6 +1,6 @@
 # Task: Infinite Scroll Image Feed with Blurred Placeholder + Fade-In
 
-> Follows `fe_principles.md` (five-layer architecture) and `clean_code_principles.md` (naming, state, exports).
+> Follows `principle_frontend.md` (five-layer architecture) and `principle_clean_code.md` (naming, state, exports).
 
 ---
 

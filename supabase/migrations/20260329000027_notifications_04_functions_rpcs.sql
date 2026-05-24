@@ -2,7 +2,7 @@
 -- NOTIFICATIONS — helpers, fan-out RPC, audit trigger bodies for new tables
 -- Requires: 20260329000026_notifications_03_indexes_constraints.sql
 --
--- Audit triggers in this file follow docs/architecture/dsgvo-audit-datendefinition.md:
+-- Audit triggers in this file follow docs/architecture/principle_dsgvo_audit_datendefinition.md:
 --   * metadata.visibility_level always set
 --   * payload free-text fields (notification title/body) intentionally excluded
 --   * deliveries trigger raises if institution_id lookup returns NULL to avoid

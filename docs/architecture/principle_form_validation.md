@@ -384,7 +384,7 @@ const onSubmit = async (values: InstitutionFormValues): Promise<void> => {
 
 ## Naming Conventions
 
-Aligned with `clean_code_principles.md` naming rules:
+Aligned with `principle_clean_code.md` naming rules:
 
 | Thing               | Convention                                             | Example                                         |
 | ------------------- | ------------------------------------------------------ | ----------------------------------------------- |

@@ -130,7 +130,7 @@ BEGIN
   )
   RETURNING id INTO v_version_id;
 
-  -- Audit event (docs/architecture/db_principles.md + dsgvo-audit-datendefinition.md)
+  -- Audit event (docs/architecture/principle_database.md + principle_dsgvo_audit_datendefinition.md)
   INSERT INTO public.audit.events (event_type, occurred_at, actor_user_id, institution_id, subject_type, subject_id, metadata)
   VALUES (
     'lesson.published',

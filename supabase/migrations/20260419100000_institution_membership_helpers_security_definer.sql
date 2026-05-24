@@ -6,7 +6,7 @@
 --
 -- Pattern: SECURITY DEFINER with fixed search_path; SET row_security = off for
 -- the function body only; caller identity via auth.uid() (JWT), not caller-supplied ids.
--- See docs/architecture/db_principles.md (SECURITY DEFINER + safe search_path).
+-- See docs/architecture/principle_database.md (SECURITY DEFINER + safe search_path).
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION app.admin_institution_ids()

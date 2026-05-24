@@ -2,7 +2,7 @@
 -- COURSE DELIVERY — lesson_progress + learning_events: data backfill
 -- Expands each existing progress / learning event row to one row per
 -- entitled course_delivery (member of classroom hosting the delivery).
--- Per db_principles §10 this is isolated from schema changes.
+-- Per principle_database.md §10 this is isolated from schema changes.
 -- Requires: 20260329000005a_lesson_progress_learning_events_columns.sql
 -- =============================================================================
 

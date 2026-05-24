@@ -2,7 +2,7 @@
 -- LESSON DRAFT JSONB — 01_tables
 -- Make lessons.content the canonical Lexical draft store and extend analytics
 -- with block metadata so lesson_blocks can be retired safely.
--- docs/architecture/db_principles.md: JSONB for editor payloads; comments on
+-- docs/architecture/principle_database.md: JSONB for editor payloads; comments on
 -- new/changed application columns.
 -- =============================================================================
 

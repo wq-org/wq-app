@@ -8,7 +8,7 @@
 --
 -- Pattern: SECURITY DEFINER + SET search_path = '' + SET row_security = off,
 -- scoped strictly by row id (and auth.uid() where the policy already required it).
--- See docs/architecture/db_principles.md (Pre-implementation checklist — RLS
+-- See docs/architecture/principle_database.md (Pre-implementation checklist — RLS
 -- recursion and helper traps) and 20260424120000_classrooms_rls_break_recursion.sql.
 -- =============================================================================
 

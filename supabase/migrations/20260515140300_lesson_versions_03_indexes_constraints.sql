@@ -25,7 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_lesson_versions_lexical_gin
 CREATE INDEX IF NOT EXISTS idx_lesson_versions_published_by
   ON public.lesson_versions (published_by, published_at DESC);
 
--- Ensure institution_id is indexed for RLS filtering (per db_principles.md §13)
+-- Ensure institution_id is indexed for RLS filtering (per principle_database.md §13)
 CREATE INDEX IF NOT EXISTS idx_lesson_versions_institution_id
   ON public.lesson_versions (institution_id);
 

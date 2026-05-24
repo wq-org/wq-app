@@ -1,7 +1,7 @@
 -- =============================================================================
 -- COURSE DELIVERY — updated_at triggers for versioning + delivery tables
 -- These triggers were originally tacked onto the lesson_progress backfill
--- migration but are an unrelated concern; isolated here per db_principles §1.
+-- migration but are an unrelated concern; isolated here per principle_database.md §1.
 -- Requires: course_versions, course_version_topics, course_version_lessons,
 -- course_deliveries tables (created in earlier course_delivery_* migrations).
 -- =============================================================================

@@ -63,7 +63,7 @@ flowchart TD
 
 ### Row level security (RLS)
 
-**Avoid policy cycles.** Do not implement mutual visibility by having a policy on `classrooms` scan `classroom_members` while policies on `classroom_members` subquery `classrooms`: PostgreSQL still evaluates every applicable **permissive** policy on `classrooms`, so institution admins who are also members hit both admin and member policies and trigger **infinite recursion** (SQLSTATE `42P17`). Break the cycle with small `app.*` functions (`SECURITY DEFINER`, fixed `search_path`, `row_security` off only inside the function body) scoped by `auth.uid()` — for example `app.auth_has_active_classroom_membership`, `app.auth_is_primary_teacher_of_classroom`, and `app.classroom_institution_id` — and call those from policies instead of cross-table subqueries. See `docs/architecture/db_principles.md`.
+**Avoid policy cycles.** Do not implement mutual visibility by having a policy on `classrooms` scan `classroom_members` while policies on `classroom_members` subquery `classrooms`: PostgreSQL still evaluates every applicable **permissive** policy on `classrooms`, so institution admins who are also members hit both admin and member policies and trigger **infinite recursion** (SQLSTATE `42P17`). Break the cycle with small `app.*` functions (`SECURITY DEFINER`, fixed `search_path`, `row_security` off only inside the function body) scoped by `auth.uid()` — for example `app.auth_has_active_classroom_membership`, `app.auth_is_primary_teacher_of_classroom`, and `app.classroom_institution_id` — and call those from policies instead of cross-table subqueries. See `docs/architecture/principle_database.md`.
 
 ---
 

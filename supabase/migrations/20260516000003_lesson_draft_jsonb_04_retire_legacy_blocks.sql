@@ -1,7 +1,7 @@
 -- =============================================================================
 -- LESSON DRAFT JSONB — 04_retire_legacy_blocks (DDL only)
 -- Drops normalized lesson_blocks authoring path after JSONB migration.
--- Per docs/architecture/db_principles.md: schema/DDL changes are not mixed with
+-- Per docs/architecture/principle_database.md: schema/DDL changes are not mixed with
 -- data backfills (see 20260516000002_lesson_draft_jsonb_03_backfill_cleanup.sql).
 -- Order: tables first (drops triggers), then functions, then types.
 -- =============================================================================
