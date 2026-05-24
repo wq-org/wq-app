@@ -43,6 +43,7 @@ export function MathNodePalette() {
                   editAriaLabel={t('dragDropMathEditor.paletteDragAriaLabel', {
                     variant: item.variant,
                   })}
+                  className=" bg-orange-100! text-orange-600! dark:bg-orange-950/80! dark:text-orange-400!"
                 />
               ) : (
                 <MathTextNode

@@ -14,6 +14,7 @@ import type { SerializedEditorState } from 'lexical'
 import { LexicalTextarea } from '@/components/shared/lexical-textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
 
 import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
 import {
@@ -33,6 +34,11 @@ import { resolveDropNodeDefaultValue } from './math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from './math-node-palette.constants'
 import { snapCenterToCursor } from './snapCenterToCursor'
 import { Separator } from '@/components/ui/separator'
+
+const dragDropMathEditorEnterLift =
+  'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
+const dragDropMathEditorEnterSubtle =
+  'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
 export type DragDropMathEditorProps = {
   nodeId: string
@@ -214,27 +220,31 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <LexicalTextarea
-        id={`drag-drop-math-description-${nodeId}`}
-        label={t('dragDropMathEditor.descriptionLabel')}
-        placeholder={t('dragDropMathEditor.descriptionPlaceholder')}
-        hydrationKey={nodeId}
-        value={descriptionContent}
-        onValueChange={handleDescriptionChange}
-        minHeight={300}
-      />
+      <div className={dragDropMathEditorEnterLift}>
+        <LexicalTextarea
+          id={`drag-drop-math-description-${nodeId}`}
+          label={t('dragDropMathEditor.descriptionLabel')}
+          placeholder={t('dragDropMathEditor.descriptionPlaceholder')}
+          hydrationKey={nodeId}
+          value={descriptionContent}
+          onValueChange={handleDescriptionChange}
+          minHeight={300}
+        />
+      </div>
 
-      <Label htmlFor={`drag-drop-math-title-${nodeId}`}>
-        {t('dragDropMathEditor.exerciseTitleLabel')}
-      </Label>
-      <Input
-        id={`drag-drop-math-title-${nodeId}`}
-        value={pin.title ?? ''}
-        onChange={handleTitleChange}
-        placeholder={t('dragDropMathEditor.exerciseTitlePlaceholder')}
-      />
+      <div className={cn('flex flex-col gap-2', dragDropMathEditorEnterSubtle)}>
+        <Label htmlFor={`drag-drop-math-title-${nodeId}`}>
+          {t('dragDropMathEditor.exerciseTitleLabel')}
+        </Label>
+        <Input
+          id={`drag-drop-math-title-${nodeId}`}
+          value={pin.title ?? ''}
+          onChange={handleTitleChange}
+          placeholder={t('dragDropMathEditor.exerciseTitlePlaceholder')}
+        />
+      </div>
 
-      <Separator />
+      <Separator className={dragDropMathEditorEnterSubtle} />
 
       <DndContext
         sensors={sensors}
@@ -243,14 +253,18 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <MathNodePalette />
-        <DragDropMathCanvas
-          rows={canvasRows}
-          onRowsReorder={reorderRows}
-          onTokenValueChange={updateTokenValue}
-          onMathTokenCommit={commitMathEquation}
-          onTokenRemove={removeToken}
-        />
+        <div className={cn('flex flex-col gap-4', dragDropMathEditorEnterSubtle)}>
+          <MathNodePalette />
+        </div>
+        <div className={dragDropMathEditorEnterLift}>
+          <DragDropMathCanvas
+            rows={canvasRows}
+            onRowsReorder={reorderRows}
+            onTokenValueChange={updateTokenValue}
+            onMathTokenCommit={commitMathEquation}
+            onTokenRemove={removeToken}
+          />
+        </div>
         <DragOverlay
           dropAnimation={null}
           modifiers={[snapCenterToCursor]}

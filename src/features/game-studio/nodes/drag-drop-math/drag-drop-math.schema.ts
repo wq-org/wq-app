@@ -32,14 +32,24 @@ export type GameDragDropMathNodeData = {
   descriptionContent?: SerializedEditorState | null
   /** Token rows placed on the drag-drop math canvas. */
   canvasRows?: DragDropMathCanvasRow[]
+  /** Max total score this node can award. */
+  points?: number
 }
 
 export const GAME_DRAG_DROP_MATH_TYPE = 'gameDragDropMath' as const
+export const GAME_DRAG_DROP_MATH_DEFAULT_POINTS = 10
 
 export const gameDragDropMathDefaultConfig: GameDragDropMathNodeData = {
   label: 'Drag & drop math',
   title: '',
   canvasRows: [],
+  points: GAME_DRAG_DROP_MATH_DEFAULT_POINTS,
+}
+
+export function resolveGameDragDropMathPoints(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+    ? Math.floor(value)
+    : GAME_DRAG_DROP_MATH_DEFAULT_POINTS
 }
 
 /** Shell node — validation deferred until authoring UI exists. */
