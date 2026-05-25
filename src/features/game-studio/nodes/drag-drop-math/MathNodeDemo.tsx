@@ -32,8 +32,6 @@ export function MathNodeDemo() {
           />
           <MathTextNode
             value={t('dragDropMathEditor.textBlockLabel')}
-            onValueChange={() => {}}
-            editable={false}
             showPaletteIcon
           />
         </div>

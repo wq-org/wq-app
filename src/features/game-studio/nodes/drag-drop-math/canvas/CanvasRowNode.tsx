@@ -136,11 +136,11 @@ function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform) }}
       className={wrapperClassName}
-      role="button"
-      tabIndex={0}
       aria-label={ariaLabel}
       {...attributes}
       {...listeners}
+      role="button"
+      tabIndex={0}
     >
       <DropMathStaticNode
         value={token.value}

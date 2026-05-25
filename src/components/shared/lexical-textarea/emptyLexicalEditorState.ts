@@ -1,7 +1,7 @@
-import type { SerializedEditorState } from 'lexical'
+import type { SerializedEditorState, SerializedParagraphNode } from 'lexical'
 
 /** Minimal empty Lexical document (single empty paragraph). */
-export const emptyLexicalEditorState = {
+export const emptyLexicalEditorState: SerializedEditorState<SerializedParagraphNode> = {
   root: {
     children: [
       {
@@ -21,4 +21,4 @@ export const emptyLexicalEditorState = {
     type: 'root',
     version: 1,
   },
-} satisfies SerializedEditorState
+}

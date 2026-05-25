@@ -6,7 +6,15 @@ import {
   textNodeShellVariants,
 } from './drop-node-variants'
 import { MathNodeSingleLineShell } from './MathNodeSingleLineShell'
+import type { DropNodeVisualState } from './drop-node.types'
 import { useDropNodeEditor } from './useDropNodeEditor'
+
+function textNodeShellState(
+  state: DropNodeVisualState,
+): 'default' | 'editing' | 'inactive' | 'disabled' {
+  if (state === 'editing' || state === 'inactive' || state === 'disabled') return state
+  return 'default'
+}
 
 export type DropTextNodeProps = {
   value: string
@@ -39,7 +47,7 @@ export function DropTextNode({
   })
 
   const shellClassName = cn(
-    textNodeShellVariants({ state: editor.visualState }),
+    textNodeShellVariants({ state: textNodeShellState(editor.visualState) }),
     compact && canvasDropNodeCompactTextClass,
     !editor.isEditing && !disabled && useGrabCursor && 'cursor-grab active:cursor-grabbing',
     !editor.isEditing && !disabled && !useGrabCursor && 'cursor-text',
