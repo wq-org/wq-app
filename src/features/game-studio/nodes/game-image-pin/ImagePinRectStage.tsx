@@ -78,7 +78,7 @@ export function ImagePinRectStage({
   const [draft, setDraft] = useState<DraftBox | null>(null)
   const [imageFailureReported, setImageFailureReported] = useState(false)
 
-  // Compute image load states (per clean_code_principles.md: compute before render)
+  // Compute image load states (per principle_clean_code.md: compute before render)
   const hasImage = image && status === 'loaded'
   const isImageFailed = status === 'failed'
 

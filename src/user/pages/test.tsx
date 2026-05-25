@@ -148,7 +148,7 @@ import {
   type ChatHistoryMessage,
 } from '@/components/shared/chat'
 import { GameHeader } from '@/features/game-studio'
-import { MathNodeDemo } from '@/features/game-studio/nodes/drag-drop-math/MathNodeDemo'
+import { MathNodeDemo } from '@/features/game-studio/nodes/drag-drop-math'
 import { getThemeClasses } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'

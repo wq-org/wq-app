@@ -1,7 +1,7 @@
-import type { DragDropMathCanvasRow, DragDropMathCanvasToken } from '../drag-drop-math.schema'
-import type { MathTokenRole } from '../math-token-role.types'
-import type { MathTokenShellState } from '../math-token-shell.types'
-import { createCanvasTokenId } from '../canvas/canvasDnd.utils'
+import type { DragDropMathCanvasRow, DragDropMathCanvasToken } from '../types/drag-drop-math.schema'
+import type { MathTokenRole } from '../types/math-token-role.types'
+import type { MathTokenShellState } from '../types/math-token-shell.types'
+import { createCanvasTokenId } from './canvasDnd.utils'
 
 export const MATH_EQUALS_DISPLAY = '=' as const
 
