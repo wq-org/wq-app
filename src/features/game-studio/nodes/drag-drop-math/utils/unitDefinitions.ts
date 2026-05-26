@@ -456,6 +456,12 @@ export type BinaryRule = readonly [
 ]
 
 export const ALLOWED_BINARY_RULES: readonly BinaryRule[] = [
+  // ── Pure numbers (dimensionless) ────────────────────────────────────────────
+  ['dimensionless', '+', 'dimensionless', 'dimensionless'],
+  ['dimensionless', '-', 'dimensionless', 'dimensionless'],
+  ['dimensionless', '*', 'dimensionless', 'dimensionless'],
+  ['dimensionless', '/', 'dimensionless', 'dimensionless'],
+
   // ── Geometry ────────────────────────────────────────────────────────────────
   ['length', '*', 'length', 'area'], // 4 m × 3 m → 12 m²
   ['area', '*', 'length', 'volume'], // 6 m² × 2 m → 12 m³
