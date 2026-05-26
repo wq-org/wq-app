@@ -294,6 +294,18 @@
     "evaluateToastParse": "Der Ausdruck konnte nicht berechnet werden.",
     "evaluateToastNotFinite": "Das Ergebnis ist keine gültige Zahl."
   },
+  "dragDropMathGamePreview": {
+    "previewNotice": "Vorschau-Modus. Hier siehst du, wie das Spiel beim Erstellen aussieht und funktioniert.",
+    "badgeSubmitAnswer": "Antwort abgeben",
+    "badgeHint": "Tipp geben",
+    "badgeHowToPlay": "So funktioniert es",
+    "submitPlaceholder": "Antwort abgeben",
+    "submitAnswerPrompt": "Ich habe meine Rechnung auf der Fläche fertiggestellt. Bitte prüfe meine Antwort.",
+    "hintPrompt": "Gib mir einen hilfreichen Hinweis für diese Aufgabe, aber verrate nicht die ganze Lösung.",
+    "howToPlayPrompt": "Erkläre, wie man dieses Spiel spielt. Sag mir, wie ich meine Antwort mit den Mathebausteinen aufbaue und abgebe.",
+    "expandCanvasAriaLabel": "Fläche vergrößern",
+    "collapseCanvasAriaLabel": "Fläche verkleinern"
+  },
   "imagePinDialog": {
     "title": "Bild und Pins",
     "description": "Lade ein Bild hoch, markiere Bereiche und formuliere für jeden Bereich eine Frage."
@@ -314,6 +326,8 @@
     "helpExampleValues": "Lade ein Anatomiebild hoch, markiere das Herz mit einem Rechteck und frage: „Wie heißt dieser Teil?“",
     "questionsPerRegion": "Fragen pro Bereich",
     "questionLabel": "Frage {{index}}",
+    "addQuestionTabAriaLabel": "Frage hinzufügen",
+    "closeQuestionTabAriaLabel": "Fragen-Tab schließen",
     "questionPlaceholder": "Was soll die Lernperson für diesen Bereich beantworten?",
     "addRectangle": "Rechteck",
     "deleteSelection": "Auswahl löschen",

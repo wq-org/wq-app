@@ -16,6 +16,8 @@ export type DragDropMathCanvasProps = {
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
   onSigmaRemove: (rowId: string) => void
+  /** When true, omits outer shell — for use inside {@link DragDropMathCanvasPanel}. */
+  embedded?: boolean
 }
 
 export function DragDropMathCanvas({
@@ -26,6 +28,7 @@ export function DragDropMathCanvas({
   onMathTokenCommit,
   onTokenRemove,
   onSigmaRemove,
+  embedded = false,
 }: DragDropMathCanvasProps) {
   const { t } = useTranslation('features.gameStudio')
   const { active } = useDndContext()
@@ -37,13 +40,23 @@ export function DragDropMathCanvas({
     <div
       ref={setNodeRef}
       className={cn(
-        'relative w-full rounded-2xl border border-dashed border-border/70 bg-secondary/30 transition-[min-height,padding,box-shadow] duration-150',
-        isEmpty
-          ? 'min-h-[200px] px-6 py-5'
-          : isDragSession
-            ? 'min-h-[160px] px-5 pt-4 pb-8'
-            : 'min-h-0 px-4 pt-3 pb-8',
-        isEmpty && isOver && 'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-background',
+        'relative w-full transition-[min-height,padding,box-shadow] duration-150',
+        embedded
+          ? 'min-h-[160px] bg-transparent px-4 py-4'
+          : 'rounded-2xl border border-dashed border-border/70 bg-secondary/30',
+        !embedded &&
+          (isEmpty
+            ? 'min-h-[200px] px-6 py-5'
+            : isDragSession
+              ? 'min-h-[160px] px-5 pt-4 pb-8'
+              : 'min-h-0 px-4 pt-3 pb-8'),
+        embedded &&
+          (isEmpty ? 'min-h-[200px]' : isDragSession ? 'min-h-[160px] pb-6' : 'min-h-0 pb-6'),
+        isEmpty &&
+          isOver &&
+          !embedded &&
+          'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-background',
+        isEmpty && isOver && embedded && 'ring-2 ring-inset ring-blue-500/40',
       )}
     >
       {isEmpty ? (

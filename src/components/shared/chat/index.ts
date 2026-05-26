@@ -10,6 +10,8 @@ export { ChatMessages } from './ChatMessages'
 export { ChatUserCard } from './ChatUserCard'
 export { ReceivingChatMessageBubble } from './ReceivingChatMessageBubble'
 export { SendingChatMessageBubble } from './SendingChatMessageBubble'
+export { ChatBubbleLexicalContent } from './ChatBubbleLexicalContent'
+export { hasLexicalEditorContent } from './hasLexicalEditorContent'
 export {
   chatBubbleEnterAnimation,
   chatBubbleVariants,
@@ -24,7 +26,11 @@ export type {
   ChatImageItem,
   ChatHistoryMessageDirection,
   ChatMessageBubbleProps,
+  ChatMessageBubbleLexicalProps,
+  ChatMessageBubbleTextProps,
+  ChatMessageContentMode,
   ChatMessageStatus,
 } from './types'
+export { isLexicalChatMessageBubble } from './types'
 
 export type { ChatImageCarouselImage, ChatImageCarouselProps } from './ChatImageCarousel'

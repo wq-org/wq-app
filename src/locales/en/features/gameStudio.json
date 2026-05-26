@@ -294,6 +294,18 @@
     "evaluateToastParse": "The expression could not be calculated.",
     "evaluateToastNotFinite": "The result is not a valid number."
   },
+  "dragDropMathGamePreview": {
+    "previewNotice": "Preview mode. This shows how the game looks and works while you build it.",
+    "badgeSubmitAnswer": "Submit answer",
+    "badgeHint": "Give me a hint",
+    "badgeHowToPlay": "How to play",
+    "submitPlaceholder": "Submit your answer",
+    "submitAnswerPrompt": "I finished my calculation on the canvas. Please check my answer.",
+    "hintPrompt": "Give me a helpful hint for this exercise, but do not reveal the full answer.",
+    "howToPlayPrompt": "Explain how to play this game. Tell me how to build and submit my answer using the math blocks.",
+    "expandCanvasAriaLabel": "Expand canvas",
+    "collapseCanvasAriaLabel": "Collapse canvas"
+  },
   "imagePinDialog": {
     "title": "Image Pin",
     "description": "Upload an image, draw regions, and set a question for each area."
@@ -314,6 +326,8 @@
     "helpExampleValues": "Upload an anatomy image, draw a rectangle around the heart, and ask: “What is this part called?”",
     "questionsPerRegion": "Questions per region",
     "questionLabel": "Question {{index}}",
+    "addQuestionTabAriaLabel": "Add question",
+    "closeQuestionTabAriaLabel": "Close question tab",
     "questionPlaceholder": "What should the learner answer for this region?",
     "addRectangle": "Rectangle",
     "deleteSelection": "Delete selection",

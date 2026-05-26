@@ -5,6 +5,8 @@ import { tokenizeEquationInput } from './mathExpressionTokens'
 import { findUnitDefinition, type UnitCategory, type UnitDefinition } from './unitDefinitions'
 import type { SigmaCanvasRow, SigmaItem } from '../types/sigma-row.types'
 
+const DIMENSIONLESS_UNIT_SYMBOL = '' as const
+
 export type ParsedResultChip = {
   value: number
   displayUnit: string
@@ -51,17 +53,28 @@ export function normalizeSigmaRow(row: SigmaCanvasRow): SigmaCanvasRow {
   })
 }
 
-/** Display for a single chip inside a sigma row (e.g. `340 €`). */
+/** Display for a single chip inside a sigma row (e.g. `340 €` or `170`). */
 export function formatSigmaItemDisplay(item: Pick<SigmaItem, 'value' | 'displayUnit'>): string {
-  return `${formatGroupedNumber(item.value)} ${item.displayUnit}`.trim()
+  const formatted = formatGroupedNumber(item.value)
+  return item.displayUnit.length > 0 ? `${formatted} ${item.displayUnit}` : formatted
 }
 
-/** Display for the computed sum (e.g. `1.000.340,60 €`). */
+/** Display for the computed sum (e.g. `1.000.340,60 €` or `230`). */
 export function formatSigmaResultDisplay(sum: number, displayUnit: string): string {
-  return `${formatGroupedNumber(sum)} ${displayUnit}`.trim()
+  const formatted = formatGroupedNumber(sum)
+  return displayUnit.length > 0 ? `${formatted} ${displayUnit}` : formatted
 }
 
-/** Parses a ghost result chip value (e.g. `340 €`, `81,6 €`). */
+function createDimensionlessParsedChip(value: number): ParsedResultChip {
+  return {
+    value,
+    displayUnit: '',
+    category: 'dimensionless',
+    unitSymbol: DIMENSIONLESS_UNIT_SYMBOL,
+  }
+}
+
+/** Parses a ghost result chip value (e.g. `340 €`, `81,6 €`, `170`). */
 export function parseResultChipValue(display: string): ParsedResultChip | null {
   const tokens = buildTokens(tokenizeEquationInput(display))
   let numericValue: number | null = null
@@ -77,7 +90,8 @@ export function parseResultChipValue(display: string): ParsedResultChip | null {
     }
   }
 
-  if (numericValue === null || unitDef === null) return null
+  if (numericValue === null) return null
+  if (unitDef === null) return createDimensionlessParsedChip(numericValue)
 
   return {
     value: numericValue,
@@ -100,11 +114,14 @@ function withComputedResult(row: SigmaCanvasRow): SigmaCanvasRow {
   return {
     ...row,
     result,
-    resultDisplay:
-      result !== null && displayUnit.length > 0
-        ? formatSigmaResultDisplay(result, displayUnit)
-        : null,
+    resultDisplay: result !== null ? formatSigmaResultDisplay(result, displayUnit) : null,
   }
+}
+
+function resolveLockedUnitLabel(category: UnitCategory | null, unitSymbol: string | null): string {
+  if (category === 'dimensionless') return 'reine Zahlen'
+  const lockedDef = findUnitDefinition(unitSymbol ?? '')
+  return lockedDef?.displaySymbol ?? unitSymbol ?? '?'
 }
 
 export function isSigmaDropAllowed(
@@ -116,8 +133,7 @@ export function isSigmaDropAllowed(
   }
 
   if (row.lockedCategory !== parsed.category || row.lockedUnit !== parsed.unitSymbol) {
-    const lockedDef = findUnitDefinition(row.lockedUnit ?? '')
-    const lockedLabel = lockedDef?.displaySymbol ?? row.lockedUnit ?? '?'
+    const lockedLabel = resolveLockedUnitLabel(row.lockedCategory, row.lockedUnit)
     return {
       allowed: false,
       message: `Nur ${lockedLabel}-Werte erlaubt. Alle Tokens entfernen um neu zu starten.`,

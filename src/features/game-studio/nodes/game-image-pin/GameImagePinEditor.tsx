@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
-import { Plus, Repeat, Trash2, ImageMinus, X } from 'lucide-react'
+import { Plus, Repeat, Trash2, ImageMinus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { FileDropzone, ImageCarousel } from '@/components/shared'
+import { FileDropzone, ImageCarousel, SelectTabs } from '@/components/shared'
 import type { ImageCarouselImage } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
@@ -22,6 +22,7 @@ import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
 import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
 import type { GameImagePinCloudUploadResult } from './useGameImagePinImageUpload'
 import { useImagePinCloudGalleryImages } from './useImagePinCloudGalleryImages'
+import { useImagePinQuestionTabs } from './useImagePinQuestionTabs'
 
 const imagePinEditorEnterLift =
   'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
@@ -125,10 +126,21 @@ export function GameImagePinEditor({
   }, [imagePreview])
 
   useEffect(() => {
-    if (selectedRectId && !rectangles.some((r) => r.id === selectedRectId)) {
+    if (rectangles.length === 0) {
       setSelectedRectId(null)
+      return
+    }
+    if (!selectedRectId || !rectangles.some((rect) => rect.id === selectedRectId)) {
+      setSelectedRectId(rectangles[0].id)
     }
   }, [rectangles, selectedRectId])
+
+  const { activeRect, activeRectId, selectTabItems, setActiveTabId } = useImagePinQuestionTabs({
+    rectangles,
+    selectedRectId,
+    onSelectedRectIdChange: setSelectedRectId,
+    t,
+  })
 
   const handleRectanglesChange = useCallback(
     (next: GameImagePinRect[]) => {
@@ -488,34 +500,33 @@ export function GameImagePinEditor({
                   >
                     {t('imagePinEditor.questionsPerRegion')}
                   </Text>
-                  <div className="flex flex-col gap-4">
-                    {rectangles.map((rect, index) => (
-                      <div
-                        key={rect.id}
-                        className="flex flex-col gap-2 rounded-lg border border-border bg-muted/20 p-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
-                        onFocusCapture={() => setSelectedRectId(rect.id)}
-                      >
-                        <FieldTextarea
-                          className="min-w-0 flex-1"
-                          label={t('imagePinEditor.questionLabel', { index: index + 1 })}
-                          placeholder={t('imagePinEditor.questionPlaceholder')}
-                          value={rect.question ?? ''}
-                          onValueChange={(value) => patchRectQuestion(rect.id, value)}
-                          rows={2}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          className="rounded-full shrink-0 self-end sm:self-start"
-                          onClick={() => handleDeleteRectRow(rect.id)}
-                          aria-label={t('imagePinEditor.removeRegionAria', { index: index + 1 })}
-                        >
-                          <X className="size-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+
+                  <SelectTabs
+                    variant="compact"
+                    className="border-b border-border"
+                    tabs={selectTabItems}
+                    activeTabId={activeRectId}
+                    onTabChange={setActiveTabId}
+                    showAddTab
+                    addTabAriaLabel={t('imagePinEditor.addQuestionTabAriaLabel')}
+                    onAddTabClick={handleAddRect}
+                    addTabDisabled={!sceneMetrics}
+                    onTabClose={handleDeleteRectRow}
+                    closeTabAriaLabel={t('imagePinEditor.closeQuestionTabAriaLabel')}
+                  />
+
+                  {activeRect ? (
+                    <FieldTextarea
+                      className="min-w-0"
+                      label={t('imagePinEditor.questionLabel', {
+                        index: rectangles.findIndex((rect) => rect.id === activeRect.id) + 1,
+                      })}
+                      placeholder={t('imagePinEditor.questionPlaceholder')}
+                      value={activeRect.question ?? ''}
+                      onValueChange={(value) => patchRectQuestion(activeRect.id, value)}
+                      rows={3}
+                    />
+                  ) : null}
                 </div>
               ) : null}
             </div>

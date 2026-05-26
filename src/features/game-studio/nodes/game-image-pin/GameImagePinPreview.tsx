@@ -216,7 +216,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
           className="flex-1 min-h-0"
           showUserAvatar
           incomingAvatarUrl={userAvatarUrl ?? undefined}
-          incomingBubbleVariant="orange"
+          incomingBubbleVariant="dark"
           receivingBubbleVariant="default"
           renderImageChildren={renderImageChildren}
         />

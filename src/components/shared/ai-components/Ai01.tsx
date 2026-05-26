@@ -114,20 +114,17 @@ export function Ai01({
 
         <div
           className={cn(
-            'mx-auto w-full max-w-2xl cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg transition-[border-radius,padding] duration-200 ease-out dark:bg-muted/50',
+            'mx-auto w-full max-w-2xl cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg dark:bg-muted/50',
             isExpanded
               ? "grid rounded-3xl [grid-template-areas:'header'_'primary'_'footer'] grid-cols-[1fr] grid-rows-[auto_1fr_auto]"
               : "grid rounded-full [grid-template-areas:'header_header_header'_'leading_primary_trailing'_'._footer_.'] grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto]",
           )}
         >
           <div
-            className={cn(
-              'flex min-h-14 items-center overflow-x-hidden px-1.5 transition-[padding,margin] duration-200 ease-out',
-              {
-                'mb-0 px-2 py-1': isExpanded,
-                '-my-2.5': !isExpanded,
-              },
-            )}
+            className={cn('flex min-h-14 items-center overflow-x-hidden px-1.5', {
+              'mb-0 px-2 py-1': isExpanded,
+              '-my-2.5': !isExpanded,
+            })}
             style={{ gridArea: 'primary' }}
           >
             <div className="max-h-22 flex-1 overflow-auto">
@@ -137,7 +134,7 @@ export function Ai01({
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                className="scrollbar-thin min-h-0 resize-none rounded-none border-0 p-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent transition-[height] duration-200 ease-out"
+                className="scrollbar-thin min-h-0 resize-none rounded-none border-0 p-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
                 rows={1}
               />
             </div>

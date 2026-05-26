@@ -45,7 +45,12 @@ export function GameDragDropMathDialog(props: GameNodeDialogProps) {
             onPatchNodeData={onPatchNodeData}
           />
         }
-        previewContent={<DragDropMathPreview nodeId={nodeId} />}
+        previewContent={
+          <DragDropMathPreview
+            nodeId={nodeId}
+            nodeData={dragDropMathNodeData}
+          />
+        }
         settingsContent={
           <DragDropMathSettings
             nodeId={nodeId}
