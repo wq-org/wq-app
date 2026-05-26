@@ -3,10 +3,12 @@
 import { useMemo } from 'react'
 import type { SerializedEditorState } from 'lexical'
 
-import { ReceivingChatMessageBubble } from '@/components/shared/chat'
+import { ReceivingChatMessageBubble, SendingChatMessageBubble } from '@/components/shared/chat'
 import type { ChatBubbleVariant } from '@/components/shared/chat/chat-bubble-variants'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { cn } from '@/lib/utils'
+
+import type { DragDropMathPreviewPromptMessage } from '../utils/dragDropMathPreviewMessages'
 
 type PreviewChatMessage =
   | {
@@ -19,7 +21,6 @@ type PreviewChatMessage =
       id: string
       kind: 'text'
       text: string
-      hideAvatar: boolean
     }
 
 export type DragDropMathPreviewChatHistoryProps = {
@@ -28,9 +29,11 @@ export type DragDropMathPreviewChatHistoryProps = {
   title: string
   showDescription: boolean
   showTitle: boolean
+  promptMessages?: readonly DragDropMathPreviewPromptMessage[]
   avatarUrl?: string
   avatarFallback: string
-  bubbleVariant?: ChatBubbleVariant
+  incomingBubbleVariant?: ChatBubbleVariant
+  receivingBubbleVariant?: ChatBubbleVariant
   className?: string
 }
 
@@ -60,7 +63,6 @@ function buildPreviewMessages({
       id: `${nodeId}-title`,
       kind: 'text',
       text: title,
-      hideAvatar: showDescription,
     })
   }
 
@@ -73,9 +75,11 @@ export function DragDropMathPreviewChatHistory({
   title,
   showDescription,
   showTitle,
+  promptMessages = [],
   avatarUrl,
   avatarFallback,
-  bubbleVariant = 'default',
+  incomingBubbleVariant = 'default',
+  receivingBubbleVariant = 'orange',
   className,
 }: DragDropMathPreviewChatHistoryProps) {
   const messages = useMemo(
@@ -90,7 +94,9 @@ export function DragDropMathPreviewChatHistory({
     [descriptionContent, nodeId, showDescription, showTitle, title],
   )
 
-  if (messages.length === 0) {
+  const hasContent = messages.length > 0 || promptMessages.length > 0
+
+  if (!hasContent) {
     return null
   }
 
@@ -120,7 +126,7 @@ export function DragDropMathPreviewChatHistory({
                   time=""
                   avatarUrl={avatarUrl}
                   avatarFallback={avatarFallback}
-                  variant={bubbleVariant}
+                  variant={incomingBubbleVariant}
                   messageId={message.id}
                 />
               ) : (
@@ -129,8 +135,37 @@ export function DragDropMathPreviewChatHistory({
                   time=""
                   avatarUrl={avatarUrl}
                   avatarFallback={avatarFallback}
-                  hideAvatar={message.hideAvatar}
-                  variant={bubbleVariant}
+                  variant={incomingBubbleVariant}
+                  messageId={message.id}
+                />
+              )}
+            </div>
+          ))}
+
+          {promptMessages.map((message) => (
+            <div
+              key={message.id}
+              className={cn(
+                'flex',
+                message.direction === 'sending' ? 'justify-end' : 'justify-start',
+              )}
+            >
+              {message.direction === 'sending' ? (
+                <SendingChatMessageBubble
+                  text={message.text}
+                  time=""
+                  avatarUrl={avatarUrl}
+                  avatarFallback={avatarFallback}
+                  variant={receivingBubbleVariant}
+                  messageId={message.id}
+                />
+              ) : (
+                <ReceivingChatMessageBubble
+                  text={message.text}
+                  time=""
+                  avatarUrl={avatarUrl}
+                  avatarFallback={avatarFallback}
+                  variant={incomingBubbleVariant}
                   messageId={message.id}
                 />
               )}

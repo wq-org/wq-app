@@ -103,7 +103,7 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
             </>
           ) : (
             <>
-              <p className="text-inherit">{text}</p>
+              <p className="whitespace-pre-line text-inherit">{text}</p>
               {time ? <p className="mt-1 text-[10px] opacity-70">{time}</p> : null}
             </>
           )}

@@ -48,6 +48,10 @@ import { MATH_NODE_PALETTE_DRAG_IDS } from '../constants/drag-drop-math-dnd.cons
 import { resolveDropNodeDefaultValue } from '../constants/math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from '../constants/math-node-palette.constants'
 import { resolveExerciseTabsState } from '../utils/exerciseTabs.utils'
+import {
+  buildDragDropMathHowToPlayResponse,
+  type DragDropMathPreviewPromptMessage,
+} from '../utils/dragDropMathPreviewMessages'
 import { snapCenterToCursor } from '../utils/snapCenterToCursor'
 
 function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
@@ -91,6 +95,17 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
   const [canvasRows, setCanvasRows] = useState<DragDropMathCanvasRow[]>([])
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [previewScore] = useState(0)
+  const [promptMessages, setPromptMessages] = useState<DragDropMathPreviewPromptMessage[]>([])
+
+  const howToPlayPrompt = t('dragDropMathGamePreview.howToPlayPrompt')
+  const howToPlayResponse = useMemo(
+    () =>
+      buildDragDropMathHowToPlayResponse(
+        t('dragDropMathGamePreview.howToPlayScoringResponse', { maxPoints: maxScore }),
+        t('dragDropMathGamePreview.howToPlayResponse'),
+      ),
+    [maxScore, t],
+  )
 
   const descriptionContent = pin.descriptionContent ?? null
   const title = activeTab?.title?.trim() || pin.title?.trim() || ''
@@ -118,9 +133,37 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     {
       icon: CircleQuestionMark,
       text: t('dragDropMathGamePreview.badgeHowToPlay'),
-      prompt: t('dragDropMathGamePreview.howToPlayPrompt'),
+      prompt: howToPlayPrompt,
     },
   ] as const satisfies readonly Ai02PromptSuggestion[]
+
+  const handleHowToPlay = useCallback(() => {
+    setPromptMessages((prev) => {
+      const seq = Math.floor(prev.length / 2) + 1
+      return [
+        ...prev,
+        {
+          id: `${nodeId}-how-to-play-prompt-${seq}`,
+          direction: 'sending',
+          text: howToPlayPrompt,
+        },
+        {
+          id: `${nodeId}-how-to-play-reply-${seq}`,
+          direction: 'receiving',
+          text: howToPlayResponse,
+        },
+      ]
+    })
+  }, [howToPlayPrompt, howToPlayResponse, nodeId])
+
+  const handlePromptClick = useCallback(
+    (message: string) => {
+      if (message === howToPlayPrompt) {
+        handleHowToPlay()
+      }
+    },
+    [handleHowToPlay, howToPlayPrompt],
+  )
 
   const resolveDropValue = useCallback(
     (variant: MathNodeVariant, value: string) => resolveDropNodeDefaultValue(variant, value, t),
@@ -269,15 +312,17 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         title={title}
         showDescription={showDescription}
         showTitle={showTitle}
+        promptMessages={promptMessages}
         avatarUrl={userAvatarUrl ?? undefined}
         avatarFallback={avatarFallback}
-        bubbleVariant="default"
+        incomingBubbleVariant="default"
+        receivingBubbleVariant="orange"
         className="min-h-0 flex-1"
       />
 
       <AiPromptBadgeList
         prompts={prompts}
-        onPromptClick={() => {}}
+        onPromptClick={handlePromptClick}
       />
 
       <DndContext

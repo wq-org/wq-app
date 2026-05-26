@@ -26,12 +26,26 @@ function formatCompactSegment(value: number, unit: 'k' | 'M') {
   return `${compactValue}${unit}`
 }
 
+/** Formats values under 1k with up to one decimal place (e.g. 4, 4.5, 12.5). */
+function formatDecimalScore(score: number) {
+  const sign = score < 0 ? '-' : ''
+  const absolute = Math.abs(score)
+  const rounded = Math.round(absolute * 10) / 10
+  const hasFraction = Math.abs(rounded - Math.trunc(rounded)) > 1e-9
+
+  if (!hasFraction) {
+    return `${sign}${Math.trunc(rounded)}`
+  }
+
+  return `${sign}${rounded.toFixed(1)}`
+}
+
 function formatScoreValue(score: number) {
   const absoluteScore = Math.abs(score)
   const prefix = score < 0 ? '-' : ''
 
   if (absoluteScore < 1_000) {
-    return `${score}`
+    return formatDecimalScore(score)
   }
 
   if (absoluteScore < 1_000_000) {
@@ -41,21 +55,42 @@ function formatScoreValue(score: number) {
   return `${prefix}${formatCompactSegment(absoluteScore / 1_000_000, 'M')}`
 }
 
+function resolveScoreLayout(
+  label: string,
+  { containerSize, strokeWidth, fontSize, minLabelWidth }: ReturnType<typeof getScoreSizeTokens>,
+) {
+  const charWidth = fontSize * 0.58
+  const labelWidth = Math.max(minLabelWidth, Math.ceil(label.length * charWidth))
+  const innerMin = labelWidth + 4
+  const resolvedContainer = Math.max(containerSize, innerMin + strokeWidth * 2)
+
+  return {
+    containerSize: resolvedContainer,
+    strokeWidth,
+    fontSize,
+    minLabelWidth: labelWidth,
+  }
+}
+
 function getScoreAriaLabel(score: number, max: number) {
   return `Score ${formatScoreValue(score)} out of ${formatScoreValue(max)}`
 }
 
 export function Score({ score, max, size = 'md', variant = 'default', className }: ScoreProps) {
-  const { containerSize, strokeWidth, fontSize, minLabelWidth } = getScoreSizeTokens(size)
+  const sizeTokens = getScoreSizeTokens(size)
   const { ringColor, trackColor, labelColor } = getScoreColorTokens(variant)
 
   const safeMax = max > 0 ? max : 1
   const clampedScore = Math.min(safeMax, Math.max(0, score))
   const progress = Math.min(1, Math.max(0, clampedScore / safeMax))
+  const label = formatScoreValue(score)
+  const { containerSize, strokeWidth, fontSize, minLabelWidth } = resolveScoreLayout(
+    label,
+    sizeTokens,
+  )
   const radius = (containerSize - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const dashOffset = circumference * (1 - progress)
-  const label = formatScoreValue(score)
   const ariaLabel = getScoreAriaLabel(score, max)
 
   const containerStyle = {

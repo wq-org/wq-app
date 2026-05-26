@@ -4,12 +4,12 @@ import {
   MapPin,
   MessageCircleQuestion,
   Play,
-  Sigma,
   Split,
   Square,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import {
@@ -29,6 +29,7 @@ import {
   resolveGameDragDropMathPoints,
   type GameDragDropMathNodeData,
 } from '../types/drag-drop-math.schema'
+import { formatPscaExamplePoints } from '../utils/formatPscaExamplePoints'
 
 type AdjacentNodeInfo = { id: string; nodeType: string | undefined }
 
@@ -46,6 +47,8 @@ function getNodeIcon(type: string | undefined): LucideIcon {
   return NODE_TYPE_ICONS[type] ?? FileQuestionMark
 }
 
+const dragDropMathSettingsEnterLift =
+  'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
 const dragDropMathSettingsEnterSubtle =
   'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
@@ -69,8 +72,10 @@ export function DragDropMathSettings({
   prevNode,
   nextNode,
 }: DragDropMathSettingsProps) {
+  const { t } = useTranslation('features.gameStudio')
   const maxPoints = resolveGameDragDropMathPoints(nodeData.points)
   const instantColorFeedback = nodeData.instantColorFeedback !== false
+  const examplePoints = formatPscaExamplePoints(maxPoints)
 
   function handleNavigate(targetNodeId: string) {
     onClose()
@@ -88,16 +93,16 @@ export function DragDropMathSettings({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className={cn('flex flex-col gap-6', dragDropMathSettingsEnterLift)}>
       <Text
         as="p"
         bold
       >
-        Game settings
+        {t('dragDropMathSettings.gameSettingsTitle')}
       </Text>
 
       <div className={cn('flex items-center gap-4', dragDropMathSettingsEnterSubtle)}>
-        <Label className="flex-1">Maximum score</Label>
+        <Label className="flex-1">{t('dragDropMathSettings.maxPointsLabel')}</Label>
         <QuantityStepper
           className="w-44"
           value={maxPoints}
@@ -105,7 +110,7 @@ export function DragDropMathSettings({
           max={999}
           step={1}
           onChange={handleMaxPointsChange}
-          label="Maximum score"
+          label={t('dragDropMathSettings.maxPointsLabel')}
         />
       </div>
 
@@ -116,26 +121,29 @@ export function DragDropMathSettings({
         )}
       >
         <div className="flex flex-col gap-0.5">
-          <Label htmlFor="drag-drop-math-instant-color-feedback">Instant color feedback</Label>
+          <Label htmlFor="drag-drop-math-instant-color-feedback">
+            {t('dragDropMathSettings.instantColorFeedbackLabel')}
+          </Label>
           <Text
             as="p"
             variant="small"
             muted
           >
-            Blue on valid Enter, red on invalid (per row).
+            {t('dragDropMathSettings.instantColorFeedbackHint')}
           </Text>
         </div>
         <Switch
           id="drag-drop-math-instant-color-feedback"
           checked={instantColorFeedback}
           onCheckedChange={handleInstantColorFeedbackChange}
-          aria-label="Instant color feedback on Enter"
+          aria-label={t('dragDropMathSettings.instantColorFeedbackLabel')}
         />
       </div>
 
       <Accordion
         type="single"
         collapsible
+        className={dragDropMathSettingsEnterSubtle}
       >
         <AccordionItem
           value="score-calculation"
@@ -143,26 +151,78 @@ export function DragDropMathSettings({
         >
           <AccordionTrigger className="py-3">
             <span className="flex items-center gap-2">
-              <Sigma className="size-4" />
+              <Calculator className="size-4" />
               <Text
                 variant="small"
                 as="p"
                 muted
               >
-                How the score is calculated
+                {t('dragDropMathSettings.scoreAccordionTitle')}
               </Text>
             </span>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="flex flex-col gap-2 rounded-lg border border-border bg-muted/20 p-4">
+            <div className="flex flex-col gap-3 rounded-lg border border-border bg-muted/20 p-4">
               <Text
                 as="p"
                 variant="small"
                 muted
               >
-                {/* Calculation rules are still being designed. */}
-                Calculation rules will be defined here once the scoring model for drag-and-drop math
-                is finalized.
+                {t('dragDropMathSettings.scoreAccordionHint')}
+              </Text>
+              <Text
+                as="p"
+                variant="small"
+                className="font-medium"
+              >
+                {t('dragDropMathSettings.scoreAccordionFormula')}
+              </Text>
+              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+                <li>
+                  <span className="font-medium text-foreground">
+                    {t('dragDropMathSettings.scoreAccordionResultTitle')}
+                  </span>
+                  {' — '}
+                  {t('dragDropMathSettings.scoreAccordionResultBody')}
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    {t('dragDropMathSettings.scoreAccordionStepsTitle')}
+                  </span>
+                  {' — '}
+                  {t('dragDropMathSettings.scoreAccordionStepsBody')}
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    {t('dragDropMathSettings.scoreAccordionMethodTitle')}
+                  </span>
+                  {' — '}
+                  {t('dragDropMathSettings.scoreAccordionMethodBody')}
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    {t('dragDropMathSettings.scoreAccordionErrorFreeTitle')}
+                  </span>
+                  {' — '}
+                  {t('dragDropMathSettings.scoreAccordionErrorFreeBody')}
+                </li>
+              </ul>
+              <Text
+                as="p"
+                variant="small"
+                muted
+              >
+                {t('dragDropMathSettings.scoreAccordionPointsMapping', {
+                  maxPoints,
+                  examplePoints,
+                })}
+              </Text>
+              <Text
+                as="p"
+                variant="small"
+                muted
+              >
+                {t('dragDropMathSettings.scoreAccordionCarryNote')}
               </Text>
             </div>
           </AccordionContent>
