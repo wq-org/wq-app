@@ -75,7 +75,7 @@ export function DragDropMathPreviewChatHistory({
   showTitle,
   avatarUrl,
   avatarFallback,
-  bubbleVariant = 'dark',
+  bubbleVariant = 'default',
   className,
 }: DragDropMathPreviewChatHistoryProps) {
   const messages = useMemo(

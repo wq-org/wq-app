@@ -50,7 +50,7 @@ export function ChatBubbleLexicalContent({
         variant="embedded"
         minHeightClassName="min-h-0"
         surfaceClassName="relative w-full"
-        embeddedEditableClassName="px-0! py-0!"
+        embeddedEditableClassName="px-0! py-0! text-inherit! dark:text-inherit!"
         ariaLabel="Message content"
         normalizeInitialContent={normalizeInitialContent}
         floatingToolbarFeatures={READONLY_CHAT_LEXICAL_TOOLBAR}

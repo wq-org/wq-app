@@ -83,7 +83,7 @@ export function SendingChatMessageBubble(props: ChatMessageBubbleProps) {
             </>
           ) : (
             <>
-              <p>{text}</p>
+              <p className="text-inherit">{text}</p>
               <p className="mt-1 text-right text-[10px] opacity-70">{time}</p>
             </>
           )}

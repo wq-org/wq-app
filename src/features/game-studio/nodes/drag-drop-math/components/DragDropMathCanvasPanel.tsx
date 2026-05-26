@@ -13,10 +13,12 @@ import { MathNodePalette } from './MathNodePalette'
 
 export type DragDropMathCanvasPanelProps = DragDropMathCanvasProps & {
   className?: string
+  showPaletteLabel?: boolean
 }
 
 export function DragDropMathCanvasPanel({
   className,
+  showPaletteLabel = true,
   ...canvasProps
 }: DragDropMathCanvasPanelProps) {
   const { t } = useTranslation('features.gameStudio')
@@ -71,7 +73,7 @@ export function DragDropMathCanvasPanel({
           viewportClassName="pb-1"
         >
           <div className="w-max">
-            <MathNodePalette />
+            <MathNodePalette showLabel={showPaletteLabel} />
           </div>
         </BlurredScrollArea>
       </div>

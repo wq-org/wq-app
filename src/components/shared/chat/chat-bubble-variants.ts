@@ -5,7 +5,8 @@ export const chatBubbleVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-neutral-200 text-neutral-800',
+        default:
+          'bg-neutral-200 text-neutral-800 dark:bg-neutral-200 dark:text-neutral-800 [&_p]:text-inherit [&_.editor-contentEditable]:!text-inherit dark:[&_.editor-contentEditable]:!text-inherit [&_.editor-heading-h1]:text-inherit [&_.editor-heading-h2]:text-inherit [&_.editor-heading-h3]:text-inherit [&_.editor-heading-h4]:text-inherit [&_.editor-heading-h5]:text-inherit [&_.editor-heading-h6]:text-inherit',
         dark: 'bg-neutral-900 text-neutral-50',
         'blue-on-gray': 'bg-neutral-100 text-[oklch(var(--oklch-blue))]',
         'darkblue-on-blue':

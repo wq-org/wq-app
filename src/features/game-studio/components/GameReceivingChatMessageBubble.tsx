@@ -52,7 +52,7 @@ export function GameReceivingChatMessageBubble({
             </div>
           ) : (
             <>
-              <p className="whitespace-pre-line">{text}</p>
+              <p className="whitespace-pre-line text-inherit">{text}</p>
               <p className="mt-1 text-right text-[10px] opacity-70">{time}</p>
             </>
           )}

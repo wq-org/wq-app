@@ -68,7 +68,9 @@ export function GameIncomingChatMessageBubble({
             </div>
           ) : (
             <>
-              <p className={cn('whitespace-pre-line', textBold && 'font-bold')}>{text}</p>
+              <p className={cn('whitespace-pre-line text-inherit', textBold && 'font-bold')}>
+                {text}
+              </p>
               <p className="mt-1 text-[10px] opacity-70">{time}</p>
             </>
           )}

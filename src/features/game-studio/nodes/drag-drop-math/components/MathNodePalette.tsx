@@ -10,18 +10,24 @@ import { MATH_NODE_PALETTE_DRAG_IDS } from '../constants/drag-drop-math-dnd.cons
 import { resolveDropNodeDefaultValue } from '../constants/math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from '../constants/math-node-palette.constants'
 
-export function MathNodePalette() {
+export type MathNodePaletteProps = {
+  showLabel?: boolean
+}
+
+export function MathNodePalette({ showLabel = true }: MathNodePaletteProps) {
   const { t } = useTranslation('features.gameStudio')
 
   return (
     <div className="flex flex-col gap-2">
-      <Text
-        as="p"
-        variant="small"
-        muted
-      >
-        {t('dragDropMathEditor.paletteLabel')}
-      </Text>
+      {showLabel ? (
+        <Text
+          as="p"
+          variant="small"
+          muted
+        >
+          {t('dragDropMathEditor.paletteLabel')}
+        </Text>
+      ) : null}
       <div className="flex flex-wrap items-center gap-3">
         {MATH_NODE_PALETTE_PRESETS.map((item) => {
           const dropValue = resolveDropNodeDefaultValue(item.variant, item.value, t)

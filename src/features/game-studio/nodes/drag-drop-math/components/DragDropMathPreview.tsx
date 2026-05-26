@@ -266,7 +266,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         showTitle={showTitle}
         avatarUrl={userAvatarUrl ?? undefined}
         avatarFallback={avatarFallback}
-        bubbleVariant="dark"
+        bubbleVariant="default"
         className="min-h-0 flex-1"
       />
 
@@ -284,6 +284,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
       >
         <DnDMathChatInput
           className="shrink-0"
+          showPaletteLabel={false}
           rows={canvasRows}
           instantColorFeedback={instantColorFeedback}
           onRowsReorder={reorderRows}
