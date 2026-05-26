@@ -230,7 +230,7 @@ export function formatPrettyMathExpression(tokens: readonly string[]): string {
  */
 const RESULT_SUFFIX_BY_CATEGORY: Readonly<Partial<Record<UnitCategory, string>>> = {
   money: ' €',
-  percencltage: ' %',
+  percentage: ' %',
   length: ' m',
   area: ' m²',
   volume: ' m³',
