@@ -525,37 +525,37 @@ export const ALLOWED_BINARY_RULES: readonly BinaryRule[] = [
   ['count', '/', 'time', 'rate'], // 120 Stk / 8 h  → rate (15 Stk/h)
 
   // ── Scalar × quantity (BWL: 40 × 8.50 € → 340 €; 15 h × 30 → 450 h) ────────
-  ['dimensionless', '*', 'money', 'money'],
-  ['money', '*', 'dimensionless', 'money'],
-  ['dimensionless', '*', 'length', 'length'],
-  ['length', '*', 'dimensionless', 'length'],
-  ['dimensionless', '*', 'area', 'area'],
-  ['area', '*', 'dimensionless', 'area'],
-  ['dimensionless', '*', 'volume', 'volume'],
-  ['volume', '*', 'dimensionless', 'volume'],
-  ['dimensionless', '*', 'capacity', 'capacity'],
-  ['capacity', '*', 'dimensionless', 'capacity'],
-  ['dimensionless', '*', 'mass', 'mass'],
-  ['mass', '*', 'dimensionless', 'mass'],
-  ['dimensionless', '*', 'time', 'time'],
-  ['time', '*', 'dimensionless', 'time'],
-  ['dimensionless', '*', 'count', 'count'],
-  ['count', '*', 'dimensionless', 'count'],
-  ['dimensionless', '*', 'power', 'power'],
-  ['power', '*', 'dimensionless', 'power'],
-  ['dimensionless', '*', 'energy', 'energy'],
-  ['energy', '*', 'dimensionless', 'energy'],
-  // ── Quantity ÷ scalar → quantity (100 km / 2 → 50 km) ──────────────────────
-  ['money', '/', 'dimensionless', 'money'],
-  ['length', '/', 'dimensionless', 'length'],
-  ['area', '/', 'dimensionless', 'area'],
-  ['volume', '/', 'dimensionless', 'volume'],
-  ['capacity', '/', 'dimensionless', 'capacity'],
-  ['mass', '/', 'dimensionless', 'mass'],
-  ['time', '/', 'dimensionless', 'time'],
-  ['count', '/', 'dimensionless', 'count'],
-  ['power', '/', 'dimensionless', 'power'],
-  ['energy', '/', 'dimensionless', 'energy'],
+  ['dimensionless', '*', 'money', 'money'], // 40 × 8.50 € → 340 €
+  ['money', '*', 'dimensionless', 'money'], // 8.50 € × 40 → 340 €
+  ['dimensionless', '*', 'length', 'length'], // 10 × 6 m → 60 m
+  ['length', '*', 'dimensionless', 'length'], // 6 m × 10 → 60 m
+  ['dimensionless', '*', 'area', 'area'], // 3 × 12 m² → 36 m²
+  ['area', '*', 'dimensionless', 'area'], // 12 m² × 3 → 36 m²
+  ['dimensionless', '*', 'volume', 'volume'], // 2 × 5 m³ → 10 m³
+  ['volume', '*', 'dimensionless', 'volume'], // 5 m³ × 2 → 10 m³
+  ['dimensionless', '*', 'capacity', 'capacity'], // 4 × 2.5 l → 10 l
+  ['capacity', '*', 'dimensionless', 'capacity'], // 2.5 l × 4 → 10 l
+  ['dimensionless', '*', 'mass', 'mass'], // 90 × 6 kg → 540 kg
+  ['mass', '*', 'dimensionless', 'mass'], // 6 kg × 90 → 540 kg
+  ['dimensionless', '*', 'time', 'time'], // 15 × 30 h → 450 h
+  ['time', '*', 'dimensionless', 'time'], // 30 h × 15 → 450 h
+  ['dimensionless', '*', 'count', 'count'], // 15 × 40 Stück → 600 Stück
+  ['count', '*', 'dimensionless', 'count'], // 40 Stück × 15 → 600 Stück
+  ['dimensionless', '*', 'power', 'power'], // 2 × 12.5 kW → 25 kW
+  ['power', '*', 'dimensionless', 'power'], // 12.5 kW × 2 → 25 kW
+  ['dimensionless', '*', 'energy', 'energy'], // 3 × 50 kWh → 150 kWh
+  ['energy', '*', 'dimensionless', 'energy'], // 50 kWh × 3 → 150 kWh
+  // ── Quantity ÷ scalar ───────────────────────────────────────────────────────
+  ['money', '/', 'dimensionless', 'money'], // 340 € / 2 → 170 €
+  ['length', '/', 'dimensionless', 'length'], // 100 km / 2 → 50 km
+  ['area', '/', 'dimensionless', 'area'], // 24 m² / 3 → 8 m²
+  ['volume', '/', 'dimensionless', 'volume'], // 12 m³ / 4 → 3 m³
+  ['capacity', '/', 'dimensionless', 'capacity'], // 10 l / 2 → 5 l
+  ['mass', '/', 'dimensionless', 'mass'], // 540 kg / 3 → 180 kg
+  ['time', '/', 'dimensionless', 'time'], // 450 h / 15 → 30 h
+  ['count', '/', 'dimensionless', 'count'], // 600 Stück / 40 → 15 Stück
+  ['power', '/', 'dimensionless', 'power'], // 25 kW / 5 → 5 kW
+  ['energy', '/', 'dimensionless', 'energy'], // 150 kWh / 3 → 50 kWh
 
   // ── Percentage scaling ──────────────────────────────────────────────────────
   ['money', '*', 'percentage', 'money'], // 400 € × 24%  → 96 €
