@@ -260,6 +260,13 @@
     "descriptionPlaceholder": "Describe the math task, context, and what learners should do…",
     "exerciseTitleLabel": "Exercise title",
     "exerciseTitlePlaceholder": "Enter exercise title",
+    "newExerciseTabLabel": "New Tab",
+    "addExerciseTabAriaLabel": "Add exercise tab",
+    "closeExerciseTabAriaLabel": "Close exercise tab",
+    "deleteExerciseTabDialogTitle": "Delete exercise tab?",
+    "deleteExerciseTabDialogDescription": "This exercise tab and all of its content — title, building blocks, and canvas — will be permanently removed. This cannot be undone.",
+    "deleteExerciseTabDialogCancel": "Cancel",
+    "deleteExerciseTabDialogConfirm": "Delete tab",
     "paletteLabel": "Drag tokens onto the canvas",
     "paletteDragAriaLabel": "Drag {{variant}} math token to canvas",
     "mathBlockLabel": "Math Block",
@@ -280,7 +287,12 @@
     "editTextTokenAriaLabel": "Edit text token on canvas",
     "canvasEmptyHint": "Drag math nodes here to place them anywhere on the canvas.",
     "reorderRowAriaLabel": "Reorder row",
-    "duplicateResultAriaLabel": "Drag result {{value}} into a new row to keep calculating"
+    "duplicateResultAriaLabel": "Drag result {{value}} into a new row to keep calculating",
+    "evaluateToastTitle": "Equation not accepted",
+    "evaluateToastIncompatibleUnits": "This unit combination is not allowed (e.g. m² × m² or km + kg).",
+    "evaluateToastInvalid": "Check operators, numbers, and units.",
+    "evaluateToastParse": "The expression could not be calculated.",
+    "evaluateToastNotFinite": "The result is not a valid number."
   },
   "imagePinDialog": {
     "title": "Image Pin",

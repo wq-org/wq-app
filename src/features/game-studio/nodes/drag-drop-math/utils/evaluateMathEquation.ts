@@ -8,10 +8,10 @@
 import { buildTokens } from './tokenLayer'
 import { validateTokens } from './validationLayer'
 import {
-  formatMathResult,
   type MathExpressionEvaluateFailure,
   type MathExpressionEvaluateResult,
 } from './evaluateMathExpression'
+import { formatGroupedNumber } from './numberDisplay'
 import {
   formatDisplayEquation,
   resolveResultDisplaySuffix,
@@ -27,6 +27,7 @@ function mapValidationReason(
   reason: ValidationFailureReason,
 ): MathExpressionEvaluateFailure['reason'] {
   if (reason === 'empty') return 'empty'
+  if (reason === 'incompatible_units') return 'incompatible_units'
   return 'invalid_characters'
 }
 
@@ -70,13 +71,13 @@ export function evaluateMathEquation(raw: string): MathExpressionEvaluateResult 
     return { ok: false, reason: 'not_finite' }
   }
 
-  const numericDisplay = formatMathResult(result)
+  const numericDisplay = formatGroupedNumber(result)
   const suffix = resolveResultDisplaySuffix(validation.resultCategory)
 
   return {
     ok: true,
     expression: prettyExpression,
     result,
-    display: `${numericDisplay}${suffix}`,
+    display: `${numericDisplay}${suffix}`.trim(),
   }
 }

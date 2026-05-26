@@ -44,8 +44,65 @@ function tryMatchUnitAt(raw: string, index: number): string | null {
   return null
 }
 
+/** Peels one or more registry units glued directly after a number (e.g. `11h`, `25.5kW`, `8.50€/kg`). */
+function peelGluedUnitsAfterNumber(
+  raw: string,
+  index: number,
+): { units: string[]; nextIndex: number } {
+  const units: string[] = []
+  let cursor = index
+
+  while (cursor < raw.length) {
+    const unit = tryMatchUnitAt(raw, cursor)
+    if (!unit) break
+    units.push(unit)
+    cursor += unit.length
+  }
+
+  if (units.length > 0) {
+    return { units, nextIndex: cursor }
+  }
+
+  if (cursor < raw.length && CURRENCY_SYMBOLS.has(raw[cursor]!)) {
+    units.push(raw[cursor]!)
+    return { units, nextIndex: cursor + 1 }
+  }
+
+  return { units, nextIndex: cursor }
+}
+
+/**
+ * Splits tokens like `11h` or `280.5kWh` when they were not split during the main scan.
+ */
+function splitGluedNumberUnitToken(token: string): string[] | null {
+  const match = token.match(/^(\d+(?:[.,]\d+)?)(.+)$/)
+  if (!match) return null
+
+  const [, numberPart, suffix] = match
+  const unit = tryMatchUnitAt(suffix, 0)
+  if (!unit || unit.length !== suffix.length) return null
+
+  return [numberPart, unit]
+}
+
+function expandGluedOperandTokens(tokens: string[]): string[] {
+  const expanded: string[] = []
+
+  for (const token of tokens) {
+    const split = splitGluedNumberUnitToken(token)
+    if (split) {
+      expanded.push(...split)
+      continue
+    }
+    expanded.push(token)
+  }
+
+  return expanded
+}
+
 function mapTokenForEval(token: string): string {
   if (token in MATH_BADGE_MAP) return MATH_BADGE_MAP[token]
+  if (findUnitDefinition(token) !== null) return ''
   if (/^\d+,\d+$/.test(token)) return token.replace(',', '.')
   return token
 }
@@ -60,7 +117,7 @@ export function toMathExpr(tokens: readonly string[]): string {
 
 /**
  * Tokenize typed equation input (registry-aware).
- * Supports glued forms like `8.5€`, `EUR/kg`, `40*8.5€`.
+ * Supports glued forms like `8.5€`, `11h`, `25.5kW`, `EUR/kg`, `40*8.5€`.
  */
 export function tokenizeEquationInput(raw: string): string[] {
   const normalized = raw.replace(/\u00a0/g, ' ').trim()
@@ -93,17 +150,9 @@ export function tokenizeEquationInput(raw: string): string[] {
       tokens.push(normalized.slice(index, end))
       index = end
 
-      const gluedCurrency = normalized[index]
-      if (gluedCurrency && CURRENCY_SYMBOLS.has(gluedCurrency)) {
-        tokens.push(gluedCurrency)
-        index += 1
-      } else {
-        const gluedUnit = tryMatchUnitAt(normalized, index)
-        if (gluedUnit) {
-          tokens.push(gluedUnit)
-          index += gluedUnit.length
-        }
-      }
+      const { units: gluedUnits, nextIndex } = peelGluedUnitsAfterNumber(normalized, index)
+      for (const unit of gluedUnits) tokens.push(unit)
+      index = nextIndex
       continue
     }
 
@@ -114,12 +163,6 @@ export function tokenizeEquationInput(raw: string): string[] {
       continue
     }
 
-    if (SINGLE_CHAR_TOKENS.has(char)) {
-      tokens.push(char)
-      index += 1
-      continue
-    }
-
     const unitMatch = tryMatchUnitAt(normalized, index)
     if (unitMatch) {
       tokens.push(unitMatch)
@@ -127,11 +170,17 @@ export function tokenizeEquationInput(raw: string): string[] {
       continue
     }
 
+    if (SINGLE_CHAR_TOKENS.has(char)) {
+      tokens.push(char)
+      index += 1
+      continue
+    }
+
     tokens.push(char)
     index += 1
   }
 
-  return tokens
+  return expandGluedOperandTokens(tokens)
 }
 
 /** @deprecated Prefer {@link tokenizeEquationInput} for typed equations with units. */
@@ -175,8 +224,27 @@ export function formatPrettyMathExpression(tokens: readonly string[]): string {
   return spaced.replace(/\( /g, '(').replace(/ \)/g, ')').trim()
 }
 
+/**
+ * Default result unit glyph per inferred category (classroom DE conventions).
+ * Money and derived compound units use registry display symbols.
+ */
+const RESULT_SUFFIX_BY_CATEGORY: Readonly<Partial<Record<UnitCategory, string>>> = {
+  money: ' €',
+  percencltage: ' %',
+  length: ' m',
+  area: ' m²',
+  volume: ' m³',
+  capacity: ' l',
+  mass: ' kg',
+  time: ' h',
+  energy: ' kWh',
+  power: ' kW',
+  speed: ' km/h',
+  count: ' Stück',
+  density: ' kg/m³',
+}
+
 export function resolveResultDisplaySuffix(resultCategory: UnitCategory | null): string {
-  if (resultCategory === 'money') return ' €'
-  if (resultCategory === 'percentage') return ' %'
-  return ''
+  if (resultCategory === null) return ''
+  return RESULT_SUFFIX_BY_CATEGORY[resultCategory] ?? ''
 }

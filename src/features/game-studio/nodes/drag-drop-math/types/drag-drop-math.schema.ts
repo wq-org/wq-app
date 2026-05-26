@@ -2,7 +2,10 @@ import type { SerializedEditorState } from 'lexical'
 
 import type { MathTokenRole } from './math-token-role.types'
 import type { MathTokenShellState } from './math-token-shell.types'
+import type { DragDropMathExerciseTab } from './exercise-tab.types'
 import type { SigmaCanvasRow } from './sigma-row.types'
+
+export type { DragDropMathExerciseTab } from './exercise-tab.types'
 
 /** Canvas pill variants — sigma lives on {@link SigmaCanvasRow}, not in `tokens[]`. */
 export type TokenCanvasVariant = 'math' | 'text'
@@ -43,11 +46,15 @@ export function isTokenCanvasRow(row: DragDropMathCanvasRow): row is TokenCanvas
 
 export type GameDragDropMathNodeData = {
   label?: string
+  /** @deprecated Use {@link exerciseTabs} — migrated on read. */
   title?: string
   /** Rich description (Lexical JSON), autosaved on the canvas node. */
   descriptionContent?: SerializedEditorState | null
-  /** Token rows placed on the drag-drop math canvas. */
+  /** @deprecated Use {@link exerciseTabs} — migrated on read. */
   canvasRows?: DragDropMathCanvasRow[]
+  /** Isolated exercise workspaces (title + canvas per tab). */
+  exerciseTabs?: DragDropMathExerciseTab[]
+  activeExerciseTabId?: string
   /** Max total score this node can award. */
   points?: number
   /** Blue/red equation chip on Enter. Omit or `true` = enabled; `false` = off. */

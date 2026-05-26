@@ -7,11 +7,13 @@ import {
   type MouseEvent,
   type RefObject,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { MathTokenShellState } from '../types/math-token-shell.types'
 import { resolveDropNodeVisualState, type DropNodeVisualState } from '../types/drop-node.types'
 import type { MathEquationCommitPayload } from '../utils/mathEquationRow'
 import { evaluateMathEquation } from '../utils/evaluateMathEquation'
+import { notifyMathExpressionEvaluateFailure } from '../utils/mathEvaluateToast'
 
 export type MathTokenCommitPayload = MathEquationCommitPayload
 
@@ -65,6 +67,7 @@ export function useMathDropNodeEditor({
   onRemove,
   instantColorFeedback = true,
 }: UseMathDropNodeEditorArgs): UseMathDropNodeEditorResult {
+  const { t } = useTranslation('features.gameStudio')
   const nodeRef = useRef<HTMLSpanElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [instantShell, setInstantShell] = useState<MathTokenShellState | null>(null)
@@ -104,6 +107,7 @@ export function useMathDropNodeEditor({
 
       const outcome = evaluateMathEquation(trimmed)
       if (!outcome.ok) {
+        notifyMathExpressionEvaluateFailure(outcome.reason, t)
         if (instantColorFeedback) setInstantShell('error')
         onCommit({ kind: 'error', raw: trimmed })
         return
@@ -118,7 +122,7 @@ export function useMathDropNodeEditor({
         equationShell: instantColorFeedback ? 'success' : 'default',
       })
     },
-    [instantColorFeedback, onCommit, onRemove],
+    [instantColorFeedback, onCommit, onRemove, t],
   )
 
   const cancelEditing = useCallback(() => {

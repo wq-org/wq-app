@@ -95,7 +95,7 @@ Author toggle: **Game settings → Instant color feedback** (`DragDropMathSettin
 | #   | Pattern                                 | Reason                              | Example                                    |
 | --- | --------------------------------------- | ----------------------------------- | ------------------------------------------ |
 | 1   | Cross-category addition                 | Dimensionally meaningless           | `m + m²`, `kg + l`, `h + €`                |
-| 2   | Didactically unsupported multiplication | No rule defined                     | `€ × €`, `kg × h`, `m² × kg`               |
+| 2   | Didactically unsupported multiplication | No rule defined                     | `€ × €`, `kg × h`, `m² × kg`, `m² × m²`    |
 | 3   | Ambiguous division                      | Only when a surface-rate is taught  | `50 m² ÷ 8 h` (no `area/time → rate` rule) |
 | 4   | Temperature arithmetic                  | Scale vs. physical temperature trap | `20 °C × 2` (blocked by default)           |
 | 5   | Currency mixing                         | Requires explicit exchange rate     | `100 EUR + 50 USD`                         |

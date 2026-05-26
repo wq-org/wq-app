@@ -28,11 +28,11 @@ const inactiveToneTextClasses = {
   darkblue: 'text-muted-foreground group-hover:text-blue-500',
 } as const
 
-export const selectTabsContainerVariants = cva('', {
+export const selectTabsContainerVariants = cva('flex w-max min-w-full flex-nowrap', {
   variants: {
     layout: {
-      default: 'flex gap-12',
-      compact: 'flex gap-4',
+      default: 'gap-12',
+      compact: 'gap-4',
     },
   },
   defaultVariants: {
@@ -43,7 +43,7 @@ export const selectTabsContainerVariants = cva('', {
 // Underline animates left-to-right via scaleX on the ::after pseudo-element.
 // The button sets text-[color] when active so after:bg-current picks up the right hue.
 export const selectTabButtonVariants = cva(
-  "group relative flex items-center gap-2 focus:outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 after:ease-out",
+  "group relative flex shrink-0 items-center gap-2 focus:outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 after:ease-out",
   {
     variants: {
       layout: {

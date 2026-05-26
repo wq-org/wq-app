@@ -515,10 +515,13 @@ export const ALLOWED_BINARY_RULES: readonly BinaryRule[] = [
   ['length', '*', 'rate', 'money'],
   ['time', '*', 'rate', 'money'],
   ['count', '*', 'rate', 'money'], // 15 Stk × 8.50 €/Stk → 127.5 €
-  ['energy', '*', 'rate', 'money'],
+  ['mass', '*', 'rate', 'money'], // 90 kg × 6 €/kg → 540 €
+  ['area', '*', 'rate', 'money'], // 14 m² × 45 €/m² → 630 €
+  ['volume', '*', 'rate', 'money'],
+  ['capacity', '*', 'rate', 'money'],
+  ['energy', '*', 'rate', 'money'], // 280.5 kWh × 0.26 €/kWh → 72.93 €
 
   // ── Count / Productivity ────────────────────────────────────────────────────
-  ['money', '/', 'count', 'rate'], // 540 € / 15 Stk → rate (36 €/Stk)
   ['count', '/', 'time', 'rate'], // 120 Stk / 8 h  → rate (15 Stk/h)
 
   // ── Scalar × quantity (BWL: 40 × 8.50 € → 340 €) ───────────────────────────

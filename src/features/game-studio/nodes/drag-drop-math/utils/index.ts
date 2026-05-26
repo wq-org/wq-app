@@ -48,7 +48,9 @@ export type {
   MathExpressionEvaluateResult,
   MathExpressionEvaluateSuccess,
   MathExpressionEvaluateFailure,
+  MathExpressionEvaluateFailureReason,
 } from './evaluateMathExpression'
+export { notifyMathExpressionEvaluateFailure } from './mathEvaluateToast'
 export {
   MATH_BADGE_MAP,
   toMathExpr,

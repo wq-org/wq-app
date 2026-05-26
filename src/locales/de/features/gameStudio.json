@@ -260,6 +260,13 @@
     "descriptionPlaceholder": "Beschreibe die Mathe-Aufgabe, den Kontext und was Lernende tun sollen…",
     "exerciseTitleLabel": "Aufgabentitel",
     "exerciseTitlePlaceholder": "Aufgabentitel eingeben",
+    "newExerciseTabLabel": "Neuer Tab",
+    "addExerciseTabAriaLabel": "Aufgaben-Tab hinzufügen",
+    "closeExerciseTabAriaLabel": "Aufgaben-Tab schließen",
+    "deleteExerciseTabDialogTitle": "Aufgaben-Tab löschen?",
+    "deleteExerciseTabDialogDescription": "Dieser Aufgaben-Tab und sein gesamter Inhalt — Titel, Bausteine und Fläche — werden dauerhaft entfernt. Das lässt sich nicht rückgängig machen.",
+    "deleteExerciseTabDialogCancel": "Abbrechen",
+    "deleteExerciseTabDialogConfirm": "Tab löschen",
     "paletteLabel": "Bausteine auf die Fläche ziehen",
     "paletteDragAriaLabel": "{{variant}}-Mathebaustein auf die Fläche ziehen",
     "mathBlockLabel": "Mathe Block",
@@ -280,7 +287,12 @@
     "editTextTokenAriaLabel": "Textbaustein auf der Fläche bearbeiten",
     "canvasEmptyHint": "Mathebausteine hierher ziehen und beliebig auf der Fläche platzieren.",
     "reorderRowAriaLabel": "Reihe neu anordnen",
-    "duplicateResultAriaLabel": "Ergebnis {{value}} in eine neue Reihe ziehen, um weiterzurechnen"
+    "duplicateResultAriaLabel": "Ergebnis {{value}} in eine neue Reihe ziehen, um weiterzurechnen",
+    "evaluateToastTitle": "Rechnung nicht übernommen",
+    "evaluateToastIncompatibleUnits": "Diese Einheitenkombination ist nicht erlaubt (z. B. m² × m² oder km + kg).",
+    "evaluateToastInvalid": "Prüfe Operatoren, Zahlen und Einheiten.",
+    "evaluateToastParse": "Der Ausdruck konnte nicht berechnet werden.",
+    "evaluateToastNotFinite": "Das Ergebnis ist keine gültige Zahl."
   },
   "imagePinDialog": {
     "title": "Bild und Pins",

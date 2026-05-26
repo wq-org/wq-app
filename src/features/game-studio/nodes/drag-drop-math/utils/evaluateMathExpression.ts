@@ -15,9 +15,16 @@ export type MathExpressionEvaluateSuccess = {
   display: string
 }
 
+export type MathExpressionEvaluateFailureReason =
+  | 'empty'
+  | 'invalid_characters'
+  | 'incompatible_units'
+  | 'parse_error'
+  | 'not_finite'
+
 export type MathExpressionEvaluateFailure = {
   ok: false
-  reason: 'empty' | 'invalid_characters' | 'parse_error' | 'not_finite'
+  reason: MathExpressionEvaluateFailureReason
 }
 
 export type MathExpressionEvaluateResult =
