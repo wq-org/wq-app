@@ -524,13 +524,44 @@ export const ALLOWED_BINARY_RULES: readonly BinaryRule[] = [
   // ── Count / Productivity ────────────────────────────────────────────────────
   ['count', '/', 'time', 'rate'], // 120 Stk / 8 h  → rate (15 Stk/h)
 
-  // ── Scalar × quantity (BWL: 40 × 8.50 € → 340 €) ───────────────────────────
+  // ── Scalar × quantity (BWL: 40 × 8.50 € → 340 €; 15 h × 30 → 450 h) ────────
   ['dimensionless', '*', 'money', 'money'],
   ['money', '*', 'dimensionless', 'money'],
+  ['dimensionless', '*', 'length', 'length'],
+  ['length', '*', 'dimensionless', 'length'],
+  ['dimensionless', '*', 'area', 'area'],
+  ['area', '*', 'dimensionless', 'area'],
+  ['dimensionless', '*', 'volume', 'volume'],
+  ['volume', '*', 'dimensionless', 'volume'],
+  ['dimensionless', '*', 'capacity', 'capacity'],
+  ['capacity', '*', 'dimensionless', 'capacity'],
+  ['dimensionless', '*', 'mass', 'mass'],
+  ['mass', '*', 'dimensionless', 'mass'],
+  ['dimensionless', '*', 'time', 'time'],
+  ['time', '*', 'dimensionless', 'time'],
+  ['dimensionless', '*', 'count', 'count'],
+  ['count', '*', 'dimensionless', 'count'],
+  ['dimensionless', '*', 'power', 'power'],
+  ['power', '*', 'dimensionless', 'power'],
+  ['dimensionless', '*', 'energy', 'energy'],
+  ['energy', '*', 'dimensionless', 'energy'],
+  // ── Quantity ÷ scalar → quantity (100 km / 2 → 50 km) ──────────────────────
+  ['money', '/', 'dimensionless', 'money'],
+  ['length', '/', 'dimensionless', 'length'],
+  ['area', '/', 'dimensionless', 'area'],
+  ['volume', '/', 'dimensionless', 'volume'],
+  ['capacity', '/', 'dimensionless', 'capacity'],
+  ['mass', '/', 'dimensionless', 'mass'],
+  ['time', '/', 'dimensionless', 'time'],
+  ['count', '/', 'dimensionless', 'count'],
+  ['power', '/', 'dimensionless', 'power'],
+  ['energy', '/', 'dimensionless', 'energy'],
 
   // ── Percentage scaling ──────────────────────────────────────────────────────
   ['money', '*', 'percentage', 'money'], // 400 € × 24%  → 96 €
   ['percentage', '*', 'money', 'money'], // commutative: % × € → €
+  ['dimensionless', '*', 'percentage', 'dimensionless'], // 320 × 19% → 60.8
+  ['percentage', '*', 'dimensionless', 'dimensionless'], // commutative
 
   // ── Ratio / dimensionless scaling ───────────────────────────────────────────
   ['money', '*', 'ratio', 'money'], // 400 € × 1.24      → 496 €

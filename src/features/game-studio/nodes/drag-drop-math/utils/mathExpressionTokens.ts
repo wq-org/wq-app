@@ -1,4 +1,9 @@
-import { findUnitDefinition, UNIT_DEFINITIONS, type UnitCategory } from './unitDefinitions'
+import {
+  findUnitDefinition,
+  UNIT_DEFINITIONS,
+  type UnitCategory,
+  type UnitDefinition,
+} from './unitDefinitions'
 
 /** Maps display/badge glyphs to mathjs-safe tokens (per-token). */
 export const MATH_BADGE_MAP: Record<string, string> = {
@@ -102,7 +107,11 @@ function expandGluedOperandTokens(tokens: string[]): string[] {
 
 function mapTokenForEval(token: string): string {
   if (token in MATH_BADGE_MAP) return MATH_BADGE_MAP[token]
-  if (findUnitDefinition(token) !== null) return ''
+  const unit = findUnitDefinition(token)
+  if (unit !== null) {
+    if (unit.symbol === 'percent') return '* 0.01'
+    return ''
+  }
   if (/^\d+,\d+$/.test(token)) return token.replace(',', '.')
   return token
 }
@@ -244,7 +253,23 @@ const RESULT_SUFFIX_BY_CATEGORY: Readonly<Partial<Record<UnitCategory, string>>>
   density: ' kg/m³',
 }
 
-export function resolveResultDisplaySuffix(resultCategory: UnitCategory | null): string {
+export function resolveResultDisplaySuffix(
+  resultCategory: UnitCategory | null,
+  tokens: readonly string[] = [],
+): string {
   if (resultCategory === null) return ''
+
+  const unitDefs = tokens
+    .map((token) => findUnitDefinition(token))
+    .filter((def): def is UnitDefinition => def !== null)
+
+  if (unitDefs.length > 0) {
+    const firstDef = unitDefs[0]
+    const allMatchResult = unitDefs.every(
+      (def) => def.displaySymbol === firstDef.displaySymbol && def.category === resultCategory,
+    )
+    if (allMatchResult) return ` ${firstDef.displaySymbol}`
+  }
+
   return RESULT_SUFFIX_BY_CATEGORY[resultCategory] ?? ''
 }

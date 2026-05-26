@@ -72,7 +72,7 @@ export function evaluateMathEquation(raw: string): MathExpressionEvaluateResult 
   }
 
   const numericDisplay = formatGroupedNumber(result)
-  const suffix = resolveResultDisplaySuffix(validation.resultCategory)
+  const suffix = resolveResultDisplaySuffix(validation.resultCategory, stringTokens)
 
   return {
     ok: true,
