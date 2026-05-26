@@ -7,6 +7,7 @@ export const DROP_NODE_VISUAL_STATES = [
   'disabled',
   'ghost',
   'error',
+  'success',
 ] as const
 
 export type DropNodeVisualState = (typeof DROP_NODE_VISUAL_STATES)[number]
@@ -29,6 +30,7 @@ export function resolveDropNodeVisualState({
   if (disabled) return 'disabled'
   if (isEditing) return 'editing'
   if (!inactive && mathShell === 'error') return 'error'
+  if (!inactive && mathShell === 'success') return 'success'
   if (!inactive && mathShell === 'ghost' && !disabled) return 'ghost'
   if (inactive) return 'inactive'
   return 'default'

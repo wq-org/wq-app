@@ -52,6 +52,7 @@ export type CanvasRowProps = {
   row: DragDropMathCanvasRow
   /** Framer Motion drag controls owned by the wrapping Reorder.Item. */
   dragControls: DragControls
+  instantColorFeedback?: boolean
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
@@ -64,6 +65,7 @@ export type CanvasRowProps = {
 export function CanvasRow({
   row,
   dragControls,
+  instantColorFeedback,
   onTokenValueChange,
   onMathTokenCommit,
   onTokenRemove,
@@ -182,6 +184,7 @@ export function CanvasRow({
               rowId={row.id}
               token={token}
               compact={isCompactLayout}
+              instantColorFeedback={instantColorFeedback}
               onTokenValueChange={onTokenValueChange}
               onMathTokenCommit={onMathTokenCommit}
               onRemove={onTokenRemove}

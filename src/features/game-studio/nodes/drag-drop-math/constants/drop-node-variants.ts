@@ -22,6 +22,8 @@ export const mathNodeShellVariants = cva(mathNodeShellBase, {
       ghost: 'gap-2 rounded-full px-3.5 py-2 font-medium bg-transparent text-primary',
       error:
         'gap-2 rounded-full border border-red-500/20 px-3.5 py-2 font-medium bg-red-500/10 text-red-500 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-300',
+      success:
+        'gap-2 rounded-full border border-blue-500/25 px-3.5 py-2 font-medium bg-blue-500/10 text-blue-600 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300',
     },
   },
   defaultVariants: {
@@ -64,6 +66,7 @@ export const dropNodeEditableVariants = cva('min-w-[1ch] outline-none', {
       disabled: 'pointer-events-none',
       ghost: '',
       error: '',
+      success: '',
     },
   },
   defaultVariants: {

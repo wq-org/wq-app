@@ -1,4 +1,4 @@
-export const MATH_TOKEN_SHELL_STATES = ['default', 'ghost', 'error'] as const
+export const MATH_TOKEN_SHELL_STATES = ['default', 'ghost', 'error', 'success'] as const
 
 export type MathTokenShellState = (typeof MATH_TOKEN_SHELL_STATES)[number]
 

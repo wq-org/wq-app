@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/accordion'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { AnimatedBeamHub, BeamHubBadge, QuantityStepper } from '@/components/shared'
 import { cn } from '@/lib/utils'
@@ -69,6 +70,7 @@ export function DragDropMathSettings({
   nextNode,
 }: DragDropMathSettingsProps) {
   const maxPoints = resolveGameDragDropMathPoints(nodeData.points)
+  const instantColorFeedback = nodeData.instantColorFeedback !== false
 
   function handleNavigate(targetNodeId: string) {
     onClose()
@@ -79,6 +81,10 @@ export function DragDropMathSettings({
     const next = Math.max(0, Math.floor(value))
     if (next === maxPoints) return
     onPatchNodeData({ points: next })
+  }
+
+  function handleInstantColorFeedbackChange(checked: boolean) {
+    onPatchNodeData({ instantColorFeedback: checked })
   }
 
   return (
@@ -100,6 +106,30 @@ export function DragDropMathSettings({
           step={1}
           onChange={handleMaxPointsChange}
           label="Maximum score"
+        />
+      </div>
+
+      <div
+        className={cn(
+          'flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/20 px-4 py-3',
+          dragDropMathSettingsEnterSubtle,
+        )}
+      >
+        <div className="flex flex-col gap-0.5">
+          <Label htmlFor="drag-drop-math-instant-color-feedback">Instant color feedback</Label>
+          <Text
+            as="p"
+            variant="small"
+            muted
+          >
+            Blue on valid Enter, red on invalid (per row).
+          </Text>
+        </div>
+        <Switch
+          id="drag-drop-math-instant-color-feedback"
+          checked={instantColorFeedback}
+          onCheckedChange={handleInstantColorFeedbackChange}
+          aria-label="Instant color feedback on Enter"
         />
       </div>
 

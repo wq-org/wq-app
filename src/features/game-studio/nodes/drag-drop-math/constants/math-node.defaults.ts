@@ -10,6 +10,7 @@ export function resolveDropNodeDefaultValue(
   value: string,
   translate: (key: string) => string,
 ): string {
+  if (variant === 'sigma') return value
   if (value.trim().length > 0) return value
   return translate(DROP_NODE_DEFAULT_VALUE_KEYS[variant])
 }

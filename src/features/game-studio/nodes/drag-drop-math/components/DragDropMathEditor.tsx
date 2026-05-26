@@ -26,16 +26,28 @@ import {
 import { DropMathNode } from './DropMathNode'
 import { DropMathStaticNode } from './DropMathStaticNode'
 import { DropTextNode } from './DropTextNode'
+import { SigmaNode } from './SigmaNode'
 import { collectEquationGroupTokenIds, isFixedMathSuffixToken } from '../utils/mathEquationRow'
-import type {
-  DragDropMathCanvasRow,
-  GameDragDropMathNodeData,
+import {
+  isTokenCanvasRow,
+  type DragDropMathCanvasRow,
+  type DragDropMathCanvasToken,
+  type GameDragDropMathNodeData,
 } from '../types/drag-drop-math.schema'
+import type { MathNodeVariant } from '../types/math-node.types'
+import { createCanvasRowId } from '../utils/canvasDnd.utils'
+import { normalizeSigmaRow } from '../utils/sigmaRow'
 import { MATH_NODE_PALETTE_DRAG_IDS } from '../constants/drag-drop-math-dnd.constants'
 import { MathNodePalette } from './MathNodePalette'
 import { resolveDropNodeDefaultValue } from '../constants/math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from '../constants/math-node-palette.constants'
 import { snapCenterToCursor } from '../utils/snapCenterToCursor'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
 
 const dragDropMathEditorEnterLift =
@@ -51,15 +63,32 @@ export type DragDropMathEditorProps = {
 
 function resolveCanvasRows(nodeData: GameDragDropMathNodeData): DragDropMathCanvasRow[] {
   if (!Array.isArray(nodeData.canvasRows)) return []
-  return nodeData.canvasRows.map((row) => {
-    if (row.variant) return row
-    const inferredVariant = row.tokens[0]?.variant ?? 'math'
-    return { ...row, variant: inferredVariant }
+  return nodeData.canvasRows.map((row): DragDropMathCanvasRow => {
+    if (!row || typeof row !== 'object') {
+      return { id: createCanvasRowId(), variant: 'math', tokens: [] }
+    }
+    if (row.variant === 'sigma') return normalizeSigmaRow(row)
+    if (isTokenCanvasRow(row)) return row
+    const legacyRow = row as {
+      id: string
+      tokens?: DragDropMathCanvasToken[]
+      variant?: string
+    }
+    const variant =
+      legacyRow.variant === 'math' || legacyRow.variant === 'text'
+        ? legacyRow.variant
+        : (legacyRow.tokens?.[0]?.variant ?? 'math')
+    return {
+      id: legacyRow.id,
+      variant,
+      tokens: Array.isArray(legacyRow.tokens) ? legacyRow.tokens : [],
+    }
   })
 }
 
 function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
   for (const row of rows) {
+    if (!isTokenCanvasRow(row)) continue
     const token = row.tokens.find((candidate) => candidate.id === tokenId)
     if (token) return token
   }
@@ -67,7 +96,11 @@ function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string
 }
 
 function findRowForToken(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
-  return rows.find((row) => row.tokens.some((candidate) => candidate.id === tokenId)) ?? null
+  return (
+    rows.find(
+      (row) => isTokenCanvasRow(row) && row.tokens.some((candidate) => candidate.id === tokenId),
+    ) ?? null
+  )
 }
 
 export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDropMathEditorProps) {
@@ -75,11 +108,12 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
   const pin = nodeData as GameDragDropMathNodeData
   const descriptionContent = pin.descriptionContent ?? null
   const canvasRows = useMemo(() => resolveCanvasRows(pin), [pin])
+  const instantColorFeedback = pin.instantColorFeedback !== false
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
   const resolveDropValue = useCallback(
-    (variant: 'math' | 'text', value: string) => resolveDropNodeDefaultValue(variant, value, t),
+    (variant: MathNodeVariant, value: string) => resolveDropNodeDefaultValue(variant, value, t),
     [t],
   )
 
@@ -102,6 +136,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     updateTokenValue,
     commitMathEquation,
     removeToken,
+    resetSigmaRow,
   } = useDragDropMathCanvasRows({
     rows: canvasRows,
     onRowsChange: patchCanvasRows,
@@ -154,6 +189,14 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
           />
         )
       }
+      if (palettePreset.variant === 'sigma') {
+        return (
+          <SigmaNode
+            paletteMode
+            label={t('dragDropMathEditor.sigmaBlockLabel')}
+          />
+        )
+      }
       return (
         <DropTextNode
           value={dropValue}
@@ -168,7 +211,9 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
       const canvasToken = findTokenInRows(canvasRows, tokenId)
       if (!canvasToken || !sourceRow) return null
 
-      const renderCanvasToken = (token: (typeof canvasRows)[number]['tokens'][number]) => {
+      if (!isTokenCanvasRow(sourceRow)) return null
+
+      const renderCanvasToken = (token: DragDropMathCanvasToken) => {
         if (token.variant === 'math') {
           if (isFixedMathSuffixToken(token)) {
             return (
@@ -189,6 +234,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
               onCommit={() => {}}
               disabled={token.disabled}
               useGrabCursor={!token.disabled}
+              instantColorFeedback={instantColorFeedback}
             />
           )
         }
@@ -219,20 +265,36 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     }
 
     return null
-  }, [activeDragId, canvasRows, resolveDropValue])
+  }, [activeDragId, canvasRows, instantColorFeedback, resolveDropValue])
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <div className={dragDropMathEditorEnterLift}>
-        <LexicalTextarea
-          id={`drag-drop-math-description-${nodeId}`}
-          label={t('dragDropMathEditor.descriptionLabel')}
-          placeholder={t('dragDropMathEditor.descriptionPlaceholder')}
-          hydrationKey={nodeId}
-          value={descriptionContent}
-          onValueChange={handleDescriptionChange}
-          minHeight={300}
-        />
+        <Accordion
+          type="single"
+          collapsible
+          defaultValue="task-description"
+        >
+          <AccordionItem
+            value="task-description"
+            className="border-b-0"
+          >
+            <AccordionTrigger className="py-3 text-sm font-medium hover:no-underline">
+              {t('dragDropMathEditor.descriptionLabel')}
+            </AccordionTrigger>
+            <AccordionContent className="[&_label]:sr-only">
+              <LexicalTextarea
+                id={`drag-drop-math-description-${nodeId}`}
+                label={t('dragDropMathEditor.descriptionLabel')}
+                placeholder={t('dragDropMathEditor.descriptionPlaceholder')}
+                hydrationKey={nodeId}
+                value={descriptionContent}
+                onValueChange={handleDescriptionChange}
+                minHeight={300}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div className={cn('flex flex-col gap-2', dragDropMathEditorEnterSubtle)}>
@@ -262,10 +324,12 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         <div className={dragDropMathEditorEnterLift}>
           <DragDropMathCanvas
             rows={canvasRows}
+            instantColorFeedback={instantColorFeedback}
             onRowsReorder={reorderRows}
             onTokenValueChange={updateTokenValue}
             onMathTokenCommit={commitMathEquation}
             onTokenRemove={removeToken}
+            onSigmaReset={resetSigmaRow}
           />
         </div>
         <DragOverlay

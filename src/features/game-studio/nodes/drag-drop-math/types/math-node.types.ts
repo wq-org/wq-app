@@ -1,4 +1,4 @@
-export const MATH_NODE_VARIANTS = ['math', 'text'] as const
+export const MATH_NODE_VARIANTS = ['math', 'text', 'sigma'] as const
 
 export type MathNodeVariant = (typeof MATH_NODE_VARIANTS)[number]
 

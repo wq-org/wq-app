@@ -1,10 +1,11 @@
-import { isMathNodeVariant, type MathNodeVariant } from './math-node.types'
+import type { TokenCanvasVariant } from './drag-drop-math.schema'
+import { isTokenCanvasVariant } from './drag-drop-math.schema'
 
 export type CanvasRowSortablePayload = { rowId: string }
 export type CanvasTokenSortablePayload = {
   rowId: string
   tokenId: string
-  variant: MathNodeVariant
+  variant: TokenCanvasVariant
 }
 export type CanvasGapDroppablePayload = { position: 'before' | 'after'; rowId: string }
 export type CanvasResultDuplicatePayload = {
@@ -14,10 +15,15 @@ export type CanvasResultDuplicatePayload = {
   value: string
 }
 
+export type CanvasSigmaDropPayload = {
+  rowId: string
+}
+
 export const CANVAS_ROW_SORTABLE_DATA_KEY = 'canvasRowSortable' as const
 export const CANVAS_TOKEN_SORTABLE_DATA_KEY = 'canvasTokenSortable' as const
 export const CANVAS_GAP_DROPPABLE_DATA_KEY = 'canvasGapDroppable' as const
 export const CANVAS_RESULT_DUPLICATE_DATA_KEY = 'canvasResultDuplicate' as const
+export const CANVAS_SIGMA_DROP_DATA_KEY = 'canvasSigmaDrop' as const
 
 function readNamedPayload(data: unknown, key: string): Record<string, unknown> | null {
   if (!data || typeof data !== 'object') return null
@@ -37,7 +43,7 @@ export function getCanvasTokenSortablePayload(data: unknown): CanvasTokenSortabl
   if (!payload || typeof payload.rowId !== 'string' || typeof payload.tokenId !== 'string') {
     return null
   }
-  if (!isMathNodeVariant(payload.variant)) return null
+  if (!isTokenCanvasVariant(payload.variant)) return null
   return { rowId: payload.rowId, tokenId: payload.tokenId, variant: payload.variant }
 }
 
@@ -57,4 +63,15 @@ export function getCanvasResultDuplicatePayload(
   const value = payload.value
   if (typeof sourceTokenId !== 'string' || typeof value !== 'string') return null
   return { sourceTokenId, value }
+}
+
+export function getCanvasSigmaDropPayload(data: unknown): CanvasSigmaDropPayload | null {
+  const payload = readNamedPayload(data, CANVAS_SIGMA_DROP_DATA_KEY)
+  if (!payload || typeof payload.rowId !== 'string') return null
+  return { rowId: payload.rowId }
+}
+
+/** Only ghost result chips (`= 340 €`) may be dropped onto a sigma row. */
+export function isResultChipDragSource(activeData: unknown): boolean {
+  return getCanvasResultDuplicatePayload(activeData) !== null
 }

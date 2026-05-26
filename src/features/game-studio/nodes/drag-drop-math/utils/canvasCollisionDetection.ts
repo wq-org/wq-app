@@ -8,22 +8,31 @@ import {
 import { CANVAS_EMPTY_DROP_ID } from '../constants/canvas-dnd.constants'
 import {
   getCanvasGapDroppablePayload,
+  getCanvasResultDuplicatePayload,
   getCanvasRowSortablePayload,
+  getCanvasSigmaDropPayload,
   getCanvasTokenSortablePayload,
 } from '../types/canvas.types'
 
-type CanvasDropTargetKind = 'token' | 'row' | 'empty' | 'gap' | 'unknown'
+type CanvasDropTargetKind = 'token' | 'sigma' | 'row' | 'empty' | 'gap' | 'unknown'
 
 const DROP_TARGET_PRIORITY: Record<CanvasDropTargetKind, number> = {
-  // Token > row > gap > empty. When the pointer's rect overlaps multiple
-  // targets (e.g. row padding touches the gap below), we always prefer the
-  // most specific one. Row > gap means moving the cursor through row padding
-  // never accidentally creates a "new row" drop; gap > empty keeps the
-  // dashed-row hint from being swallowed by the empty-canvas backdrop.
+  // Token > sigma > row > gap > empty.
   token: 40,
+  sigma: 35,
   row: 30,
   gap: 20,
   empty: 10,
+  unknown: 0,
+}
+
+/** Result chips target sigma rows first; gap/row targets must not win visually. */
+const RESULT_DUPLICATE_DROP_PRIORITY: Record<CanvasDropTargetKind, number> = {
+  sigma: 50,
+  token: 25,
+  row: 15,
+  gap: 8,
+  empty: 5,
   unknown: 0,
 }
 
@@ -44,15 +53,20 @@ function getCanvasDropTargetKind(collision: Collision): CanvasDropTargetKind {
   if (collision.id === CANVAS_EMPTY_DROP_ID) return 'empty'
   const payload = getCollisionPayload(collision)
   if (getCanvasTokenSortablePayload(payload)) return 'token'
+  if (getCanvasSigmaDropPayload(payload)) return 'sigma'
   if (getCanvasRowSortablePayload(payload)) return 'row'
   if (getCanvasGapDroppablePayload(payload)) return 'gap'
   return 'unknown'
 }
 
-function sortCollisionsByDropPriority(collisions: Collision[]): Collision[] {
+function sortCollisionsByDropPriority(
+  collisions: Collision[],
+  isResultDuplicateDrag: boolean,
+): Collision[] {
+  const priorityMap = isResultDuplicateDrag ? RESULT_DUPLICATE_DROP_PRIORITY : DROP_TARGET_PRIORITY
   return [...collisions].sort((a, b) => {
-    const priorityA = DROP_TARGET_PRIORITY[getCanvasDropTargetKind(a)]
-    const priorityB = DROP_TARGET_PRIORITY[getCanvasDropTargetKind(b)]
+    const priorityA = priorityMap[getCanvasDropTargetKind(a)]
+    const priorityB = priorityMap[getCanvasDropTargetKind(b)]
     return priorityB - priorityA
   })
 }
@@ -72,7 +86,8 @@ function sortCollisionsByDropPriority(collisions: Collision[]): Collision[] {
  * sync with the actual cursor position.
  */
 export const canvasCollisionDetection: CollisionDetection = (args) => {
+  const isResultDuplicateDrag = Boolean(getCanvasResultDuplicatePayload(args.active?.data?.current))
   const pointerHits = pointerWithin(args)
   const baseHits = pointerHits.length > 0 ? pointerHits : closestCenter(args)
-  return sortCollisionsByDropPriority(baseHits)
+  return sortCollisionsByDropPriority(baseHits, isResultDuplicateDrag)
 }

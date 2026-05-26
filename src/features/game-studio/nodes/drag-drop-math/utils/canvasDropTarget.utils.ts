@@ -1,11 +1,19 @@
+import type { Collision } from '@dnd-kit/core'
+
 import type { CanvasTokenInsertTarget } from './canvasDnd.utils'
 import { CANVAS_EMPTY_DROP_ID } from '../constants/canvas-dnd.constants'
 import {
   getCanvasGapDroppablePayload,
   getCanvasRowSortablePayload,
+  getCanvasSigmaDropPayload,
   getCanvasTokenSortablePayload,
 } from '../types/canvas.types'
-import type { DragDropMathCanvasRow } from '../types/drag-drop-math.schema'
+import type { CanvasSigmaDropPayload } from '../types/canvas.types'
+import {
+  isSigmaCanvasRow,
+  isTokenCanvasRow,
+  type DragDropMathCanvasRow,
+} from '../types/drag-drop-math.schema'
 import type { MathNodeVariant } from '../types/math-node.types'
 import { rowHasEquationToken } from '../utils/mathEquationRow'
 import { findRowIndexById, findTokenLocation } from './canvasDnd.utils'
@@ -40,6 +48,12 @@ function enforceHomogeneousRow(
   const rowIndex = findRowIndexById(rows, target.rowId)
   if (rowIndex < 0) return target
   const targetRow = rows[rowIndex]
+  if (tokenVariant === 'sigma') {
+    return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
+  }
+  if (isSigmaCanvasRow(targetRow)) {
+    return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
+  }
   if (targetRow.variant === tokenVariant) return target
   return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
 }
@@ -60,6 +74,9 @@ function enforceRowCapacity(
   const rowIndex = findRowIndexById(rows, target.rowId)
   if (rowIndex < 0) return target
   const targetRow = rows[rowIndex]
+  if (!isTokenCanvasRow(targetRow)) {
+    return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
+  }
   if (targetRow.tokens.length + incomingTokenCount <= CANVAS_ROW_MAX_TOKENS) return target
   return { kind: 'new-row', position: 'after', referenceRowId: target.rowId }
 }
@@ -131,6 +148,31 @@ export function resolveCanvasDropInsertTarget({
     return applyConstraints({ kind: 'row-end', rowId: overRow.rowId })
   }
 
+  return null
+}
+
+function getDroppablePayloadFromCollision(collision: Collision): unknown {
+  const droppableContainer = collision.data?.droppableContainer
+  if (!droppableContainer) return null
+  return droppableContainer.data?.current ?? null
+}
+
+/**
+ * Resolves a sigma drop target from the primary `over` id or any collision hit.
+ * Needed when gap zones briefly win `over` even though the sigma row was highlighted.
+ */
+export function resolveSigmaDropTarget(
+  overData: unknown,
+  collisions: Collision[] | null | undefined,
+): CanvasSigmaDropPayload | null {
+  const fromOver = getCanvasSigmaDropPayload(overData)
+  if (fromOver) return fromOver
+
+  if (!collisions?.length) return null
+  for (const collision of collisions) {
+    const sigma = getCanvasSigmaDropPayload(getDroppablePayloadFromCollision(collision))
+    if (sigma) return sigma
+  }
   return null
 }
 

@@ -11,7 +11,7 @@ import {
 import type { MathTokenShellState } from '../types/math-token-shell.types'
 import { resolveDropNodeVisualState, type DropNodeVisualState } from '../types/drop-node.types'
 import type { MathEquationCommitPayload } from '../utils/mathEquationRow'
-import { evaluateMathExpression } from '../utils/evaluateMathExpression'
+import { evaluateMathEquation } from '../utils/evaluateMathEquation'
 
 export type MathTokenCommitPayload = MathEquationCommitPayload
 
@@ -22,6 +22,8 @@ export type UseMathDropNodeEditorArgs = {
   onCommit: (payload: MathTokenCommitPayload) => void
   disabled?: boolean
   onRemove?: () => void
+  /** Blue/red shell on Enter when evaluation succeeds or fails. Default: true. */
+  instantColorFeedback?: boolean
 }
 
 export type UseMathDropNodeEditorResult = {
@@ -44,8 +46,17 @@ function resolveEditText(
   expression: string | undefined,
   mathShell: MathTokenShellState,
 ): string {
-  if (mathShell === 'error' && expression) return expression
+  if ((mathShell === 'error' || mathShell === 'success') && expression) return expression
   return expression ?? value
+}
+
+function resolveActiveMathShell(
+  persisted: MathTokenShellState,
+  instant: MathTokenShellState | null,
+  instantColorFeedback: boolean,
+): MathTokenShellState {
+  if (!instantColorFeedback) return persisted
+  return instant ?? persisted
 }
 
 export function useMathDropNodeEditor({
@@ -55,18 +66,26 @@ export function useMathDropNodeEditor({
   onCommit,
   disabled = false,
   onRemove,
+  instantColorFeedback = true,
 }: UseMathDropNodeEditorArgs): UseMathDropNodeEditorResult {
   const nodeRef = useRef<HTMLSpanElement>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [instantShell, setInstantShell] = useState<MathTokenShellState | null>(null)
   const canEdit = !disabled
+
+  const activeMathShell = resolveActiveMathShell(mathShell, instantShell, instantColorFeedback)
 
   const visualState = resolveDropNodeVisualState({
     disabled,
     isEditing,
-    mathShell,
+    mathShell: activeMathShell,
   })
 
   const displayText = value
+
+  useEffect(() => {
+    setInstantShell(null)
+  }, [mathShell, value, expression])
 
   useEffect(() => {
     if (isEditing || !nodeRef.current) return
@@ -77,6 +96,7 @@ export function useMathDropNodeEditor({
     (raw: string) => {
       const trimmed = raw.trim()
       if (trimmed.length === 0) {
+        if (instantColorFeedback) setInstantShell(null)
         if (onRemove) {
           onRemove()
           return
@@ -85,19 +105,22 @@ export function useMathDropNodeEditor({
         return
       }
 
-      const outcome = evaluateMathExpression(trimmed)
+      const outcome = evaluateMathEquation(trimmed)
       if (!outcome.ok) {
+        if (instantColorFeedback) setInstantShell('error')
         onCommit({ kind: 'error', raw: trimmed })
         return
       }
 
+      if (instantColorFeedback) setInstantShell('success')
       onCommit({
         kind: 'success',
         expression: outcome.expression,
         display: outcome.display,
+        equationShell: instantColorFeedback ? 'success' : 'default',
       })
     },
-    [onCommit, onRemove],
+    [instantColorFeedback, onCommit, onRemove],
   )
 
   const cancelEditing = useCallback(() => {
@@ -110,6 +133,7 @@ export function useMathDropNodeEditor({
 
   const beginEditing = useCallback(() => {
     if (!canEdit || isEditing) return
+    setInstantShell(null)
     setIsEditing(true)
     const editText = resolveEditText(value, expression, mathShell)
 
@@ -153,6 +177,7 @@ export function useMathDropNodeEditor({
       }
       if (event.key === 'Escape') {
         event.preventDefault()
+        setInstantShell(null)
         if (nodeRef.current) {
           const revert = resolveEditText(value, expression, mathShell)
           nodeRef.current.textContent = revert.length > 0 ? revert : '\u00a0'

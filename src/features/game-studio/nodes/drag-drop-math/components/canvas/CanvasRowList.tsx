@@ -7,10 +7,12 @@ import { CanvasRowItem } from './CanvasRowItem'
 
 export type CanvasRowListProps = {
   rows: readonly DragDropMathCanvasRow[]
+  instantColorFeedback?: boolean
   onRowsReorder: (nextRows: DragDropMathCanvasRow[]) => void
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (tokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
+  onSigmaReset: (rowId: string) => void
 }
 
 /**
@@ -20,10 +22,12 @@ export type CanvasRowListProps = {
  */
 export function CanvasRowList({
   rows,
+  instantColorFeedback,
   onRowsReorder,
   onTokenValueChange,
   onMathTokenCommit,
   onTokenRemove,
+  onSigmaReset,
 }: CanvasRowListProps) {
   return (
     <div className="flex w-full flex-col">
@@ -45,9 +49,11 @@ export function CanvasRowList({
           <CanvasRowItem
             key={row.id}
             row={row}
+            instantColorFeedback={instantColorFeedback}
             onTokenValueChange={onTokenValueChange}
             onMathTokenCommit={onMathTokenCommit}
             onTokenRemove={onTokenRemove}
+            onSigmaReset={onSigmaReset}
           />
         ))}
       </Reorder.Group>

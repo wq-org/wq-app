@@ -1,4 +1,4 @@
-import { evaluate } from 'mathjs'
+import { mathEvaluate } from './mathInstance'
 
 import {
   containsCurrency,
@@ -78,7 +78,7 @@ export function evaluateMathExpression(raw: string): MathExpressionEvaluateResul
 
   let evaluated: unknown
   try {
-    evaluated = evaluate(mathExpression)
+    evaluated = mathEvaluate(mathExpression)
   } catch {
     return { ok: false, reason: 'parse_error' }
   }

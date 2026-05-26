@@ -1,4 +1,8 @@
-import type { DragDropMathCanvasRow, DragDropMathCanvasToken } from '../types/drag-drop-math.schema'
+import {
+  isTokenCanvasRow,
+  type DragDropMathCanvasRow,
+  type DragDropMathCanvasToken,
+} from '../types/drag-drop-math.schema'
 import type { MathTokenRole } from '../types/math-token-role.types'
 import type { MathTokenShellState } from '../types/math-token-shell.types'
 import { createCanvasTokenId } from './canvasDnd.utils'
@@ -8,7 +12,13 @@ export const MATH_EQUALS_DISPLAY = '=' as const
 export type MathEquationCommitPayload =
   | { kind: 'empty' }
   | { kind: 'error'; raw: string }
-  | { kind: 'success'; expression: string; display: string }
+  | {
+      kind: 'success'
+      expression: string
+      display: string
+      /** Equation chip shell after commit when instant color feedback is on. */
+      equationShell?: MathTokenShellState
+    }
 
 function createMathSuffixToken(
   role: Extract<MathTokenRole, 'equals' | 'result'>,
@@ -59,6 +69,7 @@ export function isFixedMathSuffixToken(token: DragDropMathCanvasToken): boolean 
 }
 
 export function rowHasEquationToken(row: DragDropMathCanvasRow): boolean {
+  if (!isTokenCanvasRow(row)) return false
   return row.tokens.some(isEditableEquationToken)
 }
 
@@ -67,6 +78,7 @@ export function collectEquationGroupTokenIds(
   row: DragDropMathCanvasRow,
   equationTokenId: string,
 ): string[] {
+  if (!isTokenCanvasRow(row)) return []
   const startIndex = row.tokens.findIndex((token) => token.id === equationTokenId)
   if (startIndex < 0) return []
 
@@ -86,6 +98,7 @@ export function removeTokensById(
   row: DragDropMathCanvasRow,
   tokenIds: ReadonlySet<string>,
 ): DragDropMathCanvasToken[] {
+  if (!isTokenCanvasRow(row)) return []
   return row.tokens.filter((token) => !tokenIds.has(token.id))
 }
 
@@ -93,6 +106,7 @@ function buildEvaluatedEquationTokens(
   equationToken: DragDropMathCanvasToken,
   expression: string,
   display: string,
+  equationShell: MathTokenShellState = 'default',
   existing?: { equals?: DragDropMathCanvasToken; result?: DragDropMathCanvasToken },
 ): DragDropMathCanvasToken[] {
   const equation: DragDropMathCanvasToken = {
@@ -100,7 +114,7 @@ function buildEvaluatedEquationTokens(
     mathRole: 'equation',
     value: expression,
     expression,
-    mathShell: 'default',
+    mathShell: equationShell,
     disabled: false,
   }
 
@@ -127,6 +141,7 @@ export function applyMathEquationCommitToRow(
   equationTokenId: string,
   payload: MathEquationCommitPayload,
 ): DragDropMathCanvasRow {
+  if (!isTokenCanvasRow(row)) return row
   const groupIds = new Set(collectEquationGroupTokenIds(row, equationTokenId))
   const equationToken = row.tokens.find((token) => token.id === equationTokenId)
   if (!equationToken) return row
@@ -159,6 +174,7 @@ export function applyMathEquationCommitToRow(
     equationToken,
     payload.expression,
     payload.display,
+    payload.equationShell ?? 'default',
     {
       equals: existingEquals,
       result: existingResult,
@@ -174,6 +190,7 @@ export function applyMathEquationCommitToRows(
   payload: MathEquationCommitPayload,
 ): DragDropMathCanvasRow[] {
   return rows.map((row) => {
+    if (!isTokenCanvasRow(row)) return row
     if (!row.tokens.some((token) => token.id === equationTokenId)) return row
     return applyMathEquationCommitToRow(row, equationTokenId, payload)
   })
@@ -184,6 +201,7 @@ export function extractEquationGroupTokens(
   equationTokenId: string,
 ): DragDropMathCanvasToken[] {
   for (const row of rows) {
+    if (!isTokenCanvasRow(row)) continue
     const ids = collectEquationGroupTokenIds(row, equationTokenId)
     if (ids.length === 0) continue
     return ids

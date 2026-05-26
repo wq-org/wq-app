@@ -1,28 +1,44 @@
 import type { SerializedEditorState } from 'lexical'
 
-import type { MathNodeVariant } from './math-node.types'
 import type { MathTokenRole } from './math-token-role.types'
 import type { MathTokenShellState } from './math-token-shell.types'
+import type { SigmaCanvasRow } from './sigma-row.types'
+
+/** Canvas pill variants — sigma lives on {@link SigmaCanvasRow}, not in `tokens[]`. */
+export type TokenCanvasVariant = 'math' | 'text'
+
+export function isTokenCanvasVariant(value: unknown): value is TokenCanvasVariant {
+  return value === 'math' || value === 'text'
+}
 
 export type DragDropMathCanvasToken = {
   id: string
   value: string
-  variant: MathNodeVariant
+  variant: TokenCanvasVariant
   /** Math row layout: equation (editable) · equals · result (fixed). */
   mathRole?: MathTokenRole
   /** Frozen on canvas: not editable or draggable. */
   disabled?: boolean
-  /** Math tokens only: `error` on equation; `ghost` on result badge. */
+  /** Math tokens only: `error` / `success` on equation; `ghost` on result badge. */
   mathShell?: MathTokenShellState
   /** Equation token: last committed expression (re-shown when editing). */
   expression?: string
 }
 
-export type DragDropMathCanvasRow = {
+export type TokenCanvasRow = {
   id: string
-  /** Rows are homogeneous: every token in `tokens` shares this variant. */
-  variant: MathNodeVariant
+  variant: TokenCanvasVariant
   tokens: DragDropMathCanvasToken[]
+}
+
+export type DragDropMathCanvasRow = TokenCanvasRow | SigmaCanvasRow
+
+export function isSigmaCanvasRow(row: DragDropMathCanvasRow): row is SigmaCanvasRow {
+  return row.variant === 'sigma'
+}
+
+export function isTokenCanvasRow(row: DragDropMathCanvasRow): row is TokenCanvasRow {
+  return row.variant === 'math' || row.variant === 'text'
 }
 
 export type GameDragDropMathNodeData = {
@@ -34,6 +50,8 @@ export type GameDragDropMathNodeData = {
   canvasRows?: DragDropMathCanvasRow[]
   /** Max total score this node can award. */
   points?: number
+  /** Blue/red equation chip on Enter. Omit or `true` = enabled; `false` = off. */
+  instantColorFeedback?: boolean
 }
 
 export const GAME_DRAG_DROP_MATH_TYPE = 'gameDragDropMath' as const

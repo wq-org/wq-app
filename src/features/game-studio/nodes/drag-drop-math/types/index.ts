@@ -10,7 +10,11 @@ export type {
   DragDropMathCanvasRow,
   DragDropMathCanvasToken,
   GameDragDropMathNodeData,
+  TokenCanvasRow,
+  TokenCanvasVariant,
 } from './drag-drop-math.schema'
+export { isSigmaCanvasRow, isTokenCanvasRow, isTokenCanvasVariant } from './drag-drop-math.schema'
+export type { SigmaCanvasRow, SigmaItem } from './sigma-row.types'
 export { isMathNodeVariant, MATH_NODE_VARIANTS } from './math-node.types'
 export type { MathNodeVariant } from './math-node.types'
 export { MATH_NODE_DRAG_DATA_KEY, getMathNodeDragData } from './drag-drop-math-dnd.types'
@@ -24,14 +28,18 @@ export {
   CANVAS_TOKEN_SORTABLE_DATA_KEY,
   CANVAS_GAP_DROPPABLE_DATA_KEY,
   CANVAS_RESULT_DUPLICATE_DATA_KEY,
+  CANVAS_SIGMA_DROP_DATA_KEY,
   getCanvasRowSortablePayload,
   getCanvasTokenSortablePayload,
   getCanvasGapDroppablePayload,
   getCanvasResultDuplicatePayload,
+  getCanvasSigmaDropPayload,
+  isResultChipDragSource,
 } from './canvas.types'
 export type {
   CanvasRowSortablePayload,
   CanvasTokenSortablePayload,
   CanvasGapDroppablePayload,
   CanvasResultDuplicatePayload,
+  CanvasSigmaDropPayload,
 } from './canvas.types'

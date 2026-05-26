@@ -13,7 +13,7 @@ export function MathNodeDemo() {
   const [mathSlot, setMathSlot] = useState(t('dragDropMathEditor.mathNodeDefaultValue'))
   const [mathCanvas, setMathCanvas] = useState('(4 + 6) * 3')
   const [mathExpression, setMathExpression] = useState<string | undefined>()
-  const [mathShell, setMathShell] = useState<'default' | 'ghost' | 'error'>('default')
+  const [mathShell, setMathShell] = useState<'default' | 'ghost' | 'error' | 'success'>('default')
   const [textCanvas, setTextCanvas] = useState('× 50')
 
   return (
@@ -50,7 +50,7 @@ export function MathNodeDemo() {
               if (payload.kind === 'success') {
                 setMathSlot(payload.expression)
                 setMathExpression(payload.expression)
-                setMathShell('default')
+                setMathShell(payload.equationShell ?? 'success')
               } else if (payload.kind === 'error') {
                 setMathSlot(payload.raw)
                 setMathExpression(payload.raw)
@@ -74,7 +74,7 @@ export function MathNodeDemo() {
               if (payload.kind === 'success') {
                 setMathCanvas(payload.expression)
                 setMathExpression(payload.expression)
-                setMathShell('default')
+                setMathShell(payload.equationShell ?? 'success')
               } else if (payload.kind === 'error') {
                 setMathCanvas(payload.raw)
                 setMathExpression(payload.raw)

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { getCanvasGapDropId } from '../../constants/canvas-dnd.constants'
 import {
   CANVAS_GAP_DROPPABLE_DATA_KEY,
+  getCanvasResultDuplicatePayload,
   getCanvasRowSortablePayload,
 } from '../../types/canvas.types'
 import { RowGhostHint } from './RowGhostHint'
@@ -22,8 +23,10 @@ export function BetweenRowZone({ position, rowId }: BetweenRowZoneProps) {
     },
   })
 
-  // Row reorder drags should not surface gap targets; only palette / canvas tokens do.
-  const isTokenLikeDrag = Boolean(active) && !getCanvasRowSortablePayload(active?.data.current)
+  // Row reorder and result→sigma drags keep gaps minimal so they do not steal sigma drops.
+  const isResultDuplicateDrag = Boolean(getCanvasResultDuplicatePayload(active?.data.current))
+  const isTokenLikeDrag =
+    Boolean(active) && !getCanvasRowSortablePayload(active?.data.current) && !isResultDuplicateDrag
 
   return (
     <div

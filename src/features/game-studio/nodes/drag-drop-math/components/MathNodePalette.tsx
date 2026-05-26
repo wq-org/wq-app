@@ -5,6 +5,7 @@ import { Text } from '@/components/ui/text'
 import { DraggablePaletteNode } from './DraggablePaletteNode'
 import { MathNode } from './MathNode'
 import { MathTextNode } from './MathTextNode'
+import { SigmaNode } from './SigmaNode'
 import { MATH_NODE_PALETTE_DRAG_IDS } from '../constants/drag-drop-math-dnd.constants'
 import { resolveDropNodeDefaultValue } from '../constants/math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from '../constants/math-node-palette.constants'
@@ -25,11 +26,15 @@ export function MathNodePalette() {
         {MATH_NODE_PALETTE_PRESETS.map((item) => {
           const dropValue = resolveDropNodeDefaultValue(item.variant, item.value, t)
           const paletteLabel =
-            item.variant === 'text' ? t('dragDropMathEditor.textBlockLabel') : item.value
+            item.variant === 'text'
+              ? t('dragDropMathEditor.textBlockLabel')
+              : item.variant === 'sigma'
+                ? t('dragDropMathEditor.sigmaBlockLabel')
+                : item.value
 
           return (
             <DraggablePaletteNode
-              key={item.variant}
+              key={MATH_NODE_PALETTE_DRAG_IDS[item.variant]}
               dragId={MATH_NODE_PALETTE_DRAG_IDS[item.variant]}
               dragData={{ source: 'palette', variant: item.variant, value: dropValue }}
             >
@@ -43,7 +48,12 @@ export function MathNodePalette() {
                   editAriaLabel={t('dragDropMathEditor.paletteDragAriaLabel', {
                     variant: item.variant,
                   })}
-                  className=" bg-orange-100! text-orange-600! dark:bg-orange-950/80! dark:text-orange-400!"
+                  className="bg-orange-100! text-orange-600! dark:bg-orange-950/80! dark:text-orange-400!"
+                />
+              ) : item.variant === 'sigma' ? (
+                <SigmaNode
+                  paletteMode
+                  label={paletteLabel}
                 />
               ) : (
                 <MathTextNode

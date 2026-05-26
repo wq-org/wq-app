@@ -21,6 +21,8 @@ export type DropMathNodeProps = {
   onRemove?: () => void
   /** Smaller padding when the canvas is in rest (non-drag) layout. */
   compact?: boolean
+  /** Blue/red shell on Enter. Default: true. */
+  instantColorFeedback?: boolean
 }
 
 /** Canvas equation token — evaluates on Enter; row adds `=` + result badges. */
@@ -35,6 +37,7 @@ export function DropMathNode({
   useGrabCursor = false,
   onRemove,
   compact = false,
+  instantColorFeedback,
 }: DropMathNodeProps) {
   const editor = useMathDropNodeEditor({
     value,
@@ -43,6 +46,7 @@ export function DropMathNode({
     onCommit,
     disabled,
     onRemove,
+    instantColorFeedback,
   })
 
   const shellClassName = cn(

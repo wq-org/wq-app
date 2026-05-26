@@ -1,6 +1,14 @@
 import { arrayMove } from '@dnd-kit/sortable'
 
-import type { DragDropMathCanvasRow, DragDropMathCanvasToken } from '../types/drag-drop-math.schema'
+import {
+  isSigmaCanvasRow,
+  isTokenCanvasRow,
+  type DragDropMathCanvasRow,
+  type DragDropMathCanvasToken,
+  type TokenCanvasRow,
+} from '../types/drag-drop-math.schema'
+import type { SigmaCanvasRow } from '../types/sigma-row.types'
+import { createEmptySigmaRow } from './sigmaRow'
 
 export type CanvasTokenInsertTarget =
   | { kind: 'first-row' }
@@ -32,21 +40,48 @@ export function findTokenLocation(
   tokenId: string,
 ): { rowIndex: number; tokenIndex: number } | null {
   for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
-    const tokenIndex = rows[rowIndex].tokens.findIndex((token) => token.id === tokenId)
+    const row = rows[rowIndex]
+    if (!isTokenCanvasRow(row)) continue
+    const tokenIndex = row.tokens.findIndex((token) => token.id === tokenId)
     if (tokenIndex >= 0) return { rowIndex, tokenIndex }
   }
   return null
 }
 
-/** Removes a token from whichever row contains it (row may become empty). */
+/** Removes a token from whichever token row contains it (row may become empty). */
 export function removeTokenById(
   rows: readonly DragDropMathCanvasRow[],
   tokenId: string,
 ): DragDropMathCanvasRow[] {
-  return rows.map((row) => ({
-    ...row,
-    tokens: row.tokens.filter((token) => token.id !== tokenId),
-  }))
+  return rows.map((row) => {
+    if (!isTokenCanvasRow(row)) return row
+    return { ...row, tokens: row.tokens.filter((token) => token.id !== tokenId) }
+  })
+}
+
+function insertRowAtIndex(
+  rows: readonly DragDropMathCanvasRow[],
+  insertIndex: number,
+  newRow: DragDropMathCanvasRow,
+): DragDropMathCanvasRow[] {
+  return [...rows.slice(0, insertIndex), newRow, ...rows.slice(insertIndex)]
+}
+
+function createTokenCanvasRow(token: DragDropMathCanvasToken): TokenCanvasRow {
+  return {
+    id: createCanvasRowId(),
+    variant: token.variant,
+    tokens: [token],
+  }
+}
+
+function resolveNewRowInsertIndex(
+  rows: readonly DragDropMathCanvasRow[],
+  target: Extract<CanvasTokenInsertTarget, { kind: 'new-row' }>,
+): number | null {
+  const refIndex = findRowIndexById(rows, target.referenceRowId)
+  if (refIndex < 0) return null
+  return target.position === 'before' ? refIndex : refIndex + 1
 }
 
 /**
@@ -59,23 +94,17 @@ export function insertTokenAt(
   target: CanvasTokenInsertTarget,
 ): DragDropMathCanvasRow[] {
   if (target.kind === 'first-row') {
-    return [...rows, { id: createCanvasRowId(), variant: token.variant, tokens: [token] }]
+    return [...rows, createTokenCanvasRow(token)]
   }
 
   if (target.kind === 'new-row') {
-    const refIndex = findRowIndexById(rows, target.referenceRowId)
-    if (refIndex < 0) return [...rows]
-    const insertIndex = target.position === 'before' ? refIndex : refIndex + 1
-    const newRow: DragDropMathCanvasRow = {
-      id: createCanvasRowId(),
-      variant: token.variant,
-      tokens: [token],
-    }
-    return [...rows.slice(0, insertIndex), newRow, ...rows.slice(insertIndex)]
+    const insertIndex = resolveNewRowInsertIndex(rows, target)
+    if (insertIndex === null) return [...rows]
+    return insertRowAtIndex(rows, insertIndex, createTokenCanvasRow(token))
   }
 
   return rows.map((row) => {
-    if (row.id !== target.rowId) return row
+    if (!isTokenCanvasRow(row) || row.id !== target.rowId) return row
     if (target.kind === 'row-end') {
       return { ...row, tokens: [...row.tokens, token] }
     }
@@ -85,6 +114,33 @@ export function insertTokenAt(
       tokens: [...row.tokens.slice(0, clampedIndex), token, ...row.tokens.slice(clampedIndex)],
     }
   })
+}
+
+/** Inserts a sigma summation row at a resolved drop target. */
+export function insertSigmaRowAt(
+  rows: readonly DragDropMathCanvasRow[],
+  sigmaRow: SigmaCanvasRow = createEmptySigmaRow(),
+  target: CanvasTokenInsertTarget,
+): DragDropMathCanvasRow[] {
+  if (target.kind === 'first-row') {
+    return [...rows, sigmaRow]
+  }
+
+  if (target.kind === 'new-row') {
+    const insertIndex = resolveNewRowInsertIndex(rows, target)
+    if (insertIndex === null) return [...rows]
+    return insertRowAtIndex(rows, insertIndex, sigmaRow)
+  }
+
+  const refIndex = findRowIndexById(rows, target.rowId)
+  if (refIndex < 0) return [...rows]
+  const insertIndex =
+    target.kind === 'row-at'
+      ? refIndex + 1
+      : target.kind === 'row-end'
+        ? refIndex + 1
+        : refIndex + 1
+  return insertRowAtIndex(rows, insertIndex, sigmaRow)
 }
 
 /** Reorders top-level canvas rows after a row grip drag. */
@@ -97,9 +153,11 @@ export function reorderRowsByIndex(
   return arrayMove([...rows], oldIndex, newIndex)
 }
 
-/** Drops rows with no tokens after moves/removals. */
+/** Drops empty token rows after moves/removals; sigma rows are always kept. */
 export function pruneEmptyRows(rows: readonly DragDropMathCanvasRow[]): DragDropMathCanvasRow[] {
-  return rows.filter((row) => row.tokens.length > 0)
+  return rows.filter(
+    (row) => isSigmaCanvasRow(row) || (isTokenCanvasRow(row) && row.tokens.length > 0),
+  )
 }
 
 /** Inserts multiple tokens in order at a drop target (equation groups). */
@@ -115,8 +173,9 @@ export function insertTokenGroupAt(
   for (let index = 1; index < tokens.length; index += 1) {
     const location = findTokenLocation(next, anchorId)
     if (!location) break
-    const rowId = next[location.rowIndex].id
-    next = insertTokenAt(next, tokens[index], { kind: 'row-end', rowId })
+    const row = next[location.rowIndex]
+    if (!isTokenCanvasRow(row)) break
+    next = insertTokenAt(next, tokens[index], { kind: 'row-end', rowId: row.id })
   }
 
   return next
@@ -135,7 +194,7 @@ export function reorderTokenWithinRow(
   if (activeTokenId === overTokenId) return null
 
   return rows.map((row) => {
-    if (row.id !== rowId) return row
+    if (!isTokenCanvasRow(row) || row.id !== rowId) return row
     const oldIndex = row.tokens.findIndex((token) => token.id === activeTokenId)
     const newIndex = row.tokens.findIndex((token) => token.id === overTokenId)
     if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return row

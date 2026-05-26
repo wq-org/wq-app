@@ -20,6 +20,7 @@ export type CanvasRowNodeProps = {
   rowId: string
   token: DragDropMathCanvasToken
   compact?: boolean
+  instantColorFeedback?: boolean
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
   onRemove: (equationTokenId: string) => void
@@ -49,6 +50,7 @@ function CanvasSortableRowNode({
   rowId,
   token,
   compact = false,
+  instantColorFeedback,
   onTokenValueChange,
   onMathTokenCommit,
   onRemove,
@@ -96,6 +98,7 @@ function CanvasSortableRowNode({
           editAriaLabel={editAriaLabel}
           useGrabCursor={!token.disabled}
           compact={compact}
+          instantColorFeedback={instantColorFeedback}
         />
       ) : (
         <DropTextNode
