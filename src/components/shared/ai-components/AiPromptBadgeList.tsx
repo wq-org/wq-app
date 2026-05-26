@@ -5,6 +5,10 @@ import { cn } from '@/lib/utils'
 
 import type { Ai02PromptSuggestion } from './ai-components.types'
 
+/** Subtle entrance when prompt badges mount (matches chat bubble enter). */
+export const aiPromptBadgeListEnterAnimation =
+  'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
+
 export type AiPromptBadgeListProps = {
   prompts: readonly Ai02PromptSuggestion[]
   onPromptClick: (prompt: string) => void
@@ -13,7 +17,13 @@ export type AiPromptBadgeListProps = {
 
 export function AiPromptBadgeList({ prompts, onPromptClick, className }: AiPromptBadgeListProps) {
   return (
-    <div className={cn('flex flex-wrap justify-center gap-2', className)}>
+    <div
+      className={cn(
+        'flex flex-wrap justify-center gap-2',
+        aiPromptBadgeListEnterAnimation,
+        className,
+      )}
+    >
       {prompts.map((item) => {
         const Icon = item.icon
         const isDisabled = item.disabled === true

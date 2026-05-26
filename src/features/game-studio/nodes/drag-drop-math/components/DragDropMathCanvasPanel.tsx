@@ -16,6 +16,9 @@ export type DragDropMathCanvasPanelProps = DragDropMathCanvasProps & {
   showPaletteLabel?: boolean
 }
 
+const canvasPanelToggleAnimation =
+  'animate-in fade-in-0 slide-in-from-bottom-4 duration-200 ease-in-out' as const
+
 export function DragDropMathCanvasPanel({
   className,
   showPaletteLabel = true,
@@ -45,23 +48,36 @@ export function DragDropMathCanvasPanel({
           aria-expanded={isExpanded}
           onClick={() => setIsExpanded((prev) => !prev)}
         >
-          {isExpanded ? <ArrowDownLeft className="size-4" /> : <ArrowUpRight className="size-4" />}
+          <span
+            key={isExpanded ? 'collapse' : 'expand'}
+            className={cn('inline-flex', canvasPanelToggleAnimation)}
+          >
+            {isExpanded ? (
+              <ArrowDownLeft className="size-4" />
+            ) : (
+              <ArrowUpRight className="size-4" />
+            )}
+          </span>
         </Button>
 
         <BlurredScrollArea
-          key={isExpanded ? 'expanded' : 'collapsed'}
           orientation="vertical"
           hideScrollBar
           className={cn(
-            'min-h-[200px] transition-[height] duration-200 ease-out',
+            'min-h-[200px] transition-[height] duration-200 ease-in-out',
             isExpanded ? 'h-[60vh]' : 'h-[240px]',
           )}
           viewportClassName="pb-1"
         >
-          <DragDropMathCanvas
-            {...canvasProps}
-            embedded
-          />
+          <div
+            key={isExpanded ? 'expanded' : 'collapsed'}
+            className={canvasPanelToggleAnimation}
+          >
+            <DragDropMathCanvas
+              {...canvasProps}
+              embedded
+            />
+          </div>
         </BlurredScrollArea>
       </div>
 

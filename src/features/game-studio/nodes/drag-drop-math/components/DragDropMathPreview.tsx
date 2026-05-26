@@ -13,9 +13,14 @@ import {
 import { Check, CircleQuestionMark, HandHelping } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { AiPromptBadgeList, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
+import {
+  AiPromptBadgeList,
+  aiPromptBadgeListEnterAnimation,
+  type Ai02PromptSuggestion,
+} from '@/components/shared/ai-components'
 import { hasLexicalEditorContent } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 
@@ -283,7 +288,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         onDragCancel={handleDragCancel}
       >
         <DnDMathChatInput
-          className="shrink-0"
+          className={cn('shrink-0', aiPromptBadgeListEnterAnimation)}
           showPaletteLabel={false}
           rows={canvasRows}
           instantColorFeedback={instantColorFeedback}
