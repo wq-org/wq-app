@@ -41,13 +41,10 @@ function readContentEditableText(element: HTMLElement): string {
   return element.textContent?.replace(/\u00a0/g, ' ').trim() ?? ''
 }
 
-function resolveEditText(
-  value: string,
-  expression: string | undefined,
-  mathShell: MathTokenShellState,
-): string {
-  if ((mathShell === 'error' || mathShell === 'success') && expression) return expression
-  return expression ?? value
+/** Re-edit shows stored raw input; falls back to display value for legacy rows. */
+function resolveEditText(value: string, expression: string | undefined): string {
+  if (expression && expression.length > 0) return expression
+  return value
 }
 
 function resolveActiveMathShell(
@@ -115,6 +112,7 @@ export function useMathDropNodeEditor({
       if (instantColorFeedback) setInstantShell('success')
       onCommit({
         kind: 'success',
+        raw: trimmed,
         expression: outcome.expression,
         display: outcome.display,
         equationShell: instantColorFeedback ? 'success' : 'default',
@@ -135,7 +133,7 @@ export function useMathDropNodeEditor({
     if (!canEdit || isEditing) return
     setInstantShell(null)
     setIsEditing(true)
-    const editText = resolveEditText(value, expression, mathShell)
+    const editText = resolveEditText(value, expression)
 
     requestAnimationFrame(() => {
       const element = nodeRef.current
@@ -148,7 +146,7 @@ export function useMathDropNodeEditor({
       selection?.removeAllRanges()
       selection?.addRange(range)
     })
-  }, [canEdit, expression, isEditing, mathShell, value])
+  }, [canEdit, expression, isEditing, value])
 
   const handleClick = useCallback(
     (event: MouseEvent<HTMLSpanElement>) => {
@@ -179,14 +177,14 @@ export function useMathDropNodeEditor({
         event.preventDefault()
         setInstantShell(null)
         if (nodeRef.current) {
-          const revert = resolveEditText(value, expression, mathShell)
+          const revert = resolveEditText(value, expression)
           nodeRef.current.textContent = revert.length > 0 ? revert : '\u00a0'
         }
         setIsEditing(false)
         nodeRef.current?.blur()
       }
     },
-    [commitEquation, expression, mathShell, value],
+    [commitEquation, expression, value],
   )
 
   return {

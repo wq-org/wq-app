@@ -49,7 +49,7 @@ export function MathNodeDemo() {
             onCommit={(payload) => {
               if (payload.kind === 'success') {
                 setMathSlot(payload.expression)
-                setMathExpression(payload.expression)
+                setMathExpression(payload.raw)
                 setMathShell(payload.equationShell ?? 'success')
               } else if (payload.kind === 'error') {
                 setMathSlot(payload.raw)
@@ -73,7 +73,7 @@ export function MathNodeDemo() {
             onCommit={(payload) => {
               if (payload.kind === 'success') {
                 setMathCanvas(payload.expression)
-                setMathExpression(payload.expression)
+                setMathExpression(payload.raw)
                 setMathShell(payload.equationShell ?? 'success')
               } else if (payload.kind === 'error') {
                 setMathCanvas(payload.raw)

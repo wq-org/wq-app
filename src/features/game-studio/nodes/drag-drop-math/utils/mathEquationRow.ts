@@ -14,6 +14,9 @@ export type MathEquationCommitPayload =
   | { kind: 'error'; raw: string }
   | {
       kind: 'success'
+      /** Literal input from the editor (re-shown when editing again). */
+      raw: string
+      /** Formatted equation for the committed chip display (e.g. `40 × 8.50 €`). */
       expression: string
       display: string
       /** Equation chip shell after commit when instant color feedback is on. */
@@ -104,16 +107,17 @@ export function removeTokensById(
 
 function buildEvaluatedEquationTokens(
   equationToken: DragDropMathCanvasToken,
-  expression: string,
-  display: string,
+  displayValue: string,
+  editValue: string,
+  resultDisplay: string,
   equationShell: MathTokenShellState = 'default',
   existing?: { equals?: DragDropMathCanvasToken; result?: DragDropMathCanvasToken },
 ): DragDropMathCanvasToken[] {
   const equation: DragDropMathCanvasToken = {
     ...equationToken,
     mathRole: 'equation',
-    value: expression,
-    expression,
+    value: displayValue,
+    expression: editValue,
     mathShell: equationShell,
     disabled: false,
   }
@@ -121,9 +125,9 @@ function buildEvaluatedEquationTokens(
   const equals = existing?.equals ?? createMathEqualsToken()
 
   const result: DragDropMathCanvasToken = {
-    ...(existing?.result ?? createMathResultToken(display)),
+    ...(existing?.result ?? createMathResultToken(resultDisplay)),
     mathRole: 'result',
-    value: display,
+    value: resultDisplay,
     expression: undefined,
     mathShell: 'ghost',
     disabled: true,
@@ -173,6 +177,7 @@ export function applyMathEquationCommitToRow(
   const evaluated = buildEvaluatedEquationTokens(
     equationToken,
     payload.expression,
+    payload.raw,
     payload.display,
     payload.equationShell ?? 'default',
     {

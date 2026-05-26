@@ -21,7 +21,7 @@ export type DragDropMathCanvasToken = {
   disabled?: boolean
   /** Math tokens only: `error` / `success` on equation; `ghost` on result badge. */
   mathShell?: MathTokenShellState
-  /** Equation token: last committed expression (re-shown when editing). */
+  /** Equation token: raw user input (re-shown when editing). */
   expression?: string
 }
 
