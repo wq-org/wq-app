@@ -147,9 +147,10 @@ function inferFlat(
       operators.push({ op: t.op, tokenIndex: i })
       continue
     }
-    if (isNumberToken(t) && i + 1 < tokens.length && isUnitToken(tokens[i + 1])) {
+    const next = tokens[i + 1]
+    if (isNumberToken(t) && next !== undefined && isUnitToken(next)) {
       operands.push({
-        category: tokens[i + 1].definition.category,
+        category: next.definition.category,
         tokenIndex: i,
       })
       i += 1

@@ -12,7 +12,7 @@ export type CanvasRowListProps = {
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (tokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
-  onSigmaReset: (rowId: string) => void
+  onSigmaRemove: (rowId: string) => void
 }
 
 /**
@@ -27,7 +27,7 @@ export function CanvasRowList({
   onTokenValueChange,
   onMathTokenCommit,
   onTokenRemove,
-  onSigmaReset,
+  onSigmaRemove,
 }: CanvasRowListProps) {
   return (
     <div className="flex w-full flex-col">
@@ -53,7 +53,7 @@ export function CanvasRowList({
             onTokenValueChange={onTokenValueChange}
             onMathTokenCommit={onMathTokenCommit}
             onTokenRemove={onTokenRemove}
-            onSigmaReset={onSigmaReset}
+            onSigmaRemove={onSigmaRemove}
           />
         ))}
       </Reorder.Group>

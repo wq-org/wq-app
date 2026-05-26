@@ -1,6 +1,10 @@
 import { Reorder, useDragControls } from 'motion/react'
 
-import { isSigmaCanvasRow, type DragDropMathCanvasRow } from '../../types/drag-drop-math.schema'
+import {
+  isSigmaCanvasRow,
+  isTokenCanvasRow,
+  type DragDropMathCanvasRow,
+} from '../../types/drag-drop-math.schema'
 import { BetweenRowZone } from './BetweenRowZone'
 import { CanvasRow } from './CanvasRow'
 import { SigmaCanvasRow } from './SigmaCanvasRow'
@@ -13,7 +17,7 @@ export type CanvasRowItemProps = {
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (tokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
-  onSigmaReset: (rowId: string) => void
+  onSigmaRemove: (rowId: string) => void
 }
 
 /**
@@ -26,7 +30,7 @@ export function CanvasRowItem({
   onTokenValueChange,
   onMathTokenCommit,
   onTokenRemove,
-  onSigmaReset,
+  onSigmaRemove,
 }: CanvasRowItemProps) {
   const dragControls = useDragControls()
 
@@ -42,9 +46,9 @@ export function CanvasRowItem({
         <SigmaCanvasRow
           row={row}
           dragControls={dragControls}
-          onReset={onSigmaReset}
+          onRemove={onSigmaRemove}
         />
-      ) : (
+      ) : isTokenCanvasRow(row) ? (
         <CanvasRow
           row={row}
           dragControls={dragControls}
@@ -53,7 +57,7 @@ export function CanvasRowItem({
           onMathTokenCommit={onMathTokenCommit}
           onTokenRemove={onTokenRemove}
         />
-      )}
+      ) : null}
       <BetweenRowZone
         position="after"
         rowId={row.id}

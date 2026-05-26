@@ -38,7 +38,7 @@ import {
   getCanvasResultDuplicatePayload,
   getCanvasTokenSortablePayload,
 } from '../types/canvas.types'
-import { dropOnSigmaRow, resetSigma } from '../utils/sigmaRow'
+import { dropOnSigmaRow } from '../utils/sigmaRow'
 
 export type UseDragDropMathCanvasRowsArgs = {
   rows: readonly DragDropMathCanvasRow[]
@@ -253,11 +253,9 @@ export function useDragDropMathCanvasRows({
     [onRowsChange, rows],
   )
 
-  const resetSigmaRow = useCallback(
+  const removeSigmaRow = useCallback(
     (rowId: string) => {
-      onRowsChange(
-        rows.map((row) => (isSigmaCanvasRow(row) && row.id === rowId ? resetSigma(row) : row)),
-      )
+      onRowsChange(rows.filter((row) => !(isSigmaCanvasRow(row) && row.id === rowId)))
     },
     [onRowsChange, rows],
   )
@@ -268,6 +266,6 @@ export function useDragDropMathCanvasRows({
     updateTokenValue,
     commitMathEquation,
     removeToken,
-    resetSigmaRow,
+    removeSigmaRow,
   }
 }

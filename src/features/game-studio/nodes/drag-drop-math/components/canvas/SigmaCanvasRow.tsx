@@ -2,7 +2,7 @@ import { useDraggable, useDroppable, useDndContext } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import type { DragControls } from 'motion/react'
 import { GripVertical, X } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
@@ -18,6 +18,7 @@ import {
   getCanvasResultDuplicatePayload,
   getCanvasTokenSortablePayload,
 } from '../../types/canvas.types'
+import { SigmaResetConfirmDialog } from '../SigmaResetConfirmDialog'
 import {
   formatSigmaItemDisplay,
   isSigmaDropAllowed,
@@ -27,7 +28,8 @@ import {
 export type SigmaCanvasRowProps = {
   row: SigmaCanvasRow
   dragControls: DragControls
-  onReset: (rowId: string) => void
+  /** Removes the entire sigma row from the canvas (badge, chips, and sum). */
+  onRemove: (rowId: string) => void
 }
 
 type SigmaDropSourceKind = 'result' | 'palette' | 'token'
@@ -39,8 +41,9 @@ function resolveSigmaDropSourceKind(activeData: unknown): SigmaDropSourceKind | 
   return null
 }
 
-export function SigmaCanvasRow({ row, dragControls, onReset }: SigmaCanvasRowProps) {
+export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowProps) {
   const { t } = useTranslation('features.gameStudio')
+  const [resetDialogOpen, setResetDialogOpen] = useState(false)
   const dropId = getCanvasSigmaDropId(row.id)
 
   const { setNodeRef: setDropRef, isOver } = useDroppable({
@@ -155,22 +158,29 @@ export function SigmaCanvasRow({ row, dragControls, onReset }: SigmaCanvasRowPro
             ) : null}
           </div>
 
-          {hasItems ? (
-            <button
-              type="button"
-              aria-label={t('dragDropMathEditor.sigmaResetAriaLabel', {
-                defaultValue: 'Summe zurücksetzen',
-              })}
-              className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
-              onClick={() => onReset(row.id)}
-            >
-              <X
-                className="h-4 w-4"
-                aria-hidden
-              />
-            </button>
-          ) : null}
+          <button
+            type="button"
+            aria-label={t('dragDropMathEditor.sigmaResetAriaLabel')}
+            className={cn(
+              'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground',
+              'opacity-0 transition-opacity duration-150',
+              'group-hover/sigma-row:opacity-100 focus-visible:opacity-100',
+              hasItems && 'opacity-100',
+            )}
+            onClick={() => setResetDialogOpen(true)}
+          >
+            <X
+              className="h-4 w-4"
+              aria-hidden
+            />
+          </button>
         </div>
+
+        <SigmaResetConfirmDialog
+          open={resetDialogOpen}
+          onOpenChange={setResetDialogOpen}
+          onConfirm={() => onRemove(row.id)}
+        />
 
         {row.resultDisplay ? (
           <div className="flex justify-end pr-1">

@@ -136,7 +136,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     updateTokenValue,
     commitMathEquation,
     removeToken,
-    resetSigmaRow,
+    removeSigmaRow,
   } = useDragDropMathCanvasRows({
     rows: canvasRows,
     onRowsChange: patchCanvasRows,
@@ -329,7 +329,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
             onTokenValueChange={updateTokenValue}
             onMathTokenCommit={commitMathEquation}
             onTokenRemove={removeToken}
-            onSigmaReset={resetSigmaRow}
+            onSigmaRemove={removeSigmaRow}
           />
         </div>
         <DragOverlay

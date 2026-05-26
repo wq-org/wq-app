@@ -15,7 +15,7 @@ export type DragDropMathCanvasProps = {
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
-  onSigmaReset: (rowId: string) => void
+  onSigmaRemove: (rowId: string) => void
 }
 
 export function DragDropMathCanvas({
@@ -25,7 +25,7 @@ export function DragDropMathCanvas({
   onTokenValueChange,
   onMathTokenCommit,
   onTokenRemove,
-  onSigmaReset,
+  onSigmaRemove,
 }: DragDropMathCanvasProps) {
   const { t } = useTranslation('features.gameStudio')
   const { active } = useDndContext()
@@ -58,7 +58,7 @@ export function DragDropMathCanvas({
           onTokenValueChange={onTokenValueChange}
           onMathTokenCommit={onMathTokenCommit}
           onTokenRemove={onTokenRemove}
-          onSigmaReset={onSigmaReset}
+          onSigmaRemove={onSigmaRemove}
         />
       )}
     </div>

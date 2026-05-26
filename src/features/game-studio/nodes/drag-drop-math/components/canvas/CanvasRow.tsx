@@ -8,9 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 import { getMathNodeDragData } from '../../types/drag-drop-math-dnd.types'
-import type { DragDropMathCanvasRow } from '../../types/drag-drop-math.schema'
+import type { DragDropMathCanvasToken, TokenCanvasRow } from '../../types/drag-drop-math.schema'
 import type { MathNodeVariant } from '../../types/math-node.types'
-import type { DragDropMathCanvasToken } from '../../types/drag-drop-math.schema'
 import {
   collectEquationGroupTokenIds,
   isFixedMathSuffixToken,
@@ -22,12 +21,13 @@ import {
  * `animate-in` entrance plays each time the result value changes. Equation
  * and `=` chips keep a stable id-keyed identity.
  */
+import type { MathTokenCommitPayload } from '../../hooks/useMathDropNodeEditor'
+import { CanvasRowNode } from './CanvasRowNode'
+
 function getCanvasRowNodeReactKey(token: DragDropMathCanvasToken): string {
   if (token.mathRole === 'result') return `${token.id}:${token.value}`
   return token.id
 }
-import type { MathTokenCommitPayload } from '../../hooks/useMathDropNodeEditor'
-import { CanvasRowNode } from './CanvasRowNode'
 import { CANVAS_ROW_MAX_TOKENS } from '../../utils/canvasDropTarget.utils'
 import {
   getCanvasRowSortableId,
@@ -49,7 +49,7 @@ type ActiveCanvasDrag = {
 }
 
 export type CanvasRowProps = {
-  row: DragDropMathCanvasRow
+  row: TokenCanvasRow
   /** Framer Motion drag controls owned by the wrapping Reorder.Item. */
   dragControls: DragControls
   instantColorFeedback?: boolean
