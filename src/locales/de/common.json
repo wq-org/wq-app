@@ -27,6 +27,12 @@
     "success": "Vorgang erfolgreich abgeschlossen",
     "oops": "Etwas ist schiefgelaufen."
   },
+  "chatBubble": {
+    "editMessageAria": "Nachricht bearbeiten",
+    "deleteMessageAria": "Nachricht löschen",
+    "deleteMessageDialogTitle": "Nachricht löschen?",
+    "deleteMessageDialogDescription": "Diese Nachricht wird aus dem Verlauf entfernt. Das kann nicht rückgängig gemacht werden."
+  },
   "placeholders": {
     "search": "Suchen...",
     "typeHere": "Hier tippen..."

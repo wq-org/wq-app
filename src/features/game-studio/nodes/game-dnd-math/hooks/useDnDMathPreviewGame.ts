@@ -12,7 +12,6 @@ import {
   resolveFailedStepTokenIds,
 } from '../utils/scoring'
 
-const POINTS_REVEAL_DELAY_MS = 500
 const ITERATION_ADVANCE_DELAY_MS = 1200
 
 export type DnDMathPreviewGameMessage = {
@@ -49,8 +48,9 @@ function fireCorrectConfetti(): void {
  * Coordinates submit-flow state for drag-drop-math preview.
  *
  * Each exercise tab is one isolated step: PSCA scores against
- * `totalMaxScore / tabs.length`. After the reveal of a non-final tab,
- * the hook waits {@link ITERATION_ADVANCE_DELAY_MS} ms, advances the
+ * `totalMaxScore / tabs.length`. Points and feedback reveal as soon as
+ * scoring finishes. After a non-final tab, the hook waits
+ * {@link ITERATION_ADVANCE_DELAY_MS} ms, advances the
  * current tab index, unlocks the canvas, and pushes the next tab's
  * title into the chat stream so the parent can react to a single
  * `currentTabIndex` change.
@@ -71,7 +71,6 @@ export function useDnDMathPreviewGame({
   const [errorTokenIds, setErrorTokenIds] = useState<string[]>([])
   const [currentTabIndex, setCurrentTabIndex] = useState(0)
   const seqRef = useRef(0)
-  const revealTimeoutRef = useRef<number | null>(null)
   const advanceTimeoutRef = useRef<number | null>(null)
 
   const tabCount = tabs.length
@@ -87,10 +86,6 @@ export function useDnDMathPreviewGame({
   const canSubmit = !submissionLocked && hasSubmittableCanvas
 
   const clearTimers = useCallback(() => {
-    if (revealTimeoutRef.current !== null) {
-      window.clearTimeout(revealTimeoutRef.current)
-      revealTimeoutRef.current = null
-    }
     if (advanceTimeoutRef.current !== null) {
       window.clearTimeout(advanceTimeoutRef.current)
       advanceTimeoutRef.current = null
@@ -158,82 +153,79 @@ export function useDnDMathPreviewGame({
 
     clearTimers()
 
-    revealTimeoutRef.current = window.setTimeout(() => {
-      const revealSeq = ++seqRef.current
-      const tabIsFinal = safeTabIndex >= tabCount - 1
-      const hasMultipleTabs = tabCount > 1
-      const totalMaxReached = cappedRunning >= totalMaxScore && totalMaxScore > 0
+    const revealSeq = ++seqRef.current
+    const tabIsFinal = safeTabIndex >= tabCount - 1
+    const hasMultipleTabs = tabCount > 1
+    const totalMaxReached = cappedRunning >= totalMaxScore && totalMaxScore > 0
 
-      setMessages((prev) => {
-        const withoutLoading = prev.filter((message) => message.kind !== 'loading')
-        const next: DnDMathPreviewGameMessage[] = [
-          ...withoutLoading,
+    setMessages((prev) => {
+      const withoutLoading = prev.filter((message) => message.kind !== 'loading')
+      const next: DnDMathPreviewGameMessage[] = [
+        ...withoutLoading,
+        {
+          id: `${nodeId}-submit-rows-${safeTabIndex}-${revealSeq}`,
+          direction: 'sending',
+          kind: 'math',
+          rows: submittedRows,
+        },
+        {
+          id: `${nodeId}-submit-points-${safeTabIndex}-${revealSeq}`,
+          direction: 'receiving',
+          kind: 'text',
+          bold: true,
+          text: t('dragDropMathGamePreview.pointsEarnedMessage', {
+            points: Number(perTabEarned.toFixed(1)),
+          }),
+        },
+      ]
+      if (isPerTabMax && tabIsFinal) {
+        next.push({
+          id: `${nodeId}-submit-max-score-${safeTabIndex}-${revealSeq}`,
+          direction: 'receiving',
+          kind: 'text',
+          text: t('dragDropMathGamePreview.maxScoreAchievedMessage'),
+        })
+      }
+      if (tabIsFinal && hasMultipleTabs) {
+        next.push({
+          id: `${nodeId}-submit-final-summary-${revealSeq}`,
+          direction: 'receiving',
+          kind: 'text',
+          bold: true,
+          text: t('dragDropMathGamePreview.iterationFinalSummary', {
+            earned: Number(cappedRunning.toFixed(1)),
+            total: totalMaxScore,
+          }),
+        })
+      }
+      return next
+    })
+
+    if (tabIsFinal && totalMaxReached) fireCorrectConfetti()
+
+    if (tabIsFinal) return
+
+    advanceTimeoutRef.current = window.setTimeout(() => {
+      const advanceSeq = ++seqRef.current
+      const nextIndex = safeTabIndex + 1
+      const nextTab = tabs[nextIndex]
+      const nextTitle = nextTab?.title?.trim() ?? ''
+      setCurrentTabIndex(nextIndex)
+      setSubmissionLocked(false)
+      setErrorTokenIds([])
+      if (nextTitle.length > 0) {
+        setMessages((prev) => [
+          ...prev,
           {
-            id: `${nodeId}-submit-rows-${safeTabIndex}-${revealSeq}`,
-            direction: 'sending',
-            kind: 'math',
-            rows: submittedRows,
+            id: `${nodeId}-tab-title-${nextIndex}-${advanceSeq}`,
+            direction: 'receiving',
+            kind: 'text',
+            text: nextTitle,
           },
-          {
-            id: `${nodeId}-submit-points-${safeTabIndex}-${revealSeq}`,
-            direction: 'receiving',
-            kind: 'text',
-            bold: true,
-            text: t('dragDropMathGamePreview.pointsEarnedMessage', {
-              points: Number(perTabEarned.toFixed(1)),
-            }),
-          },
-        ]
-        if (isPerTabMax && tabIsFinal) {
-          next.push({
-            id: `${nodeId}-submit-max-score-${safeTabIndex}-${revealSeq}`,
-            direction: 'receiving',
-            kind: 'text',
-            text: t('dragDropMathGamePreview.maxScoreAchievedMessage'),
-          })
-        }
-        if (tabIsFinal && hasMultipleTabs) {
-          next.push({
-            id: `${nodeId}-submit-final-summary-${revealSeq}`,
-            direction: 'receiving',
-            kind: 'text',
-            bold: true,
-            text: t('dragDropMathGamePreview.iterationFinalSummary', {
-              earned: Number(cappedRunning.toFixed(1)),
-              total: totalMaxScore,
-            }),
-          })
-        }
-        return next
-      })
-
-      if (tabIsFinal && totalMaxReached) fireCorrectConfetti()
-      revealTimeoutRef.current = null
-
-      if (tabIsFinal) return
-
-      advanceTimeoutRef.current = window.setTimeout(() => {
-        const advanceSeq = ++seqRef.current
-        const nextIndex = safeTabIndex + 1
-        const nextTab = tabs[nextIndex]
-        const nextTitle = nextTab?.title?.trim() ?? ''
-        setCurrentTabIndex(nextIndex)
-        setSubmissionLocked(false)
-        setErrorTokenIds([])
-        if (nextTitle.length > 0) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `${nodeId}-tab-title-${nextIndex}-${advanceSeq}`,
-              direction: 'receiving',
-              kind: 'text',
-              text: nextTitle,
-            },
-          ])
-        }
-        advanceTimeoutRef.current = null
-      }, ITERATION_ADVANCE_DELAY_MS)
-    }, POINTS_REVEAL_DELAY_MS)
+        ])
+      }
+      advanceTimeoutRef.current = null
+    }, ITERATION_ADVANCE_DELAY_MS)
   }
 
   return {

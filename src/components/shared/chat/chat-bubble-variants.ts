@@ -31,10 +31,32 @@ export const chatBubbleVariants = cva(
         xl: 'rounded-[1.75rem]',
         pill: 'rounded-full',
       },
+      dashed: {
+        true: 'border border-dashed bg-transparent shadow-none',
+        false: '',
+      },
     },
+    compoundVariants: [
+      {
+        dashed: true,
+        variant: 'orange',
+        className: 'border-[oklch(var(--oklch-orange))] text-[oklch(var(--oklch-orange))]',
+      },
+      {
+        dashed: true,
+        variant: 'dark',
+        className: 'border-neutral-400 text-neutral-800 dark:text-neutral-200',
+      },
+      {
+        dashed: true,
+        variant: 'default',
+        className: 'border-border text-foreground',
+      },
+    ],
     defaultVariants: {
       variant: 'default',
       rounded: 'lg',
+      dashed: false,
     },
   },
 )

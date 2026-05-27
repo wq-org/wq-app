@@ -66,7 +66,7 @@ function buildPreviewMessages({
     })
   }
 
-  if (showTitle) {
+  if (showTitle && !showDescription) {
     messages.push({
       id: `${nodeId}-title`,
       kind: 'text',

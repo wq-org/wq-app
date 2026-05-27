@@ -10,6 +10,7 @@ export { ChatMessages } from './ChatMessages'
 export { ChatUserCard } from './ChatUserCard'
 export { ReceivingChatMessageBubble } from './ReceivingChatMessageBubble'
 export { SendingChatMessageBubble } from './SendingChatMessageBubble'
+export type { SendingChatMessageBubbleProps } from './SendingChatMessageBubble'
 export { ChatBubbleLexicalContent } from './ChatBubbleLexicalContent'
 export { hasLexicalEditorContent } from './hasLexicalEditorContent'
 export {

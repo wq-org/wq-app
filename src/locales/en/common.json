@@ -27,6 +27,12 @@
     "success": "Operation completed successfully",
     "oops": "Something went wrong."
   },
+  "chatBubble": {
+    "editMessageAria": "Edit message",
+    "deleteMessageAria": "Delete message",
+    "deleteMessageDialogTitle": "Delete message?",
+    "deleteMessageDialogDescription": "This message will be removed from the conversation. This cannot be undone."
+  },
   "placeholders": {
     "search": "Search...",
     "typeHere": "Type here..."

@@ -9,6 +9,7 @@ import {
   aiPromptBadgeListEnterAnimation,
   type Ai02PromptSuggestion,
 } from '@/components/shared/ai-components'
+import { hasLexicalEditorContent } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 import { useUser } from '@/contexts/user'
@@ -34,11 +35,14 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   const pin = useMemo(() => nodeData ?? {}, [nodeData])
   const maxScore = resolveGameOpenQuestionPoints(pin.points)
 
+  const descriptionContent = pin.descriptionContent ?? null
   const title = pin.title?.trim() || pin.label?.trim() || ''
+  const showDescription = hasLexicalEditorContent(descriptionContent)
   const showTitle = title.length > 0
 
   const [composerValue, setComposerValue] = useState('')
   const [previewMessages, setPreviewMessages] = useState<OpenQuestionPreviewChatMessage[]>([])
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const earnedScore = 0
 
   const avatarFallback =
@@ -102,15 +106,40 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     [appendMessage, howToPlayPrompt, howToPlayResponse, nodeId, submitAnswerPrompt],
   )
 
+  const handleEditMessage = useCallback((messageId: string, text: string) => {
+    setEditingMessageId(messageId)
+    setComposerValue(text)
+  }, [])
+
+  const handleDeleteMessage = useCallback(
+    (messageId: string) => {
+      setPreviewMessages((prev) => prev.filter((message) => message.id !== messageId))
+      if (editingMessageId === messageId) {
+        setEditingMessageId(null)
+        setComposerValue('')
+      }
+    },
+    [editingMessageId],
+  )
+
   const handleComposerSubmit = useCallback(
     (text: string) => {
+      if (editingMessageId) {
+        setPreviewMessages((prev) =>
+          prev.map((message) => (message.id === editingMessageId ? { ...message, text } : message)),
+        )
+        setEditingMessageId(null)
+        setComposerValue('')
+        return
+      }
+
       appendMessage({
         id: `${nodeId}-answer-${Date.now()}`,
         direction: 'sending',
         text,
       })
     },
-    [appendMessage, nodeId],
+    [appendMessage, editingMessageId, nodeId],
   )
 
   return (
@@ -126,9 +155,14 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
 
       <OpenQuestionPreviewChatHistory
         nodeId={nodeId}
+        descriptionContent={descriptionContent}
+        showDescription={showDescription}
         title={title}
         showTitle={showTitle}
         previewMessages={previewMessages}
+        editingMessageId={editingMessageId}
+        onEditSendingMessage={handleEditMessage}
+        onDeleteSendingMessage={handleDeleteMessage}
         incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingAvatarFallback={avatarFallback}
         incomingBubbleVariant="default"
