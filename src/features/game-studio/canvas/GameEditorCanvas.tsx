@@ -32,7 +32,7 @@ import { GAME_END_TYPE } from '../nodes/game-end/game-end.schema'
 import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/image-pin.schema'
 import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/game-dnd-math'
-import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/open-question.schema'
+import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/constants'
 import {
   getGameForStudio,
   publishGame,

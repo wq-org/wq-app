@@ -1,11 +1,11 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { MessageCircleQuestion } from 'lucide-react'
-import { GameNodeLayout } from '../../components/GameNodeLayout'
-import type { GameOpenQuestionNodeData } from './open-question.schema'
+import { GameNodeLayout } from '../../../components/GameNodeLayout'
+import type { GameOpenQuestionNodeData } from '../types/open-question.schema'
 
 type CanvasData = GameOpenQuestionNodeData & { onClick?: () => void }
 
-export function GameOpenQuestionNode({ data, selected }: NodeProps) {
+export function OpenQuestionNode({ data, selected }: NodeProps) {
   const d = (data ?? {}) as CanvasData
   return (
     <GameNodeLayout

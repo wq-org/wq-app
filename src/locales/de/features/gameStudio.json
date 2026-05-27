@@ -419,5 +419,17 @@
     "qualitySliderLabel": "Bildqualität",
     "areaExclusionLabel": "Bildbereich schrittweise ausblenden (in %)",
     "areaSliderLabel": "Ausblendung"
+  },
+  "openQuestionDialog": {
+    "title": "Offene Frage",
+    "description": "Konfiguriere den Knoten für offene Fragen in deinem Lernablauf."
+  },
+  "openQuestionSettings": {
+    "holdToDeleteNode": "Gedrückt halten, um den Knoten zu löschen",
+    "gameSettingsTitle": "Spieleinstellungen",
+    "maxPointsLabel": "Maximale Punktzahl bei vollständig richtiger Antwort",
+    "scoreAccordionTitle": "Wie wird die Punktzahl berechnet?",
+    "scoreAccordionHint": "Die Aufschlüsselung unten zeigt, wie die maximale Punktzahl verteilt wird, sobald Bewertungsregeln konfiguriert sind.",
+    "scoreAccordionPending": "Die Bewertungslogik ist noch nicht konfiguriert. Aktuelles Maximum: {{maxPoints}} Punkte — die detaillierte Aufschlüsselung erscheint hier, sobald du die Antwortauswertung anbindest."
   }
 }

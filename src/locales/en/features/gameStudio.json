@@ -419,5 +419,17 @@
     "qualitySliderLabel": "Image Quality",
     "areaExclusionLabel": "Gradually hide image area (in %)",
     "areaSliderLabel": "Area Exclusion"
+  },
+  "openQuestionDialog": {
+    "title": "Open question",
+    "description": "Configure the open-ended question node for your learning flow."
+  },
+  "openQuestionSettings": {
+    "holdToDeleteNode": "Hold to delete node",
+    "gameSettingsTitle": "Game Settings",
+    "maxPointsLabel": "Maximum score for a fully correct answer",
+    "scoreAccordionTitle": "How is the score calculated?",
+    "scoreAccordionHint": "The breakdown below shows how the maximum score is distributed once evaluation rules are configured.",
+    "scoreAccordionPending": "Scoring logic is not configured yet. The current maximum is {{maxPoints}} points — detailed breakdown will appear here after you wire answer evaluation."
   }
 }

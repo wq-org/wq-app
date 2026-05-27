@@ -2,13 +2,9 @@ import { MessageCircleQuestion } from 'lucide-react'
 
 import { GAME_FEATURE_KEY_OPEN_QUESTION } from '../../constants/gameFeatureKeys'
 import type { GameNodeRegistryEntry } from '../_registry/game-node-registry.types'
-import { GameOpenQuestionDialog } from './GameOpenQuestionDialog'
-import { GameOpenQuestionNode } from './GameOpenQuestionNode'
-import {
-  GAME_OPEN_QUESTION_TYPE,
-  gameOpenQuestionDefaultConfig,
-  validateGameOpenQuestionConfig,
-} from './open-question.schema'
+import { OpenQuestionDialog, OpenQuestionNode } from './components'
+import { GAME_OPEN_QUESTION_TYPE, gameOpenQuestionDefaultConfig } from './constants'
+import { validateOpenQuestionConfig } from './utils'
 
 export const gameOpenQuestionEntry: GameNodeRegistryEntry = {
   type: GAME_OPEN_QUESTION_TYPE,
@@ -16,17 +12,26 @@ export const gameOpenQuestionEntry: GameNodeRegistryEntry = {
   category: 'games',
   accent: 'blue',
   Icon: MessageCircleQuestion,
-  NodeComponent: GameOpenQuestionNode,
-  DialogComponent: GameOpenQuestionDialog,
+  NodeComponent: OpenQuestionNode,
+  DialogComponent: OpenQuestionDialog,
   defaultConfig: gameOpenQuestionDefaultConfig,
-  validateConfig: validateGameOpenQuestionConfig,
+  validateConfig: validateOpenQuestionConfig,
   isDeletable: true,
   allowMultiple: true,
-  disabled: true,
   isDraggable: true,
   featureKey: GAME_FEATURE_KEY_OPEN_QUESTION,
 }
 
-export { GameOpenQuestionDialog } from './GameOpenQuestionDialog'
-export { GameOpenQuestionNode } from './GameOpenQuestionNode'
-export type { GameOpenQuestionNodeData } from './open-question.schema'
+export { OpenQuestionDialog, OpenQuestionNode } from './components'
+export {
+  GAME_OPEN_QUESTION_TYPE,
+  GAME_OPEN_QUESTION_DEFAULT_POINTS,
+  gameOpenQuestionDefaultConfig,
+} from './constants'
+export type { GameOpenQuestionNodeData } from './types'
+export {
+  validateOpenQuestionConfig,
+  resolveGameOpenQuestionPoints,
+  buildOpenQuestionScoreBreakdown,
+} from './utils'
+export type { OpenQuestionScoreBreakdown } from './utils'
