@@ -1,4 +1,4 @@
-export type DragDropMathPreviewPromptMessage = {
+export type DnDMathPreviewPromptMessage = {
   id: string
   direction: 'sending' | 'receiving'
   text: string

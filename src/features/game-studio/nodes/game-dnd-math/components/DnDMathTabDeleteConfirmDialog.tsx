@@ -11,17 +11,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 
-export type DragDropMathTabDeleteConfirmDialogProps = {
+export type DnDMathTabDeleteConfirmDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
 }
 
-export function DragDropMathTabDeleteConfirmDialog({
+export function DnDMathTabDeleteConfirmDialog({
   open,
   onOpenChange,
   onConfirm,
-}: DragDropMathTabDeleteConfirmDialogProps) {
+}: DnDMathTabDeleteConfirmDialogProps) {
   const { t } = useTranslation('features.gameStudio')
 
   const handleConfirm = () => {

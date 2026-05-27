@@ -261,6 +261,7 @@
     "exerciseTitleLabel": "Aufgabentitel",
     "exerciseTitlePlaceholder": "Aufgabentitel eingeben",
     "newExerciseTabLabel": "Neuer Tab",
+    "addExerciseTabLabel": "Aufgabe",
     "addExerciseTabAriaLabel": "Aufgaben-Tab hinzufügen",
     "closeExerciseTabAriaLabel": "Aufgaben-Tab schließen",
     "deleteExerciseTabDialogTitle": "Aufgaben-Tab löschen?",

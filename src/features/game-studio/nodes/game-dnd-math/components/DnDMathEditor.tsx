@@ -12,21 +12,21 @@ import {
 } from '@/components/ui/accordion'
 
 import type { GameNodeDataPatch } from '../../_registry/game-node-registry.types'
-import { useDragDropMathExerciseTabs } from '../hooks/useDragDropMathExerciseTabs'
+import { useDnDMathExerciseTabs } from '../hooks/useDnDMathExerciseTabs'
 import type { GameDragDropMathNodeData } from '../types/drag-drop-math.schema'
-import { DragDropMathExerciseWorkspace } from './DragDropMathExerciseWorkspace'
-import { DragDropMathTabDeleteConfirmDialog } from './DragDropMathTabDeleteConfirmDialog'
+import { DnDMathExerciseWorkspace } from './DnDMathExerciseWorkspace'
+import { DnDMathTabDeleteConfirmDialog } from './DnDMathTabDeleteConfirmDialog'
 
 const dragDropMathEditorEnterLift =
   'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
 
-export type DragDropMathEditorProps = {
+export type DnDMathEditorProps = {
   nodeId: string
   nodeData: Record<string, unknown>
   onPatchNodeData: (patch: GameNodeDataPatch) => void
 }
 
-export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDropMathEditorProps) {
+export function DnDMathEditor({ nodeId, nodeData, onPatchNodeData }: DnDMathEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameDragDropMathNodeData
   const descriptionContent = pin.descriptionContent ?? null
@@ -42,7 +42,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
     removeTab,
     updateActiveTabTitle,
     updateActiveTabCanvasRows,
-  } = useDragDropMathExerciseTabs({
+  } = useDnDMathExerciseTabs({
     nodeData: pin,
     onPatchNodeData,
     defaultTabTitle,
@@ -100,6 +100,8 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         activeTabId={activeTabId}
         onTabChange={setActiveTabId}
         showAddTab
+        optionalText
+        addTabText={t('dragDropMathEditor.addExerciseTabLabel')}
         addTabAriaLabel={t('dragDropMathEditor.addExerciseTabAriaLabel')}
         onAddTabClick={addTab}
         onTabClose={setTabIdPendingDelete}
@@ -107,7 +109,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
       />
 
       {activeTab ? (
-        <DragDropMathExerciseWorkspace
+        <DnDMathExerciseWorkspace
           key={activeTab.id}
           tabId={activeTab.id}
           nodeId={nodeId}
@@ -119,7 +121,7 @@ export function DragDropMathEditor({ nodeId, nodeData, onPatchNodeData }: DragDr
         />
       ) : null}
 
-      <DragDropMathTabDeleteConfirmDialog
+      <DnDMathTabDeleteConfirmDialog
         open={tabIdPendingDelete != null}
         onOpenChange={(open) => {
           if (!open) setTabIdPendingDelete(null)

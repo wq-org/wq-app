@@ -52,7 +52,7 @@ const dragDropMathSettingsEnterLift =
 const dragDropMathSettingsEnterSubtle =
   'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
-export type DragDropMathSettingsProps = {
+export type DnDMathSettingsProps = {
   nodeId: string
   onDelete: () => void
   onClose: () => void
@@ -63,7 +63,7 @@ export type DragDropMathSettingsProps = {
   nextNode?: AdjacentNodeInfo
 }
 
-export function DragDropMathSettings({
+export function DnDMathSettings({
   onDelete,
   onClose,
   onNavigateToNode,
@@ -71,7 +71,7 @@ export function DragDropMathSettings({
   nodeData,
   prevNode,
   nextNode,
-}: DragDropMathSettingsProps) {
+}: DnDMathSettingsProps) {
   const { t } = useTranslation('features.gameStudio')
   const maxPoints = resolveGameDragDropMathPoints(nodeData.points)
   const instantColorFeedback = nodeData.instantColorFeedback !== false

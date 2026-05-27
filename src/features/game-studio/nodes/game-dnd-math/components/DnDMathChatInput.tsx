@@ -3,15 +3,12 @@
 import { Score } from '@/components/ui/score'
 import { cn } from '@/lib/utils'
 
-import {
-  DragDropMathCanvasPanel,
-  type DragDropMathCanvasPanelProps,
-} from './DragDropMathCanvasPanel'
+import { DnDMathCanvasPanel, type DnDMathCanvasPanelProps } from './DnDMathCanvasPanel'
 
-export type DnDMathChatInputProps = DragDropMathCanvasPanelProps & {
+export type DnDMathChatInputProps = DnDMathCanvasPanelProps & {
   score?: number
   maxScore?: number
-  /** Passed to {@link DragDropMathCanvasPanel} (e.g. transparent preview shell). */
+  /** Passed to {@link DnDMathCanvasPanel} (e.g. transparent preview shell). */
   panelClassName?: string
 }
 
@@ -30,7 +27,7 @@ export function DnDMathChatInput({
         size="lg"
         variant="orange"
       />
-      <DragDropMathCanvasPanel
+      <DnDMathCanvasPanel
         {...canvasProps}
         className={panelClassName}
       />

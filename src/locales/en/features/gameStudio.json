@@ -261,6 +261,7 @@
     "exerciseTitleLabel": "Exercise title",
     "exerciseTitlePlaceholder": "Enter exercise title",
     "newExerciseTabLabel": "New Tab",
+    "addExerciseTabLabel": "Exercise",
     "addExerciseTabAriaLabel": "Add exercise tab",
     "closeExerciseTabAriaLabel": "Close exercise tab",
     "deleteExerciseTabDialogTitle": "Delete exercise tab?",

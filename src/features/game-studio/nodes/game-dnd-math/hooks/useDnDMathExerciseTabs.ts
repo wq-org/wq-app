@@ -14,18 +14,18 @@ import {
   resolveExerciseTabsState,
 } from '../utils/exerciseTabs.utils'
 
-export type UseDragDropMathExerciseTabsArgs = {
+export type UseDnDMathExerciseTabsArgs = {
   nodeData: GameDragDropMathNodeData
   onPatchNodeData: (patch: GameNodeDataPatch) => void
   /** Translated fallback when a tab title is empty (e.g. “New Tab”). */
   defaultTabTitle: string
 }
 
-export function useDragDropMathExerciseTabs({
+export function useDnDMathExerciseTabs({
   nodeData,
   onPatchNodeData,
   defaultTabTitle,
-}: UseDragDropMathExerciseTabsArgs) {
+}: UseDnDMathExerciseTabsArgs) {
   const { tabs, activeTabId } = useMemo(
     () => resolveExerciseTabsState(nodeData, defaultTabTitle),
     [nodeData, defaultTabTitle],

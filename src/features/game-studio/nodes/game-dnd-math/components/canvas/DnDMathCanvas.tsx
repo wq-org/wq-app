@@ -8,7 +8,7 @@ import type { MathTokenCommitPayload } from '../../hooks/useMathDropNodeEditor'
 import { CANVAS_EMPTY_DROP_ID } from '../../constants/canvas-dnd.constants'
 import { CanvasRowList } from './CanvasRowList'
 
-export type DragDropMathCanvasProps = {
+export type DnDMathCanvasProps = {
   rows: readonly DragDropMathCanvasRow[]
   /** When true, canvas rows, chips, palette, and sigma drops are frozen (preview submit lock). */
   interactionLocked?: boolean
@@ -18,11 +18,11 @@ export type DragDropMathCanvasProps = {
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
   onTokenRemove: (tokenId: string) => void
   onSigmaRemove: (rowId: string) => void
-  /** When true, omits outer shell — for use inside {@link DragDropMathCanvasPanel}. */
+  /** When true, omits outer shell — for use inside {@link DnDMathCanvasPanel}. */
   embedded?: boolean
 }
 
-export function DragDropMathCanvas({
+export function DnDMathCanvas({
   rows,
   interactionLocked = false,
   instantColorFeedback,
@@ -32,7 +32,7 @@ export function DragDropMathCanvas({
   onTokenRemove,
   onSigmaRemove,
   embedded = false,
-}: DragDropMathCanvasProps) {
+}: DnDMathCanvasProps) {
   const { t } = useTranslation('features.gameStudio')
   const { active } = useDndContext()
   const { setNodeRef, isOver } = useDroppable({

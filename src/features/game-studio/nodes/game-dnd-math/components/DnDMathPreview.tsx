@@ -27,16 +27,16 @@ import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import {
   canvasCollisionDetection,
   getCanvasTokenIdFromSortableId,
-  useDragDropMathCanvasRows,
+  useDnDMathCanvasRows,
 } from './canvas'
-import { useDragDropMathPreviewGame } from '../hooks'
+import { useDnDMathPreviewGame } from '../hooks'
 import { DropMathNode } from './DropMathNode'
 import { DropMathStaticNode } from './DropMathStaticNode'
 import { DropTextNode } from './DropTextNode'
 import { SigmaNode } from './SigmaNode'
 import { DnDMathChatInput } from './DnDMathChatInput'
-import { DragDropMathPreviewChatHistory } from './DragDropMathPreviewChatHistory'
-import { DragDropMathSubmitConfirmDialog } from './DragDropMathSubmitConfirmDialog'
+import { DnDMathPreviewChatHistory } from './DnDMathPreviewChatHistory'
+import { DnDMathSubmitConfirmDialog } from './DnDMathSubmitConfirmDialog'
 import { collectEquationGroupTokenIds, isFixedMathSuffixToken } from '../utils/mathEquationRow'
 import {
   isTokenCanvasRow,
@@ -74,12 +74,12 @@ function findRowForToken(rows: readonly DragDropMathCanvasRow[], tokenId: string
   )
 }
 
-export type DragDropMathPreviewProps = {
+export type DnDMathPreviewProps = {
   nodeId: string
   nodeData?: GameDragDropMathNodeData
 }
 
-export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewProps) {
+export function DnDMathPreview({ nodeId, nodeData }: DnDMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -97,7 +97,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
   const [canvasRows, setCanvasRows] = useState<DragDropMathCanvasRow[]>([])
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [howToPlayMessages, setHowToPlayMessages] = useState<
-    ReturnType<typeof useDragDropMathPreviewGame>['messages']
+    ReturnType<typeof useDnDMathPreviewGame>['messages']
   >([])
 
   const howToPlayPrompt = t('dragDropMathGamePreview.howToPlayPrompt')
@@ -162,7 +162,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     commitMathEquation,
     removeToken,
     removeSigmaRow,
-  } = useDragDropMathCanvasRows({
+  } = useDnDMathCanvasRows({
     rows: canvasRows,
     onRowsChange: setCanvasRows,
     resolveDropValue,
@@ -179,7 +179,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     errorTokenIds,
     currentTabIndex,
     allTabsCompleted,
-  } = useDragDropMathPreviewGame({
+  } = useDnDMathPreviewGame({
     nodeId,
     submitPrompt: t('dragDropMathGamePreview.submitAnswerPrompt'),
     totalMaxScore: maxScore,
@@ -387,7 +387,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         </Text>
       ) : null}
 
-      <DragDropMathPreviewChatHistory
+      <DnDMathPreviewChatHistory
         nodeId={nodeId}
         descriptionContent={descriptionContent}
         title={initialTabTitle}
@@ -435,7 +435,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
           {activeDragPreview}
         </DragOverlay>
       </DndContext>
-      <DragDropMathSubmitConfirmDialog
+      <DnDMathSubmitConfirmDialog
         open={submitDialogOpen}
         onOpenChange={setSubmitDialogOpen}
         onConfirm={handleConfirmSubmit}

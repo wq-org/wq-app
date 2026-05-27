@@ -2,11 +2,11 @@ import { GameNodeDialogShell } from '../../../components/GameNodeDialogShell'
 import { GameLayout } from '../../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../../_registry/game-node-registry.types'
 import type { GameDragDropMathNodeData } from '../types/drag-drop-math.schema'
-import { DragDropMathEditor } from './DragDropMathEditor'
-import { DragDropMathPreview } from './DragDropMathPreview'
-import { DragDropMathSettings } from './DragDropMathSettings'
+import { DnDMathEditor } from './DnDMathEditor'
+import { DnDMathPreview } from './DnDMathPreview'
+import { DnDMathSettings } from './DnDMathSettings'
 
-export function GameDragDropMathDialog(props: GameNodeDialogProps) {
+export function DnDMathDialog(props: GameNodeDialogProps) {
   const {
     nodeId,
     nodeData,
@@ -39,20 +39,20 @@ export function GameDragDropMathDialog(props: GameNodeDialogProps) {
     >
       <GameLayout
         editorContent={
-          <DragDropMathEditor
+          <DnDMathEditor
             nodeId={nodeId}
             nodeData={nodeData}
             onPatchNodeData={onPatchNodeData}
           />
         }
         previewContent={
-          <DragDropMathPreview
+          <DnDMathPreview
             nodeId={nodeId}
             nodeData={dragDropMathNodeData}
           />
         }
         settingsContent={
-          <DragDropMathSettings
+          <DnDMathSettings
             nodeId={nodeId}
             onDelete={onDelete}
             onClose={onClose}

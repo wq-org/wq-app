@@ -15,7 +15,7 @@ import {
 const POINTS_REVEAL_DELAY_MS = 500
 const ITERATION_ADVANCE_DELAY_MS = 1200
 
-export type DragDropMathPreviewGameMessage = {
+export type DnDMathPreviewGameMessage = {
   id: string
   direction: 'sending' | 'receiving'
   kind: 'text' | 'loading' | 'math'
@@ -25,7 +25,7 @@ export type DragDropMathPreviewGameMessage = {
   bold?: boolean
 }
 
-type UseDragDropMathPreviewGameArgs = {
+type UseDnDMathPreviewGameArgs = {
   nodeId: string
   submitPrompt: string
   /** Total points budget for the whole node — distributed evenly across tabs. */
@@ -55,16 +55,16 @@ function fireCorrectConfetti(): void {
  * title into the chat stream so the parent can react to a single
  * `currentTabIndex` change.
  */
-export function useDragDropMathPreviewGame({
+export function useDnDMathPreviewGame({
   nodeId,
   submitPrompt,
   totalMaxScore,
   tabs,
   studentRows,
   hasSubmittableCanvas = true,
-}: UseDragDropMathPreviewGameArgs) {
+}: UseDnDMathPreviewGameArgs) {
   const { t } = useTranslation('features.gameStudio')
-  const [messages, setMessages] = useState<DragDropMathPreviewGameMessage[]>([])
+  const [messages, setMessages] = useState<DnDMathPreviewGameMessage[]>([])
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false)
   const [submissionLocked, setSubmissionLocked] = useState(false)
   const [runningEarnedScore, setRunningEarnedScore] = useState(0)
@@ -166,7 +166,7 @@ export function useDragDropMathPreviewGame({
 
       setMessages((prev) => {
         const withoutLoading = prev.filter((message) => message.kind !== 'loading')
-        const next: DragDropMathPreviewGameMessage[] = [
+        const next: DnDMathPreviewGameMessage[] = [
           ...withoutLoading,
           {
             id: `${nodeId}-submit-rows-${safeTabIndex}-${revealSeq}`,

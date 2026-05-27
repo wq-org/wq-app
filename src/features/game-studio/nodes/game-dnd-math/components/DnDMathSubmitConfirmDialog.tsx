@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 
-export type DragDropMathSubmitConfirmDialogProps = {
+export type DnDMathSubmitConfirmDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
@@ -22,11 +22,11 @@ export type DragDropMathSubmitConfirmDialogProps = {
  * Confirmation dialog shown before the learner submits a preview answer.
  * Submission is irreversible for the current preview run.
  */
-export function DragDropMathSubmitConfirmDialog({
+export function DnDMathSubmitConfirmDialog({
   open,
   onOpenChange,
   onConfirm,
-}: DragDropMathSubmitConfirmDialogProps) {
+}: DnDMathSubmitConfirmDialogProps) {
   const { t } = useTranslation('features.gameStudio')
 
   return (

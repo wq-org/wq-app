@@ -46,25 +46,36 @@ export type SelectTabsProps =
       onAddTabClick?: never
       addTabAriaLabel?: never
       addTabDisabled?: never
+      optionalText?: never
+      addTabText?: never
     })
   | (SelectTabsPropsBase & {
       showAddTab: true
       onAddTabClick: () => void
       addTabAriaLabel: string
       addTabDisabled?: boolean
+      /** When true, renders visible label text beside the plus icon (use `addTabText`). */
+      optionalText?: boolean
+      addTabText?: string
     })
 
 function SelectTabsAddButton({
   ariaLabel,
   disabled,
   layout,
+  optionalText = false,
+  optionalTextLabel,
   onClick,
 }: {
   ariaLabel: string
   disabled?: boolean
   layout: SelectTabsLayoutVariant
+  optionalText?: boolean
+  optionalTextLabel?: string
   onClick: () => void
 }) {
+  const showLabel = optionalText && Boolean(optionalTextLabel?.trim())
+
   return (
     <div
       className={cn(
@@ -77,13 +88,22 @@ function SelectTabsAddButton({
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size={showLabel ? 'sm' : 'icon'}
         aria-label={ariaLabel}
         disabled={disabled}
         onClick={onClick}
-        className="shrink-0"
+        className={cn('shrink-0', showLabel && 'gap-1 px-2')}
       >
         <Plus aria-hidden />
+        {showLabel ? (
+          <Text
+            as="span"
+            variant="small"
+            className="text-muted-foreground"
+          >
+            {optionalTextLabel}
+          </Text>
+        ) : null}
       </Button>
     </div>
   )
@@ -199,6 +219,8 @@ export function SelectTabs(props: SelectTabsProps) {
           ariaLabel={props.addTabAriaLabel}
           disabled={props.addTabDisabled}
           layout={variant}
+          optionalText={props.optionalText}
+          optionalTextLabel={props.addTabText}
           onClick={props.onAddTabClick}
         />
       ) : null}

@@ -8,10 +8,10 @@ import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-import { DragDropMathCanvas, type DragDropMathCanvasProps } from './canvas/DragDropMathCanvas'
+import { DnDMathCanvas, type DnDMathCanvasProps } from './canvas/DnDMathCanvas'
 import { MathNodePalette } from './MathNodePalette'
 
-export type DragDropMathCanvasPanelProps = DragDropMathCanvasProps & {
+export type DnDMathCanvasPanelProps = DnDMathCanvasProps & {
   className?: string
   showPaletteLabel?: boolean
 }
@@ -19,11 +19,11 @@ export type DragDropMathCanvasPanelProps = DragDropMathCanvasProps & {
 const canvasPanelToggleAnimation =
   'animate-in fade-in-0 slide-in-from-bottom-4 duration-200 ease-in-out' as const
 
-export function DragDropMathCanvasPanel({
+export function DnDMathCanvasPanel({
   className,
   showPaletteLabel = true,
   ...canvasProps
-}: DragDropMathCanvasPanelProps) {
+}: DnDMathCanvasPanelProps) {
   const { t } = useTranslation('features.gameStudio')
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -73,7 +73,7 @@ export function DragDropMathCanvasPanel({
             key={isExpanded ? 'expanded' : 'collapsed'}
             className={canvasPanelToggleAnimation}
           >
-            <DragDropMathCanvas
+            <DnDMathCanvas
               {...canvasProps}
               embedded
             />

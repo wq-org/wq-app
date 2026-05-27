@@ -5,7 +5,7 @@ import type { GameDragDropMathNodeData } from '../types/drag-drop-math.schema'
 
 type CanvasData = GameDragDropMathNodeData & { onClick?: () => void }
 
-export function GameDragDropMathNode({ data, selected }: NodeProps) {
+export function DnDMathNode({ data, selected }: NodeProps) {
   const d = (data ?? {}) as CanvasData
   return (
     <GameNodeLayout

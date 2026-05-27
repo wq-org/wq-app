@@ -2,7 +2,7 @@ import { Calculator } from 'lucide-react'
 
 import { GAME_FEATURE_KEY_DRAG_DROP_MATH } from '../../constants/gameFeatureKeys'
 import type { GameNodeRegistryEntry } from '../_registry/game-node-registry.types'
-import { GameDragDropMathDialog, GameDragDropMathNode } from './components'
+import { DnDMathDialog, DnDMathNode } from './components'
 import {
   GAME_DRAG_DROP_MATH_TYPE,
   gameDragDropMathDefaultConfig,
@@ -15,8 +15,8 @@ export const gameDragDropMathEntry: GameNodeRegistryEntry = {
   category: 'games',
   accent: 'blue',
   Icon: Calculator,
-  NodeComponent: GameDragDropMathNode,
-  DialogComponent: GameDragDropMathDialog,
+  NodeComponent: DnDMathNode,
+  DialogComponent: DnDMathDialog,
   defaultConfig: gameDragDropMathDefaultConfig,
   validateConfig: validateGameDragDropMathConfig,
   isDeletable: true,
@@ -26,8 +26,8 @@ export const gameDragDropMathEntry: GameNodeRegistryEntry = {
 }
 
 export {
-  GameDragDropMathDialog,
-  GameDragDropMathNode,
+  DnDMathDialog,
+  DnDMathNode,
   MathNode,
   MathTextNode,
   DropMathNode,
@@ -37,7 +37,7 @@ export {
   MathNodeInlineSentence,
   MathNodeSentenceText,
   MathNodeMathChrome,
-  DragDropMathCanvas,
+  DnDMathCanvas,
 } from './components'
 export type {
   MathNodeProps,

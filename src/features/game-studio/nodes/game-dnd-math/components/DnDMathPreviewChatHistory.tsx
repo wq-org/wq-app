@@ -9,7 +9,7 @@ import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 
-import type { DragDropMathPreviewGameMessage } from '../hooks/useDragDropMathPreviewGame'
+import type { DnDMathPreviewGameMessage } from '../hooks/useDnDMathPreviewGame'
 import {
   isSigmaCanvasRow,
   isTokenCanvasRow,
@@ -31,13 +31,13 @@ type PreviewChatMessage =
       text: string
     }
 
-export type DragDropMathPreviewChatHistoryProps = {
+export type DnDMathPreviewChatHistoryProps = {
   nodeId: string
   descriptionContent: SerializedEditorState | null
   title: string
   showDescription: boolean
   showTitle: boolean
-  previewMessages?: readonly DragDropMathPreviewGameMessage[]
+  previewMessages?: readonly DnDMathPreviewGameMessage[]
   avatarUrl?: string
   avatarFallback: string
   incomingBubbleVariant?: ChatBubbleVariant
@@ -52,7 +52,7 @@ function buildPreviewMessages({
   showDescription,
   showTitle,
 }: Pick<
-  DragDropMathPreviewChatHistoryProps,
+  DnDMathPreviewChatHistoryProps,
   'nodeId' | 'descriptionContent' | 'title' | 'showDescription' | 'showTitle'
 >): PreviewChatMessage[] {
   const messages: PreviewChatMessage[] = []
@@ -77,7 +77,7 @@ function buildPreviewMessages({
   return messages
 }
 
-export function DragDropMathPreviewChatHistory({
+export function DnDMathPreviewChatHistory({
   nodeId,
   descriptionContent,
   title,
@@ -89,7 +89,7 @@ export function DragDropMathPreviewChatHistory({
   incomingBubbleVariant = 'default',
   receivingBubbleVariant = 'orange',
   className,
-}: DragDropMathPreviewChatHistoryProps) {
+}: DnDMathPreviewChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const messages = useMemo(
     () =>

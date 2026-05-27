@@ -16,10 +16,10 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 import {
-  DragDropMathCanvas,
+  DnDMathCanvas,
   canvasCollisionDetection,
   getCanvasTokenIdFromSortableId,
-  useDragDropMathCanvasRows,
+  useDnDMathCanvasRows,
 } from './canvas'
 import { DropMathNode } from './DropMathNode'
 import { DropMathStaticNode } from './DropMathStaticNode'
@@ -43,7 +43,7 @@ const dragDropMathEditorEnterLift =
 const dragDropMathEditorEnterSubtle =
   'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
-export type DragDropMathExerciseWorkspaceProps = {
+export type DnDMathExerciseWorkspaceProps = {
   tabId: string
   nodeId: string
   title: string
@@ -70,7 +70,7 @@ function findRowForToken(rows: readonly DragDropMathCanvasRow[], tokenId: string
   )
 }
 
-export function DragDropMathExerciseWorkspace({
+export function DnDMathExerciseWorkspace({
   tabId,
   nodeId,
   title,
@@ -78,7 +78,7 @@ export function DragDropMathExerciseWorkspace({
   instantColorFeedback,
   onTitleChange,
   onCanvasRowsChange,
-}: DragDropMathExerciseWorkspaceProps) {
+}: DnDMathExerciseWorkspaceProps) {
   const { t } = useTranslation('features.gameStudio')
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
@@ -100,7 +100,7 @@ export function DragDropMathExerciseWorkspace({
     commitMathEquation,
     removeToken,
     removeSigmaRow,
-  } = useDragDropMathCanvasRows({
+  } = useDnDMathCanvasRows({
     rows: canvasRows,
     onRowsChange: onCanvasRowsChange,
     resolveDropValue,
@@ -251,7 +251,7 @@ export function DragDropMathExerciseWorkspace({
           <MathNodePalette />
         </div>
         <div className={dragDropMathEditorEnterLift}>
-          <DragDropMathCanvas
+          <DnDMathCanvas
             rows={canvasRows}
             instantColorFeedback={instantColorFeedback}
             onRowsReorder={reorderRows}

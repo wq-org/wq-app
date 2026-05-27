@@ -40,7 +40,7 @@ import {
 } from '../types/canvas.types'
 import { dropOnSigmaRow } from '../utils/sigmaRow'
 
-export type UseDragDropMathCanvasRowsArgs = {
+export type UseDnDMathCanvasRowsArgs = {
   rows: readonly DragDropMathCanvasRow[]
   onRowsChange: (rows: DragDropMathCanvasRow[]) => void
   resolveDropValue: (variant: MathNodeVariant, value: string) => string
@@ -57,7 +57,7 @@ function cloneRows(rows: readonly DragDropMathCanvasRow[]): DragDropMathCanvasRo
 function buildPaletteToken(
   variant: TokenCanvasVariant,
   value: string,
-  resolveDropValue: UseDragDropMathCanvasRowsArgs['resolveDropValue'],
+  resolveDropValue: UseDnDMathCanvasRowsArgs['resolveDropValue'],
 ): DragDropMathCanvasToken {
   return {
     id: createCanvasTokenId(),
@@ -93,11 +93,11 @@ function removeTokenGroup(
  * row reorder, value edits, and token removal. dnd-kit handles all *token* drags;
  * row order is handled by Framer Motion's Reorder.Group (see {@link CanvasRowList}).
  */
-export function useDragDropMathCanvasRows({
+export function useDnDMathCanvasRows({
   rows,
   onRowsChange,
   resolveDropValue,
-}: UseDragDropMathCanvasRowsArgs) {
+}: UseDnDMathCanvasRowsArgs) {
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event

@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react'
 import type { NodeProps } from '@xyflow/react'
 
-import { gameDragDropMathEntry } from '../drag-drop-math'
+import { gameDragDropMathEntry } from '../game-dnd-math'
 import { gameStartEntry } from '../game-start'
 import { gameEndEntry } from '../game-end'
 import { gameIfElseEntry } from '../game-if-else'
