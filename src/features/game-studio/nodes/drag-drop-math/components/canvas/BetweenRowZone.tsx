@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils'
 import { getCanvasGapDropId } from '../../constants/canvas-dnd.constants'
 import {
   CANVAS_GAP_DROPPABLE_DATA_KEY,
-  getCanvasResultDuplicatePayload,
   getCanvasRowSortablePayload,
 } from '../../types/canvas.types'
 import { RowGhostHint } from './RowGhostHint'
@@ -25,23 +24,22 @@ export function BetweenRowZone({ position, rowId, disabled = false }: BetweenRow
     },
   })
 
-  // Row reorder and result→sigma drags keep gaps minimal so they do not steal sigma drops.
-  const isResultDuplicateDrag = Boolean(getCanvasResultDuplicatePayload(active?.data.current))
-  const isTokenLikeDrag =
-    Boolean(active) && !getCanvasRowSortablePayload(active?.data.current) && !isResultDuplicateDrag
+  // Framer row reorder does not set a dnd-kit active payload — gaps stay minimal then.
+  // Result-duplicate drags use the same gap affordance; sigma still wins via collision priority.
+  const showGapGhost = Boolean(active) && !getCanvasRowSortablePayload(active?.data.current)
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
         'relative w-full transition-all duration-150',
-        !isTokenLikeDrag && 'my-0.5 h-1',
-        isTokenLikeDrag && !isOver && 'my-1.5 h-10',
-        isTokenLikeDrag && isOver && 'my-1.5 h-14',
+        !showGapGhost && 'my-0.5 h-1',
+        showGapGhost && !isOver && 'my-1.5 h-10',
+        showGapGhost && isOver && 'my-1.5 h-14',
       )}
     >
       <RowGhostHint
-        isVisible={isTokenLikeDrag}
+        isVisible={showGapGhost}
         isOver={isOver}
       />
     </div>
