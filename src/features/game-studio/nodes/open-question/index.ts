@@ -22,6 +22,7 @@ export const gameOpenQuestionEntry: GameNodeRegistryEntry = {
   validateConfig: validateGameOpenQuestionConfig,
   isDeletable: true,
   allowMultiple: true,
+  disabled: true,
   isDraggable: true,
   featureKey: GAME_FEATURE_KEY_OPEN_QUESTION,
 }
