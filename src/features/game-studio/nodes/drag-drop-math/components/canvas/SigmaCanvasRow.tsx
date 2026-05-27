@@ -257,18 +257,24 @@ function SigmaResultDraggable({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform) }}
-      className={cn('cursor-grab touch-none active:cursor-grabbing', isDragging && 'opacity-0')}
+      className={cn(
+        'flex cursor-grab touch-none items-center active:cursor-grabbing',
+        isDragging && 'opacity-0',
+      )}
       aria-label={ariaLabel}
       {...attributes}
       {...listeners}
       role="button"
       tabIndex={0}
     >
-      <span className="text-sm font-medium text-muted-foreground">= </span>
+      <span className="cursor-grab text-sm font-medium text-muted-foreground active:cursor-grabbing">
+        ={' '}
+      </span>
       <DropMathStaticNode
         value={value}
         mathShell="ghost"
         compact
+        className="cursor-grab active:cursor-grabbing"
       />
     </div>
   )

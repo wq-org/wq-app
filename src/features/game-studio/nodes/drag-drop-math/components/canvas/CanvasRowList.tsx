@@ -64,6 +64,7 @@ export function CanvasRowList({
         <BetweenRowZone
           position="before"
           rowId={rows[0].id}
+          disabled={interactionLocked}
         />
       ) : null}
 

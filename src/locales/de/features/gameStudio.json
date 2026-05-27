@@ -309,7 +309,7 @@
     "submitConfirmDialogBody": "Wenn du jetzt absendest, kann die Antwort nicht mehr geändert werden. Sie wird mit PSCA ausgewertet.",
     "submitConfirmDialogCancel": "Abbrechen",
     "submitConfirmDialogConfirm": "Jetzt absenden",
-    "pointsEarnedMessage": "{{points}} + pts",
+    "pointsEarnedMessage": "{{points}} Pkt.",
     "maxScoreAchievedMessage": "Glückwunsch! Du hast die maximale Punktzahl erreicht 🥳",
     "expandCanvasAriaLabel": "Fläche vergrößern",
     "collapseCanvasAriaLabel": "Fläche verkleinern"

@@ -1,14 +1,14 @@
 import { cva } from 'class-variance-authority'
 
 /**
- * Dot fills aligned with `button-variants` variant names.
- * `default` and `dark` both use `primary` so the loader follows light/dark theme (no literal white/black dots).
+ * Dot fills aligned with `button-variants` / chat-bubble variant names where they overlap.
+ * `default` uses semantic foreground so loaders stay visible on neutral chat bubbles (light + dark).
  */
 export const dotWaveVariants = cva('h-2.5 w-2.5 animate-bounce rounded-full', {
   variants: {
     variant: {
-      default: 'bg-primary',
-      dark: 'bg-primary',
+      default: 'bg-muted-foreground',
+      dark: 'bg-neutral-50',
       destructive: 'bg-destructive',
       info: 'bg-info',
       success: 'bg-success',

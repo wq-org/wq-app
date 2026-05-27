@@ -4,4 +4,9 @@ export { resolveOperands } from './carryResolver'
 export { computeTolerance } from './toleranceWindow'
 export { methodScore } from './operatorMatch'
 export { errorFreeScore } from './errorFreeChecks'
-export { buildTeacherStepTree, buildStudentAnswers } from './canvasStepAdapter'
+export {
+  buildTeacherStepTree,
+  buildStudentAnswers,
+  extractCanvasScoringSteps,
+  resolveFailedStepTokenIds,
+} from './canvasStepAdapter'

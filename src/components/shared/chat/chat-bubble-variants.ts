@@ -1,5 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
+import { dotWaveVariants } from '@/components/ui/dot-wave-loader-variant'
+
 export const chatBubbleVariants = cva(
   'inline-block px-4 py-2.5 text-sm leading-relaxed transition-colors',
   {
@@ -40,6 +42,32 @@ export const chatBubbleVariants = cva(
 export type ChatBubbleVariants = VariantProps<typeof chatBubbleVariants>
 export type ChatBubbleVariant = NonNullable<ChatBubbleVariants['variant']>
 export type ChatBubbleRounded = NonNullable<ChatBubbleVariants['rounded']>
+
+type DotWaveLoaderVariant = NonNullable<VariantProps<typeof dotWaveVariants>['variant']>
+
+const CHAT_BUBBLE_DOT_WAVE_VARIANT: Record<ChatBubbleVariant, DotWaveLoaderVariant | undefined> = {
+  default: undefined,
+  dark: 'dark',
+  'blue-on-gray': 'blue',
+  'darkblue-on-blue': 'darkblue',
+  violet: 'violet',
+  indigo: 'indigo',
+  blue: 'blue',
+  cyan: 'cyan',
+  teal: 'teal',
+  green: 'green',
+  lime: 'lime',
+  orange: 'orange',
+  pink: 'pink',
+  darkblue: 'darkblue',
+}
+
+/** Maps chat bubble skin to a visible dot-wave variant (`undefined` → theme default on loader). */
+export function resolveDotWaveLoaderVariant(
+  bubbleVariant: ChatBubbleVariant = 'default',
+): DotWaveLoaderVariant | undefined {
+  return CHAT_BUBBLE_DOT_WAVE_VARIANT[bubbleVariant]
+}
 
 const tailReceivingByRounded: Record<ChatBubbleRounded, string> = {
   sm: 'rounded-bl-sm',

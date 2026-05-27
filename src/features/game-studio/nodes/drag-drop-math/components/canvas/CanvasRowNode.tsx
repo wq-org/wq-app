@@ -20,6 +20,8 @@ export type CanvasRowNodeProps = {
   rowId: string
   token: DragDropMathCanvasToken
   compact?: boolean
+  /** Preview submit lock — disables chip drag/edit even when token.disabled is false. */
+  interactionLocked?: boolean
   instantColorFeedback?: boolean
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
@@ -50,12 +52,14 @@ function CanvasSortableRowNode({
   rowId,
   token,
   compact = false,
+  interactionLocked = false,
   instantColorFeedback,
   onTokenValueChange,
   onMathTokenCommit,
   onRemove,
 }: CanvasRowNodeProps) {
   const { t } = useTranslation('features.gameStudio')
+  const dragDisabled = interactionLocked || token.disabled
 
   const editAriaLabel =
     token.variant === 'math'
@@ -64,7 +68,7 @@ function CanvasSortableRowNode({
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: getCanvasTokenSortableId(token.id),
-    disabled: token.disabled,
+    disabled: dragDisabled,
     data: {
       [CANVAS_TOKEN_SORTABLE_DATA_KEY]: {
         rowId,
@@ -75,8 +79,8 @@ function CanvasSortableRowNode({
   })
 
   const dragSurfaceClassName = cn(
-    'max-w-full shrink-0 touch-none',
-    !token.disabled && 'cursor-grab active:cursor-grabbing',
+    'max-w-full shrink-0',
+    !dragDisabled && 'touch-none cursor-grab active:cursor-grabbing',
     isDragging && 'opacity-0',
   )
 
@@ -85,7 +89,7 @@ function CanvasSortableRowNode({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={dragSurfaceClassName}
-      {...(token.disabled ? {} : { ...attributes, ...listeners })}
+      {...(dragDisabled ? {} : { ...attributes, ...listeners })}
     >
       {token.variant === 'math' ? (
         <DropMathNode
@@ -94,9 +98,9 @@ function CanvasSortableRowNode({
           mathShell={token.mathShell}
           onCommit={(payload) => onMathTokenCommit(token.id, payload)}
           onRemove={() => onRemove(token.id)}
-          disabled={token.disabled}
+          disabled={dragDisabled}
           editAriaLabel={editAriaLabel}
-          useGrabCursor={!token.disabled}
+          useGrabCursor={!dragDisabled}
           compact={compact}
           instantColorFeedback={instantColorFeedback}
         />
@@ -105,9 +109,9 @@ function CanvasSortableRowNode({
           value={token.value}
           onValueChange={(next) => onTokenValueChange(token.id, next)}
           onRemove={() => onRemove(token.id)}
-          disabled={token.disabled}
+          disabled={dragDisabled}
           editAriaLabel={editAriaLabel}
-          useGrabCursor={!token.disabled}
+          useGrabCursor={!dragDisabled}
           compact={compact}
         />
       )}
@@ -115,8 +119,10 @@ function CanvasSortableRowNode({
   )
 }
 
-function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
+function CanvasResultDraggable({ token, interactionLocked = false }: CanvasRowNodeProps) {
   const { t } = useTranslation('features.gameStudio')
+  // `token.disabled` only blocks inline editing; result chips stay draggable for sigma/new-row duplicate.
+  const dragDisabled = interactionLocked
   const ariaLabel = t('dragDropMathEditor.duplicateResultAriaLabel', {
     defaultValue: 'Drag result {{value}} into a new row',
     value: token.value,
@@ -124,7 +130,7 @@ function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: getCanvasTokenSortableId(token.id),
-    disabled: token.disabled,
+    disabled: dragDisabled,
     data: {
       [CANVAS_RESULT_DUPLICATE_DATA_KEY]: {
         sourceTokenId: token.id,
@@ -133,11 +139,11 @@ function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
     },
   })
 
-  if (token.disabled) {
+  if (dragDisabled) {
     return (
       <DropMathStaticNode
         value={token.value}
-        mathShell="ghost"
+        mathShell={token.mathShell === 'error' ? 'error' : 'ghost'}
         compact
       />
     )
@@ -163,6 +169,7 @@ function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
         value={token.value}
         mathShell="ghost"
         compact
+        className="cursor-grab active:cursor-grabbing"
       />
     </div>
   )

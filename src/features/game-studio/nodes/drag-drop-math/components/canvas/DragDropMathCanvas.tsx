@@ -35,7 +35,10 @@ export function DragDropMathCanvas({
 }: DragDropMathCanvasProps) {
   const { t } = useTranslation('features.gameStudio')
   const { active } = useDndContext()
-  const { setNodeRef, isOver } = useDroppable({ id: CANVAS_EMPTY_DROP_ID })
+  const { setNodeRef, isOver } = useDroppable({
+    id: CANVAS_EMPTY_DROP_ID,
+    disabled: interactionLocked,
+  })
   const isEmpty = rows.length === 0
   const isDragSession = active != null
 

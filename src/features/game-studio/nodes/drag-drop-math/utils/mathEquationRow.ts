@@ -32,6 +32,7 @@ function createMathSuffixToken(
     variant: 'math',
     mathRole: role,
     value,
+    /** Non-editable suffix chip; duplicate-drag is enabled separately on the canvas. */
     disabled: true,
     mathShell: 'ghost',
   }

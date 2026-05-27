@@ -76,6 +76,7 @@ export function CanvasRow({
 
   const { setNodeRef, isOver } = useDroppable({
     id: getCanvasRowSortableId(row.id),
+    disabled: interactionLocked,
     data: {
       [CANVAS_ROW_SORTABLE_DATA_KEY]: { rowId: row.id },
     },
@@ -136,9 +137,11 @@ export function CanvasRow({
   const isDragSession = active != null
   const isCompactLayout = !isDragSession
 
-  const tokenSortableIds = row.tokens
-    .filter((token) => !token.disabled && !isFixedMathSuffixToken(token))
-    .map((token) => getCanvasTokenSortableId(token.id))
+  const tokenSortableIds = interactionLocked
+    ? []
+    : row.tokens
+        .filter((token) => !token.disabled && !isFixedMathSuffixToken(token))
+        .map((token) => getCanvasTokenSortableId(token.id))
 
   return (
     <div
@@ -193,6 +196,7 @@ export function CanvasRow({
               rowId={row.id}
               token={token}
               compact={isCompactLayout}
+              interactionLocked={interactionLocked}
               instantColorFeedback={instantColorFeedback}
               onTokenValueChange={onTokenValueChange}
               onMathTokenCommit={onMathTokenCommit}

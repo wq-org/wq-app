@@ -4,6 +4,7 @@ import {
   chatBubbleEnterAnimation,
   chatBubbleVariants,
   getChatBubbleTailClass,
+  resolveDotWaveLoaderVariant,
 } from '@/components/shared/chat/chat-bubble-variants'
 import {
   isMathChatMessageBubble,
@@ -74,8 +75,8 @@ export function SendingChatMessageBubble(props: ChatMessageBubbleProps) {
           )}
         >
           {resolvedStatus === 'loading' ? (
-            <div className="flex min-h-9 items-center justify-center py-0.5">
-              <DotWaveLoader variant="default" />
+            <div className="flex min-h-9 items-center justify-center py-0.5 text-inherit">
+              <DotWaveLoader variant={resolveDotWaveLoaderVariant(variant)} />
             </div>
           ) : isMath ? (
             <>

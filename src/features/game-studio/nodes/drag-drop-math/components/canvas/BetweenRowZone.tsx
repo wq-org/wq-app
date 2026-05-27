@@ -13,11 +13,13 @@ import { RowGhostHint } from './RowGhostHint'
 export type BetweenRowZoneProps = {
   position: 'before' | 'after'
   rowId: string
+  disabled?: boolean
 }
 
-export function BetweenRowZone({ position, rowId }: BetweenRowZoneProps) {
+export function BetweenRowZone({ position, rowId, disabled = false }: BetweenRowZoneProps) {
   const { setNodeRef, isOver, active } = useDroppable({
     id: getCanvasGapDropId(position, rowId),
+    disabled,
     data: {
       [CANVAS_GAP_DROPPABLE_DATA_KEY]: { position, rowId },
     },

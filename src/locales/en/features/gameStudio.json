@@ -309,7 +309,7 @@
     "submitConfirmDialogBody": "If you submit now, your answer can no longer be changed. It will be analyzed using PSCA scoring.",
     "submitConfirmDialogCancel": "Cancel",
     "submitConfirmDialogConfirm": "Submit now",
-    "pointsEarnedMessage": "{{points}} + pts",
+    "pointsEarnedMessage": "{{points}} pts",
     "maxScoreAchievedMessage": "Congratulations! You achieved the maximal score 🥳",
     "expandCanvasAriaLabel": "Expand canvas",
     "collapseCanvasAriaLabel": "Collapse canvas"

@@ -2,9 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
 import { useTranslation } from 'react-i18next'
 
-import { R_ONLY_SCORING_CONFIG } from '../constants/scoring.defaults'
+import { DEFAULT_SCORING_CONFIG } from '../constants/scoring.defaults'
 import type { DragDropMathCanvasRow } from '../types/drag-drop-math.schema'
-import { buildStudentAnswers, buildTeacherStepTree, pscaScore } from '../utils/scoring'
+import {
+  buildStudentAnswers,
+  buildTeacherStepTree,
+  pscaScore,
+  resolveFailedStepTokenIds,
+} from '../utils/scoring'
 
 const POINTS_REVEAL_DELAY_MS = 500
 
@@ -24,6 +29,8 @@ type UseDragDropMathPreviewGameArgs = {
   maxScore: number
   teacherRows: readonly DragDropMathCanvasRow[]
   studentRows: readonly DragDropMathCanvasRow[]
+  /** When false, submit dialog and confirm are no-ops (e.g. empty canvas). */
+  hasSubmittableCanvas?: boolean
 }
 
 function fireCorrectConfetti(): void {
@@ -37,11 +44,7 @@ function fireCorrectConfetti(): void {
 /**
  * Coordinates submit-flow state for drag-drop-math preview.
  *
- * Responsibilities:
- * - submit confirmation workflow
- * - single-step PSCA scoring (R-only config for MVP)
- * - message-thread updates (prompt, loading, points, optional max-score congrats)
- * - submission lock and error-token highlighting metadata
+ * Uses full PSCA weights on every committed result chip (per row), aligned by row id.
  */
 export function useDragDropMathPreviewGame({
   nodeId,
@@ -49,6 +52,7 @@ export function useDragDropMathPreviewGame({
   maxScore,
   teacherRows,
   studentRows,
+  hasSubmittableCanvas = true,
 }: UseDragDropMathPreviewGameArgs) {
   const { t } = useTranslation('features.gameStudio')
   const [messages, setMessages] = useState<DragDropMathPreviewGameMessage[]>([])
@@ -59,7 +63,10 @@ export function useDragDropMathPreviewGame({
   const seqRef = useRef(0)
   const revealTimeoutRef = useRef<number | null>(null)
 
-  const canSubmit = useMemo(() => !submissionLocked, [submissionLocked])
+  const canSubmit = useMemo(
+    () => !submissionLocked && hasSubmittableCanvas,
+    [hasSubmittableCanvas, submissionLocked],
+  )
 
   useEffect(() => {
     return () => {
@@ -95,22 +102,26 @@ export function useDragDropMathPreviewGame({
     ])
 
     const teacher = buildTeacherStepTree(teacherRows)
-    const student = buildStudentAnswers(studentRows)
+    const student =
+      teacher && buildStudentAnswers(studentRows, teacher.steps, DEFAULT_SCORING_CONFIG.tolerance)
 
     const result =
       teacher && student
-        ? pscaScore(teacher.tree, student.answers, R_ONLY_SCORING_CONFIG, maxScore)
+        ? pscaScore(teacher.tree, student.answers, DEFAULT_SCORING_CONFIG, maxScore)
         : null
 
     const nextScore = result?.awardedPoints ?? 0
     const isMax = (result?.score ?? 0) >= 1
     setEarnedScore(nextScore)
 
-    if (result && student && result.perStep.some((step) => step.s === 0)) {
-      setErrorTokenIds([student.sourceTokenId])
+    if (result && student) {
+      setErrorTokenIds(resolveFailedStepTokenIds(result.perStep, student.studentTokenIdByStepId))
     } else {
       setErrorTokenIds([])
     }
+
+    setSubmissionLocked(true)
+    setSubmitDialogOpen(false)
 
     if (revealTimeoutRef.current !== null) {
       window.clearTimeout(revealTimeoutRef.current)
@@ -121,8 +132,6 @@ export function useDragDropMathPreviewGame({
       const revealSeq = ++seqRef.current
       setMessages((prev) => {
         const withoutLoading = prev.filter((message) => message.kind !== 'loading')
-        // Points appear once in chat (`pointsEarnedMessage`). Max-score congrats has no number
-        // (avoids duplicate "10 pts" style copy). `nextScore` is capped by PSCA: score ∈ [0,1] → awarded ≤ maxScore.
         const pointsMessage: DragDropMathPreviewGameMessage = {
           id: `${nodeId}-submit-points-${revealSeq}`,
           direction: 'receiving',
@@ -150,7 +159,6 @@ export function useDragDropMathPreviewGame({
       })
 
       if (isMax) fireCorrectConfetti()
-      setSubmissionLocked(true)
       revealTimeoutRef.current = null
     }, POINTS_REVEAL_DELAY_MS)
   }

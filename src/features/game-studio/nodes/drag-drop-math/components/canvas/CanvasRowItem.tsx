@@ -58,6 +58,7 @@ function CanvasRowItemBody({
       <BetweenRowZone
         position="after"
         rowId={row.id}
+        disabled={interactionLocked}
       />
     </>
   )
