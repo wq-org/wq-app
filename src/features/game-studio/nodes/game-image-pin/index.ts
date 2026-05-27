@@ -2,13 +2,12 @@ import { MapPin } from 'lucide-react'
 
 import { GAME_FEATURE_KEY_GAME_IMAGE_PIN } from '../../constants/gameFeatureKeys'
 import type { GameNodeRegistryEntry } from '../_registry/game-node-registry.types'
-import { GameImagePinNode } from './GameImagePinNode'
-import { GameImagePinDialog } from './GameImagePinDialog'
+import { ImagePinDialog, ImagePinNode } from './components'
 import {
   GAME_IMAGE_PIN_TYPE,
   gameImagePinDefaultConfig,
   validateGameImagePinConfig,
-} from './game-image-pin.schema'
+} from './image-pin.schema'
 
 export const gameImagePinEntry: GameNodeRegistryEntry = {
   type: GAME_IMAGE_PIN_TYPE,
@@ -16,8 +15,8 @@ export const gameImagePinEntry: GameNodeRegistryEntry = {
   category: 'games',
   accent: 'blue',
   Icon: MapPin,
-  NodeComponent: GameImagePinNode,
-  DialogComponent: GameImagePinDialog,
+  NodeComponent: ImagePinNode,
+  DialogComponent: ImagePinDialog,
   defaultConfig: gameImagePinDefaultConfig,
   validateConfig: validateGameImagePinConfig,
   isDeletable: true,
@@ -26,6 +25,5 @@ export const gameImagePinEntry: GameNodeRegistryEntry = {
   featureKey: GAME_FEATURE_KEY_GAME_IMAGE_PIN,
 }
 
-export { GameImagePinNode } from './GameImagePinNode'
-export { GameImagePinDialog } from './GameImagePinDialog'
-export type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
+export { ImagePinDialog, ImagePinNode } from './components'
+export type { GameImagePinNodeData, GameImagePinRect } from './image-pin.schema'

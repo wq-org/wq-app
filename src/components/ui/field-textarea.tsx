@@ -25,7 +25,8 @@ export type FieldTextareaOverLimitDetail = FieldTextareaLengthDetail & {
 type FieldTextareaProps = {
   value: string
   onValueChange: (value: string) => void
-  label: string
+  /** When omitted, no visible label is rendered; `placeholder` is used for `aria-label`. */
+  label?: string
   placeholder?: string
   id?: string
   rows?: number
@@ -78,6 +79,8 @@ export const FieldTextarea = ({
 
   const hasLimit = maxLengthProp !== undefined && maxLengthProp > 0
   const maxLength = hasLimit ? maxLengthProp! : 0
+  const resolvedPlaceholder = placeholder ?? label ?? ''
+  const textareaAriaLabel = label?.trim() ? label : resolvedPlaceholder || undefined
 
   const showCounter = showCounterProp !== undefined ? showCounterProp : hasLimit
 
@@ -122,9 +125,9 @@ export const FieldTextarea = ({
 
   return (
     <div className={cn('w-full pb-2', className)}>
-      <Label htmlFor={resolvedId}>{label}</Label>
+      {label?.trim() ? <Label htmlFor={resolvedId}>{label}</Label> : null}
 
-      <div className="relative my-4 w-full">
+      <div className={cn('relative w-full', label?.trim() ? 'my-4' : '')}>
         {useHighlightOverlay ? (
           <div
             className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
@@ -153,7 +156,8 @@ export const FieldTextarea = ({
               ? ({ WebkitTextFillColor: 'transparent' } satisfies CSSProperties)
               : undefined
           }
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder || undefined}
+          aria-label={textareaAriaLabel}
           rows={rows}
           value={value}
           onChange={readOnly ? undefined : handleChange}

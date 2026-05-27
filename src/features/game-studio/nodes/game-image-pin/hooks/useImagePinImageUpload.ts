@@ -7,9 +7,9 @@ import { ALLOWED_IMAGE_TYPES } from '@/components/shared/upload-files/types/uplo
 import { resolveCloudFileId } from '@/features/cloud'
 import { useUser } from '@/contexts/user/UserContext'
 
-import { mapUserRoleToCloudPathRole } from './gameImagePinCloudRole'
+import { mapUserRoleToCloudPathRole } from './imagePinCloudRole'
 
-export type GameImagePinCloudUploadResult = {
+export type ImagePinCloudUploadResult = {
   publicUrl: string
   path: string
   cloudFileId: string
@@ -19,12 +19,12 @@ export type GameImagePinCloudUploadResult = {
  * Uploads a local image file to the institution cloud bucket (same pipeline as
  * `FileStepperForm` / lexical image insert). Intended for the Image Pin editor only.
  */
-export function useGameImagePinImageUpload() {
+export function useImagePinImageUpload() {
   const { t } = useTranslation('features.gameStudio')
   const { getUserId, getUserInstitutionId, getRole } = useUser()
 
-  const uploadGameImagePinFile = useCallback(
-    async (file: File): Promise<GameImagePinCloudUploadResult | null> => {
+  const uploadImagePinFile = useCallback(
+    async (file: File): Promise<ImagePinCloudUploadResult | null> => {
       const institutionId = getUserInstitutionId()
       const userId = getUserId()
       const role = mapUserRoleToCloudPathRole(getRole())
@@ -74,5 +74,5 @@ export function useGameImagePinImageUpload() {
     [getRole, getUserId, getUserInstitutionId, t],
   )
 
-  return { uploadGameImagePinFile }
+  return { uploadImagePinFile }
 }

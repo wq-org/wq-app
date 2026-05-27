@@ -13,16 +13,16 @@ import { lookupCloudFileIdByStoragePath } from '@/features/cloud'
 import { cn } from '@/lib/utils'
 
 import { ImagePinRectStage } from './ImagePinRectStage'
+import type { GameNodeDataPatch } from '../../_registry/game-node-registry.types'
+import type { GameImagePinNodeData, GameImagePinRect } from '../image-pin.schema'
 import {
   createDefaultImagePinRectangle,
   loadImageNaturalSize,
   remapRectsForNewImageSize,
-} from './imagePinRectGeometry'
-import type { GameNodeDataPatch } from '../_registry/game-node-registry.types'
-import type { GameImagePinNodeData, GameImagePinRect } from './game-image-pin.schema'
-import type { GameImagePinCloudUploadResult } from './useGameImagePinImageUpload'
-import { useImagePinCloudGalleryImages } from './useImagePinCloudGalleryImages'
-import { useImagePinQuestionTabs } from './useImagePinQuestionTabs'
+} from '../imagePinRectGeometry'
+import { useImagePinCloudGalleryImages } from '../hooks/useImagePinCloudGalleryImages'
+import type { ImagePinCloudUploadResult } from '../hooks/useImagePinImageUpload'
+import { useImagePinQuestionTabs } from '../hooks/useImagePinQuestionTabs'
 
 const imagePinEditorEnterLift =
   'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
@@ -49,24 +49,24 @@ function readFileAsDataUrl(file: File): Promise<string> {
   })
 }
 
-export type GameImagePinEditorProps = {
+export type ImagePinEditorProps = {
   nodeData: Record<string, unknown>
   onPatchNodeData: (patch: GameNodeDataPatch) => void
   /** Thumbnails from other Image Pin nodes on the same canvas (from `GameEditorCanvas`). */
   projectImageGallery?: readonly { url: string; title: string; storagePath?: string }[]
   /**
-   * When set (wired from `GameImagePinDialog`), file picks upload to institution cloud
+   * When set (wired from `ImagePinDialog`), file picks upload to institution cloud
    * via `uploadFile` and the node stores the public URL plus storage `filepath`.
    */
-  uploadGameImagePinFile?: (file: File) => Promise<GameImagePinCloudUploadResult | null>
+  uploadImagePinFile?: (file: File) => Promise<ImagePinCloudUploadResult | null>
 }
 
-export function GameImagePinEditor({
+export function ImagePinEditor({
   nodeData,
   onPatchNodeData,
   projectImageGallery,
-  uploadGameImagePinFile,
-}: GameImagePinEditorProps) {
+  uploadImagePinFile,
+}: ImagePinEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameImagePinNodeData
   const imagePreview =
@@ -165,15 +165,15 @@ export function GameImagePinEditor({
 
   const handleDeleteRectRow = useCallback(
     (id: string) => {
-      onPatchNodeData((current) => {
-        const currentRects = Array.isArray(current.rectangles)
-          ? (current.rectangles as GameImagePinRect[])
-          : []
-        return { rectangles: currentRects.filter((r) => r.id !== id) }
-      })
-      if (selectedRectId === id) setSelectedRectId(null)
+      const remaining = rectangles.filter((r) => r.id !== id)
+      onPatchNodeData({ rectangles: remaining })
+      if (selectedRectId === id) {
+        const removedIndex = rectangles.findIndex((r) => r.id === id)
+        const nextActive = remaining[Math.min(removedIndex, remaining.length - 1)]
+        setSelectedRectId(nextActive?.id ?? null)
+      }
     },
-    [onPatchNodeData, selectedRectId],
+    [onPatchNodeData, rectangles, selectedRectId],
   )
 
   const handleAddRect = useCallback(() => {
@@ -215,7 +215,7 @@ export function GameImagePinEditor({
           })
         })
         .catch((error) => {
-          console.error('[GameImagePinEditor] Failed to refresh signed URL:', error)
+          console.error('[ImagePinEditor] Failed to refresh signed URL:', error)
         })
     },
     [pin.cloudFileId, pin.filepath, rectangles, onPatchNodeData],
@@ -248,7 +248,7 @@ export function GameImagePinEditor({
         }
       } catch (error) {
         console.error(
-          '[GameImagePinEditor] Failed to load image dimensions, persisting without remapping:',
+          '[ImagePinEditor] Failed to load image dimensions, persisting without remapping:',
           error,
         )
       }
@@ -295,13 +295,13 @@ export function GameImagePinEditor({
         // base64 blob and then patches again with the cloud URL.
         setPendingPreviewSrc(dataUrl)
 
-        if (!uploadGameImagePinFile) {
+        if (!uploadImagePinFile) {
           await applyImagePreviewFromSrc(dataUrl, { filepath: '' })
           setPendingPreviewSrc(null)
           return
         }
 
-        const uploaded = await uploadGameImagePinFile(file)
+        const uploaded = await uploadImagePinFile(file)
         if (!uploaded) {
           setPendingPreviewSrc(null)
           return
@@ -323,7 +323,7 @@ export function GameImagePinEditor({
         isUploadingRef.current = false
       }
     },
-    [applyImagePreviewFromSrc, uploadGameImagePinFile],
+    [applyImagePreviewFromSrc, uploadImagePinFile],
   )
 
   const handleClearImage = useCallback(() => {
@@ -518,9 +518,6 @@ export function GameImagePinEditor({
                   {activeRect ? (
                     <FieldTextarea
                       className="min-w-0"
-                      label={t('imagePinEditor.questionLabel', {
-                        index: rectangles.findIndex((rect) => rect.id === activeRect.id) + 1,
-                      })}
                       placeholder={t('imagePinEditor.questionPlaceholder')}
                       value={activeRect.question ?? ''}
                       onValueChange={(value) => patchRectQuestion(activeRect.id, value)}

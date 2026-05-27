@@ -1,4 +1,4 @@
-import type { GameImagePinRect } from './game-image-pin.schema'
+import type { GameImagePinRect } from './image-pin.schema'
 
 /** Pin bounding box in 0..1 image coordinates. */
 export type NormalizedPinBounds = {

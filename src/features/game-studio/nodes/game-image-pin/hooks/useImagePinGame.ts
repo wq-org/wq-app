@@ -2,25 +2,31 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
 import confetti from 'canvas-confetti'
 import { useTranslation } from 'react-i18next'
-import type { GameChatHistoryMessage } from '../../components/game-chat.types'
+import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
+import {
+  PIN_IMAGE_DROPPABLE_ID,
+  PIN_SOURCE_DROPPABLE_ID,
+} from '../constants/imagePinPreviewDnd.constants'
 import {
   resolveGameImagePinPoints,
   resolveGameImagePinRetryDeductionPercent,
   type GameImagePinNodeData,
   type GameImagePinRect,
-} from './game-image-pin.schema'
-import { loadImageNaturalSize } from './imagePinRectGeometry'
+} from '../image-pin.schema'
+import { loadImageNaturalSize } from '../imagePinRectGeometry'
 import {
   evaluatePinSubmission,
   type ImagePinSubmissionVariant,
   type NormalizedPinBounds,
   type NormalizedPinPoint,
-} from './gameImagePinValidation'
-import { calcAttemptPoints, calcPointsPerQuestion } from '../../utils/gameScoringUtils'
+} from '../imagePinValidation'
+import { calcAttemptPoints, calcPointsPerQuestion } from '../../../utils/gameScoringUtils'
 
-export const PIN_SOURCE_DROPPABLE_ID = 'pin-source'
-export const PIN_IMAGE_DROPPABLE_ID = 'image-pin-target'
-export const PIN_DRAGGABLE_ID = 'image-pin'
+export {
+  PIN_DRAGGABLE_ID,
+  PIN_IMAGE_DROPPABLE_ID,
+  PIN_SOURCE_DROPPABLE_ID,
+} from '../constants/imagePinPreviewDnd.constants'
 
 const POINTS_REVEAL_DELAY_MS = 500
 const NEXT_QUESTION_DELAY_MS = 1500
@@ -38,7 +44,7 @@ export type ImagePinSubmission = {
   variant: ImagePinSubmissionVariant
 }
 
-export type UseGameImagePinGameArgs = {
+export type UseImagePinGameArgs = {
   nodeId: string
   nodeData: GameImagePinNodeData
 }
@@ -229,7 +235,7 @@ function fireCorrectConfetti(): void {
   })
 }
 
-export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArgs) {
+export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
   const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
   const description = getPreviewDescription(nodeData)
@@ -609,7 +615,6 @@ export function useGameImagePinGame({ nodeId, nodeData }: UseGameImagePinGameArg
     displayMessages,
     handleDragEnd,
     handlePromptClick,
-    handleChatInput,
     submitAnswerPrompt,
     howToPlayPrompt,
     pinAtSource,

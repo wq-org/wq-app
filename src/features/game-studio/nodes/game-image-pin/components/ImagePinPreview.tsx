@@ -1,37 +1,31 @@
+'use client'
+
 import { useState, type ReactNode } from 'react'
-import {
-  Ai01,
-  AiPromptBadgeList,
-  type Ai02PromptSuggestion,
-} from '@/components/shared/ai-components'
-import { Score } from '@/components/ui/score'
-import { Text } from '@/components/ui/text'
-import { Check, HandHelping, CircleQuestionMark } from 'lucide-react'
-import { useUser } from '@/contexts/user'
-import { useAvatarUrl } from '@/hooks/useAvatarUrl'
-import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
-import { GameChatHistory } from '../../components/GameChatHistory'
-import type { GameChatHistoryMessage } from '../../components/game-chat.types'
-import { resolveGameImagePinPoints, type GameImagePinNodeData } from './game-image-pin.schema'
-import { ImagePin } from './ImagePin'
 import {
   DndContext,
   DragOverlay,
   useDraggable,
-  useDroppable,
   type DragEndEvent,
   type DragStartEvent,
   type Modifier,
 } from '@dnd-kit/core'
-import {
-  PIN_DRAGGABLE_ID,
-  PIN_SOURCE_DROPPABLE_ID,
-  useGameImagePinGame,
-} from './useGameImagePinGame'
-import type { ImagePinSubmissionVariant, NormalizedPinPoint } from './gameImagePinValidation'
+import { AiPromptBadgeList, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
+import { Text } from '@/components/ui/text'
+import { Check, CircleQuestionMark, HandHelping } from 'lucide-react'
+import { useUser } from '@/contexts/user'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
+import { useTranslation } from 'react-i18next'
 
-export type GameImagePinPreviewProps = {
+import { GameChatHistory } from '../../../components/GameChatHistory'
+import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
+import { PIN_DRAGGABLE_ID } from '../constants/imagePinPreviewDnd.constants'
+import { resolveGameImagePinPoints, type GameImagePinNodeData } from '../image-pin.schema'
+import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
+import { useImagePinGame } from '../hooks/useImagePinGame'
+import { ImagePin } from './ImagePin'
+import { ImagePinChatInput } from './ImagePinChatInput'
+
+export type ImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
 }
@@ -71,9 +65,6 @@ function DraggablePin() {
     id: PIN_DRAGGABLE_ID,
   })
 
-  // Hide the in-place pin while it's being dragged; the visible copy
-  // is rendered in <DragOverlay> at the cursor so it isn't clipped by
-  // chat-bubble or image overflow boundaries.
   return (
     <ImagePin
       ref={setNodeRef}
@@ -103,25 +94,7 @@ function PositionedPin({ drop, children }: { drop: NormalizedPinPoint; children:
   )
 }
 
-function PinSourceSlot({ pinAtSource }: { pinAtSource: boolean }) {
-  const { setNodeRef, isOver } = useDroppable({ id: PIN_SOURCE_DROPPABLE_ID })
-
-  return (
-    <div className="w-full flex justify-center">
-      <div
-        ref={setNodeRef}
-        className={cn(
-          'w-[200px] h-20 flex items-center justify-center border rounded-2xl relative transition-shadow',
-          isOver && 'ring-2 ring-[#0000FF] ring-offset-2 ring-offset-background',
-        )}
-      >
-        {pinAtSource ? <DraggablePin /> : null}
-      </div>
-    </div>
-  )
-}
-
-export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewProps) {
+export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -129,7 +102,6 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     displayMessages,
     handleDragEnd,
     handlePromptClick,
-    handleChatInput,
     pinAtSource,
     currentPin,
     hasActiveQuestion,
@@ -138,7 +110,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
     submitAnswerPrompt,
     howToPlayPrompt,
     earnedScore,
-  } = useGameImagePinGame({ nodeId, nodeData })
+  } = useImagePinGame({ nodeId, nodeData })
 
   const maxScore = resolveGameImagePinPoints(nodeData.points)
 
@@ -196,7 +168,7 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
   }
 
   return (
-    <div className="flex flex-col h-full gap-3">
+    <div className="flex h-full flex-col gap-3">
       <Text
         as="p"
         variant="small"
@@ -211,43 +183,33 @@ export function GameImagePinPreview({ nodeId, nodeData }: GameImagePinPreviewPro
         onDragEnd={handleDragEndWrapped}
         onDragCancel={handleDragCancel}
       >
-        <GameChatHistory
-          messages={displayMessages}
-          className="flex-1 min-h-0"
-          showUserAvatar
-          incomingAvatarUrl={userAvatarUrl ?? undefined}
-          incomingBubbleVariant="default"
-          receivingBubbleVariant="orange"
-          renderImageChildren={renderImageChildren}
-        />
+        <div className="flex min-h-0 flex-1 flex-col gap-3">
+          <GameChatHistory
+            messages={displayMessages}
+            className="min-h-0 flex-1"
+            showUserAvatar
+            incomingAvatarUrl={userAvatarUrl ?? undefined}
+            incomingBubbleVariant="default"
+            receivingBubbleVariant="orange"
+            renderImageChildren={renderImageChildren}
+          />
 
-        <PinSourceSlot pinAtSource={pinAtSource} />
+          <AiPromptBadgeList
+            prompts={prompts}
+            onPromptClick={handlePromptClick}
+          />
+
+          <ImagePinChatInput
+            score={earnedScore}
+            maxScore={maxScore}
+            pinAtSource={pinAtSource}
+          />
+        </div>
 
         <DragOverlay dropAnimation={null}>
           {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
         </DragOverlay>
       </DndContext>
-
-      <AiPromptBadgeList
-        prompts={prompts}
-        onPromptClick={handlePromptClick}
-      />
-
-      <div className="flex w-full items-center ">
-        <Score
-          score={earnedScore}
-          max={maxScore}
-          size="lg"
-          variant="orange"
-        />
-        <Ai01
-          className="min-w-0 flex-1"
-          placeholder="Submit your answer"
-          showDropDown={false}
-          showMic={false}
-          onSubmit={handleChatInput}
-        />
-      </div>
     </div>
   )
 }

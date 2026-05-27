@@ -4,7 +4,7 @@ import { fetchFilesByRole } from '@/components/shared/upload-files/api'
 import { getFileSignedUrl } from '@/features/cloud'
 import { useUser } from '@/contexts/user/UserContext'
 
-import { buildCloudUserObjectPrefix, mapUserRoleToCloudPathRole } from './gameImagePinCloudRole'
+import { buildCloudUserObjectPrefix, mapUserRoleToCloudPathRole } from './imagePinCloudRole'
 
 export type ImagePinGalleryImage = {
   url: string

@@ -1,4 +1,4 @@
-import type { GameImagePinNodeData } from '../nodes/game-image-pin/game-image-pin.schema'
+import type { GameImagePinNodeData } from '../nodes/game-image-pin/image-pin.schema'
 
 const PUBLIC_PATH_MARKER = '/object/public/cloud/'
 

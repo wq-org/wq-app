@@ -3,7 +3,7 @@ import type { Node } from '@xyflow/react'
 import {
   GAME_IMAGE_PIN_TYPE,
   type GameImagePinNodeData,
-} from '../nodes/game-image-pin/game-image-pin.schema'
+} from '../nodes/game-image-pin/image-pin.schema'
 
 export type GameStudioProjectGalleryImage = {
   url: string

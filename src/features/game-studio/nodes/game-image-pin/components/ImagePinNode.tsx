@@ -1,11 +1,11 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { MapPin } from 'lucide-react'
-import { GameNodeLayout } from '../../components/GameNodeLayout'
-import type { GameImagePinNodeData } from './game-image-pin.schema'
+import { GameNodeLayout } from '../../../components/GameNodeLayout'
+import type { GameImagePinNodeData } from '../image-pin.schema'
 
 type ImagePinCanvasData = GameImagePinNodeData & { onClick?: () => void }
 
-export function GameImagePinNode({ data, selected }: NodeProps) {
+export function ImagePinNode({ data, selected }: NodeProps) {
   const d = (data ?? {}) as ImagePinCanvasData
   return (
     <GameNodeLayout

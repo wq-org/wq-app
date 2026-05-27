@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import {
   GAME_IMAGE_PIN_TYPE,
   type GameImagePinNodeData,
-} from '../nodes/game-image-pin/game-image-pin.schema'
+} from '../nodes/game-image-pin/image-pin.schema'
 import { collectLexicalStatesFromGameNodes } from './collectLexicalStatesFromGameNodes'
 import { resolveGameImagePinStoragePath } from './gameImagePinStoragePath'
 

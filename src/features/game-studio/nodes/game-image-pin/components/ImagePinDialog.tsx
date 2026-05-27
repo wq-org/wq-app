@@ -2,16 +2,16 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getFileSignedUrl } from '@/features/cloud'
-import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
-import { GameLayout } from '../../components/GameDialogLayout'
-import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
-import { getMissingGameImagePinDefaults, type GameImagePinNodeData } from './game-image-pin.schema'
-import { GameImagePinEditor } from './GameImagePinEditor'
-import { GameImagePinPreview } from './GameImagePinPreview'
-import { GameImagePinSettings } from './GameImagePinSettings'
-import { useGameImagePinImageUpload } from './useGameImagePinImageUpload'
+import { GameNodeDialogShell } from '../../../components/GameNodeDialogShell'
+import { GameLayout } from '../../../components/GameDialogLayout'
+import type { GameNodeDialogProps } from '../../_registry/game-node-registry.types'
+import { getMissingGameImagePinDefaults, type GameImagePinNodeData } from '../image-pin.schema'
+import { useImagePinImageUpload } from '../hooks/useImagePinImageUpload'
+import { ImagePinEditor } from './ImagePinEditor'
+import { ImagePinPreview } from './ImagePinPreview'
+import { ImagePinSettings } from './ImagePinSettings'
 
-export function GameImagePinDialog({
+export function ImagePinDialog({
   nodeId,
   onClose,
   onDelete,
@@ -23,7 +23,7 @@ export function GameImagePinDialog({
   projectImageGallery,
 }: GameNodeDialogProps) {
   const { t } = useTranslation('features.gameStudio')
-  const { uploadGameImagePinFile } = useGameImagePinImageUpload()
+  const { uploadImagePinFile } = useImagePinImageUpload()
   const gameImagePinNodeData = nodeData as GameImagePinNodeData
   const { points, retryDeductionPercent } = gameImagePinNodeData
 
@@ -102,21 +102,21 @@ export function GameImagePinDialog({
     >
       <GameLayout
         editorContent={
-          <GameImagePinEditor
+          <ImagePinEditor
             nodeData={nodeData}
             onPatchNodeData={onPatchNodeData}
             projectImageGallery={projectImageGallery}
-            uploadGameImagePinFile={uploadGameImagePinFile}
+            uploadImagePinFile={uploadImagePinFile}
           />
         }
         previewContent={
-          <GameImagePinPreview
+          <ImagePinPreview
             nodeId={nodeId}
             nodeData={gameImagePinNodeData}
           />
         }
         settingsContent={
-          <GameImagePinSettings
+          <ImagePinSettings
             nodeId={nodeId}
             onDelete={onDelete}
             onClose={onClose}

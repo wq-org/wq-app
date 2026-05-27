@@ -4,7 +4,7 @@ import type {
   ChatBubbleVariant,
   ChatMessageStatus,
 } from '@/components/shared/chat'
-import type { GameImagePinRect } from '../nodes/game-image-pin/game-image-pin.schema'
+import type { GameImagePinRect } from '../nodes/game-image-pin/image-pin.schema'
 
 export type GameChatImagePinDescriptor = {
   variant: 'image-pin'

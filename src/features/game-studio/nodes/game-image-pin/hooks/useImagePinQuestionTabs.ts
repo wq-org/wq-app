@@ -3,7 +3,7 @@ import type { TFunction } from 'i18next'
 
 import type { TabItem } from '@/components/shared'
 
-import type { GameImagePinRect } from './game-image-pin.schema'
+import type { GameImagePinRect } from '../image-pin.schema'
 
 export type UseImagePinQuestionTabsArgs = {
   rectangles: readonly GameImagePinRect[]
@@ -35,7 +35,7 @@ export function useImagePinQuestionTabs({
       rectangles.map((rect, index) => ({
         id: rect.id,
         title: t('imagePinEditor.questionLabel', { index: index + 1 }),
-        closable: rectangles.length > 1,
+        closable: true,
       })),
     [rectangles, t],
   )

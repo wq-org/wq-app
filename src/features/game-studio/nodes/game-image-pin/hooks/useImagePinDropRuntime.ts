@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, SyntheticEvent } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
 
-import type { GameImagePinRect } from './game-image-pin.schema'
-import type { ImagePinProps } from './ImagePin'
+import type { ImagePinProps } from '../components/ImagePin'
+import type { GameImagePinRect } from '../image-pin.schema'
 
 export const IMAGE_PIN_DRAG_ID = 'game-image-pin-preview-pin' as const
 export const IMAGE_PIN_DROP_ID = 'game-image-pin-preview-image' as const

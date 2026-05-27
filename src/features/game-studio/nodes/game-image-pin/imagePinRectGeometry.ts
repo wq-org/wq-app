@@ -1,4 +1,4 @@
-import type { GameImagePinRect } from './game-image-pin.schema'
+import type { GameImagePinRect } from './image-pin.schema'
 
 export const IMAGE_PIN_RECT_MIN_SIZE = 24
 

@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import {
   Calculator,
   MapPin,
-  Sigma,
   MessageCircleQuestion,
   Play,
   Square,
@@ -48,7 +47,7 @@ import {
   resolveGameImagePinPoints,
   resolveGameImagePinRetryDeductionPercent,
   type GameImagePinNodeData,
-} from './game-image-pin.schema'
+} from '../image-pin.schema'
 
 type AdjacentNodeInfo = { id: string; nodeType: string | undefined }
 
@@ -83,7 +82,7 @@ const imagePinSettingsEnterLift =
 const imagePinSettingsEnterSubtle =
   'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
-export type GameImagePinSettingsProps = {
+export type ImagePinSettingsProps = {
   nodeId: string
   onDelete: () => void
   onClose: () => void
@@ -94,7 +93,7 @@ export type GameImagePinSettingsProps = {
   nextNode?: AdjacentNodeInfo
 }
 
-export function GameImagePinSettings({
+export function ImagePinSettings({
   onDelete,
   onClose,
   onNavigateToNode,
@@ -102,7 +101,7 @@ export function GameImagePinSettings({
   nodeData,
   prevNode,
   nextNode,
-}: GameImagePinSettingsProps) {
+}: ImagePinSettingsProps) {
   const { description = '', imagePreview } = nodeData
   const { t } = useTranslation('features.gameStudio')
   const maxPoints = resolveGameImagePinPoints(nodeData.points)
@@ -327,7 +326,7 @@ export function GameImagePinSettings({
         >
           <AccordionTrigger className="py-3">
             <span className="flex items-center gap-2">
-              <Sigma className="size-4" />
+              <Calculator className="size-4" />
               <Text
                 variant="small"
                 as="p"
@@ -409,7 +408,7 @@ export function GameImagePinSettings({
         >
           <AccordionTrigger className="py-3">
             <span className="flex items-center gap-2">
-              <Sigma className="size-4" />
+              <Calculator className="size-4" />
               <Text
                 variant="small"
                 as="p"

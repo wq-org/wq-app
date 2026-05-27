@@ -3,9 +3,9 @@ import Konva from 'konva'
 import { Image as KonvaImage, Layer, Rect, Stage, Text, Transformer } from 'react-konva'
 import useImage from 'use-image'
 
-import type { GameImagePinRect } from './game-image-pin.schema'
+import type { GameImagePinRect } from '../image-pin.schema'
+import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from '../imagePinRectGeometry'
 import { ImagePinRectErrorOverlay } from './ImagePinRectErrorOverlay'
-import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from './imagePinRectGeometry'
 
 const RECT_FILL = 'rgba(186, 213, 228, 0.18)'
 const RECT_STROKE_SELECTED = '#0000FF'
