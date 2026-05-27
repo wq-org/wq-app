@@ -89,11 +89,10 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
   const instantColorFeedback = pin.instantColorFeedback !== false
   const maxScore = resolveGameDragDropMathPoints(pin.points)
 
-  const { tabs, activeTabId } = useMemo(
+  const { tabs } = useMemo(
     () => resolveExerciseTabsState(pin, defaultTabTitle),
     [pin, defaultTabTitle],
   )
-  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]
 
   const [canvasRows, setCanvasRows] = useState<DragDropMathCanvasRow[]>([])
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
@@ -112,9 +111,10 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
   )
 
   const descriptionContent = pin.descriptionContent ?? null
-  const title = activeTab?.title?.trim() || pin.title?.trim() || ''
+  const initialTabTitle = tabs[0]?.title?.trim() || pin.title?.trim() || ''
   const showDescription = hasLexicalEditorContent(descriptionContent)
-  const showTitle = title.length > 0
+  const showTitle = initialTabTitle.length > 0
+  const hasMultipleTabs = tabs.length > 1
 
   const avatarFallback =
     profile?.display_name?.trim().charAt(0).toUpperCase() ??
@@ -175,16 +175,22 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     openSubmitDialog,
     handleConfirmSubmit,
     submissionLocked,
-    earnedScore,
+    runningEarnedScore,
     errorTokenIds,
+    currentTabIndex,
+    allTabsCompleted,
   } = useDragDropMathPreviewGame({
     nodeId,
     submitPrompt: t('dragDropMathGamePreview.submitAnswerPrompt'),
-    maxScore,
-    teacherRows: activeTab?.canvasRows ?? [],
+    totalMaxScore: maxScore,
+    tabs,
     studentRows: canvasRows,
     hasSubmittableCanvas: !isCanvasEmpty,
   })
+
+  useEffect(() => {
+    setCanvasRows([])
+  }, [currentTabIndex])
 
   const prompts = useMemo(
     () =>
@@ -193,7 +199,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
           icon: Check,
           text: t('dragDropMathGamePreview.badgeSubmitAnswer'),
           prompt: t('dragDropMathGamePreview.submitAnswerPrompt'),
-          disabled: isCanvasEmpty || submissionLocked,
+          disabled: isCanvasEmpty || submissionLocked || allTabsCompleted,
         },
         {
           icon: HandHelping,
@@ -207,7 +213,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
           prompt: howToPlayPrompt,
         },
       ] as const satisfies readonly Ai02PromptSuggestion[],
-    [howToPlayPrompt, isCanvasEmpty, submissionLocked, t],
+    [allTabsCompleted, howToPlayPrompt, isCanvasEmpty, submissionLocked, t],
   )
 
   const previewMessages = useMemo(
@@ -225,7 +231,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
   const handlePromptClick = useCallback(
     (message: string) => {
       if (message === t('dragDropMathGamePreview.submitAnswerPrompt')) {
-        if (isCanvasEmpty || submissionLocked) return
+        if (isCanvasEmpty || submissionLocked || allTabsCompleted) return
         openSubmitDialog()
         return
       }
@@ -233,7 +239,15 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         handleHowToPlay()
       }
     },
-    [handleHowToPlay, howToPlayPrompt, isCanvasEmpty, openSubmitDialog, submissionLocked, t],
+    [
+      allTabsCompleted,
+      handleHowToPlay,
+      howToPlayPrompt,
+      isCanvasEmpty,
+      openSubmitDialog,
+      submissionLocked,
+      t,
+    ],
   )
 
   const handleDragStart = useCallback(
@@ -358,10 +372,25 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         {t('dragDropMathGamePreview.previewNotice')}
       </Text>
 
+      {hasMultipleTabs ? (
+        <Text
+          as="p"
+          variant="small"
+          muted
+          aria-live="polite"
+          className="shrink-0"
+        >
+          {t('dragDropMathGamePreview.iterationProgressLabel', {
+            current: currentTabIndex + 1,
+            total: tabs.length,
+          })}
+        </Text>
+      ) : null}
+
       <DragDropMathPreviewChatHistory
         nodeId={nodeId}
         descriptionContent={descriptionContent}
-        title={title}
+        title={initialTabTitle}
         showDescription={showDescription}
         showTitle={showTitle}
         previewMessages={previewMessages}
@@ -395,7 +424,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
           onMathTokenCommit={submissionLocked ? () => {} : commitMathEquation}
           onTokenRemove={submissionLocked ? () => {} : removeToken}
           onSigmaRemove={submissionLocked ? () => {} : removeSigmaRow}
-          score={earnedScore}
+          score={runningEarnedScore}
           maxScore={maxScore}
         />
 

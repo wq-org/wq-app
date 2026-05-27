@@ -311,6 +311,8 @@
     "submitConfirmDialogConfirm": "Jetzt absenden",
     "pointsEarnedMessage": "{{points}} Pkt.",
     "maxScoreAchievedMessage": "Glückwunsch! Du hast die maximale Punktzahl erreicht 🥳",
+    "iterationProgressLabel": "Schritt {{current}} von {{total}}",
+    "iterationFinalSummary": "Gesamt: {{earned}} / {{total}} Pkt.",
     "expandCanvasAriaLabel": "Fläche vergrößern",
     "collapseCanvasAriaLabel": "Fläche verkleinern"
   },
