@@ -10,6 +10,23 @@ export {
   isBinaryOperator,
 } from './unitDefinitions'
 
+// ─── Locked combinations (hard blocks over ALLOWED_BINARY_RULES) ─────────────
+export type {
+  LockedCombinationReason,
+  LockedCombinationResult,
+  LockedCombinationMatch,
+  NotLockedCombinationMatch,
+} from './lockedCombinations'
+export {
+  LOCKED_COMBINATIONS,
+  isBlocked,
+  isBlockedByCategory,
+  syntheticDefinition,
+  isMixedCurrency,
+  isTemperatureUnit,
+  isAddSub,
+} from './lockedCombinations'
+
 // ─── Token layer ──────────────────────────────────────────────────────────────
 export type {
   MathToken,
@@ -108,3 +125,13 @@ export {
   resolveSigmaDropTarget,
 } from './canvasDropTarget.utils'
 export { canvasCollisionDetection } from './canvasCollisionDetection'
+export { pscaScore } from './scoring'
+export {
+  validateStepTree,
+  topoSort,
+  getFinalNode,
+  resolveOperands,
+  computeTolerance,
+  methodScore,
+  errorFreeScore,
+} from './scoring'

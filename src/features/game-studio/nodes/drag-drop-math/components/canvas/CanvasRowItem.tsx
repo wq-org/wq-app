@@ -13,6 +13,7 @@ import type { MathTokenCommitPayload } from '../../hooks/useMathDropNodeEditor'
 
 export type CanvasRowItemProps = {
   row: DragDropMathCanvasRow
+  interactionLocked?: boolean
   instantColorFeedback?: boolean
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (tokenId: string, payload: MathTokenCommitPayload) => void
@@ -24,34 +25,30 @@ export type CanvasRowItemProps = {
  * One reorderable row. Hosts its own Framer Motion drag controls so the grip
  * button inside {@link CanvasRow} can start the reorder gesture programmatically.
  */
-export function CanvasRowItem({
+function CanvasRowItemBody({
   row,
+  interactionLocked = false,
   instantColorFeedback,
   onTokenValueChange,
   onMathTokenCommit,
   onTokenRemove,
   onSigmaRemove,
-}: CanvasRowItemProps) {
-  const dragControls = useDragControls()
-
+  dragControls,
+}: CanvasRowItemProps & { dragControls: ReturnType<typeof useDragControls> }) {
   return (
-    <Reorder.Item
-      as="div"
-      value={row}
-      dragListener={false}
-      dragControls={dragControls}
-      className="list-none"
-    >
+    <>
       {isSigmaCanvasRow(row) ? (
         <SigmaCanvasRow
           row={row}
           dragControls={dragControls}
+          interactionLocked={interactionLocked}
           onRemove={onSigmaRemove}
         />
       ) : isTokenCanvasRow(row) ? (
         <CanvasRow
           row={row}
           dragControls={dragControls}
+          interactionLocked={interactionLocked}
           instantColorFeedback={instantColorFeedback}
           onTokenValueChange={onTokenValueChange}
           onMathTokenCommit={onMathTokenCommit}
@@ -61,6 +58,55 @@ export function CanvasRowItem({
       <BetweenRowZone
         position="after"
         rowId={row.id}
+      />
+    </>
+  )
+}
+
+export function CanvasRowItem({
+  row,
+  interactionLocked = false,
+  instantColorFeedback,
+  onTokenValueChange,
+  onMathTokenCommit,
+  onTokenRemove,
+  onSigmaRemove,
+}: CanvasRowItemProps) {
+  const dragControls = useDragControls()
+
+  if (interactionLocked) {
+    return (
+      <div className="list-none">
+        <CanvasRowItemBody
+          row={row}
+          interactionLocked
+          instantColorFeedback={instantColorFeedback}
+          onTokenValueChange={onTokenValueChange}
+          onMathTokenCommit={onMathTokenCommit}
+          onTokenRemove={onTokenRemove}
+          onSigmaRemove={onSigmaRemove}
+          dragControls={dragControls}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <Reorder.Item
+      as="div"
+      value={row}
+      dragListener={false}
+      dragControls={dragControls}
+      className="list-none"
+    >
+      <CanvasRowItemBody
+        row={row}
+        instantColorFeedback={instantColorFeedback}
+        onTokenValueChange={onTokenValueChange}
+        onMathTokenCommit={onMathTokenCommit}
+        onTokenRemove={onTokenRemove}
+        onSigmaRemove={onSigmaRemove}
+        dragControls={dragControls}
       />
     </Reorder.Item>
   )

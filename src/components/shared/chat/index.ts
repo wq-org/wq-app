@@ -27,10 +27,11 @@ export type {
   ChatHistoryMessageDirection,
   ChatMessageBubbleProps,
   ChatMessageBubbleLexicalProps,
+  ChatMessageBubbleMathProps,
   ChatMessageBubbleTextProps,
   ChatMessageContentMode,
   ChatMessageStatus,
 } from './types'
-export { isLexicalChatMessageBubble } from './types'
+export { isLexicalChatMessageBubble, isMathChatMessageBubble } from './types'
 
 export type { ChatImageCarouselImage, ChatImageCarouselProps } from './ChatImageCarousel'

@@ -177,7 +177,7 @@ export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   // temperature
   {
     symbol: 'celsius',
-    aliases: ['°C'],
+    aliases: ['°C', 'degC'],
     category: 'temperature',
     baseSymbol: 'K',
     displaySymbol: '°C',

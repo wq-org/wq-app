@@ -1,14 +1,22 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { SerializedEditorState } from 'lexical'
 
 import { ReceivingChatMessageBubble, SendingChatMessageBubble } from '@/components/shared/chat'
 import type { ChatBubbleVariant } from '@/components/shared/chat/chat-bubble-variants'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
+import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 
-import type { DragDropMathPreviewPromptMessage } from '../utils/dragDropMathPreviewMessages'
+import type { DragDropMathPreviewGameMessage } from '../hooks/useDragDropMathPreviewGame'
+import {
+  isSigmaCanvasRow,
+  isTokenCanvasRow,
+  type DragDropMathCanvasRow,
+} from '../types/drag-drop-math.schema'
+import { isFixedMathSuffixToken } from '../utils/mathEquationRow'
+import { DropMathStaticNode } from './DropMathStaticNode'
 
 type PreviewChatMessage =
   | {
@@ -29,7 +37,7 @@ export type DragDropMathPreviewChatHistoryProps = {
   title: string
   showDescription: boolean
   showTitle: boolean
-  promptMessages?: readonly DragDropMathPreviewPromptMessage[]
+  previewMessages?: readonly DragDropMathPreviewGameMessage[]
   avatarUrl?: string
   avatarFallback: string
   incomingBubbleVariant?: ChatBubbleVariant
@@ -75,13 +83,14 @@ export function DragDropMathPreviewChatHistory({
   title,
   showDescription,
   showTitle,
-  promptMessages = [],
+  previewMessages = [],
   avatarUrl,
   avatarFallback,
   incomingBubbleVariant = 'default',
   receivingBubbleVariant = 'orange',
   className,
 }: DragDropMathPreviewChatHistoryProps) {
+  const bottomRef = useRef<HTMLDivElement>(null)
   const messages = useMemo(
     () =>
       buildPreviewMessages({
@@ -94,10 +103,71 @@ export function DragDropMathPreviewChatHistory({
     [descriptionContent, nodeId, showDescription, showTitle, title],
   )
 
-  const hasContent = messages.length > 0 || promptMessages.length > 0
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [previewMessages, messages])
+
+  const hasContent = messages.length > 0 || previewMessages.length > 0
 
   if (!hasContent) {
     return null
+  }
+
+  const renderMathRows = (rows: readonly DragDropMathCanvasRow[]) => {
+    return (
+      <div className="flex flex-col gap-1.5">
+        {rows.map((row) => {
+          if (isSigmaCanvasRow(row)) {
+            return (
+              <div
+                key={row.id}
+                className="flex items-center gap-2"
+              >
+                <Text
+                  as="span"
+                  variant="small"
+                  muted
+                >
+                  Σ
+                </Text>
+                <DropMathStaticNode
+                  value={row.resultDisplay ?? '0'}
+                  mathShell="ghost"
+                />
+              </div>
+            )
+          }
+          if (!isTokenCanvasRow(row)) return null
+          return (
+            <div
+              key={row.id}
+              className="flex flex-wrap items-center gap-2"
+            >
+              {row.tokens.map((token) => {
+                if (token.variant === 'math') {
+                  return (
+                    <DropMathStaticNode
+                      key={token.id}
+                      value={token.value}
+                      mathShell={token.mathShell}
+                      compact={isFixedMathSuffixToken(token)}
+                    />
+                  )
+                }
+                return (
+                  <span
+                    key={token.id}
+                    className="rounded-lg border border-border bg-muted/30 px-2 py-1 text-xs"
+                  >
+                    {token.value}
+                  </span>
+                )
+              })}
+            </div>
+          )
+        })}
+      </div>
+    )
   }
 
   return (
@@ -142,7 +212,7 @@ export function DragDropMathPreviewChatHistory({
             </div>
           ))}
 
-          {promptMessages.map((message) => (
+          {previewMessages.map((message) => (
             <div
               key={message.id}
               className={cn(
@@ -152,25 +222,37 @@ export function DragDropMathPreviewChatHistory({
             >
               {message.direction === 'sending' ? (
                 <SendingChatMessageBubble
-                  text={message.text}
+                  contentMode={message.kind === 'math' ? 'math' : 'text'}
+                  text={message.text ?? ''}
+                  mathContent={
+                    message.kind === 'math' ? renderMathRows(message.rows ?? []) : undefined
+                  }
                   time=""
                   avatarUrl={avatarUrl}
                   avatarFallback={avatarFallback}
                   variant={receivingBubbleVariant}
+                  status={message.kind === 'loading' ? 'loading' : 'ready'}
                   messageId={message.id}
                 />
               ) : (
                 <ReceivingChatMessageBubble
-                  text={message.text}
+                  contentMode={message.kind === 'math' ? 'math' : 'text'}
+                  text={message.text ?? ''}
+                  mathContent={
+                    message.kind === 'math' ? renderMathRows(message.rows ?? []) : undefined
+                  }
                   time=""
                   avatarUrl={avatarUrl}
                   avatarFallback={avatarFallback}
                   variant={incomingBubbleVariant}
+                  status={message.kind === 'loading' ? 'loading' : 'ready'}
                   messageId={message.id}
+                  textBold={message.bold}
                 />
               )}
             </div>
           ))}
+          <div ref={bottomRef} />
         </div>
       </BlurredScrollArea>
     </div>

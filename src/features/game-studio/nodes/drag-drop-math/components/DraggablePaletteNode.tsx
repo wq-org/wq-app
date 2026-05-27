@@ -13,6 +13,7 @@ export type DraggablePaletteNodeProps = {
   dragData: MathNodePaletteDragData
   children: ReactNode
   className?: string
+  disabled?: boolean
 }
 
 export function DraggablePaletteNode({
@@ -20,9 +21,11 @@ export function DraggablePaletteNode({
   dragData,
   children,
   className,
+  disabled = false,
 }: DraggablePaletteNodeProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: dragId,
+    disabled,
     data: { [MATH_NODE_DRAG_DATA_KEY]: dragData },
   })
 
@@ -34,7 +37,8 @@ export function DraggablePaletteNode({
       ref={setNodeRef}
       data-dragging={isDragging ? 'true' : 'false'}
       className={cn(
-        'touch-none cursor-grab rounded-full transition-[outline-color,opacity] duration-150 active:cursor-grabbing',
+        'touch-none rounded-full transition-[outline-color,opacity] duration-150',
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-grab active:cursor-grabbing',
         // Keep the source chip in place (just dimmed slightly) and outline it in
         // the dragged variant's accent color so authors see what's being moved.
         isDragging && [
@@ -44,8 +48,7 @@ export function DraggablePaletteNode({
         ],
         className,
       )}
-      {...listeners}
-      {...attributes}
+      {...(disabled ? {} : { ...listeners, ...attributes })}
     >
       {children}
     </div>

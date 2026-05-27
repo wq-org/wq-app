@@ -75,7 +75,7 @@ function parseNumber(raw: string): number | null {
   return Number.isFinite(value) ? value : null
 }
 
-const NUMBER_PATTERN = /^\d+([.,]\d+)?$/
+const NUMBER_PATTERN = /^-?\d+([.,]\d+)?$/
 
 // ─── Core classification ──────────────────────────────────────────────────────
 

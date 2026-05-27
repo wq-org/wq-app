@@ -28,6 +28,7 @@ import {
 export type SigmaCanvasRowProps = {
   row: SigmaCanvasRow
   dragControls: DragControls
+  interactionLocked?: boolean
   /** Removes the entire sigma row from the canvas (badge, chips, and sum). */
   onRemove: (rowId: string) => void
 }
@@ -41,13 +42,19 @@ function resolveSigmaDropSourceKind(activeData: unknown): SigmaDropSourceKind | 
   return null
 }
 
-export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowProps) {
+export function SigmaCanvasRow({
+  row,
+  dragControls,
+  interactionLocked = false,
+  onRemove,
+}: SigmaCanvasRowProps) {
   const { t } = useTranslation('features.gameStudio')
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
   const dropId = getCanvasSigmaDropId(row.id)
 
   const { setNodeRef: setDropRef, isOver } = useDroppable({
     id: dropId,
+    disabled: interactionLocked,
     data: {
       [CANVAS_SIGMA_DROP_DATA_KEY]: { rowId: row.id },
     },
@@ -63,7 +70,7 @@ export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowPr
     const parsed = parseResultChipValue(resultDuplicate.value)
     if (!parsed) return { allowed: false as const, message: 'Ungültiger Ergebniswert.' }
     return isSigmaDropAllowed(row, parsed)
-  }, [active?.data.current, isOver, row])
+  }, [active, isOver, row])
 
   const wrongSourceMessage = t('dragDropMathEditor.sigmaWrongSourceHint', {
     defaultValue: 'Nur Ergebnis-Chips (= Wert) erlaubt — keine Mathe- oder Textbausteine.',
@@ -96,26 +103,33 @@ export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowPr
         )}
       >
         <div className="flex w-full items-start gap-1.5">
-          <button
-            type="button"
-            aria-label={t('dragDropMathEditor.reorderRowAriaLabel')}
-            className={cn(
-              'mt-0.5 flex shrink-0 items-center justify-center rounded text-muted-foreground/60',
-              'opacity-0 transition-opacity duration-150',
-              'group-hover/sigma-row:opacity-100 focus-visible:opacity-100',
-              'cursor-grab touch-none hover:text-foreground active:cursor-grabbing',
-              'h-7 w-5',
-            )}
-            onPointerDown={(event) => {
-              event.stopPropagation()
-              dragControls.start(event)
-            }}
-          >
-            <GripVertical
-              className="h-4 w-4"
+          {!interactionLocked ? (
+            <button
+              type="button"
+              aria-label={t('dragDropMathEditor.reorderRowAriaLabel')}
+              className={cn(
+                'mt-0.5 flex shrink-0 items-center justify-center rounded text-muted-foreground/60',
+                'opacity-0 transition-opacity duration-150',
+                'group-hover/sigma-row:opacity-100 focus-visible:opacity-100',
+                'cursor-grab touch-none hover:text-foreground active:cursor-grabbing',
+                'h-7 w-5',
+              )}
+              onPointerDown={(event) => {
+                event.stopPropagation()
+                dragControls.start(event)
+              }}
+            >
+              <GripVertical
+                className="h-4 w-4"
+                aria-hidden
+              />
+            </button>
+          ) : (
+            <span
+              className="mt-0.5 h-7 w-5 shrink-0"
               aria-hidden
             />
-          </button>
+          )}
 
           <SigmaNode
             label={t('dragDropMathEditor.sigmaBlockLabel')}
@@ -158,22 +172,24 @@ export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowPr
             ) : null}
           </div>
 
-          <button
-            type="button"
-            aria-label={t('dragDropMathEditor.sigmaResetAriaLabel')}
-            className={cn(
-              'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground',
-              'opacity-0 transition-opacity duration-150',
-              'group-hover/sigma-row:opacity-100 focus-visible:opacity-100',
-              hasItems && 'opacity-100',
-            )}
-            onClick={() => setResetDialogOpen(true)}
-          >
-            <X
-              className="h-4 w-4"
-              aria-hidden
-            />
-          </button>
+          {!interactionLocked ? (
+            <button
+              type="button"
+              aria-label={t('dragDropMathEditor.sigmaResetAriaLabel')}
+              className={cn(
+                'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground',
+                'opacity-0 transition-opacity duration-150',
+                'group-hover/sigma-row:opacity-100 focus-visible:opacity-100',
+                hasItems && 'opacity-100',
+              )}
+              onClick={() => setResetDialogOpen(true)}
+            >
+              <X
+                className="h-4 w-4"
+                aria-hidden
+              />
+            </button>
+          ) : null}
         </div>
 
         <SigmaResetConfirmDialog
@@ -188,6 +204,7 @@ export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowPr
               rowId={row.id}
               resultTokenId={row.resultTokenId}
               value={row.resultDisplay}
+              interactionLocked={interactionLocked}
             />
           </div>
         ) : null}
@@ -199,10 +216,12 @@ export function SigmaCanvasRow({ row, dragControls, onRemove }: SigmaCanvasRowPr
 function SigmaResultDraggable({
   resultTokenId,
   value,
+  interactionLocked = false,
 }: {
   rowId: string
   resultTokenId: string
   value: string
+  interactionLocked?: boolean
 }) {
   const { t } = useTranslation('features.gameStudio')
   const ariaLabel = t('dragDropMathEditor.duplicateResultAriaLabel', {
@@ -212,6 +231,7 @@ function SigmaResultDraggable({
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `sigma-result-${resultTokenId}`,
+    disabled: interactionLocked,
     data: {
       [CANVAS_RESULT_DUPLICATE_DATA_KEY]: {
         sourceTokenId: resultTokenId,
@@ -219,6 +239,19 @@ function SigmaResultDraggable({
       },
     },
   })
+
+  if (interactionLocked) {
+    return (
+      <div className="flex items-center">
+        <span className="text-sm font-medium text-muted-foreground">= </span>
+        <DropMathStaticNode
+          value={value}
+          mathShell="ghost"
+          compact
+        />
+      </div>
+    )
+  }
 
   return (
     <div

@@ -25,6 +25,8 @@ export type MathExpressionEvaluateFailureReason =
 export type MathExpressionEvaluateFailure = {
   ok: false
   reason: MathExpressionEvaluateFailureReason
+  /** Optional specific message (e.g. locked-combination block). Overrides the toast i18n fallback. */
+  message?: string
 }
 
 export type MathExpressionEvaluateResult =

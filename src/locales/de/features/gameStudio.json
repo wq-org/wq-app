@@ -305,6 +305,12 @@
     "howToPlayPrompt": "Erkläre, wie man dieses Spiel spielt. Sag mir, wie ich meine Antwort mit den Mathebausteinen aufbaue und abgebe.",
     "howToPlayScoringResponse": "Punkte (PSCA):\n1. Deine Antwort wird aus vier gewichteten Teilen bewertet: Endergebnis (50 %), Zwischenschritte (30 %), Methode (15 %) und Fehlerfreiheit (5 %).\n2. Die Schrittbewertung nutzt standardmäßig den Carry-Modus: spätere Schritte werden mit deinen bisherigen Ergebnissen geprüft, Folgefehler werden nicht immer doppelt bestraft.\n3. Punkte = Score × {{maxPoints}} (bis zu {{maxPoints}} Punkte in diesem Spiel).",
     "howToPlayResponse": "So funktioniert es:\n1. Lies die Aufgabenbeschreibung und den Aufgabentitel.\n2. Ziehe Mathe Block, Summe und Textbaustein aus der Palette auf die Fläche.\n3. Baue deine Rechnung Zeile für Zeile — drücke Enter auf einem Mathebaustein zum Auswerten.\n4. Ziehe Ergebnis-Chips in eine Summen-Zeile, um Zwischensummen zu addieren.\n5. Nutze die Vergrößern-Funktion, wenn du mehr Platz brauchst.\n6. Klicke auf Antwort abgeben, wenn deine Rechnung fertig ist.\n\nTipp: Blaues Feedback bedeutet, die Zeile wurde akzeptiert; Rot bedeutet: Operatoren, Zahlen oder Einheiten prüfen.",
+    "submitConfirmDialogTitle": "Antwort abgeben?",
+    "submitConfirmDialogBody": "Wenn du jetzt absendest, kann die Antwort nicht mehr geändert werden. Sie wird mit PSCA ausgewertet.",
+    "submitConfirmDialogCancel": "Abbrechen",
+    "submitConfirmDialogConfirm": "Jetzt absenden",
+    "pointsEarnedMessage": "{{points}} + pts",
+    "maxScoreAchievedMessage": "Glückwunsch! Du hast die maximale Punktzahl erreicht 🥳",
     "expandCanvasAriaLabel": "Fläche vergrößern",
     "collapseCanvasAriaLabel": "Fläche verkleinern"
   },

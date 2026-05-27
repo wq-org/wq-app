@@ -10,6 +10,8 @@ import { CanvasRowList } from './CanvasRowList'
 
 export type DragDropMathCanvasProps = {
   rows: readonly DragDropMathCanvasRow[]
+  /** When true, canvas rows, chips, palette, and sigma drops are frozen (preview submit lock). */
+  interactionLocked?: boolean
   instantColorFeedback?: boolean
   onRowsReorder: (nextRows: DragDropMathCanvasRow[]) => void
   onTokenValueChange: (tokenId: string, value: string) => void
@@ -22,6 +24,7 @@ export type DragDropMathCanvasProps = {
 
 export function DragDropMathCanvas({
   rows,
+  interactionLocked = false,
   instantColorFeedback,
   onRowsReorder,
   onTokenValueChange,
@@ -66,6 +69,7 @@ export function DragDropMathCanvas({
       ) : (
         <CanvasRowList
           rows={rows}
+          interactionLocked={interactionLocked}
           instantColorFeedback={instantColorFeedback}
           onRowsReorder={onRowsReorder}
           onTokenValueChange={onTokenValueChange}

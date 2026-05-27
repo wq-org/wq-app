@@ -305,6 +305,12 @@
     "howToPlayPrompt": "Explain how to play this game. Tell me how to build and submit my answer using the math blocks.",
     "howToPlayScoringResponse": "Scoring (PSCA):\n1. Your answer is scored from four weighted parts: final result (50%), intermediate steps (30%), method (15%), and error-free checks (5%).\n2. Step scoring uses carry mode by default: later steps are judged from your previous results, so follow-up errors are not always double-penalized.\n3. Points = Score × {{maxPoints}} (up to {{maxPoints}} points for this game).",
     "howToPlayResponse": "How to play:\n1. Read the task description and the exercise title.\n2. Drag Math Block, Sum, and Text Block chips from the palette onto the canvas.\n3. Build your calculation row by row — press Enter on a math chip to evaluate it.\n4. Drag result chips into a Sum row to add intermediate totals.\n5. Use the expand control if you need more canvas space.\n6. Click Submit answer when your calculation is ready.\n\nTip: blue feedback means the row accepted your input; red means check operators, numbers, or units.",
+    "submitConfirmDialogTitle": "Submit answer?",
+    "submitConfirmDialogBody": "If you submit now, your answer can no longer be changed. It will be analyzed using PSCA scoring.",
+    "submitConfirmDialogCancel": "Cancel",
+    "submitConfirmDialogConfirm": "Submit now",
+    "pointsEarnedMessage": "{{points}} + pts",
+    "maxScoreAchievedMessage": "Congratulations! You achieved the maximal score 🥳",
     "expandCanvasAriaLabel": "Expand canvas",
     "collapseCanvasAriaLabel": "Collapse canvas"
   },

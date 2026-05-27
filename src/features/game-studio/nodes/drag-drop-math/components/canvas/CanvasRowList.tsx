@@ -7,6 +7,7 @@ import { CanvasRowItem } from './CanvasRowItem'
 
 export type CanvasRowListProps = {
   rows: readonly DragDropMathCanvasRow[]
+  interactionLocked?: boolean
   instantColorFeedback?: boolean
   onRowsReorder: (nextRows: DragDropMathCanvasRow[]) => void
   onTokenValueChange: (tokenId: string, value: string) => void
@@ -20,8 +21,36 @@ export type CanvasRowListProps = {
  * {@link Reorder.Group}; token drops still flow through dnd-kit on the row body
  * and the {@link BetweenRowZone} drop targets.
  */
+function CanvasRowListContent({
+  rows,
+  interactionLocked = false,
+  instantColorFeedback,
+  onTokenValueChange,
+  onMathTokenCommit,
+  onTokenRemove,
+  onSigmaRemove,
+}: CanvasRowListProps) {
+  return (
+    <>
+      {rows.map((row) => (
+        <CanvasRowItem
+          key={row.id}
+          row={row}
+          interactionLocked={interactionLocked}
+          instantColorFeedback={instantColorFeedback}
+          onTokenValueChange={onTokenValueChange}
+          onMathTokenCommit={onMathTokenCommit}
+          onTokenRemove={onTokenRemove}
+          onSigmaRemove={onSigmaRemove}
+        />
+      ))}
+    </>
+  )
+}
+
 export function CanvasRowList({
   rows,
+  interactionLocked = false,
   instantColorFeedback,
   onRowsReorder,
   onTokenValueChange,
@@ -38,25 +67,38 @@ export function CanvasRowList({
         />
       ) : null}
 
-      <Reorder.Group
-        as="div"
-        axis="y"
-        values={[...rows]}
-        onReorder={onRowsReorder}
-        className="flex w-full flex-col"
-      >
-        {rows.map((row) => (
-          <CanvasRowItem
-            key={row.id}
-            row={row}
+      {interactionLocked ? (
+        <div className="flex w-full flex-col">
+          <CanvasRowListContent
+            rows={rows}
+            interactionLocked
             instantColorFeedback={instantColorFeedback}
+            onRowsReorder={onRowsReorder}
             onTokenValueChange={onTokenValueChange}
             onMathTokenCommit={onMathTokenCommit}
             onTokenRemove={onTokenRemove}
             onSigmaRemove={onSigmaRemove}
           />
-        ))}
-      </Reorder.Group>
+        </div>
+      ) : (
+        <Reorder.Group
+          as="div"
+          axis="y"
+          values={[...rows]}
+          onReorder={onRowsReorder}
+          className="flex w-full flex-col"
+        >
+          <CanvasRowListContent
+            rows={rows}
+            instantColorFeedback={instantColorFeedback}
+            onRowsReorder={onRowsReorder}
+            onTokenValueChange={onTokenValueChange}
+            onMathTokenCommit={onMathTokenCommit}
+            onTokenRemove={onTokenRemove}
+            onSigmaRemove={onSigmaRemove}
+          />
+        </Reorder.Group>
+      )}
     </div>
   )
 }

@@ -11,7 +11,8 @@
  * Pure functions only. No React, no side-effects.
  */
 
-import { applyBinaryRule, type UnitCategory } from './unitDefinitions'
+import { applyBinaryRule, type UnitCategory, type UnitDefinition } from './unitDefinitions'
+import { isBlocked, syntheticDefinition, type LockedCombinationReason } from './lockedCombinations'
 import {
   isNumberToken,
   isOperandToken,
@@ -37,6 +38,14 @@ export type ValidationFailure = {
   readonly reason: ValidationFailureReason
   /** Zero-based index of the first offending token, when applicable. */
   readonly tokenIndex?: number
+  /**
+   * Optional human-readable message for the failure. Populated when a locked
+   * combination (e.g. `EUR + USD`) fires so the UI can show a specific German
+   * explanation instead of the generic incompatible-units toast.
+   */
+  readonly message?: string
+  /** Locked-combination reason when `reason === 'incompatible_units'` was triggered by a hard block. */
+  readonly lockedReason?: LockedCombinationReason
 }
 
 export type ValidationResult = ValidationSuccess | ValidationFailure
@@ -114,13 +123,39 @@ function checkStructure(tokens: readonly MathToken[]): ValidationFailure | null 
 
 // ─── Unit inference ───────────────────────────────────────────────────────────
 
-/**
- * Infer the unit category of a single operand token.
- * Numbers without an explicit unit are 'dimensionless'.
- */
+type FoldOperand = {
+  readonly category: UnitCategory
+  /** Real unit definition when the operand was a unit badge; null for dimensionless numbers. */
+  readonly definition: UnitDefinition | null
+  readonly tokenIndex: number
+}
+
+/** Infer the unit category of a single operand token. */
 function operandCategory(token: MathToken): UnitCategory {
   if (isUnitToken(token)) return token.definition.category
   return 'dimensionless'
+}
+
+/**
+ * Pick the definition to carry forward after applying a binary rule. We keep
+ * the left operand's definition when the result stays in the left category
+ * (e.g. `4 kg × 2 → 8 kg`), the right operand's definition when the result
+ * matches the right side (e.g. `2 × 4 kg → 8 kg`), and drop the definition
+ * when the result is a derived category (e.g. `length × length → area`).
+ */
+function carryDefinition(
+  left: FoldOperand,
+  right: FoldOperand,
+  resultCategory: UnitCategory,
+): UnitDefinition | null {
+  if (left.definition && left.definition.category === resultCategory) return left.definition
+  if (right.definition && right.definition.category === resultCategory) return right.definition
+  return null
+}
+
+/** Synthetic stand-in so locked-combination rules can match dimensionless operands. */
+function resolveDefinitionForBlockCheck(operand: FoldOperand): UnitDefinition {
+  return operand.definition ?? syntheticDefinition(operand.category)
 }
 
 /**
@@ -137,7 +172,7 @@ function inferFlat(
 ): { category: UnitCategory; failIndex?: number } | { error: ValidationFailure } {
   // Collect operand + operator pairs in order.
   // Tokens are guaranteed structurally valid at this point.
-  const operands: Array<{ category: UnitCategory; tokenIndex: number }> = []
+  const operands: FoldOperand[] = []
   const operators: Array<{ op: string; tokenIndex: number }> = []
 
   for (let i = 0; i < tokens.length; i += 1) {
@@ -151,13 +186,18 @@ function inferFlat(
     if (isNumberToken(t) && next !== undefined && isUnitToken(next)) {
       operands.push({
         category: next.definition.category,
+        definition: next.definition,
         tokenIndex: i,
       })
       i += 1
       continue
     }
     if (isOperandToken(t)) {
-      operands.push({ category: operandCategory(t), tokenIndex: i })
+      operands.push({
+        category: operandCategory(t),
+        definition: isUnitToken(t) ? t.definition : null,
+        tokenIndex: i,
+      })
     }
   }
 
@@ -167,14 +207,30 @@ function inferFlat(
 
   // Fold left: apply each operator in sequence (ignores precedence — see note).
   // Full precedence parsing is the next planned step.
-  let running = operands[0].category
+  let running: FoldOperand = operands[0]
   for (let i = 0; i < operators.length; i += 1) {
     const right = operands[i + 1]
     if (!right) break
 
     const op = operators[i].op as '+' | '-' | '*' | '/'
-    const result = applyBinaryRule(running, op, right.category)
 
+    // Hard block — supersedes ALLOWED_BINARY_RULES (e.g. EUR + USD, °C × 2).
+    const leftDef = resolveDefinitionForBlockCheck(running)
+    const rightDef = resolveDefinitionForBlockCheck(right)
+    const locked = isBlocked(leftDef, op, rightDef)
+    if (locked.blocked) {
+      return {
+        error: {
+          ok: false,
+          reason: 'incompatible_units',
+          tokenIndex: operators[i].tokenIndex,
+          message: locked.message,
+          lockedReason: locked.reason,
+        },
+      }
+    }
+
+    const result = applyBinaryRule(running.category, op, right.category)
     if (result === null) {
       return {
         error: {
@@ -184,10 +240,15 @@ function inferFlat(
         },
       }
     }
-    running = result
+
+    running = {
+      category: result,
+      definition: carryDefinition(running, right, result),
+      tokenIndex: running.tokenIndex,
+    }
   }
 
-  return { category: running }
+  return { category: running.category }
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

@@ -89,7 +89,10 @@ export function DragDropMathCanvasPanel({
           viewportClassName="pb-1"
         >
           <div className="w-max">
-            <MathNodePalette showLabel={showPaletteLabel} />
+            <MathNodePalette
+              showLabel={showPaletteLabel}
+              disabled={canvasProps.interactionLocked}
+            />
           </div>
         </BlurredScrollArea>
       </div>

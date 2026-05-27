@@ -43,3 +43,17 @@ export type {
   CanvasResultDuplicatePayload,
   CanvasSigmaDropPayload,
 } from './canvas.types'
+export type {
+  StepOperator,
+  ScoringMode,
+  StepRef,
+  StepOperand,
+  StepNode,
+  StudentNotation,
+  StudentStep,
+  ScoringWeights,
+  ToleranceWindow,
+  ScoringConfig,
+  StepBreakdown,
+  PscaResult,
+} from './scoring.types'

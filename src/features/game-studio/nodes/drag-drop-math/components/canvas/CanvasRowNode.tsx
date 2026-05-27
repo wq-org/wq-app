@@ -124,6 +124,7 @@ function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: getCanvasTokenSortableId(token.id),
+    disabled: token.disabled,
     data: {
       [CANVAS_RESULT_DUPLICATE_DATA_KEY]: {
         sourceTokenId: token.id,
@@ -131,6 +132,16 @@ function CanvasResultDraggable({ token }: CanvasRowNodeProps) {
       },
     },
   })
+
+  if (token.disabled) {
+    return (
+      <DropMathStaticNode
+        value={token.value}
+        mathShell="ghost"
+        compact
+      />
+    )
+  }
 
   const wrapperClassName = cn(
     'max-w-full shrink-0 cursor-grab touch-none active:cursor-grabbing',

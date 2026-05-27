@@ -55,6 +55,20 @@ export type {
   DragDropMathCanvasToken,
   GameDragDropMathNodeData,
 } from './types'
+export type {
+  StepOperator,
+  ScoringMode,
+  StepRef,
+  StepOperand,
+  StepNode,
+  StudentNotation,
+  StudentStep,
+  ScoringWeights,
+  ToleranceWindow,
+  ScoringConfig,
+  StepBreakdown,
+  PscaResult,
+} from './types'
 export {
   GAME_DRAG_DROP_MATH_TYPE,
   gameDragDropMathDefaultConfig,
@@ -62,3 +76,11 @@ export {
   GAME_DRAG_DROP_MATH_DEFAULT_POINTS,
   resolveGameDragDropMathPoints,
 } from './types'
+export {
+  DEFAULT_SCORING_WEIGHTS,
+  R_ONLY_SCORING_WEIGHTS,
+  DEFAULT_TOLERANCE,
+  DEFAULT_SCORING_CONFIG,
+  R_ONLY_SCORING_CONFIG,
+} from './constants/scoring.defaults'
+export { pscaScore } from './utils/scoring'

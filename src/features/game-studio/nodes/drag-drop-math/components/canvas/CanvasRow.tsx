@@ -52,6 +52,7 @@ export type CanvasRowProps = {
   row: TokenCanvasRow
   /** Framer Motion drag controls owned by the wrapping Reorder.Item. */
   dragControls: DragControls
+  interactionLocked?: boolean
   instantColorFeedback?: boolean
   onTokenValueChange: (tokenId: string, value: string) => void
   onMathTokenCommit: (equationTokenId: string, payload: MathTokenCommitPayload) => void
@@ -65,6 +66,7 @@ export type CanvasRowProps = {
 export function CanvasRow({
   row,
   dragControls,
+  interactionLocked = false,
   instantColorFeedback,
   onTokenValueChange,
   onMathTokenCommit,
@@ -148,26 +150,33 @@ export function CanvasRow({
         showRejectFeedback && 'border-red-500/70 bg-red-500/10',
       )}
     >
-      <button
-        type="button"
-        aria-label={t('dragDropMathEditor.reorderRowAriaLabel')}
-        className={cn(
-          'flex shrink-0 items-center justify-center rounded text-muted-foreground/60',
-          'opacity-0 transition-opacity duration-150',
-          'group-hover/canvas-row:opacity-100 focus-visible:opacity-100',
-          'cursor-grab touch-none hover:text-foreground active:cursor-grabbing',
-          isCompactLayout ? 'h-6 w-4' : 'mt-0.5 h-7 w-5',
-        )}
-        onPointerDown={(event) => {
-          event.stopPropagation()
-          dragControls.start(event)
-        }}
-      >
-        <GripVertical
-          className="h-4 w-4"
+      {!interactionLocked ? (
+        <button
+          type="button"
+          aria-label={t('dragDropMathEditor.reorderRowAriaLabel')}
+          className={cn(
+            'flex shrink-0 items-center justify-center rounded text-muted-foreground/60',
+            'opacity-0 transition-opacity duration-150',
+            'group-hover/canvas-row:opacity-100 focus-visible:opacity-100',
+            'cursor-grab touch-none hover:text-foreground active:cursor-grabbing',
+            isCompactLayout ? 'h-6 w-4' : 'mt-0.5 h-7 w-5',
+          )}
+          onPointerDown={(event) => {
+            event.stopPropagation()
+            dragControls.start(event)
+          }}
+        >
+          <GripVertical
+            className="h-4 w-4"
+            aria-hidden
+          />
+        </button>
+      ) : (
+        <span
+          className={cn('shrink-0', isCompactLayout ? 'h-6 w-4' : 'mt-0.5 h-7 w-5')}
           aria-hidden
         />
-      </button>
+      )}
       <SortableContext
         items={tokenSortableIds}
         strategy={horizontalListSortingStrategy}

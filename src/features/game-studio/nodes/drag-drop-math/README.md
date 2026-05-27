@@ -32,6 +32,94 @@ DropMathNode (keydown Enter)
                                             rendered by CanvasRowNode / DropMathStaticNode
 ```
 
+## Architecture diagrams
+
+### Runtime validation and scoring sequence
+
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant UI as Math Node UI
+    participant P as Parser
+    participant R as unitRegistry.ts
+    participant B as lockedCombinations.ts
+    participant S as strictSchoolRuleMatrix.ts
+    participant D as unitDefinitions.ts / Rule Engine
+    participant M as math.js Adapter
+    participant X as Result Resolver
+    participant C as Scoring Engine
+
+    U->>UI: Drag badges into row\n(e.g. 25.5 kW * 11 h)
+    UI->>P: Build token sequence / expression
+    P->>R: lookupUnit(...) for all unit tokens
+    R-->>P: Resolved UnitDefinitions
+
+    P->>B: isBlocked(left, operator, right)?
+    alt Hard-blocked
+        B-->>UI: blocked + German error message
+        UI-->>U: Show validation error
+    else Not blocked
+        B-->>P: continue
+        P->>S: is operation allowed in current mode?
+        alt Not allowed in strict school mode
+            S-->>UI: rejected by school policy
+            UI-->>U: Show mode-based error
+        else Allowed
+            S-->>P: continue
+            P->>D: applyBinaryRule(leftCategory, op, rightCategory)
+            D-->>P: result category
+            P->>M: evaluate with math.js
+            M-->>P: raw numeric/unit result
+            P->>X: resolve display unit + carry-forward token
+            X-->>UI: result badge + orange preview
+            UI-->>U: Show result and allow drag to next line
+            UI->>C: send attempt snapshot
+            C-->>UI: partial-credit evaluation
+            UI-->>U: score / feedback
+        end
+    end
+```
+
+### System component flow
+
+```mermaid
+flowchart TB
+    A[Lexical Exercise Editor] --> B[Math Node UI]
+    B --> C[Token Builder / Drag & Drop Rows]
+    C --> D[Expression Parser]
+
+    D --> E[unitRegistry.ts\nUnits + aliases + lookup]
+    D --> F[unitDefinitions.ts\nCategories + BinaryOperator + ALLOWED_BINARY_RULES]
+    D --> G[allowedStandardOperations.ts\n14 didactic operation patterns]
+
+    E --> H[Resolved UnitDefinitions]
+    F --> I[Rule Engine]
+    G --> I
+
+    I --> J[lockedCombinations.ts\nhard block layer]
+    I --> K[strictSchoolRuleMatrix.ts\nmode-based allowed subset]
+
+    J -->|blocked| L[Validation Error\nGerman user message]
+    K -->|not allowed in school mode| L
+
+    K -->|allowed| M[math.js Adapter\ncreateUnit + evaluate]
+    H --> M
+
+    M --> N[Result Resolver\nresult category + display unit]
+    N --> O[Carry-forward Result Token\nnext row draggable]
+    N --> P[Orange Preview / Final Result UI]
+
+    B --> Q[Teacher Solution / Expected Steps]
+    N --> R[Attempt Snapshot]
+    Q --> S[Scoring Engine]
+    R --> S
+    S --> T[Partial Credit Result\nR / S / M / E or simplified model]
+
+    L --> U[UI Feedback]
+    P --> U
+    T --> U
+```
+
 **Unit-aware pipeline** (TokenLayer + ValidationLayer, wired before commit):
 
 ```

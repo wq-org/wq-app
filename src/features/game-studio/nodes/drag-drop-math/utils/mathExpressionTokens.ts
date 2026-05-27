@@ -19,7 +19,7 @@ const CURRENCY_SYMBOLS = new Set(['€', '$', '£', '¥'])
 const MULTI_CHAR_OPS = ['×', '÷', '·', '−'] as const
 const SINGLE_CHAR_TOKENS = new Set(['+', '-', '*', '/', '(', ')', '.', ',', '€', '$', '£', '¥'])
 
-const NUMBER_TOKEN_PATTERN = /^\d+(?:[.,]\d+)?$/
+const NUMBER_TOKEN_PATTERN = /^-?\d+(?:[.,]\d+)?$/
 
 const DISPLAY_OPERATOR_MAP: Record<string, string> = {
   '*': '×',
@@ -80,7 +80,7 @@ function peelGluedUnitsAfterNumber(
  * Splits tokens like `11h` or `280.5kWh` when they were not split during the main scan.
  */
 function splitGluedNumberUnitToken(token: string): string[] | null {
-  const match = token.match(/^(\d+(?:[.,]\d+)?)(.+)$/)
+  const match = token.match(/^(-?\d+(?:[.,]\d+)?)(.+)$/)
   if (!match) return null
 
   const [, numberPart, suffix] = match
@@ -157,6 +157,48 @@ export function toMathExpr(tokens: readonly string[]): string {
   return mapped.join(' ')
 }
 
+function isUnaryMinusAt(normalized: string, index: number): boolean {
+  if (normalized[index] !== '-') return false
+  if (index === 0) return true
+
+  let prev = index - 1
+  while (prev >= 0 && /\s/.test(normalized[prev]!)) prev -= 1
+  if (prev < 0) return true
+
+  const prevChar = normalized[prev]!
+  return (
+    prevChar === '(' || prevChar === '+' || prevChar === '-' || prevChar === '*' || prevChar === '/'
+  )
+}
+
+function readNumberToken(normalized: string, index: number): { token: string; nextIndex: number } {
+  let start = index
+  if (normalized[index] === '-' && isUnaryMinusAt(normalized, index)) {
+    start = index
+    index += 1
+  }
+
+  let end = index + 1
+  while (end < normalized.length && /\d/.test(normalized[end]!)) {
+    end += 1
+  }
+
+  const separator = normalized[end]
+  if (
+    (separator === ',' || separator === '.') &&
+    end + 1 < normalized.length &&
+    /\d/.test(normalized[end + 1]!)
+  ) {
+    end += 1
+    while (end < normalized.length && /\d/.test(normalized[end]!)) {
+      end += 1
+    }
+  }
+
+  const token = normalized.slice(start, end)
+  return { token, nextIndex: end }
+}
+
 /**
  * Tokenize typed equation input (registry-aware).
  * Supports glued forms like `8.5€`, `11h`, `25.5kW`, `EUR/kg`, `40*8.5€`.
@@ -167,34 +209,26 @@ export function tokenizeEquationInput(raw: string): string[] {
   let index = 0
 
   while (index < normalized.length) {
-    const char = normalized[index]
+    const char = normalized[index]!
     if (/\s/.test(char)) {
       index += 1
       continue
     }
 
-    if (/\d/.test(char)) {
-      let end = index + 1
-      while (end < normalized.length && /\d/.test(normalized[end])) {
-        end += 1
-      }
-      const separator = normalized[end]
-      if (
-        (separator === ',' || separator === '.') &&
-        end + 1 < normalized.length &&
-        /\d/.test(normalized[end + 1])
-      ) {
-        end += 1
-        while (end < normalized.length && /\d/.test(normalized[end])) {
-          end += 1
-        }
-      }
-      tokens.push(normalized.slice(index, end))
-      index = end
-
-      const { units: gluedUnits, nextIndex } = peelGluedUnitsAfterNumber(normalized, index)
-      for (const unit of gluedUnits) tokens.push(unit)
+    if (
+      /\d/.test(char) ||
+      (char === '-' && isUnaryMinusAt(normalized, index) && /\d/.test(normalized[index + 1]!))
+    ) {
+      const { token, nextIndex } = readNumberToken(normalized, index)
+      tokens.push(token)
       index = nextIndex
+
+      const { units: gluedUnits, nextIndex: unitIndex } = peelGluedUnitsAfterNumber(
+        normalized,
+        index,
+      )
+      for (const unit of gluedUnits) tokens.push(unit)
+      index = unitIndex
       continue
     }
 

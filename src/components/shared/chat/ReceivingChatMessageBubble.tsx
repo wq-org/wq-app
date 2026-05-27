@@ -6,6 +6,7 @@ import {
   getChatBubbleTailClass,
 } from '@/components/shared/chat/chat-bubble-variants'
 import {
+  isMathChatMessageBubble,
   isLexicalChatMessageBubble,
   type ChatMessageBubbleProps,
 } from '@/components/shared/chat/types'
@@ -25,12 +26,15 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
     rounded = 'lg',
     status,
     messageId,
+    textBold,
   } = props
 
   const isLexical = isLexicalChatMessageBubble(props)
-  const text = isLexical ? '' : props.text
+  const isMath = isMathChatMessageBubble(props)
+  const text = isLexical || isMath ? '' : props.text
   const lexicalContent = isLexical ? props.lexicalContent : null
   const lexicalHydrationKey = isLexical ? props.lexicalHydrationKey : ''
+  const mathContent = isMath ? props.mathContent : null
 
   const resolvedStatus = status ?? 'ready'
   const bubbleStateKey = isLexical
@@ -44,7 +48,7 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
     <div
       className={cn(
         'flex items-end gap-2',
-        isLexical ? 'max-w-full w-full' : 'max-w-[88%]',
+        isLexical || isMath ? 'max-w-full w-full' : 'max-w-[88%]',
         className,
       )}
     >
@@ -71,7 +75,7 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
       <div
         className={cn(
           'flex min-w-0 flex-col items-start',
-          isLexical ? 'w-full max-w-full' : 'max-w-[78%]',
+          isLexical || isMath ? 'w-full max-w-full' : 'max-w-[78%]',
         )}
       >
         {showImages ? (
@@ -86,13 +90,18 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
             chatBubbleVariants({ variant, rounded }),
             getChatBubbleTailClass('receiving', rounded),
             chatBubbleEnterAnimation,
-            isLexical && 'w-full max-w-full',
+            (isLexical || isMath) && 'w-full max-w-full',
           )}
         >
           {resolvedStatus === 'loading' ? (
             <div className="flex min-h-9 items-center justify-center py-0.5">
               <DotWaveLoader variant="default" />
             </div>
+          ) : isMath ? (
+            <>
+              {mathContent}
+              {time ? <p className="mt-1 text-[10px] opacity-70">{time}</p> : null}
+            </>
           ) : isLexical ? (
             <>
               <ChatBubbleLexicalContent
@@ -103,7 +112,9 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
             </>
           ) : (
             <>
-              <p className="whitespace-pre-line text-inherit">{text}</p>
+              <p className={cn('whitespace-pre-line text-inherit', textBold && 'font-bold')}>
+                {text}
+              </p>
               {time ? <p className="mt-1 text-[10px] opacity-70">{time}</p> : null}
             </>
           )}

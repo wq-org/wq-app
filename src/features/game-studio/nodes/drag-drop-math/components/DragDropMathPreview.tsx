@@ -29,14 +29,17 @@ import {
   getCanvasTokenIdFromSortableId,
   useDragDropMathCanvasRows,
 } from './canvas'
+import { useDragDropMathPreviewGame } from '../hooks'
 import { DropMathNode } from './DropMathNode'
 import { DropMathStaticNode } from './DropMathStaticNode'
 import { DropTextNode } from './DropTextNode'
 import { SigmaNode } from './SigmaNode'
 import { DnDMathChatInput } from './DnDMathChatInput'
 import { DragDropMathPreviewChatHistory } from './DragDropMathPreviewChatHistory'
+import { DragDropMathSubmitConfirmDialog } from './DragDropMathSubmitConfirmDialog'
 import { collectEquationGroupTokenIds, isFixedMathSuffixToken } from '../utils/mathEquationRow'
 import {
+  isSigmaCanvasRow,
   isTokenCanvasRow,
   resolveGameDragDropMathPoints,
   type DragDropMathCanvasRow,
@@ -48,10 +51,7 @@ import { MATH_NODE_PALETTE_DRAG_IDS } from '../constants/drag-drop-math-dnd.cons
 import { resolveDropNodeDefaultValue } from '../constants/math-node.defaults'
 import { MATH_NODE_PALETTE_PRESETS } from '../constants/math-node-palette.constants'
 import { resolveExerciseTabsState } from '../utils/exerciseTabs.utils'
-import {
-  buildDragDropMathHowToPlayResponse,
-  type DragDropMathPreviewPromptMessage,
-} from '../utils/dragDropMathPreviewMessages'
+import { buildDragDropMathHowToPlayResponse } from '../utils/dragDropMathPreviewMessages'
 import { snapCenterToCursor } from '../utils/snapCenterToCursor'
 
 function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
@@ -76,13 +76,35 @@ export type DragDropMathPreviewProps = {
   nodeData?: GameDragDropMathNodeData
 }
 
+function applyPreviewSubmissionState(
+  rows: readonly DragDropMathCanvasRow[],
+  submissionLocked: boolean,
+  errorTokenIds: readonly string[],
+): DragDropMathCanvasRow[] {
+  if (!submissionLocked && errorTokenIds.length === 0) return [...rows]
+  const errorSet = new Set(errorTokenIds)
+
+  return rows.map((row) => {
+    if (isSigmaCanvasRow(row)) return { ...row }
+    if (!isTokenCanvasRow(row)) return row
+    return {
+      ...row,
+      tokens: row.tokens.map((token) => ({
+        ...token,
+        disabled: submissionLocked ? true : token.disabled,
+        mathShell: errorSet.has(token.id) ? 'error' : token.mathShell,
+      })),
+    }
+  })
+}
+
 export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
 
   const defaultTabTitle = t('dragDropMathEditor.newExerciseTabLabel')
-  const pin = nodeData ?? {}
+  const pin = useMemo(() => nodeData ?? {}, [nodeData])
   const instantColorFeedback = pin.instantColorFeedback !== false
   const maxScore = resolveGameDragDropMathPoints(pin.points)
 
@@ -94,8 +116,9 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
 
   const [canvasRows, setCanvasRows] = useState<DragDropMathCanvasRow[]>([])
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
-  const [previewScore] = useState(0)
-  const [promptMessages, setPromptMessages] = useState<DragDropMathPreviewPromptMessage[]>([])
+  const [howToPlayMessages, setHowToPlayMessages] = useState<
+    ReturnType<typeof useDragDropMathPreviewGame>['messages']
+  >([])
 
   const howToPlayPrompt = t('dragDropMathGamePreview.howToPlayPrompt')
   const howToPlayResponse = useMemo(
@@ -138,43 +161,35 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
   const handleHowToPlay = useCallback(() => {
-    setPromptMessages((prev) => {
+    setHowToPlayMessages((prev) => {
       const seq = Math.floor(prev.length / 2) + 1
       return [
         ...prev,
         {
           id: `${nodeId}-how-to-play-prompt-${seq}`,
           direction: 'sending',
+          kind: 'text',
           text: howToPlayPrompt,
         },
         {
           id: `${nodeId}-how-to-play-reply-${seq}`,
           direction: 'receiving',
+          kind: 'text',
           text: howToPlayResponse,
         },
       ]
     })
   }, [howToPlayPrompt, howToPlayResponse, nodeId])
 
-  const handlePromptClick = useCallback(
-    (message: string) => {
-      if (message === howToPlayPrompt) {
-        handleHowToPlay()
-      }
-    },
-    [handleHowToPlay, howToPlayPrompt],
-  )
-
   const resolveDropValue = useCallback(
     (variant: MathNodeVariant, value: string) => resolveDropNodeDefaultValue(variant, value, t),
     [t],
   )
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    }),
-  )
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: { distance: 8 },
+  })
+  const dragSensors = useSensors(pointerSensor)
 
   const {
     handleDragEnd: handleCanvasDragEnd,
@@ -189,16 +204,63 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     resolveDropValue,
   })
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveDragId(String(event.active.id))
-  }, [])
+  const {
+    messages: submitMessages,
+    submitDialogOpen,
+    setSubmitDialogOpen,
+    openSubmitDialog,
+    handleConfirmSubmit,
+    submissionLocked,
+    earnedScore,
+    errorTokenIds,
+  } = useDragDropMathPreviewGame({
+    nodeId,
+    submitPrompt: t('dragDropMathGamePreview.submitAnswerPrompt'),
+    maxScore,
+    teacherRows: activeTab?.canvasRows ?? [],
+    studentRows: canvasRows,
+  })
+
+  const previewMessages = useMemo(
+    () => [...howToPlayMessages, ...submitMessages],
+    [howToPlayMessages, submitMessages],
+  )
+
+  const renderedRows = useMemo(
+    () => applyPreviewSubmissionState(canvasRows, submissionLocked, errorTokenIds),
+    [canvasRows, submissionLocked, errorTokenIds],
+  )
+
+  const activeDragSensors = submissionLocked ? [] : dragSensors
+
+  const handlePromptClick = useCallback(
+    (message: string) => {
+      if (message === t('dragDropMathGamePreview.submitAnswerPrompt')) {
+        openSubmitDialog()
+        return
+      }
+      if (message === howToPlayPrompt) {
+        handleHowToPlay()
+      }
+    },
+    [handleHowToPlay, howToPlayPrompt, openSubmitDialog, t],
+  )
+
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      if (submissionLocked) return
+      setActiveDragId(String(event.active.id))
+    },
+    [submissionLocked],
+  )
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       setActiveDragId(null)
+      if (submissionLocked) return
       handleCanvasDragEnd(event)
     },
-    [handleCanvasDragEnd],
+    [handleCanvasDragEnd, submissionLocked],
   )
 
   const handleDragCancel = useCallback(() => {
@@ -240,8 +302,8 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     const tokenId = getCanvasTokenIdFromSortableId(activeDragId)
     if (!tokenId) return null
 
-    const sourceRow = findRowForToken(canvasRows, tokenId)
-    const canvasToken = findTokenInRows(canvasRows, tokenId)
+    const sourceRow = findRowForToken(renderedRows, tokenId)
+    const canvasToken = findTokenInRows(renderedRows, tokenId)
     if (!canvasToken || !sourceRow || !isTokenCanvasRow(sourceRow)) return null
 
     const renderCanvasToken = (token: DragDropMathCanvasToken) => {
@@ -293,7 +355,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
     }
 
     return renderCanvasToken(canvasToken)
-  }, [activeDragId, canvasRows, instantColorFeedback, resolveDropValue, t])
+  }, [activeDragId, instantColorFeedback, renderedRows, resolveDropValue, t])
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -312,7 +374,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         title={title}
         showDescription={showDescription}
         showTitle={showTitle}
-        promptMessages={promptMessages}
+        previewMessages={previewMessages}
         avatarUrl={userAvatarUrl ?? undefined}
         avatarFallback={avatarFallback}
         incomingBubbleVariant="default"
@@ -326,7 +388,7 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
       />
 
       <DndContext
-        sensors={sensors}
+        sensors={activeDragSensors}
         collisionDetection={canvasCollisionDetection}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -335,14 +397,15 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
         <DnDMathChatInput
           className={cn('shrink-0', aiPromptBadgeListEnterAnimation)}
           showPaletteLabel={false}
-          rows={canvasRows}
+          rows={renderedRows}
+          interactionLocked={submissionLocked}
           instantColorFeedback={instantColorFeedback}
-          onRowsReorder={reorderRows}
-          onTokenValueChange={updateTokenValue}
-          onMathTokenCommit={commitMathEquation}
-          onTokenRemove={removeToken}
-          onSigmaRemove={removeSigmaRow}
-          score={previewScore}
+          onRowsReorder={submissionLocked ? () => {} : reorderRows}
+          onTokenValueChange={submissionLocked ? () => {} : updateTokenValue}
+          onMathTokenCommit={submissionLocked ? () => {} : commitMathEquation}
+          onTokenRemove={submissionLocked ? () => {} : removeToken}
+          onSigmaRemove={submissionLocked ? () => {} : removeSigmaRow}
+          score={earnedScore}
           maxScore={maxScore}
         />
 
@@ -353,6 +416,11 @@ export function DragDropMathPreview({ nodeId, nodeData }: DragDropMathPreviewPro
           {activeDragPreview}
         </DragOverlay>
       </DndContext>
+      <DragDropMathSubmitConfirmDialog
+        open={submitDialogOpen}
+        onOpenChange={setSubmitDialogOpen}
+        onConfirm={handleConfirmSubmit}
+      />
     </div>
   )
 }

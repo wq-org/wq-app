@@ -49,7 +49,11 @@ export function evaluateMathEquation(raw: string): MathExpressionEvaluateResult 
   const validation = validateTokens(tokens)
 
   if (!validation.ok) {
-    return { ok: false, reason: mapValidationReason(validation.reason) }
+    return {
+      ok: false,
+      reason: mapValidationReason(validation.reason),
+      ...(validation.message ? { message: validation.message } : {}),
+    }
   }
 
   const prettyExpression = formatDisplayEquation(raw)

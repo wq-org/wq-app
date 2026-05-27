@@ -12,9 +12,10 @@ import { MATH_NODE_PALETTE_PRESETS } from '../constants/math-node-palette.consta
 
 export type MathNodePaletteProps = {
   showLabel?: boolean
+  disabled?: boolean
 }
 
-export function MathNodePalette({ showLabel = true }: MathNodePaletteProps) {
+export function MathNodePalette({ showLabel = true, disabled = false }: MathNodePaletteProps) {
   const { t } = useTranslation('features.gameStudio')
 
   return (
@@ -43,6 +44,7 @@ export function MathNodePalette({ showLabel = true }: MathNodePaletteProps) {
               key={MATH_NODE_PALETTE_DRAG_IDS[item.variant]}
               dragId={MATH_NODE_PALETTE_DRAG_IDS[item.variant]}
               dragData={{ source: 'palette', variant: item.variant, value: dropValue }}
+              disabled={disabled}
             >
               {item.variant === 'math' ? (
                 <MathNode

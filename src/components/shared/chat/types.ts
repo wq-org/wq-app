@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { SerializedEditorState } from 'lexical'
 
 import type { ChatBubbleRounded, ChatBubbleVariant } from './chat-bubble-variants'
@@ -39,6 +40,8 @@ type ChatMessageBubbleBaseProps = {
   status?: ChatMessageStatus
   /** Stable id (e.g. `ChatHistory` message id) for enter animation when status or content appears. */
   messageId?: string
+  /** Renders bubble body text in bold (e.g. score feedback). */
+  textBold?: boolean
 }
 
 export type ChatMessageBubbleTextProps = ChatMessageBubbleBaseProps & {
@@ -53,10 +56,24 @@ export type ChatMessageBubbleLexicalProps = ChatMessageBubbleBaseProps & {
   lexicalHydrationKey: string
 }
 
-export type ChatMessageBubbleProps = ChatMessageBubbleTextProps | ChatMessageBubbleLexicalProps
+export type ChatMessageBubbleMathProps = ChatMessageBubbleBaseProps & {
+  contentMode: 'math'
+  mathContent: ReactNode
+}
+
+export type ChatMessageBubbleProps =
+  | ChatMessageBubbleTextProps
+  | ChatMessageBubbleLexicalProps
+  | ChatMessageBubbleMathProps
 
 export function isLexicalChatMessageBubble(
   props: ChatMessageBubbleProps,
 ): props is ChatMessageBubbleLexicalProps {
   return props.contentMode === 'lexical'
+}
+
+export function isMathChatMessageBubble(
+  props: ChatMessageBubbleProps,
+): props is ChatMessageBubbleMathProps {
+  return props.contentMode === 'math'
 }
