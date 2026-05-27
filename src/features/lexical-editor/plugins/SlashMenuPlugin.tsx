@@ -17,8 +17,19 @@ import * as ReactDOM from 'react-dom'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
+import { snapshotDomRect } from '../utils/emojiPickerPosition'
+import {
+  clampHorizontalViewportPosition,
+  getFloatingPlacementViewport,
+  resolveVerticalPlacement,
+} from '../utils/floatingPlacementViewport'
+import { resolveLexicalFloatingPortalTarget } from '../utils/floatingPortalTarget'
 import { BlockOptionIcon } from './BlockOptionIcon'
 import { BlockOption, getBlockOptions } from './blockOptions'
+
+const SLASH_MENU_WIDTH = 220
+const SLASH_MENU_OFFSET = 4
+const SLASH_MENU_ESTIMATED_HEIGHT = 320
 
 type SlashMenuPluginProps = {
   registry?: LessonBlockTypeRegistryRow[]
@@ -73,19 +84,39 @@ export function SlashMenuPlugin({
         if (!anchorRef.current) return null
 
         const anchorRect = anchorRef.current.getBoundingClientRect()
+        const portalStyle = (() => {
+          if (!portalMenuToDocumentBody) {
+            return undefined
+          }
+
+          const anchorSnapshot = snapshotDomRect(anchorRect)
+          const viewport = getFloatingPlacementViewport(anchorRef.current)
+          const menuHeight = Math.min(SLASH_MENU_ESTIMATED_HEIGHT, viewport.height)
+          const { top } = resolveVerticalPlacement({
+            anchorRect: anchorSnapshot,
+            floatingHeight: menuHeight,
+            offsetPx: SLASH_MENU_OFFSET,
+            prefer: 'below',
+            viewport,
+          })
+          const left = clampHorizontalViewportPosition({
+            left: anchorRect.left,
+            floatingWidth: SLASH_MENU_WIDTH,
+            viewport,
+          })
+
+          return {
+            position: 'fixed' as const,
+            top,
+            left,
+            zIndex: 9999,
+          }
+        })()
+
         const menu = (
           <div
             className="w-[220px] overflow-hidden rounded-2xl border border-solid border-zinc-200/80 bg-white/80 text-[#1c1e21] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:border-zinc-700/80 dark:bg-[#232325]/80 dark:text-[#e3e3e3] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
-            style={
-              portalMenuToDocumentBody
-                ? {
-                    position: 'fixed',
-                    top: anchorRect.bottom + 4,
-                    left: anchorRect.left,
-                    zIndex: 9999,
-                  }
-                : undefined
-            }
+            style={portalStyle}
           >
             <ul className="m-0 max-h-[min(320px,50vh)] list-none overflow-y-auto p-1">
               {options.map((option, i) => {
@@ -122,10 +153,11 @@ export function SlashMenuPlugin({
           </div>
         )
 
-        return ReactDOM.createPortal(
-          menu,
-          portalMenuToDocumentBody ? document.body : anchorRef.current,
-        )
+        const portalTarget = portalMenuToDocumentBody
+          ? resolveLexicalFloatingPortalTarget(anchorRef.current)
+          : anchorRef.current
+
+        return ReactDOM.createPortal(menu, portalTarget)
       }}
     />
   )

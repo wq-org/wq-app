@@ -12,14 +12,17 @@ import { EmojiPickerPanel } from '../components/EmojiPickerPanel'
 import { OPEN_EMOJI_PICKER_COMMAND } from '../commands/emojiPickerCommands'
 import {
   getSelectionAnchorRect,
+  positionFloatingPickerBelowSelection,
   readSavedEditorSelection,
   type SavedEditorSelection,
 } from '../utils/emojiPickerPosition'
+import { observeFloatingPlacementUpdates } from '../utils/floatingPlacementViewport'
+import { resolveLexicalFloatingPortalTarget } from '../utils/floatingPortalTarget'
 import { insertEmojiAtSelection } from '../utils/insertEmoji'
 
-const floatingShellClassName = 'absolute top-0 left-0 z-50 opacity-0 will-change-[top,left]'
+const floatingShellClassName =
+  'pointer-events-auto top-0 left-0 z-[200] opacity-0 will-change-[top,left]'
 const PICKER_OFFSET = 8
-const VIEWPORT_MARGIN = 12
 const DEFAULT_PICKER_HEIGHT = 320
 const DEFAULT_PICKER_WIDTH = 352
 
@@ -33,6 +36,7 @@ type FloatingEmojiPickerProps = {
   anchorElem: HTMLElement
   pickerAnchor: PickerAnchorState
   onClose: () => void
+  portalRoot: HTMLElement
 }
 
 function FloatingEmojiPicker({
@@ -40,6 +44,7 @@ function FloatingEmojiPicker({
   anchorElem,
   pickerAnchor,
   onClose,
+  portalRoot,
 }: FloatingEmojiPickerProps): JSX.Element {
   const pickerRef = useRef<HTMLDivElement | null>(null)
 
@@ -50,37 +55,35 @@ function FloatingEmojiPicker({
       return
     }
 
-    const anchorRect = anchorElem.getBoundingClientRect()
     const pickerHeight = pickerElem.offsetHeight || DEFAULT_PICKER_HEIGHT
     const pickerWidth = pickerElem.offsetWidth || DEFAULT_PICKER_WIDTH
 
-    const overflowsBottom =
-      rect.bottom + PICKER_OFFSET + pickerHeight > window.innerHeight - VIEWPORT_MARGIN
-    const top = overflowsBottom
-      ? rect.top - anchorRect.top - pickerHeight - PICKER_OFFSET
-      : rect.bottom - anchorRect.top + PICKER_OFFSET
-
-    const rightOverflow = rect.left + pickerWidth - window.innerWidth + VIEWPORT_MARGIN
-    const left = rect.left - anchorRect.left - Math.max(0, rightOverflow)
-
-    pickerElem.style.top = `${top}px`
-    pickerElem.style.left = `${left}px`
-    pickerElem.style.opacity = '1'
-  }, [anchorElem, pickerAnchor.rect])
+    positionFloatingPickerBelowSelection({
+      anchorRect: {
+        top: rect.top,
+        left: rect.left,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      },
+      anchorElem,
+      floatingElem: pickerElem,
+      pickerWidth,
+      pickerHeight,
+      offsetPx: PICKER_OFFSET,
+      portalRoot,
+    })
+  }, [anchorElem, pickerAnchor.rect, portalRoot])
 
   useEffect(() => {
     updatePosition()
     const frame = requestAnimationFrame(updatePosition)
-
-    const scrollerElem = anchorElem.parentElement
-    const handleWindowChange = () => updatePosition()
-    window.addEventListener('resize', handleWindowChange)
-    scrollerElem?.addEventListener('scroll', handleWindowChange, { passive: true })
+    const stopObserving = observeFloatingPlacementUpdates(anchorElem, updatePosition)
 
     return () => {
       cancelAnimationFrame(frame)
-      window.removeEventListener('resize', handleWindowChange)
-      scrollerElem?.removeEventListener('scroll', handleWindowChange)
+      stopObserving()
     }
   }, [anchorElem, updatePosition])
 
@@ -92,11 +95,11 @@ function FloatingEmojiPicker({
     }
 
     const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target
-      if (!(target instanceof Node)) {
+      const pickerElem = pickerRef.current
+      if (!pickerElem) {
         return
       }
-      if (pickerRef.current?.contains(target)) {
+      if (event.composedPath().includes(pickerElem)) {
         return
       }
       onClose()
@@ -132,10 +135,12 @@ function FloatingEmojiPicker({
 
 type FloatingEmojiPickerPluginProps = {
   anchorElem: HTMLElement
+  portalToDocumentBody?: boolean
 }
 
 export function FloatingEmojiPickerPlugin({
   anchorElem,
+  portalToDocumentBody = false,
 }: FloatingEmojiPickerPluginProps): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -170,13 +175,18 @@ export function FloatingEmojiPickerPlugin({
     return null
   }
 
+  const portalRoot = portalToDocumentBody
+    ? resolveLexicalFloatingPortalTarget(anchorElem)
+    : anchorElem
+
   return createPortal(
     <FloatingEmojiPicker
       editor={editor}
       anchorElem={anchorElem}
       pickerAnchor={pickerAnchor}
       onClose={handleClose}
+      portalRoot={portalRoot}
     />,
-    anchorElem,
+    portalRoot,
   )
 }

@@ -27,6 +27,8 @@ import {
   readSavedEditorSelection,
   type SavedEditorSelection,
 } from '../utils/emojiPickerPosition'
+import { observeFloatingPlacementUpdates } from '../utils/floatingPlacementViewport'
+import { resolveLexicalFloatingPortalTarget } from '../utils/floatingPortalTarget'
 import {
   insertCloudImageAtSelection,
   insertImagePlaceholderAtSelection,
@@ -35,7 +37,8 @@ import {
   replaceImagePlaceholderWithImage,
 } from '../utils/insertCloudImage'
 
-const floatingShellClassName = 'absolute top-0 left-0 z-50 opacity-0 will-change-[top,left]'
+const floatingShellClassName =
+  'pointer-events-auto top-0 left-0 z-[200] opacity-0 will-change-[top,left]'
 const PICKER_OFFSET = 2
 const DEFAULT_PICKER_HEIGHT = 200
 const DEFAULT_PICKER_WIDTH = 450
@@ -54,6 +57,7 @@ type FloatingImagePickerProps = {
   anchorElem: HTMLElement
   pickerMode: PickerMode
   onClose: () => void
+  portalRoot: HTMLElement
 }
 
 function FloatingImagePicker({
@@ -61,6 +65,7 @@ function FloatingImagePicker({
   anchorElem,
   pickerMode,
   onClose,
+  portalRoot,
 }: FloatingImagePickerProps): JSX.Element {
   const pickerRef = useRef<HTMLDivElement | null>(null)
   const { t } = useTranslation('features.lesson')
@@ -82,6 +87,7 @@ function FloatingImagePicker({
         pickerWidth,
         pickerHeight,
         offsetPx: PICKER_OFFSET,
+        portalRoot,
       })
       return
     }
@@ -105,22 +111,18 @@ function FloatingImagePicker({
       pickerWidth,
       pickerHeight,
       offsetPx: PICKER_OFFSET,
+      portalRoot,
     })
-  }, [anchorElem, pickerMode])
+  }, [anchorElem, pickerMode, portalRoot])
 
   useEffect(() => {
     updatePosition()
     const frame = requestAnimationFrame(updatePosition)
-
-    const scrollerElem = anchorElem.parentElement
-    const handleWindowChange = () => updatePosition()
-    window.addEventListener('resize', handleWindowChange)
-    scrollerElem?.addEventListener('scroll', handleWindowChange, { passive: true })
+    const stopObserving = observeFloatingPlacementUpdates(anchorElem, updatePosition)
 
     return () => {
       cancelAnimationFrame(frame)
-      window.removeEventListener('resize', handleWindowChange)
-      scrollerElem?.removeEventListener('scroll', handleWindowChange)
+      stopObserving()
     }
   }, [anchorElem, updatePosition])
 
@@ -132,11 +134,11 @@ function FloatingImagePicker({
     }
 
     const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target
-      if (!(target instanceof Node)) {
+      const pickerElem = pickerRef.current
+      if (!pickerElem) {
         return
       }
-      if (pickerRef.current?.contains(target)) {
+      if (event.composedPath().includes(pickerElem)) {
         return
       }
       onClose()
@@ -241,10 +243,12 @@ function FloatingImagePicker({
 
 type FloatingImagePickerPluginProps = {
   anchorElem: HTMLElement
+  portalToDocumentBody?: boolean
 }
 
 export function FloatingImagePickerPlugin({
   anchorElem,
+  portalToDocumentBody = false,
 }: FloatingImagePickerPluginProps): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -305,13 +309,18 @@ export function FloatingImagePickerPlugin({
     return null
   }
 
+  const portalRoot = portalToDocumentBody
+    ? resolveLexicalFloatingPortalTarget(anchorElem)
+    : anchorElem
+
   return createPortal(
     <FloatingImagePicker
       editor={editor}
       anchorElem={anchorElem}
       pickerMode={pickerMode}
       onClose={handleClose}
+      portalRoot={portalRoot}
     />,
-    anchorElem,
+    portalRoot,
   )
 }

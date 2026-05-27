@@ -126,11 +126,12 @@ export function CloudImagePickerPanel({
   return (
     <div
       className={cn(
-        'w-[450px] rounded-2xl border border-border bg-popover p-3',
+        'pointer-events-auto w-[min(450px,calc(100vw-24px))] max-h-[min(360px,50dvh)] overflow-y-auto rounded-2xl border border-border bg-popover p-3',
         'text-popover-foreground shadow-xl backdrop-blur-xl',
         'supports-backdrop-filter:bg-popover/90',
         className,
       )}
+      onMouseDown={(event) => event.stopPropagation()}
     >
       <SelectTabs
         tabs={TABS}

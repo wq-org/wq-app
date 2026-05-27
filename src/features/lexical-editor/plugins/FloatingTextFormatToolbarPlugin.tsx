@@ -32,6 +32,8 @@ import { TextHighlightToolbarButton } from './TextHighlightPlugin/TextHighlightP
 
 import { getDOMRangeRect } from '../utils/getDOMRangeRect'
 import { getSelectedNode } from '../utils/getSelectedNode'
+import { observeFloatingPlacementUpdates } from '../utils/floatingPlacementViewport'
+import { resolveLexicalFloatingPortalTarget } from '../utils/floatingPortalTarget'
 import { setFloatingElemPosition } from '../utils/setFloatingElemPosition'
 import { useSignalValue } from '../utils/useExtensionHooks'
 import {
@@ -142,7 +144,7 @@ const toolbarButtonClassName =
   'flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted'
 
 const toolbarShellClassName =
-  'absolute top-0 left-0 z-30 flex items-center gap-0.5 rounded-full border border-border bg-popover/95 px-1 py-1 opacity-0 text-popover-foreground shadow-xl backdrop-blur-md transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
+  'pointer-events-auto top-0 left-0 z-[200] flex items-center gap-0.5 rounded-full border border-border bg-popover/95 px-1 py-1 opacity-0 text-popover-foreground shadow-xl backdrop-blur-md transition-opacity will-change-transform supports-backdrop-filter:bg-popover/90'
 
 type FloatingPopupProps = {
   editor: LexicalEditor
@@ -152,6 +154,7 @@ type FloatingPopupProps = {
   isLink: boolean
   isText: boolean
   onRequestLinkDialog: () => void
+  portalRoot: HTMLElement
 }
 
 function FloatingPopup({
@@ -162,6 +165,7 @@ function FloatingPopup({
   isLink,
   isText,
   onRequestLinkDialog,
+  portalRoot,
 }: FloatingPopupProps): JSX.Element {
   const popupRef = useRef<HTMLDivElement | null>(null)
 
@@ -180,7 +184,7 @@ function FloatingPopup({
 
       if (!nativeSelection.isCollapsed) {
         const rangeRect = getDOMRangeRect(nativeSelection, rootElement)
-        setFloatingElemPosition(rangeRect, popupElem, anchorElem)
+        setFloatingElemPosition(rangeRect, popupElem, anchorElem, false, 10, 5, portalRoot)
         return
       }
 
@@ -192,20 +196,23 @@ function FloatingPopup({
       const linkElement = editor.getElementByKey(linkNode.getKey())
       if (!linkElement) return
 
-      setFloatingElemPosition(linkElement.getBoundingClientRect(), popupElem, anchorElem)
+      setFloatingElemPosition(
+        linkElement.getBoundingClientRect(),
+        popupElem,
+        anchorElem,
+        true,
+        10,
+        5,
+        portalRoot,
+      )
     })
-  }, [editor, anchorElem])
+  }, [editor, anchorElem, portalRoot])
 
   useEffect(() => {
     editor.getEditorState().read(updatePosition)
-    const scrollerElem = anchorElem.parentElement
     const onUpdate = () => editor.getEditorState().read(updatePosition)
-    window.addEventListener('resize', onUpdate)
-    if (scrollerElem) scrollerElem.addEventListener('scroll', onUpdate)
-    return () => {
-      window.removeEventListener('resize', onUpdate)
-      if (scrollerElem) scrollerElem.removeEventListener('scroll', onUpdate)
-    }
+    const stopObserving = observeFloatingPlacementUpdates(anchorElem, onUpdate)
+    return stopObserving
   }, [editor, anchorElem, updatePosition])
 
   useEffect(() => {
@@ -290,12 +297,14 @@ type FloatingTextFormatToolbarPluginProps = {
   anchorElem: HTMLElement
   onRequestLinkDialog: () => void
   features?: FloatingToolbarFeatures
+  portalToDocumentBody?: boolean
 }
 
 export function FloatingTextFormatToolbarPlugin({
   anchorElem,
   onRequestLinkDialog,
   features = DEFAULT_FLOATING_TOOLBAR_FEATURES,
+  portalToDocumentBody = false,
 }: FloatingTextFormatToolbarPluginProps): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   const out = useExtensionDependency(FloatingFormatExtension).output
@@ -310,6 +319,10 @@ export function FloatingTextFormatToolbarPlugin({
 
   if (!isText && !isLink) return null
 
+  const portalRoot = portalToDocumentBody
+    ? resolveLexicalFloatingPortalTarget(anchorElem)
+    : anchorElem
+
   return createPortal(
     <FloatingPopup
       editor={editor}
@@ -319,7 +332,8 @@ export function FloatingTextFormatToolbarPlugin({
       isLink={isLink}
       isText={isText}
       onRequestLinkDialog={onRequestLinkDialog}
+      portalRoot={portalRoot}
     />,
-    anchorElem,
+    portalRoot,
   )
 }

@@ -53,8 +53,19 @@ export function OpenQuestionDialog({
       description={t('openQuestionDialog.description')}
     >
       <GameLayout
-        editorContent={<OpenQuestionEditor nodeId={nodeId} />}
-        previewContent={<OpenQuestionPreview nodeId={nodeId} />}
+        editorContent={
+          <OpenQuestionEditor
+            nodeId={nodeId}
+            nodeData={openQuestionNodeData}
+            onPatchNodeData={onPatchNodeData}
+          />
+        }
+        previewContent={
+          <OpenQuestionPreview
+            nodeId={nodeId}
+            nodeData={openQuestionNodeData}
+          />
+        }
         settingsContent={
           <OpenQuestionSettings
             nodeId={nodeId}

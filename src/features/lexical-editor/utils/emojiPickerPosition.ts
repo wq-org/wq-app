@@ -9,6 +9,14 @@ import {
 
 import { getDOMRangeRect } from './getDOMRangeRect'
 import { setFloatingElemPosition } from './setFloatingElemPosition'
+import {
+  applyAnchorRelativeFloatingStyles,
+  applyPortalFloatingStyles,
+  clampHorizontalViewportPosition,
+  getFloatingPlacementViewport,
+  resolveVerticalPlacement,
+  type ViewportBounds,
+} from './floatingPlacementViewport'
 
 export type SavedEditorSelection = BaseSelection | null
 
@@ -54,8 +62,6 @@ export function getNodeElementRect(editor: LexicalEditor, nodeKey: NodeKey): DOM
   return element.getBoundingClientRect()
 }
 
-const VIEWPORT_MARGIN = 12
-
 type PositionFloatingPickerParams = {
   anchorRect: DomRectSnapshot
   anchorElem: HTMLElement
@@ -63,9 +69,47 @@ type PositionFloatingPickerParams = {
   pickerWidth: number
   pickerHeight: number
   offsetPx: number
+  /** Portal mount node (`document.body` or dialog content). */
+  portalRoot?: HTMLElement
 }
 
-/** Positions below the text caret / selection (insert flow). */
+function positionFloatingPicker({
+  anchorRect,
+  anchorElem,
+  floatingElem,
+  pickerWidth,
+  pickerHeight,
+  offsetPx,
+  portalRoot,
+  prefer,
+  resolveLeft,
+}: PositionFloatingPickerParams & {
+  prefer: 'above' | 'below'
+  resolveLeft: (viewport: ViewportBounds) => number
+}): void {
+  const viewport = getFloatingPlacementViewport(anchorElem)
+  const { top } = resolveVerticalPlacement({
+    anchorRect,
+    floatingHeight: pickerHeight,
+    offsetPx,
+    prefer,
+    viewport,
+  })
+  const left = clampHorizontalViewportPosition({
+    left: resolveLeft(viewport),
+    floatingWidth: pickerWidth,
+    viewport,
+  })
+
+  if (portalRoot) {
+    applyPortalFloatingStyles(floatingElem, portalRoot, top, left)
+    return
+  }
+
+  applyAnchorRelativeFloatingStyles(floatingElem, anchorElem, top, left)
+}
+
+/** Positions below the text caret / selection (insert flow), flipping above when needed. */
 export function positionFloatingPickerBelowSelection({
   anchorRect,
   anchorElem,
@@ -73,24 +117,22 @@ export function positionFloatingPickerBelowSelection({
   pickerWidth,
   pickerHeight,
   offsetPx,
+  portalRoot,
 }: PositionFloatingPickerParams): void {
-  const anchorElemRect = anchorElem.getBoundingClientRect()
-
-  const overflowsBottom =
-    anchorRect.bottom + offsetPx + pickerHeight > window.innerHeight - VIEWPORT_MARGIN
-  const top = overflowsBottom
-    ? anchorRect.top - anchorElemRect.top - pickerHeight - offsetPx
-    : anchorRect.bottom - anchorElemRect.top + offsetPx
-
-  const rightOverflow = anchorRect.left + pickerWidth - window.innerWidth + VIEWPORT_MARGIN
-  const left = anchorRect.left - anchorElemRect.left - Math.max(0, rightOverflow)
-
-  floatingElem.style.top = `${top}px`
-  floatingElem.style.left = `${left}px`
-  floatingElem.style.opacity = '1'
+  positionFloatingPicker({
+    anchorRect,
+    anchorElem,
+    floatingElem,
+    pickerWidth,
+    pickerHeight,
+    offsetPx,
+    portalRoot,
+    prefer: 'below',
+    resolveLeft: () => anchorRect.left,
+  })
 }
 
-/** Positions below the replace button, right-aligned to the button (replace flow). */
+/** Positions below the replace button, right-aligned (replace flow). */
 export function positionFloatingPickerBelowReplaceButton({
   anchorRect,
   anchorElem,
@@ -98,24 +140,19 @@ export function positionFloatingPickerBelowReplaceButton({
   pickerWidth,
   pickerHeight,
   offsetPx,
+  portalRoot,
 }: PositionFloatingPickerParams): void {
-  const anchorElemRect = anchorElem.getBoundingClientRect()
-
-  const overflowsBottom =
-    anchorRect.bottom + offsetPx + pickerHeight > window.innerHeight - VIEWPORT_MARGIN
-  const top = overflowsBottom
-    ? anchorRect.top - anchorElemRect.top - pickerHeight - offsetPx
-    : anchorRect.bottom - anchorElemRect.top + offsetPx
-
-  let left = anchorRect.right - anchorElemRect.left - pickerWidth
-
-  const minLeft = VIEWPORT_MARGIN - anchorElemRect.left
-  const maxLeft = window.innerWidth - VIEWPORT_MARGIN - anchorElemRect.left - pickerWidth
-  left = Math.min(Math.max(left, minLeft), maxLeft)
-
-  floatingElem.style.top = `${top}px`
-  floatingElem.style.left = `${left}px`
-  floatingElem.style.opacity = '1'
+  positionFloatingPicker({
+    anchorRect,
+    anchorElem,
+    floatingElem,
+    pickerWidth,
+    pickerHeight,
+    offsetPx,
+    portalRoot,
+    prefer: 'below',
+    resolveLeft: () => anchorRect.right - pickerWidth,
+  })
 }
 
 export function getSelectionAnchorRect(
@@ -167,6 +204,7 @@ export function positionFloatingElementAtRect(
   targetRect: DOMRect | null,
   floatingElem: HTMLElement,
   anchorElem: HTMLElement,
+  portalRoot?: HTMLElement,
 ): void {
-  setFloatingElemPosition(targetRect, floatingElem, anchorElem)
+  setFloatingElemPosition(targetRect, floatingElem, anchorElem, false, 10, 5, portalRoot)
 }

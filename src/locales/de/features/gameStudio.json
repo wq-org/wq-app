@@ -420,9 +420,24 @@
     "areaExclusionLabel": "Bildbereich schrittweise ausblenden (in %)",
     "areaSliderLabel": "Ausblendung"
   },
+  "openQuestionEditor": {
+    "descriptionLabel": "Aufgabenbeschreibung",
+    "descriptionPlaceholder": "Beschreibe die Frage, den Kontext und was Lernende beantworten sollen…"
+  },
   "openQuestionDialog": {
     "title": "Offene Frage",
     "description": "Konfiguriere den Knoten für offene Fragen in deinem Lernablauf."
+  },
+  "openQuestionGamePreview": {
+    "previewNotice": "Vorschaumodus. So sieht das Spiel aus und funktioniert, während du es baust.",
+    "badgeSubmitAnswer": "Antwort abgeben",
+    "badgeHint": "Gib mir einen Tipp",
+    "badgeHowToPlay": "So funktioniert es",
+    "composerPlaceholder": "Antwort eingeben…",
+    "submitAnswerPrompt": "Ich bin mit meiner Antwort fertig. Bitte prüfe sie.",
+    "hintPrompt": "Gib mir einen hilfreichen Tipp, aber verrate nicht die ganze Lösung.",
+    "howToPlayPrompt": "Erkläre, wie diese offene Frage funktioniert.",
+    "howToPlayResponse": "So funktioniert es:\n1. Lies die Frage im Chat.\n2. Gib deine Antwort im Textfeld unten ein.\n3. Klicke auf Antwort abgeben, wenn du fertig bist.\n\nTipp: Du kannst deine Antwort bearbeiten, bis du sie abgibst."
   },
   "openQuestionSettings": {
     "holdToDeleteNode": "Gedrückt halten, um den Knoten zu löschen",

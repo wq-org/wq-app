@@ -396,14 +396,21 @@ export function Editor({
                 anchorElem={anchorElem}
                 onRequestLinkDialog={handleRequestLinkDialog}
                 features={floatingToolbarFeatures}
+                portalToDocumentBody={isEmbedded}
               />
               <FloatingLinkEditorPlugin
                 anchorElem={anchorElem}
                 onRequestLinkDialog={handleRequestLinkDialog}
                 enabled={floatingToolbarFeatures.link}
               />
-              <FloatingEmojiPickerPlugin anchorElem={anchorElem} />
-              <FloatingImagePickerPlugin anchorElem={anchorElem} />
+              <FloatingEmojiPickerPlugin
+                anchorElem={anchorElem}
+                portalToDocumentBody={isEmbedded}
+              />
+              <FloatingImagePickerPlugin
+                anchorElem={anchorElem}
+                portalToDocumentBody={isEmbedded}
+              />
               <TableInteractionPlugin anchorElem={anchorElem} />
             </>
           ) : null}

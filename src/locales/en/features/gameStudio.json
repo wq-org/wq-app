@@ -420,9 +420,24 @@
     "areaExclusionLabel": "Gradually hide image area (in %)",
     "areaSliderLabel": "Area Exclusion"
   },
+  "openQuestionEditor": {
+    "descriptionLabel": "Exercise Description",
+    "descriptionPlaceholder": "Describe the question, context, and what learners should answer…"
+  },
   "openQuestionDialog": {
     "title": "Open question",
     "description": "Configure the open-ended question node for your learning flow."
+  },
+  "openQuestionGamePreview": {
+    "previewNotice": "Preview mode. This shows how the game looks and works while you build it.",
+    "badgeSubmitAnswer": "Submit answer",
+    "badgeHint": "Give me a hint",
+    "badgeHowToPlay": "How to play",
+    "composerPlaceholder": "Type your answer…",
+    "submitAnswerPrompt": "I finished my answer. Please check it.",
+    "hintPrompt": "Give me a helpful hint, but do not reveal the full answer.",
+    "howToPlayPrompt": "Explain how to play this open question.",
+    "howToPlayResponse": "How to play:\n1. Read the question shown in the chat.\n2. Type your answer in the text field below.\n3. Click Submit answer when you are ready.\n\nTip: you can still edit your answer until you submit."
   },
   "openQuestionSettings": {
     "holdToDeleteNode": "Hold to delete node",
