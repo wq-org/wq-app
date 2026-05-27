@@ -59,7 +59,7 @@ function sigmaRow(
   return {
     id: rowId,
     variant: 'sigma',
-    lockedCategory: 'currency',
+    lockedCategory: 'money',
     lockedUnit: '€',
     items: [],
     result,
