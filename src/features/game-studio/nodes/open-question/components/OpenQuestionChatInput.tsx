@@ -1,6 +1,6 @@
 'use client'
 
-import { Ai01 } from '@/components/shared/ai-components'
+import { Ai01, aiPromptBadgeListEnterAnimation } from '@/components/shared/ai-components'
 import { Score } from '@/components/ui/score'
 import { cn } from '@/lib/utils'
 
@@ -27,24 +27,26 @@ export function OpenQuestionChatInput({
   className,
 }: OpenQuestionChatInputProps) {
   return (
-    <div className={cn('flex w-full shrink-0 items-end gap-3', className)}>
+    <div className={cn('flex w-full shrink-0 items-center gap-3', className)}>
       <Score
         score={score}
         max={maxScore}
         size="lg"
         variant="orange"
+        className="shrink-0"
       />
-      <div className="min-w-0 flex-1">
-        <Ai01
-          placeholder={placeholder}
-          value={value}
-          onValueChange={onValueChange}
-          onSubmit={disabled ? undefined : onSubmit}
-          showDropDown={false}
-          showMic={false}
-          clearOnSubmit
-        />
-      </div>
+      <Ai01
+        className="min-w-0 flex-1"
+        fullWidth
+        composerShellClassName={cn('border-muted', aiPromptBadgeListEnterAnimation)}
+        placeholder={placeholder}
+        value={value}
+        onValueChange={onValueChange}
+        onSubmit={disabled ? undefined : onSubmit}
+        showDropDown={false}
+        showMic={false}
+        clearOnSubmit
+      />
     </div>
   )
 }

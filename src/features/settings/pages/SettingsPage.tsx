@@ -109,7 +109,7 @@ const SettingsPage = ({ role, embedded }: SettingsPageProps) => {
   }
 
   return (
-    <div className={embedded ? 'w-full' : 'w-full min-h-screen'}>
+    <div className={embedded ? 'w-full' : 'w-full min-h-screen pb-32'}>
       <section className="animate-in fade-in-0 slide-in-from-bottom-4">
         <div
           className={

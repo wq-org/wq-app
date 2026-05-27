@@ -44,12 +44,13 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
       ? `${messageId}-${resolvedStatus}`
       : `${text}-${time}-${resolvedStatus}`
   const showImages = Boolean(images?.length) && resolvedStatus !== 'loading'
+  const isMathWide = isMath
 
   return (
     <div
       className={cn(
         'flex items-end gap-2',
-        isLexical || isMath ? 'max-w-full w-full' : 'max-w-[88%]',
+        isMathWide ? 'w-full max-w-full' : 'max-w-[88%]',
         className,
       )}
     >
@@ -76,7 +77,7 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
       <div
         className={cn(
           'flex min-w-0 flex-col items-start',
-          isLexical || isMath ? 'w-full max-w-full' : 'max-w-[78%]',
+          isMathWide ? 'w-full max-w-full' : 'max-w-[78%]',
         )}
       >
         {showImages ? (
@@ -91,7 +92,7 @@ export function ReceivingChatMessageBubble(props: ChatMessageBubbleProps) {
             chatBubbleVariants({ variant, rounded }),
             getChatBubbleTailClass('receiving', rounded),
             chatBubbleEnterAnimation,
-            (isLexical || isMath) && 'w-full max-w-full',
+            isMathWide && 'w-full max-w-full',
           )}
         >
           {resolvedStatus === 'loading' ? (

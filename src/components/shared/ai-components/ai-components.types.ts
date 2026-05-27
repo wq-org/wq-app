@@ -54,6 +54,10 @@ export type Ai01Props = {
   clearOnSubmit?: boolean
   showDropDown?: boolean
   showMic?: boolean
+  /** Drops the centered `max-w-2xl` cap so the shell fills the parent row. */
+  fullWidth?: boolean
+  /** Extra classes on the composer shell (border, motion, rounding). */
+  composerShellClassName?: string
 }
 
 export type Ai03Props = {

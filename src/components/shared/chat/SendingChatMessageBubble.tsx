@@ -83,6 +83,10 @@ export function SendingChatMessageBubble(props: SendingChatMessageBubbleProps) {
     !isMath &&
     (onEdit != null || onDelete != null)
 
+  const isMathWide = isMath
+  const rowMaxWidthClass = isMathWide ? 'w-full max-w-full' : 'max-w-[88%]'
+  const bubbleColumnClass = isMathWide ? 'w-full max-w-full' : 'max-w-[78%]'
+
   const handleConfirmDelete = () => {
     onDelete?.()
     setDeleteDialogOpen(false)
@@ -93,90 +97,87 @@ export function SendingChatMessageBubble(props: SendingChatMessageBubbleProps) {
       <div
         className={cn(
           'group/sending-bubble flex items-end justify-end gap-2',
-          isLexical || isMath ? 'max-w-full w-full' : 'max-w-[88%]',
+          rowMaxWidthClass,
           className,
         )}
       >
-        {canShowActions ? (
-          <div
-            className={cn(
-              'mb-1 flex flex-col gap-0.5 opacity-0 transition-opacity',
-              'group-hover/sending-bubble:opacity-100 group-focus-within/sending-bubble:opacity-100',
-            )}
-          >
-            {onEdit ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="size-8 shrink-0"
-                aria-label={t('chatBubble.editMessageAria')}
-                onClick={onEdit}
-              >
-                <Pencil className="size-4" />
-              </Button>
-            ) : null}
-            {onDelete ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="size-8 shrink-0 text-destructive hover:text-destructive"
-                aria-label={t('chatBubble.deleteMessageAria')}
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
-
-        <div
-          className={cn(
-            'flex min-w-0 flex-col items-end',
-            isLexical || isMath ? 'w-full max-w-full' : 'max-w-[78%]',
-          )}
-        >
-          {showImages ? (
-            <ChatImageList
-              images={images}
-              className="mb-2"
-            />
+        <div className={cn('relative min-w-0', bubbleColumnClass)}>
+          {canShowActions ? (
+            <div
+              className={cn(
+                'absolute top-1/2 right-full z-10 mr-1 flex -translate-y-1/2 flex-col gap-0.5 opacity-0 transition-opacity',
+                'group-hover/sending-bubble:opacity-100 group-focus-within/sending-bubble:opacity-100',
+              )}
+            >
+              {onEdit ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 shrink-0 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+                  aria-label={t('chatBubble.editMessageAria')}
+                  onClick={onEdit}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              ) : null}
+              {onDelete ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 shrink-0 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+                  aria-label={t('chatBubble.deleteMessageAria')}
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              ) : null}
+            </div>
           ) : null}
-          <div
-            key={bubbleStateKey}
-            className={cn(
-              chatBubbleVariants({ variant, rounded, dashed }),
-              getChatBubbleTailClass('sending', rounded),
-              chatBubbleEnterAnimation,
-              (isLexical || isMath) && 'w-full max-w-full',
-            )}
-          >
-            {resolvedStatus === 'loading' ? (
-              <div className="flex min-h-9 items-center justify-center py-0.5 text-inherit">
-                <DotWaveLoader variant={resolveDotWaveLoaderVariant(variant)} />
-              </div>
-            ) : isMath ? (
-              <>
-                {mathContent}
-                {time ? <p className="mt-1 text-right text-[10px] opacity-70">{time}</p> : null}
-              </>
-            ) : isLexical ? (
-              <>
-                <ChatBubbleLexicalContent
-                  content={lexicalContent}
-                  hydrationKey={lexicalHydrationKey}
-                />
-                {time ? <p className="mt-1 text-right text-[10px] opacity-70">{time}</p> : null}
-              </>
-            ) : (
-              <>
-                <p className={cn('whitespace-pre-line text-inherit', textBold && 'font-bold')}>
-                  {text}
-                </p>
-                {time ? <p className="mt-1 text-right text-[10px] opacity-70">{time}</p> : null}
-              </>
-            )}
+
+          <div className="flex min-w-0 flex-col items-end">
+            {showImages ? (
+              <ChatImageList
+                images={images}
+                className="mb-2"
+              />
+            ) : null}
+            <div
+              key={bubbleStateKey}
+              className={cn(
+                chatBubbleVariants({ variant, rounded, dashed }),
+                getChatBubbleTailClass('sending', rounded),
+                chatBubbleEnterAnimation,
+                isMathWide && 'w-full max-w-full',
+              )}
+            >
+              {resolvedStatus === 'loading' ? (
+                <div className="flex min-h-9 items-center justify-center py-0.5 text-inherit">
+                  <DotWaveLoader variant={resolveDotWaveLoaderVariant(variant)} />
+                </div>
+              ) : isMath ? (
+                <>
+                  {mathContent}
+                  {time ? <p className="mt-1 text-right text-[10px] opacity-70">{time}</p> : null}
+                </>
+              ) : isLexical ? (
+                <>
+                  <ChatBubbleLexicalContent
+                    content={lexicalContent}
+                    hydrationKey={lexicalHydrationKey}
+                  />
+                  {time ? <p className="mt-1 text-right text-[10px] opacity-70">{time}</p> : null}
+                </>
+              ) : (
+                <>
+                  <p className={cn('whitespace-pre-line text-inherit', textBold && 'font-bold')}>
+                    {text}
+                  </p>
+                  {time ? <p className="mt-1 text-right text-[10px] opacity-70">{time}</p> : null}
+                </>
+              )}
+            </div>
           </div>
         </div>
 

@@ -32,6 +32,8 @@ export function Ai01({
   clearOnSubmit = true,
   showDropDown = true,
   showMic = true,
+  fullWidth = false,
+  composerShellClassName,
 }: Ai01Props) {
   const isControlled = controlledValue !== undefined
   const [internalValue, setInternalValue] = useState(defaultValue)
@@ -114,10 +116,12 @@ export function Ai01({
 
         <div
           className={cn(
-            'mx-auto w-full max-w-2xl cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg dark:bg-muted/50',
+            fullWidth ? 'w-full' : 'mx-auto w-full max-w-2xl',
+            'cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg dark:bg-muted/50',
             isExpanded
               ? "grid rounded-3xl [grid-template-areas:'header'_'primary'_'footer'] grid-cols-[1fr] grid-rows-[auto_1fr_auto]"
               : "grid rounded-full [grid-template-areas:'header_header_header'_'leading_primary_trailing'_'._footer_.'] grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto]",
+            composerShellClassName,
           )}
         >
           <div

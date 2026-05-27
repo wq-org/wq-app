@@ -4,14 +4,9 @@ import { useCallback, useMemo, useState } from 'react'
 import { Check, CircleQuestionMark, HandHelping } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  AiPromptBadgeList,
-  aiPromptBadgeListEnterAnimation,
-  type Ai02PromptSuggestion,
-} from '@/components/shared/ai-components'
+import { AiPromptBadgeList, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
 import { hasLexicalEditorContent } from '@/components/shared/chat'
 import { Text } from '@/components/ui/text'
-import { cn } from '@/lib/utils'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 
@@ -176,7 +171,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
       />
 
       <OpenQuestionChatInput
-        className={cn('shrink-0', aiPromptBadgeListEnterAnimation)}
+        className="shrink-0"
         score={earnedScore}
         maxScore={maxScore}
         placeholder={t('openQuestionGamePreview.composerPlaceholder')}
