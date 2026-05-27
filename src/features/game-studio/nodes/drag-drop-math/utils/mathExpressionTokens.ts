@@ -105,23 +105,56 @@ function expandGluedOperandTokens(tokens: string[]): string[] {
   return expanded
 }
 
-function mapTokenForEval(token: string): string {
+function normalizeNumberToken(token: string): string {
+  if (/^\d+,\d+$/.test(token)) return token.replace(',', '.')
+  return token
+}
+
+function mapStandaloneTokenForEval(token: string): string {
   if (token in MATH_BADGE_MAP) return MATH_BADGE_MAP[token]
   const unit = findUnitDefinition(token)
   if (unit !== null) {
     if (unit.symbol === 'percent') return '* 0.01'
     return ''
   }
-  if (/^\d+,\d+$/.test(token)) return token.replace(',', '.')
-  return token
+  return normalizeNumberToken(token)
 }
 
 /** Turns canvas/display tokens into a spaced expression for `mathjs.evaluate`. */
 export function toMathExpr(tokens: readonly string[]): string {
-  return tokens
-    .map(mapTokenForEval)
-    .filter((token) => token !== '')
-    .join(' ')
+  const mapped: string[] = []
+
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index]
+    const nextToken = tokens[index + 1]
+    const nextUnit = nextToken ? findUnitDefinition(nextToken) : null
+    const normalizedNumber = normalizeNumberToken(token)
+    const isNumber = NUMBER_TOKEN_PATTERN.test(normalizedNumber)
+
+    // Normalize number+unit pairs before removing units from the math expression.
+    if (isNumber && nextUnit !== null) {
+      if (nextUnit.symbol === 'percent') {
+        mapped.push(`(${normalizedNumber} * 0.01)`)
+        index += 1
+        continue
+      }
+
+      if (nextUnit.symbol === 'ct') {
+        mapped.push(`(${normalizedNumber} * 0.01)`)
+        index += 1
+        continue
+      }
+
+      mapped.push(normalizedNumber)
+      index += 1
+      continue
+    }
+
+    const mappedToken = mapStandaloneTokenForEval(token)
+    if (mappedToken !== '') mapped.push(mappedToken)
+  }
+
+  return mapped.join(' ')
 }
 
 /**
