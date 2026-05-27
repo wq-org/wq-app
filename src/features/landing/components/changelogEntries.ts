@@ -20,6 +20,39 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-05-27-game-studio-dnd-math-node',
+    date: '27 May 2026',
+    title:
+      'Game Studio: Drag & Drop Math — build multi-step calculations with real units, fair scoring, and a student-style preview',
+    summary:
+      'Teachers can now add a Drag & Drop Math game node to a learning flow. Students drag math blocks, text, and sum rows onto a canvas, press Enter to evaluate each line, and chain results into further calculations or a final Σ total. The editor supports a rich task description, several exercise tabs in one game, and a preview that mirrors how learners will submit answers. Scoring uses partial credit (PSCA): correct intermediate steps earn points even when the final total is wrong. Settings explain the formula in plain language and let you set the maximum score for the whole activity.',
+    bullets: [
+      'Teachers: add the Drag & Drop Math node from Game Studio and open a three-pane workspace — editor (build), preview (test as a student), and settings (points and scoring rules)',
+      'Teachers: write the task introduction in a rich text editor (Lexical), so instructions, emphasis, and structure appear in the learner chat before the first exercise title',
+      'Teachers: create several exercise tabs in one game (for example 1.1, 1.2, 1.3); each tab has its own title, answer canvas, and teacher solution you build separately',
+      'Teachers: drag Math Block, Sum (Σ), and Text Block chips from the palette onto the canvas; reorder rows with the grip handle; drop result chips onto Σ rows or between rows to start a new calculation line',
+      'Teachers: press Enter on a math chip to evaluate the line — the engine uses math.js with custom units (€, m², kg, %, and many more) so results show with the correct unit, not just bare numbers',
+      'Teachers: invalid combinations are blocked before they confuse learners — for example incompatible units or operations that are not allowed in strict school mode, with clear feedback on the row',
+      'Teachers: a built-in rule set covers allowed standard operations and a strict-school matrix so only school-appropriate operator and unit combinations are accepted during authoring',
+      'Teachers: optional instant color feedback turns a row blue when Enter accepts the expression and red when something is wrong (operators, numbers, or units), so you can spot mistakes while building',
+      'Teachers: the add-tab control shows “+ Exercise” so it is obvious you are adding another sub-question to the same game node',
+      'Preview (for teachers testing, and the pattern students will see): walk through exercise tabs one after another; each tab’s maximum points is your total game score divided evenly across tabs (10 points and 2 tabs → up to 5 points per tab)',
+      'Preview: submit your canvas answer, confirm in a dialog, then see a short loading state, your submitted rows in the chat, points earned for that tab, and — when applicable — a congratulations message for a perfect tab score',
+      'Preview: after a tab is scored, the next exercise title appears in the chat, the canvas resets for a fresh attempt, and a running total toward the game maximum is shown at the bottom',
+      'Preview: after the last tab, a bold total summary shows how many points you earned out of the maximum you set in settings',
+      'Preview: use “How to play” in the preview to see step-by-step instructions and how PSCA scoring maps to your maximum points',
+      'Preview: empty canvases cannot be submitted; after submit, chips lock so the attempt cannot be changed (same idea learners will experience)',
+      'Settings: set the maximum score for the entire game node (for example 10 points); that budget is shared across all exercise tabs automatically',
+      'Settings: open “How is the score calculated?” to read the partial-credit formula in plain language — result (50%), steps (30%), method (15%), and error-free checks (5%) — plus an example of how a score between 0 and 1 becomes points',
+      'Settings: toggle instant color feedback on or off for the whole node',
+      'Settings: see the previous and next nodes in your game flow with icons, so you can jump to neighbors while editing',
+      'Students (when this node is published in a game): read the task and each exercise title in a chat-style layout, build calculations by dragging blocks, submit when ready, and receive partial points when intermediate results are correct even if the final sum is wrong',
+      'Students: fair scoring means a single typo on the last Σ line does not automatically erase credit for correct work on earlier lines, as long as those lines match what the teacher modeled',
+      'Internal: unit categories and a TypeScript unit registry keep €, areas, rates (€/m²), and derived results consistent across validation and display',
+    ],
+    badges: ['feature', 'new'],
+  },
+  {
     id: '2026-05-23-teacher-cloud-gallery-and-expanded-file-preview',
     date: '23 May 2026',
     title: 'Teacher Cloud gallery previews files more clearly and stays easier to browse',
