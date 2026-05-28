@@ -1,0 +1,295 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1000" width="820" height="1000" role="img" font-family="'Segoe UI', system-ui, sans-serif">
+  <title>Fig. 3 — Radar charts: multi-dimensional similarity analysis (Ayaan &amp; Ng, 2025)</title>
+  <desc>Four radar charts comparing student and reference answers across Jaccard, Inverted Edit, Cosine, Normal Words, Semantic, and Final score metrics. Cases: (a) high similarity, (b) moderate similarity, (c) low similarity — hard zero, (d) partial similarity.</desc>
+
+  <defs>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="120%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#00000014"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="1000" fill="#f9fafb" rx="10"/>
+
+  <!-- ════════════════════════════════════════════════════════════
+       MAIN TITLE
+  ═══════════════════════════════════════════════════════════════ -->
+  <text x="410" y="32" text-anchor="middle" font-size="13.5" font-weight="600" fill="#111827">
+    Fig. 3 — Radar charts: multi-dimensional similarity analysis
+  </text>
+  <text x="410" y="48" text-anchor="middle" font-size="10.5" fill="#6b7280" font-style="italic">
+    Ayaan &amp; Ng · MethodsX 14 (2025) 103395
+  </text>
+
+  <!-- ════════════════════════════════════════════════════════════
+       ── CHART (a)  cx=205  cy=325 ──
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Stats text block (a) -->
+  <text x="22" y="68"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Jaccard Score-  0.5520169851380042</text>
+  <text x="22" y="82"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Inverted Edit Score  -  0.5340557275541795</text>
+  <text x="22" y="96"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Cosine Score -  0.8248465273840783</text>
+  <text x="22" y="110" font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Normal Words -  1.0</text>
+  <text x="22" y="124" font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Semantic Score -  0.8942685723304749</text>
+  <text x="22" y="138" font-size="9.2" fill="#6d28d9" font-family="'Courier New', monospace">Base score =  0.7664646265120427</text>
+  <text x="22" y="152" font-size="9.2" fill="#b45309" font-family="'Courier New', monospace">Final score =  0.8303665994212588</text>
+
+  <!-- Chart title (a) -->
+  <text x="165" y="192" font-size="8.5" fill="#6b7280">Comparison of Students Answers and References</text>
+
+  <!-- Legend (a) -->
+  <rect x="280" y="183" width="9" height="9" fill="#93c5fd" stroke="#3b82f6" stroke-width="0.8" rx="1"/>
+  <text x="291" y="191" font-size="8" fill="#374151">Reference Answer</text>
+  <rect x="280" y="196" width="9" height="9" fill="#f9a8d4" stroke="#e05070" stroke-width="0.8" rx="1"/>
+  <text x="291" y="204" font-size="8" fill="#374151">Student Answer</text>
+
+  <!-- Grid hexagons (a) cx=205 cy=325 -->
+  <polygon points="225,325 215,342.3 195,342.3 185,325 195,307.7 215,307.7" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="245,325 225,359.6 185,359.6 165,325 185,290.4 225,290.4" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="265,325 235,376.9 175,376.9 145,325 175,273.1 235,273.1" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="285,325 245,394.2 165,394.2 125,325 165,255.8 245,255.8" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="305,325 255,411.6 155,411.6 105,325 155,238.4 255,238.4" fill="none" stroke="#d1d5db" stroke-width="1"/>
+
+  <!-- Axis lines (a) -->
+  <line x1="205" y1="325" x2="305" y2="325"   stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="325" x2="255" y2="411.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="325" x2="155" y2="411.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="325" x2="105" y2="325"    stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="325" x2="155" y2="238.4"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="325" x2="255" y2="238.4"  stroke="#d1d5db" stroke-width="0.8"/>
+
+  <!-- Reference polygon (a) -->
+  <polygon points="305,325 255,411.6 155,411.6 105,325 155,238.4 255,238.4"
+           fill="#bfdbfe" fill-opacity="0.55" stroke="#3b82f6" stroke-width="1.5"/>
+
+  <!-- Student polygon (a): J=0.552 F=0.830 S=0.894 NW=1.0 C=0.825 IE=0.534 -->
+  <polygon points="260.2,325 246.5,396.9 160.3,402.4 105,325 163.8,253.5 231.7,278.8"
+           fill="#fda4af" fill-opacity="0.55" stroke="#e05070" stroke-width="1.5"/>
+
+  <!-- Center text (a) -->
+  <text x="205" y="321" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Total Marks: 4</text>
+  <text x="205" y="336" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Marks Given: 4</text>
+
+  <!-- Axis labels (a) r=118 -->
+  <text x="324" y="328" font-size="9" fill="#374151" text-anchor="start">Jaccard</text>
+  <text x="264" y="432" font-size="9" fill="#374151" text-anchor="middle">Final</text>
+  <text x="146" y="432" font-size="9" fill="#374151" text-anchor="middle">Semantic</text>
+  <text x="86"  y="328" font-size="9" fill="#374151" text-anchor="end">Normal Words</text>
+  <text x="146" y="222" font-size="9" fill="#374151" text-anchor="middle">Cosine</text>
+  <text x="264" y="222" font-size="9" fill="#374151" text-anchor="middle">Inverted Edit</text>
+
+  <!-- Caption (a) -->
+  <text x="205" y="455" text-anchor="middle" font-size="11" font-weight="700" fill="#1f2937">(a) High similarity — Final Score: 0.83</text>
+  <!-- Explanation (a) -->
+  <text x="205" y="471" text-anchor="middle" font-size="9" fill="#4b5563">Stf=0.894 &lt; 0.90 → partial branch. F=C=0.830. Ceiling: ⌈0.83×4⌉=4/4.</text>
+  <text x="205" y="484" text-anchor="middle" font-size="9" fill="#7c3aed">Ceiling rounding awards full marks even though branch was partial.</text>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       ── CHART (b)  cx=615  cy=325 ──
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Stats text block (b) -->
+  <text x="432" y="68"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Jaccard Score-  0.18679245283018867</text>
+  <text x="432" y="82"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Inverted Edit Score  -  0.3306581059390048</text>
+  <text x="432" y="96"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Cosine Score -  0.44448930751740523</text>
+  <text x="432" y="110" font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Normal Words -  0.7</text>
+  <text x="432" y="124" font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Semantic Score -  0.6225690841674805</text>
+  <text x="432" y="138" font-size="9.2" fill="#6d28d9" font-family="'Courier New', monospace">Base score =  0.4324503386981786</text>
+  <text x="432" y="152" font-size="9.2" fill="#b45309" font-family="'Courier New', monospace">Final score =  0.5275097114328295</text>
+
+  <!-- Chart title (b) -->
+  <text x="575" y="192" font-size="8.5" fill="#6b7280">Comparison of Students Answers and References</text>
+
+  <!-- Legend (b) -->
+  <rect x="690" y="183" width="9" height="9" fill="#93c5fd" stroke="#3b82f6" stroke-width="0.8" rx="1"/>
+  <text x="701" y="191" font-size="8" fill="#374151">Reference</text>
+  <rect x="690" y="196" width="9" height="9" fill="#f9a8d4" stroke="#e05070" stroke-width="0.8" rx="1"/>
+  <text x="701" y="204" font-size="8" fill="#374151">Student</text>
+
+  <!-- Grid hexagons (b) cx=615 cy=325 -->
+  <polygon points="635,325 625,342.3 605,342.3 595,325 605,307.7 625,307.7" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="655,325 635,359.6 595,359.6 575,325 595,290.4 635,290.4" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="675,325 645,376.9 585,376.9 555,325 585,273.1 645,273.1" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="695,325 655,394.2 575,394.2 535,325 575,255.8 655,255.8" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="715,325 665,411.6 565,411.6 515,325 565,238.4 665,238.4" fill="none" stroke="#d1d5db" stroke-width="1"/>
+
+  <!-- Axis lines (b) -->
+  <line x1="615" y1="325" x2="715" y2="325"   stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="325" x2="665" y2="411.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="325" x2="565" y2="411.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="325" x2="515" y2="325"    stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="325" x2="565" y2="238.4"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="325" x2="665" y2="238.4"  stroke="#d1d5db" stroke-width="0.8"/>
+
+  <!-- Reference polygon (b) -->
+  <polygon points="715,325 665,411.6 565,411.6 515,325 565,238.4 665,238.4"
+           fill="#bfdbfe" fill-opacity="0.55" stroke="#3b82f6" stroke-width="1.5"/>
+
+  <!-- Student polygon (b): J=0.187 F=0.528 S=0.623 NW=0.7 C=0.445 IE=0.331 -->
+  <polygon points="633.7,325 641.4,370.7 583.9,378.9 545,325 592.8,286.5 631.5,296.3"
+           fill="#fda4af" fill-opacity="0.55" stroke="#e05070" stroke-width="1.5"/>
+
+  <!-- Center text (b) -->
+  <text x="615" y="321" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Total Marks: 3</text>
+  <text x="615" y="336" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Marks Given: 2</text>
+
+  <!-- Axis labels (b) -->
+  <text x="734" y="328" font-size="9" fill="#374151" text-anchor="start">Jaccard</text>
+  <text x="674" y="432" font-size="9" fill="#374151" text-anchor="middle">Final</text>
+  <text x="556" y="432" font-size="9" fill="#374151" text-anchor="middle">Semantic</text>
+  <text x="496" y="328" font-size="9" fill="#374151" text-anchor="end">Normal Words</text>
+  <text x="556" y="222" font-size="9" fill="#374151" text-anchor="middle">Cosine</text>
+  <text x="674" y="222" font-size="9" fill="#374151" text-anchor="middle">Inverted Edit</text>
+
+  <!-- Caption (b) -->
+  <text x="615" y="455" text-anchor="middle" font-size="11" font-weight="700" fill="#1f2937">(b) Moderate similarity — Final Score: 0.52</text>
+  <!-- Explanation (b) -->
+  <text x="615" y="471" text-anchor="middle" font-size="9" fill="#4b5563">Stf=0.622 → partial branch. F=C=0.527. ⌈0.527×3⌉=⌈1.58⌉=2/3 marks.</text>
+  <text x="615" y="484" text-anchor="middle" font-size="9" fill="#0369a1">Student shows partial understanding with notable metric divergence.</text>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION SEPARATOR
+  ═══════════════════════════════════════════════════════════════ -->
+  <line x1="30" y1="498" x2="790" y2="498" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4 3"/>
+
+  <!-- ════════════════════════════════════════════════════════════
+       ── CHART (c)  cx=205  cy=788 ──
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Stats text block (c) -->
+  <text x="22" y="516"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Jaccard Score-  0.05026455026455026</text>
+  <text x="22" y="530"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Inverted Edit Score  -  0.26981919332406124</text>
+  <text x="22" y="544"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Cosine Score -  0.39587665480785805</text>
+  <text x="22" y="558"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Normal Words -  1.3  (capped to 1.0 in chart)</text>
+  <text x="22" y="572"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Semantic Score -  0.19080691039562225</text>
+  <text x="22" y="586"  font-size="9.2" fill="#6d28d9" font-family="'Courier New', monospace">Base score =  0.5508242808541286</text>
+  <text x="22" y="600"  font-size="9.2" fill="#dc2626" font-family="'Courier New', monospace">Final score =  0  ← hard zero (Stf &lt; 0.20)</text>
+
+  <!-- Chart title (c) -->
+  <text x="165" y="648" font-size="8.5" fill="#6b7280">Comparison of Students Answers and References</text>
+
+  <!-- Legend (c) -->
+  <rect x="280" y="639" width="9" height="9" fill="#93c5fd" stroke="#3b82f6" stroke-width="0.8" rx="1"/>
+  <text x="291" y="647" font-size="8" fill="#374151">Reference Answer</text>
+  <rect x="280" y="652" width="9" height="9" fill="#f9a8d4" stroke="#e05070" stroke-width="0.8" rx="1"/>
+  <text x="291" y="660" font-size="8" fill="#374151">Student Answer</text>
+
+  <!-- Grid hexagons (c) cx=205 cy=788 -->
+  <polygon points="225,788 215,805.3 195,805.3 185,788 195,770.7 215,770.7" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="245,788 225,822.6 185,822.6 165,788 185,753.4 225,753.4" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="265,788 235,839.9 175,839.9 145,788 175,736.1 235,736.1" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="285,788 245,857.2 165,857.2 125,788 165,718.8 245,718.8" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="305,788 255,874.6 155,874.6 105,788 155,701.4 255,701.4" fill="none" stroke="#d1d5db" stroke-width="1"/>
+
+  <!-- Axis lines (c) -->
+  <line x1="205" y1="788" x2="305" y2="788"   stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="788" x2="255" y2="874.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="788" x2="155" y2="874.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="788" x2="105" y2="788"    stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="788" x2="155" y2="701.4"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="205" y1="788" x2="255" y2="701.4"  stroke="#d1d5db" stroke-width="0.8"/>
+
+  <!-- Reference polygon (c) -->
+  <polygon points="305,788 255,874.6 155,874.6 105,788 155,701.4 255,701.4"
+           fill="#bfdbfe" fill-opacity="0.55" stroke="#3b82f6" stroke-width="1.5"/>
+
+  <!-- Student polygon (c): J=0.050 F=0 S=0.191 NW=1.0 C=0.396 IE=0.270 -->
+  <!-- Final=0 means that axis point is at center -->
+  <polygon points="210,788 205,788 195.5,804.5 105,788 185.2,753.7 218.5,764.6"
+           fill="#fda4af" fill-opacity="0.60" stroke="#e05070" stroke-width="1.5"/>
+
+  <!-- Center text (c) -->
+  <text x="205" y="784" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Total Marks: 3</text>
+  <text x="205" y="799" text-anchor="middle" font-size="9.5" font-weight="700" fill="#dc2626">Marks Given: 0</text>
+
+  <!-- Axis labels (c) -->
+  <text x="324" y="791" font-size="9" fill="#374151" text-anchor="start">Jaccard</text>
+  <text x="264" y="895" font-size="9" fill="#374151" text-anchor="middle">Final</text>
+  <text x="146" y="895" font-size="9" fill="#374151" text-anchor="middle">Semantic</text>
+  <text x="86"  y="791" font-size="9" fill="#374151" text-anchor="end">Normal Words</text>
+  <text x="146" y="685" font-size="9" fill="#374151" text-anchor="middle">Cosine</text>
+  <text x="264" y="685" font-size="9" fill="#374151" text-anchor="middle">Inverted Edit</text>
+
+  <!-- Caption (c) -->
+  <text x="205" y="917" text-anchor="middle" font-size="11" font-weight="700" fill="#1f2937">(c) Low similarity — Final Score: 0.00</text>
+  <!-- Explanation (c) -->
+  <text x="205" y="933" text-anchor="middle" font-size="9" fill="#dc2626">Stf=0.191 &lt; 0.20 → hard zero branch fires. F=0. All other scores ignored.</text>
+  <text x="205" y="946" text-anchor="middle" font-size="9" fill="#4b5563">NW=1.3 (verbose) but semantic mismatch means zero marks awarded.</text>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       ── CHART (d)  cx=615  cy=788 ──
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Stats text block (d) -->
+  <text x="432" y="516"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Jaccard Score-  0.15242494226327943</text>
+  <text x="432" y="530"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Inverted Edit Score  -  0.36036036036036034</text>
+  <text x="432" y="544"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Cosine Score -  0.31596402621774283</text>
+  <text x="432" y="558"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Normal Words -  1.8  (capped to 1.0 in chart)</text>
+  <text x="432" y="572"  font-size="9.2" fill="#374151" font-family="'Courier New', monospace">Semantic Score -  0.6876624822616577</text>
+  <text x="432" y="586"  font-size="9.2" fill="#6d28d9" font-family="'Courier New', monospace">Base score =  0.7165527265803427</text>
+  <text x="432" y="600"  font-size="9.2" fill="#b45309" font-family="'Courier New', monospace">Final score =  0.7021076044210002</text>
+
+  <!-- Chart title (d) -->
+  <text x="575" y="648" font-size="8.5" fill="#6b7280">Comparison of Students Answers and References</text>
+
+  <!-- Legend (d) -->
+  <rect x="690" y="639" width="9" height="9" fill="#93c5fd" stroke="#3b82f6" stroke-width="0.8" rx="1"/>
+  <text x="701" y="647" font-size="8" fill="#374151">Reference</text>
+  <rect x="690" y="652" width="9" height="9" fill="#f9a8d4" stroke="#e05070" stroke-width="0.8" rx="1"/>
+  <text x="701" y="660" font-size="8" fill="#374151">Student</text>
+
+  <!-- Grid hexagons (d) cx=615 cy=788 -->
+  <polygon points="635,788 625,805.3 605,805.3 595,788 605,770.7 625,770.7" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="655,788 635,822.6 595,822.6 575,788 595,753.4 635,753.4" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="675,788 645,839.9 585,839.9 555,788 585,736.1 645,736.1" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="695,788 655,857.2 575,857.2 535,788 575,718.8 655,718.8" fill="none" stroke="#e5e7eb" stroke-width="0.7"/>
+  <polygon points="715,788 665,874.6 565,874.6 515,788 565,701.4 665,701.4" fill="none" stroke="#d1d5db" stroke-width="1"/>
+
+  <!-- Axis lines (d) -->
+  <line x1="615" y1="788" x2="715" y2="788"   stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="788" x2="665" y2="874.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="788" x2="565" y2="874.6"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="788" x2="515" y2="788"    stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="788" x2="565" y2="701.4"  stroke="#d1d5db" stroke-width="0.8"/>
+  <line x1="615" y1="788" x2="665" y2="701.4"  stroke="#d1d5db" stroke-width="0.8"/>
+
+  <!-- Reference polygon (d) -->
+  <polygon points="715,788 665,874.6 565,874.6 515,788 565,701.4 665,701.4"
+           fill="#bfdbfe" fill-opacity="0.55" stroke="#3b82f6" stroke-width="1.5"/>
+
+  <!-- Student polygon (d): J=0.152 F=0.702 S=0.688 NW=1.0 C=0.316 IE=0.360 -->
+  <polygon points="630.2,788 650.1,848.8 580.6,847.6 515,788 599.2,760.6 633.0,756.8"
+           fill="#fda4af" fill-opacity="0.55" stroke="#e05070" stroke-width="1.5"/>
+
+  <!-- Center text (d) -->
+  <text x="615" y="784" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Total Marks: 4</text>
+  <text x="615" y="799" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e1b4b">Marks Given: 3</text>
+
+  <!-- Axis labels (d) -->
+  <text x="734" y="791" font-size="9" fill="#374151" text-anchor="start">Jaccard</text>
+  <text x="674" y="895" font-size="9" fill="#374151" text-anchor="middle">Final</text>
+  <text x="556" y="895" font-size="9" fill="#374151" text-anchor="middle">Semantic</text>
+  <text x="496" y="791" font-size="9" fill="#374151" text-anchor="end">Normal Words</text>
+  <text x="556" y="685" font-size="9" fill="#374151" text-anchor="middle">Cosine</text>
+  <text x="674" y="685" font-size="9" fill="#374151" text-anchor="middle">Inverted Edit</text>
+
+  <!-- Caption (d) -->
+  <text x="615" y="917" text-anchor="middle" font-size="11" font-weight="700" fill="#1f2937">(d) Partial similarity — Final Score: 0.70</text>
+  <!-- Explanation (d) -->
+  <text x="615" y="933" text-anchor="middle" font-size="9" fill="#4b5563">Stf=0.688 → partial branch. F=C=0.702. ⌈0.702×4⌉=⌈2.81⌉=3/4 marks.</text>
+  <text x="615" y="946" text-anchor="middle" font-size="9" fill="#0369a1">NW=1.8 capped. Extended answer with incomplete semantic match.</text>
+
+  <!-- ════════════════════════════════════════════════════════════
+       BOTTOM FOOTER
+  ═══════════════════════════════════════════════════════════════ -->
+  <line x1="30" y1="960" x2="790" y2="960" stroke="#e5e7eb" stroke-width="0.8"/>
+  <text x="410" y="976" text-anchor="middle" font-size="9" fill="#9ca3af" font-style="italic">
+    Blue polygon = reference answer (max value 1.0 on all axes) · Pink polygon = student answer · Grid rings at 0.2 intervals
+  </text>
+  <text x="410" y="990" text-anchor="middle" font-size="9" fill="#9ca3af" font-style="italic">
+    NW values &gt; 1.0 (cases c, d) are capped to 1.0 for display · Hard zero fires when Stf &lt; 0.20 regardless of other metrics
+  </text>
+
+</svg>

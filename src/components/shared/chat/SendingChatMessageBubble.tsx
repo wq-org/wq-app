@@ -31,8 +31,10 @@ import DotWaveLoader from '@/components/ui/dot-wave-loader'
 import { cn } from '@/lib/utils'
 
 export type SendingChatMessageBubbleProps = ChatMessageBubbleProps & {
-  /** Transparent fill + dashed outline (e.g. message being edited in composer). */
+  /** Transparent fill + dashed outline (no dimming). */
   dashed?: boolean
+  /** Message is open in the composer — dashed outline, transparent fill, 50% opacity. */
+  editMode?: boolean
   /** Shows edit/delete controls to the left of the bubble on hover/focus. */
   showHoverActions?: boolean
   onEdit?: () => void
@@ -56,6 +58,7 @@ export function SendingChatMessageBubble(props: SendingChatMessageBubbleProps) {
     messageId,
     textBold,
     dashed = false,
+    editMode = false,
     showHoverActions = false,
     onEdit,
     onDelete,
@@ -76,8 +79,12 @@ export function SendingChatMessageBubble(props: SendingChatMessageBubbleProps) {
       : `${text}-${time}-${resolvedStatus}`
   const showImages = Boolean(images?.length) && resolvedStatus !== 'loading'
 
+  const isEditing = editMode
+  const showDashedOutline = dashed && !isEditing
+
   const canShowActions =
     showHoverActions &&
+    !isEditing &&
     resolvedStatus === 'ready' &&
     !isLexical &&
     !isMath &&
@@ -146,11 +153,17 @@ export function SendingChatMessageBubble(props: SendingChatMessageBubbleProps) {
             <div
               key={bubbleStateKey}
               className={cn(
-                chatBubbleVariants({ variant, rounded, dashed }),
+                chatBubbleVariants({
+                  variant,
+                  rounded,
+                  dashed: showDashedOutline,
+                  editMode: isEditing,
+                }),
                 getChatBubbleTailClass('sending', rounded),
                 chatBubbleEnterAnimation,
                 isMathWide && 'w-full max-w-full',
               )}
+              data-edit-mode={isEditing ? '' : undefined}
             >
               {resolvedStatus === 'loading' ? (
                 <div className="flex min-h-9 items-center justify-center py-0.5 text-inherit">

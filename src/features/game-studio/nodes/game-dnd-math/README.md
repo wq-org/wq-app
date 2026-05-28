@@ -149,6 +149,83 @@ Author toggle: **Game settings → Instant color feedback** (`DragDropMathSettin
 
 ## Evaluation rules
 
+### Scoring equation (weighted model)
+
+When the weighted rubric model is active, the final score is:
+
+$$
+S = \left(0.50 \cdot R + 0.30 \cdot T + 0.15 \cdot M + 0.05 \cdot E\right) \times P_{\max}
+$$
+
+Where:
+
+- `R`: result correctness
+- `T`: token/operator correctness
+- `M`: method/step quality
+- `E`: explanation quality
+- `P_max`: maximum points for the task
+
+### Partical Scroing Carry Algorithm PSCA equations (formal)
+
+The PSCA scorer computes four normalized components and combines them with configured weights:
+
+$$
+\text{score} = w_R \cdot R + w_S \cdot S + w_M \cdot M + w_E \cdot E,\quad
+w_R + w_S + w_M + w_E = 1
+$$
+
+Current default full-weight profile:
+
+$$
+\text{score} = 0.50 \cdot R + 0.30 \cdot S + 0.15 \cdot M + 0.05 \cdot E
+$$
+
+Points mapping:
+
+$$
+\text{awardedPoints} = \text{score} \cdot P_{\max}
+$$
+
+Result component (`R`) for final node:
+
+$$
+R =
+\begin{cases}
+1, & |\Delta| \le \varepsilon \\
+0, & |\Delta| > \varepsilon \land \text{graceful} = \text{false} \\
+\max\left(0,\;1-\frac{|\Delta|}{|y^*|}\right), & |\Delta| > \varepsilon \land \text{graceful} = \text{true}
+\end{cases}
+$$
+
+where $\Delta = y - y^*$, $y$ is student final value, and $y^*$ is teacher final expected value.
+
+Step component (`S`) for each step $i$:
+
+$$
+s_i =
+\begin{cases}
+1, & |a_i - \hat{a}_i| \le \varepsilon_i \\
+0, & \text{otherwise}
+\end{cases},
+\qquad
+S=\frac{1}{N}\sum_{i=1}^{N} s_i
+$$
+
+Method component (`M`) and error-free component (`E`) are averaged per-step:
+
+$$
+M=\frac{1}{N}\sum_{i=1}^{N} m_i,\qquad
+E=\frac{1}{N}\sum_{i=1}^{N} e_i
+$$
+
+Scoring mode:
+
+$$
+\text{mode} \in \{carry,\ strict\}
+$$
+
+Bei `strict` wird die erwartete Schrittberechnung durch die Musterlosungs-Operanden ersetzt; bei `carry` werden Folgeoperanden aus den bisherigen Schulerergebnissen aufgelost.
+
 ### What `math.evaluate()` is called on
 
 | Rule                                                      | Detail                                                       | Result                        | Example                                                                                |

@@ -1,0 +1,135 @@
+
+<style>
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.panel{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.label{font-size:13px;color:var(--color-text-secondary);min-width:180px}
+.val{font-size:13px;font-weight:500;min-width:42px;text-align:right;color:var(--color-text-primary)}
+input[type=range]{flex:1}
+.formula{font-size:12px;font-family:var(--font-mono);background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;margin-top:6px;color:var(--color-text-secondary);line-height:1.6}
+.result-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px}
+.metric{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;min-width:100px;text-align:center}
+.metric .mval{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric .mlbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:var(--border-radius-md);font-weight:500}
+.badge-zero{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-full{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-partial{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-attn{background:var(--color-background-info);color:var(--color-text-info)}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;margin-top:0}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:12px 0}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--color-background-tertiary);font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-right:6px;flex-shrink:0}
+</style>
+<h2 class="sr-only">Interactive NLP Scoring Pipeline — adjust metric sliders to see how the final mark is computed.</h2>
+
+<div class="panel">
+  <p class="section-title"><span class="step-num">1</span>NLP metric inputs — adjust each signal</p>
+  <div class="row"><span class="label">Jaccard similarity  <em style="font-size:11px;opacity:.6">w=0.15</em></span><input type="range" min="0" max="1" step="0.01" value="0.55" id="sj" oninput="calc()"><span class="val" id="vj">0.55</span></div>
+  <div class="row"><span class="label">Edit distance  <em style="font-size:11px;opacity:.6">w=0.05 (inverted)</em></span><input type="range" min="0.01" max="1" step="0.01" value="0.53" id="se" oninput="calc()"><span class="val" id="ve">0.53</span></div>
+  <div class="row"><span class="label">Cosine similarity  <em style="font-size:11px;opacity:.6">w=0.15</em></span><input type="range" min="0" max="1" step="0.01" value="0.82" id="sc" oninput="calc()"><span class="val" id="vc">0.82</span></div>
+  <div class="row"><span class="label">Normalised word count  <em style="font-size:11px;opacity:.6">w=0.15</em></span><input type="range" min="0" max="2" step="0.01" value="1.00" id="sw" oninput="calc()"><span class="val" id="vw">1.00</span></div>
+  <div class="formula" id="formula-a">C_nlp = clamp( 0.15·Sj + 0.05·(1/Se) + 0.15·Sc + 0.15·Sw , 0, 1 )</div>
+  <div class="result-row">
+    <div class="metric"><div class="mval" id="cnlp">—</div><div class="mlbl">C_nlp base score</div></div>
+    <div style="font-size:12px;color:var(--color-text-secondary);max-width:260px">Clamped weighted sum of surface-level text signals. Max possible from these 4 weights = 0.50 (the other 0.50 comes from USE semantic).</div>
+  </div>
+</div>
+
+<div class="panel">
+  <p class="section-title"><span class="step-num">2</span>Semantic signal — Universal Sentence Encoder</p>
+  <div class="row"><span class="label">USE semantic score  <em style="font-size:11px;opacity:.6">w=0.50</em></span><input type="range" min="0" max="1" step="0.01" value="0.89" id="stf" oninput="calc()"><span class="val" id="vstf">0.89</span></div>
+  <div class="formula" id="formula-b">C = clamp( 0.50·Stf + 0.50·C_nlp , 0, 1 )   — convex combination</div>
+  <div class="result-row">
+    <div class="metric"><div class="mval" id="conf">—</div><div class="mlbl">Confidence score C</div></div>
+    <div style="font-size:12px;color:var(--color-text-secondary);max-width:260px">Semantic score carries 50% of total weight. This single number represents "does the student understand the concept?"</div>
+  </div>
+</div>
+
+<div class="panel">
+  <p class="section-title"><span class="step-num">3</span>Rule-based final score — piecewise logic</p>
+  <div class="formula">
+    F = 0        if Stf &lt; 0.20  (semantically off-topic)<br>
+    F = 1        if Stf ≥ 0.90 AND Sw ≥ 0.85  (full understanding + sufficient length)<br>
+    F = C        otherwise  (partial credit via confidence)
+  </div>
+  <div class="result-row" style="margin-top:10px">
+    <div class="metric"><div class="mval" id="final">—</div><div class="mlbl">Final score F</div></div>
+    <div><span id="branch-badge" class="badge">—</span><br><span id="branch-reason" style="font-size:11px;color:var(--color-text-secondary);display:block;margin-top:4px;max-width:280px"></span></div>
+  </div>
+</div>
+
+<div class="panel">
+  <p class="section-title"><span class="step-num">4</span>Marks — scaled and ceiling-rounded</p>
+  <div class="row"><span class="label">Total marks for question</span><input type="range" min="1" max="20" step="1" value="10" id="tm" oninput="calc()"><span class="val" id="vtm">10</span></div>
+  <div class="formula">M = ⌈ min(F · T, T) ⌉   — ceiling prevents rounding down; clamp prevents exceeding max</div>
+  <div class="result-row" style="margin-top:10px">
+    <div class="metric"><div class="mval" id="marks" style="font-size:28px">—</div><div class="mlbl">Marks awarded M</div></div>
+    <div class="metric"><div class="mval" id="pct" style="font-size:28px">—</div><div class="mlbl">% of total</div></div>
+    <div id="attn-flag" style="display:none" class="badge badge-attn"><i class="ti ti-eye" aria-hidden="true"></i> Teacher review needed</div>
+  </div>
+</div>
+
+<script>
+const W = {j:0.15, e:0.05, c:0.15, w:0.15, tf:0.50};
+const ATTN_LO = 0.40, ATTN_HI = 0.70;
+
+function calc() {
+  const Sj = +document.getElementById('sj').value;
+  const Se = +document.getElementById('se').value;
+  const Sc = +document.getElementById('sc').value;
+  const Sw = +document.getElementById('sw').value;
+  const Stf = +document.getElementById('stf').value;
+  const T = +document.getElementById('tm').value;
+
+  document.getElementById('vj').textContent = Sj.toFixed(2);
+  document.getElementById('ve').textContent = Se.toFixed(2);
+  document.getElementById('vc').textContent = Sc.toFixed(2);
+  document.getElementById('vw').textContent = Sw.toFixed(2);
+  document.getElementById('vstf').textContent = Stf.toFixed(2);
+  document.getElementById('vtm').textContent = T;
+
+  const invE = 1 / Se;
+  const raw_cnlp = W.j*Sj + W.e*invE + W.c*Sc + W.w*Sw;
+  const Cnlp = Math.min(Math.max(0, raw_cnlp), 1);
+
+  document.getElementById('formula-a').textContent =
+    `C_nlp = clamp( ${W.j}×${Sj.toFixed(2)} + ${W.e}×(1/${Se.toFixed(2)}) + ${W.c}×${Sc.toFixed(2)} + ${W.w}×${Sw.toFixed(2)}, 0, 1 )\n       = clamp( ${(W.j*Sj).toFixed(3)} + ${(W.e*invE).toFixed(3)} + ${(W.c*Sc).toFixed(3)} + ${(W.w*Sw).toFixed(3)}, 0, 1 )\n       = ${Cnlp.toFixed(4)}`;
+
+  const C = Math.min(Math.max(0, W.tf*Stf + (1-W.tf)*Cnlp), 1);
+
+  document.getElementById('formula-b').textContent =
+    `C = clamp( 0.50×${Stf.toFixed(2)} + 0.50×${Cnlp.toFixed(4)}, 0, 1 )\n  = clamp( ${(0.5*Stf).toFixed(4)} + ${(0.5*Cnlp).toFixed(4)}, 0, 1 )\n  = ${C.toFixed(4)}`;
+
+  let F, branch, reason;
+  if (Stf < 0.20) {
+    F = 0; branch = 'zero'; reason = `Stf ${Stf.toFixed(2)} < 0.20 — semantically off-topic, hard zero applied.`;
+  } else if (Stf >= 0.90 && Sw >= 0.85) {
+    F = 1; branch = 'full'; reason = `Stf ${Stf.toFixed(2)} ≥ 0.90 AND Sw ${Sw.toFixed(2)} ≥ 0.85 — full marks.`;
+  } else {
+    F = C; branch = 'partial'; reason = `Neither threshold met — confidence score ${C.toFixed(4)} used for partial credit.`;
+  }
+
+  const M = Math.ceil(Math.min(F * T, T));
+  const pct = Math.round((M / T) * 100);
+
+  const needsAttn = C >= ATTN_LO && C <= ATTN_HI;
+
+  document.getElementById('cnlp').textContent = Cnlp.toFixed(3);
+  document.getElementById('conf').textContent = C.toFixed(3);
+  document.getElementById('final').textContent = F.toFixed(3);
+  document.getElementById('marks').textContent = `${M}/${T}`;
+  document.getElementById('pct').textContent = pct + '%';
+
+  const bb = document.getElementById('branch-badge');
+  bb.className = 'badge';
+  if (branch === 'zero') { bb.classList.add('badge-zero'); bb.textContent = 'Hard zero'; }
+  else if (branch === 'full') { bb.classList.add('badge-full'); bb.textContent = 'Full marks'; }
+  else { bb.classList.add('badge-partial'); bb.textContent = 'Partial credit'; }
+
+  document.getElementById('branch-reason').textContent = reason;
+
+  const af = document.getElementById('attn-flag');
+  af.style.display = needsAttn ? 'inline-block' : 'none';
+}
+calc();
+</script>

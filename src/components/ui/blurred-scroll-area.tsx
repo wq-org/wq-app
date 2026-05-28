@@ -40,14 +40,38 @@ function createMaskImage({
     return undefined
   }
 
-  const startSize = shadowState.start ? `${shadowSize}px` : '0px'
-  const endSize = shadowState.end ? `${shadowSize}px` : '0px'
+  const sz = `${shadowSize}px`
+
+  // Sine ease-in-out approximation (t = 0.2, 0.4, 0.6, 0.8)
+  const startFade = shadowState.start
+    ? [
+        `transparent 0`,
+        `rgba(0,0,0,0.095) calc(${sz} * 0.2)`,
+        `rgba(0,0,0,0.345) calc(${sz} * 0.4)`,
+        `rgba(0,0,0,0.655) calc(${sz} * 0.6)`,
+        `rgba(0,0,0,0.905) calc(${sz} * 0.8)`,
+        `black ${sz}`,
+      ].join(', ')
+    : `black 0`
+
+  const endFade = shadowState.end
+    ? [
+        `black calc(100% - ${sz})`,
+        `rgba(0,0,0,0.905) calc(100% - ${sz} * 0.8)`,
+        `rgba(0,0,0,0.655) calc(100% - ${sz} * 0.6)`,
+        `rgba(0,0,0,0.345) calc(100% - ${sz} * 0.4)`,
+        `rgba(0,0,0,0.095) calc(100% - ${sz} * 0.2)`,
+        `transparent 100%`,
+      ].join(', ')
+    : `black 100%`
+
+  const stops = `${startFade}, ${endFade}`
 
   if (scrollbars === 'horizontal') {
-    return `linear-gradient(to right, transparent 0, black ${startSize}, black calc(100% - ${endSize}), transparent 100%)`
+    return `linear-gradient(to right, ${stops})`
   }
 
-  return `linear-gradient(to bottom, transparent 0, black ${startSize}, black calc(100% - ${endSize}), transparent 100%)`
+  return `linear-gradient(to bottom, ${stops})`
 }
 
 export function BlurredScrollArea({
@@ -59,7 +83,7 @@ export function BlurredScrollArea({
   orientation = 'vertical',
   hideScrollBar = false,
   hideHorizontalScrollBar = true,
-  shadowSize = 40,
+  shadowSize = 80,
   viewportRef: externalViewportRef,
   ...props
 }: BlurredScrollAreaProps) {

@@ -27,13 +27,13 @@ export function OpenQuestionChatInput({
   className,
 }: OpenQuestionChatInputProps) {
   return (
-    <div className={cn('flex w-full shrink-0 items-center gap-3', className)}>
+    <div className={cn('flex w-full shrink-0 items-end gap-3', className)}>
       <Score
         score={score}
         max={maxScore}
         size="lg"
         variant="orange"
-        className="shrink-0"
+        className="shrink-0 self-end"
       />
       <Ai01
         className="min-w-0 flex-1"

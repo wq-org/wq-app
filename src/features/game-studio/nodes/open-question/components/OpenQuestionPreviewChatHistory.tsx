@@ -176,7 +176,7 @@ export function OpenQuestionPreviewChatHistory({
                   variant={receivingBubbleVariant}
                   status={message.status ?? 'ready'}
                   messageId={message.id}
-                  dashed={editingMessageId === message.id}
+                  editMode={editingMessageId === message.id}
                   showHoverActions={onEditSendingMessage != null || onDeleteSendingMessage != null}
                   onEdit={
                     onEditSendingMessage

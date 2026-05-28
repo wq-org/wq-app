@@ -35,6 +35,10 @@ export const chatBubbleVariants = cva(
         true: 'border border-dashed bg-transparent shadow-none',
         false: '',
       },
+      editMode: {
+        true: 'border border-dashed bg-transparent opacity-50 shadow-none',
+        false: '',
+      },
     },
     compoundVariants: [
       {
@@ -52,11 +56,27 @@ export const chatBubbleVariants = cva(
         variant: 'default',
         className: 'border-border text-foreground',
       },
+      {
+        editMode: true,
+        variant: 'orange',
+        className: 'border-[oklch(var(--oklch-orange))] text-[oklch(var(--oklch-orange))]',
+      },
+      {
+        editMode: true,
+        variant: 'dark',
+        className: 'border-neutral-400 text-neutral-800 dark:text-neutral-200',
+      },
+      {
+        editMode: true,
+        variant: 'default',
+        className: 'border-border text-foreground',
+      },
     ],
     defaultVariants: {
       variant: 'default',
       rounded: 'lg',
       dashed: false,
+      editMode: false,
     },
   },
 )
