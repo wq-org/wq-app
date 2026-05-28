@@ -1,0 +1,10 @@
+{
+  "loading": "Grading in progress...",
+  "error": "Grading failed. Please try again.",
+  "attention": "Needs teacher attention",
+  "branch": {
+    "hardZero": "Hard zero",
+    "fullMarks": "Full marks",
+    "partial": "Partial credit"
+  }
+}

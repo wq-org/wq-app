@@ -112,7 +112,7 @@ export function SendingChatMessageBubble(props: SendingChatMessageBubbleProps) {
           {canShowActions ? (
             <div
               className={cn(
-                'absolute top-1/2 right-full z-10 mr-1 flex -translate-y-1/2 flex-col gap-0.5 opacity-0 transition-opacity',
+                'absolute top-1/2 right-full z-10 mr-1 flex -translate-y-1/2 flex-row gap-0.5 opacity-0 transition-opacity',
                 'group-hover/sending-bubble:opacity-100 group-focus-within/sending-bubble:opacity-100',
               )}
             >

@@ -1,0 +1,97 @@
+# wq-grading-worker — REST Client (VS Code / JetBrains)
+# Start worker: cd grading-worker && uvicorn app.main:app --reload --port 8081
+#
+# FastAPI erwartet JSON-Bodies und validiert sie gegen das Pydantic-Schema (GradeRequest).
+# https://fastapi.tiangolo.com/tutorial/body/
+#
+# Deutsche Testfälle: Paraphrasen mit unterschiedlicher semantischer Nähe prüfen,
+# wie der Score auf nahe, teilweise und schwache Übereinstimmungen reagiert.
+
+@baseUrl = http://127.0.0.1:8000
+@json = application/json
+
+### Health check
+GET {{baseUrl}}/grade/health
+Accept: {{json}}
+
+
+###############################################################################
+# Deutsch — Wundversorgung (Standardbeispiel)
+# Schülerantwort entspricht inhaltlich der Musterlösung (Paraphrase).
+###############################################################################
+POST {{baseUrl}}/grade/
+Content-Type: {{json}}
+
+{
+  "student_answer": "Die Wunde sollte mit Kochsalzlösung gereinigt und mit einem sterilen Verband abgedeckt werden.",
+  "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
+  "total_points": 10,
+  "institution_id": "test_institution",
+  "session_participant_id": "test_preprocess_quick_de"
+}
+
+
+###############################################################################
+# Deutsch — Sehr nahe Übereinstimmung
+# Gleicher Sachverhalt, leicht andere Formulierung (soll hohen semantischen Score liefern).
+###############################################################################
+POST {{baseUrl}}/grade/
+Content-Type: {{json}}
+
+{
+  "student_answer": "Die Wunde wird mit Kochsalzlösung gereinigt und anschließend mit einem sterilen Verband bedeckt.",
+  "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
+  "total_points": 10,
+  "institution_id": "test_institution",
+  "session_participant_id": "test_german_close_match"
+}
+
+
+###############################################################################
+# Deutsch — Teilweise Übereinstimmung
+# Kernidee (reinigen + verbinden) ohne Details (Kochsalz, steriler Verband, Infektion).
+###############################################################################
+POST {{baseUrl}}/grade/
+Content-Type: {{json}}
+
+{
+  "student_answer": "Die Wunde sollte gereinigt und verbunden werden.",
+  "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
+  "total_points": 10,
+  "institution_id": "test_institution",
+  "session_participant_id": "test_german_partial_match"
+}
+
+
+###############################################################################
+# Deutsch — Schwache Übereinstimmung
+# Anderes Thema (Beruhigen, Arzt rufen) — erwartbar niedriger semantischer Score.
+###############################################################################
+POST {{baseUrl}}/grade/
+Content-Type: {{json}}
+
+{
+  "student_answer": "Man sollte die verletzte Person beruhigen und einen Arzt rufen.",
+  "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
+  "total_points": 10,
+  "institution_id": "test_institution",
+  "session_participant_id": "test_german_weak_match"
+}
+
+
+###############################################################################
+# Curl (Terminal) — gleiches Standardbeispiel wie oben
+#
+# curl -s -X POST http://127.0.0.1:8081/grade/ \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "student_answer": "Die Wunde sollte mit Kochsalzlösung gereinigt und mit einem sterilen Verband abgedeckt werden.",
+#     "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
+#     "total_points": 10,
+#     "institution_id": "test_institution",
+#     "session_participant_id": "test_preprocess_quick_de"
+#   }' | python3 -m json.tool
+#
+# Nächster Schritt: 10–20 deutsche Lehrer-/Schülerpaare aus eurer Domäne sammeln
+# und die Score-Verteilung prüfen, bevor Schwellenwerte festgelegt werden.
+###############################################################################

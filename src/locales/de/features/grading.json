@@ -1,0 +1,10 @@
+{
+  "loading": "Bewertung lauft...",
+  "error": "Bewertung fehlgeschlagen. Bitte erneut versuchen.",
+  "attention": "Lehrerhinweis erforderlich",
+  "branch": {
+    "hardZero": "Harte Null",
+    "fullMarks": "Volle Punktzahl",
+    "partial": "Teilpunkte"
+  }
+}
