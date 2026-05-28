@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 type BlurredScrollAreaProps = React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> & {
   children: React.ReactNode
   viewportClassName?: string
+  /** Applied to the fade overlay divs (e.g. `from-neutral-950` for dark surfaces). */
   fadeClassName?: string
   scrollbars?: 'vertical' | 'horizontal' | 'both'
   orientation?: 'vertical' | 'horizontal'
@@ -14,6 +15,8 @@ type BlurredScrollAreaProps = React.ComponentPropsWithoutRef<typeof ScrollAreaPr
   /** Visually hides the horizontal scrollbar (`opacity-0 pointer-events-none`); viewport scrolling is unchanged. */
   hideHorizontalScrollBar?: boolean
   shadowSize?: number
+  /** CSS color that matches the container background — used as the opaque end of the fade gradient. */
+  fadeColor?: string
   /** Receives the scroll viewport element — useful as `root` for IntersectionObserver. */
   viewportRef?: React.Ref<HTMLDivElement | null>
 }
@@ -21,57 +24,6 @@ type BlurredScrollAreaProps = React.ComponentPropsWithoutRef<typeof ScrollAreaPr
 type ShadowState = {
   start: boolean
   end: boolean
-}
-
-function createMaskImage({
-  scrollbars,
-  shadowSize,
-  shadowState,
-}: {
-  scrollbars: 'vertical' | 'horizontal' | 'both'
-  shadowSize: number
-  shadowState: ShadowState
-}) {
-  if (scrollbars === 'both') {
-    return undefined
-  }
-
-  if (!shadowState.start && !shadowState.end) {
-    return undefined
-  }
-
-  const sz = `${shadowSize}px`
-
-  // Sine ease-in-out approximation (t = 0.2, 0.4, 0.6, 0.8)
-  const startFade = shadowState.start
-    ? [
-        `transparent 0`,
-        `rgba(0,0,0,0.095) calc(${sz} * 0.2)`,
-        `rgba(0,0,0,0.345) calc(${sz} * 0.4)`,
-        `rgba(0,0,0,0.655) calc(${sz} * 0.6)`,
-        `rgba(0,0,0,0.905) calc(${sz} * 0.8)`,
-        `black ${sz}`,
-      ].join(', ')
-    : `black 0`
-
-  const endFade = shadowState.end
-    ? [
-        `black calc(100% - ${sz})`,
-        `rgba(0,0,0,0.905) calc(100% - ${sz} * 0.8)`,
-        `rgba(0,0,0,0.655) calc(100% - ${sz} * 0.6)`,
-        `rgba(0,0,0,0.345) calc(100% - ${sz} * 0.4)`,
-        `rgba(0,0,0,0.095) calc(100% - ${sz} * 0.2)`,
-        `transparent 100%`,
-      ].join(', ')
-    : `black 100%`
-
-  const stops = `${startFade}, ${endFade}`
-
-  if (scrollbars === 'horizontal') {
-    return `linear-gradient(to right, ${stops})`
-  }
-
-  return `linear-gradient(to bottom, ${stops})`
 }
 
 export function BlurredScrollArea({
@@ -84,6 +36,7 @@ export function BlurredScrollArea({
   hideScrollBar = false,
   hideHorizontalScrollBar = true,
   shadowSize = 80,
+  fadeColor = 'var(--background)',
   viewportRef: externalViewportRef,
   ...props
 }: BlurredScrollAreaProps) {
@@ -101,6 +54,7 @@ export function BlurredScrollArea({
     },
     [externalViewportRef],
   )
+
   const [shadowState, setShadowState] = React.useState<ShadowState>({
     start: false,
     end: false,
@@ -141,14 +95,10 @@ export function BlurredScrollArea({
 
     updateShadows()
 
-    const handleScroll = () => {
-      updateShadows()
-    }
-
-    viewport.addEventListener('scroll', handleScroll, { passive: true })
+    viewport.addEventListener('scroll', updateShadows, { passive: true })
 
     const resizeObserver =
-      typeof ResizeObserver === 'function' ? new ResizeObserver(() => updateShadows()) : null
+      typeof ResizeObserver === 'function' ? new ResizeObserver(updateShadows) : null
 
     resizeObserver?.observe(viewport)
 
@@ -157,12 +107,12 @@ export function BlurredScrollArea({
       resizeObserver?.observe(contentNode)
     }
 
-    window.addEventListener('resize', handleScroll)
+    window.addEventListener('resize', updateShadows)
 
     return () => {
-      viewport.removeEventListener('scroll', handleScroll)
+      viewport.removeEventListener('scroll', updateShadows)
       resizeObserver?.disconnect()
-      window.removeEventListener('resize', handleScroll)
+      window.removeEventListener('resize', updateShadows)
     }
   }, [updateShadows])
 
@@ -170,24 +120,16 @@ export function BlurredScrollArea({
     updateShadows()
   }, [children, updateShadows])
 
-  const maskImage = React.useMemo(
-    () =>
-      createMaskImage({
-        scrollbars: resolvedScrollbars,
-        shadowSize,
-        shadowState,
-      }),
-    [resolvedScrollbars, shadowSize, shadowState],
-  )
+  const isVertical = resolvedScrollbars === 'vertical'
+  const showFades = resolvedScrollbars !== 'both'
 
-  const viewportMaskStyle: React.CSSProperties = maskImage
-    ? {
-        maskImage,
-        WebkitMaskImage: maskImage,
-        maskRepeat: 'no-repeat',
-        WebkitMaskRepeat: 'no-repeat',
-      }
-    : {}
+  const startBackground = isVertical
+    ? `linear-gradient(to bottom, ${fadeColor}, transparent)`
+    : `linear-gradient(to right, ${fadeColor}, transparent)`
+
+  const endBackground = isVertical
+    ? `linear-gradient(to top, ${fadeColor}, transparent)`
+    : `linear-gradient(to left, ${fadeColor}, transparent)`
 
   return (
     <ScrollAreaPrimitive.Root
@@ -203,16 +145,45 @@ export function BlurredScrollArea({
       <ScrollAreaPrimitive.Viewport
         ref={handleViewportRef}
         data-slot="blurred-scroll-area-viewport"
-        style={viewportMaskStyle}
         className={cn(
-          'size-full rounded-[inherit] transition-[mask-image,-webkit-mask-image] duration-200 ease-out outline-none',
+          'size-full rounded-[inherit] outline-none',
           resolvedScrollbars === 'horizontal' && 'whitespace-nowrap',
           viewportClassName,
-          fadeClassName,
         )}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
+
+      {showFades && (
+        <>
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute z-10 transition-opacity duration-300 ease-in-out',
+              isVertical ? 'inset-x-0 top-0' : 'inset-y-0 left-0',
+              shadowState.start ? 'opacity-100' : 'opacity-0',
+              fadeClassName,
+            )}
+            style={{
+              [isVertical ? 'height' : 'width']: shadowSize,
+              background: startBackground,
+            }}
+          />
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute z-10 transition-opacity duration-300 ease-in-out',
+              isVertical ? 'inset-x-0 bottom-0' : 'inset-y-0 right-0',
+              shadowState.end ? 'opacity-100' : 'opacity-0',
+              fadeClassName,
+            )}
+            style={{
+              [isVertical ? 'height' : 'width']: shadowSize,
+              background: endBackground,
+            }}
+          />
+        </>
+      )}
 
       {(resolvedScrollbars === 'vertical' || resolvedScrollbars === 'both') && (
         <ScrollBar

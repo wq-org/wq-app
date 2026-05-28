@@ -330,3 +330,80 @@ w_j + w_e + w_c + w_w + w_{tf} = 0.15 + 0.05 + 0.15 + 0.15 + 0.50 = 1.00
 $$
 
 The first four weights (statistical NLP) sum to $0.50$ - exactly equal to the single USE semantic weight. The model and the math each carry half the total decision.
+
+## Part A — Libraries & Wozu
+
+```bash
+pip install tensorflow==2.13.0
+```
+
+**Universal Sentence Encoder Backend** — TensorFlow ist das Laufzeitsystem das das USE-Modell (512-dim Sentence Embeddings) ausführt. Ohne TF läuft kein USE-Modell.
+
+---
+
+```bash
+pip install tensorflow-hub
+```
+
+**USE Modell laden** — `hub.load("/opt/wq-models/use_v4")` lädt das self-hosted Modell vom lokalen Hetzner-Pfad. Kein Internet-Call in Production → DSGVO-konform.
+
+---
+
+```bash
+pip install nltk==3.8.1
+```
+
+**3 Aufgaben gleichzeitig:**
+
+- `edit_distance(a, b)` → berechnet \( S_e \) (Edit Distance zwischen zwei Texten)
+- `word_tokenize(text)` → zerlegt Satz in Tokens für Jaccard \( S_j \)
+- `stopwords.words("german")` → entfernt „die", „der", „und" vor der Berechnung
+
+---
+
+```bash
+pip install scikit-learn==1.3.2
+```
+
+**TF-IDF Cosine Similarity** → berechnet \( S_c \):
+
+- `TfidfVectorizer` wandelt Text in gewichtete Wortvektoren um
+- `cosine_similarity(vec_a, vec_b)` → gibt \( S_c \in [0,1] \) zurück
+
+---
+
+```bash
+pip install numpy==1.24.3
+```
+
+**Vektor-Arithmetik** — `np.dot()`, `np.linalg.norm()` für alle manuellen Cosine-Berechnungen mit dem USE-Embedding-Vektor \( S\_{tf} \).
+
+---
+
+```bash
+pip install pandas==2.0.3
+```
+
+**Datenverwaltung** — Kriterien + Schülerantworten als DataFrame, Score-Outputs tabellarisch speichern und an Supabase zurückgeben.
+
+---
+
+## Komplett in einer Zeile
+
+```bash
+pip install tensorflow==2.13.0 tensorflow-hub nltk==3.8.1 scikit-learn==1.3.2 numpy==1.24.3 pandas==2.0.3
+```
+
+---
+
+## `requirements.txt` Part A
+
+```
+# Part A — Automatic Short-Answer Scoring (Paper: PMC12171532)
+tensorflow==2.13.0        # USE Model Runtime
+tensorflow-hub==0.16.1    # Self-hosted Model Loader (DSGVO)
+nltk==3.8.1               # Tokenisierung, Edit Distance, Stopwords
+scikit-learn==1.3.2       # TF-IDF + Cosine Similarity
+numpy==1.24.3             # Vektor-Operationen
+pandas==2.0.3             # Score-Tabellen, DataFrame I/O
+```
