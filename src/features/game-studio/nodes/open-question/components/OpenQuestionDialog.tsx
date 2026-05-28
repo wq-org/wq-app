@@ -22,17 +22,16 @@ export function OpenQuestionDialog({
 }: GameNodeDialogProps) {
   const { t } = useTranslation('features.gameStudio')
   const openQuestionNodeData = nodeData as GameOpenQuestionNodeData
-  const { points } = openQuestionNodeData
 
   const defaultsAppliedRef = useRef(false)
 
   useEffect(() => {
     if (defaultsAppliedRef.current) return
-    const defaultPatch = getMissingOpenQuestionDefaults({ points })
+    const defaultPatch = getMissingOpenQuestionDefaults(openQuestionNodeData)
     if (Object.keys(defaultPatch).length === 0) return
     defaultsAppliedRef.current = true
     queueMicrotask(() => onPatchNodeData(defaultPatch))
-  }, [onPatchNodeData, points])
+  }, [onPatchNodeData, openQuestionNodeData])
 
   const prevEdge = flowEdges.find((edge) => edge.target === nodeId)
   const nextEdge = flowEdges.find((edge) => edge.source === nodeId)

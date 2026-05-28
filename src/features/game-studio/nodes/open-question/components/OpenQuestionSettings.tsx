@@ -135,12 +135,18 @@ export function OpenQuestionSettings({
                 {t('openQuestionSettings.scoreAccordionHint')}
               </Text>
 
-              {scoreBreakdown.isCalculated && scoreBreakdown.detailLines.length > 0 ? (
-                <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                  {scoreBreakdown.detailLines.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
+              {scoreBreakdown.isCalculated ? (
+                <Text
+                  as="p"
+                  variant="small"
+                  muted
+                >
+                  {t('openQuestionSettings.scoreAccordionBulletPerQuestion', {
+                    maxPoints: scoreBreakdown.maxPoints,
+                    questionCount: scoreBreakdown.filledQuestionCount,
+                    pointsPerQuestion: scoreBreakdown.pointsPerQuestion,
+                  })}
+                </Text>
               ) : (
                 <Text
                   as="p"

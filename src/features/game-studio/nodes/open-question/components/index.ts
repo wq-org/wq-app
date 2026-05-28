@@ -11,5 +11,7 @@ export type {
 } from './OpenQuestionPreviewChatHistory'
 export { OpenQuestionChatInput } from './OpenQuestionChatInput'
 export type { OpenQuestionChatInputProps } from './OpenQuestionChatInput'
+export { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDialog'
+export type { OpenQuestionSubmitConfirmDialogProps } from './OpenQuestionSubmitConfirmDialog'
 export { OpenQuestionSettings } from './OpenQuestionSettings'
 export type { OpenQuestionSettingsProps } from './OpenQuestionSettings'

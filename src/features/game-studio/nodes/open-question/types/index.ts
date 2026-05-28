@@ -1,1 +1,1 @@
-export type { GameOpenQuestionNodeData } from './open-question.schema'
+export type { GameOpenQuestionNodeData, OpenQuestionAuthoredQuestion } from './open-question.schema'

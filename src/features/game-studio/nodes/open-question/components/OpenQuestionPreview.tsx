@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
-import { Check, CircleQuestionMark, HandHelping } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { CircleQuestionMark, HandHelping } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { AiPromptBadgeList, type Ai02PromptSuggestion } from '@/components/shared/ai-components'
@@ -10,35 +10,60 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 
+import { useGrading } from '../hooks/useGrading'
+import { useOpenQuestionPreviewLoop } from '../hooks/useOpenQuestionPreviewLoop'
 import type { GameOpenQuestionNodeData } from '../types/open-question.schema'
-import { resolveGameOpenQuestionPoints } from '../utils'
+import { collectPreviewStudentAnswer } from '../utils/collectPreviewStudentAnswer'
+import { buildOpenQuestionGradingRequest, resolveGameOpenQuestionPoints } from '../utils'
 import { OpenQuestionChatInput } from './OpenQuestionChatInput'
 import {
   OpenQuestionPreviewChatHistory,
   type OpenQuestionPreviewChatMessage,
 } from './OpenQuestionPreviewChatHistory'
+import { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDialog'
 
 export type OpenQuestionPreviewProps = {
   nodeId: string
   nodeData?: GameOpenQuestionNodeData
 }
 
+function questionMarkerId(nodeId: string, index: number, questionId: string): string {
+  return `${nodeId}-question-${index}-${questionId}`
+}
+
 export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
-  const { profile } = useUser()
+  const { profile, getUserId, getUserInstitutionId } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
-  const pin = useMemo(() => nodeData ?? {}, [nodeData])
-  const maxScore = resolveGameOpenQuestionPoints(pin.points)
+  const { isGrading, gradeAnswer } = useGrading()
 
-  const descriptionContent = pin.descriptionContent ?? null
-  const title = pin.title?.trim() || pin.label?.trim() || ''
+  const data = useMemo(() => nodeData ?? {}, [nodeData])
+  const maxScore = resolveGameOpenQuestionPoints(data.points)
+  const descriptionContent = data.descriptionContent ?? null
+  const title = data.title?.trim() || data.label?.trim() || ''
   const showDescription = hasLexicalEditorContent(descriptionContent)
   const showTitle = title.length > 0
+
+  const loop = useOpenQuestionPreviewLoop({ questions: data.questions, maxScore })
+  const {
+    filledQuestions,
+    currentIndex,
+    currentQuestion,
+    pointsPerQuestion,
+    earnedTotal,
+    isFinished,
+    isAdvancing,
+    recordAwardAndAdvance,
+    reset,
+  } = loop
 
   const [composerValue, setComposerValue] = useState('')
   const [previewMessages, setPreviewMessages] = useState<OpenQuestionPreviewChatMessage[]>([])
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const earnedScore = 0
+  const [finalSummaryShown, setFinalSummaryShown] = useState(false)
+  const [submitDialogOpen, setSubmitDialogOpen] = useState(false)
+  /** Answer held until the user confirms in the submit dialog — not shown in chat yet. */
+  const [pendingAnswerText, setPendingAnswerText] = useState<string | null>(null)
 
   const avatarFallback =
     profile?.display_name?.trim().charAt(0).toUpperCase() ??
@@ -49,15 +74,179 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   const submitAnswerPrompt = t('openQuestionGamePreview.submitAnswerPrompt')
   const hintPrompt = t('openQuestionGamePreview.hintPrompt')
   const howToPlayPrompt = t('openQuestionGamePreview.howToPlayPrompt')
-
   const howToPlayResponse = t('openQuestionGamePreview.howToPlayResponse')
 
-  const prompts = [
-    {
-      icon: Check,
-      text: t('openQuestionGamePreview.badgeSubmitAnswer'),
-      prompt: submitAnswerPrompt,
+  const systemPrompts = useMemo(
+    () => new Set([submitAnswerPrompt, hintPrompt, howToPlayPrompt]),
+    [hintPrompt, howToPlayPrompt, submitAnswerPrompt],
+  )
+
+  const institutionId = profile?.institution?.id ?? getUserInstitutionId() ?? 'game-studio-preview'
+  const sessionParticipantId = `${nodeId}-preview-${getUserId() ?? 'anonymous'}`
+
+  const appendMessage = useCallback((message: OpenQuestionPreviewChatMessage) => {
+    setPreviewMessages((prev) => [...prev, message])
+  }, [])
+
+  const filledQuestionIdsSignature = useMemo(
+    () => filledQuestions.map((question) => question.id).join('|'),
+    [filledQuestions],
+  )
+
+  useEffect(() => {
+    setPreviewMessages([])
+    setEditingMessageId(null)
+    setComposerValue('')
+    setFinalSummaryShown(false)
+    setSubmitDialogOpen(false)
+    setPendingAnswerText(null)
+    reset()
+  }, [filledQuestionIdsSignature, reset])
+
+  useEffect(() => {
+    if (!currentQuestion) return
+    const markerId = questionMarkerId(nodeId, currentIndex, currentQuestion.id)
+    setPreviewMessages((prev) => {
+      if (prev.some((message) => message.id === markerId)) return prev
+      const text = t('openQuestionGamePreview.questionMessage', {
+        index: currentIndex + 1,
+        total: filledQuestions.length,
+        text: currentQuestion.question,
+      })
+      return [...prev, { id: markerId, direction: 'receiving', text }]
+    })
+  }, [currentIndex, currentQuestion, filledQuestions.length, nodeId, t])
+
+  useEffect(() => {
+    if (!isFinished || finalSummaryShown) return
+    setFinalSummaryShown(true)
+    appendMessage({
+      id: `${nodeId}-final-summary-${Date.now()}`,
+      direction: 'receiving',
+      text: t('openQuestionGamePreview.iterationFinalSummary', {
+        earned: earnedTotal,
+        total: maxScore,
+      }),
+      textBold: true,
+    })
+  }, [appendMessage, earnedTotal, finalSummaryShown, isFinished, maxScore, nodeId, t])
+
+  const runGrading = useCallback(
+    async (messages: readonly OpenQuestionPreviewChatMessage[]) => {
+      if (!currentQuestion) return
+
+      const markerId = questionMarkerId(nodeId, currentIndex, currentQuestion.id)
+      const markerIndex = messages.findIndex((message) => message.id === markerId)
+      const slice = markerIndex >= 0 ? messages.slice(markerIndex + 1) : messages
+      const studentAnswer = collectPreviewStudentAnswer(slice, systemPrompts)
+
+      if (studentAnswer.length === 0) {
+        appendMessage({
+          id: `${nodeId}-grading-missing-answer-${Date.now()}`,
+          direction: 'receiving',
+          text: t('openQuestionGamePreview.gradingMissingAnswer'),
+        })
+        return
+      }
+
+      const teacherSolution = currentQuestion.answer.trim()
+      if (teacherSolution.length === 0) {
+        appendMessage({
+          id: `${nodeId}-grading-missing-solution-${Date.now()}`,
+          direction: 'receiving',
+          text: t('openQuestionGamePreview.gradingMissingReferenceAnswer'),
+        })
+        return
+      }
+
+      const loadingMessageId = `${nodeId}-grading-loading-${Date.now()}`
+      appendMessage({
+        id: loadingMessageId,
+        direction: 'receiving',
+        text: t('openQuestionGamePreview.gradingInProgress'),
+        status: 'loading',
+      })
+
+      const result = await gradeAnswer(
+        buildOpenQuestionGradingRequest({
+          studentAnswer,
+          referenceAnswer: teacherSolution,
+          pointsPerQuestion,
+          institutionId,
+          sessionParticipantId: `${sessionParticipantId}-q${currentIndex}`,
+        }),
+      )
+
+      setPreviewMessages((prev) => prev.filter((message) => message.id !== loadingMessageId))
+
+      if (!result) {
+        appendMessage({
+          id: `${nodeId}-grading-error-${Date.now()}`,
+          direction: 'receiving',
+          text: t('openQuestionGamePreview.gradingFailed'),
+        })
+        return
+      }
+
+      const marksMessage = t('openQuestionGamePreview.marksAwardedMessage', {
+        marks: result.marksAwarded,
+        total: result.totalPoints,
+      })
+      const attentionSuffix = result.requiresTeacherAttention
+        ? `\n\n${t('openQuestionGamePreview.gradingNeedsAttention')}`
+        : ''
+
+      appendMessage({
+        id: `${nodeId}-grading-result-${Date.now()}`,
+        direction: 'receiving',
+        text: `${marksMessage}${attentionSuffix}`,
+        textBold: true,
+      })
+      recordAwardAndAdvance(result.marksAwarded)
     },
+    [
+      appendMessage,
+      currentIndex,
+      currentQuestion,
+      gradeAnswer,
+      institutionId,
+      nodeId,
+      pointsPerQuestion,
+      recordAwardAndAdvance,
+      sessionParticipantId,
+      systemPrompts,
+      t,
+    ],
+  )
+
+  const handleConfirmSubmit = useCallback(() => {
+    const trimmed = pendingAnswerText?.trim() ?? ''
+    if (!trimmed || !currentQuestion) return
+
+    const answerMessage: OpenQuestionPreviewChatMessage = {
+      id: `${nodeId}-answer-${currentIndex}-${Date.now()}`,
+      direction: 'sending',
+      text: trimmed,
+    }
+
+    setPendingAnswerText(null)
+    setComposerValue('')
+
+    setPreviewMessages((prev) => {
+      const next = [...prev, answerMessage]
+      void runGrading(next)
+      return next
+    })
+  }, [currentIndex, currentQuestion, nodeId, pendingAnswerText, runGrading])
+
+  const handleSubmitDialogOpenChange = useCallback((open: boolean) => {
+    setSubmitDialogOpen(open)
+    if (!open) {
+      setPendingAnswerText(null)
+    }
+  }, [])
+
+  const prompts = [
     {
       icon: HandHelping,
       text: t('openQuestionGamePreview.badgeHint'),
@@ -71,20 +260,11 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     },
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
-  const appendMessage = useCallback((message: OpenQuestionPreviewChatMessage) => {
-    setPreviewMessages((prev) => [...prev, message])
-  }, [])
+  const isComposerLocked =
+    isGrading || isAdvancing || isFinished || filledQuestions.length === 0 || submitDialogOpen
 
   const handlePromptClick = useCallback(
     (message: string) => {
-      if (message === submitAnswerPrompt) {
-        appendMessage({
-          id: `${nodeId}-submit-prompt-${Date.now()}`,
-          direction: 'sending',
-          text: submitAnswerPrompt,
-        })
-        return
-      }
       if (message === howToPlayPrompt) {
         appendMessage({
           id: `${nodeId}-how-to-play-prompt-${Date.now()}`,
@@ -98,7 +278,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
         })
       }
     },
-    [appendMessage, howToPlayPrompt, howToPlayResponse, nodeId, submitAnswerPrompt],
+    [appendMessage, howToPlayPrompt, howToPlayResponse, nodeId],
   )
 
   const handleEditMessage = useCallback((messageId: string, text: string) => {
@@ -119,23 +299,27 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
 
   const handleComposerSubmit = useCallback(
     (text: string) => {
+      const trimmed = text.trim()
+      if (!trimmed || isComposerLocked || !currentQuestion) return
+
       if (editingMessageId) {
         setPreviewMessages((prev) =>
-          prev.map((message) => (message.id === editingMessageId ? { ...message, text } : message)),
+          prev.map((message) =>
+            message.id === editingMessageId ? { ...message, text: trimmed } : message,
+          ),
         )
         setEditingMessageId(null)
         setComposerValue('')
         return
       }
 
-      appendMessage({
-        id: `${nodeId}-answer-${Date.now()}`,
-        direction: 'sending',
-        text,
-      })
+      setPendingAnswerText(trimmed)
+      setSubmitDialogOpen(true)
     },
-    [appendMessage, editingMessageId, nodeId],
+    [currentQuestion, editingMessageId, isComposerLocked],
   )
+
+  const hasFilledQuestions = filledQuestions.length > 0
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -147,6 +331,21 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
       >
         {t('openQuestionGamePreview.previewNotice')}
       </Text>
+
+      {hasFilledQuestions ? (
+        <Text
+          as="p"
+          variant="small"
+          muted
+          className="shrink-0"
+        >
+          {t('openQuestionGamePreview.iterationProgressLabel', {
+            current: Math.min(currentIndex + 1, filledQuestions.length),
+            total: filledQuestions.length,
+            perQuestion: pointsPerQuestion,
+          })}
+        </Text>
+      ) : null}
 
       <OpenQuestionPreviewChatHistory
         nodeId={nodeId}
@@ -172,12 +371,20 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
 
       <OpenQuestionChatInput
         className="shrink-0"
-        score={earnedScore}
+        score={earnedTotal}
         maxScore={maxScore}
         placeholder={t('openQuestionGamePreview.composerPlaceholder')}
         value={composerValue}
         onValueChange={setComposerValue}
         onSubmit={handleComposerSubmit}
+        disabled={isComposerLocked}
+        clearOnSubmit={false}
+      />
+
+      <OpenQuestionSubmitConfirmDialog
+        open={submitDialogOpen}
+        onOpenChange={handleSubmitDialogOpenChange}
+        onConfirm={handleConfirmSubmit}
       />
     </div>
   )

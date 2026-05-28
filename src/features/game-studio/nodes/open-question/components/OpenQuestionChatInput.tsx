@@ -12,6 +12,8 @@ export type OpenQuestionChatInputProps = {
   onValueChange?: (value: string) => void
   onSubmit?: (message: string) => void
   disabled?: boolean
+  /** When false, text stays in the composer until the parent clears it (submit-confirm flow). */
+  clearOnSubmit?: boolean
   className?: string
 }
 
@@ -24,6 +26,7 @@ export function OpenQuestionChatInput({
   onValueChange,
   onSubmit,
   disabled = false,
+  clearOnSubmit = true,
   className,
 }: OpenQuestionChatInputProps) {
   return (
@@ -45,7 +48,7 @@ export function OpenQuestionChatInput({
         onSubmit={disabled ? undefined : onSubmit}
         showDropDown={false}
         showMic={false}
-        clearOnSubmit
+        clearOnSubmit={clearOnSubmit}
       />
     </div>
   )

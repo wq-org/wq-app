@@ -1,4 +1,4 @@
-// src/features/grading/types/grading.types.ts
+// src/features/game-studio/nodes/open-question/types/grading.types.ts
 // No math. No constants. Dumb receiver of Python output.
 
 export type ScoringBranch = 'hard_zero' | 'full_marks' | 'partial'

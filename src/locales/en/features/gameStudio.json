@@ -422,7 +422,15 @@
   },
   "openQuestionEditor": {
     "descriptionLabel": "Exercise Description",
-    "descriptionPlaceholder": "Describe the question, context, and what learners should answer…"
+    "descriptionPlaceholder": "Describe the question, context, and what learners should answer…",
+    "exercisesTitle": "Add up to 4 exercises. Each one has a learner question and a reference answer used for automatic grading.",
+    "exerciseLabel": "Exercise {{index}}",
+    "fieldTabQuestion": "Question",
+    "fieldTabAnswer": "Reference answer",
+    "questionPlaceholder": "Type the learner question…",
+    "answerPlaceholder": "Reference answer used for automatic grading…",
+    "addExerciseTabAriaLabel": "Add exercise",
+    "closeExerciseTabAriaLabel": "Close exercise"
   },
   "openQuestionDialog": {
     "title": "Open question",
@@ -437,7 +445,21 @@
     "submitAnswerPrompt": "I finished my answer. Please check it.",
     "hintPrompt": "Give me a helpful hint, but do not reveal the full answer.",
     "howToPlayPrompt": "Explain how to play this open question.",
-    "howToPlayResponse": "How to play:\n1. Read the question shown in the chat.\n2. Type your answer in the text field below.\n3. Click Submit answer when you are ready.\n\nTip: you can still edit your answer until you submit."
+    "howToPlayResponse": "How to play:\n1. Read the question shown in the chat.\n2. Type your answer in the text field below.\n3. Click Submit answer when you are ready.\n\nTip: you can still edit your answer until you submit.",
+    "gradingInProgress": "Checking your answer…",
+    "gradingFailed": "We could not grade your answer. Please try again.",
+    "gradingMissingSolution": "Add an exercise description in the editor before grading.",
+    "gradingMissingReferenceAnswer": "Add a reference answer under “Reference answer” for this exercise in the editor.",
+    "gradingMissingAnswer": "Type your answer before submitting.",
+    "gradingNeedsAttention": "This answer may need a teacher review.",
+    "marksAwardedMessage": "You earned {{marks}} out of {{total}} points.",
+    "questionMessage": "Exercise {{index}}/{{total}}: {{text}}",
+    "iterationProgressLabel": "Exercise {{current}} of {{total}} · {{perQuestion}} pts each",
+    "iterationFinalSummary": "All done! You earned {{earned}} out of {{total}} points across all questions.",
+    "submitConfirmDialogTitle": "Submit answer?",
+    "submitConfirmDialogBody": "If you submit now, your answer can no longer be changed. It will be graded against the reference answer for this question.",
+    "submitConfirmDialogCancel": "Cancel",
+    "submitConfirmDialogConfirm": "Submit now"
   },
   "openQuestionSettings": {
     "holdToDeleteNode": "Hold to delete node",
@@ -445,6 +467,7 @@
     "maxPointsLabel": "Maximum score for a fully correct answer",
     "scoreAccordionTitle": "How is the score calculated?",
     "scoreAccordionHint": "The breakdown below shows how the maximum score is distributed once evaluation rules are configured.",
-    "scoreAccordionPending": "Scoring logic is not configured yet. The current maximum is {{maxPoints}} points — detailed breakdown will appear here after you wire answer evaluation."
+    "scoreAccordionPending": "Scoring logic is not configured yet. The current maximum is {{maxPoints}} points — detailed breakdown will appear here after you wire answer evaluation.",
+    "scoreAccordionBulletPerQuestion": "Total {{maxPoints}} pts · {{questionCount}} exercises · {{pointsPerQuestion}} pts per exercise."
   }
 }

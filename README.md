@@ -28,6 +28,37 @@ supabase start
 supabase stop
 ```
 
+## Grading worker (open-question scoring)
+
+The Python service under [`grading-worker/app/grading/`](grading-worker/app/grading/) grades open-ended student answers for Game Studio. Deeper design notes: [grading-worker/README.md](grading-worker/README.md).
+
+**Prerequisites:** Python 3.11 (see `grading-worker/.python-version`).
+
+From the repo root:
+
+```bash
+cd grading-worker
+python3.11 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+On first startup the worker loads the embedding model (default: `embaas/sentence-transformers-multilingual-e5-base`). Override with a local path for offline or production-style runs:
+
+```bash
+export EMBEDDING_MODEL_NAME=/path/to/local/model-directory
+```
+
+**Health check:**
+
+```bash
+curl http://127.0.0.1:8000/grade/health
+# {"status":"ok"}
+```
+
+**With the React app:** run `npm start` from the repo root. Vite proxies `/api/grading` → `http://127.0.0.1:8000/grade`, so keep the worker on port **8000**. To use another URL, set `VITE_GRADING_WORKER_URL` (for example `http://127.0.0.1:8081/grade`) in `.env` or `.env.local`.
+
 ## SQL migrations
 
 Naming checks (no Python deps beyond the stdlib):

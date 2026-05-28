@@ -422,7 +422,15 @@
   },
   "openQuestionEditor": {
     "descriptionLabel": "Aufgabenbeschreibung",
-    "descriptionPlaceholder": "Beschreibe die Frage, den Kontext und was Lernende beantworten sollen…"
+    "descriptionPlaceholder": "Beschreibe die Frage, den Kontext und was Lernende beantworten sollen…",
+    "exercisesTitle": "Lege bis zu 4 Aufgaben an. Jede Aufgabe enthält eine Frage für Lernende und eine Musterlösung für die automatische Bewertung.",
+    "exerciseLabel": "Aufgabe {{index}}",
+    "fieldTabQuestion": "Frage",
+    "fieldTabAnswer": "Musterlösung",
+    "questionPlaceholder": "Frage für Lernende eingeben…",
+    "answerPlaceholder": "Referenzantwort für die automatische Bewertung…",
+    "addExerciseTabAriaLabel": "Aufgabe hinzufügen",
+    "closeExerciseTabAriaLabel": "Aufgabe schließen"
   },
   "openQuestionDialog": {
     "title": "Offene Frage",
@@ -437,7 +445,21 @@
     "submitAnswerPrompt": "Ich bin mit meiner Antwort fertig. Bitte prüfe sie.",
     "hintPrompt": "Gib mir einen hilfreichen Tipp, aber verrate nicht die ganze Lösung.",
     "howToPlayPrompt": "Erkläre, wie diese offene Frage funktioniert.",
-    "howToPlayResponse": "So funktioniert es:\n1. Lies die Frage im Chat.\n2. Gib deine Antwort im Textfeld unten ein.\n3. Klicke auf Antwort abgeben, wenn du fertig bist.\n\nTipp: Du kannst deine Antwort bearbeiten, bis du sie abgibst."
+    "howToPlayResponse": "So funktioniert es:\n1. Lies die Frage im Chat.\n2. Gib deine Antwort im Textfeld unten ein.\n3. Klicke auf Antwort abgeben, wenn du fertig bist.\n\nTipp: Du kannst deine Antwort bearbeiten, bis du sie abgibst.",
+    "gradingInProgress": "Deine Antwort wird geprüft…",
+    "gradingFailed": "Die Bewertung ist fehlgeschlagen. Bitte versuche es erneut.",
+    "gradingMissingSolution": "Füge im Editor eine Aufgabenbeschreibung hinzu, bevor du bewertest.",
+    "gradingMissingReferenceAnswer": "Füge im Editor unter „Musterlösung“ eine Referenzantwort für diese Aufgabe hinzu.",
+    "gradingMissingAnswer": "Gib zuerst deine Antwort ein, bevor du sie abgibst.",
+    "gradingNeedsAttention": "Diese Antwort sollte vielleicht von einer Lehrperson geprüft werden.",
+    "marksAwardedMessage": "Du hast {{marks}} von {{total}} Punkten erreicht.",
+    "questionMessage": "Aufgabe {{index}}/{{total}}: {{text}}",
+    "iterationProgressLabel": "Aufgabe {{current}} von {{total}} · je {{perQuestion}} Punkte",
+    "iterationFinalSummary": "Geschafft! Du hast {{earned}} von {{total}} Punkten über alle Fragen erreicht.",
+    "submitConfirmDialogTitle": "Antwort abgeben?",
+    "submitConfirmDialogBody": "Wenn du jetzt absendest, kann die Antwort nicht mehr geändert werden. Sie wird mit der Musterlösung dieser Frage verglichen.",
+    "submitConfirmDialogCancel": "Abbrechen",
+    "submitConfirmDialogConfirm": "Jetzt absenden"
   },
   "openQuestionSettings": {
     "holdToDeleteNode": "Gedrückt halten, um den Knoten zu löschen",
@@ -445,6 +467,7 @@
     "maxPointsLabel": "Maximale Punktzahl bei vollständig richtiger Antwort",
     "scoreAccordionTitle": "Wie wird die Punktzahl berechnet?",
     "scoreAccordionHint": "Die Aufschlüsselung unten zeigt, wie die maximale Punktzahl verteilt wird, sobald Bewertungsregeln konfiguriert sind.",
-    "scoreAccordionPending": "Die Bewertungslogik ist noch nicht konfiguriert. Aktuelles Maximum: {{maxPoints}} Punkte — die detaillierte Aufschlüsselung erscheint hier, sobald du die Antwortauswertung anbindest."
+    "scoreAccordionPending": "Die Bewertungslogik ist noch nicht konfiguriert. Aktuelles Maximum: {{maxPoints}} Punkte — die detaillierte Aufschlüsselung erscheint hier, sobald du die Antwortauswertung anbindest.",
+    "scoreAccordionBulletPerQuestion": "Gesamt {{maxPoints}} Pkt · {{questionCount}} Aufgaben · {{pointsPerQuestion}} Pkt pro Aufgabe."
   }
 }
