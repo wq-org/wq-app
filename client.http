@@ -1,97 +1,166 @@
-# wq-grading-worker — REST Client (VS Code / JetBrains)
-# Start worker: cd grading-worker && uvicorn app.main:app --reload --port 8081
+# wq-auto-scoring-worker — REST Client (VS Code REST Client / JetBrains HTTP Client)
 #
-# FastAPI erwartet JSON-Bodies und validiert sie gegen das Pydantic-Schema (GradeRequest).
-# https://fastapi.tiangolo.com/tutorial/body/
+# Start the worker (from repo root):
+#   cd auto-scoring-worker
+#   python3.11 -m venv .venv && source .venv/bin/activate
+#   pip install -r requirements.txt
+#   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 #
-# Deutsche Testfälle: Paraphrasen mit unterschiedlicher semantischer Nähe prüfen,
-# wie der Score auf nahe, teilweise und schwache Übereinstimmungen reagiert.
+# Endpoints (see app/main.py):
+#   GET  /auto-score/health
+#   POST /auto-score/
+#
+# Request body → GradeRequest (app/auto_scoring/schemas.py)
+# Response     → GradeResponse (snake_case JSON)
+#
+# With the React app (npm start), the Vite proxy maps:
+#   POST http://localhost:5173/api/scoring/  →  http://127.0.0.1:8000/auto-score/
 
-@baseUrl = http://127.0.0.1:8000
+@host = 127.0.0.1
+@port = 8000
+@baseUrl = http://{{host}}:{{port}}
+@scoringPrefix = /auto-score
 @json = application/json
 
-### Health check
-GET {{baseUrl}}/grade/health
+@institutionId = test_institution
+@sessionParticipantId = rest-client-preview
+
+### Health check — GET /auto-score/health
+GET {{baseUrl}}{{scoringPrefix}}/health
 Accept: {{json}}
+
+
+###############################################################################
+# Smoke — minimal payload (1 point)
+###############################################################################
+POST {{baseUrl}}{{scoringPrefix}}/
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "student_answer": "Kurzantwort.",
+  "teacher_solution": "Musterlösung.",
+  "total_points": 1,
+  "institution_id": "{{institutionId}}",
+  "session_participant_id": "{{sessionParticipantId}}-smoke"
+}
+
+
+###############################################################################
+# Via Vite dev proxy (run npm start from repo root; worker on :8000)
+###############################################################################
+# @viteBase = http://127.0.0.1:5173
+#
+# GET {{viteBase}}/api/scoring/health
+# Accept: {{json}}
+#
+# POST {{viteBase}}/api/scoring/
+# Content-Type: {{json}}
+# Accept: {{json}}
+#
+# {
+#   "student_answer": "Kurzantwort.",
+#   "teacher_solution": "Musterlösung.",
+#   "total_points": 1,
+#   "institution_id": "{{institutionId}}",
+#   "session_participant_id": "{{sessionParticipantId}}-vite-proxy"
+# }
 
 
 ###############################################################################
 # Deutsch — Wundversorgung (Standardbeispiel)
 # Schülerantwort entspricht inhaltlich der Musterlösung (Paraphrase).
 ###############################################################################
-POST {{baseUrl}}/grade/
+POST {{baseUrl}}{{scoringPrefix}}/
 Content-Type: {{json}}
+Accept: {{json}}
 
 {
   "student_answer": "Die Wunde sollte mit Kochsalzlösung gereinigt und mit einem sterilen Verband abgedeckt werden.",
   "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
   "total_points": 10,
-  "institution_id": "test_institution",
-  "session_participant_id": "test_preprocess_quick_de"
+  "institution_id": "{{institutionId}}",
+  "session_participant_id": "{{sessionParticipantId}}-de-standard"
 }
 
 
 ###############################################################################
 # Deutsch — Sehr nahe Übereinstimmung
-# Gleicher Sachverhalt, leicht andere Formulierung (soll hohen semantischen Score liefern).
 ###############################################################################
-POST {{baseUrl}}/grade/
+POST {{baseUrl}}{{scoringPrefix}}/
 Content-Type: {{json}}
+Accept: {{json}}
 
 {
   "student_answer": "Die Wunde wird mit Kochsalzlösung gereinigt und anschließend mit einem sterilen Verband bedeckt.",
   "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
   "total_points": 10,
-  "institution_id": "test_institution",
-  "session_participant_id": "test_german_close_match"
+  "institution_id": "{{institutionId}}",
+  "session_participant_id": "{{sessionParticipantId}}-de-close"
 }
 
 
 ###############################################################################
 # Deutsch — Teilweise Übereinstimmung
-# Kernidee (reinigen + verbinden) ohne Details (Kochsalz, steriler Verband, Infektion).
 ###############################################################################
-POST {{baseUrl}}/grade/
+POST {{baseUrl}}{{scoringPrefix}}/
 Content-Type: {{json}}
+Accept: {{json}}
 
 {
   "student_answer": "Die Wunde sollte gereinigt und verbunden werden.",
   "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
   "total_points": 10,
-  "institution_id": "test_institution",
-  "session_participant_id": "test_german_partial_match"
+  "institution_id": "{{institutionId}}",
+  "session_participant_id": "{{sessionParticipantId}}-de-partial"
 }
 
 
 ###############################################################################
 # Deutsch — Schwache Übereinstimmung
-# Anderes Thema (Beruhigen, Arzt rufen) — erwartbar niedriger semantischer Score.
 ###############################################################################
-POST {{baseUrl}}/grade/
+POST {{baseUrl}}{{scoringPrefix}}/
 Content-Type: {{json}}
+Accept: {{json}}
 
 {
   "student_answer": "Man sollte die verletzte Person beruhigen und einen Arzt rufen.",
   "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
   "total_points": 10,
-  "institution_id": "test_institution",
-  "session_participant_id": "test_german_weak_match"
+  "institution_id": "{{institutionId}}",
+  "session_participant_id": "{{sessionParticipantId}}-de-weak"
 }
 
 
 ###############################################################################
-# Curl (Terminal) — gleiches Standardbeispiel wie oben
+# Validation error example — empty student_answer (expect 422)
+###############################################################################
+POST {{baseUrl}}{{scoringPrefix}}/
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "student_answer": "",
+  "teacher_solution": "Musterlösung.",
+  "total_points": 10,
+  "institution_id": "{{institutionId}}",
+  "session_participant_id": "{{sessionParticipantId}}-validation-422"
+}
+
+
+###############################################################################
+# Curl (terminal) — same as smoke test
 #
-# curl -s -X POST http://127.0.0.1:8081/grade/ \
+# curl -sS -X POST "http://127.0.0.1:8000/auto-score/" \
 #   -H "Content-Type: application/json" \
 #   -d '{
 #     "student_answer": "Die Wunde sollte mit Kochsalzlösung gereinigt und mit einem sterilen Verband abgedeckt werden.",
 #     "teacher_solution": "Reinigen Sie die Wunde mit Kochsalzlösung und legen Sie einen sterilen Verband an, um Infektionen zu vermeiden.",
 #     "total_points": 10,
 #     "institution_id": "test_institution",
-#     "session_participant_id": "test_preprocess_quick_de"
+#     "session_participant_id": "curl-de-standard"
 #   }' | python3 -m json.tool
 #
-# Nächster Schritt: 10–20 deutsche Lehrer-/Schülerpaare aus eurer Domäne sammeln
-# und die Score-Verteilung prüfen, bevor Schwellenwerte festgelegt werden.
+# Health:
+# curl -sS "http://127.0.0.1:8000/auto-score/health"
 ###############################################################################

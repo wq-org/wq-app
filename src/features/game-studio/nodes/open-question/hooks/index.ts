@@ -1,5 +1,5 @@
-export { useGrading } from './useGrading'
-export type { UseGradingResult } from './useGrading'
+export { useScoring } from './useScoring'
+export type { UseScoringResult } from './useScoring'
 export { useOpenQuestionEditorQuestions } from './useOpenQuestionEditorQuestions'
 export type {
   UseOpenQuestionEditorQuestionsArgs,

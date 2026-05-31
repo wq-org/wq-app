@@ -17,10 +17,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-      '/api/grading': {
+      '/api/scoring': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/grading/, '/grade'),
+        rewrite: (path) => path.replace(/^\/api\/scoring/, '/auto-score'),
       },
     },
   },

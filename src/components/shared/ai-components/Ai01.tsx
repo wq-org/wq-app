@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import type { ChangeEvent, FocusEvent, FormEvent, KeyboardEvent, PointerEvent } from 'react'
 import { ArrowUp, AudioLines, Mic, Paperclip, Plus, Search, Sparkles } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -17,8 +17,9 @@ import { cn } from '@/lib/utils'
 
 import type { Ai01Props } from './ai-components.types'
 
+/** Switch to the two-row shell once content is clearly multi-line. */
 function shouldExpandComposer(value: string) {
-  return value.length > 100 || value.includes('\n')
+  return value.includes('\n') || value.length > 80
 }
 
 export function Ai01({
@@ -29,39 +30,92 @@ export function Ai01({
   onValueChange,
   onSubmit,
   onFilesSelected,
+  onFocus,
+  onBlur,
   clearOnSubmit = true,
   showDropDown = true,
   showMic = true,
   fullWidth = false,
   composerShellClassName,
+  disabled = false,
 }: Ai01Props) {
   const isControlled = controlledValue !== undefined
   const [internalValue, setInternalValue] = useState(defaultValue)
   const message = isControlled ? controlledValue : internalValue
-  const [isExpanded, setIsExpanded] = useState(() => shouldExpandComposer(defaultValue))
+  const [isFocused, setIsFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const resizeTextarea = () => {
-    if (!textareaRef.current) return
-    textareaRef.current.style.height = 'auto'
-    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-  }
+  const isExpanded = shouldExpandComposer(message)
 
-  const resetTextarea = () => {
-    if (!textareaRef.current) return
-    textareaRef.current.style.height = 'auto'
-  }
+  const resetTextarea = useCallback(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+  }, [])
 
-  const setMessage = (nextValue: string) => {
-    if (!isControlled) {
-      setInternalValue(nextValue)
+  const resizeTextarea = useCallback(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [])
+
+  const setMessage = useCallback(
+    (nextValue: string) => {
+      if (!isControlled) {
+        setInternalValue(nextValue)
+      }
+      onValueChange?.(nextValue)
+    },
+    [isControlled, onValueChange],
+  )
+
+  const focusComposer = useCallback(() => {
+    textareaRef.current?.focus()
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!message.trim()) {
+      resetTextarea()
+      return
     }
-    onValueChange?.(nextValue)
-    setIsExpanded(shouldExpandComposer(nextValue))
-  }
+    resizeTextarea()
+  }, [isExpanded, message, resetTextarea, resizeTextarea])
+
+  const handleShellPointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (disabled) return
+      const target = event.target
+      if (!(target instanceof HTMLElement)) return
+      if (target.closest('textarea')) return
+      if (target.closest('button')) return
+      focusComposer()
+    },
+    [disabled, focusComposer],
+  )
+
+  const handleTextareaFocus = useCallback(
+    (event: FocusEvent<HTMLTextAreaElement>) => {
+      setIsFocused(true)
+      onFocus?.(event)
+    },
+    [onFocus],
+  )
+
+  const handleTextareaBlur = useCallback(
+    (event: FocusEvent<HTMLTextAreaElement>) => {
+      setIsFocused(false)
+      if (!message.trim()) {
+        resetTextarea()
+      }
+      onBlur?.(event)
+    },
+    [message, onBlur, resetTextarea],
+  )
 
   const submitMessage = () => {
+    if (disabled) return
     const trimmedMessage = message.trim()
     if (!trimmedMessage) return
 
@@ -69,7 +123,6 @@ export function Ai01({
 
     if (clearOnSubmit) {
       setMessage('')
-      setIsExpanded(false)
       resetTextarea()
     }
   }
@@ -81,7 +134,6 @@ export function Ai01({
 
   const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value)
-    resizeTextarea()
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -115,30 +167,42 @@ export function Ai01({
         ) : null}
 
         <div
+          onPointerDown={handleShellPointerDown}
           className={cn(
             fullWidth ? 'w-full' : 'mx-auto w-full max-w-2xl',
-            'cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg dark:bg-muted/50',
+            'cursor-text overflow-clip border border-border bg-transparent bg-clip-padding p-2.5 shadow-lg transition-[border-radius,padding] duration-200 ease-out dark:bg-muted/50',
             isExpanded
               ? "grid rounded-3xl [grid-template-areas:'header'_'primary'_'footer'] grid-cols-[1fr] grid-rows-[auto_1fr_auto]"
               : "grid rounded-full [grid-template-areas:'header_header_header'_'leading_primary_trailing'_'._footer_.'] grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto]",
+            isFocused && !isExpanded && 'ring-2 ring-ring/30 ring-offset-2 ring-offset-background',
+            disabled && 'pointer-events-none opacity-50',
             composerShellClassName,
           )}
         >
           <div
-            className={cn('flex min-h-14 items-center overflow-x-hidden px-1.5', {
-              'mb-0 px-2 py-1': isExpanded,
-              '-my-2.5': !isExpanded,
-            })}
+            className={cn(
+              'flex items-center overflow-x-hidden px-1.5 transition-[min-height,margin,padding] duration-200 ease-out',
+              isExpanded ? 'mb-0 min-h-14 px-2 py-1' : 'min-h-10 -my-2.5',
+            )}
             style={{ gridArea: 'primary' }}
           >
-            <div className="max-h-22 flex-1 overflow-auto">
+            <div
+              className={cn(
+                'flex-1 overflow-auto transition-[max-height] duration-200 ease-out',
+                isExpanded ? 'max-h-22' : 'max-h-10',
+              )}
+            >
               <Textarea
                 ref={textareaRef}
                 value={message}
                 onChange={handleTextareaChange}
+                onFocus={handleTextareaFocus}
+                onBlur={handleTextareaBlur}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                className="scrollbar-thin min-h-0 resize-none rounded-none border-0 p-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
+                disabled={disabled}
+                readOnly={disabled}
+                className="scrollbar-thin min-h-0 resize-none rounded-none border-0 p-0 text-base leading-5 transition-[height] duration-150 ease-out placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
                 rows={1}
               />
             </div>
@@ -229,7 +293,7 @@ export function Ai01({
               <Button
                 type="submit"
                 size="icon"
-                disabled={!message.trim()}
+                disabled={disabled || !message.trim()}
                 className="rounded-full"
                 aria-label="Send message"
               >

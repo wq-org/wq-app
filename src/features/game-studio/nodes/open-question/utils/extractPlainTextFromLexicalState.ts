@@ -1,6 +1,6 @@
 import type { SerializedEditorState } from 'lexical'
 
-/** Lexical node types omitted from grading text (media / layout only). */
+/** Lexical node types omitted from scoring text (media / layout only). */
 const SKIPPED_NODE_TYPES = new Set([
   'image',
   'imageplaceholder',
@@ -44,7 +44,7 @@ function walkNode(node: unknown, lines: string[], lineParts: string[]): void {
   }
 }
 
-/** Plain text for grading — images and other media nodes are skipped. */
+/** Plain text for scoring — images and other media nodes are skipped. */
 export function extractPlainTextFromLexicalState(
   state: SerializedEditorState | null | undefined,
 ): string {

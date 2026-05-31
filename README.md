@@ -28,16 +28,16 @@ supabase start
 supabase stop
 ```
 
-## Grading worker (open-question scoring)
+## Auto-scoring worker (open-question scoring)
 
-The Python service under [`grading-worker/app/grading/`](grading-worker/app/grading/) grades open-ended student answers for Game Studio. Deeper design notes: [grading-worker/README.md](grading-worker/README.md).
+The Python service under [`auto-scoring-worker/app/auto_scoring/`](auto-scoring-worker/app/auto_scoring/) scores open-ended student answers for Game Studio. Deeper design notes: [auto-scoring-worker/README.md](auto-scoring-worker/README.md).
 
-**Prerequisites:** Python 3.11 (see `grading-worker/.python-version`).
+**Prerequisites:** Python 3.11 (see `auto-scoring-worker/.python-version`).
 
 From the repo root:
 
 ```bash
-cd grading-worker
+cd auto-scoring-worker
 python3.11 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -57,7 +57,7 @@ curl http://127.0.0.1:8000/grade/health
 # {"status":"ok"}
 ```
 
-**With the React app:** run `npm start` from the repo root. Vite proxies `/api/grading` → `http://127.0.0.1:8000/grade`, so keep the worker on port **8000**. To use another URL, set `VITE_GRADING_WORKER_URL` (for example `http://127.0.0.1:8081/grade`) in `.env` or `.env.local`.
+**With the React app:** run `npm start` from the repo root. Vite proxies `/api/scoring` → `http://127.0.0.1:8000/grade`, so keep the worker on port **8000**. To use another URL, set `VITE_SCORING_WORKER_URL` (for example `http://127.0.0.1:8081/grade`) in `.env` or `.env.local`.
 
 ## SQL migrations
 

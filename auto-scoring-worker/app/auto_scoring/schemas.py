@@ -1,4 +1,4 @@
-# wq-grading-worker/app/grading/schemas.py
+# app/auto_scoring/schemas.py
 from typing import Literal
 from pydantic import BaseModel, Field
 
@@ -27,5 +27,5 @@ class GradeResponse(BaseModel):
     # ── Derived ─────────────────────────────────────────────────────
     marks_awarded: int
     total_points: int
-    scoring_branch: Literal["hard_zero", "full_marks", "partial"]
+    scoring_branch: Literal["hard_zero", "full_marks", "near_full", "partial"]
     requires_teacher_attention: bool

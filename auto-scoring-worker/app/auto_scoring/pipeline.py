@@ -1,4 +1,4 @@
-# app/grading/pipeline.py
+# app/auto_scoring/pipeline.py
 
 import math
 import numpy as np
@@ -7,8 +7,13 @@ from nltk.corpus import stopwords
 from nltk.metrics.distance import edit_distance
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from app.grading.constants import SCORING_WEIGHTS, SCORING_THRESHOLDS, TEACHER_ATTENTION_BAND
-from app.grading.embedding_model import get_embedding_model
+from app.auto_scoring.constants import (
+    SCORING_WEIGHTS,
+    SCORING_THRESHOLDS,
+    TEACHER_ATTENTION_BAND,
+    MIN_MEANINGFUL_TOKENS,
+)
+from app.auto_scoring.embedding_model import get_embedding_model
 
 # Download NLTK data once on import — safe to call multiple times
 nltk.download("stopwords", quiet=True)
@@ -136,7 +141,7 @@ def compute_base_score(
 
 
 def compute_confidence_score(base_score: float, semantic_score: float) -> float:
-    """Eq.(b): C = clamp(0.5·Stf + 0.5·C_nlp, 0, 1)"""
+    """Eq.(b): C = clamp(0.4·Stf + 0.6·C_nlp, 0, 1)"""
     w_tf = SCORING_WEIGHTS["semantic"]
     raw = w_tf * semantic_score + (1 - w_tf) * base_score
     return float(np.clip(raw, 0.0, 1.0))
@@ -150,27 +155,46 @@ def compute_final_score(
     cosine: float,
 ) -> tuple[float, str]:
     """
-    Eq.(c): three-branch piecewise decision.
-    Returns (F, branch) — branch is one of: 'hard_zero', 'full_marks', 'partial'.
-    full_marks requires semantic + word_count AND both lexical gates (jaccard, cosine),
-    preventing broad embedding similarity from bypassing missing key content.
+    Eq.(c): four-branch piecewise decision.
+    Returns (F, branch) — branch is one of:
+      'hard_zero'  — semantic below minimum meaningful threshold
+      'full_marks' — all four lexical + semantic gates pass
+      'near_full'  — high semantic + most lexical gates pass; one gate narrowly missed
+      'partial'    — everything else; confidence stretched across 0.40–0.95 band
+
+    Branching order: hard_zero → full_marks → near_full → partial.
+    Calibration remap for partial: 0.40 + confidence * 0.55
+    This spreads [0, 1] confidence values across the 0.40–0.95 output range,
+    producing four human-readable integer bands on a 10-point scale.
     """
     t = SCORING_THRESHOLDS
+
     if semantic < t["semantic_hard_zero"]:
         return 0.0, "hard_zero"
+
     if (
-        semantic  >= t["semantic_full_mark"]
+        semantic   >= t["semantic_full_mark"]
         and word_count >= t["word_count_full_mark"]
-        and jaccard   >= t["full_marks_jaccard_min"]
-        and cosine    >= t["full_marks_cosine_min"]
+        and jaccard    >= t["full_marks_jaccard_min"]
+        and cosine     >= t["full_marks_cosine_min"]
     ):
         return 1.0, "full_marks"
-    return confidence, "partial"
+
+    if (
+        semantic   >= t["near_full_semantic_min"]
+        and word_count >= t["near_full_word_count_min"]
+        and jaccard    >= t["near_full_jaccard_min"]
+    ):
+        return t["near_full_final_score"], "near_full"
+
+    # Linear remap stretches partial confidence across a wider output range.
+    calibrated = float(np.clip(0.40 + confidence * 0.55, 0.0, 1.0))
+    return calibrated, "partial"
 
 
 def map_score_to_points(final_score: float, total_points: int) -> int:
-    """Eq.(d): M = ceil(min(F·T, T))"""
-    return math.ceil(min(final_score * total_points, total_points))
+    """Eq.(d): M = round(min(F·T, T))"""
+    return round(min(final_score * total_points, total_points))
 
 
 # ── Step 5: Orchestrator ──────────────────────────────────────────────────────
@@ -184,10 +208,34 @@ def run_grading_pipeline(
     Single entry point. Calls every function above in order.
     Returns a dict matching GradeResponse field names exactly.
     router.py calls this — nothing else should.
+
+    Short-circuits to hard_zero before the embedding model is called if the
+    student answer yields fewer than MIN_MEANINGFUL_TOKENS content tokens
+    after stopword removal. This prevents nonsense or empty answers from
+    receiving a non-zero semantic score.
     """
-    # Preprocess
+    # Preprocess both sides first.
     student_kw   = tokenise_and_preprocess(student_answer)
     reference_kw = tokenise_and_preprocess(teacher_solution)
+
+    # ── Dummy / nonsense guard ────────────────────────────────────────────────
+    # Zero or near-zero content tokens mean the answer carries no meaningful
+    # information; skip all metric computation including the embedding call.
+    if len(student_kw) < MIN_MEANINGFUL_TOKENS:
+        return {
+            "jaccard_score":              0.0,
+            "inverted_edit_score":        0.0,
+            "cosine_score":               0.0,
+            "normalized_word_count":      0.0,
+            "semantic_score":             0.0,
+            "base_score":                 0.0,
+            "confidence_score":           0.0,
+            "final_score":                0.0,
+            "marks_awarded":              0,
+            "total_points":               total_points,
+            "scoring_branch":             "hard_zero",
+            "requires_teacher_attention": False,
+        }
 
     # Four statistical signals
     jaccard    = compute_jaccard(student_kw, reference_kw)
@@ -196,7 +244,7 @@ def run_grading_pipeline(
     cosine     = compute_cosine(student_answer, teacher_solution)
     word_count = compute_normalized_word_count(student_kw, reference_kw)
 
-    # One AI signal
+    # One AI signal — only reached when student answer has meaningful content
     semantic = compute_semantic(student_answer, teacher_solution)
 
     # Equations
@@ -205,12 +253,13 @@ def run_grading_pipeline(
     final, branch = compute_final_score(confidence, semantic, word_count, jaccard, cosine)
     marks      = map_score_to_points(final, total_points)
 
-    # Teacher attention: ambiguous confidence band, OR semantic high but lexical low
-    # (the latter pattern flags likely embedding false positives).
+    # Teacher attention: ambiguous confidence band, semantic high but lexical low
+    # (likely embedding false positive), or near_full award needing teacher confirmation.
     band = TEACHER_ATTENTION_BAND
     attention = (
         band["low"] <= confidence <= band["high"]
         or (semantic >= 0.75 and jaccard < 0.25)
+        or branch == "near_full"
     )
 
     return {

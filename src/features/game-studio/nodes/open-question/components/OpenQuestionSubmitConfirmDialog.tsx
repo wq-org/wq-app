@@ -18,7 +18,7 @@ export type OpenQuestionSubmitConfirmDialogProps = {
   onConfirm: () => void
 }
 
-/** Confirmation before grading the current preview answer (irreversible for this question). */
+/** Confirmation before scoring the current preview answer (irreversible for this question). */
 export function OpenQuestionSubmitConfirmDialog({
   open,
   onOpenChange,

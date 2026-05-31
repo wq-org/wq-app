@@ -19,6 +19,6 @@ export {
   type PersistOpenQuestionExercisesPatch,
 } from './persistOpenQuestionExercises'
 export {
-  buildOpenQuestionGradingRequest,
-  type BuildOpenQuestionGradingRequestArgs,
-} from './buildOpenQuestionGradingRequest'
+  buildOpenQuestionScoringRequest,
+  type BuildOpenQuestionScoringRequestArgs,
+} from './buildOpenQuestionScoringRequest'

@@ -17,7 +17,7 @@ export type OpenQuestionScoreBreakdown = {
  * Describes how the configured max score maps to per-question awards.
  *
  * `pointsPerQuestion` is the even split rounded to one decimal — this matches
- * what the preview loop sends to the grading worker per question.
+ * what the preview loop sends to the scoring worker per question.
  */
 export function buildOpenQuestionScoreBreakdown(
   nodeData: GameOpenQuestionNodeData,

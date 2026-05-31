@@ -16,7 +16,7 @@ export function collectPreviewableOpenQuestions(
 }
 
 /**
- * Exercises ready for grading: learner prompt + reference answer both filled.
+ * Exercises ready for scoring: learner prompt + reference answer both filled.
  * Only these count toward the per-exercise point split in settings.
  */
 export function collectGradableOpenQuestions(

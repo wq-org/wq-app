@@ -1,3 +1,4 @@
+import type { FocusEvent } from 'react'
 import type { LucideIcon } from 'lucide-react'
 
 export const AI03_MENU_ACTION_IDS = ['attach', 'code', 'web', 'history'] as const
@@ -50,6 +51,8 @@ export type Ai01Props = {
   defaultValue?: string
   onValueChange?: (value: string) => void
   onSubmit?: (message: string) => void
+  onFocus?: (event: FocusEvent<HTMLTextAreaElement>) => void
+  onBlur?: (event: FocusEvent<HTMLTextAreaElement>) => void
   onFilesSelected?: (files: FileList) => void
   clearOnSubmit?: boolean
   showDropDown?: boolean
@@ -58,6 +61,8 @@ export type Ai01Props = {
   fullWidth?: boolean
   /** Extra classes on the composer shell (border, motion, rounding). */
   composerShellClassName?: string
+  /** When true, the textarea cannot be edited and shell clicks do not focus it. */
+  disabled?: boolean
 }
 
 export type Ai03Props = {

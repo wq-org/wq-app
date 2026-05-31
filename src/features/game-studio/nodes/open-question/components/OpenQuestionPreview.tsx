@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CircleQuestionMark, HandHelping } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,11 +10,11 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 
-import { useGrading } from '../hooks/useGrading'
+import { useScoring } from '../hooks/useScoring'
 import { useOpenQuestionPreviewLoop } from '../hooks/useOpenQuestionPreviewLoop'
 import type { GameOpenQuestionNodeData } from '../types/open-question.schema'
 import { collectPreviewStudentAnswer } from '../utils/collectPreviewStudentAnswer'
-import { buildOpenQuestionGradingRequest, resolveGameOpenQuestionPoints } from '../utils'
+import { buildOpenQuestionScoringRequest, resolveGameOpenQuestionPoints } from '../utils'
 import { OpenQuestionChatInput } from './OpenQuestionChatInput'
 import {
   OpenQuestionPreviewChatHistory,
@@ -35,7 +35,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
-  const { isGrading, gradeAnswer } = useGrading()
+  const { isScoring, scoreAnswer } = useScoring()
 
   const data = useMemo(() => nodeData ?? {}, [nodeData])
   const maxScore = resolveGameOpenQuestionPoints(data.points)
@@ -60,10 +60,10 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   const [composerValue, setComposerValue] = useState('')
   const [previewMessages, setPreviewMessages] = useState<OpenQuestionPreviewChatMessage[]>([])
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const [finalSummaryShown, setFinalSummaryShown] = useState(false)
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false)
   /** Answer held until the user confirms in the submit dialog — not shown in chat yet. */
   const [pendingAnswerText, setPendingAnswerText] = useState<string | null>(null)
+  const scoringInFlightRef = useRef(false)
 
   const avatarFallback =
     profile?.display_name?.trim().charAt(0).toUpperCase() ??
@@ -97,7 +97,6 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     setPreviewMessages([])
     setEditingMessageId(null)
     setComposerValue('')
-    setFinalSummaryShown(false)
     setSubmitDialogOpen(false)
     setPendingAnswerText(null)
     reset()
@@ -118,97 +117,134 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   }, [currentIndex, currentQuestion, filledQuestions.length, nodeId, t])
 
   useEffect(() => {
-    if (!isFinished || finalSummaryShown) return
-    setFinalSummaryShown(true)
-    appendMessage({
-      id: `${nodeId}-final-summary-${Date.now()}`,
-      direction: 'receiving',
-      text: t('openQuestionGamePreview.iterationFinalSummary', {
-        earned: earnedTotal,
-        total: maxScore,
-      }),
-      textBold: true,
+    if (!isFinished) return
+    const finalSummaryId = `${nodeId}-final-summary`
+    setPreviewMessages((prev) => {
+      if (prev.some((message) => message.id === finalSummaryId)) return prev
+      return [
+        ...prev,
+        {
+          id: finalSummaryId,
+          direction: 'receiving',
+          text: t('openQuestionGamePreview.iterationFinalSummary', {
+            earned: earnedTotal,
+            total: maxScore,
+          }),
+          textBold: true,
+        },
+      ]
     })
-  }, [appendMessage, earnedTotal, finalSummaryShown, isFinished, maxScore, nodeId, t])
+  }, [earnedTotal, isFinished, maxScore, nodeId, t])
 
-  const runGrading = useCallback(
+  const runScoring = useCallback(
     async (messages: readonly OpenQuestionPreviewChatMessage[]) => {
-      if (!currentQuestion) return
+      if (!currentQuestion || scoringInFlightRef.current) return
+      scoringInFlightRef.current = true
 
-      const markerId = questionMarkerId(nodeId, currentIndex, currentQuestion.id)
-      const markerIndex = messages.findIndex((message) => message.id === markerId)
-      const slice = markerIndex >= 0 ? messages.slice(markerIndex + 1) : messages
-      const studentAnswer = collectPreviewStudentAnswer(slice, systemPrompts)
+      try {
+        const markerId = questionMarkerId(nodeId, currentIndex, currentQuestion.id)
+        const markerIndex = messages.findIndex((message) => message.id === markerId)
+        const slice = markerIndex >= 0 ? messages.slice(markerIndex + 1) : messages
+        const studentAnswer = collectPreviewStudentAnswer(slice, systemPrompts)
 
-      if (studentAnswer.length === 0) {
-        appendMessage({
-          id: `${nodeId}-grading-missing-answer-${Date.now()}`,
-          direction: 'receiving',
-          text: t('openQuestionGamePreview.gradingMissingAnswer'),
+        if (studentAnswer.length === 0) {
+          appendMessage({
+            id: `${nodeId}-scoring-missing-answer-${Date.now()}`,
+            direction: 'receiving',
+            text: t('openQuestionGamePreview.scoringMissingAnswer'),
+          })
+          return
+        }
+
+        const teacherSolution = currentQuestion.answer.trim()
+        if (teacherSolution.length === 0) {
+          appendMessage({
+            id: `${nodeId}-scoring-missing-solution-${Date.now()}`,
+            direction: 'receiving',
+            text: t('openQuestionGamePreview.scoringMissingReferenceAnswer'),
+          })
+          return
+        }
+
+        const loadingMessageId = `${nodeId}-scoring-loading-q${currentIndex}`
+        const errorMessageId = `${nodeId}-scoring-error-q${currentIndex}`
+        const resultMessageId = `${nodeId}-scoring-result-q${currentIndex}`
+
+        setPreviewMessages((prev) => {
+          const withoutStale = prev.filter(
+            (message) =>
+              message.id !== loadingMessageId &&
+              message.id !== errorMessageId &&
+              message.id !== resultMessageId,
+          )
+          return [
+            ...withoutStale,
+            {
+              id: loadingMessageId,
+              direction: 'receiving',
+              text: t('openQuestionGamePreview.scoringInProgress'),
+              status: 'loading',
+            },
+          ]
         })
-        return
-      }
 
-      const teacherSolution = currentQuestion.answer.trim()
-      if (teacherSolution.length === 0) {
-        appendMessage({
-          id: `${nodeId}-grading-missing-solution-${Date.now()}`,
-          direction: 'receiving',
-          text: t('openQuestionGamePreview.gradingMissingReferenceAnswer'),
+        const result = await scoreAnswer(
+          buildOpenQuestionScoringRequest({
+            studentAnswer,
+            referenceAnswer: teacherSolution,
+            pointsPerQuestion,
+            institutionId,
+            sessionParticipantId: `${sessionParticipantId}-q${currentIndex}`,
+          }),
+        )
+
+        setPreviewMessages((prev) => prev.filter((message) => message.id !== loadingMessageId))
+
+        if (!result) {
+          setPreviewMessages((prev) => {
+            if (prev.some((message) => message.id === errorMessageId)) return prev
+            return [
+              ...prev,
+              {
+                id: errorMessageId,
+                direction: 'receiving',
+                text: t('openQuestionGamePreview.scoringFailed'),
+              },
+            ]
+          })
+          return
+        }
+
+        const marksMessage = t('openQuestionGamePreview.marksAwardedMessage', {
+          marks: result.marksAwarded,
+          total: result.totalPoints,
         })
-        return
-      }
+        const attentionSuffix = result.requiresTeacherAttention
+          ? `\n\n${t('openQuestionGamePreview.scoringNeedsAttention')}`
+          : ''
 
-      const loadingMessageId = `${nodeId}-grading-loading-${Date.now()}`
-      appendMessage({
-        id: loadingMessageId,
-        direction: 'receiving',
-        text: t('openQuestionGamePreview.gradingInProgress'),
-        status: 'loading',
-      })
-
-      const result = await gradeAnswer(
-        buildOpenQuestionGradingRequest({
-          studentAnswer,
-          referenceAnswer: teacherSolution,
-          pointsPerQuestion,
-          institutionId,
-          sessionParticipantId: `${sessionParticipantId}-q${currentIndex}`,
-        }),
-      )
-
-      setPreviewMessages((prev) => prev.filter((message) => message.id !== loadingMessageId))
-
-      if (!result) {
-        appendMessage({
-          id: `${nodeId}-grading-error-${Date.now()}`,
-          direction: 'receiving',
-          text: t('openQuestionGamePreview.gradingFailed'),
+        setPreviewMessages((prev) => {
+          if (prev.some((message) => message.id === resultMessageId)) return prev
+          return [
+            ...prev,
+            {
+              id: resultMessageId,
+              direction: 'receiving',
+              text: `${marksMessage}${attentionSuffix}`,
+              textBold: true,
+            },
+          ]
         })
-        return
+        recordAwardAndAdvance(result.marksAwarded)
+      } finally {
+        scoringInFlightRef.current = false
       }
-
-      const marksMessage = t('openQuestionGamePreview.marksAwardedMessage', {
-        marks: result.marksAwarded,
-        total: result.totalPoints,
-      })
-      const attentionSuffix = result.requiresTeacherAttention
-        ? `\n\n${t('openQuestionGamePreview.gradingNeedsAttention')}`
-        : ''
-
-      appendMessage({
-        id: `${nodeId}-grading-result-${Date.now()}`,
-        direction: 'receiving',
-        text: `${marksMessage}${attentionSuffix}`,
-        textBold: true,
-      })
-      recordAwardAndAdvance(result.marksAwarded)
     },
     [
       appendMessage,
       currentIndex,
       currentQuestion,
-      gradeAnswer,
+      scoreAnswer,
       institutionId,
       nodeId,
       pointsPerQuestion,
@@ -221,23 +257,22 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
 
   const handleConfirmSubmit = useCallback(() => {
     const trimmed = pendingAnswerText?.trim() ?? ''
-    if (!trimmed || !currentQuestion) return
+    if (!trimmed || !currentQuestion || scoringInFlightRef.current) return
 
     const answerMessage: OpenQuestionPreviewChatMessage = {
-      id: `${nodeId}-answer-${currentIndex}-${Date.now()}`,
+      id: `${nodeId}-answer-${currentIndex}-${currentQuestion.id}`,
       direction: 'sending',
       text: trimmed,
     }
 
+    const nextMessages: OpenQuestionPreviewChatMessage[] = [...previewMessages, answerMessage]
+
     setPendingAnswerText(null)
     setComposerValue('')
-
-    setPreviewMessages((prev) => {
-      const next = [...prev, answerMessage]
-      void runGrading(next)
-      return next
-    })
-  }, [currentIndex, currentQuestion, nodeId, pendingAnswerText, runGrading])
+    setEditingMessageId(null)
+    setPreviewMessages(nextMessages)
+    void runScoring(nextMessages)
+  }, [currentIndex, currentQuestion, nodeId, pendingAnswerText, previewMessages, runScoring])
 
   const handleSubmitDialogOpenChange = useCallback((open: boolean) => {
     setSubmitDialogOpen(open)
@@ -261,7 +296,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
   const isComposerLocked =
-    isGrading || isAdvancing || isFinished || filledQuestions.length === 0 || submitDialogOpen
+    isScoring || isAdvancing || isFinished || filledQuestions.length === 0 || submitDialogOpen
 
   const handlePromptClick = useCallback(
     (message: string) => {

@@ -1,6 +1,6 @@
 # Open Question Scoring Algorithm
 
-This document explains the automated grading pipeline used for open-question answers.
+This document explains the automated scoring pipeline used for open-question answers.
 It follows the NLP + semantic approach described in:
 
 - Ayaan, A., Ng, K.-W. _Automated grading using natural language processing and semantic analysis_ ([paper PDF](https://pmc.ncbi.nlm.nih.gov/articles/PMC12171532/pdf/main.pdf))

@@ -1,9 +1,13 @@
 # app/main.py
 
+import os
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from app.grading.embedding_model import load_embedding_model
-from app.grading.router import router as grading_router
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.auto_scoring.embedding_model import load_embedding_model
+from app.auto_scoring.router import router as scoring_router
 
 
 @asynccontextmanager
@@ -24,11 +28,24 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="wq-grading-worker",
+    title="wq-auto-scoring-worker",
     version="0.1.0",
     lifespan=lifespan,
 )
 
-# Mount the grading router.
-# All endpoints in router.py are now reachable at /grade/...
-app.include_router(grading_router, prefix="/grade")
+_default_cors_origins = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv("CORS_ALLOW_ORIGINS", _default_cors_origins).split(",")
+        if origin.strip()
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+# Mount the scoring router.
+# All endpoints in router.py are now reachable at /auto-score/...
+app.include_router(scoring_router, prefix="/auto-score")

@@ -1,9 +1,8 @@
-// src/features/game-studio/nodes/open-question/types/grading.types.ts
 // No math. No constants. Dumb receiver of Python output.
 
-export type ScoringBranch = 'hard_zero' | 'full_marks' | 'partial'
+export type ScoringBranch = 'hard_zero' | 'full_marks' | 'near_full' | 'partial'
 
-export interface GradingRequest {
+export type ScoringRequest = {
   studentAnswer: string
   teacherSolution: string
   totalPoints: number
@@ -11,7 +10,7 @@ export interface GradingRequest {
   sessionParticipantId: string
 }
 
-export interface GradingResponse {
+export type ScoringResponse = {
   // 6 radar chart axes — sent back as-is from the worker
   jaccardScore: number
   invertedEditScore: number
@@ -32,7 +31,7 @@ export interface GradingResponse {
 }
 
 /** Shape written to game_session_participants.scores_detail JSONB */
-export type GradingRow = GradingResponse & {
-  gradedAt: string // ISO timestamp added by frontend before write
+export type ScoringRow = ScoringResponse & {
+  scoredAt: string // ISO timestamp added by frontend before write
   sessionParticipantId: string
 }

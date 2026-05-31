@@ -1,7 +1,7 @@
-# app/grading/embedding_model.py
+# app/auto_scoring/embedding_model.py
 
 from sentence_transformers import SentenceTransformer
-from app.grading.constants import EMBEDDING_MODEL_NAME
+from app.auto_scoring.constants import EMBEDDING_MODEL_NAME
 
 _embedding_model: SentenceTransformer | None = None
 

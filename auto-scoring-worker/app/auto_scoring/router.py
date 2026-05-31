@@ -1,8 +1,8 @@
-# app/grading/router.py
+# app/auto_scoring/router.py
 
 from fastapi import APIRouter, HTTPException
-from app.grading.schemas import GradeRequest, GradeResponse
-from app.grading.pipeline import run_grading_pipeline
+from app.auto_scoring.schemas import GradeRequest, GradeResponse
+from app.auto_scoring.pipeline import run_grading_pipeline
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post("/", response_model=GradeResponse)
 def grade_answer(body: GradeRequest) -> GradeResponse:
     """
-    POST /grade/
+    POST /auto-score/
     Receives: student_answer, teacher_solution, total_points, institution_id, session_participant_id
     Returns: GradeResponse with all 7 floats + branch + marks + attention flag
 
@@ -36,7 +36,7 @@ def grade_answer(body: GradeRequest) -> GradeResponse:
 @router.get("/health")
 def health_check() -> dict:
     """
-    GET /grade/health
+    GET /auto-score/health
     Used by Docker health checks and Hetzner uptime monitoring.
     Returns 200 immediately — if the server responds, it is alive.
     """
