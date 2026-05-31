@@ -2,6 +2,9 @@
 
 export type ScoringBranch = 'hard_zero' | 'full_marks' | 'near_full' | 'partial'
 
+/** `coming_soon` — placeholder until the production scoring worker is live. */
+export type ScoringAvailability = 'live' | 'coming_soon'
+
 export type ScoringRequest = {
   studentAnswer: string
   teacherSolution: string
@@ -28,6 +31,7 @@ export type ScoringResponse = {
   totalPoints: number
   scoringBranch: ScoringBranch
   requiresTeacherAttention: boolean
+  availability: ScoringAvailability
 }
 
 /** Shape written to game_session_participants.scores_detail JSONB */

@@ -10,6 +10,7 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 
+import { isLiveScoringEnabled } from '../api/scoringApi'
 import { useScoring } from '../hooks/useScoring'
 import { useOpenQuestionPreviewLoop } from '../hooks/useOpenQuestionPreviewLoop'
 import type { GameOpenQuestionNodeData } from '../types/open-question.schema'
@@ -35,7 +36,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
-  const { isScoring, scoreAnswer } = useScoring()
+  const { isScoring, scoreAnswer } = useScoring('game-studio-preview')
 
   const data = useMemo(() => nodeData ?? {}, [nodeData])
   const maxScore = resolveGameOpenQuestionPoints(data.points)
@@ -116,9 +117,18 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     })
   }, [currentIndex, currentQuestion, filledQuestions.length, nodeId, t])
 
+  const liveScoringEnabled = isLiveScoringEnabled('game-studio-preview')
+
   useEffect(() => {
     if (!isFinished) return
     const finalSummaryId = `${nodeId}-final-summary`
+    const finalSummaryText = liveScoringEnabled
+      ? t('openQuestionGamePreview.iterationFinalSummary', {
+          earned: earnedTotal,
+          total: maxScore,
+        })
+      : t('openQuestionGamePreview.iterationFinalSummaryComingSoon')
+
     setPreviewMessages((prev) => {
       if (prev.some((message) => message.id === finalSummaryId)) return prev
       return [
@@ -126,15 +136,12 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
         {
           id: finalSummaryId,
           direction: 'receiving',
-          text: t('openQuestionGamePreview.iterationFinalSummary', {
-            earned: earnedTotal,
-            total: maxScore,
-          }),
+          text: finalSummaryText,
           textBold: true,
         },
       ]
     })
-  }, [earnedTotal, isFinished, maxScore, nodeId, t])
+  }, [earnedTotal, isFinished, liveScoringEnabled, maxScore, nodeId, t])
 
   const runScoring = useCallback(
     async (messages: readonly OpenQuestionPreviewChatMessage[]) => {
@@ -215,13 +222,17 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
           return
         }
 
-        const marksMessage = t('openQuestionGamePreview.marksAwardedMessage', {
-          marks: result.marksAwarded,
-          total: result.totalPoints,
-        })
-        const attentionSuffix = result.requiresTeacherAttention
-          ? `\n\n${t('openQuestionGamePreview.scoringNeedsAttention')}`
-          : ''
+        const resultText =
+          result.availability === 'coming_soon'
+            ? t('openQuestionGamePreview.scoringComingSoon')
+            : t('openQuestionGamePreview.marksAwardedMessage', {
+                marks: result.marksAwarded,
+                total: result.totalPoints,
+              })
+        const attentionSuffix =
+          result.availability === 'live' && result.requiresTeacherAttention
+            ? `\n\n${t('openQuestionGamePreview.scoringNeedsAttention')}`
+            : ''
 
         setPreviewMessages((prev) => {
           if (prev.some((message) => message.id === resultMessageId)) return prev
@@ -230,7 +241,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
             {
               id: resultMessageId,
               direction: 'receiving',
-              text: `${marksMessage}${attentionSuffix}`,
+              text: `${resultText}${attentionSuffix}`,
               textBold: true,
             },
           ]
