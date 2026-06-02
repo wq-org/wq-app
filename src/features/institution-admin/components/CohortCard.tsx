@@ -1,0 +1,98 @@
+import { useTranslation } from 'react-i18next'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Text } from '@/components/ui/text'
+import type { CohortRecord } from '../types/cohort.types'
+
+type CohortCardProps = {
+  cohort: CohortRecord
+  programmeName: string | null | undefined
+  facultyName?: string | null | undefined
+  onOpen?: () => void
+}
+
+export function CohortCard({ cohort, programmeName, facultyName, onOpen }: CohortCardProps) {
+  const { t } = useTranslation('features.institution-admin')
+
+  const resolvedFaculty = facultyName?.trim() || t('faculties.pages.programmes.card.unknownFaculty')
+  const resolvedProgramme =
+    programmeName?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
+  const resolvedTitle = cohort.name?.trim() || t('faculties.pages.cohorts.card.untitledCohort')
+  const resolvedDescription =
+    cohort.description?.trim() || t('faculties.pages.cohorts.card.noDescription')
+  const academicYearLabel =
+    cohort.academic_year != null
+      ? String(cohort.academic_year)
+      : t('faculties.pages.cohorts.card.academicYearUnknown')
+
+  return (
+    <div className="flex w-full max-w-full animate-in fade-in-0 slide-in-from-bottom-4 flex-col overflow-hidden rounded-2xl border bg-card shadow-lg ring-1 ring-black/5 transition-all duration-200 hover:shadow-xl">
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex flex-row items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            <Badge
+              variant="indigo"
+              size="sm"
+              className="font-normal"
+            >
+              {resolvedFaculty}
+            </Badge>
+            <Badge
+              variant="indigo"
+              size="sm"
+              className="font-normal"
+            >
+              {resolvedProgramme}
+            </Badge>
+          </div>
+          <Badge
+            variant="blue"
+            size="sm"
+            className="shrink-0 font-normal"
+          >
+            {academicYearLabel}
+          </Badge>
+        </div>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p className="w-full overflow-hidden text-lg font-semibold text-ellipsis line-clamp-1">
+              {resolvedTitle}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent>
+            <Text
+              as="p"
+              variant="body"
+              className="max-w-xs"
+            >
+              {resolvedTitle}
+            </Text>
+          </TooltipContent>
+        </Tooltip>
+
+        <p className="min-h-12 text-left text-sm text-muted-foreground line-clamp-2">
+          {resolvedDescription}
+        </p>
+
+        <div className="mt-auto flex justify-end">
+          <Button
+            variant="darkblue"
+            type="button"
+            size="sm"
+            onClick={() => onOpen?.()}
+          >
+            <Text
+              as="p"
+              variant="body"
+            >
+              {t('faculties.pages.cohorts.card.open')}
+            </Text>
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

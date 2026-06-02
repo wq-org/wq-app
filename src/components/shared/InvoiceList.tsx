@@ -119,7 +119,7 @@ export function InvoiceList({
   const emptyMessage = hasInvoices ? labels.emptyFiltered : labels.emptyList
 
   return (
-    <Card className={cn('rounded-2xl border-gray-200 bg-white', className)}>
+    <Card className={cn('rounded-2xl border-border bg-card', className)}>
       <CardHeader>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1">

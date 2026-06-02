@@ -2,32 +2,58 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { dismissSaveStatusToast, showSaveStatusToast } from '@/components/shared'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
 import { useTopic } from '@/contexts/topic'
-import { LessonCardList, LessonForm } from '@/features/lesson'
+import { LessonCardList, LessonForm, LessonFilter } from '@/features/lesson'
 import { TopicLayout } from '@/features/topic'
 import { TopicPreviewTab } from '@/features/topic'
 import { TopicSettings } from '@/features/topic'
-import { LessonSearchBar } from '@/features/lesson'
 import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
 import { Separator } from '@/components/ui/separator'
+
+const TOPIC_LESSONS_ERROR_TOAST_ID = 'topic-lessons-list-error'
+
 const Topic = () => {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<TopicTabId>('editor')
   const [searchQuery, setSearchQuery] = useState('')
+  const [loadError, setLoadError] = useState<string | null>(null)
   const { selectedCourse, fetchCourseById } = useCourse()
   const { selectedTopic, fetchTopicById, loading: topicLoading, error: topicError } = useTopic()
-  const { lessons, fetchLessonsByTopicId, loading: lessonLoading } = useLesson()
+  const {
+    lessons,
+    fetchLessonsByTopicId,
+    listLoading: lessonLoading,
+    error: lessonError,
+  } = useLesson()
 
+  /** Header columns only; lesson body is loaded separately via the lesson draft JSON on the lesson route. */
   const filteredLessons = useSearchFilter(lessons, searchQuery, LESSON_SEARCH_FIELDS)
+
+  useEffect(() => {
+    if (lessonError) {
+      showSaveStatusToast({
+        id: TOPIC_LESSONS_ERROR_TOAST_ID,
+        tone: 'error',
+        title: t('page.notFound'),
+        description: lessonError,
+      })
+    } else {
+      dismissSaveStatusToast(TOPIC_LESSONS_ERROR_TOAST_ID)
+    }
+    return () => {
+      dismissSaveStatusToast(TOPIC_LESSONS_ERROR_TOAST_ID)
+    }
+  }, [lessonError, t])
 
   useEffect(() => {
     if (courseId && (!selectedCourse || selectedCourse.id !== courseId)) {
@@ -39,6 +65,7 @@ const Topic = () => {
     if (!topicId) return
 
     let cancelled = false
+    setLoadError(null)
 
     const loadTopic = async () => {
       try {
@@ -52,6 +79,8 @@ const Topic = () => {
         await fetchLessonsByTopicId(topic.id)
       } catch (error) {
         if (!cancelled) {
+          const message = error instanceof Error ? error.message : t('page.emptyState.description')
+          setLoadError(message)
           console.error('Failed to load topic:', error)
         }
       }
@@ -62,7 +91,7 @@ const Topic = () => {
     return () => {
       cancelled = true
     }
-  }, [topicId, courseId, fetchTopicById, fetchLessonsByTopicId])
+  }, [topicId, courseId, fetchTopicById, fetchLessonsByTopicId, t])
 
   if (!courseId || !topicId) {
     return (
@@ -96,7 +125,7 @@ const Topic = () => {
     )
   }
 
-  if (!selectedTopic || selectedTopic.course_id !== courseId || topicError) {
+  if (!selectedTopic || selectedTopic.course_id !== courseId || topicError || loadError) {
     return (
       <Empty className="w-full rounded-xl border border-dashed border-gray-200 p-6 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
         <EmptyHeader>
@@ -110,7 +139,7 @@ const Topic = () => {
             {t('page.notFound')}
           </EmptyTitle>
           <EmptyDescription className="text-xs text-gray-400">
-            {t('page.emptyState.description')}
+            {loadError || topicError || t('page.emptyState.description')}
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -157,9 +186,6 @@ const Topic = () => {
             <LessonForm
               topicId={selectedTopic.id}
               courseId={courseId}
-              onLessonCreated={() => {
-                void fetchLessonsByTopicId(selectedTopic.id)
-              }}
             />
           </div>
 
@@ -170,7 +196,7 @@ const Topic = () => {
             {t('page.lessonsTitle')}
           </Text>
 
-          <LessonSearchBar
+          <LessonFilter
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
           />
@@ -211,24 +237,6 @@ const Topic = () => {
       ) : null}
 
       {activeTab === 'settings' ? <TopicSettings topicId={selectedTopic.id} /> : null}
-
-      {activeTab === 'analytics' ? (
-        <div className="rounded-2xl border bg-white p-6">
-          <Text
-            as="h3"
-            variant="h3"
-          >
-            {t('layout.tabs.analytics', { defaultValue: 'Analytics' })}
-          </Text>
-          <Text
-            as="p"
-            variant="body"
-            className="mt-2 text-muted-foreground"
-          >
-            Topic analytics will be available soon.
-          </Text>
-        </div>
-      ) : null}
     </TopicLayout>
   )
 }

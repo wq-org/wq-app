@@ -25,6 +25,7 @@ export type InstitutionMemberDirectoryRow = {
 
 export type InstitutionInviteDirectoryRow = {
   rowKind: 'invite'
+  invite_id: string
   invite_token: string
   email: string
   membership_role: 'teacher' | 'student'

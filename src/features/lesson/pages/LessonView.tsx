@@ -2,18 +2,16 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '@/components/layout'
+import { SkeletonLoaderTextParagraphs } from '@/components/shared'
+import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { Textarea } from '@/components/ui/textarea'
 import { getLessonById } from '../api/lessonsApi'
-import { LessonPreview } from '../components/LessonPreview'
-import { LessonWorkspaceShell } from '../components/LessonWorkspaceShell'
-import { TableOfContentDrawer } from '../components/TableOfContentDrawer'
 import type { Lesson } from '../types/lesson.types'
-import { formatLessonMetaTimestamp } from '../utils/formatLessonMetaTimestamp'
-import { getHeadingsFromLessonPages } from '../utils/lessonHeadings'
-import { scrollToLessonHeading } from '../utils/scrollToLessonHeading'
+import { Editor } from '@/features/lexical-editor'
 
 const LessonView = () => {
-  const { t, i18n } = useTranslation('features.lesson')
+  const { t } = useTranslation('features.lesson')
   const { lessonId } = useParams<{ lessonId: string }>()
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(true)
@@ -53,11 +51,9 @@ const LessonView = () => {
     }
   }, [lessonId])
 
-  const lessonHeadings = getHeadingsFromLessonPages(lesson?.pages ?? [])
-
   return (
     <AppShell role="student">
-      <div className="container flex w-full flex-col gap-6 py-6">
+      <div className="container flex w-full max-w-3xl flex-col gap-4 py-6">
         {!loading && !lesson ? (
           <Text
             as="p"
@@ -67,36 +63,61 @@ const LessonView = () => {
             {t('page.notFound', { defaultValue: 'Lesson not found' })}
           </Text>
         ) : (
-          <LessonWorkspaceShell
-            title={lesson?.title?.trim() || t('page.fallbackTitle')}
-            description={lesson?.description?.trim() || t('page.fallbackDescription')}
-            updatedLabel={t('page.meta.lastUpdatedLabel')}
-            updatedValue={
-              formatLessonMetaTimestamp(lesson?.updated_at, lesson?.created_at, i18n.language) ??
-              t('page.meta.unavailable')
-            }
-            filesLabel={t('page.meta.noFilesLinked')}
-            actions={
-              <TableOfContentDrawer
-                headings={lessonHeadings}
-                loading={loading}
-                triggerLabel={t('page.actions.tableOfContents')}
-                title={t('page.drawers.tableOfContents.title')}
-                description={t('page.drawers.tableOfContents.description')}
-                emptyLabel={t('page.drawers.tableOfContents.empty')}
-                closeLabel={t('page.drawers.closeLabel')}
-                onHeadingSelect={scrollToLessonHeading}
+          <>
+            <Text
+              as="h1"
+              variant="h2"
+            >
+              {lesson?.title?.trim() || t('page.fallbackTitle')}
+            </Text>
+            <div className="space-y-1">
+              <Text
+                as="label"
+                variant="small"
+              >
+                Title
+              </Text>
+              <Input
+                value={lesson?.title ?? ''}
+                readOnly
               />
-            }
-          >
-            <LessonPreview
-              pages={lesson?.pages}
-              loading={loading}
-              loadingLabel={t('layout.loading')}
-              editorPlaceholder={t('page.editorPlaceholder')}
-              pageBreakLabel={t('page.pageBreakLabel')}
-            />
-          </LessonWorkspaceShell>
+            </div>
+            <div className="space-y-1">
+              <Text
+                as="label"
+                variant="small"
+              >
+                Description
+              </Text>
+              <Textarea
+                value={lesson?.description ?? ''}
+                readOnly
+                rows={3}
+              />
+            </div>
+            <div className="space-y-1">
+              <Text
+                as="label"
+                variant="small"
+              >
+                Content
+              </Text>
+              {lessonId && loading ? <SkeletonLoaderTextParagraphs /> : null}
+              {lessonId && !loading ? (
+                <div
+                  key={lessonId}
+                  className="rounded-md border border-border/60 bg-muted/20 p-2"
+                >
+                  <Editor
+                    initialContent={lesson?.content ?? null}
+                    isLoading={loading}
+                    lessonId={lessonId}
+                    readOnly
+                  />
+                </div>
+              ) : null}
+            </div>
+          </>
         )}
       </div>
     </AppShell>

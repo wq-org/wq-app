@@ -137,9 +137,9 @@ type InstitutionWizardBootstrapRpcRow = {
 
 /**
  * Wizard flow:
- * 1) call bootstrap RPC (institution + settings + quotas + trial + invite token)
- * 2) patch institution metadata
- * 3) optionally scaffold faculty/programme
+ * 1) call bootstrap RPC (institution + settings + quotas + trial + invite token — no faculties,
+ *    programmes, cohorts, or any offering rows)
+ * 2) patch institution metadata (slug, legal, billing, address, pending status)
  */
 export async function bootstrapInstitutionFromWizard(
   values: NewInstitutionWizardValues,
@@ -182,30 +182,6 @@ export async function bootstrapInstitutionFromWizard(
     .select(INSTITUTION_COLUMNS)
     .single()
   if (institutionError) throw new Error(institutionError.message)
-
-  if (values.createInitialStructure && values.facultyName.trim()) {
-    const { data: faculty, error: facultyError } = await supabase
-      .from('faculties')
-      .insert({
-        institution_id: row.institution_id,
-        name: values.facultyName.trim(),
-        sort_order: 0,
-      })
-      .select('id')
-      .single()
-    if (facultyError) throw new Error(facultyError.message)
-
-    if (values.programmeName.trim()) {
-      const { error: programmeError } = await supabase.from('programmes').insert({
-        institution_id: row.institution_id,
-        faculty_id: faculty.id,
-        name: values.programmeName.trim(),
-        progression_type: 'year_group',
-        sort_order: 0,
-      })
-      if (programmeError) throw new Error(programmeError.message)
-    }
-  }
 
   return {
     institution: toInstitution(institution as InstitutionRow),

@@ -1,6 +1,11 @@
 import type { InitialConfigType } from '@lexical/react/LexicalComposer'
+import { CodeHighlightNode, CodeNode } from '@lexical/code'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
+import { EmojiNode } from '@/features/lexical-editor/nodes/EmojiNode'
+import { ImageNode } from '@/features/lexical-editor/nodes/ImageNode'
+import { MentionNode } from '@/features/lexical-editor/nodes/MentionNode'
+import { YouTubeNode } from '@/features/lexical-editor/nodes/YouTubeNode'
 import { editorTheme } from './editorTheme'
 import { lexicalConfig } from './editorLink'
 
@@ -13,6 +18,18 @@ export const createDocumentEditorInitialConfig = (): InitialConfigType => {
     namespace: lexicalConfig.namespace,
     theme: editorTheme,
     onError: handleDocumentEditorError,
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, ...lexicalConfig.nodes],
+    nodes: [
+      HeadingNode,
+      QuoteNode,
+      ListNode,
+      ListItemNode,
+      CodeNode,
+      CodeHighlightNode,
+      ImageNode,
+      EmojiNode,
+      MentionNode,
+      YouTubeNode,
+      ...lexicalConfig.nodes,
+    ],
   }
 }

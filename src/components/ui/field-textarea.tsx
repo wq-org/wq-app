@@ -9,6 +9,10 @@ import { cn } from '@/lib/utils'
 const TEXTAREA_BODY =
   'placeholder:text-muted-foreground disabled:opacity-50 min-h-16 w-full resize-none whitespace-pre-wrap break-words py-2 text-base leading-normal outline-none'
 
+/** Scrollbar colors follow theme tokens (native UA scrollbars are often illegible on dark surfaces). */
+const TEXTAREA_SCROLLBAR =
+  '[scrollbar-width:thin] [scrollbar-color:var(--primary)_var(--muted)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary'
+
 export type FieldTextareaLengthDetail = {
   length: number
   maxLength: number
@@ -32,7 +36,7 @@ type FieldTextareaProps = {
    * Pass explicitly to override.
    */
   showCounter?: boolean
-  /** Hide the bottom separator line. Defaults to true since textareas are typically inside cards or bordered containers. */
+  /** Hide the bottom separator line. Defaults to true since textarea are typically inside cards or bordered containers. */
   hideSeparator?: boolean
   disabled?: boolean
   /** When true, the textarea is not editable and stays visually normal (unlike `disabled`). */
@@ -59,7 +63,7 @@ export const FieldTextarea = ({
   rows = 4,
   maxLength: maxLengthProp,
   showCounter: showCounterProp,
-  hideSeparator = true,
+  hideSeparator = false,
   disabled = false,
   readOnly = false,
   className,
@@ -69,6 +73,8 @@ export const FieldTextarea = ({
   const generatedId = useId()
   const resolvedId = id ?? generatedId
   const [scrollTop, setScrollTop] = useState(0)
+  const [isTextareaHovered, setIsTextareaHovered] = useState(false)
+  const [isTextareaFocused, setIsTextareaFocused] = useState(false)
 
   const hasLimit = maxLengthProp !== undefined && maxLengthProp > 0
   const maxLength = hasLimit ? maxLengthProp! : 0
@@ -109,6 +115,11 @@ export const FieldTextarea = ({
     useHighlightOverlay && 'text-transparent caret-foreground [text-shadow:none]',
   )
 
+  const separatorClassName = cn(
+    'transition-colors duration-200',
+    isTextareaFocused ? 'bg-primary' : isTextareaHovered ? 'bg-muted-foreground/45' : undefined,
+  )
+
   return (
     <div className={cn('w-full pb-2', className)}>
       <Label htmlFor={resolvedId}>{label}</Label>
@@ -136,7 +147,7 @@ export const FieldTextarea = ({
         <textarea
           id={resolvedId}
           data-slot="textarea"
-          className={cn(textareaShared, 'relative z-10')}
+          className={cn(textareaShared, 'relative z-10', TEXTAREA_SCROLLBAR)}
           style={
             useHighlightOverlay
               ? ({ WebkitTextFillColor: 'transparent' } satisfies CSSProperties)
@@ -147,6 +158,10 @@ export const FieldTextarea = ({
           value={value}
           onChange={readOnly ? undefined : handleChange}
           onScroll={useHighlightOverlay ? handleScroll : undefined}
+          onMouseEnter={() => setIsTextareaHovered(true)}
+          onMouseLeave={() => setIsTextareaHovered(false)}
+          onFocus={() => setIsTextareaFocused(true)}
+          onBlur={() => setIsTextareaFocused(false)}
           disabled={disabled && !readOnly}
           readOnly={readOnly}
         />
@@ -157,6 +172,7 @@ export const FieldTextarea = ({
           <Separator
             orientation="horizontal"
             decorative
+            className={separatorClassName}
           />
         ) : null}
         {showCounter && hasLimit ? (
@@ -164,7 +180,7 @@ export const FieldTextarea = ({
             <CharacterCounter
               count={remaining}
               max={maxLength}
-              size={20}
+              size="md"
             />
           </div>
         ) : null}

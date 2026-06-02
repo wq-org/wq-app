@@ -1,9 +1,22 @@
-import { useMemo, useState } from 'react'
-import { BookOpen, Box, Edit, LockIcon, SparklesIcon } from 'lucide-react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
+import type { VariantProps } from 'class-variance-authority'
+import {
+  BookOpen,
+  Box,
+  Edit,
+  FlaskConical,
+  Globe,
+  LockIcon,
+  PlusIcon,
+  SparklesIcon,
+} from 'lucide-react'
 import { CardImageScaleHoverEffect } from '@/components/shared/CardImageScaleHoverEffect'
 
 import {
   AccentPicker,
+  AnimatedBeamHub,
+  Ai02,
+  Ai03,
   GridIconBackground,
   IconPreviewCardSquare,
   IconPreviewCardWide,
@@ -29,6 +42,7 @@ import {
   SocialMediaReactionToggles,
   ToggleIconSwapOnPress,
   ToggleNotificationCountBadge,
+  LoadingPage,
   SliderDynamicTooltipIndicator,
   SliderReferenceLabels,
   SliderSyncedNumberInput,
@@ -42,6 +56,12 @@ import {
   StatsUsageDashboard,
   StatsValueBreakdown,
   SwitchListCardIcons,
+  AgentComputerIcon,
+  TwoColumnDialog,
+  type AgentComputerIconVariant,
+  type Ai03MenuActionId,
+  CardInstantPreview,
+  type CardInstantPreviewCardProps,
 } from '@/components/shared'
 import {
   CompactSettingsTableSwitches,
@@ -63,7 +83,14 @@ import {
 } from '@/components/shared/paginations'
 import { NumberFieldButtonsRight, NumberFieldInForm } from '@/components/shared/number-fields'
 import { Onboarding } from '@/features/onboarding'
+import { Text } from '@/components/ui/text'
+import DotWaveLoader from '@/components/ui/dot-wave-loader'
+import { dotWaveVariants } from '@/components/ui/dot-wave-loader-variant'
+import { Zoomies } from '@/components/ui/zoomies'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Divider } from '@/components/ui/divider'
 import {
   Dialog,
   DialogContent,
@@ -72,8 +99,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { CharacterCounter, CharacterCounterDemo } from '@/components/ui/character-counter'
+import type {
+  CharacterCounterSize,
+  CharacterCounterVariant,
+} from '@/components/ui/character-counter-variants'
+import { Score } from '@/components/ui/score'
+import type { ScoreSize, ScoreVariant } from '@/components/ui/score-variants'
 import { Label } from '@/components/ui/label'
+import { Tick, TickContent, TickContents, TickTrack, TickZoom, Ticks } from '@/components/ui/tick'
 import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
 import {
   AdvancedPasswordStrengthIndicatorProgress,
@@ -96,6 +137,88 @@ import {
   fileExplorerTreeSampleItems,
   fileExplorerTreeSampleRootItemId,
 } from '@/components/shared/trees'
+import { CalendarHeatmap } from '@/components/shared/calendar'
+import {
+  ChatHistory,
+  ChatImageCarousel,
+  ReceivingChatMessageBubble,
+  SendingChatMessageBubble,
+  type ChatBubbleRounded,
+  type ChatBubbleVariant,
+  type ChatHistoryMessage,
+} from '@/components/shared/chat'
+import { GameHeader } from '@/features/game-studio'
+import { MathNodeDemo } from '@/features/game-studio/nodes/game-dnd-math'
+import { getThemeClasses } from '@/lib/themes'
+import { cn } from '@/lib/utils'
+import type { LucideIcon } from 'lucide-react'
+
+function BeamHubBadge({ Icon, theme }: { Icon: LucideIcon; theme: string }) {
+  const themeClasses = getThemeClasses(theme)
+  return (
+    <div
+      className={cn(
+        'flex h-14 w-14 items-center justify-center rounded-full border-2 bg-card shadow-md',
+        themeClasses.text,
+        themeClasses.border,
+      )}
+    >
+      <Icon className="h-6 w-6" />
+    </div>
+  )
+}
+
+const TEXT_SEMANTIC_VARIANTS = ['h1', 'h2', 'h3', 'body', 'small'] as const
+const TEXT_COLOR_VARIANTS = [
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+  'darkblue',
+  'secondary',
+] as const
+
+const CHARACTER_COUNTER_VARIANTS = [
+  'default',
+  'darkblue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+] as const satisfies readonly CharacterCounterVariant[]
+
+const CHARACTER_COUNTER_SIZES = [
+  'sm',
+  'md',
+  'lg',
+  'xl',
+] as const satisfies readonly CharacterCounterSize[]
+
+const SCORE_VARIANTS = [
+  'default',
+  'darkblue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+] as const satisfies readonly ScoreVariant[]
+
+const SCORE_SIZES = ['xxs', 'xs', 'sm', 'md', 'lg', 'xl'] as const satisfies readonly ScoreSize[]
 
 const paginationPages = [1, 2, 3, 4]
 
@@ -135,9 +258,9 @@ const statsProgressItems: StatsProgressItem[] = [
 ]
 
 const segmentedProgressItems: StatsSegmentedProgressSegment[] = [
-  { label: 'Video', value: 2800, color: 'bg-blue-500' },
-  { label: 'Docs', value: 1900, color: 'bg-emerald-500' },
-  { label: 'Audio', value: 700, color: 'bg-amber-500' },
+  { label: 'Video', value: 5.5, color: 'bg-blue-500' },
+  { label: 'Docs', value: 4.2, color: 'bg-emerald-500' },
+  { label: 'Audio', value: 2.1, color: 'bg-amber-500' },
 ]
 
 const trendingItems = [
@@ -177,6 +300,18 @@ const toggleIconSwapColorVariants = [
   'orange',
   'pink',
 ] as const
+
+type DotWaveLoaderVariant = NonNullable<VariantProps<typeof dotWaveVariants>['variant']>
+
+/** Demo rows for `DotWaveLoader` — variants from `dot-wave-loader-variant.ts`. */
+const dotWaveLoaderDemoRows = [
+  { variant: 'confirm', label: 'confirm' },
+  { variant: 'darkblue', label: 'darkblue' },
+  { variant: 'indigo', label: 'indigo' },
+  { variant: 'default', label: 'default (theme primary)' },
+  { variant: 'orange', label: 'orange' },
+  { variant: 'active', label: 'active' },
+] as const satisfies ReadonlyArray<{ variant: DotWaveLoaderVariant; label: string }>
 
 const pricingColumns = [
   { name: 'Starter', cta: { text: 'Choose Starter', href: '#', variant: 'outline' as const } },
@@ -227,6 +362,206 @@ const demoSwitchItems: SwitchItem[] = [
 const ratingSliderEmojis = ['😡', '🙁', '😐', '🙂', '😍'] as const
 const ratingSliderLabels = ['Awful', 'Poor', 'Okay', 'Good', 'Amazing'] as const
 
+const chatBubbleVariantList: ChatBubbleVariant[] = [
+  'default',
+  'dark',
+  'blue-on-gray',
+  'darkblue-on-blue',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+  'darkblue',
+]
+
+const chatBubbleRoundedList: ChatBubbleRounded[] = ['sm', 'md', 'lg', 'xl', 'pill']
+
+const CHAT_DEMO_MAC_BOOK_NEO_IMAGE =
+  'https://is1-ssl.mzstatic.com/image/thumb/za7Mqkp-OSK_2BHWq8AtSQ/1960x1102.jpg'
+
+const MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS: CardInstantPreviewCardProps[] = [
+  {
+    id: 'ai',
+    subtitle: 'Highlights',
+    title: 'Built for Apple Intelligence',
+    imageSrc:
+      'https://www.apple.com/v/macbook-neo/a/images/overview/highlights/highlights_ai__cfrukhyww2nm_large_2x.jpg',
+    imagePosition: 'center 30%',
+    variant: 'compact',
+    layout: 'wide',
+    description:
+      'MacBook Neo brings Apple Intelligence to more people — helping you write, express yourself, and get things done effortlessly.',
+    content: (
+      <p>
+        On-device models keep your personal context private while still delivering fast, helpful
+        suggestions across apps.
+      </p>
+    ),
+  },
+  {
+    id: 'ecosystem',
+    subtitle: 'Highlights',
+    title: 'Mac and iPhone, Perfect Together',
+    imageSrc:
+      'https://www.apple.com/v/macbook-neo/a/images/overview/highlights/highlights_mac_iphone__b5emh4vjjnyq_medium_2x.jpg',
+    imagePosition: 'center bottom',
+    layout: 'narrow',
+    description:
+      'Start something on iPhone and finish it on Mac without missing a beat — messages, files, and clipboard flow between devices instantly.',
+    content: (
+      <p>
+        Continuity Camera, Handoff, and Universal Clipboard make the Neo feel like an extension of
+        your phone.
+      </p>
+    ),
+  },
+  {
+    id: 'battery',
+    subtitle: 'Highlights',
+    title: 'All-Day Battery Life',
+    imageSrc:
+      'https://www.apple.com/v/macbook-neo/a/images/overview/highlights/highlights_battery__fu65vu9o4te2_medium_2x.jpg',
+    imagePosition: 'center 70%',
+    layout: 'narrow',
+    description:
+      'Efficient Apple silicon stretches battery life so you can work, stream, and create away from an outlet for hours longer than before.',
+    content: <p>Fast charging gets you back to full productivity when you do need to plug in.</p>,
+  },
+  {
+    id: 'camera',
+    subtitle: 'Product Stories',
+    title: 'Display, Camera, and Audio',
+    imageSrc:
+      'https://www.apple.com/euro/macbook-neo/a/screens_alt/images/overview/product-stories/display-camera-audio/dca_camera__bmfj0hk3imnm_large_2x.png',
+    imagePosition: 'center center',
+    variant: 'compact',
+    layout: 'wide',
+    description:
+      'A brilliant Liquid Retina display, improved camera, and immersive speakers make video calls and media feel closer and clearer.',
+    content: (
+      <p>
+        Whether you are presenting or watching, MacBook Neo keeps picture and sound in sync with the
+        rest of your workflow.
+      </p>
+    ),
+  },
+]
+
+const chatHistoryColorDemoMessages: ChatHistoryMessage[] = [
+  {
+    id: 'demo-in-1',
+    text: 'Incoming message — left side.',
+    time: '10:22',
+    direction: 'receiving',
+  },
+  {
+    id: 'demo-out-1',
+    text: 'Receiving message — right side.',
+    time: '10:23',
+    direction: 'sending',
+  },
+  {
+    id: 'demo-in-2',
+    text: 'Another incoming line for contrast.',
+    time: '10:24',
+    direction: 'receiving',
+  },
+]
+
+/** Same thread as `chatHistoryColorDemoMessages`, first incoming uses `ChatImageList` (one image). */
+const chatHistoryDefaultIncomingBlueReceivingMessages: ChatHistoryMessage[] = [
+  {
+    id: 'demo-default-blue-in-1',
+    text: 'Incoming with one image (rendered via ChatImageList).',
+    time: '10:22',
+    direction: 'receiving',
+    images: [
+      {
+        src: CHAT_DEMO_MAC_BOOK_NEO_IMAGE,
+        alt: 'MacBook Neo — highlights, AI',
+      },
+    ],
+  },
+  {
+    id: 'demo-default-blue-out-1',
+    text: 'Receiving message — right side.',
+    time: '10:23',
+    direction: 'sending',
+  },
+  {
+    id: 'demo-default-blue-in-2',
+    text: 'Another incoming line for contrast.',
+    time: '10:24',
+    direction: 'receiving',
+  },
+]
+
+const chatHistoryStagedLoadingSeed: ChatHistoryMessage[] = chatHistoryColorDemoMessages.map(
+  (message) => ({ ...message, status: 'loading' }),
+)
+
+function ChatHistoryStagedLoadingDemo() {
+  const [messages, setMessages] = useState<ChatHistoryMessage[]>(() =>
+    chatHistoryStagedLoadingSeed.map((message) => ({ ...message })),
+  )
+
+  useEffect(() => {
+    const timers = chatHistoryStagedLoadingSeed.map((message, index) =>
+      window.setTimeout(
+        () => {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === message.id ? { ...m, status: 'ready' as const } : m)),
+          )
+        },
+        450 * (index + 1),
+      ),
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
+  return (
+    <ChatHistory
+      messages={messages}
+      autoScroll={false}
+      className="h-80 w-full max-w-md"
+      incomingBubbleVariant="default"
+      receivingBubbleVariant="default"
+    />
+  )
+}
+
+const chatCarouselImages = [
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png',
+    alt: 'Sample 1',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png',
+    alt: 'Sample 2',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png',
+    alt: 'Sample 3',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png',
+    alt: 'Sample 5',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png',
+    alt: 'Sample 6',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png',
+    alt: 'Sample 16',
+  },
+]
+
 function CompactSettingsDemo() {
   const [items, setItems] = useState(demoSwitchItems)
   return (
@@ -241,10 +576,134 @@ function CompactSettingsDemo() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 py-4">
       <h2 className="text-lg font-semibold border-b pb-2">{title}</h2>
       <div className="flex flex-wrap gap-6 items-start">{children}</div>
     </section>
+  )
+}
+
+type AvatarGroupDemoItem = {
+  src: string
+  fallback: string
+  name: string
+}
+
+const avatarGroupDemoItems: AvatarGroupDemoItem[] = [
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png',
+    fallback: 'OS',
+    name: 'Olivia Sparks',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png',
+    fallback: 'HL',
+    name: 'Howard Lloyd',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png',
+    fallback: 'HR',
+    name: 'Hallie Richards',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png',
+    fallback: 'JW',
+    name: 'Jenny Wilson',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png',
+    fallback: 'DR',
+    name: 'Darlene Robertson',
+  },
+  {
+    src: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png',
+    fallback: 'LA',
+    name: 'Leslie Alexander',
+  },
+]
+
+function AvatarGroupDemo() {
+  return (
+    <div className="flex -space-x-2">
+      {avatarGroupDemoItems.slice(0, 3).map((avatar, index) => (
+        <Avatar
+          key={index}
+          className="ring-background ring-2"
+        >
+          <AvatarImage
+            src={avatar.src}
+            alt={avatar.name}
+          />
+          <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+        </Avatar>
+      ))}
+    </div>
+  )
+}
+
+function AvatarGroupMaxDemo() {
+  return (
+    <div className="flex -space-x-2">
+      {avatarGroupDemoItems.slice(0, 3).map((avatar, index) => (
+        <Avatar
+          key={index}
+          className="ring-background ring-2"
+        >
+          <AvatarImage
+            src={avatar.src}
+            alt={avatar.name}
+          />
+          <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+        </Avatar>
+      ))}
+      <Avatar className="ring-background ring-2">
+        <AvatarFallback className="text-xs">+9</AvatarFallback>
+      </Avatar>
+    </div>
+  )
+}
+
+function AvatarGroupDropdownDemo() {
+  return (
+    <div className="flex -space-x-2">
+      {avatarGroupDemoItems.slice(0, 3).map((avatar, index) => (
+        <Avatar
+          key={index}
+          className="ring-background ring-2"
+        >
+          <AvatarImage
+            src={avatar.src}
+            alt={avatar.name}
+          />
+          <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+        </Avatar>
+      ))}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="bg-muted has-focus-visible:ring-ring/50 ring-background flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full ring-2"
+          >
+            <PlusIcon className="size-4" />
+            <span className="sr-only">Add</span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {avatarGroupDemoItems.slice(3).map((avatar, index) => (
+            <DropdownMenuItem key={index}>
+              <Avatar>
+                <AvatarImage
+                  src={avatar.src}
+                  alt={avatar.name}
+                />
+                <AvatarFallback className="text-xs">{avatar.fallback}</AvatarFallback>
+              </Avatar>
+              <span>{avatar.name}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }
 
@@ -441,6 +900,36 @@ function StatsDashboardProgressBarsDemo() {
   )
 }
 
+function TwoColumnDialogDemo() {
+  return (
+    <TwoColumnDialog
+      triggerLabel="Open two-column dialog"
+      title="Reusable Two-Column Dialog"
+      description="Left panel takes 70%, right panel takes 30%, and the whole dialog is capped at 90vw."
+      leftChildren={
+        <div className="space-y-3">
+          <h3 className="text-base font-semibold">Left content area (70%)</h3>
+          <p className="text-sm text-muted-foreground">
+            Put any React content here: forms, editors, lists, or custom layouts.
+          </p>
+          <div className="rounded-md border p-3">
+            <p className="text-sm">Example: a rich content or form section.</p>
+          </div>
+        </div>
+      }
+      rightChildren={
+        <div className="space-y-3">
+          <h3 className="text-base font-semibold">Right content area (30%)</h3>
+          <p className="text-sm text-muted-foreground">
+            Use this for side info, summaries, actions, or a preview panel.
+          </p>
+          <Button variant="outline">Secondary action</Button>
+        </div>
+      }
+    />
+  )
+}
+
 export default function Test() {
   const [basicStepperValue, setBasicStepperValue] = useState(2)
   const [controlledStepperValue, setControlledStepperValue] = useState(2)
@@ -453,11 +942,27 @@ export default function Test() {
   const [verticalStepperValue, setVerticalStepperValue] = useState(2)
   const [progressIndicatorStepperValue, setProgressIndicatorStepperValue] = useState(2)
 
+  const [aiComponentLog, setAiComponentLog] = useState<string[]>([])
+
+  const logAiEvent = (line: string) => {
+    setAiComponentLog((prev) =>
+      [
+        `${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} — ${line}`,
+        ...prev,
+      ].slice(0, 12),
+    )
+  }
+
+  const handleAi03PlusMenu = (id: Ai03MenuActionId) => {
+    logAiEvent(`Ai03 plus menu: ${id}`)
+  }
+
   const [durationMonths, setDurationMonths] = useState(5)
   const [storageQuota, setStorageQuota] = useState(15)
   const [volumePercent, setVolumePercent] = useState(50)
   const [opacityPercent, setOpacityPercent] = useState(50)
   const [experienceRating, setExperienceRating] = useState(3)
+  const [timelineZoomPercent, setTimelineZoomPercent] = useState(100)
 
   const handleDurationMonthsChange = (value: number) => {
     setDurationMonths(value)
@@ -479,14 +984,619 @@ export default function Test() {
     setExperienceRating(value)
   }
 
+  const timelineTickMin = 2019
+  const timelineTickMax = 2030
+  const timelineSkipInterval = 2
+  const timelineTicks = Array.from(
+    { length: timelineTickMax - timelineTickMin + 1 },
+    (_, index) => timelineTickMin + index,
+  )
+  const colorTimelineTickMin = 2000
+  const colorTimelineTickMax = 2010
+  const colorTimelineSkipInterval = 2
+  const colorTimelineTicks = Array.from(
+    { length: colorTimelineTickMax - colorTimelineTickMin + 1 },
+    (_, index) => colorTimelineTickMin + index,
+  )
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold">UI Component Test Page</h1>
+
+      <Section title="MathNode (@/features/game-studio/nodes/game-dnd-math)">
+        <MathNodeDemo />
+      </Section>
+
+      <Section title="Lector PDF Viewer (@anaralabs/lector)">
+        <p className="text-sm text-muted-foreground">
+          PDF demo is disabled on this page (no bundled sample file). Pass a hosted{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">source</code> URL to{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">BasicPdfViewer</code> or use
+          teacher Cloud gallery PDF cards. See{' '}
+          <a
+            href="https://lector-weld.vercel.app/docs/installation"
+            className="text-primary underline-offset-4 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Lector installation docs
+          </a>
+          .
+        </p>
+      </Section>
+
+      <Section title="CardInstantPreview (@/components/shared) — App Store Today">
+        <div className="relative w-full basis-full overflow-visible rounded-2xl border bg-white py-8">
+          <CardInstantPreview
+            heading="Today"
+            items={MACBOOK_NEO_CARD_INSTANT_PREVIEW_ITEMS}
+          />
+        </div>
+      </Section>
+
+      <Section title="AnimatedBeamHub — left + right only">
+        <div className="flex w-full justify-center py-6">
+          <AnimatedBeamHub
+            className="h-40 w-md"
+            center={
+              <BeamHubBadge
+                Icon={SparklesIcon}
+                theme="darkblue"
+              />
+            }
+            nodes={[
+              {
+                direction: 'left',
+                content: (
+                  <BeamHubBadge
+                    Icon={FlaskConical}
+                    theme="lime"
+                  />
+                ),
+                gradientStartColor: 'darkblue',
+                gradientStopColor: 'lime',
+              },
+              {
+                direction: 'right',
+                content: (
+                  <BeamHubBadge
+                    Icon={Globe}
+                    theme="pink"
+                  />
+                ),
+                gradientStartColor: 'pink',
+                gradientStopColor: 'orange',
+                reverse: true,
+              },
+            ]}
+          />
+        </div>
+      </Section>
+
+      <Section title="AnimatedBeamHub — top-left, bottom-left, bottom-right">
+        <div className="flex w-full justify-center py-6">
+          <AnimatedBeamHub
+            className="h-72 w-md"
+            center={
+              <BeamHubBadge
+                Icon={SparklesIcon}
+                theme="darkblue"
+              />
+            }
+            nodes={[
+              {
+                direction: 'top-left',
+                content: (
+                  <BeamHubBadge
+                    Icon={BookOpen}
+                    theme="violet"
+                  />
+                ),
+                gradientStartColor: 'violet',
+                gradientStopColor: 'cyan',
+              },
+              {
+                direction: 'bottom-left',
+                content: (
+                  <BeamHubBadge
+                    Icon={FlaskConical}
+                    theme="teal"
+                  />
+                ),
+                gradientStartColor: 'teal',
+                gradientStopColor: 'lime',
+              },
+              {
+                direction: 'bottom-right',
+                content: (
+                  <BeamHubBadge
+                    Icon={LockIcon}
+                    theme="orange"
+                  />
+                ),
+                gradientStartColor: 'orange',
+                gradientStopColor: 'pink',
+                reverse: true,
+              },
+            ]}
+          />
+        </div>
+      </Section>
+
+      <Section title="Score (@/components/ui/score) — variants + sizes">
+        <div className="w-full max-w-7xl space-y-6">
+          <div className="rounded-2xl border bg-card p-5">
+            <div className="grid grid-cols-[120px_repeat(6,minmax(0,1fr))] gap-4">
+              <div />
+              {SCORE_SIZES.map((size) => (
+                <div
+                  key={size}
+                  className="text-center font-mono text-xs text-muted-foreground"
+                >
+                  {size}
+                </div>
+              ))}
+
+              {SCORE_VARIANTS.map((variant) => (
+                <Fragment key={variant}>
+                  <div className="flex items-center font-mono text-xs text-muted-foreground">
+                    {variant}
+                  </div>
+                  {SCORE_SIZES.map((size) => (
+                    <div
+                      key={`${variant}-${size}`}
+                      className="flex min-h-16 items-center justify-center rounded-xl border bg-muted/20"
+                    >
+                      <Score
+                        score={72}
+                        max={100}
+                        variant={variant}
+                        size={size}
+                      />
+                    </div>
+                  ))}
+                </Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-4">
+            {[
+              { label: 'empty state', score: 0, max: 100 },
+              { label: 'default state', score: 72, max: 100 },
+              { label: 'full state', score: 100, max: 100 },
+              { label: 'exceeded state', score: 120, max: 100 },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="space-y-3 rounded-2xl border bg-card p-4"
+              >
+                <p className="font-mono text-xs text-muted-foreground">{item.label}</p>
+                <div className="flex flex-wrap gap-4">
+                  {SCORE_VARIANTS.map((variant) => (
+                    <div
+                      key={`${item.label}-${variant}`}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <Score
+                        score={item.score}
+                        max={item.max}
+                        variant={variant}
+                        size="lg"
+                      />
+                      <span className="font-mono text-[10px] text-muted-foreground">{variant}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border bg-card p-5">
+            <div className="flex flex-wrap items-end gap-6">
+              {[
+                { label: '999', score: 999, max: 1000 },
+                { label: '1k', score: 1000, max: 2000 },
+                { label: '990.9k', score: 990900, max: 1000000 },
+                { label: '1.2M', score: 1200000, max: 1500000 },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <Score
+                    score={item.score}
+                    max={item.max}
+                    size="xl"
+                  />
+                  <span className="font-mono text-xs text-muted-foreground">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="GameHeader (@/features/game-studio/components/GameHeader)">
+        <div className="rounded-4xl bg-orange-400 p-10">
+          <GameHeader />
+        </div>
+      </Section>
+
+      <Section title="CharacterCounter (@/components/ui/character-counter) — variants + sizes">
+        <div className="w-full max-w-6xl space-y-6">
+          <div className="rounded-2xl border bg-card p-5">
+            <div className="grid grid-cols-[120px_repeat(4,minmax(0,1fr))] gap-4">
+              <div />
+              {CHARACTER_COUNTER_SIZES.map((size) => (
+                <div
+                  key={size}
+                  className="text-center font-mono text-xs text-muted-foreground"
+                >
+                  {size}
+                </div>
+              ))}
+
+              {CHARACTER_COUNTER_VARIANTS.map((variant) => (
+                <Fragment key={variant}>
+                  <div className="flex items-center font-mono text-xs text-muted-foreground">
+                    {variant}
+                  </div>
+                  {CHARACTER_COUNTER_SIZES.map((size) => (
+                    <div
+                      key={`${variant}-${size}`}
+                      className="flex min-h-14 items-center justify-center rounded-xl border bg-muted/20"
+                    >
+                      <CharacterCounter
+                        count={46}
+                        max={100}
+                        variant={variant}
+                        size={size}
+                      />
+                    </div>
+                  ))}
+                </Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              { label: 'default state', count: 46, max: 100 },
+              { label: 'warning state', count: 12, max: 100 },
+              { label: 'exceeded state', count: -8, max: 100 },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="space-y-3 rounded-2xl border bg-card p-4"
+              >
+                <p className="font-mono text-xs text-muted-foreground">{item.label}</p>
+                <div className="flex flex-wrap gap-4">
+                  {CHARACTER_COUNTER_VARIANTS.map((variant) => (
+                    <div
+                      key={`${item.label}-${variant}`}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <CharacterCounter
+                        count={item.count}
+                        max={item.max}
+                        variant={variant}
+                        size="lg"
+                      />
+                      <span className="font-mono text-[10px] text-muted-foreground">{variant}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Section title="CharacterCounter (@/components/ui/character-counter) — standalone">
+        <CharacterCounter
+          count={46}
+          max={1000}
+          size="xl"
+        />
+      </Section>
+
+      <Section title="AgentComputerIcon — variants">
+        <div className="flex flex-wrap items-center gap-6">
+          {(
+            [
+              'default',
+              'dark',
+              'violet',
+              'indigo',
+              'blue',
+              'cyan',
+              'teal',
+              'green',
+              'lime',
+              'orange',
+              'pink',
+              'darkblue',
+            ] as AgentComputerIconVariant[]
+          ).map((variant) => (
+            <div
+              key={variant}
+              className="flex flex-col items-center gap-2"
+            >
+              <div className="flex items-center justify-center w-[72px] h-[72px] rounded-full bg-secondary">
+                <AgentComputerIcon
+                  size={28}
+                  strokeWidth={1.6}
+                  variant={variant}
+                />
+              </div>
+              <p className="font-mono text-[10px] text-muted-foreground">{variant}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+      <Section title="Text (@/components/ui/text) — every variant prop">
+        <div className="w-full basis-full max-w-4xl space-y-8">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Semantic variants
+            </p>
+            <div className="divide-y divide-border rounded-xl border bg-card px-4">
+              {TEXT_SEMANTIC_VARIANTS.map((v) => (
+                <div
+                  key={v}
+                  className="py-4 first:pt-4 last:pb-4"
+                >
+                  <p className="mb-2 font-mono text-xs text-muted-foreground">
+                    variant=&quot;{v}&quot;
+                  </p>
+                  <Text
+                    variant={v}
+                    as={v === 'h1' ? 'h1' : v === 'h2' ? 'h2' : v === 'h3' ? 'h3' : 'p'}
+                  >
+                    The quick brown fox jumps over the lazy dog.
+                  </Text>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Color variants
+            </p>
+            <div className="divide-y divide-border rounded-xl border bg-card px-4">
+              {TEXT_COLOR_VARIANTS.map((v) => (
+                <div
+                  key={v}
+                  className="py-4 first:pt-4 last:pb-4"
+                >
+                  <p className="mb-2 font-mono text-xs text-muted-foreground">
+                    variant=&quot;{v}&quot;
+                  </p>
+                  <Text
+                    variant={v}
+                    as="p"
+                  >
+                    The quick brown fox jumps over the lazy dog.
+                  </Text>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              muted / bold booleans (body &amp; small)
+            </p>
+            <div className="divide-y divide-border rounded-xl border bg-card px-4">
+              {(
+                [
+                  [
+                    'variant="body"',
+                    <Text
+                      key="b"
+                      variant="body"
+                    >
+                      Default body
+                    </Text>,
+                  ],
+                  [
+                    'variant="body" muted',
+                    <Text
+                      key="bm"
+                      variant="body"
+                      muted
+                    >
+                      Muted body
+                    </Text>,
+                  ],
+                  [
+                    'variant="body" bold',
+                    <Text
+                      key="bb"
+                      variant="body"
+                      bold
+                    >
+                      Bold body
+                    </Text>,
+                  ],
+                  [
+                    'variant="body" muted bold',
+                    <Text
+                      key="bmb"
+                      variant="body"
+                      muted
+                      bold
+                    >
+                      Muted bold body
+                    </Text>,
+                  ],
+                  [
+                    'variant="small"',
+                    <Text
+                      key="s"
+                      variant="small"
+                    >
+                      Default small
+                    </Text>,
+                  ],
+                  [
+                    'variant="small" muted',
+                    <Text
+                      key="sm"
+                      variant="small"
+                      muted
+                    >
+                      Muted small
+                    </Text>,
+                  ],
+                  [
+                    'variant="small" bold',
+                    <Text
+                      key="sb"
+                      variant="small"
+                      bold
+                    >
+                      Bold small
+                    </Text>,
+                  ],
+                  [
+                    'variant="small" muted bold',
+                    <Text
+                      key="smb"
+                      variant="small"
+                      muted
+                      bold
+                    >
+                      Muted bold small
+                    </Text>,
+                  ],
+                ] as const
+              ).map(([label, node]) => (
+                <div
+                  key={String(label)}
+                  className="py-4 first:pt-4 last:pb-4"
+                >
+                  <p className="mb-2 font-mono text-xs text-muted-foreground">{label}</p>
+                  {node}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Avatar group — overlapping stack">
+        <AvatarGroupDemo />
+      </Section>
+
+      <Section title="Avatar group — stack + overflow count">
+        <AvatarGroupMaxDemo />
+      </Section>
+
+      <Section title="Avatar group — visible faces + rest in menu">
+        <AvatarGroupDropdownDemo />
+      </Section>
+
+      <Section title="Calendar Heatmap">
+        <CalendarHeatmap
+          month={4}
+          year={2026}
+        />
+
+        <CalendarHeatmap
+          month={2}
+          year={2024}
+          size="md"
+        />
+
+        <CalendarHeatmap
+          month={12}
+          year={2026}
+          size="sm"
+          color="green"
+        />
+      </Section>
+
+      <Section title="Divider (@/components/ui/divider)">
+        <div className="w-full space-y-6">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Horizontal
+            </p>
+            <Divider
+              color="black"
+              thickness={1}
+              lengthClassName="w-24"
+            />
+            <Divider
+              color="teal"
+              thickness={2}
+              lengthClassName="w-40"
+            />
+            <Divider
+              color="orange"
+              thickness={3}
+              lengthClassName="w-56"
+            />
+            <Divider
+              color="pink"
+              thickness={5}
+              lengthClassName="w-72"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Vertical
+            </p>
+            <div className="flex h-28 items-end gap-6">
+              <Divider
+                orientation="vertical"
+                color="black"
+                thickness={1}
+                lengthClassName="h-12"
+              />
+              <Divider
+                orientation="vertical"
+                color="teal"
+                thickness={2}
+                lengthClassName="h-16"
+              />
+              <Divider
+                orientation="vertical"
+                color="orange"
+                thickness={3}
+                lengthClassName="h-20"
+              />
+              <Divider
+                orientation="vertical"
+                color="pink"
+                thickness={5}
+                lengthClassName="h-24"
+              />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="AspectRatio">
+        <div className="w-full max-w-md">
+          <AspectRatio
+            ratio={1 / 1}
+            className="overflow-hidden rounded-lg"
+          >
+            <div className="h-full w-full bg-black" />
+          </AspectRatio>
+        </div>
+      </Section>
 
       <Section title="Onboarding (@/features/onboarding)">
         <div className="w-full basis-full rounded-lg border bg-muted/40 shadow-sm **:data-[slot=stepper-panel]:min-h-0">
           <Onboarding />
         </div>
+      </Section>
+
+      <Section title="TwoColumnDialog (@/components/shared/TwoColumnDialog)">
+        <TwoColumnDialogDemo />
       </Section>
 
       <SharedInputsGallery />
@@ -601,6 +1711,121 @@ export default function Test() {
           step={1}
           skipInterval={2}
         />
+      </Section>
+      <Section title="Tick atom (2020-2030)">
+        <div className="w-full max-w-2xl p-4 relative">
+          <TickZoom
+            value={timelineZoomPercent}
+            onValueChange={setTimelineZoomPercent}
+            min={80}
+            max={220}
+            step={5}
+            className="mb-4"
+          />
+          <TickTrack style={{ minWidth: `${timelineZoomPercent}%` }}>
+            <Ticks>
+              {timelineTicks.map((tick) => {
+                const isMinorTick = (tick - timelineTickMin) % timelineSkipInterval !== 0
+
+                return (
+                  <Tick
+                    key={tick}
+                    minor={isMinorTick}
+                    hideLabel={isMinorTick}
+                  >
+                    {tick}
+                  </Tick>
+                )
+              })}
+            </Ticks>
+            <TickContents>
+              <TickContent
+                start={2020}
+                end={2024}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2020–2024
+              </TickContent>
+              <TickContent
+                start={2021}
+                end={2026}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2021–2026 lets see if this works perfectly or not do i have what this box is for
+                example lets see if this works perfectly or not do i have what this box is for
+                example
+              </TickContent>
+              <TickContent
+                start={2025}
+                end={2029}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2025–2029
+              </TickContent>
+              <TickContent
+                start={2023}
+                end={2027}
+                min={timelineTickMin}
+                max={timelineTickMax}
+              >
+                2023–2027
+              </TickContent>
+            </TickContents>
+          </TickTrack>
+        </div>
+      </Section>
+      <Section title="Tick atom color variants (2000-2010)">
+        <div className="w-full max-w-2xl p-4 relative">
+          <TickTrack>
+            <Ticks>
+              {colorTimelineTicks.map((tick) => {
+                const isMinorTick = (tick - colorTimelineTickMin) % colorTimelineSkipInterval !== 0
+
+                return (
+                  <Tick
+                    key={tick}
+                    minor={isMinorTick}
+                    hideLabel={isMinorTick}
+                  >
+                    {tick}
+                  </Tick>
+                )
+              })}
+            </Ticks>
+            <TickContents>
+              <TickContent
+                start={2000}
+                end={2004}
+                min={colorTimelineTickMin}
+                max={colorTimelineTickMax}
+                variant="teal"
+              >
+                Teal: 2000-2004
+              </TickContent>
+              <TickContent
+                start={2003}
+                end={2007}
+                min={colorTimelineTickMin}
+                max={colorTimelineTickMax}
+                variant="indigo"
+              >
+                Indigo: 2003-2007
+              </TickContent>
+              <TickContent
+                start={2006}
+                end={2010}
+                min={colorTimelineTickMin}
+                max={colorTimelineTickMax}
+                variant="blue"
+              >
+                Blue: 2006-2010
+              </TickContent>
+            </TickContents>
+          </TickTrack>
+        </div>
       </Section>
       <Section title="SliderReferenceLabels">
         <SliderReferenceLabels
@@ -829,9 +2054,9 @@ export default function Test() {
       <Section title="StatsSegmentedProgress">
         <StatsSegmentedProgress
           title="Storage usage"
-          used={5400}
-          total={10}
-          usedLabel="MB"
+          used={11.8}
+          total={15}
+          usedLabel="GB"
           totalLabel="GB"
           segments={segmentedProgressItems}
         />
@@ -939,6 +2164,311 @@ export default function Test() {
 
       <Section title="SwitchListCardIcons">
         <SwitchListCardIcons items={switchCardItems} />
+      </Section>
+
+      <Section title="ChatHistory — incoming / receiving color presets">
+        <div className="flex w-full basis-full max-w-6xl flex-col gap-8 lg:flex-row lg:items-start lg:gap-6">
+          <div className="min-h-[280px] min-w-0 flex-1 space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              incoming default · receiving default
+            </p>
+            <ChatHistory
+              messages={chatHistoryColorDemoMessages}
+              autoScroll={false}
+              className="h-[280px]"
+              incomingBubbleVariant="default"
+              receivingBubbleVariant="default"
+            />
+          </div>
+          <div className="min-h-[280px] min-w-0 flex-1 space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              incoming dark · receiving blue
+            </p>
+            <ChatHistory
+              messages={chatHistoryColorDemoMessages}
+              autoScroll={false}
+              className="h-[280px]"
+              incomingBubbleVariant="dark"
+              receivingBubbleVariant="blue"
+            />
+          </div>
+          <div className="min-h-[280px] min-w-0 flex-1 space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              incoming default · receiving blue
+            </p>
+            <ChatHistory
+              messages={chatHistoryDefaultIncomingBlueReceivingMessages}
+              autoScroll={false}
+              className="h-[280px]"
+              incomingBubbleVariant="default"
+              receivingBubbleVariant="blue"
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="ChatHistory — loading → ready (DotWaveLoader in bubble)">
+        <div className="w-full max-w-md space-y-2">
+          <p className="font-mono text-xs text-muted-foreground">
+            Each message starts as status loading; timers flip to ready so the bubble content runs
+            the enter animation.
+          </p>
+          <ChatHistoryStagedLoadingDemo />
+        </div>
+      </Section>
+
+      <Section title="Ai components (@/components/shared — Ai02, Ai03)">
+        <div className="flex w-full basis-full flex-col gap-10 lg:max-w-5xl">
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Ai02 — composer + prompts
+            </p>
+            <Ai02
+              onSubmit={(message) =>
+                logAiEvent(`Ai02 submit: ${message.slice(0, 80)}${message.length > 80 ? '…' : ''}`)
+              }
+              onModelChange={(model) => logAiEvent(`Ai02 model: ${model.name}`)}
+              onAttachImagesClick={() => logAiEvent('Ai02 attach images click')}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Ai03 — default
+            </p>
+            <Ai03
+              placeholder="Ask anything (test page)"
+              onSubmitMessage={(message) =>
+                logAiEvent(`Ai03 submit: ${message.slice(0, 80)}${message.length > 80 ? '…' : ''}`)
+              }
+              onFilesSelected={(files) => logAiEvent(`Ai03 files: ${files.length} file(s)`)}
+              onPlusMenuAction={handleAi03PlusMenu}
+              onModelLabelChange={(label) => logAiEvent(`Ai03 model label: ${label}`)}
+              onAgentLabelChange={(label) => logAiEvent(`Ai03 agent: ${label}`)}
+              onPerformanceLabelChange={(label) => logAiEvent(`Ai03 performance: ${label}`)}
+              onAutoModeChange={(enabled) => logAiEvent(`Ai03 auto: ${enabled ? 'on' : 'off'}`)}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Ai03 — compact
+            </p>
+            <Ai03
+              compact
+              placeholder="Compact layout…"
+              onSubmitMessage={(message) =>
+                logAiEvent(
+                  `Ai03 compact submit: ${message.length > 60 ? `${message.slice(0, 60)}…` : message}`,
+                )
+              }
+            />
+          </div>
+
+          <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Callback log (newest first)
+            </p>
+            {aiComponentLog.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                Submit a message or use controls above to see onSubmit, onPlusMenuAction, and
+                related handlers.
+              </p>
+            ) : (
+              <ul className="max-h-48 space-y-1 overflow-y-auto font-mono text-[11px] text-muted-foreground">
+                {aiComponentLog.map((line, i) => (
+                  <li key={`${i}-${line}`}>{line}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </Section>
+
+      <Section title="ChatMessageBubble — variants (incoming)">
+        <div className="flex w-full max-w-3xl flex-col gap-3">
+          {chatBubbleVariantList.map((variant) => (
+            <div
+              key={`incoming-${variant}`}
+              className="space-y-1"
+            >
+              <p className="font-mono text-xs text-muted-foreground">
+                variant=&quot;{variant}&quot;
+              </p>
+              <ReceivingChatMessageBubble
+                text={`Incoming bubble — ${variant}`}
+                time="10:24"
+                variant={variant}
+                messageId={`test-incoming-${variant}`}
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="ChatMessageBubble — variants (receiving)">
+        <div className="flex w-full max-w-3xl flex-col items-end gap-3">
+          {chatBubbleVariantList.map((variant) => (
+            <div
+              key={`receiving-${variant}`}
+              className="flex w-full flex-col items-end gap-1"
+            >
+              <p className="self-start font-mono text-xs text-muted-foreground">
+                variant=&quot;{variant}&quot;
+              </p>
+              <SendingChatMessageBubble
+                text={`Receiving bubble — ${variant}`}
+                time="10:25"
+                variant={variant}
+                messageId={`test-receiving-${variant}`}
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="ChatMessageBubble — rounded variants">
+        <div className="flex w-full max-w-3xl flex-col gap-4">
+          {chatBubbleRoundedList.map((rounded) => (
+            <div
+              key={`rounded-${rounded}`}
+              className="space-y-2"
+            >
+              <p className="font-mono text-xs text-muted-foreground">
+                rounded=&quot;{rounded}&quot;
+              </p>
+              <div className="flex flex-col gap-2">
+                <ReceivingChatMessageBubble
+                  text={`blue-on-gray ${rounded}`}
+                  time="10:24"
+                  variant="blue-on-gray"
+                  rounded={rounded}
+                  messageId={`test-rounded-in-${rounded}`}
+                />
+                <div className="flex justify-end">
+                  <SendingChatMessageBubble
+                    text={`darkblue-on-blue ${rounded}`}
+                    time="10:25"
+                    variant="darkblue-on-blue"
+                    rounded={rounded}
+                    messageId={`test-rounded-out-${rounded}`}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="ChatImageCarousel — horizontal (BlurredImage)">
+        <div className="w-full max-w-3xl space-y-6">
+          <div className="space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              orientation=&quot;horizontal&quot; blurredBackdrop
+            </p>
+            <ChatImageCarousel
+              images={chatCarouselImages}
+              orientation="horizontal"
+              itemWidth={180}
+              itemHeight={220}
+              rounded="xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <p className="font-mono text-xs text-muted-foreground">
+              orientation=&quot;horizontal&quot; blurredBackdrop=false
+            </p>
+            <ChatImageCarousel
+              images={chatCarouselImages}
+              orientation="horizontal"
+              itemWidth={140}
+              itemHeight={140}
+              blurredBackdrop={false}
+              rounded="lg"
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="ChatImageCarousel — vertical (ScrollArea)">
+        <div className="w-full max-w-sm">
+          <ChatImageCarousel
+            images={chatCarouselImages}
+            orientation="vertical"
+            itemHeight={200}
+            viewportHeight={360}
+            rounded="xl"
+          />
+        </div>
+      </Section>
+
+      <Section title="DotWaveLoader (@/components/ui/dot-wave-loader)">
+        <div className="flex w-full basis-full max-w-4xl flex-col gap-6">
+          <p className="text-xs text-muted-foreground">
+            Dot colors from <span className="font-mono">dot-wave-loader-variant.ts</span> — confirm,
+            darkblue, indigo, default (theme primary), orange, active.
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {dotWaveLoaderDemoRows.map(({ variant, label }) => (
+              <div
+                key={variant}
+                className="flex flex-col items-center gap-3 rounded-xl border bg-card px-4 py-6"
+              >
+                <DotWaveLoader variant={variant} />
+                <p className="font-mono text-xs text-muted-foreground">{label}</p>
+                <p className="font-mono text-[10px] text-muted-foreground/80">
+                  variant=&quot;{variant}&quot;
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Section title="CharacterCounter (@/components/ui/character-counter)">
+        <div className="w-full max-w-3xl">
+          <CharacterCounterDemo />
+        </div>
+      </Section>
+
+      <Section title="Zoomies + LoadingPage">
+        <div className="flex flex-col gap-10 rounded-2xl border border-dashed border-border p-8">
+          <div>
+            <Text
+              as="p"
+              variant="small"
+              muted
+              className="mb-3"
+            >
+              Zoomies — blue (size 100, stroke 6)
+            </Text>
+            <Zoomies
+              color="blue"
+              size={100}
+              stroke={6}
+              speed={1.4}
+              bgOpacity={0.1}
+            />
+          </div>
+          <div>
+            <Text
+              as="p"
+              variant="small"
+              muted
+              className="mb-3"
+            >
+              LoadingPage — embedded, blue Zoomies
+            </Text>
+            <div className="rounded-xl border bg-muted/30 p-4">
+              <LoadingPage
+                variant="embedded"
+                message="Loading workspace…"
+                zoomiesColor="blue"
+                size={72}
+              />
+            </div>
+          </div>
+        </div>
       </Section>
     </div>
   )

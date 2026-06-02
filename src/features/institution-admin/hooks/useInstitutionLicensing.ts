@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useUser } from '@/contexts/user'
 import {
   fetchLatestInstitutionSubscription,
-  type InstitutionSubscriptionWithPlan,
   resolvePlanCode,
 } from '../api/institutionSubscriptionApi'
 
 import { fetchEffectiveEntitlements } from '../api/institutionEntitlementsApi'
-import { fetchInstitutionQuotasUsage } from '../api/institutionQuotasApi'
-import type { EffectiveFeature, InstitutionQuotasUsage } from '../types/licensing.types'
+import {
+  fetchInstitutionUsageMetrics,
+  mergeInstitutionQuotasWithFeatures,
+} from '../api/institutionQuotasApi'
+import type {
+  EffectiveFeature,
+  InstitutionQuotasUsage,
+  InstitutionSubscriptionWithPlan,
+} from '../types/licensing.types'
 
 type State = {
   subscription: InstitutionSubscriptionWithPlan | null
@@ -30,10 +36,18 @@ const INITIAL_STATE: State = {
   error: null,
 }
 
-export function useInstitutionLicensing(): State & { institutionId: string | null } {
+export function useInstitutionLicensing(): State & {
+  institutionId: string | null
+  refreshSubscription: () => void
+} {
   const { getUserInstitutionId } = useUser()
   const institutionId = getUserInstitutionId()
   const [state, setState] = useState<State>(INITIAL_STATE)
+  const [refreshToken, setRefreshToken] = useState(0)
+
+  const refreshSubscription = useCallback(() => {
+    setRefreshToken((n) => n + 1)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -51,10 +65,11 @@ export function useInstitutionLicensing(): State & { institutionId: string | nul
         const planCode =
           subscription?.plan_catalog?.code ?? (planId ? await resolvePlanCode(planId) : null)
 
-        const [quotas, features] = await Promise.all([
-          fetchInstitutionQuotasUsage(institutionId),
+        const [metrics, features] = await Promise.all([
+          fetchInstitutionUsageMetrics(institutionId),
           planId ? fetchEffectiveEntitlements(institutionId, planId) : Promise.resolve([]),
         ])
+        const quotas = mergeInstitutionQuotasWithFeatures(metrics, features)
         if (cancelled) return
         setState({ subscription, planCode, quotas, features, isLoading: false, error: null })
       } catch (e) {
@@ -69,7 +84,7 @@ export function useInstitutionLicensing(): State & { institutionId: string | nul
     return () => {
       cancelled = true
     }
-  }, [institutionId])
+  }, [institutionId, refreshToken])
 
-  return { ...state, institutionId }
+  return { ...state, institutionId, refreshSubscription }
 }

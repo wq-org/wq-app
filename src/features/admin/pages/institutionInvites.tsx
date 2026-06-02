@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { RefreshCcw, TriangleAlert } from 'lucide-react'
+import { Eraser, RefreshCcw, TriangleAlert } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -14,8 +14,39 @@ import { useInstitutionInvites } from '../hooks/useInstitutionInvites'
 
 export function AdminInstitutionInvites() {
   const { t } = useTranslation('features.admin')
-  const { invites, inviterEmailByUserId, isLoading, error, refresh, resend } =
-    useInstitutionInvites()
+  const {
+    invites,
+    inviterEmailByUserId,
+    isLoading,
+    error,
+    refresh,
+    resend,
+    revoke,
+    cleanupExpired,
+  } = useInstitutionInvites()
+  const [isCleaning, setIsCleaning] = useState(false)
+
+  async function handleCleanupExpired() {
+    setIsCleaning(true)
+    try {
+      const count = await cleanupExpired()
+      toast.success(
+        t('institutionInvites.cleanupSuccess', {
+          defaultValue: 'Cleaned up {{count}} expired invite(s)',
+          count,
+        }),
+      )
+    } catch (e) {
+      toast.error(
+        t('institutionInvites.cleanupError', {
+          defaultValue: 'Failed to clean up expired invites',
+        }),
+        { description: e instanceof Error ? e.message : undefined },
+      )
+    } finally {
+      setIsCleaning(false)
+    }
+  }
 
   useEffect(() => {
     if (error) {
@@ -25,9 +56,9 @@ export function AdminInstitutionInvites() {
 
   return (
     <AdminWorkspaceShell>
-      <div className="mx-auto flex w-full max-w-[min(100%,1600px)] flex-col gap-6 py-8 px-4">
+      <div className="mx-auto flex w-full max-w-[min(100%,1600px)] flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 animate-in fade-in-0 slide-in-from-left-4">
             <Text
               as="h1"
               variant="h3"
@@ -44,21 +75,36 @@ export function AdminInstitutionInvites() {
               {t('institutionInvites.pageDescription')}
             </Text>
           </div>
-          <Button
-            type="button"
-            variant="darkblue"
-            size="sm"
-            className="gap-2"
-            onClick={() => void refresh()}
-            disabled={isLoading}
-          >
-            <RefreshCcw className="size-4" />
-            {t('institutionInvites.refresh')}
-          </Button>
+          <div className="flex items-center gap-2 animate-in fade-in-0 slide-in-from-bottom-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => void handleCleanupExpired()}
+              disabled={isLoading || isCleaning}
+            >
+              <Eraser className="size-4" />
+              {isCleaning
+                ? t('institutionInvites.cleanupRunning', { defaultValue: 'Cleaning…' })
+                : t('institutionInvites.cleanupExpired', { defaultValue: 'Clean up expired' })}
+            </Button>
+            <Button
+              type="button"
+              variant="darkblue"
+              size="sm"
+              className="gap-2"
+              onClick={() => void refresh()}
+              disabled={isLoading}
+            >
+              <RefreshCcw className="size-4" />
+              {t('institutionInvites.refresh')}
+            </Button>
+          </div>
         </div>
 
         {error && !isLoading ? (
-          <Empty className="border border-dashed">
+          <Empty className="animate-in fade-in-0 slide-in-from-bottom-2 border border-dashed">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <TriangleAlert aria-hidden />
@@ -72,7 +118,7 @@ export function AdminInstitutionInvites() {
         ) : null}
 
         {isLoading ? (
-          <div className="flex min-h-[280px] items-center justify-center">
+          <div className="flex min-h-[280px] items-center justify-center animate-in fade-in-0 slide-in-from-bottom-2">
             <Spinner
               variant="gray"
               size="sm"
@@ -84,6 +130,8 @@ export function AdminInstitutionInvites() {
             invites={invites}
             inviterEmailByUserId={inviterEmailByUserId}
             onResend={resend}
+            onRevoke={revoke}
+            className="animate-in fade-in-0 slide-in-from-bottom-2"
           />
         ) : null}
       </div>

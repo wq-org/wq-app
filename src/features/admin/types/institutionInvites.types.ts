@@ -9,6 +9,8 @@ export type InstitutionInviteRow = {
   invited_by: string | null
   accepted_at: string | null
   accepted_user_id: string | null
+  revoked_at: string | null
+  revoked_by: string | null
   created_at: string
 }
 
@@ -23,5 +25,7 @@ export type InstitutionInvite = {
   invitedByUserId: string | null
   acceptedAtIso: string | null
   acceptedUserId: string | null
+  revokedAtIso: string | null
+  revokedByUserId: string | null
   createdAtIso: string
 }

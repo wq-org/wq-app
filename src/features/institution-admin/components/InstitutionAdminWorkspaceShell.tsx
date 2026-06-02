@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { LogOut, Moon, Sun, Languages, ChevronsUpDown, Settings } from 'lucide-react'
+import { LogOut, Moon, Sun, Languages, ChevronDown, Settings } from 'lucide-react'
 
 import {
   Sidebar,
@@ -83,6 +83,10 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
     }
   }
 
+  const institutionDisplayName =
+    profile?.institution?.name?.trim() || profile?.institution?.slug?.trim() || '—'
+  const accountEmail = profile?.email?.trim() || '—'
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -98,16 +102,19 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center justify-between px-2 py-3">
+        <SidebarHeader className="min-w-0">
+          <div className="flex min-w-0 w-full px-2 py-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring w-full"
+                  className="flex min-w-0 w-full items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label={t('planFeatures.accountMenu')}
                 >
-                  <Avatar className="h-8 w-8 shrink-0">
+                  <Avatar
+                    size="sm"
+                    className="shrink-0"
+                  >
                     <AvatarImage
                       src={signedAvatarUrl || DEFAULT_INSTITUTION_IMAGE}
                       alt=""
@@ -120,24 +127,26 @@ export function InstitutionAdminWorkspaceShell({ children }: InstitutionAdminWor
                       />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0 flex-1 text-left">
+                  <div className="min-w-0 flex-1 overflow-hidden text-left">
                     <Text
                       as="p"
                       variant="small"
-                      className="truncate font-semibold text-xs"
+                      title={institutionDisplayName}
+                      className="block w-full truncate text-xs font-semibold"
                     >
-                      {profile?.display_name?.trim() || profile?.username?.trim() || '—'}
+                      {institutionDisplayName}
                     </Text>
                     <Text
                       as="p"
                       variant="small"
                       color="muted"
-                      className="truncate text-xs"
+                      title={accountEmail}
+                      className="block w-full truncate text-xs"
                     >
-                      {profile?.email?.trim() || '—'}
+                      {accountEmail}
                     </Text>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground shrink-0" />
+                  <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

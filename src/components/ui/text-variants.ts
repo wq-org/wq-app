@@ -15,7 +15,7 @@ export const textVariants = cva('font-sans', {
     },
     color: {
       default: 'text-semantic-text',
-      muted: 'text-semantic-muted',
+      muted: 'text-muted-foreground',
       primary: 'text-semantic-primary',
       danger: 'text-semantic-danger',
       violet: 'text-[oklch(var(--oklch-violet))]',
@@ -28,6 +28,7 @@ export const textVariants = cva('font-sans', {
       orange: 'text-[oklch(var(--oklch-orange))]',
       pink: 'text-[oklch(var(--oklch-pink))]',
       darkblue: 'text-[oklch(var(--oklch-darkblue))]',
+      secondary: 'text-secondary-foreground',
     },
     font: {
       default: 'font-sans',

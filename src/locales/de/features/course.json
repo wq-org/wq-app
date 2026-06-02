@@ -27,6 +27,7 @@
     "themeHint": "Wahle den Standardhintergrund fur den Kurs, wenn kein eigenes Bild verwendet wird."
   },
   "page": {
+    "loadError": "Dieser Kurs konnte nicht geladen werden.",
     "notFound": "Kurs nicht gefunden",
     "courseLabel": "Kurs:",
     "topicLabel": "Thema:",
@@ -57,6 +58,14 @@
     "title": "Neues Thema hinzuf\u00fcgen",
     "description": "Es gibt noch kein Thema. Nutze das Eingabefeld und klicke auf das Plus-Symbol."
   },
+  "emptyCourse": {
+    "title": "Erstelle deinen ersten Kurs",
+    "description": "Benutze das Kommando <0></0> in der Befehlsleiste, um einen neuen Kurs zu erstellen."
+  },
+  "emptyLessons": {
+    "title": "F\u00fcge eine neue Lektion hinzu",
+    "description": "Benutze das Eingabefeld und klicke auf \u201eLektion erstellen\u201c, um eine neue Lektion zu erstellen."
+  },
   "layout": {
     "tabs": {
       "preview": "Vorschau",
@@ -71,9 +80,7 @@
     }
   },
   "analytics": {
-    "membersTitle": "Kursmitglieder",
-    "membersHint": "Personen, die aktuell in diesem Kurs sind.",
-    "emptyMembers": "Für diesen Kurs wurden noch keine Mitglieder gefunden."
+    "placeholder": "Kursanalysen sind bald verfügbar."
   },
   "lessonTable": {
     "columns": {
@@ -104,12 +111,13 @@
     },
     "titleLabel": "Titel",
     "descriptionLabel": "Beschreibung",
-    "toolbar": {
+    "filter": {
+      "searchLabel": "Themen durchsuchen",
       "searchPlaceholder": "nach Titel oder Beschreibung suchen..."
     }
   },
   "course": {
-    "toolbar": {
+    "filter": {
       "searchLabel": "Kurse suchen",
       "searchPlaceholder": "Nach Titel oder Beschreibung suchen..."
     }

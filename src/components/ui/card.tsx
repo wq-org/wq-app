@@ -1,20 +1,30 @@
 import * as React from 'react'
 import type { VariantProps } from 'class-variance-authority'
 
+import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import { cardVariants } from './card-variants'
+
+type CardLayout = 'default' | 'flush'
 
 function Card({
   className,
   variant,
+  layout = 'default',
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof cardVariants>) {
+}: React.ComponentProps<'div'> &
+  VariantProps<typeof cardVariants> & {
+    /** `flush`: no root gap/padding — use for dense rows (e.g. lists inside dialogs). */
+    layout?: CardLayout
+  }) {
   return (
     <div
       data-slot="card"
       className={cn(
-        cardVariants({ variant, className }),
-        'text-card-foreground flex flex-col gap-6 py-6',
+        cardVariants({ variant }),
+        layout === 'default' && 'text-card-foreground flex flex-col gap-6 py-6',
+        layout === 'flush' && 'text-card-foreground',
+        className,
       )}
       {...props}
     />
@@ -34,11 +44,22 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
+type CardTitleProps = React.ComponentProps<'div'> & {
+  /** Clamp title lines and show ellipsis; sets `title` tooltip when provided. */
+  clampLines?: 1 | 2 | 3
+}
+
+function CardTitle({ className, clampLines, title, ...props }: CardTitleProps) {
   return (
     <div
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn(
+        'font-semibold',
+        !clampLines && 'leading-none',
+        clampLines && lineClampClassName(clampLines, { flex: true }),
+        className,
+      )}
+      title={title}
       {...props}
     />
   )

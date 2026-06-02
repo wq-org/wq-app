@@ -1,0 +1,62 @@
+{
+  "suffixes": [
+    "Studio",
+    "Lab",
+    "Design",
+    "Workshop",
+    "Industries",
+    "Starship",
+    "Workspace",
+    "Atelier",
+    "Garage",
+    "Collective"
+  ],
+  "themes": {
+    "superhero": {
+      "baseTokens": [
+        { "id": "spider_man", "tokens": ["Spider", "Web", "Parker", "Spidey"] },
+        { "id": "batman", "tokens": ["Gotham", "Knight", "Cave", "Wayne"] },
+        { "id": "superman", "tokens": ["Krypton", "Metropolis", "Hope", "Clark"] },
+        { "id": "iron_man", "tokens": ["Stark", "Arc", "Armor", "Iron"] },
+        { "id": "wonder_woman", "tokens": ["Amazon", "Themyscira", "Lasso", "Diana"] },
+        { "id": "captain_america", "tokens": ["Shield", "Brooklyn", "Rogers", "Captain"] },
+        { "id": "hulk", "tokens": ["Gamma", "Smash", "Banner", "Green"] },
+        { "id": "wolverine", "tokens": ["Adamantium", "Logan", "Claws", "X-Force"] },
+        { "id": "thor", "tokens": ["Asgard", "Hammer", "Mjolnir", "Thunder"] },
+        { "id": "black_widow", "tokens": ["Widow", "Red Room", "Spy", "Natasha"] },
+        { "id": "flash", "tokens": ["Speedforce", "Central", "Flash", "Barry"] },
+        { "id": "aquaman", "tokens": ["Atlantis", "Trident", "Sea", "Arthur"] },
+        { "id": "green_lantern", "tokens": ["Lantern", "Ring", "Sector", "Corps"] },
+        { "id": "doctor_strange", "tokens": ["Sanctum", "Strange", "Mystic", "Portal"] },
+        { "id": "black_panther", "tokens": ["Wakanda", "Panther", "Vibranium", "T'Challa"] },
+        { "id": "deadpool", "tokens": ["Merc", "Fourth Wall", "Red Suit", "Wade"] },
+        { "id": "daredevil", "tokens": ["Hell's Kitchen", "Devil", "Murdock", "Radar"] },
+        { "id": "captain_marvel", "tokens": ["Photon", "Carol", "Cosmic", "Starforce"] }
+      ]
+    },
+    "luxury": {
+      "baseTokens": [
+        { "id": "louis_vuitton", "tokens": ["Louis", "Vuitton", "Monogram", "Trunk"] },
+        { "id": "chanel", "tokens": ["Chanel", "No. 5", "Coco", "Haute"] },
+        { "id": "hermes", "tokens": ["Hermès", "Birkin", "Kelly", "Saddle"] },
+        { "id": "gucci", "tokens": ["Gucci", "Florence", "GG", "Bloom"] },
+        { "id": "rolex", "tokens": ["Rolex", "Oyster", "Perpetual", "Crown"] },
+        { "id": "dior", "tokens": ["Dior", "Couture", "New Look", "Parfum"] },
+        { "id": "cartier", "tokens": ["Cartier", "Panthère", "Tank", "Jewels"] },
+        { "id": "prada", "tokens": ["Prada", "Milano", "Nylon", "Linea Rossa"] },
+        { "id": "ferrari", "tokens": ["Ferrari", "Scuderia", "Maranello", "Cavallino"] },
+        { "id": "balenciaga", "tokens": ["Balenciaga", "Neo", "Arena", "Paris"] },
+        { "id": "fendi", "tokens": ["Fendi", "Roma", "Baguette", "Fur"] },
+        { "id": "tiffany", "tokens": ["Tiffany", "Blue Box", "Fifth Ave", "Diamond"] },
+        { "id": "burberry", "tokens": ["Burberry", "Trench", "Check", "London"] },
+        { "id": "ysl", "tokens": ["Saint Laurent", "YSL", "Rive Gauche", "Monogram"] },
+        { "id": "patek_philippe", "tokens": ["Patek", "Complication", "Nautilus", "Geneva"] },
+        { "id": "versace", "tokens": ["Versace", "Medusa", "Baroque", "Atelier"] },
+        { "id": "valentino", "tokens": ["Valentino", "Rockstud", "Haute", "Roma"] },
+        { "id": "bottega_veneta", "tokens": ["Bottega", "Intrecciato", "Veneta", "Studio"] },
+        { "id": "givenchy", "tokens": ["Givenchy", "Couture", "L'Interdit", "Paris"] },
+        { "id": "moncler", "tokens": ["Moncler", "Grenoble", "Down", "Alps"] }
+      ]
+    }
+  }
+}

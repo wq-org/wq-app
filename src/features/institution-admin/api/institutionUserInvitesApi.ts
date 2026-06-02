@@ -2,6 +2,7 @@ import { FunctionsHttpError } from '@supabase/supabase-js'
 
 import { supabase } from '@/lib/supabase'
 
+import { isPlatformStaffProfile } from '../utils/institutionAdminUsers'
 import type { InstitutionDirectoryRow } from '../types/institution-users.types'
 
 export type InviteTeacherStudentRole = 'teacher' | 'student'
@@ -128,21 +129,66 @@ export async function resendTeacherStudentInviteEmail(params: {
   })
 }
 
+export async function revokeTeacherStudentInvite(inviteId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('revoke_institution_invite', {
+    p_invite_id: inviteId,
+  })
+  if (error) throw new Error(error.message)
+  return data === true
+}
+
+export async function revokeExpiredTeacherStudentInvites(institutionId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('revoke_expired_institution_invites', {
+    p_institution_id: institutionId,
+  })
+  if (error) throw new Error(error.message)
+  return typeof data === 'number' ? data : 0
+}
+
 type MembershipStatusDb = 'invited' | 'active' | 'suspended'
 
 type MembershipRowDb = {
   user_id: string
   membership_role: string
   status: MembershipStatusDb
-  profiles: {
-    email: string | null
-    display_name: string | null
-    username: string | null
-    avatar_url: string | null
-  } | null
+  profiles:
+    | {
+        email: string | null
+        display_name: string | null
+        username: string | null
+        avatar_url: string | null
+        role: string | null
+        is_super_admin: boolean | null
+      }
+    | {
+        email: string | null
+        display_name: string | null
+        username: string | null
+        avatar_url: string | null
+        role: string | null
+        is_super_admin: boolean | null
+      }[]
+    | null
+}
+
+type MembershipProfileDb = {
+  email: string | null
+  display_name: string | null
+  username: string | null
+  avatar_url: string | null
+  role: string | null
+  is_super_admin: boolean | null
+}
+
+function pickMembershipProfile(
+  profileOrProfiles: MembershipRowDb['profiles'],
+): MembershipProfileDb | null {
+  if (Array.isArray(profileOrProfiles)) return profileOrProfiles[0] ?? null
+  return profileOrProfiles
 }
 
 type InviteRowDb = {
+  id: string
   token: string
   email: string
   membership_role: string
@@ -165,7 +211,9 @@ export async function fetchInstitutionUserDirectory(
             email,
             display_name,
             username,
-            avatar_url
+            avatar_url,
+            role,
+            is_super_admin
           )
         `,
         )
@@ -173,9 +221,10 @@ export async function fetchInstitutionUserDirectory(
         .is('deleted_at', null),
       supabase
         .from('institution_invites')
-        .select('token, email, membership_role, expires_at')
+        .select('id, token, email, membership_role, expires_at')
         .eq('institution_id', institutionId)
         .is('accepted_at', null)
+        .is('revoked_at', null)
         .in('membership_role', ['teacher', 'student']),
     ])
 
@@ -186,7 +235,9 @@ export async function fetchInstitutionUserDirectory(
   const members: InstitutionDirectoryRow[] = []
 
   for (const row of (membershipRows ?? []) as MembershipRowDb[]) {
-    const prof = row.profiles
+    const prof = pickMembershipProfile(row.profiles)
+    if (isPlatformStaffProfile(prof)) continue
+
     const emailLower = prof?.email?.toLowerCase().trim() ?? ''
     if (emailLower) memberEmails.add(emailLower)
 
@@ -212,6 +263,7 @@ export async function fetchInstitutionUserDirectory(
 
     invites.push({
       rowKind: 'invite',
+      invite_id: inv.id,
       invite_token: inv.token,
       email: inv.email,
       membership_role: role,

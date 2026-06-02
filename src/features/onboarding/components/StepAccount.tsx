@@ -17,7 +17,7 @@ export function StepAccount({ onNext, initialData }: StepAccountProps) {
     setUsername(lowerValue)
     if (lowerValue.trim() && !validateUsername(lowerValue)) {
       setUsernameError(
-        'Username must be 3-20 characters and contain only letters, numbers, and underscores',
+        'Username must be at least 3 characters and contain only letters, numbers, underscores, and hyphens',
       )
     } else {
       setUsernameError(null)
@@ -27,12 +27,8 @@ export function StepAccount({ onNext, initialData }: StepAccountProps) {
   const handleContinue = () => {
     if (!validateUsername(username)) {
       setUsernameError(
-        'Username must be 3-20 characters and contain only letters, numbers, and underscores',
+        'Username must be at least 3 characters and contain only letters, numbers, underscores, and hyphens',
       )
-      return
-    }
-
-    if (description.length > 120) {
       return
     }
 
@@ -44,10 +40,7 @@ export function StepAccount({ onNext, initialData }: StepAccountProps) {
   }
 
   const isFormValid =
-    validateUsername(username) &&
-    displayName.trim() !== '' &&
-    description.trim() !== '' &&
-    description.length <= 120
+    validateUsername(username) && displayName.trim() !== '' && description.trim() !== ''
 
   return (
     <div className="flex flex-col gap-8">
@@ -85,8 +78,6 @@ export function StepAccount({ onNext, initialData }: StepAccountProps) {
           placeholder="Tell us about yourself"
           value={description}
           onValueChange={setDescription}
-          maxLength={120}
-          showCounter
           rows={3}
           hideSeparator={false}
         />

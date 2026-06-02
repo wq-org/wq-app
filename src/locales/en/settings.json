@@ -1,6 +1,13 @@
 {
   "appearance": {
-    "accentColor": "Accent color"
+    "accentColor": "Accent color",
+    "modeTitle": "Appearance",
+    "modeHint": "Choose how the interface looks. System follows your OS setting.",
+    "mode": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
   },
   "profile": {
     "roles": {
@@ -14,16 +21,19 @@
       "avatarHint": "Choose the avatar shown on your profile and in game stats.",
       "profileTitle": "Profile",
       "profileHint": "Manage your public profile details.",
-      "roleHint": "Current role: {{role}}",
+      "roleHintPrefix": "Current role:",
       "accountTitle": "Account",
-      "accountHint": "These fields are managed by your account and are read-only."
+      "accountHint": "These fields are managed by your account and are read-only.",
+      "institutionTitle": "Institution",
+      "institutionHint": "Organization linked to your membership (read-only)."
     },
     "avatarDrawer": {
       "title": "Choose your avatar",
       "description": "Select the avatar shown on your profile and in game stats.",
       "triggerAriaLabel": "Change avatar",
       "close": "Close avatar drawer",
-      "selectAriaLabel": "Select {{avatarName}} avatar"
+      "selectAriaLabel": "Select {{avatarName}} avatar",
+      "empty": "No avatars available yet."
     },
     "fields": {
       "name": {
@@ -37,6 +47,15 @@
       "email": {
         "label": "E-mail",
         "placeholder": "wq-health@serious-game.com"
+      },
+      "institutionName": {
+        "label": "Institution name"
+      },
+      "institutionSlug": {
+        "label": "Institution slug"
+      },
+      "institutionEmail": {
+        "label": "Institution email"
       },
       "linkedin": {
         "label": "LinkedIn",

@@ -8,8 +8,8 @@ import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Label } from '@/components/ui/label'
-import { Text } from '@/components/ui/text'
 import { FeatureDefinitionCategoryPopover } from './FeatureDefinitionCategoryPopover'
+import { FeatureDefinitionKeyField } from './FeatureDefinitionKeyField'
 import {
   Select,
   SelectContent,
@@ -105,7 +105,6 @@ export function FeatureDefinitionEditorForm({
     })
   }
 
-  const keyLabel = t('featureDefinitions.form.key')
   const nameLabel = t('featureDefinitions.form.name')
   const categoryLabel = t('featureDefinitions.form.category')
   const descriptionLabel = t('featureDefinitions.form.descriptionField')
@@ -118,65 +117,23 @@ export function FeatureDefinitionEditorForm({
     >
       <FieldCard className="py-5">
         <div className="flex flex-col gap-6">
-          {/* Key */}
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="fd-editor-key"
-              className="text-sm font-medium leading-none"
-            >
-              {keyLabel}
-            </Label>
-            <Controller
-              name="key"
-              control={control}
-              render={({ field }) => (
-                <FieldInput
-                  id="fd-editor-key"
-                  label={keyLabel}
-                  placeholder={t('featureDefinitions.form.keyPlaceholder')}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={mode === 'edit' || saving}
-                  autoComplete="off"
-                  required={mode === 'create'}
-                />
-              )}
-            />
-            {errors.key ? (
-              <p
-                id="fd-editor-key-error"
-                className="text-sm text-destructive"
-                role="alert"
-              >
-                {errors.key.message}
-              </p>
-            ) : null}
-            {mode === 'create' && normalizedKey ? (
-              <Text
-                as="p"
-                variant="small"
-                color="muted"
-                className="text-xs"
-              >
-                {t('featureDefinitions.form.storedKey')}{' '}
-                <span className="font-mono">{normalizedKey}</span>
-              </Text>
-            ) : null}
-            {mode === 'edit' ? (
-              <p className="text-xs text-muted-foreground">
-                {t('featureDefinitions.form.keyReadOnlyHint')}
-              </p>
-            ) : null}
-          </div>
+          <Controller
+            name="key"
+            control={control}
+            render={({ field }) => (
+              <FeatureDefinitionKeyField
+                id="fd-editor-key"
+                value={field.value}
+                onValueChange={field.onChange}
+                mode={mode}
+                saving={saving}
+                normalizedKey={normalizedKey}
+                errorMessage={errors.key?.message}
+              />
+            )}
+          />
 
-          {/* Name */}
           <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="fd-editor-name"
-              className="text-sm font-medium leading-none"
-            >
-              {nameLabel}
-            </Label>
             <Controller
               name="name"
               control={control}
@@ -264,31 +221,22 @@ export function FeatureDefinitionEditorForm({
             ) : null}
           </div>
 
-          {/* Description */}
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="fd-editor-description"
-              className="text-sm font-medium leading-none"
-            >
-              {descriptionLabel}
-            </Label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <FieldTextarea
-                  id="fd-editor-description"
-                  label={descriptionLabel}
-                  placeholder={t('featureDefinitions.form.descriptionPlaceholder')}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  rows={3}
-                  hideSeparator={false}
-                  disabled={saving}
-                />
-              )}
-            />
-          </div>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <FieldTextarea
+                id="fd-editor-description"
+                label={descriptionLabel}
+                placeholder={t('featureDefinitions.form.descriptionPlaceholder')}
+                value={field.value}
+                onValueChange={field.onChange}
+                rows={3}
+                hideSeparator={false}
+                disabled={saving}
+              />
+            )}
+          />
 
           {/* Value Type */}
           <div className="flex flex-col gap-2">

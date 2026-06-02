@@ -17,6 +17,11 @@
     "search": "Suchen",
     "studio": "Spiel-Studio",
     "chat": "Chat",
+    "cloud": "Dateien",
+    "notebook": "Notizen",
+    "attendance": "Anwesenheit",
+    "attendanceStart": "Anwesenheit starten",
+    "attendanceEnd": "Anwesenheit beenden",
     "upload": "Hochladen",
     "addNew": "Neu hinzufügen",
     "feedback": "Feedback",
@@ -24,7 +29,8 @@
     "pan": "Verschieben",
     "select": "Auswählen",
     "undo": "Rückgängig",
-    "redo": "Wiederholen"
+    "redo": "Wiederholen",
+    "agent": "Agent"
   },
   "navigation": {
     "pan": "Verschieben",
@@ -33,7 +39,8 @@
   "search": {
     "placeholder": "Kurse, Personen, Institutionen, Spiele suchen…",
     "noResults": "Keine Ergebnisse gefunden",
-    "recent": "Letzte Suchen"
+    "recent": "Letzte Suchen",
+    "openTeacherChat": "Lehrer-Chat öffnen"
   },
   "addDialog": {
     "title": "Neu hinzufügen",
@@ -58,7 +65,8 @@
       "course": "Kurs",
       "institution": "Institution",
       "game": "Spiel",
-      "notes": "Notizen",
+      "note": "Notiz",
+      "task": "Aufgabe",
       "node": "Knoten"
     },
     "options": {
@@ -73,14 +81,74 @@
       "game": {
         "label": "Neues Spiel",
         "description": "Ein neues Lernspiel erstellen"
+      },
+      "note": {
+        "label": "Neue Notiz",
+        "description": "Schnell eine Notiz erfassen"
+      },
+      "task": {
+        "label": "Neue Aufgabe",
+        "description": "Einen Eintrag zur To-do-Liste hinzufügen"
       }
+    },
+    "toasts": {
+      "noteNotWired": "Notizen sind verfügbar, sobald die Notizen-API angebunden ist.",
+      "taskNotWired": "Aufgaben sind verfügbar, sobald die Aufgaben-API angebunden ist."
     }
+  },
+  "attendanceDialog": {
+    "titleStart": "Anwesenheitssitzung starten",
+    "titleEnd": "Anwesenheitssitzung beenden",
+    "errorTitle": "Etwas ist schiefgelaufen",
+    "classroom": "Klassenraum",
+    "classroomPlaceholder": "Klassenraum wählen",
+    "course": "Kurs",
+    "coursePlaceholder": "Kurs wählen",
+    "session": "Offene Sitzung",
+    "sessionPlaceholder": "Sitzung wählen",
+    "sessionTitle": "Titel (optional)",
+    "sessionTitlePlaceholder": "Optionaler Sitzungstitel",
+    "sessionDate": "Sitzungsdatum",
+    "startsAt": "Beginn",
+    "endsAtOptional": "Ende (optional)",
+    "closeEndsAt": "Schließen um",
+    "submitStart": "Sitzung starten",
+    "submitEnd": "Sitzung schließen",
+    "submitting": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "loading": "Wird geladen…",
+    "noClassrooms": "Keine Klassenräume verfügbar.",
+    "noCourses": "Keine Kurse mit diesem Klassenraum verknüpft.",
+    "noSessions": "Keine offenen Anwesenheitssitzungen für diesen Klassenraum.",
+    "untitledSession": "Sitzung",
+    "toastStarted": "Anwesenheitssitzung gestartet.",
+    "toastClosed": "Anwesenheitssitzung geschlossen.",
+    "loadClassroomsFailed": "Klassenräume konnten nicht geladen werden",
+    "errors": {
+      "classroomAndCourseRequired": "Klassenraum und Kurs sind erforderlich.",
+      "sessionRequired": "Wähle eine offene Sitzung zum Schließen.",
+      "requestFailed": "Anfrage fehlgeschlagen"
+    }
+  },
+  "taskDialog": {
+    "title": "Aufgabe erstellen",
+    "fieldTitle": "Titel",
+    "fieldTitlePlaceholder": "Aufgabentitel",
+    "fieldDescription": "Beschreibung",
+    "fieldDescriptionPlaceholder": "Optionale Details",
+    "submit": "Speichern",
+    "submitting": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "notWiredToast": "Aufgaben sind verfügbar, sobald die Aufgaben-API angebunden ist."
   },
   "upload": {
     "dropzone": {
       "uploadButton": "Dateien hochladen",
       "title": "Dateien auswählen oder hier per Drag & Drop ablegen.",
-      "description": "Bilder (außer WebP), PDF, MP4-Videos (max. 60s), Word (docx), PowerPoint (pptx/ppt). Max. 20 MB pro Datei."
+      "description": "JPEG-, JPG- oder PNG-Bilder, PDF und MP4-Videos (max. 60s). Max. 20 MB pro Datei."
+    },
+    "validation": {
+      "fileTypeNotAllowed": "„{{fileType}}“ ist nicht erlaubt. Erlaubt: JPEG-, JPG- oder PNG-Bilder, PDF oder MP4-Video (max. {{maxDuration}}s)."
     },
     "stepper": {
       "filenameLabel": "Dateiname *",
@@ -98,11 +166,22 @@
     "toasts": {
       "fileValidationError": "Datei \"{{fileName}}\" ist ungültig",
       "userIdMissing": "Benutzer-ID nicht gefunden. Bitte melde dich erneut an.",
+      "institutionIdIdMissing": "Institution nicht gefunden. Bitte melde dich erneut an.",
       "userRoleMissing": "Benutzerrolle nicht gefunden. Bitte melde dich erneut an.",
       "noFiles": "Keine Dateien zum Hochladen",
       "successSummary": "{{successCount}} Datei(en) erfolgreich hochgeladen. Fehlgeschlagen: {{failedCount}}",
       "failedSummary": "{{failedCount}} Datei(en) konnten nicht hochgeladen werden",
       "unexpectedError": "Beim Upload ist ein unerwarteter Fehler aufgetreten"
+    },
+    "summary": {
+      "title": "Upload-Übersicht",
+      "stats": "{{successCount}} hochgeladen · {{failedCount}} fehlgeschlagen",
+      "succeededSection": "Hochgeladene Dateien",
+      "failedSection": "Fehlgeschlagene Dateien",
+      "succeededHeading": "Hochgeladen",
+      "failedHeading": "Fehlgeschlagen",
+      "done": "Fertig",
+      "closeAria": "Upload-Dialog schließen"
     }
   }
 }

@@ -36,11 +36,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  SkeletonLoaderAvatarsUserInfo,
-  SkeletonLoaderCard,
-  SkeletonLoaderTextParagraphs,
-} from '@/components/shared'
+import { SkeletonLoaderDataTable } from '@/components/shared'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { useAdminUsers } from '../hooks/useAdminUsers'
@@ -162,15 +158,13 @@ const AdminUsers = () => {
     <AdminWorkspaceShell>
       <div className="flex flex-col gap-6 py-10 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
-          <h1 className="text-2xl font-semibold text-gray-900">{t('users.pageTitle')}</h1>
+          <h1 className="text-2xl font-semibold">{t('users.pageTitle')}</h1>
         </div>
 
         {isLoading ? (
           <div className="min-h-[300px] animate-in fade-in-0 slide-in-from-bottom-2 rounded-lg border p-6">
             <div className="grid gap-6 md:grid-cols-3">
-              <SkeletonLoaderAvatarsUserInfo />
-              <SkeletonLoaderCard />
-              <SkeletonLoaderTextParagraphs />
+              <SkeletonLoaderDataTable />
             </div>
             <div className="mt-6 flex items-center justify-center">
               <Spinner
@@ -215,7 +209,7 @@ const AdminUsers = () => {
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
+                        <Avatar size="sm">
                           <AvatarImage
                             src={user.avatar_url || undefined}
                             alt={user.display_name || user.username || 'User avatar'}

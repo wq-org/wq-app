@@ -2,7 +2,7 @@ import { USER_ROLES } from '@/features/auth'
 import { SettingsPage } from '@/features/settings'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 
-const AdminSettings = () => {
+export const InstitutionAdminSettings = () => {
   return (
     <InstitutionAdminWorkspaceShell>
       <SettingsPage
@@ -12,5 +12,3 @@ const AdminSettings = () => {
     </InstitutionAdminWorkspaceShell>
   )
 }
-
-export { AdminSettings }

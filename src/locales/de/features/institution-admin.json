@@ -5,12 +5,14 @@
     "users": "Benutzer",
     "inviteUsers": "Benutzer einladen",
     "faculties": "Fakultäten",
-    "facultyProgrammes": "Studiengänge",
-    "facultyCohorts": "Kohorten",
+    "facultyCreate": "Struktur anlegen",
+    "facultyProgrammes": "Programme",
+    "facultyCohorts": "Jahrgänge",
     "facultyClassGroups": "Klassengruppen",
     "classrooms": "Klassenräume",
     "licenseUsage": "Lizenznutzung",
     "gdprRequest": "DSGVO-Anfragen",
+    "license": "Lizenz",
     "billing": "Abrechnung",
     "analytics": "Analysen",
     "cloudStorage": "Cloud-Speicher",
@@ -18,6 +20,22 @@
     "teachers": "Lehrkräfte",
     "students": "Studierende",
     "courses": "Kurse"
+  },
+  "components": {
+    "academicYearCombobox": {
+      "empty": "Kein passendes Jahr."
+    }
+  },
+  "assignUsersSheet": {
+    "title": "Nutzer zuweisen",
+    "description": "Wählen Sie Institutionsmitglieder für dieses Angebot aus.",
+    "searchLabel": "Nutzer suchen",
+    "searchPlaceholder": "Nach Name oder E-Mail suchen…",
+    "loadError": "Nutzer konnten nicht geladen werden.",
+    "empty": "Keine Nutzer gefunden.",
+    "roleTeacher": "Lehrkraft",
+    "roleStudent": "Lernende",
+    "roleMember": "Mitglied"
   },
   "shell": {
     "settings": "Einstellungen",
@@ -197,8 +215,27 @@
   "faculties": {
     "title": "Fakultäten",
     "subtitle": "Organisieren Sie Bereiche und akademische Einheiten.",
-    "create": "Fakultät anlegen",
-    "createSubtitle": "Richten Sie eine neue oberste Organisationseinheit in wenigen Schritten ein.",
+    "create": "Struktur anlegen",
+    "createFaculty": "Fakultät anlegen",
+    "createDialog": {
+      "title": "Fakultät anlegen",
+      "description": "Legen Sie eine Fakultät mit Namen und optionaler Beschreibung an.",
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "z. B. Pflege & Gesundheit",
+        "descriptionLabel": "Beschreibung",
+        "descriptionPlaceholder": "Optionale Beschreibung für Ihr Team"
+      },
+      "cancel": "Abbrechen",
+      "submit": "Fakultät anlegen",
+      "creating": "Wird angelegt…",
+      "validation": {
+        "nameRequired": "Ein Fakultätsname ist erforderlich."
+      },
+      "errorGeneric": "Fakultät konnte nicht angelegt werden.",
+      "errorNoInstitution": "Ihrem Konto ist keine Institution zugeordnet."
+    },
+    "createSubtitle": "Legen Sie Fakultät, Programme, Jahrgänge und Klassengruppen in wenigen Schritten an.",
     "empty": "Noch keine Fakultäten. Legen Sie eine an, um zu starten.",
     "card": {
       "untitled": "Fakultät ohne Titel",
@@ -208,37 +245,528 @@
     },
     "pages": {
       "programmes": {
-        "title": "Studiengänge",
-        "subtitle": "Studiengänge und Programme an Ihren Fakultäten.",
-        "empty": "Die Verwaltung der Studiengänge folgt in Kürze."
+        "title": "Programme",
+        "subtitle": "Programme an den Fakultäten Ihrer Institution.",
+        "createCta": "Programm erstellen",
+        "searchLabel": "Programme durchsuchen",
+        "searchPlaceholder": "Suche nach Name, Beschreibung oder Fakultät…",
+        "loadError": "Programme konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Programme",
+        "emptyDescription": "Erstellen Sie eine Fakultät mit Programm oder fügen Sie über die Fakultät ein Programm hinzu.",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "card": {
+          "unknownFaculty": "Unbekannte Fakultät",
+          "untitledProgramme": "Programm ohne Titel",
+          "noDescription": "Keine Beschreibung",
+          "durationYears_one": "{{count}} Jahr",
+          "durationYears_other": "{{count}} Jahre",
+          "durationUnknown": "Dauer nicht angegeben",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "open": "Öffnen"
+        },
+        "createDialog": {
+          "title": "Programm anlegen",
+          "description": "Fügen Sie ein Programm hinzu und verknüpfen Sie es mit einer Fakultät.",
+          "facultyLabel": "Fakultät",
+          "facultyPlaceholder": "Fakultät auswählen",
+          "titleLabel": "Titel",
+          "titlePlaceholder": "z. B. Pflegeassistenz",
+          "descriptionLabel": "Beschreibung",
+          "descriptionPlaceholder": "Beschreiben Sie dieses Programm",
+          "durationYearsLabel": "Dauer (Jahre)",
+          "durationYearsPlaceholder": "Dauer wählen…",
+          "validation": {
+            "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
+            "titleRequired": "Ein Programmtitel ist erforderlich."
+          },
+          "cancel": "Abbrechen",
+          "create": "Programm anlegen",
+          "creating": "Wird angelegt...",
+          "errorGeneric": "Programm konnte nicht angelegt werden."
+        }
+      },
+      "facultyProgrammes": {
+        "noFacultyDescription": "Für diese Fakultät liegt keine Beschreibung vor.",
+        "missingFacultyId": "Fakultätskennung fehlt.",
+        "facultyNotFound": "Diese Fakultät wurde nicht gefunden.",
+        "loadError": "Programme der Fakultät konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Programme in dieser Fakultät",
+        "emptyDescription": "Fügen Sie ein Programm hinzu, um Jahrgänge und Klassengruppen aufzubauen.",
+        "addProgramme": "Programm hinzufügen",
+        "searchLabel": "Programme durchsuchen",
+        "searchPlaceholder": "Suche nach Name oder Beschreibung…",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saving": "Wird gespeichert...",
+          "saveSuccess": "Fakultätseinstellungen gespeichert",
+          "saveError": "Fakultätseinstellungen konnten nicht gespeichert werden.",
+          "validation": {
+            "nameRequired": "Der Fakultätsname ist erforderlich."
+          },
+          "fields": {
+            "nameLabel": "Fakultätsname",
+            "namePlaceholder": "Fakultätsname eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Fakultätsbeschreibung eingeben"
+          },
+          "archiveHoldLabel": "Halten zum Archivieren der Fakultät",
+          "archiveDialogTitle": "Fakultät archivieren",
+          "archiveDialogDescription": "Das Archivieren kennzeichnet diese Fakultät für den laufenden Betrieb als inaktiv; eine Wiederherstellung soll später über die Verwaltung möglich sein. Derzeit ändert sich noch nichts—nur die Oberfläche.\n\nSobald Archivierung angebunden ist, wird diese Fakultät als archiviert markiert: Sie bleibt für Nachweise sichtbar, soll aber keine neuen Programme mehr erhalten, bis sie wiederhergestellt wird. Verknüpfte Programme und Jahrgänge können bestehen bleiben, bis Sie sie separat bearbeiten.",
+          "archiveDialogCancel": "Abbrechen",
+          "archiveDialogConfirm": "Verstanden"
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        }
+      },
+      "programmeOfferings": {
+        "titleFallback": "Programmangebote",
+        "subtitle": "Zeitgebundene Durchläufe dieses Programms mit aktuellem Status.",
+        "addOffering": "Angebot hinzufügen",
+        "loadError": "Programmangebote konnten nicht geladen werden.",
+        "programmeNotFound": "Dieses Programm wurde in der ausgewählten Fakultät nicht gefunden.",
+        "empty": "Für dieses Programm gibt es noch keine Angebote.",
+        "emptyFiltered": "Keine Angebote passen zu Ihrem aktuellen Filter.",
+        "filterLabel": "Angebote filtern",
+        "filterPlaceholder": "Nach Jahr, Term-Code oder Status filtern…",
+        "filterButton": "Filter anwenden",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saveSuccess": "Programmeinstellungen gespeichert",
+          "saveError": "Programmeinstellungen konnten nicht gespeichert werden.",
+          "archive": "Zum Archivieren halten",
+          "archiving": "Wird archiviert...",
+          "archiveSuccess": "Programm archiviert",
+          "archiveError": "Programm konnte nicht archiviert werden.",
+          "status": {
+            "active": "Aktiv",
+            "archived": "Archiviert"
+          },
+          "fields": {
+            "nameLabel": "Programmname",
+            "namePlaceholder": "Programmname eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Programmbeschreibung eingeben",
+            "durationYearsLabel": "Dauer (Jahre)"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        },
+        "offering": {
+          "programme": "Programm",
+          "dateRange": "Zeitraum",
+          "academicYear": "Akademisches Jahr",
+          "termCode": "Term-Code",
+          "status": "Status",
+          "startsAt": "Start",
+          "endsAt": "Ende",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "notSet": "Nicht gesetzt"
+        },
+        "cohortsSection": {
+          "title": "Jahrgänge",
+          "empty": "Für dieses Programm gibt es noch keine Jahrgänge."
+        },
+        "createDialog": {
+          "title": "Programmangebot hinzufügen",
+          "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieses Programms.",
+          "fields": {
+            "academicYearLabel": "Akademisches Jahr",
+            "academicYearPlaceholder": "Jahr suchen oder wählen…",
+            "termCodeLabel": "Term-Code",
+            "termCodePlaceholder": "z. B. MD-2028/31",
+            "typicalDateRanges": "Typische Ausbildungsjahr-Spannen im System",
+            "springCourse": "Frühjahrskurs:",
+            "autumnCourse": "Herbstkurs:",
+            "startsAtLabel": "Start",
+            "endsAtLabel": "Ende",
+            "datePlaceholder": "Datum wählen",
+            "statusLabel": "Status",
+            "statusActive": "Aktiv",
+            "statusDraft": "Entwurf"
+          },
+          "validation": {
+            "academicYearRequired": "Ein akademisches Jahr ist erforderlich."
+          },
+          "cancel": "Abbrechen",
+          "create": "Angebot erstellen",
+          "creating": "Wird erstellt..."
+        },
+        "editActiveOffering": {
+          "datesReadOnly": "Start- und Enddatum können nicht geändert werden, solange das Angebot aktiv ist. Wechseln Sie zu Entwurf, um die Daten anzupassen."
+        },
+        "timeline": {
+          "archiveMenuItem": "Angebot archivieren",
+          "archiveDialogTitle": "Dieses Programmangebot archivieren?",
+          "archiveDialogDescription": "Beim Archivieren wird dieses Angebot als inaktiv markiert. Es verschwindet aus der aktiven Timeline und erscheint unter dem Tab „Archiviert“. Verknüpfungen zu Jahrgängen oder Klassengruppen werden nicht automatisch entfernt; bearbeiten oder archivieren Sie diese bei Bedarf separat.",
+          "archiveDialogOfferingLabel": "Angebot: {{term}}",
+          "archiveDialogCancel": "Abbrechen",
+          "holdToArchive": "Zum Archivieren halten"
+        }
       },
       "cohorts": {
-        "title": "Kohorten",
+        "title": "Jahrgänge",
         "subtitle": "Aufnahmen und Jahrgänge innerhalb von Programmen.",
-        "empty": "Die Verwaltung von Kohorten folgt in Kürze."
+        "createCta": "Jahrgang erstellen",
+        "searchLabel": "Jahrgänge suchen",
+        "searchPlaceholder": "Suche nach Name, Beschreibung oder Programm…",
+        "loadError": "Jahrgänge konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Jahrgänge",
+        "emptyDescription": "Erstellen Sie eine Fakultät mit einem Jahrgang oder fügen Sie einen Jahrgang über die Programmseite hinzu.",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "card": {
+          "unknownProgramme": "Unbekanntes Programm",
+          "untitledCohort": "Jahrgang ohne Titel",
+          "noDescription": "Keine Beschreibung",
+          "academicYearUnknown": "Jahrgang nicht gesetzt",
+          "open": "Öffnen"
+        },
+        "createDialog": {
+          "title": "Jahrgang anlegen",
+          "description": "Fügen Sie einen Jahrgang hinzu und verknüpfen Sie ihn mit Fakultät und Programm.",
+          "facultyLabel": "Fakultät",
+          "facultyPlaceholder": "Fakultät auswählen",
+          "programmeLabel": "Programm",
+          "programmePlaceholder": "Programm auswählen",
+          "titleLabel": "Titel",
+          "titlePlaceholder": "z. B. MD-2027 oder Modedesign — MD-2027",
+          "descriptionLabel": "Beschreibung",
+          "descriptionPlaceholder": "Beschreiben Sie diesen Jahrgang",
+          "academicYearLabel": "Akademisches Jahr",
+          "academicYearPlaceholder": "z. B. 2027",
+          "academicYearHint": "Standard ist das aktuelle Jahr oder das nächste Jahr nach dem letzten Jahrgang dieses Programms.",
+          "syncTitleLabel": "Titel automatisch aus Programmcode und Jahr",
+          "descriptiveTitleLabel": "Programmnamen einfügen (Programm — PREFIX-JAHR)",
+          "syncDescriptionLabel": "Beschreibung aus Fakultät, Programm und Jahrgang vorschlagen",
+          "syncDescriptionHint": "Wird kurz verzögert aktualisiert, wenn Sie Titel oder Auswahl ändern (Debouncing). Deaktivieren Sie die Option für eine eigene Beschreibung.",
+          "validation": {
+            "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
+            "programmeRequired": "Bitte wählen Sie ein Programm aus.",
+            "titleRequired": "Ein Jahrgangstitel ist erforderlich.",
+            "academicYearRequired": "Ein akademisches Jahr ist erforderlich.",
+            "academicYearInvalid": "Das akademische Jahr muss eine gültige Jahreszahl sein."
+          },
+          "cancel": "Abbrechen",
+          "create": "Jahrgang anlegen",
+          "creating": "Wird angelegt..."
+        }
+      },
+      "cohortOfferings": {
+        "titleFallback": "Jahrgangangebote",
+        "subtitle": "Zeitgebundene Durchläufe dieses Jahrgangs mit aktuellem Status.",
+        "addOffering": "Angebot hinzufügen",
+        "loadError": "Jahrgangangebote konnten nicht geladen werden.",
+        "cohortNotFound": "Dieser Jahrgang wurde nicht gefunden.",
+        "programmeFallback": "Programm",
+        "empty": "Für diesen Jahrgang gibt es noch keine Angebote.",
+        "emptyFiltered": "Keine Angebote passen zu Ihrem aktuellen Filter.",
+        "filterLabel": "Angebote filtern",
+        "filterPlaceholder": "Nach Status oder Datum filtern…",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saveSuccess": "Jahrgangeinstellungen gespeichert",
+          "saveError": "Jahrgangeinstellungen konnten nicht gespeichert werden.",
+          "fields": {
+            "nameLabel": "Jahrgangname",
+            "namePlaceholder": "Jahrgangname eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Jahrgangbeschreibung eingeben"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        },
+        "offering": {
+          "name": "Name",
+          "programmeOfferingUnknown": "Unbekanntes Programmangebot",
+          "dateRange": "Zeitraum",
+          "startsAt": "Start",
+          "endsAt": "Ende",
+          "status": "Status",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "notSet": "Nicht gesetzt",
+          "assignUsers": "Nutzer zuweisen"
+        },
+        "classGroupsSection": {
+          "title": "Klassengruppen",
+          "empty": "Für diesen Jahrgang gibt es noch keine Klassengruppen."
+        },
+        "createDialog": {
+          "title": "Jahrgangangebot hinzufügen",
+          "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieses Jahrgangs verknüpft mit einem Programmangebot.",
+          "fields": {
+            "programmeOfferingLabel": "Programmangebot",
+            "programmeOfferingPlaceholder": "Programmangebot auswählen",
+            "programmeOfferingEmpty": "Keine Programmangebote verfügbar – legen Sie zuerst eines auf der Programmseite an.",
+            "programmeOfferingArchivedSuffix": "archiviert",
+            "programmeOfferingAlreadyLinkedSuffix": "bereits mit diesem Jahrgang verknüpft",
+            "startsAtLabel": "Start",
+            "endsAtLabel": "Ende",
+            "datePlaceholder": "Datum wählen",
+            "statusLabel": "Status",
+            "statusActive": "Aktiv",
+            "statusDraft": "Entwurf",
+            "applyProgrammeOfferingDates": "Programmangebot-Daten übernehmen",
+            "selectProgrammeOfferingForDateHints": "Wählen Sie ein Programmangebot, um den empfohlenen Datumsbereich zu sehen.",
+            "programmeOfferingDatesNotSet": "Für dieses Programmangebot sind noch keine Daten hinterlegt — ergänzen Sie diese zuerst beim Programmangebot.",
+            "startsAtProgrammeOfferingHint": "Wählen Sie einen Start zwischen {{from}} und {{to}} (Programmangebot).",
+            "endsAtProgrammeOfferingHint": "Wählen Sie ein Ende zwischen {{from}} und {{to}} (Programmangebot)."
+          },
+          "validation": {
+            "programmeOfferingRequired": "Bitte wählen Sie ein Programmangebot aus.",
+            "noSelectableProgrammeOffering": "Alle Programmangebote dieses Programms sind archiviert oder bereits mit diesem Jahrgang verknüpft."
+          },
+          "cancel": "Abbrechen",
+          "create": "Angebot erstellen",
+          "creating": "Wird erstellt..."
+        },
+        "editDialog": {
+          "title": "Jahrgangangebot bearbeiten",
+          "description": "Ändern Sie die Verknüpfung zum Programmangebot, die Daten oder den Status Entwurf/Aktiv.",
+          "cancel": "Abbrechen",
+          "save": "Änderungen speichern",
+          "saving": "Wird gespeichert..."
+        },
+        "archiveSuccess": "Jahrgangangebot archiviert",
+        "archiveError": "Jahrgangangebot konnte nicht archiviert werden."
       },
       "classGroups": {
         "title": "Klassengruppen",
-        "subtitle": "Operative Lerngruppen innerhalb von Kohorten.",
-        "empty": "Die Verwaltung von Klassengruppen folgt in Kürze."
+        "subtitle": "Operative Lerngruppen innerhalb von Jahrgängen.",
+        "createCta": "Klassengruppe erstellen",
+        "searchLabel": "Klassengruppen suchen",
+        "searchPlaceholder": "Suche nach Name, Beschreibung oder Jahrgang…",
+        "loadError": "Klassengruppen konnten nicht geladen werden.",
+        "emptyTitle": "Noch keine Klassengruppen",
+        "emptyDescription": "Erstellen Sie einen Jahrgang mit einer Klassengruppe oder fügen Sie eine über die Jahrgangseite hinzu.",
+        "noSearchResults": "Keine Treffer für diese Suche.",
+        "card": {
+          "unknownCohort": "Unbekannter Jahrgang",
+          "untitledClassGroup": "Klassengruppe ohne Titel",
+          "noDescription": "Keine Beschreibung",
+          "open": "Öffnen"
+        },
+        "createDialog": {
+          "title": "Klassengruppe anlegen",
+          "description": "Fügen Sie eine Klassengruppe hinzu und verknüpfen Sie sie mit Fakultät, Programm und Jahrgang.",
+          "facultyLabel": "Fakultät",
+          "facultyNoProgrammesSuffix": "keine Programme",
+          "facultyPlaceholder": "Fakultät auswählen",
+          "programmeNoCohortsSuffix": "keine Jahrgänge",
+          "programmeLabel": "Programm",
+          "programmePlaceholder": "Programm auswählen",
+          "cohortLabel": "Jahrgang",
+          "cohortPlaceholder": "Jahrgang auswählen",
+          "titleLabel": "Titel",
+          "titlePlaceholder": "z. B. PF-1A",
+          "descriptionLabel": "Beschreibung",
+          "descriptionPlaceholder": "Beschreiben Sie diese Klassengruppe",
+          "suggestNextTitle": "Nächsten Titel vorschlagen",
+          "syncDescriptionLabel": "Beschreibung automatisch aus Auswahl füllen",
+          "syncDescriptionHint": "Beschreibung wird neu erzeugt, wenn Sie Fakultät, Programm, Jahrgang (Jahrgangsjahr) oder den Klassengruppentitel ändern.",
+          "noTitleSuggestionAvailable": "Alle Slots für dieses Präfix sind belegt oder noch kein Präfix verfügbar.",
+          "validation": {
+            "facultyRequired": "Bitte wählen Sie eine Fakultät aus.",
+            "programmeRequired": "Bitte wählen Sie ein Programm aus.",
+            "cohortRequired": "Bitte wählen Sie einen Jahrgang aus.",
+            "titleRequired": "Ein Titel für die Klassengruppe ist erforderlich."
+          },
+          "cancel": "Abbrechen",
+          "create": "Klassengruppe anlegen",
+          "creating": "Wird angelegt..."
+        }
+      },
+      "classGroupOfferings": {
+        "titleFallback": "Klassengruppenangebote",
+        "subtitle": "Zeitgebundene Durchläufe dieser Klassengruppe mit aktuellem Status.",
+        "addOffering": "Angebot hinzufügen",
+        "loadError": "Klassengruppenangebote konnten nicht geladen werden.",
+        "classGroupNotFound": "Diese Klassengruppe wurde nicht gefunden.",
+        "programmeFallback": "Programm",
+        "cohortFallback": "Jahrgang",
+        "empty": "Für diese Klassengruppe gibt es noch keine Angebote.",
+        "emptyFiltered": "Keine Angebote passen zu Ihrem aktuellen Filter.",
+        "filterLabel": "Angebote filtern",
+        "filterPlaceholder": "Nach Status oder Datum filtern…",
+        "tabs": {
+          "overview": "Übersicht",
+          "settings": "Einstellungen"
+        },
+        "settings": {
+          "saveChanges": "Änderungen speichern",
+          "saveSuccess": "Klassengruppeneinstellungen gespeichert",
+          "saveError": "Klassengruppeneinstellungen konnten nicht gespeichert werden.",
+          "fields": {
+            "nameLabel": "Klassengruppename",
+            "namePlaceholder": "Klassengruppename eingeben",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Klassengrupenbeschreibung eingeben"
+          }
+        },
+        "unsavedChanges": {
+          "title": "Sie haben ungespeicherte Änderungen",
+          "description": "Möchten Sie ohne Speichern fortfahren?",
+          "stay": "Bleiben",
+          "continueAnyway": "Trotzdem fortfahren"
+        },
+        "offering": {
+          "dateRange": "Zeitraum",
+          "startsAt": "Start",
+          "endsAt": "Ende",
+          "status": "Status",
+          "statusActive": "Aktiv",
+          "statusInactive": "Inaktiv",
+          "notSet": "Nicht gesetzt",
+          "assignUsers": "Nutzer zuweisen"
+        },
+        "classroomsSection": {
+          "title": "Klassenräume",
+          "empty": "Für diese Klassengruppe gibt es noch keine Klassenräume."
+        },
+        "createDialog": {
+          "title": "Klassengruppenangebot hinzufügen",
+          "description": "Erstellen Sie einen zeitlich begrenzten Durchlauf dieser Klassengruppe verknüpft mit einem Jahrgangangebot.",
+          "fields": {
+            "cohortOfferingLabel": "Jahrgangangebot",
+            "cohortOfferingPlaceholder": "Jahrgangangebot auswählen",
+            "cohortOfferingEmpty": "Keine Jahrgangangebote verfügbar – legen Sie zuerst eines auf der Jahrgangseite an.",
+            "startsAtLabel": "Start",
+            "endsAtLabel": "Ende",
+            "datePlaceholder": "Datum wählen",
+            "statusLabel": "Status",
+            "statusActive": "Aktiv",
+            "statusDraft": "Entwurf"
+          },
+          "validation": {
+            "cohortOfferingRequired": "Bitte wählen Sie ein Jahrgangangebot aus."
+          },
+          "cancel": "Abbrechen",
+          "create": "Angebot erstellen",
+          "creating": "Wird erstellt..."
+        }
       }
     },
     "wizard": {
+      "pageTitle": "Struktur anlegen",
       "backToList": "Zurück zu Fakultäten",
+      "help": {
+        "sectionLabels": {
+          "definition": "Definition",
+          "example": "Beispiel",
+          "exampleValues": "Beispielwerte",
+          "reason": "Grund"
+        },
+        "faculty": {
+          "title": "Fakultät",
+          "definition": "Die übergeordnete Organisationseinheit deiner Bildungseinrichtung. Eine Fakultät fasst thematisch verwandte Ausbildungsgänge zusammen.",
+          "exampleTitle": "Pflege & Gesundheit",
+          "exampleValues": [
+            "Name: Pflege & Gesundheit",
+            "Beschreibung: Alle pflegerischen und medizinischen Ausbildungsgänge der Kreiskliniken Reutlingen"
+          ]
+        },
+        "programme": {
+          "title": "Programm",
+          "definition": "Ein konkreter Ausbildungsgang innerhalb der Fakultät. Das Programm beschreibt was ausgebildet wird - unabhängig davon wann oder wer.",
+          "exampleTitle": "Ausbildung zur Pflegefachkraft",
+          "exampleValues": [
+            "Beschreibung: Generalistische Pflegeausbildung nach Pflegeberufegesetz (PflBG)",
+            "Dauer: 3 Jahre",
+            "Progression: Jährlich",
+            "Weitere Beispiele: OTA-Ausbildung, Medizinprodukteaufbereitung (ZSVA), Gesundheits- und Krankenpflegehilfe"
+          ]
+        },
+        "programmeOffering": {
+          "title": "Programmangebot",
+          "definition": "Eine konkrete zeitliche Durchführung des Programms - also der Starttermin eines Ausbildungsjahrgangs. Hier legst du fest, von wann bis wann dieses Programm in diesem Jahr angeboten wird.",
+          "exampleTitle": "PF-2025",
+          "exampleValues": [
+            "Akademisches Jahr: 2025",
+            "Term-Code: PF-2025",
+            "Startdatum: 01.09.2025",
+            "Enddatum: 30.06.2028",
+            "Status: Aktiv"
+          ]
+        },
+        "cohort": {
+          "title": "Jahrgang",
+          "definition": "Eine konkrete Gruppe von Auszubildenden, die gemeinsam starten. Der Jahrgang ist der menschliche Anker - die Gruppe, die zusammen ausgebildet wird.",
+          "exampleTitle": "Jahrgang 2025",
+          "exampleValues": ["Name: Jahrgang 2025", "Akademisches Jahr: 2025"]
+        },
+        "cohortOffering": {
+          "title": "Jahrgangsangebot",
+          "definition": "Die zeitliche Bindung des Jahrgangs an das Programmangebot. Hier wird festgelegt, wie lange dieser Jahrgang aktiv in diesem Programm läuft.",
+          "exampleTitle": "Jahrgang 2025 im Programm PF-2025",
+          "exampleValues": ["Startdatum: 01.09.2025", "Enddatum: 30.06.2028", "Status: Aktiv"],
+          "reason": "Getrennt vom Programmangebot, weil ein Jahrgang leicht verzögert starten kann oder ein Nachrückjahrgang andere Zeiträume haben kann."
+        },
+        "classGroup": {
+          "title": "Klassengruppe",
+          "definition": "Die operative Einheit innerhalb eines Jahrgangs - eine Klasse mit etwa 15 bis 25 Auszubildenden, die gemeinsam Unterricht haben.",
+          "exampleTitle": "PF-A 2025",
+          "exampleValues": [
+            "Beschreibung: Erste Klasse des Pflegejahrgangs 2025, Theorieblock Standort Reutlingen",
+            "Bei 40 Auszubildenden: PF-A 2025 und PF-B 2025"
+          ]
+        },
+        "classGroupOffering": {
+          "title": "Klassengruppenangebot",
+          "definition": "Der aktive Zeitraum, in dem diese Klassengruppe konkret unterrichtet wird. Hier hängen später Stundenpläne, Räume und Lehrkräfte dran.",
+          "exampleTitle": "PF-A 2025 im ersten Ausbildungsjahr",
+          "exampleValues": ["Startdatum: 01.09.2025", "Enddatum: 31.08.2026", "Status: Aktiv"],
+          "reason": "Im zweiten Ausbildungsjahr wird ein neues Klassengruppenangebot mit neuem Zeitraum angelegt, zum Beispiel 01.09.2026 bis 31.08.2027."
+        }
+      },
       "steps": {
         "faculty": "Fakultät",
         "programme": "Programm",
-        "programmeOffering": "Angebot"
+        "programmeOffering": "Programm Angebot",
+        "cohort": "Jahrgang",
+        "cohortOffering": "Jahrgang Angebot",
+        "classGroup": "Klassengruppe",
+        "classGroupOffering": "Klassengruppenangebot",
+        "summary": "Zusammenfassung"
       },
       "actions": {
         "previous": "Zurück",
         "next": "Weiter",
-        "finish": "Fakultät anlegen"
+        "finish": "Struktur anlegen",
+        "finishing": "Wird angelegt...",
+        "autoSuggestFacultyDescription": "Fakultätsbeschreibung vorschlagen",
+        "autoSuggestProgrammeDescription": "Programmbeschreibung vorschlagen",
+        "autoSuggestClassGroupDescription": "Klassengruppenbeschreibung vorschlagen"
       },
       "fields": {
         "nameLabel": "Name",
         "namePlaceholder": "z. B. Gesundheitswissenschaften",
-        "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Studiengänge, Schwerpunkte oder Zielgruppen.",
+        "descriptionHint": "Beschreiben Sie, was diese Fakultät umfasst und wie sie in Ihre Institution passt—Programme, Schwerpunkte oder Zielgruppen.",
         "descriptionLabel": "Beschreibung (optional)",
         "descriptionPlaceholder": "z. B. Bachelor- und Masterprogramme in Pflege, Public Health und verwandten Gesundheitsberufen."
       },
@@ -260,14 +788,96 @@
       "offering": {
         "intro": "Legen Sie ein oder mehrere Programmangebote (Studienjahr / Terminfenster) fest. Die Speicherung folgt mit der API.",
         "academicYearLabel": "Studienjahr",
-        "termCodeLabel": "Termin-Code",
-        "termCodePlaceholder": "z. B. 2026S1",
+        "academicYearPlaceholder": "Jahr suchen oder wählen…",
+        "termCodeLabel": "Term-Code",
+        "termCodePlaceholder": "z. B. MD-2028/31",
+        "termCodeHint": "Buchstaben, Ziffern, _, -, /. Üblich: PREFIX-START/Ende (z. B. MD-2028/31) oder älteres PREFIX-JAHR.",
         "statusActive": "Aktiv",
         "statusDraft": "Entwurf",
+        "statusArchived": "Archiviert",
+        "startsAtLabel": "Beginn",
+        "endsAtLabel": "Ende",
+        "datePlaceholder": "Datum wählen",
         "dateRangeLabel": "Beginn / Ende",
         "dateRangePlaceholder": "Daten wählen",
         "addAnother": "Weiteres Angebot",
         "remove": "Entfernen"
+      },
+      "cohort": {
+        "intro": "Benennen Sie die Aufnahme- oder Jahrgangsgruppe innerhalb dieses Programms.",
+        "nameLabel": "Jahrgangsname",
+        "namePlaceholder": "z. B. Jahrgang 2026",
+        "academicYearLabel": "Studienjahr",
+        "academicYearPlaceholder": "Jahr suchen oder wählen…"
+      },
+      "cohortOffering": {
+        "intro": "Legen Sie das Kalenderfenster für diesen Jahrgang fest.",
+        "addAnother": "Weiteres Angebot",
+        "remove": "Entfernen",
+        "startsAtLabel": "Beginn",
+        "endsAtLabel": "Ende",
+        "datePlaceholder": "Datum wählen",
+        "statusActive": "Aktiv",
+        "statusDraft": "Entwurf"
+      },
+      "summary": {
+        "intro": "Prüfen Sie alle Angaben, bevor die Fakultätsstruktur angelegt wird.",
+        "rows": {
+          "faculty": "Fakultät",
+          "programme": "Programm",
+          "programmeDuration": "Programmdauer",
+          "progression": "Fortschreibung",
+          "cohort": "Jahrgang",
+          "cohortAcademicYear": "Jahrgang Studienjahr",
+          "classGroup": "Klassengruppe"
+        },
+        "columns": {
+          "index": "#",
+          "label": "Bezeichnung",
+          "status": "Status",
+          "startsAt": "Beginn",
+          "endsAt": "Ende"
+        },
+        "sections": {
+          "programmeOfferings": "Programmangebote",
+          "cohortOfferings": "Jahrgangsangebote",
+          "classGroupOfferings": "Klassengruppenangebote"
+        },
+        "labels": {
+          "offeringNumber": "Angebot {{count}}"
+        }
+      },
+      "submit": {
+        "missingInstitution": "Für Ihr Konto konnte keine Institution geladen werden.",
+        "successTitle": "Struktur angelegt",
+        "successDescription": "{{facultyName}} und die zugehörige Struktur wurden erfolgreich angelegt.",
+        "successAppendTitle": "Programmstruktur erstellt",
+        "successAppendDescription": "Neues Programm und zugehörige Struktur wurden für {{facultyName}} hinzugefügt.",
+        "errorFallback": "Fakultätsstruktur konnte nicht angelegt werden"
+      },
+      "prefill": {
+        "facultyNotFound": "Diese Fakultät existiert nicht oder ist nicht zugänglich.",
+        "loadFailed": "Fakultätsdetails konnten nicht geladen werden."
+      },
+      "classGroup": {
+        "intro": "Benennen Sie die Klasse, der Lernende zugewiesen werden.",
+        "suggestionsLabel": "Vorschläge basierend auf Ihrem Programm – klicken Sie zur Auswahl oder geben Sie unten einen eigenen Namen ein.",
+        "showMore": "Jahrgangsstufen 3 & 4 anzeigen",
+        "showLess": "Weniger anzeigen",
+        "nameLabel": "Name der Klassengruppe",
+        "namePlaceholder": "z. B. ML-3A",
+        "descriptionLabel": "Beschreibung (optional)",
+        "descriptionPlaceholder": "z. B. Morgengruppe, 28 Lernende."
+      },
+      "classGroupOffering": {
+        "intro": "Legen Sie das Kalenderfenster für diese Klassengruppe fest.",
+        "addAnother": "Weiteres Angebot",
+        "remove": "Entfernen",
+        "startsAtLabel": "Beginn",
+        "endsAtLabel": "Ende",
+        "datePlaceholder": "Datum wählen",
+        "statusActive": "Aktiv",
+        "statusDraft": "Entwurf"
       }
     },
     "hierarchy": {
@@ -276,16 +886,16 @@
         "description": "Ein übergeordneter Bereich der Institution, der verwandte Programme bündelt (zum Beispiel Pflege oder Berufsausbildung)."
       },
       "programme": {
-        "title": "Studiengang / Programm",
-        "description": "Ein Ausbildungsgang innerhalb einer Fakultät, der festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
+        "title": "Programm",
+        "description": "Ein Programm innerhalb einer Fakultät, das festlegt, wofür gelernt wird und wie lange es dauert (zum Beispiel „Pflegeassistenz“)."
       },
       "cohort": {
-        "title": "Kohorte / Jahrgang",
-        "description": "Eine Aufnahme- oder Jahrgangsgruppe innerhalb eines Programms (zum Beispiel „Kohorte 2026“), die nach Abschluss meist archiviert wird."
+        "title": "Jahrgang",
+        "description": "Eine Aufnahme- oder Jahrgangsgruppe innerhalb eines Programms (zum Beispiel „Jahrgang 2026“), die nach Abschluss meist archiviert wird."
       },
       "classGroup": {
         "title": "Klassengruppe",
-        "description": "Eine konkrete Klasse innerhalb einer Kohorte, die die reale Lerngruppe abbildet (zum Beispiel „WIB2-A“)."
+        "description": "Eine konkrete Klasse innerhalb eines Jahrgangs, die die reale Lerngruppe abbildet (zum Beispiel „WIB2-A“)."
       },
       "classroom": {
         "title": "Kursraum / Classroom",
@@ -295,7 +905,174 @@
   },
   "classrooms": {
     "title": "Klassenräume",
-    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten."
+    "subtitle": "Klassenräume Ihrer Institution einsehen und verwalten.",
+    "searchLabel": "Klassenräume durchsuchen",
+    "searchPlaceholder": "Nach Titel, Klassengruppe oder Status suchen…",
+    "loadError": "Klassenräume konnten nicht geladen werden.",
+    "emptyTitle": "Noch keine Klassenräume",
+    "emptyDescription": "Klassenräume erscheinen, sobald sie für eine Klassengruppe angelegt werden.",
+    "noSearchResults": "Keine Klassenräume passen zu Ihrer Suche.",
+    "addClassroom": "Klassenraum hinzufügen",
+    "card": {
+      "unknownClassGroup": "Unbekannte Klassengruppe",
+      "untitledClassroom": "Klassenraum ohne Titel",
+      "open": "Öffnen",
+      "statusActive": "Aktiv",
+      "statusInactive": "Inaktiv",
+      "updatedAt": "Zuletzt aktualisiert {{date}}",
+      "deactivatedAt": "Deaktiviert {{date}}"
+    },
+    "createDialog": {
+      "title": "Klassenraum hinzufügen",
+      "description": "Erstellen Sie einen Klassenraum mit Klassengruppe und Angebot. Die Hauptlehrkraft ist optional.",
+      "cancel": "Abbrechen",
+      "create": "Klassenraum erstellen",
+      "creating": "Wird erstellt...",
+      "fields": {
+        "titleLabel": "Titel des Klassenraums",
+        "titlePlaceholder": "Titel eingeben",
+        "classGroupLabel": "Klassengruppe",
+        "classGroupPlaceholder": "Klassengruppen suchen",
+        "offeringLabel": "Klassengruppenangebot",
+        "teacherLabel": "Hauptlehrkraft (optional)",
+        "teacherPlaceholder": "Lehrkräfte suchen"
+      },
+      "classGroup": {
+        "empty": "Keine Klassengruppen gefunden."
+      },
+      "offering": {
+        "empty": "Keine Angebote für diese Klassengruppe verfügbar.",
+        "noneSelected": "Bitte Angebot wählen"
+      },
+      "teacher": {
+        "empty": "Keine aktiven Lehrkräfte gefunden."
+      },
+      "validation": {
+        "titleRequired": "Ein Klassenraumtitel ist erforderlich.",
+        "classGroupRequired": "Bitte wählen Sie eine Klassengruppe.",
+        "offeringRequired": "Bitte wählen Sie ein Klassengruppenangebot."
+      },
+      "suggestions": {
+        "label": "Vorschläge:"
+      }
+    },
+    "detail": {
+      "back": "Zurück zu Klassenräumen",
+      "notFound": "Klassenraum nicht gefunden.",
+      "tabs": {
+        "members": "Mitglieder",
+        "settings": "Einstellungen"
+      },
+      "mainTeacher": {
+        "title": "Hauptlehrkraft",
+        "description": "Primäre Lehrkraft, die diesem Klassenraum zugewiesen ist.",
+        "role": "Hauptlehrkraft",
+        "unassigned": "Nicht zugewiesen",
+        "noEmail": "Keine E-Mail verfügbar",
+        "edit": "Bearbeiten",
+        "assign": "Zuweisen",
+        "reassign": "Neu zuweisen",
+        "remove": "Entfernen"
+      },
+      "coTeachers": {
+        "title": "Co-Lehrkräfte",
+        "description": "Co-Lehrkräfte können die Klassenliste einsehen, Kursverknüpfungen verwalten und Belohnungen oder Punkte in diesem Klassenraum vergeben.",
+        "add": "Co-Lehrkraft hinzufügen",
+        "empty": "Noch keine Co-Lehrkräfte zugewiesen.",
+        "edit": "Bearbeiten",
+        "remove": "Entfernen",
+        "removeNamed": "{{name}} entfernen"
+      },
+      "assignActions": {
+        "assignCoTeachers": "Co-Lehrkräfte zuweisen",
+        "assignStudents": "Schüler zuweisen"
+      }
+    },
+    "assignCoTeachersDialog": {
+      "title": "Co-Lehrkräfte zuweisen",
+      "description": "Wählen Sie eine oder mehrere Lehrkräfte Ihrer Institution aus, die als Co-Lehrkräfte für diesen Klassenraum eingesetzt werden sollen.",
+      "searchPlaceholder": "Lehrkräfte suchen",
+      "empty": "Keine geeigneten Lehrkräfte verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Zuweisen",
+      "submitting": "Wird zugewiesen..."
+    },
+    "assignStudentsDialog": {
+      "title": "Schüler zuweisen",
+      "description": "Wählen Sie einen oder mehrere Schüler Ihrer Institution aus, die in diesen Klassenraum eingeschrieben werden sollen.",
+      "searchPlaceholder": "Schüler suchen",
+      "empty": "Keine geeigneten Schüler verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Zuweisen",
+      "submitting": "Wird zugewiesen..."
+    },
+    "reassignMainTeacherDialog": {
+      "title": "Hauptlehrkraft neu zuweisen",
+      "description": "Wählen Sie eine Lehrkraft, die als Hauptlehrkraft für diesen Klassenraum eingesetzt wird.",
+      "searchPlaceholder": "Lehrkräfte suchen",
+      "empty": "Keine weiteren Lehrkräfte verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Neu zuweisen",
+      "submitting": "Wird zugewiesen..."
+    },
+    "addCoTeacherDialog": {
+      "title": "Co-Lehrkraft hinzufügen",
+      "description": "Wählen Sie eine Lehrkraft Ihrer Institution aus, die als Co-Lehrkraft für diesen Klassenraum tätig sein soll.",
+      "searchPlaceholder": "Lehrkräfte suchen",
+      "empty": "Keine geeigneten Lehrkräfte verfügbar.",
+      "cancel": "Abbrechen",
+      "submit": "Co-Lehrkraft hinzufügen",
+      "submitting": "Wird hinzugefügt..."
+    },
+    "settings": {
+      "titleLabel": "Titel des Klassenraums",
+      "titlePlaceholder": "Titel eingeben",
+      "mainTeacherLabel": "Hauptlehrkraft",
+      "mainTeacherUnassigned": "Nicht zugewiesen",
+      "unassign": "Zuweisung aufheben",
+      "reassign": "Neu zuweisen",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Wird gespeichert...",
+      "saveError": "Änderungen konnten nicht gespeichert werden."
+    },
+    "members": {
+      "title": "Mitglieder",
+      "assignUser": "Nutzer zuweisen",
+      "empty": "Noch keine Mitglieder in diesem Klassenraum.",
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "actions": "Aktionen"
+      },
+      "roles": {
+        "student": "Schüler",
+        "co_teacher": "Co-Lehrkraft",
+        "teacher": "Lehrkraft",
+        "main_teacher": "Hauptlehrkraft"
+      },
+      "kickOut": "Aus Klassenraum entfernen"
+    },
+    "assignDialog": {
+      "title": "Nutzer dem Klassenraum zuweisen",
+      "description": "Suchen Sie Lehrkräfte und Schüler und weisen Sie sie diesem Klassenraum zu.",
+      "searchTeachersPlaceholder": "Lehrkräfte suchen",
+      "searchStudentsPlaceholder": "Schüler suchen",
+      "coTeachersLabel": "Co-Lehrkräfte",
+      "mainTeacherLabel": "Hauptlehrkraft (falls noch nicht gesetzt)",
+      "searchMainTeacherPlaceholder": "Hauptlehrkraft suchen und zuweisen",
+      "studentsLabel": "Schüler",
+      "empty": "Keine aktiven Nutzer gefunden.",
+      "emptyDescription": "Laden Sie Nutzer ein oder aktivieren Sie sie in der Institution, um sie hier zuzuweisen.",
+      "noTeachers": "Keine Lehrkräfte verfügbar.",
+      "noStudents": "Keine Schüler verfügbar.",
+      "alreadyAssigned": "Bereits im Klassenraum",
+      "cancel": "Abbrechen",
+      "assign": "Zuweisen",
+      "assigning": "Wird zugewiesen...",
+      "noChanges": "Wählen Sie mindestens einen neuen Nutzer aus.",
+      "partialFailure": "Einige Nutzer konnten nicht zugewiesen werden."
+    }
   },
   "licenses": {
     "title": "Lizenzen",
@@ -334,10 +1111,14 @@
       "teachers": {
         "title": "Lehrkräfte"
       },
+      "classrooms": {
+        "title": "Klassenräume"
+      },
       "storage": {
         "title": "Speicher",
         "using": "Speichernutzung",
         "used": "Verwendet",
+        "unmetered": "Für diesen Tarif ist keine Speicherobergrenze festgelegt — die angezeigte Nutzung stammt aus Live-Daten.",
         "ok": "Innerhalb der Tarifgrenzen.",
         "warning": "Sie nähern sich dem Speicherlimit."
       }
@@ -350,7 +1131,11 @@
   },
   "billing": {
     "title": "Abrechnung",
-    "subtitle": "Laufzeit, Verlängerung und Zahlungsdetails Ihres Abonnements.",
+    "subtitle": "Rechnungen und Zahlungshistorie Ihrer Institution."
+  },
+  "license": {
+    "title": "Lizenz",
+    "subtitle": "Abonnement, Planleistungen und Verlängerung.",
     "noInstitution": "Ihrem Konto ist keine Institution zugeordnet.",
     "invoices": {
       "title": "Rechnungen",
@@ -396,6 +1181,20 @@
   },
   "auditLogs": {
     "title": "Audit-Logs",
-    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen."
+    "subtitle": "Wichtige Aktionen in Ihrer Institution nachvollziehen.",
+    "refresh": "Aktualisieren",
+    "errorTitle": "Audit-Logs konnten nicht geladen werden",
+    "errorDescription": "Audit-Logs konnten nicht geladen werden: {{message}}",
+    "emptyTitle": "Noch keine Audit-Ereignisse",
+    "empty": "Ereignisse erscheinen hier, sobald Aktionen protokolliert wurden.",
+    "table": {
+      "occurredAt": "Zeitpunkt",
+      "actor": "Akteur",
+      "eventType": "Ereignistyp",
+      "subjectType": "Objekttyp",
+      "subjectId": "Objekt-ID",
+      "payload": "Nutzdaten",
+      "metadata": "Metadaten"
+    }
   }
 }

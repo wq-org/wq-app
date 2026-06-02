@@ -1,5 +1,6 @@
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
+import { Tick, Ticks } from '@/components/ui/tick'
 import { cn } from '@/lib/utils'
 
 export type SliderTickMarksProps = {
@@ -24,6 +25,10 @@ export function SliderTickMarks({
   className,
 }: SliderTickMarksProps) {
   const ticks = Array.from({ length: max - min + 1 }, (_, i) => min + i)
+  const tickItems = ticks.map((tick) => ({
+    tick,
+    isMinorTick: (tick - min) % skipInterval !== 0,
+  }))
 
   return (
     <div className={cn('mx-auto grid w-full max-w-sm gap-4', className)}>
@@ -35,25 +40,17 @@ export function SliderTickMarks({
         max={max}
         step={step}
       />
-      <span
-        aria-hidden="true"
-        className="text-muted-foreground flex w-full items-center justify-between gap-1 px-2.5 text-xs font-medium"
-      >
-        {ticks.map((tick) => (
-          <span
+      <Ticks>
+        {tickItems.map(({ tick, isMinorTick }) => (
+          <Tick
             key={tick}
-            className="flex w-0 flex-col items-center justify-center gap-2"
+            minor={isMinorTick}
+            hideLabel={isMinorTick}
           >
-            <span
-              className={cn(
-                'bg-muted-foreground/70 h-1 w-px',
-                (tick - min) % skipInterval !== 0 && 'h-0.5',
-              )}
-            />
-            <span className={cn((tick - min) % skipInterval !== 0 && 'opacity-0')}>{tick}</span>
-          </span>
+            {tick}
+          </Tick>
         ))}
-      </span>
+      </Ticks>
     </div>
   )
 }

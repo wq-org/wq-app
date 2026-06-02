@@ -12,8 +12,6 @@ import { toast } from 'sonner'
 import { AuthCardLayout } from '../components/AuthCardLayout'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
 import { AUTH_GRID_ICONS } from '../constants'
-import { logRoleDebug } from '../utils/roleDebugLog'
-import { Label } from '@/components/ui/label'
 
 type InviteState =
   | { status: 'loading' }
@@ -51,10 +49,6 @@ export function AuthInvitePage() {
           institutionId: result.institutionId,
           membershipRole: result.membershipRole,
         })
-        logRoleDebug('invite: token valid', {
-          membershipRole: result.membershipRole,
-          institutionId: result.institutionId,
-        })
       }
     })
   }, [token])
@@ -73,10 +67,6 @@ export function AuthInvitePage() {
 
     try {
       setPendingRole(inviteState.membershipRole)
-      logRoleDebug('invite: submit start', {
-        setPendingRole: inviteState.membershipRole,
-        inviteMembershipRole: inviteState.membershipRole,
-      })
 
       const response = await signUpUser({
         email: inviteState.email,
@@ -98,16 +88,9 @@ export function AuthInvitePage() {
         // Refresh profile so React state picks up the DB role (institution_admin)
         await refreshProfile()
       } catch (redeemError) {
-        logRoleDebug('invite: redeem failed (profile.role may stay student)', {
-          error: redeemError instanceof Error ? redeemError.message : String(redeemError),
-        })
         console.error('Invite redemption failed:', redeemError)
         // Still proceed to onboarding — invite can be redeemed later on login
       }
-
-      logRoleDebug('invite: navigate /onboarding', {
-        note: 'check prior logs for redeem success vs failure',
-      })
 
       toast.success('Account Created!', {
         description: "Welcome! Let's complete your profile.",
@@ -229,45 +212,45 @@ export function AuthInvitePage() {
           onSubmit={handleSubmit}
           className="flex flex-col gap-4"
         >
-          <Label>Email</Label>
           <FieldInput
             id="email"
             type="email"
             name="email"
-            label="Email"
+            label={t('signUp.email')}
+            placeholder={t('common.placeholder.email')}
             value={inviteState.email}
             onValueChange={() => {}}
             disabled
             inputClassName="bg-muted"
           />
 
-          <Label>{t('signUp.password', { defaultValue: 'Password' })}</Label>
           <FieldInput
             id="password"
             type="password"
             name="password"
-            label="Password"
-            placeholder="Enter your password"
+            label={t('signUp.password')}
+            placeholder={t('common.placeholder.password')}
             value={password}
             onValueChange={setPassword}
             autoComplete="new-password"
             required
           />
 
-          <Label>{t('signUp.repeatPassword', { defaultValue: 'Repeat Password' })}</Label>
           <FieldInput
             id="repeat-password"
             type="password"
             name="repeat-password"
-            label="Repeat Password"
-            placeholder="Repeat your password"
+            label={t('signUp.repeatPassword')}
+            placeholder={t('common.placeholder.repeatPassword')}
             value={repeatPassword}
             onValueChange={setRepeatPassword}
             autoComplete="new-password"
             required
           />
           {repeatPassword && password !== repeatPassword && (
-            <p className="px-1 text-xs text-destructive">Passwords do not match</p>
+            <p className="px-1 text-xs text-destructive">
+              {t('signUp.passwordMismatch', { defaultValue: 'Passwords do not match' })}
+            </p>
           )}
 
           <Button

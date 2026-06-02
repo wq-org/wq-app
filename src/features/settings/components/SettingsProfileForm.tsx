@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
@@ -9,11 +10,13 @@ import { Text } from '@/components/ui/text'
 import { AccentPicker } from '@/components/shared'
 import { settingsCapabilitiesByRole } from '../config/settingsCapabilities'
 import { useSettingsProfileForm } from '../hooks/useSettingsProfileForm'
+import type { Profile } from '@/contexts/user'
 import type { SettingsFormValues, SettingsSaveValues } from '../types/settings.types'
 import { USER_ROLES, type UserRole } from '@/features/auth'
 import type { AvatarOption } from '@/features/onboarding'
 import { SettingsAvatarSection } from './SettingsAvatarSection'
 import { SettingsReadonlyFields } from './SettingsReadonlyFields'
+import { SettingsAppearanceSection } from './SettingsAppearanceSection'
 
 type SettingsProfileFormProps = {
   role: UserRole
@@ -21,6 +24,7 @@ type SettingsProfileFormProps = {
   initialAvatarPath: string
   username: string
   email: string
+  institution?: Profile['institution']
   avatarOptions: AvatarOption[]
   linkedInError: string | null
   isSaving: boolean
@@ -34,6 +38,7 @@ export function SettingsProfileForm({
   initialAvatarPath,
   username,
   email,
+  institution,
   avatarOptions,
   linkedInError,
   isSaving,
@@ -103,13 +108,21 @@ export function SettingsProfileForm({
               {t('profile.sections.profileHint')}
             </Text>
             {capabilities.showRoleHint ? (
-              <Text
-                as="p"
-                variant="body"
-                className="text-xs text-muted-foreground"
-              >
-                {t('profile.sections.roleHint', { role: t(`profile.roles.${role}`) })}
-              </Text>
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <Text
+                  as="span"
+                  variant="body"
+                  className="text-xs text-muted-foreground"
+                >
+                  {t('profile.sections.roleHintPrefix')}
+                </Text>
+                <Badge
+                  variant="secondary"
+                  size="sm"
+                >
+                  {t(`profile.roles.${role}`)}
+                </Badge>
+              </div>
             ) : null}
           </div>
           <div className="mt-4 space-y-3">
@@ -149,6 +162,7 @@ export function SettingsProfileForm({
         <SettingsReadonlyFields
           username={username}
           email={email}
+          institution={institution}
           title={t('profile.sections.accountTitle')}
           hint={t('profile.sections.accountHint')}
           usernameLabel={t('profile.fields.username.label')}
@@ -158,6 +172,8 @@ export function SettingsProfileForm({
           className="w-full md:min-w-[280px] md:flex-1"
         />
       </div>
+
+      <SettingsAppearanceSection />
 
       {showAccentPicker ? (
         <FieldCard className="w-full">

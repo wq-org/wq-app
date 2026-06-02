@@ -1,7 +1,9 @@
+import { $createCodeNode } from '@lexical/code'
 import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
 import { $setBlocksType } from '@lexical/selection'
 import {
   $isListNode,
+  INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
   REMOVE_LIST_COMMAND,
@@ -108,6 +110,19 @@ export const applyQuote = (editor: LexicalEditor) => {
       $setBlocksType(selection, () => $createQuoteNode())
     }
   })
+}
+
+export const applyCodeBlock = (editor: LexicalEditor) => {
+  editor.update(() => {
+    const selection = $getSelection()
+    if ($isRangeSelection(selection)) {
+      $setBlocksType(selection, () => $createCodeNode())
+    }
+  })
+}
+
+export const applyCheckList = (editor: LexicalEditor) => {
+  editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
 }
 
 export const toggleList = (

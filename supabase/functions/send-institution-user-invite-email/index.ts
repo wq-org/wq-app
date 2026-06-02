@@ -11,6 +11,8 @@
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
+import { linkExpiryDurationPhrase } from '../_shared/minutesUntilExpiry.ts'
+
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -105,7 +107,7 @@ Deno.serve(async (req) => {
 
   const { data: invite, error: inviteError } = await supabase
     .from('institution_invites')
-    .select('email, expires_at, accepted_at, institution_id, membership_role')
+    .select('email, expires_at, accepted_at, revoked_at, institution_id, membership_role')
     .eq('token', inviteToken)
     .maybeSingle()
 
@@ -120,6 +122,10 @@ Deno.serve(async (req) => {
 
   if (invite.accepted_at != null) {
     return jsonResponse({ error: 'Invite already accepted' }, 400)
+  }
+
+  if (invite.revoked_at != null) {
+    return jsonResponse({ error: 'Invite revoked' }, 400)
   }
 
   const expiresAt = new Date(invite.expires_at as string)
@@ -188,6 +194,8 @@ Deno.serve(async (req) => {
   const roleLabel = role === 'teacher' ? 'teacher' : 'student'
   const inviteUrl = `${publicSiteUrl}/auth/invite?token=${encodeURIComponent(inviteToken)}`
 
+  const expiryNotice = linkExpiryDurationPhrase(expiresAt)
+
   const subject = `Invitation to join ${displayName} (${roleLabel})`
 
   const textContent = [
@@ -196,7 +204,7 @@ Deno.serve(async (req) => {
     `Open this link to sign up (use ${recipientRaw}):`,
     inviteUrl,
     '',
-    'This link expires on schedule. If you did not expect this email, you can ignore it.',
+    `${expiryNotice} If you did not expect this email, you can ignore it.`,
   ].join('\n')
 
   const htmlContent = `<!DOCTYPE html>
@@ -213,7 +221,8 @@ You have been invited to join <strong>${escapeHtml(displayName)}</strong> as a <
 <div style="text-align:center;margin:0 0 14px;">
 <a href="${escapeHtml(inviteUrl)}" style="display:inline-block;padding:12px 14px;border-radius:10px;background:#007789;color:#fff!important;text-decoration:none;font-size:14px;font-weight:600;">Accept invitation</a>
 </div>
-<p style="margin:0;font-size:12px;color:#6b7280;">If the button does not work, copy this link:<br/><span style="word-break:break-all;color:#374151;">${escapeHtml(inviteUrl)}</span></p>
+<p style="margin:0 0 12px;font-size:12px;color:#6b7280;">If the button does not work, copy this link:<br/><span style="word-break:break-all;color:#374151;">${escapeHtml(inviteUrl)}</span></p>
+<p style="margin:0;font-size:12px;color:#6b7280;">${escapeHtml(expiryNotice)} If you did not expect this email, you can ignore it.</p>
 </td></tr></table></td></tr></table></body></html>`
 
   const brevoRes = await fetch(BREVO_URL, {

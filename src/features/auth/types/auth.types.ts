@@ -44,6 +44,30 @@ export function isSuperAdmin(profile: { role: string | null }): boolean {
   return profile.role === USER_ROLES.SUPER_ADMIN
 }
 
+/** App path prefix for a role (`/teacher`, `/student`, …). Single source for settings, command bar, and nav. */
+export function getRoleRoutePrefix(role: UserRole | null): string | null {
+  if (!role) return null
+  switch (role) {
+    case USER_ROLES.SUPER_ADMIN:
+      return '/super_admin'
+    case USER_ROLES.INSTITUTION_ADMIN:
+      return '/institution_admin'
+    case USER_ROLES.TEACHER:
+      return '/teacher'
+    case USER_ROLES.STUDENT:
+      return '/student'
+    default:
+      return null
+  }
+}
+
+/** Settings URL for the role (`/teacher/settings`, …). */
+export function getRoleSettingsPath(role: UserRole | null): string | null {
+  const prefix = getRoleRoutePrefix(role)
+  if (!prefix) return null
+  return `${prefix}/settings`
+}
+
 /** Map UserRole to dashboard path (URLs use teacher/student/admin, not snake_case). */
 export function getDashboardPathForRole(role: UserRole | null): string {
   if (!role) return '/onboarding'

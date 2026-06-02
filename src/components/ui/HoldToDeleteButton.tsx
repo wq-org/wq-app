@@ -169,15 +169,14 @@ function HoldToDeleteButton({
           isHolding && contentWhenHoldingClass,
         )}
       >
-        {icon ??
-          (!loading ? (
-            <Trash2 className="size-5 shrink-0" />
-          ) : (
-            <Spinner
-              size="sm"
-              color="gray"
-            />
-          ))}
+        {loading ? (
+          <Spinner
+            size="xs"
+            variant={variant === 'delete' || variant === 'destructive' ? 'red' : 'gray'}
+          />
+        ) : (
+          (icon ?? <Trash2 className="size-5 shrink-0" />)
+        )}
 
         <Text
           as="span"

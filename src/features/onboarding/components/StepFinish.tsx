@@ -1,11 +1,10 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { upsertProfile } from '@/features/auth'
-import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
+import { getDashboardPathForRole, type UserRole, upsertProfile } from '@/features/auth'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
-import { SuccessPage } from './SuccessPage'
+import { SuccessDialog } from '@/components/shared'
 import type { StepFinishProps } from '../types/onboarding.types'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +20,8 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
   const [showSuccess, setShowSuccess] = useState(false)
   const [completedRole, setCompletedRole] = useState<string | null>(null)
   const { t } = useTranslation('features.onboarding')
+  const { t: tCommon } = useTranslation('common')
+  const appName = tCommon('app.name')
 
   // Generate signed URL for displaying avatar (accountData.avatar.src is just the path)
   const { url: signedAvatarUrl } = useAvatarUrl(accountData.avatar.src)
@@ -35,12 +36,6 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
     // profile.role is set by handle_new_user (student/teacher) or redeem_institution_invite.
     // pendingRole is the sessionStorage backup captured at invite/signup time.
     const role = pendingRole ?? profile?.role ?? null
-
-    logRoleDebug('StepFinish handleFinish start', {
-      profileRole: profile?.role ?? '(none)',
-      pendingRole: pendingRole ?? '(none)',
-      resolvedRole: role ?? '(none)',
-    })
 
     if (!role) {
       toast.error(t('finish.errors.missingRole'))
@@ -66,11 +61,9 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
       await refreshProfile()
 
       setCompletedRole(role)
+      setIsSubmitting(false)
       setShowSuccess(true)
     } catch (error) {
-      logRoleDebug('StepFinish completion error', {
-        error: error instanceof Error ? error.message : String(error),
-      })
       console.error('Error completing onboarding:', error)
       setIsSubmitting(false)
       toast.error(t('finish.errors.completionTitle'), {
@@ -79,14 +72,28 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
     }
   }
 
+  const successPath =
+    completedRole != null && completedRole !== ''
+      ? getDashboardPathForRole(completedRole as UserRole)
+      : undefined
+
+  function handleSuccessOpenChange(open: boolean) {
+    setShowSuccess(open)
+    if (!open && completedRole) {
+      onFinish()
+    }
+  }
+
   return (
     <>
-      <SuccessPage
-        isOpen={showSuccess}
-        dashboardRole={completedRole}
-        title={t('finish.successDialog.title')}
+      <SuccessDialog
+        open={showSuccess}
+        onOpenChange={handleSuccessOpenChange}
+        title={t('finish.successDialog.title', { appName })}
         description={t('finish.successDialog.description')}
-        onClickHandler={onFinish}
+        buttonDescription={t('finish.successDialog.button')}
+        path={successPath}
+        showConfetti
       />
 
       <div className="flex flex-col gap-8">

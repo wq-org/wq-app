@@ -1,0 +1,15 @@
+{
+  "profile": {
+    "openMenu": "Open profile menu",
+    "license": "License",
+    "editProfile": "Edit profile",
+    "profileUnavailable": "Profile is not available yet.",
+    "noEmail": "No email on file",
+    "noUsername": "No username yet"
+  },
+  "theme": {
+    "openMenu": "Appearance",
+    "light": "Light mode",
+    "dark": "Dark mode"
+  }
+}

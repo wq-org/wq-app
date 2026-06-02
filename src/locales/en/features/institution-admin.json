@@ -5,12 +5,14 @@
     "users": "Users",
     "inviteUsers": "Invite users",
     "faculties": "Faculties",
+    "facultyCreate": "Create structure",
     "facultyProgrammes": "Programmes",
     "facultyCohorts": "Cohorts",
     "facultyClassGroups": "Class groups",
     "classrooms": "Classrooms",
     "licenseUsage": "Usage",
     "gdprRequest": "GDPR requests",
+    "license": "License",
     "billing": "Billing",
     "analytics": "Analytics",
     "cloudStorage": "Cloud storage",
@@ -18,6 +20,22 @@
     "teachers": "Teachers",
     "students": "Students",
     "courses": "Courses"
+  },
+  "components": {
+    "academicYearCombobox": {
+      "empty": "No matching year."
+    }
+  },
+  "assignUsersSheet": {
+    "title": "Assign users",
+    "description": "Select institution members to assign to this offering.",
+    "searchLabel": "Search users",
+    "searchPlaceholder": "Search by name or email…",
+    "loadError": "Could not load users.",
+    "empty": "No users found.",
+    "roleTeacher": "Teacher",
+    "roleStudent": "Student",
+    "roleMember": "Member"
   },
   "shell": {
     "settings": "Settings",
@@ -197,8 +215,27 @@
   "faculties": {
     "title": "Faculties",
     "subtitle": "Organize departments and academic units.",
-    "create": "Create faculty",
-    "createSubtitle": "Set up a new top-level department in a few steps.",
+    "create": "Create structure",
+    "createFaculty": "Create faculty",
+    "createDialog": {
+      "title": "Create faculty",
+      "description": "Add a faculty with a name and optional description.",
+      "fields": {
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Nursing & Health",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Optional description for your team"
+      },
+      "cancel": "Cancel",
+      "submit": "Create faculty",
+      "creating": "Creating…",
+      "validation": {
+        "nameRequired": "Faculty name is required."
+      },
+      "errorGeneric": "Could not create faculty.",
+      "errorNoInstitution": "No institution is associated with your account."
+    },
+    "createSubtitle": "Set up faculty, programmes, cohorts, and class groups in a few guided steps.",
     "empty": "No faculties yet. Create one to get started.",
     "card": {
       "untitled": "Untitled faculty",
@@ -210,30 +247,521 @@
       "programmes": {
         "title": "Programmes",
         "subtitle": "Study programmes attached to faculties in your institution.",
-        "empty": "Programme management UI is coming soon."
+        "createCta": "Create programme",
+        "searchLabel": "Search programmes",
+        "searchPlaceholder": "Search by programme name, description, or faculty…",
+        "loadError": "Could not load programmes.",
+        "emptyTitle": "No programmes yet",
+        "emptyDescription": "Create a faculty with a programme, or add a programme from a faculty page.",
+        "noSearchResults": "No programmes match your search.",
+        "card": {
+          "unknownFaculty": "Unknown faculty",
+          "untitledProgramme": "Untitled programme",
+          "noDescription": "No description",
+          "durationYears_one": "{{count}} year",
+          "durationYears_other": "{{count}} years",
+          "durationUnknown": "Duration not set",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "open": "Open"
+        },
+        "createDialog": {
+          "title": "Create programme",
+          "description": "Add a programme and link it to a faculty.",
+          "facultyLabel": "Faculty",
+          "facultyPlaceholder": "Select a faculty",
+          "titleLabel": "Title",
+          "titlePlaceholder": "e.g. Nursing Assistant",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Describe this programme",
+          "durationYearsLabel": "Duration (years)",
+          "durationYearsPlaceholder": "Select duration…",
+          "validation": {
+            "facultyRequired": "Please select a faculty.",
+            "titleRequired": "Programme title is required."
+          },
+          "cancel": "Cancel",
+          "create": "Create programme",
+          "creating": "Creating...",
+          "errorGeneric": "Could not create programme."
+        }
+      },
+      "facultyProgrammes": {
+        "noFacultyDescription": "No description provided for this faculty.",
+        "missingFacultyId": "Missing faculty identifier.",
+        "facultyNotFound": "This faculty could not be found.",
+        "loadError": "Could not load faculty programmes.",
+        "emptyTitle": "No programmes in this faculty yet",
+        "emptyDescription": "Add a programme to start building cohorts and class groups.",
+        "addProgramme": "Add programme",
+        "searchLabel": "Search programmes",
+        "searchPlaceholder": "Search by programme name or description…",
+        "noSearchResults": "No programmes match your search.",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saving": "Saving...",
+          "saveSuccess": "Faculty settings saved",
+          "saveError": "Could not save faculty settings.",
+          "validation": {
+            "nameRequired": "Faculty name is required."
+          },
+          "fields": {
+            "nameLabel": "Faculty name",
+            "namePlaceholder": "Enter faculty name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter faculty description"
+          },
+          "archiveHoldLabel": "Hold to archive faculty",
+          "archiveDialogTitle": "Archive this faculty",
+          "archiveDialogDescription": "Archiving marks this faculty as inactive for ongoing operations; restoration will be available from admin tools. Nothing is changed yet—this flow is UI only.\n\nOnce archiving is connected, this faculty will be marked archived: it remains visible for records but should not receive new programmes until restored. Underlying programmes and cohorts may stay linked until you manage them separately.",
+          "archiveDialogCancel": "Cancel",
+          "archiveDialogConfirm": "Got it"
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        }
+      },
+      "programmeOfferings": {
+        "titleFallback": "Programme offerings",
+        "subtitle": "Time-bound runs for this programme with their current status.",
+        "addOffering": "Add offering",
+        "loadError": "Could not load programme offerings.",
+        "programmeNotFound": "This programme could not be found in the selected faculty.",
+        "empty": "No offerings exist for this programme yet.",
+        "emptyFiltered": "No offerings match your current filter.",
+        "filterLabel": "Filter offerings",
+        "filterPlaceholder": "Filter by year, term code, or status…",
+        "filterButton": "Apply filter",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saveSuccess": "Programme settings saved",
+          "saveError": "Could not save programme settings.",
+          "archive": "Hold to archive",
+          "archiving": "Archiving...",
+          "archiveSuccess": "Programme archived",
+          "archiveError": "Could not archive programme.",
+          "status": {
+            "active": "Active",
+            "archived": "Archived"
+          },
+          "fields": {
+            "nameLabel": "Programme name",
+            "namePlaceholder": "Enter programme name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter programme description",
+            "durationYearsLabel": "Duration (years)"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        },
+        "offering": {
+          "programme": "Programme",
+          "dateRange": "Date range",
+          "academicYear": "Academic year",
+          "termCode": "Term code",
+          "status": "Status",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "notSet": "Not set"
+        },
+        "cohortsSection": {
+          "title": "Cohorts",
+          "empty": "No cohorts exist for this programme yet."
+        },
+        "createDialog": {
+          "title": "Add programme offering",
+          "description": "Create a time-bound run of this programme.",
+          "fields": {
+            "academicYearLabel": "Academic year",
+            "academicYearPlaceholder": "Search or pick a year…",
+            "termCodeLabel": "Term code",
+            "termCodePlaceholder": "e.g. MD-2028/31",
+            "typicalDateRanges": "Typical programme date ranges in the system",
+            "springCourse": "Spring course:",
+            "autumnCourse": "Autumn course:",
+            "startsAtLabel": "Starts",
+            "endsAtLabel": "Ends",
+            "datePlaceholder": "Pick a date",
+            "statusLabel": "Status",
+            "statusActive": "Active",
+            "statusDraft": "Draft"
+          },
+          "validation": {
+            "academicYearRequired": "Academic year is required."
+          },
+          "cancel": "Cancel",
+          "create": "Create offering",
+          "creating": "Creating..."
+        },
+        "editActiveOffering": {
+          "datesReadOnly": "Start and end dates cannot be changed while the offering is active. Switch to draft to edit dates."
+        },
+        "timeline": {
+          "archiveMenuItem": "Archive offering",
+          "archiveDialogTitle": "Archive this programme offering?",
+          "archiveDialogDescription": "Archiving marks this offering as inactive. It will disappear from the active timeline and appear under the Archived tab. Links to cohorts or class groups are not removed automatically; update or archive those separately if needed.",
+          "archiveDialogOfferingLabel": "Offering: {{term}}",
+          "archiveDialogCancel": "Cancel",
+          "holdToArchive": "Hold to archive"
+        }
       },
       "cohorts": {
         "title": "Cohorts",
         "subtitle": "Intakes and year groups within programmes.",
-        "empty": "Cohort management UI is coming soon."
+        "createCta": "Create Cohort",
+        "searchLabel": "Search cohorts",
+        "searchPlaceholder": "Search by cohort name, description, or programme…",
+        "loadError": "Could not load cohorts.",
+        "emptyTitle": "No cohorts yet",
+        "emptyDescription": "Create a faculty with a cohort, or add a cohort from a programme page.",
+        "noSearchResults": "No cohorts match your search.",
+        "card": {
+          "unknownProgramme": "Unknown programme",
+          "untitledCohort": "Untitled cohort",
+          "noDescription": "No description",
+          "academicYearUnknown": "Year not set",
+          "open": "Open"
+        },
+        "createDialog": {
+          "title": "Create cohort",
+          "description": "Add a cohort and link it to a faculty and programme.",
+          "facultyLabel": "Faculty",
+          "facultyPlaceholder": "Select a faculty",
+          "programmeLabel": "Programme",
+          "programmePlaceholder": "Select a programme",
+          "titleLabel": "Title",
+          "titlePlaceholder": "e.g. MD-2027 or Mode Design — MD-2027",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Describe this cohort",
+          "academicYearLabel": "Academic year",
+          "academicYearPlaceholder": "e.g. 2027",
+          "academicYearHint": "Defaults to the current year or the next year after your latest cohort for this programme.",
+          "syncTitleLabel": "Auto-fill title from programme code and year",
+          "descriptiveTitleLabel": "Include programme name (Programme — PREFIX-YEAR)",
+          "syncDescriptionLabel": "Suggest description from faculty, programme, and cohort",
+          "syncDescriptionHint": "Updates shortly after you change the title or selections (debounced). Turn off to write your own description.",
+          "validation": {
+            "facultyRequired": "Please select a faculty.",
+            "programmeRequired": "Please select a programme.",
+            "titleRequired": "Cohort title is required.",
+            "academicYearRequired": "Academic year is required.",
+            "academicYearInvalid": "Academic year must be a valid year number."
+          },
+          "cancel": "Cancel",
+          "create": "Create cohort",
+          "creating": "Creating..."
+        }
+      },
+      "cohortOfferings": {
+        "titleFallback": "Cohort offerings",
+        "subtitle": "Time-bound runs for this cohort with their current status.",
+        "addOffering": "Add offering",
+        "loadError": "Could not load cohort offerings.",
+        "cohortNotFound": "This cohort could not be found.",
+        "programmeFallback": "Programme",
+        "empty": "No offerings exist for this cohort yet.",
+        "emptyFiltered": "No offerings match your current filter.",
+        "filterLabel": "Filter offerings",
+        "filterPlaceholder": "Filter by status or date…",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saveSuccess": "Cohort settings saved",
+          "saveError": "Could not save cohort settings.",
+          "fields": {
+            "nameLabel": "Cohort name",
+            "namePlaceholder": "Enter cohort name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter cohort description"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        },
+        "offering": {
+          "name": "Name",
+          "programmeOfferingUnknown": "Unknown programme offering",
+          "dateRange": "Date range",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "status": "Status",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "notSet": "Not set",
+          "assignUsers": "Assign users"
+        },
+        "classGroupsSection": {
+          "title": "Class groups",
+          "empty": "No class groups exist for this cohort yet."
+        },
+        "createDialog": {
+          "title": "Add cohort offering",
+          "description": "Create a time-bound run of this cohort linked to a programme offering.",
+          "fields": {
+            "programmeOfferingLabel": "Programme offering",
+            "programmeOfferingPlaceholder": "Select a programme offering",
+            "programmeOfferingEmpty": "No programme offerings available — create one first on the programme page.",
+            "programmeOfferingArchivedSuffix": "archived",
+            "programmeOfferingAlreadyLinkedSuffix": "already linked to this cohort",
+            "startsAtLabel": "Starts",
+            "endsAtLabel": "Ends",
+            "datePlaceholder": "Pick a date",
+            "statusLabel": "Status",
+            "statusActive": "Active",
+            "statusDraft": "Draft",
+            "applyProgrammeOfferingDates": "Use programme offering dates",
+            "selectProgrammeOfferingForDateHints": "Select a programme offering to see the suggested date window.",
+            "programmeOfferingDatesNotSet": "This programme offering has no start/end dates yet — add them on the programme offering first.",
+            "startsAtProgrammeOfferingHint": "Choose a start between {{from}} and {{to}} (programme offering).",
+            "endsAtProgrammeOfferingHint": "Choose an end between {{from}} and {{to}} (programme offering)."
+          },
+          "validation": {
+            "programmeOfferingRequired": "Please select a programme offering.",
+            "noSelectableProgrammeOffering": "Every programme offering for this programme is archived or already linked to this cohort."
+          },
+          "cancel": "Cancel",
+          "create": "Create offering",
+          "creating": "Creating..."
+        },
+        "editDialog": {
+          "title": "Edit cohort offering",
+          "description": "Change the programme offering link, dates, or draft/active status.",
+          "cancel": "Cancel",
+          "save": "Save changes",
+          "saving": "Saving..."
+        },
+        "archiveSuccess": "Cohort offering archived",
+        "archiveError": "Could not archive cohort offering."
       },
       "classGroups": {
         "title": "Class groups",
         "subtitle": "Operational learner groups within cohorts.",
-        "empty": "Class group management UI is coming soon."
+        "createCta": "Create Class Group",
+        "searchLabel": "Search class groups",
+        "searchPlaceholder": "Search by class group name, description, or cohort…",
+        "loadError": "Could not load class groups.",
+        "emptyTitle": "No class groups yet",
+        "emptyDescription": "Create a cohort with a class group, or add a class group from a cohort page.",
+        "noSearchResults": "No class groups match your search.",
+        "card": {
+          "unknownCohort": "Unknown cohort",
+          "untitledClassGroup": "Untitled class group",
+          "noDescription": "No description",
+          "open": "Open"
+        },
+        "createDialog": {
+          "title": "Create class group",
+          "description": "Add a class group and link it to faculty, programme, and cohort.",
+          "facultyLabel": "Faculty",
+          "facultyNoProgrammesSuffix": "no programmes",
+          "facultyPlaceholder": "Select a faculty",
+          "programmeNoCohortsSuffix": "no cohorts",
+          "programmeLabel": "Programme",
+          "programmePlaceholder": "Select a programme",
+          "cohortLabel": "Cohort",
+          "cohortPlaceholder": "Select a cohort",
+          "titleLabel": "Title",
+          "titlePlaceholder": "e.g. NS-1A",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Describe this class group",
+          "suggestNextTitle": "Suggest next title",
+          "syncDescriptionLabel": "Auto-fill description from selection",
+          "syncDescriptionHint": "Description regenerates when you change faculty, programme, cohort (year), or class group title.",
+          "noTitleSuggestionAvailable": "All slots for this prefix are taken or no prefix is available yet.",
+          "validation": {
+            "facultyRequired": "Please select a faculty.",
+            "programmeRequired": "Please select a programme.",
+            "cohortRequired": "Please select a cohort.",
+            "titleRequired": "Class group title is required."
+          },
+          "cancel": "Cancel",
+          "create": "Create class group",
+          "creating": "Creating..."
+        }
+      },
+      "classGroupOfferings": {
+        "titleFallback": "Class group offerings",
+        "subtitle": "Time-bound runs for this class group with their current status.",
+        "addOffering": "Add offering",
+        "loadError": "Could not load class group offerings.",
+        "classGroupNotFound": "This class group could not be found.",
+        "programmeFallback": "Programme",
+        "cohortFallback": "Cohort",
+        "empty": "No offerings exist for this class group yet.",
+        "emptyFiltered": "No offerings match your current filter.",
+        "filterLabel": "Filter offerings",
+        "filterPlaceholder": "Filter by status or date…",
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "settings": {
+          "saveChanges": "Save changes",
+          "saveSuccess": "Class group settings saved",
+          "saveError": "Could not save class group settings.",
+          "fields": {
+            "nameLabel": "Class group name",
+            "namePlaceholder": "Enter class group name",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter class group description"
+          }
+        },
+        "unsavedChanges": {
+          "title": "You have unsaved changes",
+          "description": "Do you want to continue without saving?",
+          "stay": "Stay",
+          "continueAnyway": "Continue anyway"
+        },
+        "offering": {
+          "dateRange": "Date range",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "status": "Status",
+          "statusActive": "Active",
+          "statusInactive": "Inactive",
+          "notSet": "Not set",
+          "assignUsers": "Assign users"
+        },
+        "classroomsSection": {
+          "title": "Classrooms",
+          "empty": "No classrooms for this class group yet."
+        },
+        "createDialog": {
+          "title": "Add class group offering",
+          "description": "Create a time-bound run of this class group linked to a cohort offering.",
+          "fields": {
+            "cohortOfferingLabel": "Cohort offering",
+            "cohortOfferingPlaceholder": "Select a cohort offering",
+            "cohortOfferingEmpty": "No cohort offerings available — create one first on the cohort page.",
+            "startsAtLabel": "Starts",
+            "endsAtLabel": "Ends",
+            "datePlaceholder": "Pick a date",
+            "statusLabel": "Status",
+            "statusActive": "Active",
+            "statusDraft": "Draft"
+          },
+          "validation": {
+            "cohortOfferingRequired": "Please select a cohort offering."
+          },
+          "cancel": "Cancel",
+          "create": "Create offering",
+          "creating": "Creating..."
+        }
       }
     },
     "wizard": {
+      "pageTitle": "Create structure",
       "backToList": "Back to faculties",
+      "help": {
+        "sectionLabels": {
+          "definition": "Definition",
+          "example": "Example",
+          "exampleValues": "Example values",
+          "reason": "Reason"
+        },
+        "faculty": {
+          "title": "Faculty",
+          "definition": "The top-level organizational unit of your institution. A faculty groups related training programs.",
+          "exampleTitle": "Nursing & Health",
+          "exampleValues": [
+            "Name: Nursing & Health",
+            "Description: All nursing and medical training tracks of the district hospital group"
+          ]
+        },
+        "programme": {
+          "title": "Programme",
+          "definition": "A specific training track inside a faculty. It defines what is taught, independent from when it runs or who attends.",
+          "exampleTitle": "Nursing Specialist Training",
+          "exampleValues": [
+            "Description: General nursing training aligned with legal standards",
+            "Duration: 3 years",
+            "Progression: Yearly",
+            "Other examples: OTA training, sterile processing, nursing assistant training"
+          ]
+        },
+        "programmeOffering": {
+          "title": "Programme offering",
+          "definition": "A concrete time-bound run of a programme. Here you define when this programme run starts and ends.",
+          "exampleTitle": "PF-2025",
+          "exampleValues": [
+            "Academic year: 2025",
+            "Term code: PF-2025",
+            "Start date: 01.09.2025",
+            "End date: 30.06.2028",
+            "Status: Active"
+          ]
+        },
+        "cohort": {
+          "title": "Year group",
+          "definition": "A concrete group of trainees starting together. This is the human group that moves through the programme together.",
+          "exampleTitle": "Year group 2025",
+          "exampleValues": ["Name: Year group 2025", "Academic year: 2025"]
+        },
+        "cohortOffering": {
+          "title": "Year group offering",
+          "definition": "The time-bound assignment of a year group to a programme offering. It defines how long this group is active in this run.",
+          "exampleTitle": "Year group 2025 in PF-2025",
+          "exampleValues": ["Start date: 01.09.2025", "End date: 30.06.2028", "Status: Active"],
+          "reason": "Separate from programme offering because a year group can start later or run on a different timeline."
+        },
+        "classGroup": {
+          "title": "Class group",
+          "definition": "The operational unit inside a year group - usually one class of about 15 to 25 trainees.",
+          "exampleTitle": "PF-A 2025",
+          "exampleValues": [
+            "Description: First class of year group 2025 at Reutlingen campus",
+            "If there are 40 trainees: PF-A 2025 and PF-B 2025"
+          ]
+        },
+        "classGroupOffering": {
+          "title": "Class group offering",
+          "definition": "The active period in which this class group is actually taught. Timetables, rooms and teachers connect here later.",
+          "exampleTitle": "PF-A 2025 in training year 1",
+          "exampleValues": ["Start date: 01.09.2025", "End date: 31.08.2026", "Status: Active"],
+          "reason": "In training year 2, create a new class group offering with a new period, for example 01.09.2026 to 31.08.2027."
+        }
+      },
       "steps": {
         "faculty": "Faculty",
         "programme": "Programme",
-        "programmeOffering": "Offering"
+        "programmeOffering": "Programme Offering",
+        "cohort": "Cohort",
+        "cohortOffering": "Cohort Offering",
+        "classGroup": "Class Group",
+        "classGroupOffering": "Class Group Offering",
+        "summary": "Summary"
       },
       "actions": {
         "previous": "Previous",
         "next": "Next",
-        "finish": "Create faculty"
+        "finish": "Create structure",
+        "finishing": "Creating...",
+        "autoSuggestFacultyDescription": "Suggest faculty description",
+        "autoSuggestProgrammeDescription": "Suggest programme description",
+        "autoSuggestClassGroupDescription": "Suggest class group description"
       },
       "fields": {
         "nameLabel": "Name",
@@ -260,14 +788,96 @@
       "offering": {
         "intro": "Define one or more programme offerings (academic year / term window). Values are saved when API wiring is ready.",
         "academicYearLabel": "Academic year",
+        "academicYearPlaceholder": "Search or pick a year…",
         "termCodeLabel": "Term code",
-        "termCodePlaceholder": "e.g. 2026S1",
+        "termCodePlaceholder": "e.g. MD-2028/31",
+        "termCodeHint": "Letters, digits, _, -, /. Typically PREFIX-START/end (e.g. MD-2028/31) or legacy PREFIX-YEAR.",
         "statusActive": "Active",
         "statusDraft": "Draft",
+        "statusArchived": "Archived",
+        "startsAtLabel": "Starts",
+        "endsAtLabel": "Ends",
+        "datePlaceholder": "Pick a date",
         "dateRangeLabel": "Starts / ends",
         "dateRangePlaceholder": "Pick dates",
         "addAnother": "Add offering",
         "remove": "Remove"
+      },
+      "cohort": {
+        "intro": "Name the intake or year group within this programme.",
+        "nameLabel": "Cohort name",
+        "namePlaceholder": "e.g. Cohort 2026",
+        "academicYearLabel": "Academic year",
+        "academicYearPlaceholder": "Search or pick a year…"
+      },
+      "cohortOffering": {
+        "intro": "Define the calendar window for this cohort.",
+        "addAnother": "Add offering",
+        "remove": "Remove",
+        "startsAtLabel": "Starts",
+        "endsAtLabel": "Ends",
+        "datePlaceholder": "Pick a date",
+        "statusActive": "Active",
+        "statusDraft": "Draft"
+      },
+      "summary": {
+        "intro": "Review all configured entries before creating this faculty structure.",
+        "rows": {
+          "faculty": "Faculty",
+          "programme": "Programme",
+          "programmeDuration": "Programme duration",
+          "progression": "Progression",
+          "cohort": "Cohort",
+          "cohortAcademicYear": "Cohort academic year",
+          "classGroup": "Class group"
+        },
+        "columns": {
+          "index": "#",
+          "label": "Label",
+          "status": "Status",
+          "startsAt": "Start",
+          "endsAt": "End"
+        },
+        "sections": {
+          "programmeOfferings": "Programme offerings",
+          "cohortOfferings": "Cohort offerings",
+          "classGroupOfferings": "Class group offerings"
+        },
+        "labels": {
+          "offeringNumber": "Offering {{count}}"
+        }
+      },
+      "submit": {
+        "missingInstitution": "No institution context loaded for your account.",
+        "successTitle": "Structure created",
+        "successDescription": "{{facultyName}} and its structure were created successfully.",
+        "successAppendTitle": "Programme structure created",
+        "successAppendDescription": "New programme and related structure were added for {{facultyName}}.",
+        "errorFallback": "Could not create faculty structure"
+      },
+      "prefill": {
+        "facultyNotFound": "That faculty does not exist or you cannot access it.",
+        "loadFailed": "Could not load faculty details."
+      },
+      "classGroup": {
+        "intro": "Name the class that learners will be assigned to.",
+        "suggestionsLabel": "Suggestions based on your programme — click to select or type a custom name below.",
+        "showMore": "Show year groups 3 & 4",
+        "showLess": "Show less",
+        "nameLabel": "Class group name",
+        "namePlaceholder": "e.g. ML-3A",
+        "descriptionLabel": "Description (optional)",
+        "descriptionPlaceholder": "e.g. Morning group, 28 learners."
+      },
+      "classGroupOffering": {
+        "intro": "Define the calendar window for this class group.",
+        "addAnother": "Add offering",
+        "remove": "Remove",
+        "startsAtLabel": "Starts",
+        "endsAtLabel": "Ends",
+        "datePlaceholder": "Pick a date",
+        "statusActive": "Active",
+        "statusDraft": "Draft"
       }
     },
     "hierarchy": {
@@ -295,7 +905,174 @@
   },
   "classrooms": {
     "title": "Classrooms",
-    "subtitle": "View and manage classrooms linked to your institution."
+    "subtitle": "View and manage classrooms linked to your institution.",
+    "searchLabel": "Search classrooms",
+    "searchPlaceholder": "Search by title, class group, or status…",
+    "loadError": "Could not load classrooms.",
+    "emptyTitle": "No classrooms yet",
+    "emptyDescription": "Classrooms appear when they are created for a class group.",
+    "noSearchResults": "No classrooms match your search.",
+    "addClassroom": "Add classroom",
+    "card": {
+      "unknownClassGroup": "Unknown class group",
+      "untitledClassroom": "Untitled classroom",
+      "open": "Open",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "updatedAt": "Last updated {{date}}",
+      "deactivatedAt": "Deactivated {{date}}"
+    },
+    "createDialog": {
+      "title": "Add classroom",
+      "description": "Create a classroom with a class group and offering. The primary teacher is optional.",
+      "cancel": "Cancel",
+      "create": "Create classroom",
+      "creating": "Creating...",
+      "fields": {
+        "titleLabel": "Classroom title",
+        "titlePlaceholder": "Enter classroom title",
+        "classGroupLabel": "Class group",
+        "classGroupPlaceholder": "Search class groups",
+        "offeringLabel": "Class group offering",
+        "teacherLabel": "Primary teacher (optional)",
+        "teacherPlaceholder": "Search teachers"
+      },
+      "classGroup": {
+        "empty": "No class groups found."
+      },
+      "offering": {
+        "empty": "No offerings available for this class group.",
+        "noneSelected": "Select an offering"
+      },
+      "teacher": {
+        "empty": "No active teachers found."
+      },
+      "validation": {
+        "titleRequired": "A classroom title is required.",
+        "classGroupRequired": "Please select a class group.",
+        "offeringRequired": "Please select a class group offering."
+      },
+      "suggestions": {
+        "label": "Suggestions:"
+      }
+    },
+    "detail": {
+      "back": "Back to classrooms",
+      "notFound": "Classroom not found.",
+      "tabs": {
+        "members": "Members",
+        "settings": "Settings"
+      },
+      "mainTeacher": {
+        "title": "Main teacher",
+        "description": "Primary teacher assigned to this classroom.",
+        "role": "Main teacher",
+        "unassigned": "Unassigned",
+        "noEmail": "No email available",
+        "edit": "Edit",
+        "assign": "Assign",
+        "reassign": "Reassign",
+        "remove": "Remove"
+      },
+      "coTeachers": {
+        "title": "Co-teachers",
+        "description": "Co-teachers can read the roster, manage course links, and award rewards or points in this classroom.",
+        "add": "Add Co-Teacher",
+        "empty": "No co-teachers assigned yet.",
+        "edit": "Edit",
+        "remove": "Remove",
+        "removeNamed": "Remove {{name}}"
+      },
+      "assignActions": {
+        "assignCoTeachers": "Assign Co-Teachers",
+        "assignStudents": "Assign Students"
+      }
+    },
+    "assignCoTeachersDialog": {
+      "title": "Assign co-teachers",
+      "description": "Pick one or more teachers in your institution to assign as co-teachers for this classroom.",
+      "searchPlaceholder": "Search teachers",
+      "empty": "No eligible teachers available.",
+      "cancel": "Cancel",
+      "submit": "Assign",
+      "submitting": "Assigning..."
+    },
+    "assignStudentsDialog": {
+      "title": "Assign students",
+      "description": "Pick one or more students in your institution to enrol in this classroom.",
+      "searchPlaceholder": "Search students",
+      "empty": "No eligible students available.",
+      "cancel": "Cancel",
+      "submit": "Assign",
+      "submitting": "Assigning..."
+    },
+    "reassignMainTeacherDialog": {
+      "title": "Reassign main teacher",
+      "description": "Select a teacher to assign as the main teacher for this classroom.",
+      "searchPlaceholder": "Search teachers",
+      "empty": "No other teachers available.",
+      "cancel": "Cancel",
+      "submit": "Reassign",
+      "submitting": "Reassigning..."
+    },
+    "addCoTeacherDialog": {
+      "title": "Add co-teacher",
+      "description": "Pick a teacher in your institution to assign as a co-teacher for this classroom.",
+      "searchPlaceholder": "Search teachers",
+      "empty": "No eligible teachers available.",
+      "cancel": "Cancel",
+      "submit": "Add co-teacher",
+      "submitting": "Adding..."
+    },
+    "settings": {
+      "titleLabel": "Classroom title",
+      "titlePlaceholder": "Enter classroom title",
+      "mainTeacherLabel": "Main teacher",
+      "mainTeacherUnassigned": "Unassigned",
+      "unassign": "Unassign",
+      "reassign": "Reassign",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "saveError": "Could not save changes."
+    },
+    "members": {
+      "title": "Members",
+      "assignUser": "Assign user",
+      "empty": "No members in this classroom yet.",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "actions": "Actions"
+      },
+      "roles": {
+        "student": "Student",
+        "co_teacher": "Co-teacher",
+        "teacher": "Teacher",
+        "main_teacher": "Main teacher"
+      },
+      "kickOut": "Remove from classroom"
+    },
+    "assignDialog": {
+      "title": "Assign users to classroom",
+      "description": "Search teachers and students and assign them to this classroom.",
+      "searchTeachersPlaceholder": "Search teachers",
+      "searchStudentsPlaceholder": "Search students",
+      "coTeachersLabel": "Co-teachers",
+      "mainTeacherLabel": "Main teacher (if unassigned)",
+      "searchMainTeacherPlaceholder": "Search to assign main teacher",
+      "studentsLabel": "Students",
+      "empty": "No active users found.",
+      "emptyDescription": "Invite or activate users in your institution to assign them here.",
+      "noTeachers": "No teachers available.",
+      "noStudents": "No students available.",
+      "alreadyAssigned": "Already in classroom",
+      "cancel": "Cancel",
+      "assign": "Assign",
+      "assigning": "Assigning...",
+      "noChanges": "Select at least one new user to assign.",
+      "partialFailure": "Some users could not be assigned."
+    }
   },
   "licenses": {
     "title": "Licenses",
@@ -334,10 +1111,14 @@
       "teachers": {
         "title": "Teachers"
       },
+      "classrooms": {
+        "title": "Classrooms"
+      },
       "storage": {
         "title": "Storage",
         "using": "Using Storage",
         "used": "Used",
+        "unmetered": "No storage cap is set for this plan — reported usage is still from your live data.",
         "ok": "Within plan limits.",
         "warning": "Approaching the storage limit."
       }
@@ -350,7 +1131,11 @@
   },
   "billing": {
     "title": "Billing",
-    "subtitle": "Subscription term, renewal and payment details.",
+    "subtitle": "Invoices and payment history for your institution."
+  },
+  "license": {
+    "title": "License",
+    "subtitle": "Subscription, plan entitlements, and renewal details.",
     "noInstitution": "No institution associated with your account.",
     "invoices": {
       "title": "Invoices",
@@ -396,6 +1181,20 @@
   },
   "auditLogs": {
     "title": "Audit logs",
-    "subtitle": "Review important actions across your institution."
+    "subtitle": "Review important actions across your institution.",
+    "refresh": "Refresh",
+    "errorTitle": "Could not load audit logs",
+    "errorDescription": "Loading audit logs failed: {{message}}",
+    "emptyTitle": "No audit events yet",
+    "empty": "Events will appear here once actions are recorded.",
+    "table": {
+      "occurredAt": "Occurred at",
+      "actor": "Actor",
+      "eventType": "Event type",
+      "subjectType": "Subject type",
+      "subjectId": "Subject ID",
+      "payload": "Payload",
+      "metadata": "Metadata"
+    }
   }
 }

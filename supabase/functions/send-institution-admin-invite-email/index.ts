@@ -13,6 +13,8 @@
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
+import { linkExpiryDurationPhrase } from '../_shared/minutesUntilExpiry.ts'
+
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -45,16 +47,19 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
-  if (
-    !brevoKey ||
-    !senderEmail ||
-    !senderName ||
-    !publicSiteUrlRaw ||
-    !supabaseUrl ||
-    !supabaseAnonKey
-  ) {
-    console.error('send-institution-admin-invite-email: missing required environment configuration')
-    return jsonResponse({ error: 'Server configuration error' }, 500)
+  const missingConfigFields = [
+    !brevoKey ? 'INSTITUTION_ADMIN_INVITE_KEY' : null,
+    !senderEmail ? 'BREVO_SENDER_EMAIL' : null,
+    !senderName ? 'BREVO_SENDER_NAME' : null,
+    !publicSiteUrlRaw ? 'PUBLIC_SITE_URL' : null,
+    !supabaseUrl ? 'SUPABASE_URL' : null,
+    !supabaseAnonKey ? 'SUPABASE_ANON_KEY' : null,
+  ].filter((field): field is string => Boolean(field))
+
+  if (missingConfigFields.length > 0) {
+    const errorMessage = `Missing required environment configuration: ${missingConfigFields.join(', ')}`
+    console.error(`send-institution-admin-invite-email: ${errorMessage}`)
+    return jsonResponse({ error: errorMessage }, 500)
   }
 
   const publicSiteUrl = publicSiteUrlRaw.replace(/\/$/, '')
@@ -109,7 +114,7 @@ Deno.serve(async (req) => {
 
   const { data: invite, error: inviteError } = await supabase
     .from('institution_invites')
-    .select('email, expires_at, accepted_at, institution_id')
+    .select('email, expires_at, accepted_at, revoked_at, institution_id')
     .eq('token', inviteToken)
     .maybeSingle()
 
@@ -119,6 +124,10 @@ Deno.serve(async (req) => {
 
   if (invite.accepted_at != null) {
     return jsonResponse({ error: 'Invite already accepted' }, 400)
+  }
+
+  if (invite.revoked_at != null) {
+    return jsonResponse({ error: 'Invite revoked' }, 400)
   }
 
   const expiresAt = new Date(invite.expires_at as string)
@@ -149,6 +158,8 @@ Deno.serve(async (req) => {
 
   const inviteUrl = `${publicSiteUrl}/auth/invite?token=${encodeURIComponent(inviteToken)}`
 
+  const expiryNotice = linkExpiryDurationPhrase(expiresAt)
+
   const subject = `Invitation: administer ${displayName}`
 
   const textContent = [
@@ -157,7 +168,7 @@ Deno.serve(async (req) => {
     `Open this link to sign up (use ${adminEmailRaw}):`,
     inviteUrl,
     '',
-    'This link expires soon. If you did not expect this email, you can ignore it.',
+    `${expiryNotice} If you did not expect this email, you can ignore it.`,
   ].join('\n')
 
   const htmlContent = `<!DOCTYPE html>
@@ -301,7 +312,7 @@ Deno.serve(async (req) => {
                     color:#6b7280;
                   "
                 >
-                  This link expires soon. If you did not expect this email, you can ignore it.
+                  ${escapeHtml(expiryNotice)} If you did not expect this email, you can ignore it.
                 </p>
               </td>
             </tr>
@@ -326,8 +337,9 @@ Deno.serve(async (req) => {
       htmlContent,
       textContent,
       tags: ['institution_admin_invite'],
+      // Per-send key: same invite token must allow intentional resends (Brevo dedupes on key).
       headers: {
-        'Idempotency-Key': inviteToken,
+        'Idempotency-Key': `${inviteToken}:${crypto.randomUUID()}`,
       },
     }),
   })

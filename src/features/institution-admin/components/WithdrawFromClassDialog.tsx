@@ -55,7 +55,7 @@ export function WithdrawFromClassDialog({
           </Button>
           <Button
             type="button"
-            variant="darkblue"
+            variant="delete"
             onClick={onConfirmWithdraw}
           >
             {t('users.withdrawFromClassDialog.confirmButton')}

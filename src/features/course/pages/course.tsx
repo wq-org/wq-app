@@ -9,8 +9,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { EmptyTopicsView } from '@/features/course'
-import { TopicForm } from '@/features/topic'
-import { TopicsToolbar } from '@/features/topic'
+import { TopicForm, TopicFilter } from '@/features/topic'
 import { TopicCardList } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { TOPIC_SEARCH_FIELDS } from '@/features/topic'
@@ -56,18 +55,18 @@ const Course = () => {
 
   if (!courseId) {
     return (
-      <Empty className="w-full rounded-xl border border-dashed border-gray-200 p-6 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
+      <Empty className="w-full rounded-xl border border-dashed border-border p-6 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
         <EmptyHeader>
           <EmptyMedia
             variant="icon"
-            className="border border-gray-200 bg-gray-50 text-gray-400"
+            className="border border-border bg-muted text-muted-foreground"
           >
-            <MessageSquareWarning className="h-8 w-8 text-gray-400" />
+            <MessageSquareWarning className="h-8 w-8 text-muted-foreground" />
           </EmptyMedia>
-          <EmptyTitle className="text-sm font-normal text-gray-500">
+          <EmptyTitle className="text-sm font-normal text-muted-foreground">
             {t('page.emptyState.title')}
           </EmptyTitle>
-          <EmptyDescription className="text-xs text-gray-400">
+          <EmptyDescription className="text-xs text-muted-foreground/80">
             {t('page.emptyState.description')}
           </EmptyDescription>
         </EmptyHeader>
@@ -95,7 +94,7 @@ const Course = () => {
       </Text>
 
       <div className="w-full min-w-0">
-        <TopicsToolbar
+        <TopicFilter
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
         />
@@ -104,8 +103,9 @@ const Course = () => {
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <Spinner
-            variant="gray"
-            size="md"
+            variant="darkblue"
+            size="xs"
+            className="shrink-0"
           />
         </div>
       ) : filteredTopics.length === 0 ? (

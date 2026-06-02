@@ -5,14 +5,17 @@ import * as Tooltip from '@radix-ui/react-tooltip'
 import * as Separator from '@radix-ui/react-separator'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { X } from 'lucide-react'
 import { gsap } from 'gsap'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type {
   CommandBarItem,
   CommandBarGroup,
   ActionId,
+  AddType,
   CommandPaletteProps,
   CommandRoleContext,
 } from '../types/command-bar.types'
@@ -25,6 +28,11 @@ import { CommandFeedbackForm } from './CommandFeedbackDialog'
 import { CommandUploadDialog } from './CommandUploadDialog'
 import { CommandAddDialog } from './CommandAddDialog'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
+import {
+  OPEN_COMMAND_ADD_EVENT,
+  OPEN_COMMAND_UPLOAD_EVENT,
+  type OpenCommandAddEventDetail,
+} from '../constants/commandPaletteEvents'
 
 const activeStyles = {
   text: 'text-blue-500',
@@ -49,15 +57,14 @@ export function CommandPalette({
   onFilesUploaded,
 }: CommandPaletteProps) {
   const [open, setOpen] = useState(false)
-  const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [activeDialog, setActiveDialog] = useState<ActionId | undefined>(undefined)
+  const [addInitialType, setAddInitialType] = useState<AddType | undefined>(undefined)
   const [isVisible, setIsVisible] = useState(true)
   const paletteRef = useRef<HTMLDivElement>(null)
   const notchRef = useRef<HTMLButtonElement>(null)
   const actionsTrackRef = useRef<HTMLDivElement>(null)
   const activeIndicatorRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({})
-  const hoverResetTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
 
   const showPalette = useCallback(() => {
     if (!paletteRef.current) return
@@ -147,52 +154,45 @@ export function CommandPalette({
 
     return commandBarGroup.find((group) => group.id === groupId) ?? commandBarGroup[0]
   }, [commandBarContext, roleForGroups, commandBarGroup])
-  const displayedUserItems = useMemo(
-    () => commandBarGroup.find((group) => group.id === 'user')?.items ?? [],
-    [commandBarGroup],
-  )
-  // Chat symbol temporarily hidden (feature coming soon)
-  const roleBasedUserCommands = useMemo(
-    () => (primaryGroup?.items ?? []).filter((item) => item.id !== 'chat'),
-    [primaryGroup],
-  )
-  const leadingPrimaryItems = useMemo(
-    () => roleBasedUserCommands.slice(0, 3),
-    [roleBasedUserCommands],
-  )
-  const trailingPrimaryItems = useMemo(
-    () => roleBasedUserCommands.slice(3),
-    [roleBasedUserCommands],
-  )
-  const visibleActionItems = useMemo(
-    () => [...roleBasedUserCommands, ...displayedUserItems],
-    [roleBasedUserCommands, displayedUserItems],
-  )
+  const primaryItems = useMemo(() => primaryGroup?.items ?? [], [primaryGroup])
+  const primaryChunks = useMemo(() => {
+    const chunkSize = 3
+    const chunks: CommandBarItem[][] = []
+    for (let i = 0; i < primaryItems.length; i += chunkSize) {
+      chunks.push(primaryItems.slice(i, i + chunkSize))
+    }
+    return chunks
+  }, [primaryItems])
   const defaultSelectedId = useMemo(
-    () => getDefaultSelectedCommandId(visibleActionItems, location.pathname),
-    [visibleActionItems, location.pathname],
+    () => getDefaultSelectedCommandId(primaryItems, location.pathname),
+    [primaryItems, location.pathname],
   )
   const [selectedId, setSelectedId] = useState<string>(defaultSelectedId)
-  const activeId = highlightedId ?? selectedId
+  const activeId = selectedId
 
-  const clearScheduledHoverReset = useCallback(() => {
-    if (!hoverResetTimeoutRef.current) return
-    window.clearTimeout(hoverResetTimeoutRef.current)
-    hoverResetTimeoutRef.current = null
+  useEffect(() => {
+    const onOpenAdd = (event: Event) => {
+      const customEvent = event as CustomEvent<OpenCommandAddEventDetail>
+      setActiveDialog('add')
+      setAddInitialType(customEvent.detail?.initialType)
+      setOpen(true)
+    }
+    const onOpenUpload = () => {
+      setActiveDialog('upload')
+      setOpen(true)
+    }
+    window.addEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
+    window.addEventListener(OPEN_COMMAND_UPLOAD_EVENT, onOpenUpload)
+    return () => {
+      window.removeEventListener(OPEN_COMMAND_ADD_EVENT, onOpenAdd)
+      window.removeEventListener(OPEN_COMMAND_UPLOAD_EVENT, onOpenUpload)
+    }
   }, [])
-
-  const scheduleHoverReset = useCallback(() => {
-    clearScheduledHoverReset()
-    hoverResetTimeoutRef.current = window.setTimeout(() => {
-      setHighlightedId(null)
-      hoverResetTimeoutRef.current = null
-    }, 140)
-  }, [clearScheduledHoverReset])
 
   // School (students) and Todos tabs commented out in dashboard-config.ts for teacher + student
 
   useEffect(() => {
-    const validIds = new Set(visibleActionItems.map((item) => item.id))
+    const validIds = new Set(primaryItems.map((item) => item.id))
 
     Object.keys(itemRefs.current).forEach((id) => {
       if (!validIds.has(id)) {
@@ -200,18 +200,14 @@ export function CommandPalette({
       }
     })
 
-    const routeMatchedId = visibleActionItems.find((item) =>
-      matchesRoute(item, location.pathname),
-    )?.id
+    const routeMatchedId = primaryItems.find((item) => matchesRoute(item, location.pathname))?.id
 
     setSelectedId((previous) => {
       if (routeMatchedId) return routeMatchedId
       if (previous && validIds.has(previous)) return previous
       return defaultSelectedId
     })
-
-    setHighlightedId((previous) => (previous && validIds.has(previous) ? previous : null))
-  }, [defaultSelectedId, location.pathname, visibleActionItems])
+  }, [defaultSelectedId, location.pathname, primaryItems])
 
   useLayoutEffect(() => {
     const activeIndicator = activeIndicatorRef.current
@@ -253,15 +249,13 @@ export function CommandPalette({
       ease: 'power2.out',
       overwrite: 'auto',
     })
-  }, [activeId, commandBarContext, isVisible, roleForGroups, visibleActionItems])
+  }, [activeId, commandBarContext, isVisible, roleForGroups, primaryItems])
 
-  const clearFocusHighlightIfOutsideTrack = useCallback((nextTarget: EventTarget | null) => {
-    const nextNode = nextTarget instanceof Node ? nextTarget : null
-    if (nextNode && actionsTrackRef.current?.contains(nextNode)) return
-    setHighlightedId(null)
-  }, [])
-
-  useEffect(() => clearScheduledHoverReset, [clearScheduledHoverReset])
+  const itemButtonClass = (isItemActive: boolean) =>
+    cn(
+      'relative z-10 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-transparent bg-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+      isItemActive ? activeStyles.text : 'text-muted-foreground',
+    )
 
   const renderCommandItem = (item: CommandBarItem) => {
     const Icon = item.icon
@@ -276,20 +270,11 @@ export function CommandPalette({
             }}
             data-command-item={item.id}
             value={item.id}
-            onMouseEnter={() => {
-              clearScheduledHoverReset()
-              setHighlightedId(item.id)
-            }}
-            onFocus={() => setHighlightedId(item.id)}
-            onBlur={(event) => clearFocusHighlightIfOutsideTrack(event.relatedTarget)}
             onClick={() => {
               setSelectedId(item.id)
               handleItemClick(item)
             }}
-            className={cn(
-              'relative z-10 inline-flex h-14 w-14 items-center justify-center rounded-full border border-transparent bg-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-              isItemActive ? activeStyles.text : 'text-muted-foreground hover:text-foreground',
-            )}
+            className={itemButtonClass(isItemActive)}
             aria-label={t(item.labelKey)}
           >
             <Icon className="h-6 w-6" />
@@ -310,33 +295,59 @@ export function CommandPalette({
     )
   }
 
+  const renderChunkRow = (chunk: readonly CommandBarItem[], chunkIndex: number) => {
+    return (
+      <div className="flex items-center gap-3">
+        <ToggleGroup.Root
+          type="single"
+          value={selectedId}
+          onValueChange={(value) => {
+            if (value) setSelectedId(value)
+          }}
+          orientation="horizontal"
+          aria-label={
+            chunkIndex === 0
+              ? 'Primary command actions'
+              : `Primary command actions ${chunkIndex + 1}`
+          }
+          className="flex items-center gap-3"
+        >
+          {chunk.map((item) => renderCommandItem(item))}
+        </ToggleGroup.Root>
+      </div>
+    )
+  }
+
   function handleOnClickSearchDialog() {
     setActiveDialog('search')
     setOpen(true)
-    console.log('Search dialog triggered')
   }
 
   function handleOnClickUploadDialog() {
     setActiveDialog('upload')
     setOpen(true)
-    console.log('Upload dialog triggered')
   }
 
   function handleOnClickFeedbackDialog() {
     setActiveDialog('feedback')
     setOpen(true)
-    console.log('Feedback dialog triggered')
   }
 
   function handleOnClickAddNewDialog() {
     setActiveDialog('add')
+    setAddInitialType(undefined)
     setOpen(true)
-    console.log('Add new dialog triggered')
+  }
+
+  function handleCloseOverlayDialog() {
+    setOpen(false)
+    setActiveDialog(undefined)
+    setAddInitialType(undefined)
   }
 
   const handleItemClick = (item: CommandBarItem) => {
-    // Dispatch custom event for pan/select actions
-    if (item.actionId === 'pan' || item.actionId === 'select' || item.actionId === 'home') {
+    // Dispatch custom event for canvas tools (game-studio editor listens for pan/select)
+    if (item.actionId === 'pan' || item.actionId === 'select') {
       window.dispatchEvent(
         new CustomEvent('command-action', {
           detail: { actionId: item.actionId },
@@ -393,8 +404,6 @@ export function CommandPalette({
               <div
                 ref={actionsTrackRef}
                 className="relative"
-                onMouseEnter={clearScheduledHoverReset}
-                onMouseLeave={() => scheduleHoverReset()}
               >
                 <div
                   ref={activeIndicatorRef}
@@ -406,64 +415,18 @@ export function CommandPalette({
                 />
 
                 <div className="relative z-10 flex items-center gap-3">
-                  {/* First group: first three items */}
-                  <ToggleGroup.Root
-                    type="single"
-                    value={selectedId}
-                    onValueChange={(value) => {
-                      if (value) setSelectedId(value)
-                    }}
-                    orientation="horizontal"
-                    aria-label="primary actions"
-                    className="flex items-center gap-3"
-                  >
-                    {leadingPrimaryItems.map(renderCommandItem)}
-                  </ToggleGroup.Root>
-
-                  {/* Separator after third icon */}
-                  {trailingPrimaryItems.length > 0 && (
-                    <Separator.Root
-                      decorative
-                      orientation="vertical"
-                      className="mx-2 h-12 w-px bg-border"
-                    />
-                  )}
-
-                  {/* Remaining primary items */}
-                  <ToggleGroup.Root
-                    type="single"
-                    value={selectedId}
-                    onValueChange={(value) => {
-                      if (value) setSelectedId(value)
-                    }}
-                    orientation="horizontal"
-                    aria-label="primary actions continued"
-                    className="flex items-center gap-3"
-                  >
-                    {trailingPrimaryItems.map(renderCommandItem)}
-                  </ToggleGroup.Root>
-
-                  {trailingPrimaryItems.length > 0 && (
-                    <Separator.Root
-                      decorative
-                      orientation="vertical"
-                      className="mx-2 h-12 w-px bg-border"
-                    />
-                  )}
-
-                  {/* System group */}
-                  <ToggleGroup.Root
-                    type="single"
-                    value={selectedId}
-                    onValueChange={(value) => {
-                      if (value) setSelectedId(value)
-                    }}
-                    orientation="horizontal"
-                    aria-label="system actions"
-                    className="flex items-center gap-3"
-                  >
-                    {displayedUserItems.map(renderCommandItem)}
-                  </ToggleGroup.Root>
+                  {primaryChunks.map((chunk, chunkIndex) => (
+                    <Fragment key={chunk.map((i) => i.id).join('-')}>
+                      {chunkIndex > 0 ? (
+                        <Separator.Root
+                          decorative
+                          orientation="vertical"
+                          className="mx-2 h-12 w-px bg-border"
+                        />
+                      ) : null}
+                      {renderChunkRow(chunk, chunkIndex)}
+                    </Fragment>
+                  ))}
                 </div>
               </div>
             </Toolbar.Root>
@@ -476,36 +439,58 @@ export function CommandPalette({
         open={open}
         onOpenChange={(v) => {
           setOpen(v)
-          if (!v) setActiveDialog(undefined)
+          if (!v) {
+            setActiveDialog(undefined)
+            setAddInitialType(undefined)
+          }
         }}
       >
         <Dialog.Portal>
           <Dialog.Content
-            className={
-              'fixed bottom-30 left-1/2 z-50 flex w-full max-w-lg -translate-x-1/2 flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-xl'
-            }
+            className={cn(
+              'fixed bottom-30 left-1/2 z-50 flex w-[calc(100vw-2rem)] -translate-x-1/2 flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-md supports-backdrop-filter:bg-popover/90',
+              activeDialog === 'upload' ? 'max-w-md' : 'max-w-lg',
+            )}
           >
             <Dialog.Title className="sr-only">Command Palette</Dialog.Title>
             <Dialog.Description className="sr-only">
               Quick access to search, upload, feedback, and other actions
             </Dialog.Description>
-            <ScrollArea className="flex-1 h-[100px] overflow-y-auto ">
-              <div className="px-4 py-2">
-                {activeDialog === 'search' && <CommandSearch />}
-                {activeDialog === 'upload' && <CommandUploadDialog onSuccess={onFilesUploaded} />}
-                {activeDialog === 'feedback' && <CommandFeedbackForm />}
-                {activeDialog === 'add' && (
-                  <CommandAddDialog
-                    role={roleForGroups}
-                    onCourseCreated={onCourseCreated}
-                    onRequestClose={() => {
-                      setOpen(false)
-                      setActiveDialog(undefined)
-                    }}
-                  />
-                )}
+            {activeDialog === 'upload' ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute right-2 top-2 z-20 h-7 w-7 shrink-0 rounded-full text-muted-foreground hover:text-foreground"
+                onClick={handleCloseOverlayDialog}
+                aria-label={t('upload.summary.closeAria')}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            ) : null}
+            {activeDialog === 'upload' ? (
+              <div className="max-h-[min(70vh,560px)] min-w-0 overflow-hidden px-4 py-2 pt-9">
+                <CommandUploadDialog
+                  isActive={open && activeDialog === 'upload'}
+                  onSuccess={onFilesUploaded}
+                />
               </div>
-            </ScrollArea>
+            ) : (
+              <ScrollArea className="max-h-[min(70vh,560px)] flex-1 rounded-4xl">
+                <div className="min-w-0 px-4 py-2">
+                  {activeDialog === 'search' && <CommandSearch />}
+                  {activeDialog === 'feedback' && <CommandFeedbackForm />}
+                  {activeDialog === 'add' && (
+                    <CommandAddDialog
+                      role={roleForGroups}
+                      onCourseCreated={onCourseCreated}
+                      onRequestClose={handleCloseOverlayDialog}
+                      initialType={addInitialType}
+                    />
+                  )}
+                </div>
+              </ScrollArea>
+            )}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

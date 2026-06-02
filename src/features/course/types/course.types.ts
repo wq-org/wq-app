@@ -42,6 +42,7 @@ export interface CourseCardProps {
   teacherAvatar?: string
   teacherInitials?: string
   onView?: (id: string) => void
+  className?: string
 }
 
 export const COURSE_SEARCH_FIELDS: Array<keyof Course> = ['title', 'description']

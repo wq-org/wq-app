@@ -1,6 +1,7 @@
 {
   "settings": {
     "title": "Lektionseinstellungen",
+    "drawerTitle": "Einstellungen",
     "subtitle": "Verwalte die Details deiner Lektion",
     "titleLabel": "Titel",
     "descriptionLabel": "Beschreibung",
@@ -16,7 +17,8 @@
     "toasts": {
       "saveSuccess": "Änderungen gespeichert",
       "saveSuccessDescription": "Deine Lektionsdetails wurden aktualisiert.",
-      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut."
+      "saveFailed": "Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteSuccess": "Lektion gelöscht"
     },
     "deleteDialog": {
       "title": "Lektion löschen",
@@ -38,6 +40,7 @@
     "addPage": "Seite hinzufügen",
     "notFound": "Lektion nicht gefunden",
     "actions": {
+      "description": "Beschreibung",
       "smartImport": "Smart Import",
       "help": "Hilfe",
       "tableOfContents": "Menü anzeigen"
@@ -91,6 +94,11 @@
         }
       }
     },
+    "toasts": {
+      "autosaveSaved": "Lektion gespeichert",
+      "autosaveFailed": "Lektion konnte nicht gespeichert werden",
+      "autosaveFailedDescription": "Beim Speichern deiner letzten Änderungen ist ein Fehler aufgetreten. Prüfe deine Verbindung und versuche es erneut."
+    },
     "toolbar": {
       "writeContent": "Inhalt schreiben",
       "blocksTrigger": "Blöcke",
@@ -110,8 +118,6 @@
         "block": "Blöcke",
         "media": "Medien"
       },
-      "searchLabel": "Lektionen suchen",
-      "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen...",
       "blocks": {
         "paragraph": {
           "label": "Absatz",
@@ -222,6 +228,31 @@
       }
     }
   },
+  "editor": {
+    "emojiPicker": {
+      "searchPlaceholder": "Emoji suchen",
+      "searchAria": "Emoji suchen",
+      "searchHint": "Tippen, um alle Emojis zu durchsuchen"
+    },
+    "image": {
+      "replaceImageAria": "Bild ersetzen",
+      "uploadingImageAria": "Bild wird hochgeladen",
+      "invalidType": "Bitte wähle ein JPEG- oder PNG-Bild.",
+      "replaceFailed": "Das ausgewählte Bild konnte nicht geladen werden.",
+      "loadFailed": "Bild konnte nicht geladen werden",
+      "loadFailedAria": "Bild konnte nicht geladen werden",
+      "loadingAria": "Bild wird geladen",
+      "uploadFailed": "Bild konnte nicht hochgeladen werden.",
+      "uploadSuccess": "Bild in deiner Cloud gespeichert.",
+      "uploadRequiresContext": "Melde dich mit einer Institution an, um Bilder hochzuladen.",
+      "alreadyExistsInCloud": "Diese Datei ist bereits im Cloud-Speicher vorhanden. Wähle ein anderes Bild oder benenne es um.",
+      "chooseImageUpload": "Bild zum Hochladen auswählen",
+      "searchCloud": "Bilder suchen…",
+      "searchCloudAria": "Cloud-Bilder durchsuchen",
+      "noResults": "Keine Bilder gefunden.",
+      "noCloudImages": "Noch keine Bilder in deiner Cloud."
+    }
+  },
   "create": {
     "titlePlaceholder": "Neue Lektion hinzufügen",
     "descriptionPlaceholder": "Beschreibung der Lektion (max. 120 Zeichen)"
@@ -230,6 +261,10 @@
     "subheading": "Lektion",
     "updatedRecently": "Kürzlich aktualisiert",
     "updatedRelative": "Aktualisiert {{relative}}"
+  },
+  "filter": {
+    "searchLabel": "Lektionen suchen",
+    "searchPlaceholder": "Lektionen nach Titel oder Beschreibung suchen..."
   },
   "layout": {
     "loading": "Wird geladen...",

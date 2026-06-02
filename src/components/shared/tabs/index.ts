@@ -1,2 +1,5 @@
 export { SelectTabs } from './SelectTabs'
+export { SELECT_TABS_DEFAULT_TAB_TITLE, resolveSelectTabDisplayTitle } from './select-tabs-utils'
 export type { SelectTabsProps, TabItem } from './SelectTabs'
+export { TabsContent, TabsContent as SelectTabsContent } from './TabsContent'
+export type { TabsContentProps, TabsContentProps as SelectTabsContentProps } from './TabsContent'

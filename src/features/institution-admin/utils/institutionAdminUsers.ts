@@ -3,16 +3,31 @@ export type InstitutionUserDialogCopyKeys = {
   bodyKey: string
 }
 
+/** Platform operators must never appear in tenant-scoped directories. */
+export function isPlatformStaffProfile(
+  profile:
+    | {
+        role?: string | null
+        is_super_admin?: boolean | null
+      }
+    | null
+    | undefined,
+): boolean {
+  if (!profile) return false
+  return profile.role === 'super_admin' || profile.is_super_admin === true
+}
+
 export function buildInitialsFromDisplayName(
   displayName?: string | null,
   username?: string | null,
 ): string {
   const source = displayName?.trim() || username?.trim() || 'U'
-  return source
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('')
+  return source.charAt(0).toUpperCase()
+}
+
+export function getInitial(name: string | null | undefined): string {
+  const trimmed = name?.trim()
+  return trimmed ? trimmed.charAt(0).toUpperCase() : '?'
 }
 
 export function institutionUserRoleTranslationKey(role: string): string {

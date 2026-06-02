@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { StepperContentEachStep } from '@/components/shared'
 import { AppNavigation } from '@/components/layout'
 import { getDashboardPathForRole, type UserRole } from '@/features/auth/'
-import { logRoleDebug } from '@/features/auth/utils/roleDebugLog'
 import { useUser } from '@/contexts/user'
 import { toast } from 'sonner'
 
@@ -51,14 +50,6 @@ const Onboarding = () => {
     [t],
   )
 
-  useEffect(() => {
-    logRoleDebug('onboarding snapshot', {
-      step,
-      profileRole: profile?.role ?? null,
-      is_onboarded: profile?.is_onboarded ?? null,
-    })
-  }, [step, profile?.role, profile?.is_onboarded])
-
   const handleStepChange = (nextStep: number) => {
     setStep((prev) => (nextStep <= prev ? nextStep : prev))
   }
@@ -75,10 +66,6 @@ const Onboarding = () => {
 
   const handleFinish = () => {
     const role = profile?.role?.trim() ?? ''
-    logRoleDebug('onboarding handleFinish (SuccessPage onClick fallback)', {
-      profileRole: role || '(none)',
-      navigateTo: role ? getDashboardPathForRole(role as UserRole) : null,
-    })
     if (!role) {
       toast.error('Something went wrong', {
         description:

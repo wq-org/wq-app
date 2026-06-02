@@ -1,5 +1,4 @@
-import { Routes, Route, Navigate, useParams } from 'react-router-dom'
-import { useUser } from '@/contexts/user'
+import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom'
 import {
   AuthInvitePage,
   LoginPage,
@@ -9,6 +8,8 @@ import {
   ResetPasswordPage,
   RequireAuth,
   RequireOnboarding,
+  RequireRole,
+  USER_ROLES,
 } from '@/features/auth'
 import Test from './user/pages/test'
 import Home from './user/pages/home'
@@ -18,18 +19,27 @@ import {
   StudentDashboard,
   StudentSettingsPage,
   StudentChat,
+  StudentFilesPage,
+  StudentNotesPage,
+  StudentTasksPage,
   StudentViewPage,
 } from '@/features/student'
 import {
   TeacherDashboard,
+  TeacherCoursesPage,
+  TeacherSchedulePage,
   TeacherSettingsPage,
+  TeacherLicensePage,
   GameStudio,
   TeacherChat,
+  TeacherCloudPage,
+  TeacherNotesPage,
+  TeacherTasksPage,
   TeacherViewPage,
 } from '@/features/teacher'
-import { PlayGamePage } from '@/features/game-play'
 import { NotFoundPage } from './user/pages/not-found'
-import { CourseLayout, CoursePage, CourseView } from '@/features/course'
+import { ClassroomDetailPage } from '@/features/classroom'
+import { CourseDetailPage, CourseLayout, CoursePage } from '@/features/course'
 import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
 import { Onboarding } from '@/features/onboarding'
@@ -41,7 +51,6 @@ import { TopicProvider } from './contexts/topic'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
 import { GameEditorCanvas } from '@/features/game-studio'
-import { ProfileViewPage } from '@/features/profile'
 import {
   AdminAuditLogs,
   AdminAnalytics,
@@ -52,6 +61,7 @@ import {
   AdminFeatures,
   AdminGdprRequest,
   AdminInstitution,
+  AdminInstitutionDetails,
   AdminInstitutionInvites,
   AdminLicenses,
   AdminPlanEntitlementsEditor,
@@ -59,6 +69,7 @@ import {
   AdminPlanCatalog,
   AdminSettings,
   AdminUsers,
+  AdminFilesPage,
 } from '@/features/admin'
 import {
   InstitutionAdminDashboardPage,
@@ -69,12 +80,18 @@ import {
   InstitutionAdminFacultiesPage,
   InstitutionAdminFacultiesCreatePage,
   InstitutionAdminFacultiesProgrammesPage,
+  InstitutionAdminFacultyProgrammesPage,
+  InstitutionAdminProgrammeOfferingsPage,
   InstitutionAdminFacultiesCohortsPage,
+  InstitutionAdminCohortOfferingsPage,
   InstitutionAdminFacultiesClassGroupsPage,
+  InstitutionAdminClassGroupOfferingsPage,
   InstitutionAdminClassroomsPage,
+  InstitutionAdminClassroomDetailPage,
   InstitutionAdminLicensesPage,
   InstitutionAdminUsagePage,
   InstitutionAdminGDPRRequestPage,
+  InstitutionAdminLicensePage,
   InstitutionAdminBillingPage,
   InstitutionAdminCoursesPage,
   InstitutionAdminAnalyticsPage,
@@ -86,19 +103,6 @@ import {
 const GameEditorCanvasWithProjectId = () => {
   const { id } = useParams<{ id: string }>()
   return <GameEditorCanvas projectId={id ?? undefined} />
-}
-
-const PlayRouteWrapper = () => {
-  const { getRole } = useUser()
-  const role = getRole() ?? 'student'
-  return (
-    <AppShell
-      role={role}
-      className="flex flex-col h-screen"
-    >
-      <PlayGamePage />
-    </AppShell>
-  )
 }
 
 const App = () => {
@@ -256,8 +260,15 @@ const App = () => {
                 }
               />
 
-              {/* Super Admin Routes (require auth) */}
-              <Route path="/super_admin">
+              {/* Super Admin Routes (require auth + super_admin role) */}
+              <Route
+                path="/super_admin"
+                element={
+                  <RequireRole role={USER_ROLES.SUPER_ADMIN}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   path="dashboard"
                   element={
@@ -266,16 +277,35 @@ const App = () => {
                     </RequireAuth>
                   }
                 />
-
+                <Route
+                  path="files"
+                  element={
+                    <RequireAuth>
+                      <AdminFilesPage />
+                    </RequireAuth>
+                  }
+                />
                 <Route
                   path="institution/new-institution"
-                  element={<NewInstitution />}
+                  element={
+                    <RequireAuth>
+                      <NewInstitution />
+                    </RequireAuth>
+                  }
                 />
                 <Route
                   path="institution/institution-invites"
                   element={
                     <RequireAuth>
                       <AdminInstitutionInvites />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="institution/:institutionId"
+                  element={
+                    <RequireAuth>
+                      <AdminInstitutionDetails />
                     </RequireAuth>
                   }
                 />
@@ -394,8 +424,15 @@ const App = () => {
                 />
               </Route>
 
-              {/* Institution Admin Routes (require auth) */}
-              <Route path="/institution_admin">
+              {/* Institution Admin Routes (require auth + institution_admin role) */}
+              <Route
+                path="/institution_admin"
+                element={
+                  <RequireRole role={USER_ROLES.INSTITUTION_ADMIN}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   index
                   element={
@@ -446,6 +483,14 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="license"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminLicensePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="courses"
                   element={
                     <RequireAuth>
@@ -486,6 +531,22 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="faculties/:facultyId/programmes"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminFacultyProgrammesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/:facultyId/programmes/:programmeId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminProgrammeOfferingsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="faculties/programmes"
                   element={
                     <RequireAuth>
@@ -502,10 +563,26 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="faculties/:facultyId/programmes/:programmeId/cohorts/:cohortId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCohortOfferingsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="faculties/class-groups"
                   element={
                     <RequireAuth>
                       <InstitutionAdminFacultiesClassGroupsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="faculties/:facultyId/programmes/:programmeId/cohorts/:cohortId/class-groups/:classGroupId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminClassGroupOfferingsPage />
                     </RequireAuth>
                   }
                 />
@@ -522,6 +599,14 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <InstitutionAdminClassroomsPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="classrooms/:classroomId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminClassroomDetailPage />
                     </RequireAuth>
                   }
                 />
@@ -549,6 +634,7 @@ const App = () => {
                     </RequireAuth>
                   }
                 />
+
                 <Route
                   path="audit-logs"
                   element={
@@ -567,8 +653,15 @@ const App = () => {
                 />
               </Route>
 
-              {/* Teacher Routes (require auth + onboarding) */}
-              <Route path="/teacher">
+              {/* Teacher Routes (require auth + onboarding + teacher role) */}
+              <Route
+                path="/teacher"
+                element={
+                  <RequireRole role={USER_ROLES.TEACHER}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   index
                   element={
@@ -589,11 +682,80 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="cloud"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherCloudPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <Navigate
+                      to="/teacher/cloud"
+                      replace
+                    />
+                  }
+                />
+                <Route
+                  path="notes"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherNotesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="tasks"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherTasksPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <ClassroomDetailPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="dashboard"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherDashboard />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherCoursesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="schedule"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherSchedulePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -637,6 +799,16 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherSettingsPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="license"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherLicensePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -694,8 +866,15 @@ const App = () => {
                 />
               </Route>
 
-              {/* Student Routes (require auth + onboarding) */}
-              <Route path="/student">
+              {/* Student Routes (require auth + onboarding + student role) */}
+              <Route
+                path="/student"
+                element={
+                  <RequireRole role={USER_ROLES.STUDENT}>
+                    <Outlet />
+                  </RequireRole>
+                }
+              >
                 <Route
                   index
                   element={
@@ -736,6 +915,36 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="files"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentFilesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="notes"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentNotesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="tasks"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentTasksPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="view/:id"
                   element={
                     <RequireAuth>
@@ -750,7 +959,7 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <CourseView />
+                        <CourseDetailPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -776,30 +985,6 @@ const App = () => {
                   }
                 />
               </Route>
-
-              {/* Centralized Profile Routes (require auth + onboarding) */}
-              <Route
-                path="/profile/:id"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <ProfileViewPage />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
-
-              {/* Play game (student and teacher) - root level so /play/:gameId works */}
-              <Route
-                path="/play/:gameId"
-                element={
-                  <RequireAuth>
-                    <RequireOnboarding>
-                      <PlayRouteWrapper />
-                    </RequireOnboarding>
-                  </RequireAuth>
-                }
-              />
 
               {/* Catch-all 404 route - must be last */}
               <Route

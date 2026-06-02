@@ -1,6 +1,7 @@
 {
   "settings": {
     "title": "Lesson Settings",
+    "drawerTitle": "Settings",
     "subtitle": "Manage your lesson details",
     "titleLabel": "Title",
     "descriptionLabel": "Description",
@@ -16,7 +17,8 @@
     "toasts": {
       "saveSuccess": "Changes saved",
       "saveSuccessDescription": "Your lesson details have been updated.",
-      "saveFailed": "Failed to save changes. Please try again."
+      "saveFailed": "Failed to save changes. Please try again.",
+      "deleteSuccess": "Lesson deleted"
     },
     "deleteDialog": {
       "title": "Delete Lesson",
@@ -38,6 +40,7 @@
     "addPage": "Add page",
     "notFound": "Lesson not found",
     "actions": {
+      "description": "Description",
       "smartImport": "Smart Import",
       "help": "Help",
       "tableOfContents": "Show Menu"
@@ -91,6 +94,11 @@
         }
       }
     },
+    "toasts": {
+      "autosaveSaved": "Lesson saved",
+      "autosaveFailed": "Couldn't save your lesson",
+      "autosaveFailedDescription": "We hit an error saving recent edits. Check your connection and try again."
+    },
     "toolbar": {
       "writeContent": "Write Content",
       "blocksTrigger": "Blocks",
@@ -110,8 +118,6 @@
         "block": "Blocks",
         "media": "Media"
       },
-      "searchLabel": "Search lessons",
-      "searchPlaceholder": "Search lessons by title or description...",
       "blocks": {
         "paragraph": {
           "label": "Paragraph",
@@ -222,6 +228,31 @@
       }
     }
   },
+  "editor": {
+    "emojiPicker": {
+      "searchPlaceholder": "Search emoji",
+      "searchAria": "Search emoji",
+      "searchHint": "Type to search all emojis"
+    },
+    "image": {
+      "replaceImageAria": "Replace image",
+      "uploadingImageAria": "Uploading image",
+      "invalidType": "Please choose a JPEG or PNG image.",
+      "replaceFailed": "Could not load the selected image.",
+      "loadFailed": "Failed to load image",
+      "loadFailedAria": "Image failed to load",
+      "loadingAria": "Loading image",
+      "uploadFailed": "Could not upload image.",
+      "uploadSuccess": "Image saved to your cloud.",
+      "uploadRequiresContext": "Sign in with an institution to upload images.",
+      "alreadyExistsInCloud": "This file is already in cloud storage. Choose a different image or rename it.",
+      "chooseImageUpload": "Choose image to upload",
+      "searchCloud": "Search images…",
+      "searchCloudAria": "Search cloud images",
+      "noResults": "No images match your search.",
+      "noCloudImages": "No images in your cloud yet."
+    }
+  },
   "create": {
     "titlePlaceholder": "New lesson",
     "descriptionPlaceholder": "Lesson description (max 120 characters)"
@@ -230,6 +261,10 @@
     "subheading": "Lesson",
     "updatedRecently": "Updated recently",
     "updatedRelative": "Updated {{relative}}"
+  },
+  "filter": {
+    "searchLabel": "Search lessons",
+    "searchPlaceholder": "Search lessons by title or description..."
   },
   "layout": {
     "loading": "Loading...",

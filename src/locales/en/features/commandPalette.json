@@ -17,6 +17,11 @@
     "search": "Search",
     "studio": "Game Studio",
     "chat": "Chat",
+    "cloud": "Files",
+    "notebook": "Notes",
+    "attendance": "Attendance",
+    "attendanceStart": "Start attendance session",
+    "attendanceEnd": "End attendance session",
     "upload": "Upload",
     "addNew": "Add New",
     "feedback": "Feedback",
@@ -24,7 +29,8 @@
     "pan": "Pan",
     "select": "Select",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "agent": "Agent"
   },
   "navigation": {
     "pan": "Pan",
@@ -33,7 +39,8 @@
   "search": {
     "placeholder": "Search courses, people, institutions, games…",
     "noResults": "No results found",
-    "recent": "Recent searches"
+    "recent": "Recent searches",
+    "openTeacherChat": "Open teacher chat"
   },
   "addDialog": {
     "title": "Add New",
@@ -58,7 +65,8 @@
       "course": "Course",
       "institution": "Institution",
       "game": "Game",
-      "notes": "Notes",
+      "note": "Note",
+      "task": "Task",
       "node": "Node"
     },
     "options": {
@@ -73,14 +81,74 @@
       "game": {
         "label": "New Game",
         "description": "Create a new educational game"
+      },
+      "note": {
+        "label": "New note",
+        "description": "Capture a quick note"
+      },
+      "task": {
+        "label": "New task",
+        "description": "Add something to your to-do list"
       }
+    },
+    "toasts": {
+      "noteNotWired": "Notes will be available when the notes API is connected.",
+      "taskNotWired": "Tasks will be available when the tasks API is connected."
     }
+  },
+  "attendanceDialog": {
+    "titleStart": "Start attendance session",
+    "titleEnd": "End attendance session",
+    "errorTitle": "Something went wrong",
+    "classroom": "Classroom",
+    "classroomPlaceholder": "Select a classroom",
+    "course": "Course",
+    "coursePlaceholder": "Select a course",
+    "session": "Open session",
+    "sessionPlaceholder": "Select a session",
+    "sessionTitle": "Title (optional)",
+    "sessionTitlePlaceholder": "Optional session title",
+    "sessionDate": "Session date",
+    "startsAt": "Starts at",
+    "endsAtOptional": "Ends at (optional)",
+    "closeEndsAt": "Close at",
+    "submitStart": "Start session",
+    "submitEnd": "Close session",
+    "submitting": "Saving…",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "noClassrooms": "No classrooms available.",
+    "noCourses": "No courses linked to this classroom.",
+    "noSessions": "No open attendance sessions for this classroom.",
+    "untitledSession": "Session",
+    "toastStarted": "Attendance session started.",
+    "toastClosed": "Attendance session closed.",
+    "loadClassroomsFailed": "Failed to load classrooms",
+    "errors": {
+      "classroomAndCourseRequired": "Classroom and course are required.",
+      "sessionRequired": "Select an open session to close.",
+      "requestFailed": "Request failed"
+    }
+  },
+  "taskDialog": {
+    "title": "Create task",
+    "fieldTitle": "Title",
+    "fieldTitlePlaceholder": "Task title",
+    "fieldDescription": "Description",
+    "fieldDescriptionPlaceholder": "Optional details",
+    "submit": "Save",
+    "submitting": "Saving…",
+    "cancel": "Cancel",
+    "notWiredToast": "Task creation will be available when the tasks API is connected."
   },
   "upload": {
     "dropzone": {
       "uploadButton": "Upload Files",
       "title": "Choose files or drag & drop them here.",
-      "description": "Images (except WebP), PDF, MP4 videos (max 60s), Word (docx), PowerPoint (pptx/ppt). Max 20 MB per file."
+      "description": "JPEG, JPG, or PNG images, PDF, and MP4 videos (max 60s). Max 20 MB per file."
+    },
+    "validation": {
+      "fileTypeNotAllowed": "“{{fileType}}” is not allowed. Use JPEG, JPG, or PNG images, PDF, or MP4 video (max {{maxDuration}}s)."
     },
     "stepper": {
       "filenameLabel": "Filename *",
@@ -98,11 +166,22 @@
     "toasts": {
       "fileValidationError": "File \"{{fileName}}\" failed validation",
       "userIdMissing": "User ID not found. Please log in again.",
+      "institutionIdIdMissing": "Institution not found. Please log in again.",
       "userRoleMissing": "User role not found. Please log in again.",
       "noFiles": "No files to upload",
       "successSummary": "Successfully uploaded {{successCount}} file(s). Failed: {{failedCount}}",
       "failedSummary": "Failed to upload {{failedCount}} file(s)",
       "unexpectedError": "An unexpected error occurred during upload"
+    },
+    "summary": {
+      "title": "Upload summary",
+      "stats": "{{successCount}} uploaded · {{failedCount}} failed",
+      "succeededSection": "Uploaded files",
+      "failedSection": "Failed files",
+      "succeededHeading": "Uploaded",
+      "failedHeading": "Failed",
+      "done": "Done",
+      "closeAria": "Close upload dialog"
     }
   }
 }

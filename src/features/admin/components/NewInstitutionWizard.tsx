@@ -5,15 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { StepperProgressBarTitles } from '@/components/shared'
+import { Spinner } from '@/components/ui/spinner'
+import { StepperProgressBarTitles, SuccessDialog } from '@/components/shared'
 import { useState } from 'react'
 import type {
   BootstrapInstitutionFromWizardResult,
@@ -39,12 +32,20 @@ type NewInstitutionWizardProps = {
   onCreate: (values: NewInstitutionWizardValues) => Promise<BootstrapInstitutionFromWizardResult>
   onCancel: () => void
   onFinished: () => void
+  /** When set, success dialog primary action navigates here before closing. */
+  successRedirectPath?: string
 }
 
-function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitutionWizardProps) {
+function NewInstitutionWizard({
+  onCreate,
+  onCancel,
+  onFinished,
+  successRedirectPath,
+}: NewInstitutionWizardProps) {
   const { t } = useTranslation('features.admin')
   const [step, setStep] = useState(1)
-  const [inviteToken, setInviteToken] = useState<string | null>(null)
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
+  const [successAdminEmail, setSuccessAdminEmail] = useState('')
 
   const {
     control,
@@ -67,9 +68,6 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
       postalCode: '',
       city: '',
       country: '',
-      createInitialStructure: false,
-      facultyName: '',
-      programmeName: '',
     },
   })
 
@@ -89,7 +87,6 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
   const handleCreate = handleSubmit(async (values) => {
     try {
       const result = await onCreate(values as NewInstitutionWizardValues)
-      setInviteToken(result.inviteToken)
       try {
         await sendInstitutionAdminInviteEmail({
           inviteToken: result.inviteToken,
@@ -107,25 +104,17 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
             emailErr instanceof Error ? emailErr.message : t('institutions.toasts.unexpectedError'),
         })
       }
+      setSuccessAdminEmail(values.adminEmail.trim())
+      setSuccessDialogOpen(true)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('institutions.toasts.unexpectedError'))
     }
   })
 
-  function handleCloseSuccessDialog(open: boolean) {
+  function handleSuccessDialogOpenChange(open: boolean) {
+    setSuccessDialogOpen(open)
     if (!open) {
-      setInviteToken(null)
       onFinished()
-    }
-  }
-
-  async function handleCopyInviteToken() {
-    if (!inviteToken) return
-    try {
-      await navigator.clipboard.writeText(inviteToken)
-      toast.success(t('wizard.success.tokenCopied'))
-    } catch {
-      toast.error(t('wizard.success.tokenCopyFailed'))
     }
   }
 
@@ -137,8 +126,8 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
 
   return (
     <>
-      <FieldCard className="w-full max-w-2xl rounded-xl border-border px-0 py-0 shadow-sm">
-        <div className="space-y-2 border-b border-border px-6 py-6">
+      <FieldCard className="w-full max-w-2xl animate-in fade-in-0 slide-in-from-bottom-4 rounded-xl border-border px-0 py-0 shadow-sm">
+        <div className="space-y-2 border-b border-border px-6 py-6 animate-in fade-in-0 slide-in-from-left-4">
           <h2 className="leading-none font-semibold">{t('wizard.title')}</h2>
           <p className="max-w-prose text-sm text-muted-foreground text-pretty leading-relaxed">
             {t('wizard.subtitle')}
@@ -155,7 +144,7 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
           </div>
         </div>
 
-        <div className="space-y-4 px-6 py-6">
+        <div className="space-y-4 px-6 py-6 animate-in fade-in-0 slide-in-from-bottom-2">
           {step === 1 ? (
             <NewInstitutionWizardIdentityStep
               control={control}
@@ -200,50 +189,31 @@ function NewInstitutionWizard({ onCreate, onCancel, onFinished }: NewInstitution
               variant="darkblue"
               onClick={handleCreate}
               disabled={isSubmitting}
+              className="gap-2"
             >
-              {isSubmitting ? t('wizard.actions.creating') : t('wizard.actions.create')}
-              {!isSubmitting ? <ChevronRight className="size-4" /> : null}
+              {isSubmitting ? (
+                <Spinner
+                  variant="darkblue"
+                  size="xs"
+                />
+              ) : (
+                <ChevronRight className="size-4" />
+              )}
+              {t('wizard.actions.create')}
             </Button>
           )}
         </div>
       </FieldCard>
 
-      <Dialog
-        open={inviteToken !== null}
-        onOpenChange={handleCloseSuccessDialog}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('wizard.success.title')}</DialogTitle>
-            <DialogDescription>
-              {t('wizard.success.description', { email: getValues('adminEmail') })}
-            </DialogDescription>
-          </DialogHeader>
-
-          {inviteToken ? (
-            <div className="rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-xs break-all">
-              {inviteToken}
-            </div>
-          ) : null}
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCopyInviteToken}
-            >
-              {t('wizard.success.copyToken')}
-            </Button>
-            <Button
-              type="button"
-              variant="darkblue"
-              onClick={() => handleCloseSuccessDialog(false)}
-            >
-              {t('wizard.success.done')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SuccessDialog
+        open={successDialogOpen}
+        onOpenChange={handleSuccessDialogOpenChange}
+        title={t('wizard.success.title')}
+        description={t('wizard.success.description', { email: successAdminEmail })}
+        buttonDescription={t('wizard.success.done')}
+        path={successRedirectPath}
+        showConfetti
+      />
     </>
   )
 }

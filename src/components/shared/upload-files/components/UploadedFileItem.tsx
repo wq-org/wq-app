@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FileText, MoreVertical, X } from 'lucide-react'
+import { FileText, Video, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { getFileTypeStyle } from '@/components/shared/upload-files/utils/fileTypeStyle'
@@ -12,6 +12,7 @@ interface UploadedFileItemProps {
 export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const isImage = file.type.startsWith('image/')
+  const isVideo = file.type.startsWith('video/')
 
   useEffect(() => {
     if (!isImage) {
@@ -53,9 +54,13 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
           </div>
         ) : (
           <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center ${config.bgColor} ${config.borderColor} border`}
+            className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${config.bgColor} ${config.borderColor}`}
           >
-            <FileText className={`w-6 h-6 ${config.color}`} />
+            {isVideo ? (
+              <Video className={`h-6 w-6 ${config.color}`} />
+            ) : (
+              <FileText className={`h-6 w-6 ${config.color}`} />
+            )}
           </div>
         )}
       </div>
@@ -78,26 +83,18 @@ export function UploadedFileItem({ file, onRemove }: UploadedFileItemProps) {
         </Text>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-1">
+      {onRemove ? (
         <Button
+          type="button"
           variant="ghost"
           size="icon-sm"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          onClick={onRemove}
+          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+          aria-label="Remove file"
         >
-          <MoreVertical className="h-4 w-4" />
+          <X className="h-4 w-4" />
         </Button>
-        {onRemove && (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={onRemove}
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
+      ) : null}
     </div>
   )
 }

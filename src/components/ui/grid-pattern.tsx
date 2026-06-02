@@ -28,7 +28,7 @@ export function GridPattern({
     <svg
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-0 h-full w-full fill-current stroke-current text-border/55 dark:text-border/35',
+        'pointer-events-none absolute inset-0 h-full w-full fill-current stroke-current text-border/85 dark:text-border/55',
         className,
       )}
       {...(props as React.SVGProps<SVGSVGElement>)}
@@ -45,6 +45,7 @@ export function GridPattern({
           <path
             d={`M.5 ${height}V.5H${width}`}
             fill="none"
+            strokeWidth={1.25}
             strokeDasharray={strokeDasharray}
           />
         </pattern>

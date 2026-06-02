@@ -4,12 +4,11 @@ import { AppShell } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
-import { CourseSettings } from '@/features/course'
-import { CoursePreviewTab } from '@/features/course'
-import { CourseAnalyticsTab } from '@/features/course'
+import { CoursePreviewTab, CourseSettings } from '@/features/course'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { CourseTabs, type CourseTabId } from './CourseTabs'
+import { CourseAnalyticsTab } from './CourseAnalyticsTab'
 import { CourseSectionHeader } from './CourseSectionHeader'
 
 export function CourseLayout() {
@@ -91,6 +90,7 @@ export function CourseLayout() {
 
   // Child routes under this layout (e.g. topic or lesson pages) are rendered directly.
   const isNestedContentRoute = /\/(topic|lesson)\/[^/]+\/?$/.test(location.pathname)
+  const isLessonRoute = /\/lesson\/[^/]+\/?$/.test(location.pathname)
 
   useEffect(() => {
     if (courseId) {
@@ -115,7 +115,10 @@ export function CourseLayout() {
   }
 
   return (
-    <AppShell role="teacher">
+    <AppShell
+      role="teacher"
+      commandBarContext={isLessonRoute ? 'lessons' : undefined}
+    >
       <div className="container flex w-full flex-col gap-6 py-6">
         {isNestedContentRoute ? (
           // Nested content routes (topic and lesson) provide their own workspace layouts.
@@ -127,7 +130,7 @@ export function CourseLayout() {
               onTabChange={handleTabChange}
               className="border-b"
             />
-            <div>
+            <div className="flex flex-col gap-8">
               {(activeTab === 'editor' || activeTab === 'preview') && selectedCourse ? (
                 <CourseSectionHeader
                   title={selectedCourse.title}

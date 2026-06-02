@@ -15,6 +15,7 @@ const NewInstitution = () => {
   const { addInstitutionFromWizard } = useInstitutions()
 
   const role = getRole()
+  const successRedirectPath = `/${role}/institution`
 
   const handleCreate = async (values: NewInstitutionWizardValues) => {
     try {
@@ -36,11 +37,12 @@ const NewInstitution = () => {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex flex-col items-center gap-4 py-8">
+      <div className="relative flex flex-col items-center gap-4 py-8">
         <NewInstitutionWizard
           onCreate={handleCreate}
           onCancel={handleCancel}
           onFinished={handleFinished}
+          successRedirectPath={successRedirectPath}
         />
       </div>
     </AdminWorkspaceShell>

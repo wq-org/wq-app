@@ -6,18 +6,18 @@ export function EmptyTopicsView() {
   const { t } = useTranslation('features.course')
 
   return (
-    <Empty className="w-full animate-in fade-in-0 slide-in-from-bottom-5 duration-300 border border-dashed border-gray-200 rounded-xl p-6">
+    <Empty className="w-full animate-in fade-in-0 slide-in-from-bottom-5 duration-300 border border-dashed border-border rounded-xl p-6">
       <EmptyHeader>
         <EmptyMedia
           variant="icon"
-          className="bg-gray-50 border border-gray-200 text-gray-400"
+          className="bg-muted border border-border text-muted-foreground"
         >
-          <TextCursorInput className="w-8 h-8 text-gray-400" />
+          <TextCursorInput className="w-8 h-8 text-muted-foreground" />
         </EmptyMedia>
-        <EmptyTitle className="text-sm font-normal text-gray-500">
+        <EmptyTitle className="text-sm font-normal text-muted-foreground">
           {t('emptyTopics.title')}
         </EmptyTitle>
-        <EmptyDescription className="text-xs text-gray-400">
+        <EmptyDescription className="text-xs text-muted-foreground/80">
           {t('emptyTopics.description')}
         </EmptyDescription>
       </EmptyHeader>

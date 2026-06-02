@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Building2, Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useUser } from '@/contexts/user'
@@ -30,48 +30,24 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
-import { InstitutionDetailsDrawer } from '../components/InstitutionDetailsDrawer'
+import { InstitutionRowActionsPopover } from '../components/InstitutionRowActionsPopover'
 import { useInstitutions } from '../hooks/useInstitutions'
-import {
-  createFormValuesFromInstitution,
-  type Institution,
-  type InstitutionEditFormValues,
-} from '../types/institution.types'
+import type { Institution } from '../types/institution.types'
 import { STATUS_VARIANT } from '../config/institutionFormOptions'
 
 const AdminInstitution = () => {
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.admin')
-  const { institutions, isLoading, error, editInstitution } = useInstitutions()
-  const [selectedInstitution, setSelectedInstitution] = useState<Institution | null>(null)
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [formValues, setFormValues] = useState<InstitutionEditFormValues>({
-    name: '',
-    type: '',
-    email: '',
-    description: '',
-    phone: '',
-    website: '',
-    legalName: '',
-    legalForm: '',
-    registrationNumber: '',
-    taxId: '',
-    vatId: '',
-    primaryContactName: '',
-    primaryContactEmail: '',
-    primaryContactPhone: '',
-    primaryContactRole: '',
-    billingEmail: '',
-    billingContactName: '',
-    billingContactPhone: '',
-    invoiceLanguage: 'de',
-    paymentTerms: 30,
-  })
+  const { institutions, isLoading, error } = useInstitutions()
 
   const role = getRole()
 
   const handleNavigateToNewInstitution = () => navigate(`/${role}/institution/new-institution`)
+
+  const handleOpenDetails = (institution: Institution) => {
+    navigate(`/${role}/institution/${institution.id}`)
+  }
 
   useEffect(() => {
     if (error) {
@@ -79,39 +55,11 @@ const AdminInstitution = () => {
     }
   }, [error, t])
 
-  const handleOpenEditDrawer = (institution: Institution) => {
-    setSelectedInstitution(institution)
-    setFormValues(createFormValuesFromInstitution(institution))
-    setIsDrawerOpen(true)
-  }
-
-  const handleSaveInstitution = async () => {
-    if (!selectedInstitution) return
-    const loadingToastId = toast.loading(t('institutions.editDrawer.saving'))
-    try {
-      await editInstitution(selectedInstitution.id, {
-        name: formValues.name,
-        type: formValues.type,
-        email: formValues.email,
-        status: selectedInstitution.status ?? 'active',
-        description: formValues.description,
-      })
-      toast.dismiss(loadingToastId)
-      toast.success(t('institutions.toasts.updateSuccess'))
-      setIsDrawerOpen(false)
-    } catch (e) {
-      toast.dismiss(loadingToastId)
-      toast.error(t('institutions.toasts.updateError'), {
-        description: e instanceof Error ? e.message : t('institutions.toasts.unexpectedError'),
-      })
-    }
-  }
-
   return (
     <AdminWorkspaceShell>
       <div className="flex flex-col gap-6 py-8 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex items-center justify-between animate-in fade-in-0 slide-in-from-bottom-3">
-          <h1 className="text-2xl font-semibold text-gray-900">{t('institutions.pageTitle')}</h1>
+          <h1 className="text-2xl font-semibold">{t('institutions.pageTitle')}</h1>
           <Button
             variant="darkblue"
             onClick={handleNavigateToNewInstitution}
@@ -173,9 +121,12 @@ const AdminInstitution = () => {
                           <button
                             type="button"
                             className="flex max-w-full min-w-0 items-center gap-2 rounded-md p-0 text-left font-medium outline-none ring-offset-background hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
-                            onClick={() => handleOpenEditDrawer(inst)}
+                            onClick={() => handleOpenDetails(inst)}
                           >
-                            <Avatar className="h-8 w-8 shrink-0 rounded-full">
+                            <Avatar
+                              size="sm"
+                              className="shrink-0 rounded-full"
+                            >
                               <AvatarImage
                                 src={inst.imageUrl ?? DEFAULT_INSTITUTION_IMAGE}
                                 alt={`${inst.name} logo`}
@@ -223,14 +174,8 @@ const AdminInstitution = () => {
                         '—'
                       )}
                     </TableCell>
-                    <TableCell className="flex items-center gap-2">
-                      <Button
-                        variant="darkblue"
-                        size="sm"
-                        onClick={() => handleOpenEditDrawer(inst)}
-                      >
-                        {t('institutions.table.viewDetails')}
-                      </Button>
+                    <TableCell className="text-right">
+                      <InstitutionRowActionsPopover institution={inst} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -239,15 +184,6 @@ const AdminInstitution = () => {
           </div>
         )}
       </div>
-
-      <InstitutionDetailsDrawer
-        open={isDrawerOpen}
-        onOpenChange={setIsDrawerOpen}
-        institution={selectedInstitution}
-        formValues={formValues}
-        onFormChange={setFormValues}
-        onSave={handleSaveInstitution}
-      />
     </AdminWorkspaceShell>
   )
 }

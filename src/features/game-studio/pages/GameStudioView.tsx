@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/layout'
-import { GameEditorCanvas } from '../components/GameEditorCanvas'
+import { GameEditorCanvas } from '../canvas/GameEditorCanvas'
 
 export function GameStudioView() {
   return (

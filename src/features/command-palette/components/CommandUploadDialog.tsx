@@ -1,28 +1,52 @@
-import { useState, useCallback } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { FileDropzone, FileStepperForm } from '@/components/shared'
-
-import { useFileValidation } from '@/components/shared'
-import { uploadFilesWithMetadata } from '@/components/shared'
-import { useUser } from '@/contexts/user'
-import type { UploadedFile } from '@/components/shared'
-import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
-import { Text } from '@/components/ui/text'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
-interface CommandUploadDialogProps {
+import { Card, CardContent } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
+import {
+  FileDropzone,
+  FileStepperForm,
+  UploadSummary,
+  buildUploadSummaryItems,
+  uploadFilesWithMetadata,
+  useFileValidation,
+} from '@/components/shared/upload-files'
+import type { UploadedFile } from '@/components/shared/upload-files'
+import type { UploadSummaryItem } from '@/components/shared/upload-files'
+import { requestCloudGalleryRefetch, resolveCloudFileId } from '@/features/cloud'
+import { useUser } from '@/contexts/user'
+
+type UploadPhase = 'dropzone' | 'stepper' | 'uploading' | 'summary'
+
+export type CommandUploadDialogProps = {
   onSuccess?: () => void
+  /** When the overlay closes, reset local upload state. */
+  isActive?: boolean
 }
 
-export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}) {
+export function CommandUploadDialog({ onSuccess, isActive = true }: CommandUploadDialogProps = {}) {
   const { t } = useTranslation('features.commandPalette')
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [showStepper, setShowStepper] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const [phase, setPhase] = useState<UploadPhase>('dropzone')
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [summaryItems, setSummaryItems] = useState<UploadSummaryItem[]>([])
   const { validateFiles } = useFileValidation()
   const { getUserId, getRole, getUserInstitutionId } = useUser()
+
+  const resetFlow = useCallback(() => {
+    setUploadedFiles([])
+    setPhase('dropzone')
+    setUploadProgress(0)
+    setSummaryItems([])
+  }, [])
+
+  useEffect(() => {
+    if (!isActive) {
+      resetFlow()
+    }
+  }, [isActive, resetFlow])
 
   const generateFileId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -45,15 +69,12 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
 
   const handleFilesSelected = useCallback(
     async (files: File[]) => {
-      // Prevent double calls by checking if we're already processing
-      if (showStepper || isUploading) {
+      if (phase === 'stepper' || phase === 'uploading' || phase === 'summary') {
         return
       }
 
-      // Validate files
       const validationResults = await validateFiles(files)
 
-      // Filter out invalid files and show errors
       const validFiles: File[] = []
       validationResults.forEach((result, index) => {
         if (result.isValid) {
@@ -69,7 +90,6 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
         return
       }
 
-      // Create uploaded file objects with previews
       const newUploadedFiles: UploadedFile[] = await Promise.all(
         validFiles.map(async (file) => {
           const preview = await createPreview(file)
@@ -83,9 +103,9 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
       )
 
       setUploadedFiles(newUploadedFiles)
-      setShowStepper(true)
+      setPhase('stepper')
     },
-    [t, validateFiles, showStepper, isUploading],
+    [phase, t, validateFiles],
   )
 
   const handleFileUpdate = useCallback((id: string, updates: { title: string }) => {
@@ -118,7 +138,7 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
       return
     }
 
-    setIsUploading(true)
+    setPhase('uploading')
     setUploadProgress(0)
 
     try {
@@ -133,85 +153,100 @@ export function CommandUploadDialog({ onSuccess }: CommandUploadDialogProps = {}
       )
 
       const successCount = results.filter((r) => r.success).length
-      const failedCount = results.filter((r) => !r.success).length
 
       if (successCount > 0) {
-        toast.success(t('upload.toasts.successSummary', { successCount, failedCount }))
+        await Promise.all(
+          results.map(async (result, index) => {
+            if (!result.success || !result.path) return
+
+            const file = uploadedFiles[index]?.file
+            if (!file) return
+
+            await resolveCloudFileId({
+              storageObjectName: result.path,
+              institutionId,
+              userId,
+              mimeType: file.type,
+              sizeBytes: file.size,
+              originalName: file.name,
+            })
+          }),
+        )
+
+        requestCloudGalleryRefetch()
+        onSuccess?.()
       }
 
-      if (failedCount > 0) {
-        const failedFiles = results
-          .map((r, i) => (r.success ? null : uploadedFiles[i].file.name))
-          .filter(Boolean)
-        toast.error(t('upload.toasts.failedSummary', { failedCount }), {
-          description: String(failedFiles.join(', ')),
-        })
-      }
-
-      // Reset state only if all uploads succeeded
-      if (failedCount === 0) {
-        setUploadedFiles([])
-        setShowStepper(false)
-        // Call onSuccess callback to reload files
-        if (onSuccess) {
-          onSuccess()
-        }
-      }
+      setSummaryItems(buildUploadSummaryItems(uploadedFiles, results))
+      setPhase('summary')
     } catch (error) {
       console.error('Unexpected error during upload:', error)
       toast.error(t('upload.toasts.unexpectedError'))
+      setPhase('stepper')
     } finally {
-      setIsUploading(false)
       setUploadProgress(0)
     }
   }, [t, uploadedFiles, getUserId, getRole, getUserInstitutionId, onSuccess])
 
   const handleBack = useCallback(() => {
-    setShowStepper(false)
+    setPhase('dropzone')
+    setUploadedFiles([])
   }, [])
 
+  const handleSummaryDone = useCallback(() => {
+    resetFlow()
+  }, [resetFlow])
+
   return (
-    <div className="px-0">
-      <Card className="w-full border-0 bg-transparent px-0 py-0 shadow-none">
-        <CardContent className="p-0 space-y-6">
-          {!showStepper ? (
+    <div className="min-w-0 max-w-full overflow-hidden px-0">
+      <Card className="w-full min-w-0 max-w-full border-0 bg-transparent px-0 py-0 shadow-none">
+        <CardContent className="min-w-0 space-y-6 p-0">
+          {phase === 'dropzone' ? (
             <FileDropzone
               onFilesSelected={handleFilesSelected}
               disabled={false}
             />
-          ) : (
-            <>
-              {isUploading && (
-                <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-card p-6">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                  <div className="text-center">
-                    <Text
-                      as="p"
-                      variant="body"
-                      className="text-sm font-medium text-foreground"
-                    >
-                      {t('upload.progress.uploading')}
-                    </Text>
-                    <Text
-                      as="p"
-                      variant="body"
-                      className="mt-1 text-xs text-muted-foreground"
-                    >
-                      {t('upload.progress.complete', { percent: uploadProgress.toFixed(0) })}
-                    </Text>
-                  </div>
-                </div>
-              )}
-              {!isUploading && (
-                <FileStepperForm
-                  files={uploadedFiles}
-                  onFileUpdate={handleFileUpdate}
-                  onComplete={handleComplete}
-                  onBack={handleBack}
-                />
-              )}
-            </>
-          )}
+          ) : null}
+
+          {phase === 'uploading' ? (
+            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border/70 bg-card/80 p-6 backdrop-blur-md supports-backdrop-filter:bg-card/60">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <div className="text-center">
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm font-medium text-foreground"
+                >
+                  {t('upload.progress.uploading')}
+                </Text>
+                <Text
+                  as="p"
+                  variant="body"
+                  muted
+                  className="mt-1 text-xs"
+                >
+                  {t('upload.progress.complete', { percent: uploadProgress.toFixed(0) })}
+                </Text>
+              </div>
+            </div>
+          ) : null}
+
+          {phase === 'stepper' ? (
+            <FileStepperForm
+              files={uploadedFiles}
+              onFileUpdate={handleFileUpdate}
+              onComplete={handleComplete}
+              onBack={handleBack}
+            />
+          ) : null}
+
+          {phase === 'summary' ? (
+            <UploadSummary
+              items={summaryItems}
+              onDone={handleSummaryDone}
+              doneLabel={t('upload.summary.done')}
+            />
+          ) : null}
         </CardContent>
       </Card>
     </div>

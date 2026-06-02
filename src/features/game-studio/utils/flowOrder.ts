@@ -1,6 +1,6 @@
 import type { Node, Edge } from '@xyflow/react'
 
-const PLAYABLE_NODE_TYPES = ['gameParagraph', 'gameImageTerms', 'gameImagePin'] as const
+const PLAYABLE_NODE_TYPES = ['gameImagePin'] as const
 
 function isPlayableType(type: string | undefined): type is (typeof PLAYABLE_NODE_TYPES)[number] {
   return type != null && PLAYABLE_NODE_TYPES.includes(type as (typeof PLAYABLE_NODE_TYPES)[number])
@@ -8,7 +8,7 @@ function isPlayableType(type: string | undefined): type is (typeof PLAYABLE_NODE
 
 /**
  * Returns playable game nodes in flow order: from start node, following edges.
- * Only nodes with type gameParagraph, gameImageTerms, or gameImagePin are included.
+ * Only nodes with type gameImagePin are included.
  */
 export function getOrderedPlayableNodes(nodes: Node[], edges: Edge[]): Node[] {
   const byId = new Map(nodes.map((n) => [n.id, n]))
@@ -77,12 +77,7 @@ export interface IfElseResolution {
  * At each gameIfElse node, follows the edge whose sourceHandle matches correctPath
  * ('A' → right-top, 'B' → right-bottom). Other nodes: follow the single outgoing edge.
  */
-const PREVIEW_NODE_TYPES = [
-  'gameParagraph',
-  'gameImageTerms',
-  'gameImagePin',
-  'gameIfElse',
-] as const
+const PREVIEW_NODE_TYPES = ['gameImagePin', 'gameIfElse'] as const
 
 function isPreviewType(type: string | undefined): type is (typeof PREVIEW_NODE_TYPES)[number] {
   return type != null && PREVIEW_NODE_TYPES.includes(type as (typeof PREVIEW_NODE_TYPES)[number])

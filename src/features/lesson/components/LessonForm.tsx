@@ -10,30 +10,34 @@ import { Text } from '@/components/ui/text'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { LESSON_CONTENT_SCHEMA_VERSION } from '../utils/createDefaultLessonLexicalState'
 
 export type LessonFormProps = {
   topicId?: string
   courseId?: string
-  onLessonCreated?: () => void
 }
 
-export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormProps) {
+const LESSON_DESCRIPTION_MAX_LENGTH = 120
+
+export function LessonForm({ topicId, courseId }: LessonFormProps) {
   const { t } = useTranslation('features.course')
   const [newLesson, setNewLesson] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { createLesson } = useLesson()
+  const withinDescriptionLimit = description.length <= LESSON_DESCRIPTION_MAX_LENGTH
   const bothFieldsFilled = Boolean(newLesson.trim() && description.trim() && topicId)
+  const canCreate = bothFieldsFilled && withinDescriptionLimit && !loading
 
   const handleCreateLesson = async () => {
-    if (!bothFieldsFilled || !topicId) return
+    if (!canCreate || !topicId) return
 
     setLoading(true)
     try {
       const createdLesson = await createLesson({
+        contentSchemaVersion: LESSON_CONTENT_SCHEMA_VERSION,
         title: newLesson.trim(),
-        content: '',
         description: description.trim(),
         topic_id: topicId,
       })
@@ -46,7 +50,6 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
       toast.success(t('createLesson.toasts.success'))
       setNewLesson('')
       setDescription('')
-      onLessonCreated?.()
     } catch (error) {
       toast.error(t('createLesson.toasts.error'))
       console.error('Failed to create lesson:', error)
@@ -56,7 +59,7 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
   }
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="animate-in fade-in-0 slide-in-from-bottom-4 flex w-full flex-col gap-4 duration-300 ease-out">
       <div className="flex flex-col gap-2">
         <FieldCard>
           <FieldInput
@@ -67,14 +70,10 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
           />
           <FieldTextarea
             value={description}
-            onValueChange={(nextDescription) => {
-              if (nextDescription.length <= 120) {
-                setDescription(nextDescription)
-              }
-            }}
+            onValueChange={setDescription}
             label={t('createLesson.descriptionLabel')}
             placeholder={t('createLesson.descriptionPlaceholder')}
-            maxLength={120}
+            maxLength={LESSON_DESCRIPTION_MAX_LENGTH}
             rows={3}
           />
         </FieldCard>
@@ -83,12 +82,13 @@ export function LessonForm({ topicId, courseId, onLessonCreated }: LessonFormPro
         <Button
           variant="darkblue"
           onClick={handleCreateLesson}
-          disabled={loading || !bothFieldsFilled}
+          disabled={!canCreate}
         >
           {loading ? (
             <Spinner
-              size="sm"
-              variant="white"
+              variant="darkblue"
+              size="xs"
+              className="shrink-0"
             />
           ) : (
             <Plus className="h-6 w-6" />

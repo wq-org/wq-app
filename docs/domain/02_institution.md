@@ -100,6 +100,32 @@ flowchart TD
 - Creates: `institution_invites` row with secret token
 - Invitee redeems via: `redeem_institution_invite(token)` after sign-up (profile email must match the invite)
 
+**Invite state machine**
+
+```
+pending  ── redeem_institution_invite ──▶ accepted   (accepted_at set)
+   │
+   └────── revoke_institution_invite ──▶ revoked    (revoked_at, revoked_by set)
+```
+
+- Expiry (`expires_at < now()`) is a _time predicate_ — the row stays pending until either redeemed or revoked. Use `revoke_expired_institution_invites(institution_id?)` to bulk-revoke stale rows so the email slot frees up.
+- Uniqueness rule: the partial unique index `idx_institution_invites_institution_id_email_pending` is `(institution_id, LOWER(email)) WHERE accepted_at IS NULL AND revoked_at IS NULL`. Revoked rows do NOT block new invites for the same email.
+
+**Revoke an invite (super_admin / institution_admin)**
+
+- RPC: `revoke_institution_invite(invite_id) → boolean`
+  - `institution_admin` invites: super_admin only.
+  - `teacher` / `student` invites: super_admin or active institution_admin for the invite's institution.
+  - Idempotent on revoked rows (returns `false`); raises if the invite was already accepted.
+- Effect: sets `revoked_at = now()`, `revoked_by = auth.uid()`. The emailed link is rejected by `redeem_institution_invite` and by the anon validate-token policy. A new invite for the same email can be created immediately.
+
+**Bulk-clean expired invites**
+
+- RPC: `revoke_expired_institution_invites(institution_id uuid DEFAULT NULL) → integer`
+- `institution_id = NULL`: super_admin only — sweeps every institution.
+- `institution_id` set: super_admin or institution_admin of that institution.
+- Returns the count of rows soft-revoked.
+
 **Assign teacher to faculty / programme**
 
 - Table: `institution_staff_scopes`
@@ -216,7 +242,7 @@ Schule für Farbe und Gestaltung  [institutions row]
 ├── institution_subscriptions (plan_id, billing_status, seats_cap, storage_bytes_cap, renewal_at, grace_ends_at)
 ├── institution_entitlement_overrides (feature_id → typed value, reason, starts_at, ends_at)
 ├── institution_invoice_records (amount_cents, status, issued_at, paid_at)
-├── institution_invites (email, role, token, expires_at, accepted_at)
+├── institution_invites (email, role, token, expires_at, accepted_at, revoked_at, revoked_by)
 ├── institution_staff_scopes (teacher_id → faculty_id, programme_id)
 └── data_subject_requests (subject_user_id, request_type, status)
 │

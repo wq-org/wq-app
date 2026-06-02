@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import sys
 from pathlib import Path
@@ -136,7 +138,7 @@ def check_policy_name(raw_name: str, file: Path, line: int | None) -> None:
         return
     parts = name.split("_")
     if len(parts) < 3:
-        fail(f"{loc}: policy '{name}' should follow <table>_<action>_<role> (see docs/architecture/db_naming_convention.md)")
+        fail(f"{loc}: policy '{name}' should follow <table>_<action>_<role> (see docs/architecture/principle_database.md)")
 
 
 def check_fk_constraint(name: str, file: Path, line: int | None) -> None:

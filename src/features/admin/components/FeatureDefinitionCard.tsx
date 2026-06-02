@@ -64,7 +64,9 @@ export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDe
   const titleContent: ReactNode = (
     <CardTitle
       ref={titleRef}
-      className="line-clamp-2 overflow-hidden text-ellipsis text-sm font-semibold leading-tight"
+      clampLines={2}
+      title={displayName}
+      className="text-sm font-semibold leading-tight"
     >
       {displayName}
     </CardTitle>

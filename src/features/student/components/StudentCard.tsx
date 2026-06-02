@@ -12,7 +12,10 @@ export function StudentCard({ username, email, imgSrc }: StudentCardProps) {
   return (
     <Card className="w-80 aspect-square flex flex-col items-center justify-center shadow-lg rounded-4xl">
       <CardContent className="flex flex-col items-center justify-center p-6 h-full w-full">
-        <Avatar className="w-24 h-24 mb-4 shadow">
+        <Avatar
+          size="xl"
+          className="mb-4 shadow"
+        >
           <AvatarImage
             src={imgSrc}
             alt={'name'}

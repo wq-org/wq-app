@@ -1,7 +1,32 @@
+export { CardInstantPreview } from './card-instant-preview'
+export type {
+  CardInstantPreviewCardProps,
+  CardInstantPreviewImageCardProps,
+  CardInstantPreviewImagePosition,
+  CardInstantPreviewLayout,
+  CardInstantPreviewListItemProps,
+  CardInstantPreviewListItemVariant,
+  CardInstantPreviewMediaType,
+  CardInstantPreviewPdfCardProps,
+  CardInstantPreviewVideoCardProps,
+  CardInstantPreviewProps,
+} from './card-instant-preview'
+export {
+  CARD_INSTANT_PREVIEW_MEDIA,
+  getCardInstantPreviewMediaVariant,
+  isCardInstantPreviewImageCard,
+  isCardInstantPreviewPdfCard,
+  isCardInstantPreviewVideoCard,
+} from './card-instant-preview'
+export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
+export type { CardInstantPreviewMediaVariant } from './card-instant-preview'
+export { BasicPdfViewer, configurePdfJsWorker } from './pdf-viewer'
+export type { BasicPdfViewerProps } from './pdf-viewer'
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
-export { DateRangePicker } from './calendar'
+export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
 export type { DateRangePickerProps } from './calendar'
+
 export { DocumentEditor, DocumentEditor as Editor } from './editors'
 export { DocumentSlashMenuPlugin } from './editors'
 export type { DocumentEditorProps, DocumentEditorProps as EditorProps } from './editors'
@@ -14,11 +39,23 @@ export {
 } from './editors'
 export { FaqList } from './FaqList'
 export type { FaqItem, FaqListProps } from './FaqList'
+export { HelpPopover } from './HelpPopover'
+export type { HelpPopoverProps } from './HelpPopover'
 export { ContainerSlider } from './containers'
-export { FollowersDrawer, SelectAvatarDrawer } from './drawers'
-export type { FollowersDrawerProps, SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
+export { SelectAvatarDrawer } from './drawers'
+export type { SelectAvatarDrawerProps, SelectAvatarOption } from './drawers'
 export { GridIconBackground } from './GridIconBackground'
 export type { IconEntry } from './GridIconBackground'
+export { InfiniteScrollSentinel } from './InfiniteScrollSentinel'
+export type { InfiniteScrollSentinelProps } from './InfiniteScrollSentinel'
+export { AnimatedBeam, AnimatedBeamHub } from './animated-beam'
+export { BeamHubBadge } from './BeamHubBadge'
+export type {
+  AnimatedBeamDirection,
+  AnimatedBeamHubNode,
+  AnimatedBeamHubProps,
+  AnimatedBeamProps,
+} from './animated-beam'
 export {
   FacebookIcon,
   InstagramIcon,
@@ -26,8 +63,16 @@ export {
   ThreadsIcon,
   TikTokIcon,
   TwitterIcon,
+  AgentComputerIcon,
+  type AgentComputerIconVariant,
 } from './icons'
 export { IconPreviewCardSquare, IconPreviewCardWide } from './IconPreviewCard'
+export {
+  LexicalTextarea,
+  emptyLexicalEditorState,
+  normalizeLexicalEditorState,
+} from './lexical-textarea'
+export type { LexicalTextareaProps } from './lexical-textarea'
 export {
   AdvancedPasswordStrengthIndicatorProgress,
   ClearableInput,
@@ -36,12 +81,18 @@ export {
   MinimalInputWithoutBordersBackground,
   QuantityStepper,
 } from './inputs'
+export { LoadingPage } from './LoadingPage'
+export type { LoadingPageProps } from './LoadingPage'
 export { LanguageSwitcher } from './LanguageSwitcher'
 export { ImageCarousel, PdfPreview, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'
 export { SidebarAccountMenu, SidebarPrimaryNav, SidebarWorkspaceSwitcher } from './sidebar'
 export { ExpandableBillingUsageCard } from './ExpandableBillingUsageCard'
 export type { ExpandableBillingUsageCardProps, UsageRow } from './ExpandableBillingUsageCard'
+export { PlanFeaturesCard } from './billing'
+export type { PlanFeaturesCardProps } from './billing'
+export { SubscriptionPlanPopover } from './billing'
+export type { SubscriptionPlanPopoverProps } from './billing'
 export { InvoiceList } from './InvoiceList'
 export type {
   InvoiceListItem,
@@ -77,6 +128,8 @@ export { default as StatsTrending } from './StatsTrending'
 export { StatsUsageBreakdown } from './StatsUsageBreakdown'
 export { default as StatsUsageDashboard } from './StatsUsageDashboard'
 export { StatsValueBreakdown } from './StatsValueBreakdown'
+export { SuccessDialog } from './SuccessDialog'
+export type { SuccessDialogProps } from './SuccessDialog'
 export {
   RatingSliderEmojiFeedback,
   SliderDynamicTooltipIndicator,
@@ -109,8 +162,14 @@ export type {
   ToggleIconSwapOnPressProps,
   ToggleNotificationCountBadgeProps,
 } from './toggles'
-export { SelectTabs } from './tabs'
-export type { SelectTabsProps, TabItem } from './tabs'
+export {
+  SelectTabs,
+  SelectTabsContent,
+  TabsContent,
+  SELECT_TABS_DEFAULT_TAB_TITLE,
+  resolveSelectTabDisplayTitle,
+} from './tabs'
+export type { SelectTabsProps, TabItem, SelectTabsContentProps, TabsContentProps } from './tabs'
 export {
   SkeletonLoaderAvatarsUserInfo,
   SkeletonLoaderCard,
@@ -118,9 +177,11 @@ export {
   SkeletonLoaderDashboardStatsRow,
   SkeletonLoaderDataTable,
   SkeletonLoaderForActions,
+  LessonTextSkeleton,
   SkeletonLoaderTextParagraphs,
 } from './skeletons'
-export { ThemeModeToggle } from './ThemeModeToggle'
+export { ThemeAppearanceMenu, ThemeModePopover, ThemeModeToggle } from './ThemeModeToggle'
+export type { ThemeAppearanceMenuProps } from './ThemeModeToggle'
 export {
   BasicTree,
   FileExplorerTreeTypeIcons,
@@ -151,6 +212,7 @@ export type {
   PaymentMethodRadioCardOption,
   PaymentMethodRadioCardsProps,
 } from './PaymentMethodRadioCards'
+export { TwoColumnDialog } from './TwoColumnDialog'
 export { PricingComparator } from './PricingComparator'
 export type {
   PricingColumn,
@@ -160,7 +222,13 @@ export type {
 } from './PricingComparator'
 export { SwitchListCardIcons } from './SwitchListCardIcons'
 export type { SwitchListCardIconsItem, SwitchListCardIconsProps } from './SwitchListCardIcons'
-export { showUnsavedChangesToast } from './toasts'
+export {
+  dismissSaveStatusToast,
+  showSaveStatusToast,
+  showUnsavedChangesToast,
+  type SaveStatusToastOptions,
+  type SaveStatusToastTone,
+} from './toasts'
 export {
   deleteFile,
   fetchFilesByRole,
@@ -179,7 +247,7 @@ export {
 } from './upload-files'
 export type {
   ALL_ALLOWED_TYPES,
-  ALLOWED_FILE_TYPES,
+  ALLOWED_DOCUMENT_TYPES,
   ALLOWED_IMAGE_TYPES,
   ALLOWED_VIDEO_TYPES,
   MAX_VIDEO_DURATION,
@@ -195,3 +263,23 @@ export type {
   FileValidationResult,
   UploadedFile,
 } from './upload-files'
+
+export { DateTimePicker, TimePickerWithIcon } from './date-time'
+export {
+  Ai01,
+  Ai02,
+  Ai03,
+  AiPromptBadgeList,
+  AI02_DEFAULT_MODELS,
+  AI02_DEFAULT_PROMPTS,
+  AI03_MENU_ACTION_IDS,
+} from './ai-components'
+export type {
+  Ai01Props,
+  Ai02ModelOption,
+  Ai02PromptSuggestion,
+  Ai02Props,
+  AiPromptBadgeListProps,
+  Ai03MenuActionId,
+  Ai03Props,
+} from './ai-components'

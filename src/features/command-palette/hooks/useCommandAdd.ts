@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { createCourse } from '@/features/course'
-import { createInstitution } from '@/features/auth'
+import { createInstitution, getRoleRoutePrefix } from '@/features/auth'
 import { createGameForStudio } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
@@ -12,6 +13,7 @@ import type { ThemeId } from '@/lib/themes'
 interface UseCommandAddOptions {
   onCourseCreated?: () => void
   onRequestClose?: () => void
+  initialType?: AddType
 }
 
 const DEFAULT_THEME: ThemeId = 'blue'
@@ -33,23 +35,28 @@ export interface CommandAddState {
 export function useCommandAdd({
   onCourseCreated,
   onRequestClose,
+  initialType,
 }: UseCommandAddOptions): CommandAddState {
   const { t } = useTranslation('features.commandPalette')
   const navigate = useNavigate()
-  const { profile } = useUser()
+  const { profile, getRole } = useUser()
   const { addNode } = useGameStudioContext()
 
-  const [selectedType, setSelectedType] = useState<AddType | null>(null)
+  const [selectedType, setSelectedType] = useState<AddType | null>(initialType ?? null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [themeId, setThemeId] = useState<ThemeId>(DEFAULT_THEME)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    setSelectedType(initialType ?? null)
+  }, [initialType])
+
   const reset = () => {
     setTitle('')
     setDescription('')
     setThemeId(DEFAULT_THEME)
-    setSelectedType(null)
+    setSelectedType(initialType ?? null)
   }
 
   const handleCreate = async () => {
@@ -102,6 +109,26 @@ export function useCommandAdd({
         )
         reset()
         onRequestClose?.()
+        return
+      }
+
+      if (selectedType === 'note') {
+        toast.info(t('addDialog.toasts.noteNotWired'))
+        reset()
+        onRequestClose?.()
+        return
+      }
+
+      if (selectedType === 'task') {
+        const prefix = getRoleRoutePrefix(getRole())
+        reset()
+        onRequestClose?.()
+        if (prefix) {
+          navigate(`${prefix}/tasks`)
+          return
+        }
+        toast.info(t('addDialog.toasts.taskNotWired'))
+        return
       }
     } catch (error) {
       console.error('[CommandAdd] failed:', error)

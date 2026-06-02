@@ -1,7 +1,12 @@
 import { useCallback } from 'react'
 import type { Node, Edge } from '@xyflow/react'
-import type { HistoryState } from '../types/game-studio.types'
 import { getGameForStudio, updateGameForStudio } from '../api/gameStudioApi'
+
+interface HistoryState {
+  nodes: Node[]
+  edges: Edge[]
+}
+
 import { serializeFlowGameConfig } from '../utils/gameConfigSerialization'
 import { useUser } from '@/contexts/user'
 
@@ -35,15 +40,15 @@ export function useGamePersistence(options: UseGamePersistenceOptions): {
     await updateGameForStudio(projectId, {
       title: gameTitle,
       description,
-      game_config: gameConfig,
+      game_content: gameConfig,
     })
   }, [projectId, getUserId, getNodes, getEdges, getGameTitle])
 
   const load = useCallback(async (): Promise<HistoryState | null> => {
     if (!projectId) return null
     const game = await getGameForStudio(projectId)
-    if (!game?.game_config?.nodes?.length) return null
-    const config = game.game_config
+    if (!game?.game_content?.nodes?.length) return null
+    const config = game.game_content
     const nodes: Node[] = config.nodes.map((n) => ({
       id: n.id,
       type: n.type,

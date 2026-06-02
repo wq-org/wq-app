@@ -77,6 +77,38 @@
       "action": "Aktion",
       "viewDetails": "Details anzeigen"
     },
+    "actions": {
+      "menu": "Aktionen",
+      "viewDetails": "Details anzeigen",
+      "changeRole": "Rolle ändern",
+      "transferOwnership": "Eigentum übertragen"
+    },
+    "roles": {
+      "institution_admin": "Institutions-Admin",
+      "teacher": "Lehrkraft",
+      "student": "Schüler:in"
+    },
+    "changeRoleDialog": {
+      "title": "Rolle ändern",
+      "description": "Profil- und Mitgliedschaftsrolle des aktiven Institutions-Admins für {{name}} aktualisieren.",
+      "userLabel": "Nutzer:in",
+      "emailLabel": "E-Mail",
+      "currentRoleLabel": "Aktuelle Rolle",
+      "newRoleLabel": "Neue Rolle",
+      "noAdmin": "Kein aktiver Institutions-Admin für diese Institution gefunden.",
+      "loadError": "Institutions-Admin konnte nicht geladen werden",
+      "cancel": "Abbrechen",
+      "confirmHold": "Zum Bestätigen gedrückt halten",
+      "success": "Rolle aktualisiert",
+      "successDescription": "{{email}} ist jetzt {{role}}.",
+      "error": "Rolle konnte nicht aktualisiert werden"
+    },
+    "transferOwnershipDialog": {
+      "title": "Eigentum übertragen",
+      "description": "Eigentum von {{name}} auf eine andere Person übertragen. Dieser Ablauf ist noch nicht verfügbar.",
+      "cancel": "Abbrechen",
+      "transfer": "Übertragen"
+    },
     "empty": {
       "title": "Noch keine Institutionen",
       "description": "Erstelle deine erste Institution, um loszulegen.",
@@ -101,6 +133,19 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Wird gespeichert..."
+    },
+    "details": {
+      "back": "Zurück zur Übersicht",
+      "description": "Profil, Kontakte, Rechnungsfelder und Abonnement dieser Institution prüfen.",
+      "notFound": "Institution nicht gefunden oder kein Zugriff mehr.",
+      "tabs": {
+        "overview": "Übersicht",
+        "subscription": "Abonnement"
+      },
+      "subscriptionAlreadyActive": "Diese Institution hat bereits ein aktives Abonnement.",
+      "assigningSubscription": "Abonnement wird zugewiesen…",
+      "subscriptionAssigned": "Abonnement zugewiesen.",
+      "subscriptionAssignError": "Abonnement konnte nicht zugewiesen werden."
     }
   },
   "institutionInvites": {
@@ -132,7 +177,9 @@
     },
     "sheet": {
       "title": "Einladungsdetails",
-      "subtitle": "Ablauf, einladende Person und Annahme unten (nur lesen)."
+      "subtitle": "Ablauf, einladende Person und Annahme unten (nur lesen).",
+      "pendingInviteHint": "Diese Einladung wurde noch nicht eingelöst.",
+      "acceptedNoUserId": "Angenommen, aber keine Benutzer-ID in dieser Zeile gespeichert."
     }
   },
   "users": {
@@ -305,7 +352,8 @@
       "notFound": "Diese Funktionsdefinition wurde nicht gefunden.",
       "dangerZone": "Gefahrenbereich",
       "deleteHint": "Beim Löschen wird der Katalogeintrag entfernt. Das schlägt fehl, wenn ein Plan oder Override noch darauf verweist.",
-      "holdToDelete": "Zum Löschen halten"
+      "holdToDelete": "Zum Löschen halten",
+      "delete": "Funktion löschen"
     },
     "empty": {
       "title": "Noch keine Funktionen",
@@ -343,6 +391,9 @@
       "key": "Schlüssel",
       "keyPlaceholder": "z. B. custom_reports",
       "keyReadOnlyHint": "Der Schlüssel bleibt fest, damit bestehende Planzeilen stabil referenzieren können.",
+      "keyCopyAria": "Funktionsschlüssel in die Zwischenablage kopieren",
+      "keyCopySuccess": "Funktionsschlüssel kopiert",
+      "keyCopyError": "Schlüssel konnte nicht kopiert werden",
       "storedKey": "Gespeicherter Schlüssel:",
       "name": "Anzeigename",
       "namePlaceholder": "Menschenlesbare Bezeichnung",
@@ -548,6 +599,9 @@
       "adminEmailHint": "Das ist die E-Mail-Adresse des künftigen Institution-Admins. Mit genau dieser Adresse legt die Person ihr Konto an, nachdem sie die Einladung per E-Mail erhalten hat.",
       "inviteAlertTitle": "Einladungs-E-Mail",
       "inviteAlertDescription": "Nach der Erstellung wird ein Einladungslink an die angegebene E-Mail-Adresse gesendet. Der Link ist 30 Minuten gültig."
+    },
+    "review": {
+      "structureHint": "Sobald Programme angelegt sind, können Klassengruppen Codes wie {{exampleCode}} (Präfix {{prefix}}) verwenden — konsistent mit der Namenslogik im Rest der Anwendung."
     },
     "billing": {
       "legalName": "Rechtlicher Name",

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { DoorOpen, Mail, UserMinus, UsersRound } from 'lucide-react'
+import { DoorOpen, Eraser, Mail, Trash2, UserMinus, UserRoundPlus, UsersRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -22,9 +22,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useUser } from '@/contexts/user'
 
 import {
-  fetchInstitutionUserDirectory,
   resendTeacherStudentInviteEmail,
+  revokeExpiredTeacherStudentInvites,
+  revokeTeacherStudentInvite,
 } from '../api/institutionUserInvitesApi'
+import { useInstitutionUsers } from '../hooks/useInstitutionUsers'
 import { AssignClassGroupDialog } from '../components/AssignClassGroupDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { InstitutionUsersEmptyState } from '../components/InstitutionUsersEmptyState'
@@ -68,34 +70,16 @@ const InstitutionUsers = () => {
   const [userActionsPopoverId, setUserActionsPopoverId] = useState<string | null>(null)
   const [dialog, setDialog] = useState<InstitutionUsersDialogState>(null)
   const [removeLoading, setRemoveLoading] = useState(false)
-
-  const [directory, setDirectory] = useState<InstitutionDirectoryRow[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
   const [resendToken, setResendToken] = useState<string | null>(null)
 
-  const refreshDirectory = useCallback(async () => {
-    if (!institutionId) {
-      setDirectory([])
-      setIsLoading(false)
-      return
-    }
-    setLoadError(null)
-    setIsLoading(true)
-    try {
-      const rows = await fetchInstitutionUserDirectory(institutionId)
-      setDirectory(rows)
-    } catch (e) {
-      setLoadError(e instanceof Error ? e.message : 'Failed to load users')
-      setDirectory([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [institutionId])
-
-  useEffect(() => {
-    void refreshDirectory()
-  }, [refreshDirectory])
+  const {
+    users: directory,
+    isLoading,
+    error: loadError,
+    refresh,
+  } = useInstitutionUsers(institutionId)
+  const [revokingToken, setRevokingToken] = useState<string | null>(null)
+  const [isCleaningExpired, setIsCleaningExpired] = useState(false)
 
   const filteredDirectory = useMemo(() => {
     if (!roleFilter) return directory
@@ -177,6 +161,49 @@ const InstitutionUsers = () => {
     }
   }
 
+  async function handleRevokeInvite(row: InstitutionInviteDirectoryRow) {
+    setRevokingToken(row.invite_token)
+    setUserActionsPopoverId(null)
+    try {
+      await revokeTeacherStudentInvite(row.invite_id)
+      toast.success(t('users.toasts.revokeInviteSuccess', { defaultValue: 'Invite revoked' }))
+      await refresh()
+    } catch (e) {
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : t('users.toasts.revokeInviteError', { defaultValue: 'Failed to revoke invite' }),
+      )
+    } finally {
+      setRevokingToken(null)
+    }
+  }
+
+  async function handleCleanupExpired() {
+    if (!institutionId) return
+    setIsCleaningExpired(true)
+    try {
+      const count = await revokeExpiredTeacherStudentInvites(institutionId)
+      toast.success(
+        t('users.toasts.cleanupExpiredSuccess', {
+          defaultValue: 'Cleaned up {{count}} expired invite(s)',
+          count,
+        }),
+      )
+      await refresh()
+    } catch (e) {
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : t('users.toasts.cleanupExpiredError', {
+              defaultValue: 'Failed to clean up expired invites',
+            }),
+      )
+    } finally {
+      setIsCleaningExpired(false)
+    }
+  }
+
   function renderStatusCell(row: InstitutionDirectoryRow) {
     if (row.rowKind === 'invite') {
       return <Badge variant="secondary">{t('users.inviteStatus.pendingEmail')}</Badge>
@@ -195,7 +222,7 @@ const InstitutionUsers = () => {
       <div className="flex flex-col gap-6 py-10 px-4 animate-in fade-in-0 slide-in-from-bottom-4">
         <div className="flex flex-col gap-3 animate-in fade-in-0 slide-in-from-bottom-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">{t('users.pageTitle')}</h1>
+            <h1 className="text-2xl font-semibold">{t('users.pageTitle')}</h1>
             <p className="text-sm text-muted-foreground">{t('users.subtitle')}</p>
             {roleFilter ? (
               <p className="mt-1 text-xs text-muted-foreground">
@@ -206,14 +233,28 @@ const InstitutionUsers = () => {
             ) : null}
             {loadError ? <p className="mt-2 text-sm text-destructive">{loadError}</p> : null}
           </div>
-          <Button
-            type="button"
-            variant="darkblue"
-            className="shrink-0 self-start"
-            onClick={() => navigate('/institution_admin/users/invite-users')}
-          >
-            {t('users.inviteUsersCta')}
-          </Button>
+          <div className="flex shrink-0 flex-wrap items-center gap-2 self-start">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => void handleCleanupExpired()}
+              disabled={!institutionId || isCleaningExpired || isLoading}
+            >
+              <Eraser className="size-4" />
+              {isCleaningExpired
+                ? t('users.cleanupRunning', { defaultValue: 'Cleaning…' })
+                : t('users.cleanupExpired', { defaultValue: 'Clean up expired' })}
+            </Button>
+            <Button
+              type="button"
+              variant="darkblue"
+              onClick={() => navigate('/institution_admin/users/invite-users')}
+            >
+              <UserRoundPlus />
+              {t('users.inviteUsersCta')}
+            </Button>
+          </div>
         </div>
 
         {!institutionId ? (
@@ -237,9 +278,7 @@ const InstitutionUsers = () => {
                 {t('users.totalHeading')}
               </span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-semibold tabular-nums text-gray-900">
-                  {totalUsers}
-                </span>
+                <span className="text-2xl font-semibold tabular-nums">{totalUsers}</span>
                 {roleFilter && totalUsers !== totalAll ? (
                   <span className="text-xs text-muted-foreground">
                     {t('users.totalOfInstitution', { total: totalAll })}
@@ -266,7 +305,7 @@ const InstitutionUsers = () => {
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
+                        <Avatar size="sm">
                           {row.rowKind === 'member' ? (
                             <>
                               <AvatarImage
@@ -327,20 +366,40 @@ const InstitutionUsers = () => {
                             align="end"
                             className="w-64 p-2"
                           >
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="w-full justify-start font-normal"
-                              disabled={resendToken === row.invite_token}
-                              onClick={() => void handleResendInvite(row)}
-                            >
-                              <Mail
-                                className="size-4 shrink-0"
-                                aria-hidden
-                              />
-                              {t('users.actions.resendInvitation')}
-                            </Button>
+                            <div className="flex flex-col gap-1">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                disabled={resendToken === row.invite_token}
+                                onClick={() => void handleResendInvite(row)}
+                              >
+                                <Mail
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {t('users.actions.resendInvitation')}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="delete"
+                                size="sm"
+                                className="w-full justify-start font-normal"
+                                disabled={revokingToken === row.invite_token}
+                                onClick={() => void handleRevokeInvite(row)}
+                              >
+                                <Trash2
+                                  className="size-4 shrink-0"
+                                  aria-hidden
+                                />
+                                {revokingToken === row.invite_token
+                                  ? t('users.actions.revokingInvite', { defaultValue: 'Revoking…' })
+                                  : t('users.actions.revokeInvite', {
+                                      defaultValue: 'Revoke invite',
+                                    })}
+                              </Button>
+                            </div>
                           </PopoverContent>
                         </Popover>
                       ) : (

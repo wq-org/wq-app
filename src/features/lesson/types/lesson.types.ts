@@ -1,47 +1,47 @@
-import type { YooptaContentValue } from '@yoopta/editor'
-import type { LESSON_BLOCK_TYPES } from '../config/yooptaBlocks'
+import type { SerializedEditorState } from 'lexical'
 
-export type LessonBlockType = (typeof LESSON_BLOCK_TYPES)[number]
+export type LessonDraftState = SerializedEditorState
 
-export type LessonFileKind = 'file' | 'image' | 'pdf' | 'video'
-
-export type LessonFileTag = {
-  kind: LessonFileKind
-  mimeType: string | null
-  name: string
-  path: string
-  size: number | null
+export type LessonBlockTypeRegistryRow = {
+  block_type: string
+  category: string
+  is_lexical_core: boolean
+  plugin_key: string | null
+  created_at: string
 }
 
-export type LessonPage = {
-  content: YooptaContentValue
-  id: string
-  order: number
-}
-
+/**
+ * Lesson metadata row plus optional draft content.
+ * The canonical Lexical draft now lives on `lessons.content`.
+ */
 export type Lesson = {
-  content: string
-  created_at?: string
-  description: string
   id: string
-  pages: LessonPage[]
   title: string
-  topic_id: string
+  description: string
+  content?: LessonDraftState | null
+  contentSchemaVersion?: number
+  created_at?: string
   updated_at?: string
 }
 
+export type LessonTopicRef = {
+  id: string
+  topic_id: string
+}
+
+/** Payload for creating a lesson row; editor body is persisted via `lessons.content`. */
 export type CreateLessonData = {
-  content: string
   description: string
-  pages?: LessonPage[]
+  content?: LessonDraftState | null
+  contentSchemaVersion?: number
   title: string
   topic_id: string
 }
 
 export type UpdateLessonData = Partial<{
-  content: string
+  content: LessonDraftState
+  contentSchemaVersion: number
   description: string
-  pages: LessonPage[]
   title: string
 }>
 

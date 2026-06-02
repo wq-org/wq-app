@@ -14,35 +14,32 @@ export const ALLOWED_IMAGE_TYPES: string[] = ['image/jpeg', 'image/jpg', 'image/
 
 export const ALLOWED_VIDEO_TYPES: string[] = ['video/mp4']
 
-export const ALLOWED_FILE_TYPES: string[] = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'application/vnd.ms-powerpoint',
-]
+export const ALLOWED_DOCUMENT_TYPES: string[] = ['application/pdf']
 
 export type AllowedFileType =
   | (typeof ALLOWED_IMAGE_TYPES)[number]
   | (typeof ALLOWED_VIDEO_TYPES)[number]
-  | (typeof ALLOWED_FILE_TYPES)[number]
+  | (typeof ALLOWED_DOCUMENT_TYPES)[number]
 
-// Combined array for easy use in file input accept attribute
+/** MIME types accepted by cloud upload (images, PDF, MP4). */
 export const ALL_ALLOWED_TYPES: string[] = [
   ...ALLOWED_IMAGE_TYPES,
   ...ALLOWED_VIDEO_TYPES,
-  ...ALLOWED_FILE_TYPES,
+  ...ALLOWED_DOCUMENT_TYPES,
 ]
 
 export const MAX_VIDEO_DURATION = 60 // seconds
 
 // File upload types
+export type FileUploadErrorCode = 'duplicate' | 'validation' | 'storage' | 'unknown'
+
 export interface FileUploadResult {
   success: boolean
   path?: string
   publicUrl?: string
   error?: string
   fileName?: string
+  code?: FileUploadErrorCode
 }
 
 export interface FileUploadOptions {
@@ -52,6 +49,11 @@ export interface FileUploadOptions {
   title?: string
   role: string // Role for storage path (e.g., 'teachers', 'students', 'institutionAdmins', 'superAdmins')
   onProgress?: (progress: number) => void
+  /**
+   * When set (batch uploads), storage paths in this set are skipped without upsert so one
+   * collision does not overwrite another file in the same batch.
+   */
+  batchPathsClaimed?: Set<string>
 }
 
 // File list types

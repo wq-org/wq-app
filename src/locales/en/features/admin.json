@@ -77,6 +77,38 @@
       "action": "Action",
       "viewDetails": "View Details"
     },
+    "actions": {
+      "menu": "Actions",
+      "viewDetails": "View Details",
+      "changeRole": "Change Role",
+      "transferOwnership": "Transfer Ownership"
+    },
+    "roles": {
+      "institution_admin": "Institution admin",
+      "teacher": "Teacher",
+      "student": "Student"
+    },
+    "changeRoleDialog": {
+      "title": "Change role",
+      "description": "Update the active institution admin profile and membership role for {{name}}.",
+      "userLabel": "User",
+      "emailLabel": "Email",
+      "currentRoleLabel": "Current role",
+      "newRoleLabel": "New role",
+      "noAdmin": "No active institution admin found for this institution.",
+      "loadError": "Could not load institution admin",
+      "cancel": "Cancel",
+      "confirmHold": "Hold to confirm role change",
+      "success": "Role updated",
+      "successDescription": "{{email}} is now {{role}}.",
+      "error": "Could not update role"
+    },
+    "transferOwnershipDialog": {
+      "title": "Transfer ownership",
+      "description": "Transfer ownership of {{name}} to another user. This flow is not available yet.",
+      "cancel": "Cancel",
+      "transfer": "Transfer"
+    },
     "empty": {
       "title": "No institutions yet",
       "description": "Create your first institution to get started.",
@@ -101,6 +133,19 @@
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving..."
+    },
+    "details": {
+      "back": "Back to institutions",
+      "description": "Review institution profile, contacts, billing fields, and subscription.",
+      "notFound": "Institution not found or you no longer have access.",
+      "tabs": {
+        "overview": "Overview",
+        "subscription": "Subscription"
+      },
+      "subscriptionAlreadyActive": "This institution already has an active subscription.",
+      "assigningSubscription": "Assigning subscription…",
+      "subscriptionAssigned": "Subscription assigned.",
+      "subscriptionAssignError": "Could not assign subscription."
     }
   },
   "institutionInvites": {
@@ -132,7 +177,9 @@
     },
     "sheet": {
       "title": "Invite details",
-      "subtitle": "Expires at, inviter, and acceptance are shown below (read-only)."
+      "subtitle": "Expires at, inviter, and acceptance are shown below (read-only).",
+      "pendingInviteHint": "This invite has not been redeemed yet.",
+      "acceptedNoUserId": "Accepted, but no user ID is recorded on this row."
     }
   },
   "users": {
@@ -305,7 +352,8 @@
       "notFound": "This feature definition could not be found.",
       "dangerZone": "Danger zone",
       "deleteHint": "Deleting removes the catalog row. This fails if a plan or override still references it.",
-      "holdToDelete": "Hold to delete"
+      "holdToDelete": "Hold to delete",
+      "delete": "Delete feature"
     },
     "empty": {
       "title": "No features yet",
@@ -343,6 +391,9 @@
       "key": "Key",
       "keyPlaceholder": "e.g. custom_reports",
       "keyReadOnlyHint": "The key is fixed so existing plan rows keep a stable reference.",
+      "keyCopyAria": "Copy feature key to clipboard",
+      "keyCopySuccess": "Feature key copied to clipboard",
+      "keyCopyError": "Could not copy the feature key",
       "storedKey": "Stored key:",
       "name": "Display name",
       "namePlaceholder": "Human-readable label",
@@ -550,6 +601,9 @@
       "adminEmailHint": "This is the email address of the future institution admin. They will use this exact address to create their account after they receive the invitation email.",
       "inviteAlertTitle": "Invite email",
       "inviteAlertDescription": "After creation we will send an invite link to the given email address. The link is valid for 30 minutes."
+    },
+    "review": {
+      "structureHint": "Once programmes exist, class groups may use codes like {{exampleCode}} (prefix {{prefix}}), consistent with how naming works elsewhere in the product."
     },
     "billing": {
       "legalName": "Legal name",

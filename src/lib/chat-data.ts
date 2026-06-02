@@ -14,6 +14,7 @@ export type Message = {
   time: string
   isMe: boolean
   images?: string[]
+  status?: 'loading' | 'ready'
 }
 
 export const SAMPLE_CONTACTS: Contact[] = [

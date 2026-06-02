@@ -1,27 +1,24 @@
 import {
-  Hand,
+  Cloud,
   Home,
-  MessagesSquare,
-  MousePointer2,
+  MessageCircle,
+  NotebookPen,
   Plus,
   Search as SearchIcon,
-  Settings as SettingsIcon,
-  SplinePointer,
   Upload,
 } from 'lucide-react'
-import { USER_ROLES } from '@/features/auth'
+import { USER_ROLES, getRoleRoutePrefix } from '@/features/auth'
 import type {
   CommandBarContext,
   CommandBarGroup,
   CommandBarItem,
   CommandRoleContext,
 } from '../types/command-bar.types'
+import { isCommandBarView } from './commandRoles'
+import { VIEW_COMMAND_ITEMS } from './commandAddOptions'
 
-const COMMAND_ROUTE_PREFIX_BY_ROLE: Record<CommandRoleContext, string> = {
-  [USER_ROLES.TEACHER]: '/teacher',
-  [USER_ROLES.INSTITUTION_ADMIN]: '/institution_admin',
-  [USER_ROLES.STUDENT]: '/student',
-  [USER_ROLES.SUPER_ADMIN]: '/super_admin',
+function rolePrefix(role: CommandRoleContext): string {
+  return getRoleRoutePrefix(role) ?? '/teacher'
 }
 
 const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]> = {
@@ -30,7 +27,7 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       id: 'home',
       labelKey: 'actions.dashboard',
       icon: Home,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.TEACHER]}/dashboard`,
+      to: `${rolePrefix(USER_ROLES.TEACHER)}/dashboard`,
     },
     {
       id: 'search',
@@ -39,16 +36,22 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'search',
     },
     {
-      id: 'studio',
-      labelKey: 'actions.studio',
-      icon: SplinePointer,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.TEACHER]}/game-studio`,
-    },
-    {
       id: 'chat',
       labelKey: 'actions.chat',
-      icon: MessagesSquare,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.TEACHER]}/chat`,
+      icon: MessageCircle,
+      to: `${rolePrefix(USER_ROLES.TEACHER)}/chat`,
+    },
+    {
+      id: 'cloud',
+      labelKey: 'actions.cloud',
+      icon: Cloud,
+      to: `${rolePrefix(USER_ROLES.TEACHER)}/cloud`,
+    },
+    {
+      id: 'add-new',
+      labelKey: 'actions.addNew',
+      icon: Plus,
+      actionId: 'add',
     },
     {
       id: 'upload',
@@ -57,10 +60,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'upload',
     },
     {
-      id: 'add-new',
-      labelKey: 'actions.addNew',
-      icon: Plus,
-      actionId: 'add',
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.TEACHER)}/notes`,
     },
   ],
   [USER_ROLES.INSTITUTION_ADMIN]: [
@@ -68,7 +71,7 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       id: 'home',
       labelKey: 'actions.dashboard',
       icon: Home,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.INSTITUTION_ADMIN]}/dashboard`,
+      to: `${rolePrefix(USER_ROLES.INSTITUTION_ADMIN)}/dashboard`,
     },
     {
       id: 'search',
@@ -77,10 +80,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'search',
     },
     {
-      id: 'upload',
-      labelKey: 'actions.upload',
-      icon: Upload,
-      actionId: 'upload',
+      id: 'cloud',
+      labelKey: 'actions.cloud',
+      icon: Cloud,
+      to: `${rolePrefix(USER_ROLES.INSTITUTION_ADMIN)}/cloud-storage`,
     },
     {
       id: 'add-new',
@@ -88,13 +91,25 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       icon: Plus,
       actionId: 'add',
     },
+    {
+      id: 'upload',
+      labelKey: 'actions.upload',
+      icon: Upload,
+      actionId: 'upload',
+    },
+    {
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.INSTITUTION_ADMIN)}/notes`,
+    },
   ],
   [USER_ROLES.STUDENT]: [
     {
       id: 'home',
       labelKey: 'actions.dashboard',
       icon: Home,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.STUDENT]}/dashboard`,
+      to: `${rolePrefix(USER_ROLES.STUDENT)}/dashboard`,
     },
     {
       id: 'search',
@@ -105,14 +120,14 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
     {
       id: 'chat',
       labelKey: 'actions.chat',
-      icon: MessagesSquare,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.STUDENT]}/chat`,
+      icon: MessageCircle,
+      to: `${rolePrefix(USER_ROLES.STUDENT)}/chat`,
     },
     {
-      id: 'upload',
-      labelKey: 'actions.upload',
-      icon: Upload,
-      actionId: 'upload',
+      id: 'cloud',
+      labelKey: 'actions.cloud',
+      icon: Cloud,
+      to: `${rolePrefix(USER_ROLES.STUDENT)}/files`,
     },
     {
       id: 'add',
@@ -120,13 +135,25 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       icon: Plus,
       actionId: 'add',
     },
+    {
+      id: 'upload',
+      labelKey: 'actions.upload',
+      icon: Upload,
+      actionId: 'upload',
+    },
+    {
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.STUDENT)}/notes`,
+    },
   ],
   [USER_ROLES.SUPER_ADMIN]: [
     {
       id: 'home',
       labelKey: 'actions.dashboard',
       icon: Home,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.SUPER_ADMIN]}/dashboard`,
+      to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/dashboard`,
     },
     {
       id: 'search',
@@ -135,10 +162,10 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       actionId: 'search',
     },
     {
-      id: 'upload',
-      labelKey: 'actions.upload',
-      icon: Upload,
-      actionId: 'upload',
+      id: 'cloud',
+      labelKey: 'actions.cloud',
+      icon: Cloud,
+      to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/files`,
     },
     {
       id: 'add-new',
@@ -146,61 +173,21 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
       icon: Plus,
       actionId: 'add',
     },
-  ],
-  'game-studio': [
-    {
-      id: 'home',
-      labelKey: 'actions.dashboard',
-      icon: Home,
-      actionId: 'home',
-    },
-    {
-      id: 'pan',
-      labelKey: 'navigation.pan',
-      icon: Hand,
-      actionId: 'pan',
-    },
-    {
-      id: 'select',
-      labelKey: 'navigation.select',
-      icon: MousePointer2,
-      actionId: 'select',
-    },
     {
       id: 'upload',
       labelKey: 'actions.upload',
       icon: Upload,
       actionId: 'upload',
     },
-  ],
-}
-
-const commandSystemItemsByRole: Record<CommandRoleContext, readonly CommandBarItem[]> = {
-  [USER_ROLES.TEACHER]: [
     {
-      id: 'settings',
-      labelKey: 'actions.settings',
-      icon: SettingsIcon,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.TEACHER]}/settings`,
+      id: 'notebook',
+      labelKey: 'actions.notebook',
+      icon: NotebookPen,
+      to: `${rolePrefix(USER_ROLES.SUPER_ADMIN)}/notes`,
     },
   ],
-  [USER_ROLES.INSTITUTION_ADMIN]: [
-    {
-      id: 'settings',
-      labelKey: 'actions.settings',
-      icon: SettingsIcon,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.INSTITUTION_ADMIN]}/settings`,
-    },
-  ],
-  [USER_ROLES.STUDENT]: [
-    {
-      id: 'settings',
-      labelKey: 'actions.settings',
-      icon: SettingsIcon,
-      to: `${COMMAND_ROUTE_PREFIX_BY_ROLE[USER_ROLES.STUDENT]}/settings`,
-    },
-  ],
-  [USER_ROLES.SUPER_ADMIN]: [],
+  'game-studio': [...VIEW_COMMAND_ITEMS['game-studio']],
+  lessons: [...VIEW_COMMAND_ITEMS.lessons],
 }
 
 const commandGroupsByContext: Record<CommandRoleContext, readonly CommandBarGroup[]> = {
@@ -209,19 +196,11 @@ const commandGroupsByContext: Record<CommandRoleContext, readonly CommandBarGrou
       id: USER_ROLES.TEACHER,
       items: [...commandItemsByContext[USER_ROLES.TEACHER]],
     },
-    {
-      id: 'user',
-      items: [...commandSystemItemsByRole[USER_ROLES.TEACHER]],
-    },
   ],
   [USER_ROLES.INSTITUTION_ADMIN]: [
     {
       id: USER_ROLES.INSTITUTION_ADMIN,
       items: [...commandItemsByContext[USER_ROLES.INSTITUTION_ADMIN]],
-    },
-    {
-      id: 'user',
-      items: [...commandSystemItemsByRole[USER_ROLES.INSTITUTION_ADMIN]],
     },
   ],
   [USER_ROLES.STUDENT]: [
@@ -229,25 +208,17 @@ const commandGroupsByContext: Record<CommandRoleContext, readonly CommandBarGrou
       id: USER_ROLES.STUDENT,
       items: [...commandItemsByContext[USER_ROLES.STUDENT]],
     },
-    {
-      id: 'user',
-      items: [...commandSystemItemsByRole[USER_ROLES.STUDENT]],
-    },
   ],
   [USER_ROLES.SUPER_ADMIN]: [
     {
       id: USER_ROLES.SUPER_ADMIN,
       items: [...commandItemsByContext[USER_ROLES.SUPER_ADMIN]],
     },
-    {
-      id: 'user',
-      items: [...commandSystemItemsByRole[USER_ROLES.SUPER_ADMIN]],
-    },
   ],
 }
 
 export function getRoutePrefixForRole(role: CommandRoleContext): string {
-  return COMMAND_ROUTE_PREFIX_BY_ROLE[role]
+  return rolePrefix(role)
 }
 
 export function getCommandGroupsByRole(role: CommandRoleContext): readonly CommandBarGroup[] {
@@ -255,18 +226,14 @@ export function getCommandGroupsByRole(role: CommandRoleContext): readonly Comma
 }
 
 export function getCommandBarGroups(
-  role: CommandRoleContext,
+  _role: CommandRoleContext,
   context: CommandBarContext,
 ): CommandBarGroup[] {
-  if (context === 'game-studio') {
+  if (isCommandBarView(context)) {
     return [
       {
-        id: 'game-studio',
-        items: [...commandItemsByContext['game-studio']],
-      },
-      {
-        id: 'user',
-        items: [...commandSystemItemsByRole[role]],
+        id: context,
+        items: [...commandItemsByContext[context]],
       },
     ]
   }

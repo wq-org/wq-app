@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useCallback, useId, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import {
   Dialog,
   DialogContent,
@@ -16,20 +15,14 @@ import {
 } from '@/components/ui/dialog'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
-import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { FeatureDefinitionEditorForm } from '../components/FeatureDefinitionEditorForm'
 import { useFeatureDefinitionsBasePath } from '../hooks/useFeatureDefinitionsBasePath'
-import {
-  createFeatureDefinition,
-  deleteFeatureDefinition,
-  getFeatureDefinitionById,
-  updateFeatureDefinition,
-} from '../api/featureDefinitionsApi'
+import { useFeatureDefinitionEditor } from '../hooks/useFeatureDefinitionEditor'
 import { useFeatureDefinitionCategories } from '../hooks/useFeatureDefinitionCategories'
-import type { FeatureDefinition } from '../types/featureDefinitions.types'
+import type { FeatureDefinitionEditorFormValues } from '../types/featureDefinitions.types'
 
 const AdminFeatureDefinitionEditor = () => {
   const { featureId } = useParams<{ featureId: string }>()
@@ -37,7 +30,10 @@ const AdminFeatureDefinitionEditor = () => {
   const location = useLocation()
   const { t } = useTranslation('features.admin')
   const basePath = useFeatureDefinitionsBasePath()
-  const isNew = featureId === 'new'
+
+  const { isNew, feature, isLoading, loadError, notFound, saving, deleting, save, remove } =
+    useFeatureDefinitionEditor(featureId)
+
   const focusCategoryField =
     isNew &&
     typeof location.state === 'object' &&
@@ -46,88 +42,25 @@ const AdminFeatureDefinitionEditor = () => {
     (location.state as { focusCategory?: boolean }).focusCategory === true
 
   const { dbCategories } = useFeatureDefinitionCategories()
-  const [feature, setFeature] = useState<FeatureDefinition | null>(null)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(!isNew)
-  const [saving, setSaving] = useState(false)
 
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [confirmKey, setConfirmKey] = useState('')
-  const [deleting, setDeleting] = useState(false)
   const deleteConfirmInputId = useId()
+
+  const displayLoadError = loadError ?? (notFound ? t('featureDefinitions.editor.notFound') : null)
 
   const handleBack = useCallback(() => {
     navigate(basePath)
   }, [navigate, basePath])
 
-  useEffect(() => {
-    if (isNew || !featureId) {
-      setFeature(null)
-      setLoadError(null)
-      setIsLoading(false)
-      return
-    }
-
-    let cancelled = false
-    setIsLoading(true)
-    setLoadError(null)
-
-    getFeatureDefinitionById(featureId)
-      .then((row) => {
-        if (cancelled) return
-        if (!row) {
-          setLoadError(t('featureDefinitions.editor.notFound'))
-          setFeature(null)
-        } else {
-          setFeature(row)
-        }
-      })
-      .catch((e: Error) => {
-        if (!cancelled) setLoadError(e.message)
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [featureId, isNew, t])
-
-  const handleSubmit = async (values: {
-    key: string
-    name: string
-    description: string
-    category: string
-    valueType: FeatureDefinition['valueType']
-    defaultEnabled: boolean
-  }) => {
-    setSaving(true)
+  const handleSubmit = async (values: FeatureDefinitionEditorFormValues) => {
     try {
-      if (isNew) {
-        await createFeatureDefinition({
-          key: values.key,
-          name: values.name,
-          description: values.description.trim() ? values.description.trim() : null,
-          category: values.category.trim() ? values.category.trim() : null,
-          value_type: values.valueType,
-          default_enabled: values.defaultEnabled,
-        })
-        toast.success(t('featureDefinitions.toasts.createSuccess'))
-        navigate(basePath)
-        return
-      }
-
-      if (!feature) return
-
-      await updateFeatureDefinition(feature.id, {
-        name: values.name,
-        description: values.description.trim() ? values.description.trim() : null,
-        category: values.category.trim() ? values.category.trim() : null,
-        value_type: values.valueType,
-        default_enabled: values.defaultEnabled,
-      })
-      toast.success(t('featureDefinitions.toasts.updateSuccess'))
+      await save(values)
+      toast.success(
+        isNew
+          ? t('featureDefinitions.toasts.createSuccess')
+          : t('featureDefinitions.toasts.updateSuccess'),
+      )
       navigate(basePath)
     } catch (e) {
       toast.error(
@@ -136,16 +69,13 @@ const AdminFeatureDefinitionEditor = () => {
           : t('featureDefinitions.toasts.updateError'),
         { description: e instanceof Error ? e.message : t('featureDefinitions.toasts.unexpected') },
       )
-    } finally {
-      setSaving(false)
     }
   }
 
   const handleDelete = async () => {
     if (!feature || confirmKey !== feature.key) return
-    setDeleting(true)
     try {
-      await deleteFeatureDefinition(feature.id)
+      await remove()
       toast.success(t('featureDefinitions.toasts.deleteSuccess'))
       setDeleteOpen(false)
       navigate(basePath)
@@ -160,8 +90,6 @@ const AdminFeatureDefinitionEditor = () => {
           ? t('featureDefinitions.toasts.deleteBlockedByReferences')
           : msg || t('featureDefinitions.toasts.unexpected'),
       })
-    } finally {
-      setDeleting(false)
     }
   }
 
@@ -215,14 +143,14 @@ const AdminFeatureDefinitionEditor = () => {
               speed={1750}
             />
           </div>
-        ) : loadError && !isNew ? (
+        ) : displayLoadError && !isNew ? (
           <Text
             as="p"
             variant="small"
             color="danger"
             role="alert"
           >
-            {loadError}
+            {displayLoadError}
           </Text>
         ) : (
           <>
@@ -255,12 +183,13 @@ const AdminFeatureDefinitionEditor = () => {
                   {t('featureDefinitions.editor.deleteHint')}
                 </Text>
                 <div className="mt-4">
-                  <HoldToDeleteButton
-                    variant="outline"
-                    onDelete={handleOpenDeleteDialog}
+                  <Button
+                    type="button"
+                    variant="delete"
+                    onClick={handleOpenDeleteDialog}
                   >
-                    {t('featureDefinitions.editor.holdToDelete')}
-                  </HoldToDeleteButton>
+                    {t('featureDefinitions.editor.delete')}
+                  </Button>
                 </div>
               </div>
             ) : null}
@@ -284,26 +213,18 @@ const AdminFeatureDefinitionEditor = () => {
               <p className="mb-3 text-sm text-muted-foreground">
                 {t('featureDefinitions.deleteDialog.confirmLabel', { key: feature.key })}
               </p>
-              <div className="flex flex-col gap-2">
-                <Label
-                  htmlFor={deleteConfirmInputId}
-                  className="text-sm font-medium leading-none"
-                >
-                  {t('featureDefinitions.deleteDialog.confirmFieldLabel')}
-                </Label>
-                <FieldInput
-                  id={deleteConfirmInputId}
-                  label={t('featureDefinitions.deleteDialog.confirmInputAria')}
-                  placeholder={feature.key}
-                  value={confirmKey}
-                  onValueChange={setConfirmKey}
-                  autoComplete="off"
-                  disabled={deleting}
-                />
-              </div>
+              <FieldInput
+                id={deleteConfirmInputId}
+                label={t('featureDefinitions.deleteDialog.confirmFieldLabel')}
+                placeholder={feature.key}
+                value={confirmKey}
+                onValueChange={setConfirmKey}
+                autoComplete="off"
+                disabled={deleting}
+              />
             </FieldCard>
           ) : null}
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -314,7 +235,7 @@ const AdminFeatureDefinitionEditor = () => {
             </Button>
             <Button
               type="button"
-              variant="destructive"
+              variant="delete"
               disabled={deleting || !feature || confirmKey !== feature.key}
               onClick={() => void handleDelete()}
             >

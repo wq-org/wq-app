@@ -6,6 +6,11 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import type { VariantProps } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-variants'
+import {
+  holdConfirmButtonVariants,
+  holdConfirmContentVariants,
+  holdConfirmProgressVariants,
+} from '@/components/ui/hold-confirm-button-variants'
 import { Text } from '@/components/ui/text'
 
 type HoldConfirmVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
@@ -18,14 +23,6 @@ interface HoldConfirmButtonProps extends Omit<React.ComponentProps<typeof Button
   /** Optional icon. Defaults to Check. */
   icon?: React.ReactNode
 }
-
-/** Blue-only progress and hold text (confirm semantics). */
-const CONFIRM_PROGRESS_CLASS = 'bg-blue-200'
-const CONFIRM_CONTENT_HOLD_CLASS = 'text-blue-600'
-
-/** Normal + hover look to match card action buttons (e.g. Öffnen). Press/hold state unchanged. */
-const CONFIRM_DEFAULT_APPEARANCE =
-  'text-blue-500 border-0 hover:opacity-80 hover:bg-blue-100 hover:text-blue-500 hover:duration-200 active:animate-in active:zoom-in-95'
 
 function HoldConfirmButton({
   className,
@@ -87,7 +84,11 @@ function HoldConfirmButton({
       type="button"
       variant={variant}
       size={size}
-      className={cn('relative overflow-hidden select-none', CONFIRM_DEFAULT_APPEARANCE, className)}
+      className={cn(
+        'relative overflow-hidden select-none',
+        holdConfirmButtonVariants({ variant: variant === 'orange' ? 'orange' : 'darkblue' }),
+        className,
+      )}
       onMouseDown={startHold}
       onMouseUp={resetHold}
       onMouseLeave={resetHold}
@@ -101,7 +102,7 @@ function HoldConfirmButton({
         variant="small"
         className={cn(
           'absolute inset-0 origin-left',
-          CONFIRM_PROGRESS_CLASS,
+          holdConfirmProgressVariants({ variant: variant === 'orange' ? 'orange' : 'darkblue' }),
           isHolding ? 'transition-none' : 'transition-transform duration-300 ease-out',
         )}
         style={{
@@ -114,7 +115,8 @@ function HoldConfirmButton({
         variant="small"
         className={cn(
           'relative z-10 flex items-center gap-2 transition-colors duration-150',
-          isHolding && CONFIRM_CONTENT_HOLD_CLASS,
+          isHolding &&
+            holdConfirmContentVariants({ variant: variant === 'orange' ? 'orange' : 'darkblue' }),
         )}
       >
         {icon ?? <Check className="size-5 shrink-0" />}

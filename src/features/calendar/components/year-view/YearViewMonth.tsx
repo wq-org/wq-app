@@ -1,0 +1,89 @@
+import { useMemo } from 'react'
+import { format, getDaysInMonth, isSameDay, parseISO, startOfMonth } from 'date-fns'
+
+import { useCalendar } from '../../contexts/useCalendar'
+
+import { YearViewDayCell } from './YearViewDayCell'
+
+import type { IEvent } from '../../types/calendar.types'
+
+type YearViewMonthProps = {
+  month: Date
+  events: IEvent[]
+}
+
+const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+export function YearViewMonth({ month, events }: YearViewMonthProps) {
+  const { setSelectedDate, onViewChange } = useCalendar()
+
+  const monthName = format(month, 'MMMM')
+
+  const daysInMonth = useMemo(() => {
+    const totalDays = getDaysInMonth(month)
+    const firstDay = startOfMonth(month).getDay()
+
+    const days = Array.from({ length: totalDays }, (_, i) => i + 1)
+    const blanks = Array(firstDay).fill(null)
+
+    return [...blanks, ...days]
+  }, [month])
+
+  const handleClick = () => {
+    setSelectedDate(new Date(month.getFullYear(), month.getMonth(), 1))
+    onViewChange('month')
+  }
+
+  return (
+    <div className="flex flex-col">
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-full rounded-t-lg border px-3 py-2 text-sm font-semibold hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      >
+        {monthName}
+      </button>
+
+      <div className="flex-1 space-y-2 rounded-b-lg border border-t-0 p-3">
+        <div className="grid grid-cols-7 gap-x-0.5 text-center">
+          {WEEK_DAYS.map((day, index) => (
+            <div
+              key={index}
+              className="text-xs font-medium text-muted-foreground"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-x-0.5 gap-y-2">
+          {daysInMonth.map((day, index) => {
+            if (day === null)
+              return (
+                <div
+                  key={`blank-${index}`}
+                  className="h-10"
+                />
+              )
+
+            const date = new Date(month.getFullYear(), month.getMonth(), day)
+            const dayEvents = events.filter(
+              (event) =>
+                isSameDay(parseISO(event.startDate), date) ||
+                isSameDay(parseISO(event.endDate), date),
+            )
+
+            return (
+              <YearViewDayCell
+                key={`day-${day}`}
+                day={day}
+                date={date}
+                events={dayEvents}
+              />
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}

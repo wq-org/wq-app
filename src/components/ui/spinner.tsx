@@ -4,11 +4,14 @@ import { cva, type VariantProps } from 'class-variance-authority'
 const spinnerVariants = cva('origin-center overflow-visible will-change-transform', {
   variants: {
     variant: {
+      primary: '[--uib-color:theme(colors.foreground)]',
       gray: '[--uib-color:theme(colors.gray.800)]',
       light: '[--uib-color:theme(colors.gray.200)]',
       white: '[--uib-color:theme(colors.white)]',
       black: '[--uib-color:theme(colors.black)]',
       darkblue: '[--uib-color:theme(colors.blue.500)]',
+      red: '[--uib-color:theme(colors.red.500)]',
+      teal: '[--uib-color:theme(colors.teal.600)]',
     },
     size: {
       xs: 'h-4 w-4 [--uib-size:16px] [--stroke-width:2px]',
@@ -19,7 +22,7 @@ const spinnerVariants = cva('origin-center overflow-visible will-change-transfor
     },
   },
   defaultVariants: {
-    variant: 'gray',
+    variant: 'primary',
     size: 'md',
   },
 })
@@ -73,7 +76,7 @@ export function Spinner({ className, variant, size, speed = 2000, ...props }: Sp
         role="status"
         aria-live="polite"
         aria-label="Loading"
-        className={cn(spinnerVariants({ variant, size }), className)}
+        className={cn(spinnerVariants({ variant, size }), 'shrink-0', className)}
         style={
           {
             '--uib-speed': `${speedInSeconds}s`,

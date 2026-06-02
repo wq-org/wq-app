@@ -60,7 +60,7 @@ export function FileDropzone({ onFilesSelected, disabled = false, accept }: File
   return (
     <div
       className={cn(
-        'relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed py-8 transition-colors animate-in fade-in-0 slide-in-from-bottom-2',
+        'relative flex min-h-[200px] w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed py-8 transition-colors animate-in fade-in-0 slide-in-from-bottom-2',
         disabled
           ? 'cursor-not-allowed border-border bg-muted/60 opacity-50'
           : isDragging

@@ -13,9 +13,17 @@ type AppShellProps = {
   className?: string
   /** Override which command bar to show (role-based or view-based). When not set, uses `role`. */
   commandBarContext?: CommandBarContext
+  /** Called after command-palette file upload succeeds (e.g. refresh cloud gallery). */
+  onFilesUploaded?: () => void
 }
 
-export function AppShell({ children, role, className, commandBarContext }: AppShellProps) {
+export function AppShell({
+  children,
+  role,
+  className,
+  commandBarContext,
+  onFilesUploaded,
+}: AppShellProps) {
   const effectiveContext: CommandBarContext = commandBarContext ?? role
   const { applyAppTheme } = useTheme()
 
@@ -26,8 +34,11 @@ export function AppShell({ children, role, className, commandBarContext }: AppSh
   return (
     <>
       <AppNavigation />
-      <main className={cn('min-h-screen', className)}>{children}</main>
-      <CommandPalette commandBarContext={effectiveContext} />
+      <main className={cn('min-h-screen', '-mt-10', className)}>{children}</main>
+      <CommandPalette
+        commandBarContext={effectiveContext}
+        onFilesUploaded={onFilesUploaded}
+      />
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Edit, Eye, Settings } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Edit, Gamepad2, Settings } from 'lucide-react'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 
@@ -10,7 +11,7 @@ interface GameLayoutProps {
   previewContent?: ReactNode
   settingsContent?: ReactNode
   previewOnly?: boolean
-  /** When true, show only preview content (no Editor/Preview/Settings tabs). Used in game-play. */
+  /** When true, show only preview content (no Editor/Preview/Settings tabs). */
   playMode?: boolean
 }
 type TabType = 'editor' | 'preview' | 'settings'
@@ -23,6 +24,7 @@ export function GameLayout({
   previewOnly = false,
   playMode = false,
 }: GameLayoutProps) {
+  const { t } = useTranslation('features.gameStudio')
   const [activeTab, setActiveTab] = useState<TabType>('editor')
 
   if (previewOnly || playMode) {
@@ -30,13 +32,13 @@ export function GameLayout({
   }
 
   const tabs: TabItem[] = [
-    { id: 'editor', icon: Edit, title: 'Editor' },
-    { id: 'preview', icon: Eye, title: 'Preview' },
-    { id: 'settings', icon: Settings, title: 'Settings' },
+    { id: 'editor', icon: Edit, title: t('nodeLayout.editorTab') },
+    { id: 'preview', icon: Gamepad2, title: t('nodeLayout.previewTab') },
+    { id: 'settings', icon: Settings, title: t('nodeLayout.settingsTab') },
   ]
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col h-full">
       {/* Tabs */}
       <SelectTabs
         tabs={tabs}
@@ -45,7 +47,7 @@ export function GameLayout({
       />
 
       {/* Tab Content */}
-      <div className="mt-6">
+      <div className="mt-6 flex min-h-0 flex-1 flex-col">
         {activeTab === 'editor' && <>{editorContent || children}</>}
         {activeTab === 'preview' && <>{previewContent}</>}
         {activeTab === 'settings' && <>{settingsContent}</>}

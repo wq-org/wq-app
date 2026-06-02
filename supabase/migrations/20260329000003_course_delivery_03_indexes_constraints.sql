@@ -35,16 +35,23 @@ BEGIN
       FOREIGN KEY (course_delivery_id) REFERENCES public.course_deliveries (id) ON DELETE SET NULL;
   END IF;
 
-  IF NOT EXISTS (
+  IF EXISTS (
     SELECT 1
-    FROM information_schema.table_constraints
+    FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'point_ledger'
-      AND constraint_name = 'fk_point_ledger_course_deliveries'
   ) THEN
-    ALTER TABLE public.point_ledger
-      ADD CONSTRAINT fk_point_ledger_course_deliveries
-      FOREIGN KEY (course_delivery_id) REFERENCES public.course_deliveries (id) ON DELETE SET NULL;
+    IF NOT EXISTS (
+      SELECT 1
+      FROM information_schema.table_constraints
+      WHERE table_schema = 'public'
+        AND table_name = 'point_ledger'
+        AND constraint_name = 'fk_point_ledger_course_deliveries'
+    ) THEN
+      ALTER TABLE public.point_ledger
+        ADD CONSTRAINT fk_point_ledger_course_deliveries
+        FOREIGN KEY (course_delivery_id) REFERENCES public.course_deliveries (id) ON DELETE SET NULL;
+    END IF;
   END IF;
 END;
 $$;

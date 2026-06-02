@@ -1,0 +1,103 @@
+'use client'
+
+import { useRef, useState } from 'react'
+import { ArrowUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
+import { AI02_DEFAULT_PROMPTS } from './ai-components.constants'
+import { AiPromptBadgeList } from './AiPromptBadgeList'
+import type { Ai02Props } from './ai-components.types'
+
+export function Ai02({
+  className,
+  placeholder = 'Ask anything',
+  prompts = AI02_DEFAULT_PROMPTS,
+  value: controlledValue,
+  defaultValue = '',
+  onValueChange,
+  onSubmit,
+  clearOnSubmit = true,
+}: Ai02Props) {
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const isControlled = controlledValue !== undefined
+  const [internalValue, setInternalValue] = useState(defaultValue)
+  const inputValue = isControlled ? controlledValue : internalValue
+
+  const setText = (next: string) => {
+    if (!isControlled) {
+      setInternalValue(next)
+    }
+    onValueChange?.(next)
+  }
+
+  const handlePromptClick = (prompt: string) => {
+    setText(prompt)
+    inputRef.current?.focus()
+  }
+
+  const handleSubmit = () => {
+    const message = inputValue.trim()
+    if (!message) return
+    onSubmit?.(message)
+    if (clearOnSubmit && !isControlled) {
+      setInternalValue('')
+    }
+  }
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    handleSubmit()
+  }
+
+  const handleComposerKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter') return
+    if (e.nativeEvent.isComposing) return
+    if (e.shiftKey) return
+    e.preventDefault()
+    handleSubmit()
+  }
+
+  const canSend = Boolean(inputValue.trim())
+
+  return (
+    <div className={cn('flex w-full flex-col gap-4', className)}>
+      <AiPromptBadgeList
+        prompts={prompts}
+        onPromptClick={handlePromptClick}
+      />
+
+      <form
+        onSubmit={handleFormSubmit}
+        className="flex min-h-[120px] cursor-text flex-col rounded-2xl border border-border bg-transparent"
+      >
+        <div className="relative max-h-[100px] flex-1 overflow-y-auto">
+          <Textarea
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleComposerKeyDown}
+            placeholder={placeholder}
+            className="min-h-[48.4px] w-full resize-none border-0 bg-transparent p-3 text-[16px] wrap-break-word whitespace-pre-wrap text-foreground shadow-none outline-none transition-[padding] duration-200 ease-in-out focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-input/0 "
+          />
+        </div>
+
+        <div className="flex min-h-10 items-center gap-2 p-2 pb-1">
+          <div className="ml-auto flex items-center gap-3">
+            <Button
+              type="submit"
+              variant="default"
+              size="icon-sm"
+              disabled={!canSend}
+              className={cn('cursor-pointer rounded-full')}
+              aria-label="Send message"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </form>
+    </div>
+  )
+}

@@ -1,13 +1,10 @@
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
-const StudentViewPage = () => {
-  const { id } = useParams<{ id: string }>()
-  return (
-    <Navigate
-      to={id ? `/profile/${id}` : '/student/dashboard'}
-      replace
-    />
-  )
-}
+const StudentViewPage = () => (
+  <Navigate
+    to="/student/dashboard"
+    replace
+  />
+)
 
 export { StudentViewPage }
