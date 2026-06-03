@@ -66,17 +66,6 @@
       "publish": "Ver\u00f6ffentlichen"
     }
   },
-  "publishChecklist": {
-    "requirementsMet": "Anforderungen erf\u00fcllt",
-    "requirementsNotMet": "Anforderungen nicht erf\u00fcllt",
-    "rulesTitle": "Ver\u00f6ffentlichungsregeln",
-    "rules": {
-      "noAbandoned": "Keine verlassenen oder nicht verbundenen Knoten",
-      "linkedStartToEnd": "Alle Knoten sind von Start bis Ende verbunden",
-      "connectedPath": "Alle Knoten sind im Pfad Start bis Ende verbunden.",
-      "minimallyFilled": "Jeder Knoten ist mindestens so ausgef\u00fcllt, dass das Spiel spielbar ist."
-    }
-  },
   "settingsDrawer": {
     "title": "Einstellungen",
     "closeAriaLabel": "Einstellungen schlie\u00dfen",
@@ -84,15 +73,10 @@
     "projectTitlePlaceholder": "Projekttitel eingeben",
     "projectDescriptionLabel": "Projektbeschreibung",
     "projectDescriptionPlaceholder": "Projektbeschreibung eingeben",
-    "publishStatusLabel": "Ver\u00f6ffentlichungsstatus",
-    "publishStatus": {
-      "published": "Ver\u00f6ffentlicht",
-      "draft": "Entwurf",
-      "publishedHint": "Lernende k\u00f6nnen dieses Spiel spielen. Deaktivieren zum Zur\u00fcckziehen und Ausblenden.",
-      "draftHint": "Nutze den Ver\u00f6ffentlichen-Button in der Toolbar, um dieses Spiel f\u00fcr Lernende freizugeben."
-    },
     "versionLabel": "Version",
-    "versionValue": "Version : {{version}}",
+    "versionValue": "Version {{version}}",
+    "versionPopoverTitle": "Projektversion",
+    "versionPopoverCurrent": "Du bearbeitest Version {{version}}.",
     "rollbackLabel": "Rollback",
     "rollbackToVersion": "Rollback auf Version {{version}}",
     "noPreviousVersions": "Keine vorherigen Versionen",
@@ -101,9 +85,7 @@
       "saved": "Einstellungen gespeichert",
       "saveFailed": "Einstellungen konnten nicht gespeichert werden",
       "rolledBack": "Auf vorherige Version zur\u00fcckgesetzt",
-      "rollbackFailed": "Rollback fehlgeschlagen",
-      "unpublished": "Spiel unver\u00f6ffentlicht",
-      "unpublishFailed": "Unver\u00f6ffentlichen fehlgeschlagen"
+      "rollbackFailed": "Rollback fehlgeschlagen"
     },
     "themeLabel": "Vorschau-Thema",
     "themeHint": "Wahle den gespeicherten Vorschauhintergrund fur diese Projektkarte."
@@ -169,7 +151,6 @@
   "publishDrawer": {
     "title": "Spiel ver\u00f6ffentlichen",
     "untitledGame": "Unbenanntes Spiel",
-    "cannotPublishGame": "Spiel kann nicht ver\u00f6ffentlicht werden",
     "publishUnavailable": "Ver\u00f6ffentlichen ist nicht verf\u00fcgbar. Speichere zuerst das Projekt.",
     "publishedSuccess": "Spiel erfolgreich ver\u00f6ffentlicht!",
     "publishFailed": "Spiel konnte nicht ver\u00f6ffentlicht werden",

@@ -33,12 +33,7 @@ import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/image-pin.schema'
 import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/game-dnd-math'
 import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/constants'
-import {
-  getGameForStudio,
-  publishGame,
-  unpublishGame,
-  updateGameForStudio,
-} from '../api/gameStudioApi'
+import { getGameForStudio, publishGame, updateGameForStudio } from '../api/gameStudioApi'
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
@@ -132,7 +127,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [gameTitle, setGameTitle] = useState<string>(DEFAULT_TITLE)
   const [gameThemeId, setGameThemeId] = useState<ThemeId>('blue')
   const [projectVersion, setProjectVersion] = useState<number>(1)
-  const [isPublished, setIsPublished] = useState(false)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false)
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
@@ -164,7 +158,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     setLoadState('loading')
     getGameForStudio(projectId)
       .then((game) => {
-        if (game) setIsPublished(game.status === 'published')
         if (!game?.game_content?.nodes?.length) {
           setLoadState('loaded')
           return
@@ -555,7 +548,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
       if (status === 'publish') {
         await publishGame(projectId)
-        setIsPublished(true)
       }
     },
     [projectId, getUserId, nodes, edges, gameTitle, gameThemeId],
@@ -636,20 +628,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       toast.error('Failed to delete project')
     }
   }, [projectId, navigate])
-
-  const handleUnpublish = useCallback(async () => {
-    if (!projectId) {
-      toast.error('No project to unpublish')
-      return
-    }
-    try {
-      await unpublishGame(projectId)
-      setIsPublished(false)
-    } catch (err) {
-      console.error(err)
-      throw err
-    }
-  }, [projectId])
 
   // ---- Container measure ----
   useEffect(() => {
@@ -872,8 +850,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         themeId={gameThemeId}
         onRollback={handleSettingsRollback}
         onDelete={handleSettingsDelete}
-        isPublished={isPublished}
-        onUnpublish={handleUnpublish}
       />
       <GamePreviewDialog
         open={isPreviewDrawerOpen}
@@ -884,9 +860,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       <GamePublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
-        nodes={nodes}
-        edges={edges}
-        gameTitle={gameTitle}
         onPublish={handlePublish}
       />
 

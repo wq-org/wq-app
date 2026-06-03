@@ -66,17 +66,6 @@
       "publish": "Publish"
     }
   },
-  "publishChecklist": {
-    "requirementsMet": "Requirements met",
-    "requirementsNotMet": "Requirements not met",
-    "rulesTitle": "Publishing rules",
-    "rules": {
-      "noAbandoned": "No abandoned or disconnected nodes",
-      "linkedStartToEnd": "All nodes linked from Start to End",
-      "connectedPath": "All nodes connected (path Start to End).",
-      "minimallyFilled": "Each node minimally filled so the game is playable."
-    }
-  },
   "settingsDrawer": {
     "title": "Settings",
     "closeAriaLabel": "Close settings",
@@ -84,15 +73,10 @@
     "projectTitlePlaceholder": "Enter project title",
     "projectDescriptionLabel": "Project Description",
     "projectDescriptionPlaceholder": "Enter project description",
-    "publishStatusLabel": "Publish status",
-    "publishStatus": {
-      "published": "Published",
-      "draft": "Draft",
-      "publishedHint": "Students can play this game. Turn off to unpublish and hide it from the list.",
-      "draftHint": "Use the Publish button in the toolbar to publish this game for students."
-    },
     "versionLabel": "Version",
-    "versionValue": "Version : {{version}}",
+    "versionValue": "Version {{version}}",
+    "versionPopoverTitle": "Project version",
+    "versionPopoverCurrent": "You are editing version {{version}}.",
     "rollbackLabel": "Rollback",
     "rollbackToVersion": "Rollback to Version {{version}}",
     "noPreviousVersions": "No previous versions",
@@ -101,9 +85,7 @@
       "saved": "Settings saved",
       "saveFailed": "Failed to save settings",
       "rolledBack": "Rolled back to previous version",
-      "rollbackFailed": "Failed to rollback",
-      "unpublished": "Game unpublished",
-      "unpublishFailed": "Failed to unpublish"
+      "rollbackFailed": "Failed to rollback"
     },
     "themeLabel": "Preview Theme",
     "themeHint": "Choose the saved preview background for this project card."
@@ -169,7 +151,6 @@
   "publishDrawer": {
     "title": "Publish Game",
     "untitledGame": "Untitled Game",
-    "cannotPublishGame": "Cannot publish game",
     "publishUnavailable": "Publish is not available. Save the project first.",
     "publishedSuccess": "Game published successfully!",
     "publishFailed": "Failed to publish game",
