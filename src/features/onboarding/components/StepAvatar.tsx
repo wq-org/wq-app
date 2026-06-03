@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/carousel'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { fetchAvatars } from '../api/onboardingApi'
+import { getAllAvatarOptions } from '@/lib/avatarHelpers'
 import { createDefaultOnboardingAvatar, DEFAULT_ONBOARDING_AVATAR_SRC } from '../constants'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import type {
@@ -114,38 +114,18 @@ export function StepAvatar({ onNext, onBack, initialAvatarSrc }: StepAvatarProps
     [t],
   )
   const [api, setApi] = useState<CarouselApi>()
-  const [avatars, setAvatars] = useState<AvatarOption[]>([defaultAvatar])
+  const avatars = useMemo<AvatarOption[]>(() => {
+    const allAvatarOptions = getAllAvatarOptions().map((avatar) => ({
+      ...avatar,
+      description: avatar.description ?? '',
+    }))
+
+    return allAvatarOptions.length > 0 ? allAvatarOptions : [defaultAvatar]
+  }, [defaultAvatar])
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [heroImageFailed, setHeroImageFailed] = useState(false)
   const selectedAvatar = avatars[selectedIndex] ?? defaultAvatar
   const { url: selectedAvatarUrl } = useAvatarUrl(selectedAvatar.src)
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function loadAvatars() {
-      try {
-        const fetchedAvatars = await fetchAvatars()
-        if (cancelled) {
-          return
-        }
-
-        setAvatars(fetchedAvatars.length > 0 ? fetchedAvatars : [defaultAvatar])
-      } catch (error) {
-        console.error('Error loading avatars:', error)
-        if (!cancelled) {
-          setAvatars([defaultAvatar])
-        }
-      }
-    }
-
-    setAvatars([defaultAvatar])
-    void loadAvatars()
-
-    return () => {
-      cancelled = true
-    }
-  }, [defaultAvatar])
 
   useEffect(() => {
     if (avatars.length === 0) {

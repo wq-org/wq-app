@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Text } from '@/components/ui/text'
 import { updateProfile } from '@/features/auth'
-import { fetchAvatars, type AvatarOption } from '@/features/onboarding'
+import type { AvatarOption } from '@/features/onboarding'
 import { useUser } from '@/contexts/user'
+import { getAllAvatarOptions } from '@/lib/avatarHelpers'
 import { validateLinkedInUrl } from '@/lib/validations'
 import type { SettingsPageProps, SettingsSaveValues } from '../types/settings.types'
 import { SettingsProfileForm } from '../components/SettingsProfileForm'
@@ -13,23 +14,16 @@ import { SettingsLoadingState } from '../components/SettingsLoadingState'
 const SettingsPage = ({ role, embedded }: SettingsPageProps) => {
   const { t } = useTranslation('settings')
   const { profile, loading, getUserId, refreshProfile } = useUser()
-  const [avatarOptions, setAvatarOptions] = useState<AvatarOption[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [linkedInError, setLinkedInError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const loadAvatars = async () => {
-      try {
-        const avatars = await fetchAvatars()
-        setAvatarOptions(avatars)
-      } catch (error) {
-        console.error('Error loading avatars:', error)
-        toast.error(t('profile.toasts.avatarLoadError'))
-      }
-    }
-
-    void loadAvatars()
-  }, [t])
+  const avatarOptions = useMemo<AvatarOption[]>(
+    () =>
+      getAllAvatarOptions().map((avatar) => ({
+        ...avatar,
+        description: avatar.description ?? '',
+      })),
+    [],
+  )
 
   const formKey = useMemo(
     () =>
