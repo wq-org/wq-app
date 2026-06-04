@@ -257,7 +257,6 @@
       "openQuestion.prompt.missing": "Open Question \"{{label}}\" needs at least one exercise prompt.",
       "openQuestion.answer.missing": "Open Question \"{{label}}\" has {{count}} exercise(s) missing a reference answer.",
       "openQuestion.points.invalid": "Open Question \"{{label}}\" must award at least 1 point.",
-      "openQuestion.meta.missingTitle": "Open Question \"{{label}}\" has no title.",
       "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" has no description.",
       "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" needs at least one exercise tab.",
       "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" has a tab without a title.",
@@ -441,6 +440,7 @@
     "scoreAccordionErrorFreeTitle": "Error-free (5%)",
     "scoreAccordionErrorFreeBody": "Units, notation, rounding, and concept checks averaged per step.",
     "scoreAccordionPointsMapping": "Awarded points = Score × {{maxPoints}} (example: Score 0.437 → {{examplePoints}} points at max {{maxPoints}}).",
+    "scoreAccordionExerciseSplit": "Exercise split: {{split}} pts ({{count}} exercise(s), total stays {{maxPoints}}).",
     "scoreAccordionCarryNote": "Carry mode is the default for step scoring. Strict mode (optional) always compares against the model solution operands."
   },
   "imagePinDialog": {

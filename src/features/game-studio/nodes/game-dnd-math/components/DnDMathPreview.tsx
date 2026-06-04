@@ -138,9 +138,7 @@ export function DnDMathPreview({
   )
 
   const descriptionContent = pin.descriptionContent ?? null
-  const initialTabTitle = tabs[0]?.title?.trim() || pin.title?.trim() || ''
   const showDescription = hasLexicalEditorContent(descriptionContent)
-  const showTitle = initialTabTitle.length > 0
   const hasMultipleTabs = tabs.length > 1
 
   const avatarFallback =
@@ -507,9 +505,9 @@ export function DnDMathPreview({
       <DnDMathPreviewChatHistory
         nodeId={nodeId}
         descriptionContent={descriptionContent}
-        title={initialTabTitle}
+        title=""
         showDescription={showDescription}
-        showTitle={showTitle}
+        showTitle={false}
         previewMessages={previewMessages}
         avatarUrl={userAvatarUrl ?? undefined}
         avatarFallback={avatarFallback}

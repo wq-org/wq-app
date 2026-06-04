@@ -11,6 +11,10 @@ import {
   pscaScore,
   resolveFailedStepTokenIds,
 } from '../utils/scoring'
+import {
+  formatDnDMathScore,
+  resolveDnDMathExerciseScoreShares,
+} from '../utils/exerciseScoreDistribution'
 
 const ITERATION_ADVANCE_DELAY_MS = 1200
 
@@ -22,6 +26,31 @@ export type DnDMathPreviewGameMessage = {
   rows?: DragDropMathCanvasRow[]
   /** When true, bubble text is rendered bold (used for score feedback and tab summaries). */
   bold?: boolean
+}
+
+function buildExerciseTitleMessage(
+  nodeId: string,
+  tabIndex: number,
+  title: string,
+  seq: number,
+): DnDMathPreviewGameMessage | null {
+  const text = title.trim()
+  if (text.length === 0) return null
+  return {
+    id: `${nodeId}-tab-title-${tabIndex}-${seq}`,
+    direction: 'receiving',
+    kind: 'text',
+    text,
+    bold: true,
+  }
+}
+
+function buildInitialMessages(
+  nodeId: string,
+  tabs: readonly DragDropMathExerciseTab[],
+): DnDMathPreviewGameMessage[] {
+  const firstTitle = buildExerciseTitleMessage(nodeId, 0, tabs[0]?.title ?? '', 0)
+  return firstTitle ? [firstTitle] : []
 }
 
 type UseDnDMathPreviewGameArgs = {
@@ -47,9 +76,9 @@ function fireCorrectConfetti(): void {
 /**
  * Coordinates submit-flow state for drag-drop-math preview.
  *
- * Each exercise tab is one isolated step: PSCA scores against
- * `totalMaxScore / tabs.length`. Points and feedback reveal as soon as
- * scoring finishes. After a non-final tab, the hook waits
+ * Each exercise tab is one isolated step: PSCA scores against its
+ * distributed share of the node's max score. Points and feedback reveal
+ * as soon as scoring finishes. After a non-final tab, the hook waits
  * {@link ITERATION_ADVANCE_DELAY_MS} ms, advances the
  * current tab index, unlocks the canvas, and pushes the next tab's
  * title into the chat stream so the parent can react to a single
@@ -64,7 +93,9 @@ export function useDnDMathPreviewGame({
   hasSubmittableCanvas = true,
 }: UseDnDMathPreviewGameArgs) {
   const { t } = useTranslation('features.gameStudio')
-  const [messages, setMessages] = useState<DnDMathPreviewGameMessage[]>([])
+  const [messages, setMessages] = useState<DnDMathPreviewGameMessage[]>(() =>
+    buildInitialMessages(nodeId, tabs),
+  )
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false)
   const [submissionLocked, setSubmissionLocked] = useState(false)
   const [runningEarnedScore, setRunningEarnedScore] = useState(0)
@@ -77,10 +108,11 @@ export function useDnDMathPreviewGame({
   const safeTabIndex = tabCount > 0 ? Math.min(currentTabIndex, tabCount - 1) : 0
   const isFinalTab = safeTabIndex >= tabCount - 1
 
-  const perTabMaxScore = useMemo(
-    () => (tabCount > 0 ? totalMaxScore / tabCount : totalMaxScore),
+  const exerciseScoreShares = useMemo(
+    () => resolveDnDMathExerciseScoreShares(totalMaxScore, tabCount),
     [tabCount, totalMaxScore],
   )
+  const perTabMaxScore = exerciseScoreShares[safeTabIndex]?.maxScore ?? 0
 
   const allTabsCompleted = submissionLocked && isFinalTab
   const canSubmit = !submissionLocked && hasSubmittableCanvas
@@ -95,6 +127,17 @@ export function useDnDMathPreviewGame({
   useEffect(() => {
     return clearTimers
   }, [clearTimers])
+
+  useEffect(() => {
+    clearTimers()
+    seqRef.current = 0
+    setMessages(buildInitialMessages(nodeId, tabs))
+    setSubmitDialogOpen(false)
+    setSubmissionLocked(false)
+    setRunningEarnedScore(0)
+    setErrorTokenIds([])
+    setCurrentTabIndex(0)
+  }, [clearTimers, nodeId, tabs, totalMaxScore])
 
   useEffect(() => {
     if (tabCount === 0) return
@@ -174,7 +217,7 @@ export function useDnDMathPreviewGame({
           kind: 'text',
           bold: true,
           text: t('dragDropMathGamePreview.pointsEarnedMessage', {
-            points: Number(perTabEarned.toFixed(1)),
+            points: formatDnDMathScore(perTabEarned),
           }),
         },
       ]
@@ -193,8 +236,8 @@ export function useDnDMathPreviewGame({
           kind: 'text',
           bold: true,
           text: t('dragDropMathGamePreview.iterationFinalSummary', {
-            earned: Number(cappedRunning.toFixed(1)),
-            total: totalMaxScore,
+            earned: formatDnDMathScore(cappedRunning),
+            total: formatDnDMathScore(totalMaxScore),
           }),
         })
       }
@@ -213,16 +256,9 @@ export function useDnDMathPreviewGame({
       setCurrentTabIndex(nextIndex)
       setSubmissionLocked(false)
       setErrorTokenIds([])
-      if (nextTitle.length > 0) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `${nodeId}-tab-title-${nextIndex}-${advanceSeq}`,
-            direction: 'receiving',
-            kind: 'text',
-            text: nextTitle,
-          },
-        ])
+      const nextTitleMessage = buildExerciseTitleMessage(nodeId, nextIndex, nextTitle, advanceSeq)
+      if (nextTitleMessage) {
+        setMessages((prev) => [...prev, nextTitleMessage])
       }
       advanceTimeoutRef.current = null
     }, ITERATION_ADVANCE_DELAY_MS)
@@ -240,5 +276,6 @@ export function useDnDMathPreviewGame({
     errorTokenIds,
     currentTabIndex: safeTabIndex,
     allTabsCompleted,
+    exerciseScoreShares,
   }
 }

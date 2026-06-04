@@ -257,7 +257,6 @@
       "openQuestion.prompt.missing": "Open Question \"{{label}}\" braucht mindestens eine Aufgabenstellung.",
       "openQuestion.answer.missing": "Open Question \"{{label}}\" hat {{count}} Aufgabe(n) ohne Musterl\u00f6sung.",
       "openQuestion.points.invalid": "Open Question \"{{label}}\" muss mindestens 1 Punkt vergeben.",
-      "openQuestion.meta.missingTitle": "Open Question \"{{label}}\" hat keinen Titel.",
       "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" hat keine Beschreibung.",
       "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" braucht mindestens einen Aufgaben-Tab.",
       "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" hat einen Tab ohne Titel.",
@@ -441,6 +440,7 @@
     "scoreAccordionErrorFreeTitle": "Fehlerfrei (5 %)",
     "scoreAccordionErrorFreeBody": "Einheit, Notation, Rundung und Konzept pro Schritt, gemittelt.",
     "scoreAccordionPointsMapping": "Erreichte Punkte = Score × {{maxPoints}} (Beispiel: Score 0,437 → {{examplePoints}} Punkte bei max. {{maxPoints}}).",
+    "scoreAccordionExerciseSplit": "Aufgabenverteilung: {{split}} Pkt. ({{count}} Aufgabe(n), Summe bleibt {{maxPoints}}).",
     "scoreAccordionCarryNote": "Carry-Modus ist Standard für Schritte. Strict-Modus (optional) vergleicht immer mit den Operanden der Musterlösung."
   },
   "imagePinDialog": {

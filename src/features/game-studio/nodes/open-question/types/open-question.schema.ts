@@ -13,9 +13,13 @@ export type OpenQuestionAuthoredQuestion = {
 
 export type GameOpenQuestionNodeData = {
   label?: string
+  /**
+   * @deprecated Canvas label uses `label`; authoring uses `descriptionContent` plus
+   * per-exercise `question` / `answer`. Kept for legacy persisted nodes only.
+   */
   title?: string
   /**
-   * Rich exercise description (Lexical JSON). Preview/display only — never sent to
+   * Rich task description (Lexical JSON). Preview/display only — never sent to
    * the scoring worker (`teacher_solution` comes from each exercise's `answer` field).
    */
   descriptionContent?: SerializedEditorState | null

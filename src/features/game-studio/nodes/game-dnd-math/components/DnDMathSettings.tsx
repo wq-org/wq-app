@@ -29,6 +29,10 @@ import {
   resolveGameDragDropMathPoints,
   type GameDragDropMathNodeData,
 } from '../types/drag-drop-math.schema'
+import {
+  formatDnDMathScore,
+  resolveDnDMathExerciseScoreShares,
+} from '../utils/exerciseScoreDistribution'
 import { formatPscaExamplePoints } from '../utils/formatPscaExamplePoints'
 
 type AdjacentNodeInfo = { id: string; nodeType: string | undefined }
@@ -76,6 +80,14 @@ export function DnDMathSettings({
   const maxPoints = resolveGameDragDropMathPoints(nodeData.points)
   const instantColorFeedback = nodeData.instantColorFeedback !== false
   const examplePoints = formatPscaExamplePoints(maxPoints)
+  const exerciseCount =
+    Array.isArray(nodeData.exerciseTabs) && nodeData.exerciseTabs.length > 0
+      ? nodeData.exerciseTabs.length
+      : 1
+  const scoreShares = resolveDnDMathExerciseScoreShares(maxPoints, exerciseCount)
+  const scoreSplitLabel = scoreShares
+    .map((share) => `${share.index + 1}: ${formatDnDMathScore(share.maxScore)}`)
+    .join(' · ')
 
   function handleNavigate(targetNodeId: string) {
     onClose()
@@ -215,6 +227,17 @@ export function DnDMathSettings({
                 {t('dragDropMathSettings.scoreAccordionPointsMapping', {
                   maxPoints,
                   examplePoints,
+                })}
+              </Text>
+              <Text
+                as="p"
+                variant="small"
+                muted
+              >
+                {t('dragDropMathSettings.scoreAccordionExerciseSplit', {
+                  count: exerciseCount,
+                  maxPoints: formatDnDMathScore(maxPoints),
+                  split: scoreSplitLabel,
                 })}
               </Text>
               <Text

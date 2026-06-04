@@ -30,10 +30,6 @@ export function validateOpenQuestionConfig(data: unknown): PublishIssue[] {
     issues.push({ code: 'openQuestion.points.invalid', severity: 'error' })
   }
 
-  if (!String(d.title ?? '').trim()) {
-    issues.push({ code: 'openQuestion.meta.missingTitle', severity: 'warning' })
-  }
-
   const descriptionText = extractPlainTextFromLexicalState(d.descriptionContent)
   if (!descriptionText.trim()) {
     issues.push({ code: 'openQuestion.meta.missingDescription', severity: 'warning' })
