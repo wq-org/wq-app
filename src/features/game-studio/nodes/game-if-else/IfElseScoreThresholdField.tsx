@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect } from 'react'
+import { Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Edge, Node } from '@xyflow/react'
 
 import { QuantityStepper } from '@/components/shared'
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
 
@@ -23,6 +25,10 @@ export type IfElseScoreThresholdFieldProps = {
   onPatchNodeData: (patch: Partial<GameIfElseNodeData>) => void
 }
 
+function isScoreThresholdMissing(nodeData: GameIfElseNodeData): boolean {
+  return typeof nodeData.scoreThreshold !== 'number' || !Number.isFinite(nodeData.scoreThreshold)
+}
+
 export function IfElseScoreThresholdField({
   nodeId,
   nodeData,
@@ -31,37 +37,35 @@ export function IfElseScoreThresholdField({
   onPatchNodeData,
 }: IfElseScoreThresholdFieldProps) {
   const { t } = useTranslation('features.gameStudio')
-  const defaultsAppliedRef = useRef(false)
 
-  const incomingNode = useMemo(
-    () => getIncomingGameplayNode(nodeId, flowNodes, flowEdges),
-    [flowEdges, flowNodes, nodeId],
-  )
-  const incomingMaxPoints = useMemo(
-    () => resolveGameplayNodeMaxPoints(incomingNode),
-    [incomingNode],
-  )
+  const incomingNode = getIncomingGameplayNode(nodeId, flowNodes, flowEdges)
+  const incomingMaxPoints = resolveGameplayNodeMaxPoints(incomingNode)
+  const smartSetThreshold = getDefaultIfElseScoreThreshold(incomingMaxPoints)
 
+  const storedThreshold = nodeData.scoreThreshold
   const scoreThreshold =
-    typeof nodeData.scoreThreshold === 'number' && Number.isFinite(nodeData.scoreThreshold)
-      ? Math.max(0, Math.floor(nodeData.scoreThreshold))
+    typeof storedThreshold === 'number' && Number.isFinite(storedThreshold)
+      ? Math.max(0, Math.floor(storedThreshold))
       : 0
 
   useEffect(() => {
-    if (defaultsAppliedRef.current) return
-    if (typeof nodeData.scoreThreshold === 'number' && Number.isFinite(nodeData.scoreThreshold)) {
-      defaultsAppliedRef.current = true
-      return
-    }
-    defaultsAppliedRef.current = true
-    onPatchNodeData({ scoreThreshold: getDefaultIfElseScoreThreshold(incomingMaxPoints) })
-  }, [incomingMaxPoints, nodeData.scoreThreshold, onPatchNodeData])
+    if (!incomingNode || !isScoreThresholdMissing(nodeData)) return
+    onPatchNodeData({ scoreThreshold: smartSetThreshold })
+  }, [incomingNode, nodeId, nodeData.scoreThreshold, onPatchNodeData, smartSetThreshold])
 
-  function handleThresholdChange(value: number) {
-    const next = Math.max(0, Math.floor(value))
-    if (next === scoreThreshold) return
-    onPatchNodeData({ scoreThreshold: next })
-  }
+  const handleThresholdChange = useCallback(
+    (value: number) => {
+      const next = Math.max(0, Math.floor(value))
+      if (next === scoreThreshold) return
+      onPatchNodeData({ scoreThreshold: next })
+    },
+    [onPatchNodeData, scoreThreshold],
+  )
+
+  const handleSmartSet = useCallback(() => {
+    if (!incomingNode) return
+    onPatchNodeData({ scoreThreshold: smartSetThreshold })
+  }, [incomingNode, onPatchNodeData, smartSetThreshold])
 
   const thresholdMax = Math.max(incomingMaxPoints, scoreThreshold, 999)
 
@@ -85,7 +89,7 @@ export function IfElseScoreThresholdField({
         </Text>
       )}
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <Label className="shrink-0">{t('ifElseSettings.scoreThresholdLabel')}</Label>
         <QuantityStepper
           className="w-44 shrink-0"
@@ -95,8 +99,21 @@ export function IfElseScoreThresholdField({
           step={1}
           disabled={!incomingNode}
           onChange={handleThresholdChange}
-          label={t('ifElseSettings.scoreThresholdLabel')}
+          label={t('ifElseSettings.scoreThresholdValueLabel')}
         />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={!incomingNode}
+          onClick={handleSmartSet}
+        >
+          <Sparkles
+            className="size-4"
+            aria-hidden
+          />
+          {t('ifElseSettings.smartSet')}
+        </Button>
       </div>
 
       <Text

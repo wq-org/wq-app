@@ -153,7 +153,9 @@
   "ifElseSettings": {
     "title": "Verzweigungseinstellungen",
     "scoreThresholdLabel": "Punkteschwelle",
-    "scoreThresholdHint": "Spielende mit mindestens dieser Punktzahl folgen dem oberen Zweig (Knoten A). Darunter folgen sie dem unteren Zweig (Knoten B).",
+    "scoreThresholdValueLabel": "Wert der Punkteschwelle",
+    "smartSet": "Smart Set",
+    "scoreThresholdHint": "Schwelle manuell setzen oder mit Smart Set die Hälfte der maximalen Punkte des eingehenden Schritts übernehmen. Dein Wert bleibt gespeichert, bis du ihn änderst oder erneut Smart Set wählst.",
     "noIncomingGameplay": "Verbinde einen Spielknoten (Bild & Pin, Drag & Drop Mathe oder Offene Frage) mit diesem Knoten, um eine Schwelle zu setzen.",
     "incomingMaxPoints": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
     "branchIncoming": "Eingehend",

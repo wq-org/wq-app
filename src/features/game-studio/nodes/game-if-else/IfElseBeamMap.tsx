@@ -136,8 +136,8 @@ export function IfElseBeamMap({
                 </Text>
               </div>
             ),
-            gradientStartColor: 'blue',
-            gradientStopColor: 'cyan',
+            gradientStartColor: 'orange',
+            gradientStopColor: 'blue',
           },
           {
             direction: 'top-right',
@@ -155,8 +155,8 @@ export function IfElseBeamMap({
                 }
               />
             ),
-            gradientStartColor: 'blue',
-            gradientStopColor: 'indigo',
+            gradientStartColor: 'orange',
+            gradientStopColor: 'blue',
           },
           {
             direction: 'bottom-right',
@@ -174,7 +174,7 @@ export function IfElseBeamMap({
                 }
               />
             ),
-            gradientStartColor: 'indigo',
+            gradientStartColor: 'orange',
             gradientStopColor: 'blue',
             reverse: true,
           },

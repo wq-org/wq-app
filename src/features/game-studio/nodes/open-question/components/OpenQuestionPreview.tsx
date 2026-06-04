@@ -67,6 +67,7 @@ export function OpenQuestionPreview({
     sessionMaxScore,
   )
   const footerScoreVariant = continuousSession ? 'default' : 'orange'
+  const receivingBubbleVariant = continuousSession ? 'dark' : 'orange'
   const descriptionContent = data.descriptionContent ?? null
   const title = data.title?.trim() || data.label?.trim() || ''
   const showDescription = hasLexicalEditorContent(descriptionContent)
@@ -496,7 +497,7 @@ export function OpenQuestionPreview({
         incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingAvatarFallback={avatarFallback}
         incomingBubbleVariant="default"
-        receivingBubbleVariant="orange"
+        receivingBubbleVariant={receivingBubbleVariant}
         flat={continuousSession}
         className={continuousSession ? undefined : 'min-h-0 flex-1'}
       />

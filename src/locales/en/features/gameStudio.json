@@ -153,7 +153,9 @@
   "ifElseSettings": {
     "title": "Branch settings",
     "scoreThresholdLabel": "Score threshold",
-    "scoreThresholdHint": "Players at or above this score follow the top branch (Node A). Scores below follow the bottom branch (Node B).",
+    "scoreThresholdValueLabel": "Score threshold value",
+    "smartSet": "Smart Set",
+    "scoreThresholdHint": "Set the split manually or use Smart Set for half of the incoming step's max points. Your value is saved until you change it or press Smart Set again.",
     "noIncomingGameplay": "Connect a gameplay node (Image & Pin, Drag & drop math, or Open question) into this node to set a threshold.",
     "incomingMaxPoints": "Incoming step can award up to {{points}} points.",
     "branchIncoming": "Incoming",

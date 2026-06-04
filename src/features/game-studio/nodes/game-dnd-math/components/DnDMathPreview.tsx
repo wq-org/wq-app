@@ -114,6 +114,7 @@ export function DnDMathPreview({
     sessionMaxScore,
   )
   const footerScoreVariant = continuousSession ? 'default' : 'orange'
+  const receivingBubbleVariant = continuousSession ? 'dark' : 'orange'
 
   const { tabs } = useMemo(
     () => resolveExerciseTabsState(pin, defaultTabTitle),
@@ -513,7 +514,7 @@ export function DnDMathPreview({
         avatarUrl={userAvatarUrl ?? undefined}
         avatarFallback={avatarFallback}
         incomingBubbleVariant="default"
-        receivingBubbleVariant="orange"
+        receivingBubbleVariant={receivingBubbleVariant}
         flat={continuousSession}
         className={continuousSession ? undefined : 'min-h-0 flex-1'}
       />
