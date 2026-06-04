@@ -302,7 +302,22 @@
     "status": {
       "published": "Ver\u00f6ffentlicht",
       "draft": "Entwurf"
+    },
+    "courseMenu": {
+      "triggerAriaLabel": "Projektoptionen",
+      "linkToCourse": "Mit Kurs verkn\u00fcpfen",
+      "unlinkFromCourse": "Von Kurs trennen"
     }
+  },
+  "linkGameDialog": {
+    "title": "Mit Kurs verkn\u00fcpfen",
+    "description": "W\u00e4hle einen Kurs, mit dem dieses Spiel verkn\u00fcpft werden soll.",
+    "cancel": "Abbrechen"
+  },
+  "unlinkGameDialog": {
+    "title": "Von Kurs trennen",
+    "description": "Entferne die Kursverkn\u00fcpfung von diesem Spiel.",
+    "cancel": "Abbrechen"
   },
   "gameCard": {
     "centerAvatarAlt": "Zentraler Avatar",

@@ -302,7 +302,22 @@
     "status": {
       "published": "Published",
       "draft": "Draft"
+    },
+    "courseMenu": {
+      "triggerAriaLabel": "Project options",
+      "linkToCourse": "Link to course",
+      "unlinkFromCourse": "Unlink from course"
     }
+  },
+  "linkGameDialog": {
+    "title": "Link to course",
+    "description": "Choose a course to link this game to.",
+    "cancel": "Cancel"
+  },
+  "unlinkGameDialog": {
+    "title": "Unlink from course",
+    "description": "Remove the course link from this game.",
+    "cancel": "Cancel"
   },
   "gameCard": {
     "centerAvatarAlt": "Center avatar",
