@@ -5,9 +5,12 @@ import {
   getDefaultIfElseScoreThreshold,
   getIfElseBranchPointRanges,
   getIncomingGameplayNode,
+  getOutgoingBranchEdge,
+  getOutgoingBranchNode,
   resolveGameplayNodeMaxPoints,
   resolveIfElseBranchFromScore,
 } from './game-if-else.utils'
+import { IF_ELSE_HANDLE_A, IF_ELSE_HANDLE_B } from './game-if-else.schema'
 
 function node(id: string, type: string, data: Record<string, unknown> = {}): Node {
   return { id, type, position: { x: 0, y: 0 }, data }
@@ -74,5 +77,41 @@ describe('incoming gameplay max points', () => {
     const edges = [edge('start', 'branch')]
 
     expect(getIncomingGameplayNode('branch', nodes, edges)).toBeUndefined()
+  })
+})
+
+describe('getOutgoingBranchEdge', () => {
+  const ifElseId = 'if-1'
+
+  it('matches branch A and B by source handle', () => {
+    const edges = [edge(ifElseId, 'a', IF_ELSE_HANDLE_A), edge(ifElseId, 'b', IF_ELSE_HANDLE_B)]
+    expect(getOutgoingBranchEdge(ifElseId, 'A', edges)?.target).toBe('a')
+    expect(getOutgoingBranchEdge(ifElseId, 'B', edges)?.target).toBe('b')
+  })
+
+  it('falls back to the only outgoing edge when sourceHandle is missing', () => {
+    const edges = [edge(ifElseId, 'only')]
+    expect(getOutgoingBranchEdge(ifElseId, 'A', edges)?.target).toBe('only')
+    expect(getOutgoingBranchEdge(ifElseId, 'B', edges)?.target).toBe('only')
+  })
+
+  it('maps two handle-less edges to A first and B second by stable id order', () => {
+    const edges = [edge(ifElseId, 'z'), edge(ifElseId, 'a')]
+    expect(getOutgoingBranchEdge(ifElseId, 'A', edges)?.target).toBe('a')
+    expect(getOutgoingBranchEdge(ifElseId, 'B', edges)?.target).toBe('z')
+  })
+})
+
+describe('getOutgoingBranchNode', () => {
+  it('returns the target gameplay node for the resolved branch', () => {
+    const nodes = [
+      node('if-1', 'gameIfElse'),
+      node('oq-a', 'gameOpenQuestion', { label: 'Node A' }),
+    ]
+    const edges = [edge('if-1', 'oq-a', IF_ELSE_HANDLE_A)]
+    expect(getOutgoingBranchNode('if-1', 'A', nodes, edges)).toEqual({
+      id: 'oq-a',
+      nodeType: 'gameOpenQuestion',
+    })
   })
 })

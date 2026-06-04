@@ -52,9 +52,12 @@ export type GameNodePreviewProps = {
   onSessionComplete?: (payload: GameNodePreviewSessionCompletePayload) => void
   /** Hides per-node preview chrome when nested inside another preview (e.g. If/Else branch test). */
   embedded?: boolean
-  /** Renders into If/Else continuous session: flat chat in shell scroll, footer when sessionActive. */
+  /**
+   * If/Else continuous session: flat chat in shell scroll; active segment registers prompts +
+   * ChatInput in the shell footer. Image Pin also registers shell-level DndContext (footer + image).
+   */
   continuousSession?: boolean
-  /** When continuousSession, only the active segment registers prompts + ChatInput in the shell footer. */
+  /** When continuousSession, only the active segment owns shell footer and DnD (if applicable). */
   sessionActive?: boolean
 }
 

@@ -78,16 +78,35 @@ export function getIfElseBranchPointRanges(
 
 export type AdjacentBranchNode = { id: string; nodeType: string | undefined }
 
+/** Outgoing edge for branch A (right-top) or B (right-bottom), with legacy fallbacks when sourceHandle is missing. */
+export function getOutgoingBranchEdge(
+  ifElseNodeId: string,
+  branch: GameIfElseCorrectPath,
+  edges: Edge[],
+): Edge | undefined {
+  const handle = branch === 'A' ? IF_ELSE_HANDLE_A : IF_ELSE_HANDLE_B
+  const outgoing = edges.filter((edge) => edge.source === ifElseNodeId)
+  const byHandle = outgoing.find((edge) => (edge.sourceHandle ?? '') === handle)
+  if (byHandle) return byHandle
+
+  if (outgoing.length === 1) return outgoing[0]
+
+  const withoutHandle = outgoing.filter((edge) => !(edge.sourceHandle ?? '').trim())
+  if (withoutHandle.length === outgoing.length && outgoing.length === 2) {
+    const sorted = [...outgoing].sort((a, b) => a.id.localeCompare(b.id))
+    return branch === 'A' ? sorted[0] : sorted[1]
+  }
+
+  return undefined
+}
+
 export function getOutgoingBranchNode(
   ifElseNodeId: string,
   branch: GameIfElseCorrectPath,
   nodes: Node[],
   edges: Edge[],
 ): AdjacentBranchNode | undefined {
-  const handle = branch === 'A' ? IF_ELSE_HANDLE_A : IF_ELSE_HANDLE_B
-  const edge = edges.find(
-    (outgoing) => outgoing.source === ifElseNodeId && (outgoing.sourceHandle ?? '') === handle,
-  )
+  const edge = getOutgoingBranchEdge(ifElseNodeId, branch, edges)
   if (!edge) return undefined
   const target = nodes.find((node) => node.id === edge.target)
   if (!target) return undefined

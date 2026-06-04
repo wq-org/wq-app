@@ -4,8 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Edge, Node } from '@xyflow/react'
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Text } from '@/components/ui/text'
 
+import { getFlowGraphNodeDisplayLabel } from '../../constants/flowGraphNodeTypes'
+import type { GameImagePinNodeData } from '../game-image-pin/image-pin.schema'
+import { isImagePinPreviewPlayable } from '../game-image-pin/utils/imagePinPreviewPlayable'
 import type { GameIfElseCorrectPath } from './game-if-else.schema'
 import type { GameIfElseNodeData } from './game-if-else.schema'
 import {
@@ -15,6 +19,7 @@ import {
 } from './game-if-else.utils'
 import { IfElseBranchDivider } from './IfElseBranchDivider'
 import { IfElseEmbeddedNodePreview } from './IfElseEmbeddedNodePreview'
+import { IfElsePreviewSegmentAnchor } from './IfElsePreviewSegmentAnchor'
 import { IfElsePreviewSessionShell } from './IfElsePreviewSessionShell'
 
 export type GameIfElsePreviewProps = {
@@ -82,6 +87,24 @@ export function GameIfElsePreview({
     return flowNodes.find((node) => node.id === branchTarget.id)
   }, [branchTarget, flowNodes])
 
+  const branchNodeLabel = useMemo(() => {
+    if (!branchFlowNode) return null
+    return getFlowGraphNodeDisplayLabel(
+      branchFlowNode.type,
+      (branchFlowNode.data ?? {}) as Record<string, unknown>,
+    )
+  }, [branchFlowNode])
+
+  const branchGameplayReady = useMemo(() => {
+    if (!branchFlowNode) return false
+    if (branchFlowNode.type !== 'gameImagePin') return true
+    return isImagePinPreviewPlayable((branchFlowNode.data ?? {}) as GameImagePinNodeData)
+  }, [branchFlowNode])
+
+  const branchSegmentKey = branchFlowNode
+    ? `${branchResult?.branch ?? ''}-${branchFlowNode.id}-${branchPlayKey}`
+    : null
+
   const incomingSessionActive = branchResult === null
   const branchSessionActive = branchResult !== null
 
@@ -125,19 +148,55 @@ export function GameIfElsePreview({
       />
 
       {branchResult ? (
-        <>
+        <IfElsePreviewSegmentAnchor
+          segmentKey={`branch-routing-${branchResult.branch}-${branchResult.score}`}
+          className="gap-6"
+        >
           <IfElseBranchDivider
             score={branchResult.score}
             threshold={scoreThreshold}
-            branch={branchResult.branch}
+            nextNodeLabel={branchNodeLabel}
           />
-          <IfElseEmbeddedNodePreview
-            flowNode={branchFlowNode}
-            sessionActive={branchSessionActive}
-            playKey={`${branchResult.branch}-${branchPlayKey}`}
-            missingLabel={t('ifElsePreview.branchNotConnected')}
-          />
-        </>
+          {branchFlowNode && branchSegmentKey ? (
+            <IfElsePreviewSegmentAnchor segmentKey={branchSegmentKey}>
+              {branchGameplayReady ? (
+                <>
+                  <Text
+                    as="p"
+                    variant="small"
+                    bold
+                  >
+                    {branchResult.branch === 'A'
+                      ? t('ifElseSettings.branchA')
+                      : t('ifElseSettings.branchB')}
+                    {branchNodeLabel ? ` · ${branchNodeLabel}` : null}
+                  </Text>
+                  <IfElseEmbeddedNodePreview
+                    flowNode={branchFlowNode}
+                    sessionActive={branchSessionActive}
+                    playKey={`${branchResult.branch}-${branchPlayKey}`}
+                    missingLabel={t('ifElsePreview.branchNotConnected')}
+                  />
+                </>
+              ) : (
+                <Alert
+                  variant="destructive"
+                  className="border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/40"
+                >
+                  <AlertTitle>
+                    {branchResult.branch === 'A'
+                      ? t('ifElseSettings.branchA')
+                      : t('ifElseSettings.branchB')}
+                    {branchNodeLabel ? ` · ${branchNodeLabel}` : null}
+                  </AlertTitle>
+                  <AlertDescription>
+                    <p>{t('ifElsePreview.branchGameplayNotReady')}</p>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </IfElsePreviewSegmentAnchor>
+          ) : null}
+        </IfElsePreviewSegmentAnchor>
       ) : null}
     </IfElsePreviewSessionShell>
   )

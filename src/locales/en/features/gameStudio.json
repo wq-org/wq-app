@@ -172,6 +172,7 @@
     "branchResultB": "Bottom branch (Node B) — score below threshold",
     "routesTo": "Next: {{node}}",
     "branchNotConnected": "No node connected on this branch",
+    "branchGameplayNotReady": "This node is not ready to preview. Add an image and at least one question region.",
     "thresholdStripMax": "Incoming step can award up to {{points}} points.",
     "thresholdStripValue": "Score threshold: {{value}}",
     "thresholdStripBranchA": "Node A (top): {{range}}",

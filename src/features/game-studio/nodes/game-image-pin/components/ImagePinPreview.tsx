@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import {
   DndContext,
@@ -19,6 +19,9 @@ import { useTranslation } from 'react-i18next'
 
 import { GameChatHistory } from '../../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
+import { IF_ELSE_GAMEPLAY_ANCHOR_ATTR } from '../../game-if-else/ifElsePreview.constants'
+import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
+import { useIfElsePreviewImagePinDnd } from '../../game-if-else/useIfElsePreviewImagePinDnd'
 import { PIN_DRAGGABLE_ID } from '../constants/imagePinPreviewDnd.constants'
 import {
   resolveGameImagePinDescription,
@@ -205,18 +208,21 @@ export function ImagePinPreview({
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveDragId(String(event.active.id))
-  }
+  }, [])
 
-  const handleDragEndWrapped = (event: DragEndEvent) => {
-    setActiveDragId(null)
-    handleDragEnd(event)
-  }
+  const handleDragEndWrapped = useCallback(
+    (event: DragEndEvent) => {
+      setActiveDragId(null)
+      handleDragEnd(event)
+    },
+    [handleDragEnd],
+  )
 
-  const handleDragCancel = () => {
+  const handleDragCancel = useCallback(() => {
     setActiveDragId(null)
-  }
+  }, [])
 
   const footerChrome = useMemo(
     () => (
@@ -254,11 +260,54 @@ export function ImagePinPreview({
     return null
   }
 
-  const showStickyChrome = continuousSession && sessionActive
-  const showInlineChrome = !continuousSession
+  const useShellSession = continuousSession
+  const shellSegmentActive = useShellSession && sessionActive
+
+  useIfElsePreviewFooter(footerChrome, shellSegmentActive)
+
+  const shellDndSession = useMemo(
+    () =>
+      shellSegmentActive
+        ? {
+            modifiers: [snapCenterToCursor] as Modifier[],
+            onDragStart: handleDragStart,
+            onDragEnd: handleDragEndWrapped,
+            onDragCancel: handleDragCancel,
+            overlay: (
+              <DragOverlay dropAnimation={null}>
+                {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
+              </DragOverlay>
+            ),
+          }
+        : null,
+    [activeDragId, handleDragCancel, handleDragEndWrapped, handleDragStart, shellSegmentActive],
+  )
+
+  useIfElsePreviewImagePinDnd(shellDndSession, shellSegmentActive)
+
+  const showInlineChrome = !useShellSession
+
+  const chatHistory = (
+    <div
+      {...(shellSegmentActive ? { [IF_ELSE_GAMEPLAY_ANCHOR_ATTR]: '' } : {})}
+      className={cn('flex flex-col gap-3', !useShellSession && 'min-h-0 flex-1')}
+    >
+      <GameChatHistory
+        messages={displayMessages}
+        flat={useShellSession}
+        className={useShellSession ? undefined : 'min-h-0 flex-1'}
+        showUserAvatar
+        incomingAvatarUrl={userAvatarUrl ?? undefined}
+        incomingBubbleVariant="default"
+        receivingBubbleVariant="orange"
+        renderImageChildren={renderImageChildren}
+      />
+      {showInlineChrome ? footerChrome : null}
+    </div>
+  )
 
   return (
-    <div className={cn('flex flex-col gap-3', continuousSession ? 'min-h-0' : 'h-full')}>
+    <div className={cn('flex flex-col gap-3', useShellSession ? 'min-h-0' : 'h-full')}>
       {!embedded ? (
         <Text
           as="p"
@@ -269,37 +318,21 @@ export function ImagePinPreview({
         </Text>
       ) : null}
 
-      <DndContext
-        modifiers={[snapCenterToCursor]}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEndWrapped}
-        onDragCancel={handleDragCancel}
-      >
-        <div className={cn('flex flex-col gap-3', !continuousSession && 'min-h-0 flex-1')}>
-          <GameChatHistory
-            messages={displayMessages}
-            flat={continuousSession}
-            className={continuousSession ? undefined : 'min-h-0 flex-1'}
-            showUserAvatar
-            incomingAvatarUrl={userAvatarUrl ?? undefined}
-            incomingBubbleVariant="default"
-            receivingBubbleVariant="orange"
-            renderImageChildren={renderImageChildren}
-          />
-
-          {showInlineChrome ? footerChrome : null}
-
-          {showStickyChrome ? (
-            <div className="sticky bottom-0 z-10 flex flex-col gap-3 border-t border-border/60 bg-background pt-3">
-              {footerChrome}
-            </div>
-          ) : null}
-        </div>
-
-        <DragOverlay dropAnimation={null}>
-          {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
-        </DragOverlay>
-      </DndContext>
+      {useShellSession ? (
+        chatHistory
+      ) : (
+        <DndContext
+          modifiers={[snapCenterToCursor]}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEndWrapped}
+          onDragCancel={handleDragCancel}
+        >
+          {chatHistory}
+          <DragOverlay dropAnimation={null}>
+            {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
+          </DragOverlay>
+        </DndContext>
+      )}
     </div>
   )
 }

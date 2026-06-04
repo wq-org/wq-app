@@ -172,6 +172,7 @@
     "branchResultB": "Unterer Zweig (Knoten B) — Punktzahl unter Schwelle",
     "routesTo": "Weiter zu: {{node}}",
     "branchNotConnected": "Auf diesem Zweig ist kein Knoten verbunden",
+    "branchGameplayNotReady": "Dieser Knoten ist noch nicht spielbereit. Füge ein Bild und mindestens einen Fragenbereich hinzu.",
     "thresholdStripMax": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
     "thresholdStripValue": "Punkteschwelle: {{value}}",
     "thresholdStripBranchA": "Knoten A (oben): {{range}}",
