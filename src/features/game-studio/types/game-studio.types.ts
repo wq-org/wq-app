@@ -36,8 +36,10 @@ export interface PreviewDrawerProps {
 export interface PublishDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Called when publish is confirmed. Wired when publish validation is re-enabled. */
+  nodes?: Node[]
+  edges?: Edge[]
   onPublish?: () => Promise<void>
+  onFocusNode?: (nodeId: string) => void
 }
 
 // ========== Card Types ==========

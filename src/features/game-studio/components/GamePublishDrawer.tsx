@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
@@ -8,16 +8,39 @@ import { HoldConfirmButton } from '@/components/ui/HoldConfirmButton'
 import type { PublishDrawerProps } from '../types/game-studio.types'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { getPublishValidationResult } from '../utils/publishValidation'
+import { GamePublishGraphIssueList } from './GamePublishGraphIssueList'
+import type { GraphIssue } from '../types/graph-validation.types'
 
-/** Publish gating is disabled until new validation rules are implemented. */
-const canPublish = false
+function resolveIssueMessage(
+  issue: GraphIssue,
+  translate: (key: string, params?: Record<string, string | number>) => string,
+): string {
+  return translate(`publishValidation.graphIssues.${issue.code}`, issue.params)
+}
 
-export function GamePublishDrawer({ open, onOpenChange, onPublish }: PublishDrawerProps) {
+export function GamePublishDrawer({
+  open,
+  onOpenChange,
+  nodes = [],
+  edges = [],
+  onPublish,
+  onFocusNode,
+}: PublishDrawerProps) {
   const { t } = useTranslation('features.gameStudio')
   const [publishing, setPublishing] = useState(false)
 
+  const validationResult = useMemo(() => getPublishValidationResult(nodes, edges), [nodes, edges])
+  const canPublish = validationResult.canPublish
+
   const handlePublish = async () => {
-    if (!canPublish) return
+    if (!canPublish) {
+      const firstIssue = validationResult.issues[0]
+      if (firstIssue) {
+        toast.error(resolveIssueMessage(firstIssue, t))
+      }
+      return
+    }
 
     if (!onPublish) {
       toast.error(t('publishDrawer.publishUnavailable'))
@@ -57,7 +80,13 @@ export function GamePublishDrawer({ open, onOpenChange, onPublish }: PublishDraw
           </div>
         </DrawerHeader>
 
-        <div className="flex-1" />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <GamePublishGraphIssueList
+            issues={validationResult.issues}
+            canPublish={canPublish}
+            onFocusNode={onFocusNode}
+          />
+        </div>
 
         <div className="shrink-0 border-t p-6">
           <HoldConfirmButton

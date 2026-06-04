@@ -158,11 +158,22 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     setLoadState('loading')
     getGameForStudio(projectId)
       .then((game) => {
-        if (!game?.game_content?.nodes?.length) {
+        if (!game) {
           setLoadState('loaded')
           return
         }
+
+        setGameTitle(game.title || DEFAULT_TITLE)
+        setGameThemeId(game.theme_id || 'blue')
+        setProjectVersion(game.version ?? 1)
+        institutionIdRef.current = game.institution_id ?? null
+
         const config = game.game_content
+        if (!config?.nodes?.length) {
+          setLoadState('loaded')
+          return
+        }
+
         const loadedNodes: Node[] = config.nodes.map((n) => ({
           id: n.id,
           type: n.type ?? 'default',
@@ -187,10 +198,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         }))
         setNodes(loadedNodes)
         setEdges(loadedEdges)
-        setGameTitle(game.title || DEFAULT_TITLE)
-        setGameThemeId(game.theme_id || 'blue')
-        setProjectVersion(game.version ?? 1)
-        institutionIdRef.current = game.institution_id ?? null
         setLoadState('loaded')
       })
       .catch((err) => {
@@ -629,6 +636,15 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [projectId, navigate])
 
+  const handlePublishFocusNode = useCallback((nodeId: string) => {
+    setNodes((prev) => prev.map((node) => ({ ...node, selected: node.id === nodeId })))
+    reactFlowInstance.current?.fitView({
+      nodes: [{ id: nodeId }],
+      duration: 300,
+      padding: 0.5,
+    })
+  }, [])
+
   // ---- Container measure ----
   useEffect(() => {
     const update = () => {
@@ -860,7 +876,10 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       <GamePublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
+        nodes={nodes}
+        edges={edges}
         onPublish={handlePublish}
+        onFocusNode={handlePublishFocusNode}
       />
 
       {openDialog ? (

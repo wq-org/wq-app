@@ -162,6 +162,24 @@
     "publishing": "Ver\u00f6ffentlicht...",
     "publishForStudents": "F\u00fcr Lernende ver\u00f6ffentlichen"
   },
+  "publishValidation": {
+    "requirementsMet": "Fluss-Anforderungen erf\u00fcllt",
+    "requirementsNotMet": "Fluss-Anforderungen nicht erf\u00fcllt",
+    "rulesTitle": "Behebe diese Graph-Probleme vor der Ver\u00f6ffentlichung:",
+    "graphIssues": {
+      "start.missing": "Genau ein Start-Knoten ist erforderlich.",
+      "start.duplicate": "Nur ein Start-Knoten ist erlaubt ({{count}} gefunden).",
+      "end.missing": "Genau ein End-Knoten ist erforderlich.",
+      "end.duplicate": "Nur ein End-Knoten ist erlaubt ({{count}} gefunden).",
+      "game.missing": "Mindestens ein Spiel-Knoten (Image Pin, Drag & Drop Math oder Open Question) ist erforderlich.",
+      "edge.sourceMissing": "Eine Kante verweist auf einen fehlenden Quell-Knoten.",
+      "edge.targetMissing": "Eine Kante verweist auf einen fehlenden Ziel-Knoten.",
+      "edge.selfLoop": "\"{{label}}\" hat eine Schleifen-Kante, die nicht erlaubt ist.",
+      "flow.endUnreachable": "Der End-Knoten ist vom Start aus nicht erreichbar.",
+      "flow.notReachableFromStart": "\"{{label}}\" ist vom Start aus nicht erreichbar.",
+      "flow.cannotReachEnd": "\"{{label}}\" kann den End-Knoten nicht erreichen."
+    }
+  },
   "previewIfElse": {
     "ifElseFallback": "Wenn / sonst",
     "routingLogic": "Routing-Logik",

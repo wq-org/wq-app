@@ -162,6 +162,24 @@
     "publishing": "Publishing...",
     "publishForStudents": "Publish for Students"
   },
+  "publishValidation": {
+    "requirementsMet": "Flow requirements met",
+    "requirementsNotMet": "Flow requirements not met",
+    "rulesTitle": "Fix these graph issues before publishing:",
+    "graphIssues": {
+      "start.missing": "Exactly one Start node is required.",
+      "start.duplicate": "Only one Start node is allowed (found {{count}}).",
+      "end.missing": "Exactly one End node is required.",
+      "end.duplicate": "Only one End node is allowed (found {{count}}).",
+      "game.missing": "At least one game node (Image Pin, Drag & Drop Math, or Open Question) is required.",
+      "edge.sourceMissing": "An edge references a missing source node.",
+      "edge.targetMissing": "An edge references a missing target node.",
+      "edge.selfLoop": "\"{{label}}\" has a self-loop edge, which is not allowed.",
+      "flow.endUnreachable": "The End node is not reachable from Start.",
+      "flow.notReachableFromStart": "\"{{label}}\" is not reachable from Start.",
+      "flow.cannotReachEnd": "\"{{label}}\" cannot reach the End node."
+    }
+  },
   "previewIfElse": {
     "ifElseFallback": "If / else",
     "routingLogic": "Routing Logic",
