@@ -54,6 +54,25 @@ export async function getTeacherCourses(teacherId: string): Promise<Course[]> {
   return (data || []) as Course[]
 }
 
+/** Published courses for the teacher (e.g. optional game link on publish). */
+export async function getTeacherPublishedCourses(teacherId: string): Promise<Course[]> {
+  const { data, error } = await supabase
+    .from('courses')
+    .select(
+      'id, title, description, teacher_id, institution_id, theme_id, is_published, created_at, updated_at',
+    )
+    .eq('teacher_id', teacherId)
+    .eq('is_published', true)
+    .order('title', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching published courses:', error)
+    throw error
+  }
+
+  return (data || []) as Course[]
+}
+
 /**
  * Get a single course by ID
  */

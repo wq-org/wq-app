@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 import {
   DndContext,
   DragOverlay,
@@ -25,7 +26,7 @@ import {
   type GameImagePinNodeData,
 } from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
-import { useImagePinGame } from '../hooks/useImagePinGame'
+import { fireImagePinPreviewConfetti, useImagePinGame } from '../hooks/useImagePinGame'
 import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
@@ -34,7 +35,11 @@ export type ImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
   onSessionScoreChange?: (score: number) => void
+  onSessionResolved?: (payload: { score: number }) => void
+  onSessionComplete?: (payload: { score: number }) => void
   embedded?: boolean
+  continuousSession?: boolean
+  sessionActive?: boolean
 }
 
 /**
@@ -105,7 +110,11 @@ export function ImagePinPreview({
   nodeId,
   nodeData,
   onSessionScoreChange,
+  onSessionResolved,
+  onSessionComplete,
   embedded = false,
+  continuousSession = false,
+  sessionActive = true,
 }: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
@@ -128,13 +137,51 @@ export function ImagePinPreview({
     submitAnswerPrompt,
     howToPlayPrompt,
     earnedScore,
-  } = useImagePinGame({ nodeId, nodeData: previewNodeData })
+    resolvedSession,
+    isSessionComplete,
+  } = useImagePinGame({
+    nodeId,
+    nodeData: previewNodeData,
+    suppressPerAnswerConfetti: embedded && !continuousSession,
+  })
 
   const maxScore = resolveGameImagePinPoints(nodeData.points)
+  const sessionCompleteReportedRef = useRef(false)
+  const sessionResolvedReportedRef = useRef(false)
 
   useEffect(() => {
     onSessionScoreChange?.(earnedScore)
   }, [earnedScore, onSessionScoreChange])
+
+  useEffect(() => {
+    sessionCompleteReportedRef.current = false
+    sessionResolvedReportedRef.current = false
+  }, [nodeId])
+
+  useEffect(() => {
+    if (continuousSession) return
+    if (!resolvedSession || sessionResolvedReportedRef.current) return
+    sessionResolvedReportedRef.current = true
+    if (embedded && resolvedSession.shouldCelebrate) {
+      fireImagePinPreviewConfetti()
+    }
+    onSessionResolved?.({ score: resolvedSession.score })
+  }, [continuousSession, embedded, onSessionResolved, resolvedSession])
+
+  useEffect(() => {
+    if (!isSessionComplete || sessionCompleteReportedRef.current) return
+    sessionCompleteReportedRef.current = true
+    if (continuousSession && resolvedSession?.shouldCelebrate) {
+      fireImagePinPreviewConfetti()
+    }
+    onSessionComplete?.({ score: earnedScore })
+  }, [
+    continuousSession,
+    earnedScore,
+    isSessionComplete,
+    onSessionComplete,
+    resolvedSession?.shouldCelebrate,
+  ])
 
   const prompts = [
     {
@@ -152,6 +199,7 @@ export function ImagePinPreview({
       icon: CircleQuestionMark,
       text: t('imagePinGamePreview.badgeHowToPlay'),
       prompt: howToPlayPrompt,
+      disabled: embedded,
     },
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
@@ -169,6 +217,23 @@ export function ImagePinPreview({
   const handleDragCancel = () => {
     setActiveDragId(null)
   }
+
+  const footerChrome = useMemo(
+    () => (
+      <>
+        <AiPromptBadgeList
+          prompts={prompts}
+          onPromptClick={handlePromptClick}
+        />
+        <ImagePinChatInput
+          score={earnedScore}
+          maxScore={maxScore}
+          pinAtSource={pinAtSource}
+        />
+      </>
+    ),
+    [earnedScore, handlePromptClick, maxScore, pinAtSource, prompts],
+  )
 
   const renderImageChildren = (message: GameChatHistoryMessage) => {
     const submission = getSubmissionForMessage(message)
@@ -189,8 +254,11 @@ export function ImagePinPreview({
     return null
   }
 
+  const showStickyChrome = continuousSession && sessionActive
+  const showInlineChrome = !continuousSession
+
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className={cn('flex flex-col gap-3', continuousSession ? 'min-h-0' : 'h-full')}>
       {!embedded ? (
         <Text
           as="p"
@@ -207,10 +275,11 @@ export function ImagePinPreview({
         onDragEnd={handleDragEndWrapped}
         onDragCancel={handleDragCancel}
       >
-        <div className="flex min-h-0 flex-1 flex-col gap-3">
+        <div className={cn('flex flex-col gap-3', !continuousSession && 'min-h-0 flex-1')}>
           <GameChatHistory
             messages={displayMessages}
-            className="min-h-0 flex-1"
+            flat={continuousSession}
+            className={continuousSession ? undefined : 'min-h-0 flex-1'}
             showUserAvatar
             incomingAvatarUrl={userAvatarUrl ?? undefined}
             incomingBubbleVariant="default"
@@ -218,16 +287,13 @@ export function ImagePinPreview({
             renderImageChildren={renderImageChildren}
           />
 
-          <AiPromptBadgeList
-            prompts={prompts}
-            onPromptClick={handlePromptClick}
-          />
+          {showInlineChrome ? footerChrome : null}
 
-          <ImagePinChatInput
-            score={earnedScore}
-            maxScore={maxScore}
-            pinAtSource={pinAtSource}
-          />
+          {showStickyChrome ? (
+            <div className="sticky bottom-0 z-10 flex flex-col gap-3 border-t border-border/60 bg-background pt-3">
+              {footerChrome}
+            </div>
+          ) : null}
         </div>
 
         <DragOverlay dropAnimation={null}>

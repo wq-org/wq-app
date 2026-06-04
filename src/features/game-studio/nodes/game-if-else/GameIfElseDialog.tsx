@@ -4,7 +4,6 @@ import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
 import { GameLayout } from '../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
 import type { GameIfElseNodeData } from './game-if-else.schema'
-import { GameIfElseEditor } from './GameIfElseEditor'
 import { GameIfElsePreview } from './GameIfElsePreview'
 import { GameIfElseSettings } from './GameIfElseSettings'
 
@@ -32,7 +31,8 @@ export function GameIfElseDialog(props: GameNodeDialogProps) {
       description={t('ifElseDialog.description')}
     >
       <GameLayout
-        editorContent={<GameIfElseEditor />}
+        hiddenTabIds={['editor']}
+        initialTab="settings"
         previewContent={
           <GameIfElsePreview
             nodeId={nodeId}

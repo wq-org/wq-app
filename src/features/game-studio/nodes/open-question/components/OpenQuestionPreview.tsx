@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { CircleQuestionMark, HandHelping } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -21,13 +22,17 @@ import {
   OpenQuestionPreviewChatHistory,
   type OpenQuestionPreviewChatMessage,
 } from './OpenQuestionPreviewChatHistory'
+import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
 import { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDialog'
 
 export type OpenQuestionPreviewProps = {
   nodeId: string
   nodeData?: GameOpenQuestionNodeData
   onSessionScoreChange?: (score: number) => void
+  onSessionComplete?: (payload: { score: number }) => void
   embedded?: boolean
+  continuousSession?: boolean
+  sessionActive?: boolean
 }
 
 function questionMarkerId(nodeId: string, index: number, questionId: string): string {
@@ -38,7 +43,10 @@ export function OpenQuestionPreview({
   nodeId,
   nodeData,
   onSessionScoreChange,
+  onSessionComplete,
   embedded = false,
+  continuousSession = false,
+  sessionActive = true,
 }: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
@@ -104,6 +112,18 @@ export function OpenQuestionPreview({
     () => filledQuestions.map((question) => question.id).join('|'),
     [filledQuestions],
   )
+
+  const sessionCompleteReportedRef = useRef(false)
+
+  useEffect(() => {
+    sessionCompleteReportedRef.current = false
+  }, [nodeId, filledQuestionIdsSignature])
+
+  useEffect(() => {
+    if (!isFinished || sessionCompleteReportedRef.current) return
+    sessionCompleteReportedRef.current = true
+    onSessionComplete?.({ score: earnedTotal })
+  }, [earnedTotal, isFinished, onSessionComplete])
 
   useEffect(() => {
     setPreviewMessages([])
@@ -314,6 +334,7 @@ export function OpenQuestionPreview({
       icon: CircleQuestionMark,
       text: t('openQuestionGamePreview.badgeHowToPlay'),
       prompt: howToPlayPrompt,
+      disabled: embedded,
     },
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
@@ -378,8 +399,47 @@ export function OpenQuestionPreview({
 
   const hasFilledQuestions = filledQuestions.length > 0
 
+  const footerChrome = useMemo(
+    () => (
+      <>
+        <AiPromptBadgeList
+          prompts={prompts}
+          onPromptClick={handlePromptClick}
+        />
+        <OpenQuestionChatInput
+          className="shrink-0"
+          score={earnedTotal}
+          maxScore={maxScore}
+          placeholder={t('openQuestionGamePreview.composerPlaceholder')}
+          value={composerValue}
+          onValueChange={setComposerValue}
+          onSubmit={handleComposerSubmit}
+          disabled={isComposerLocked}
+          clearOnSubmit={false}
+        />
+      </>
+    ),
+    [
+      composerValue,
+      earnedTotal,
+      handleComposerSubmit,
+      handlePromptClick,
+      isComposerLocked,
+      maxScore,
+      prompts,
+      t,
+    ],
+  )
+
+  useIfElsePreviewFooter(
+    continuousSession ? footerChrome : null,
+    continuousSession && sessionActive,
+  )
+
+  const showInlineChrome = !continuousSession
+
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className={cn('flex flex-col gap-3', continuousSession ? 'min-h-0' : 'h-full')}>
       {!embedded ? (
         <Text
           as="p"
@@ -391,7 +451,7 @@ export function OpenQuestionPreview({
         </Text>
       ) : null}
 
-      {hasFilledQuestions ? (
+      {hasFilledQuestions && !continuousSession ? (
         <Text
           as="p"
           variant="small"
@@ -414,31 +474,17 @@ export function OpenQuestionPreview({
         showTitle={showTitle}
         previewMessages={previewMessages}
         editingMessageId={editingMessageId}
-        onEditSendingMessage={handleEditMessage}
-        onDeleteSendingMessage={handleDeleteMessage}
+        onEditSendingMessage={sessionActive ? handleEditMessage : undefined}
+        onDeleteSendingMessage={sessionActive ? handleDeleteMessage : undefined}
         incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingAvatarFallback={avatarFallback}
         incomingBubbleVariant="default"
         receivingBubbleVariant="orange"
-        className="min-h-0 flex-1"
+        flat={continuousSession}
+        className={continuousSession ? undefined : 'min-h-0 flex-1'}
       />
 
-      <AiPromptBadgeList
-        prompts={prompts}
-        onPromptClick={handlePromptClick}
-      />
-
-      <OpenQuestionChatInput
-        className="shrink-0"
-        score={earnedTotal}
-        maxScore={maxScore}
-        placeholder={t('openQuestionGamePreview.composerPlaceholder')}
-        value={composerValue}
-        onValueChange={setComposerValue}
-        onSubmit={handleComposerSubmit}
-        disabled={isComposerLocked}
-        clearOnSubmit={false}
-      />
+      {showInlineChrome ? footerChrome : null}
 
       <OpenQuestionSubmitConfirmDialog
         open={submitDialogOpen}

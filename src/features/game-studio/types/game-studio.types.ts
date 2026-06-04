@@ -26,11 +26,9 @@ export interface SettingsDrawerProps {
   onDelete?: () => void
 }
 
-export interface PreviewDrawerProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  nodes?: Node[]
-  edges?: Edge[]
+export type PublishGameOptions = {
+  /** When set, links this game to the course on publish (optional). */
+  courseId?: string | null
 }
 
 export interface PublishDrawerProps {
@@ -38,7 +36,9 @@ export interface PublishDrawerProps {
   onOpenChange: (open: boolean) => void
   nodes?: Node[]
   edges?: Edge[]
-  onPublish?: () => Promise<void>
+  teacherId?: string
+  linkedCourseId?: string | null
+  onPublish?: (options?: PublishGameOptions) => Promise<void>
   onFocusNode?: (nodeId: string) => void
 }
 

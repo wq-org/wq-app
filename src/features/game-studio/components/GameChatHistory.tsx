@@ -21,6 +21,8 @@ type GameChatHistoryProps = {
   receivingBubbleRounded?: ChatBubbleRounded
   /** Overlay rendered inside the message's image container (e.g. a dropped pin on the active question). */
   renderImageChildren?: (message: GameChatHistoryMessage) => ReactNode
+  /** When true, render messages only (parent owns scroll, e.g. If/Else continuous session). */
+  flat?: boolean
 }
 
 export function GameChatHistory({
@@ -35,14 +37,66 @@ export function GameChatHistory({
   incomingBubbleRounded,
   receivingBubbleRounded,
   renderImageChildren,
+  flat = false,
 }: GameChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
-  const shouldAutoScroll = autoScroll !== false
+  const shouldAutoScroll = !flat && autoScroll !== false
 
   useEffect(() => {
     if (!shouldAutoScroll) return
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, shouldAutoScroll])
+
+  const messageList = (
+    <div className={cn('flex flex-col gap-4', flat ? 'py-1' : 'pb-6 pt-5')}>
+      {messages.map((message) => (
+        <div
+          key={message.id}
+          className={cn(
+            'flex',
+            message.direction === 'receiving' ? 'justify-end' : 'justify-start',
+          )}
+        >
+          {message.direction === 'receiving' ? (
+            <GameReceivingChatMessageBubble
+              text={message.text}
+              time={message.time}
+              image={message.image}
+              imageChildren={renderImageChildren?.(message)}
+              avatarUrl={showUserAvatar ? '/favicon.ico' : undefined}
+              avatarFallback="/favicon.ico"
+              variant={receivingBubbleVariant}
+              rounded={receivingBubbleRounded}
+              status={message.status}
+              messageId={message.id}
+            />
+          ) : (
+            <GameIncomingChatMessageBubble
+              text={message.text}
+              time={message.time}
+              image={message.image}
+              imageChildren={renderImageChildren?.(message)}
+              avatarUrl={
+                showUserAvatar ? incomingAvatarUrl?.trim() || '/favicon.ico' : incomingAvatarUrl
+              }
+              avatarFallback={incomingAvatarFallback}
+              variant={incomingBubbleVariant}
+              rounded={incomingBubbleRounded}
+              status={message.status}
+              messageId={message.id}
+              textBold={message.bold}
+            />
+          )}
+        </div>
+      ))}
+
+      {shouldAutoScroll ? <div ref={bottomRef} /> : null}
+    </div>
+  )
+
+  if (flat) {
+    return <div className={cn('w-full min-w-0', className)}>{messageList}</div>
+  }
 
   return (
     <div
@@ -55,50 +109,7 @@ export function GameChatHistory({
         className="flex h-full min-h-0 flex-1 flex-col bg-background px-4 sm:px-5"
         viewportClassName="min-h-0 max-h-full flex-1 basis-0 [&>div]:!block [&>div]:min-h-0"
       >
-        <div className="flex flex-col gap-4 pb-6 pt-5">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                'flex',
-                message.direction === 'receiving' ? 'justify-end' : 'justify-start',
-              )}
-            >
-              {message.direction === 'receiving' ? (
-                <GameReceivingChatMessageBubble
-                  text={message.text}
-                  time={message.time}
-                  image={message.image}
-                  imageChildren={renderImageChildren?.(message)}
-                  avatarUrl={showUserAvatar ? '/favicon.ico' : undefined}
-                  avatarFallback="/favicon.ico"
-                  variant={receivingBubbleVariant}
-                  rounded={receivingBubbleRounded}
-                  status={message.status}
-                  messageId={message.id}
-                />
-              ) : (
-                <GameIncomingChatMessageBubble
-                  text={message.text}
-                  time={message.time}
-                  image={message.image}
-                  imageChildren={renderImageChildren?.(message)}
-                  avatarUrl={
-                    showUserAvatar ? incomingAvatarUrl?.trim() || '/favicon.ico' : incomingAvatarUrl
-                  }
-                  avatarFallback={incomingAvatarFallback}
-                  variant={incomingBubbleVariant}
-                  rounded={incomingBubbleRounded}
-                  status={message.status}
-                  messageId={message.id}
-                  textBold={message.bold}
-                />
-              )}
-            </div>
-          ))}
-
-          <div ref={bottomRef} />
-        </div>
+        {messageList}
       </BlurredScrollArea>
     </div>
   )

@@ -144,11 +144,11 @@ export function IfElseBeamMap({
             content: (
               <BranchHubNode
                 rangeLabel={branchARangeLabel}
-                rangeClassName="text-blue-500"
+                rangeClassName="text-muted-foreground"
                 badge={
                   <BeamHubBadge
                     Icon={branchANode ? getNodeIcon(branchANode.nodeType) : X}
-                    theme={branchANode ? 'blue' : ('red' as ThemeClassId)}
+                    theme={branchANode ? 'default' : ('red' as ThemeClassId)}
                     onClick={branchANode && onNavigate ? () => onNavigate(branchANode) : undefined}
                     className={cn(!branchANode && 'text-red-500 border-red-500/20')}
                   />

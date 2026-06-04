@@ -55,6 +55,7 @@
   },
   "previewDrawer": {
     "title": "Game Simulation",
+    "back": "Back to editor",
     "emptyHint": "Add a Start node, game nodes, and an End node connected in a path to preview.",
     "ifElseFallback": "If / else",
     "stepLabel": "Step {{index}} of {{total}}",
@@ -170,7 +171,13 @@
     "branchResultA": "Top branch (Node A) — score at or above threshold",
     "branchResultB": "Bottom branch (Node B) — score below threshold",
     "routesTo": "Next: {{node}}",
-    "branchNotConnected": "No node connected on this branch"
+    "branchNotConnected": "No node connected on this branch",
+    "thresholdStripMax": "Incoming step can award up to {{points}} points.",
+    "thresholdStripValue": "Score threshold: {{value}}",
+    "thresholdStripBranchA": "Node A (top): {{range}}",
+    "thresholdStripBranchB": "Node B (bottom): {{range}}",
+    "branchSectionTitleA": "Node A (top) — {{range}}",
+    "branchSectionTitleB": "Node B (bottom) — {{range}}"
   },
   "startDialog": {
     "title": "Configure Start Node",
@@ -203,7 +210,15 @@
     "pointsValue": "{{points}} points",
     "floorNote": "Wrong-answer penalties may apply; score never below 0.",
     "publishing": "Publishing...",
-    "publishForStudents": "Hold to publish for students"
+    "publishForStudents": "Hold to publish for students",
+    "linkCourseSectionLabel": "Link to course (optional)",
+    "linkCourseTrigger": "Select a course",
+    "linkCourseLoading": "Loading courses…",
+    "linkCourseEmptyHint": "Publish a course first to link this game to it. You can still publish the game without a link.",
+    "linkCoursePopoverTitle": "Published courses",
+    "linkCoursePopoverHint": "Linking is optional. The game will still publish if you skip this.",
+    "linkCourseNone": "No course link",
+    "linkCourseAriaLabel": "Choose a published course to link"
   },
   "publishValidation": {
     "requirementsMet": "Flow requirements met",

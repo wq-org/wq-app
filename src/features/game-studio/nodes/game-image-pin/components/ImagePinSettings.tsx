@@ -64,6 +64,10 @@ function getNodeIcon(type: string | undefined): LucideIcon {
   return NODE_TYPE_ICONS[type] ?? FileQuestionMark
 }
 
+function getAdjacentNodeTheme(type: string | undefined): 'default' | 'orange' {
+  return type === 'gameIfElse' ? 'orange' : 'default'
+}
+
 const LEARNING_FIELD_OPTIONS = [
   { id: 'lf-1', label: 'LF-1' },
   { id: 'lf-2', label: 'LF-2' },
@@ -475,7 +479,7 @@ export function ImagePinSettings({
               content: (
                 <BeamHubBadge
                   Icon={prevNode ? getNodeIcon(prevNode.nodeType) : X}
-                  theme="default"
+                  theme={prevNode ? getAdjacentNodeTheme(prevNode.nodeType) : 'default'}
                   onClick={prevNode ? () => handleNavigate(prevNode.id) : undefined}
                   className={!prevNode ? 'text-red-500 border-red-500/20' : undefined}
                 />
@@ -488,7 +492,7 @@ export function ImagePinSettings({
               content: (
                 <BeamHubBadge
                   Icon={nextNode ? getNodeIcon(nextNode.nodeType) : X}
-                  theme="default"
+                  theme={nextNode ? getAdjacentNodeTheme(nextNode.nodeType) : 'default'}
                   onClick={nextNode ? () => handleNavigate(nextNode.id) : undefined}
                   className={!nextNode ? 'text-red-500 border-red-500/20' : undefined}
                 />

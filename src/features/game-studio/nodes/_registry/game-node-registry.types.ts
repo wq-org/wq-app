@@ -32,14 +32,30 @@ export type GameNodeDataPatch =
   | Record<string, unknown>
   | ((current: Record<string, unknown>) => Record<string, unknown>)
 
+export type GameNodePreviewSessionCompletePayload = {
+  score: number
+}
+
 /** Props passed to a node's playable preview when rendered in the holistic game preview. */
 export type GameNodePreviewProps = {
   nodeId: string
   nodeData: Record<string, unknown>
   /** Optional hook for parent previews (e.g. If/Else branch test) to read live session score. */
   onSessionScoreChange?: (score: number) => void
+  /**
+   * Fired once when the preview result is settled and the final score is known.
+   * Parent previews (e.g. If/Else) can use this to route immediately without
+   * waiting for the child preview's own wrap-up animation/message delay.
+   */
+  onSessionResolved?: (payload: GameNodePreviewSessionCompletePayload) => void
+  /** Fired once when the preview session loop finishes (all questions/tabs settled). */
+  onSessionComplete?: (payload: GameNodePreviewSessionCompletePayload) => void
   /** Hides per-node preview chrome when nested inside another preview (e.g. If/Else branch test). */
   embedded?: boolean
+  /** Renders into If/Else continuous session: flat chat in shell scroll, footer when sessionActive. */
+  continuousSession?: boolean
+  /** When continuousSession, only the active segment registers prompts + ChatInput in the shell footer. */
+  sessionActive?: boolean
 }
 
 /** Playable preview component for a gameplay node (null for non-playable flow nodes). */

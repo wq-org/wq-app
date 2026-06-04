@@ -30,6 +30,7 @@ export type { EnrollmentCourse, CourseMemberType, CourseMember } from './api/enr
 export {
   createCourse,
   getTeacherCourses,
+  getTeacherPublishedCourses,
   getCourseById,
   updateCourse,
   deleteCourse,

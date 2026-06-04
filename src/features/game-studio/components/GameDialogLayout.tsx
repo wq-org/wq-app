@@ -20,6 +20,8 @@ interface GameLayoutProps {
   tabsDisabled?: boolean
   /** Individual tabs that cannot be selected (e.g. If/Else locks Editor + Preview). */
   disabledTabIds?: TabType[]
+  /** Tabs omitted from the tab strip entirely (e.g. If/Else has no editor surface). */
+  hiddenTabIds?: TabType[]
   /** Initial selected tab when the dialog opens. */
   initialTab?: TabType
 }
@@ -34,6 +36,7 @@ export function GameLayout({
   playMode = false,
   tabsDisabled = false,
   disabledTabIds = [],
+  hiddenTabIds = [],
   initialTab = 'editor',
 }: GameLayoutProps) {
   const { t } = useTranslation('features.gameStudio')
@@ -46,6 +49,7 @@ export function GameLayout({
   const disabledTabSet = new Set<TabType>(
     tabsDisabled ? ['editor', 'preview', 'settings'] : disabledTabIds,
   )
+  const hiddenTabSet = new Set<TabType>(hiddenTabIds)
 
   const tabs: TabItem[] = [
     {
@@ -66,12 +70,13 @@ export function GameLayout({
       title: t('nodeLayout.settingsTab'),
       disabled: disabledTabSet.has('settings'),
     },
-  ]
+  ].filter((tab) => !hiddenTabSet.has(tab.id as TabType))
+
+  const isTabAvailable = (tab: TabType) => !disabledTabSet.has(tab) && !hiddenTabSet.has(tab)
 
   const resolvedTab: TabType =
-    tabsDisabled || disabledTabSet.has(activeTab)
-      ? ((['settings', 'preview', 'editor'] as const).find((tab) => !disabledTabSet.has(tab)) ??
-        'editor')
+    tabsDisabled || !isTabAvailable(activeTab)
+      ? ((['settings', 'preview', 'editor'] as const).find(isTabAvailable) ?? 'settings')
       : activeTab
 
   return (

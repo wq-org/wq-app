@@ -44,6 +44,8 @@ export type OpenQuestionPreviewChatHistoryProps = {
   incomingBubbleVariant?: ChatBubbleVariant
   receivingBubbleVariant?: ChatBubbleVariant
   className?: string
+  /** When true, render messages only (parent owns scroll). */
+  flat?: boolean
 }
 
 function buildSeedMessages({
@@ -94,6 +96,7 @@ export function OpenQuestionPreviewChatHistory({
   incomingBubbleVariant = 'default',
   receivingBubbleVariant = 'orange',
   className,
+  flat = false,
 }: OpenQuestionPreviewChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const seedMessages = useMemo(
@@ -109,12 +112,91 @@ export function OpenQuestionPreviewChatHistory({
   )
 
   useEffect(() => {
+    if (flat) return
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [previewMessages, seedMessages])
+  }, [flat, previewMessages, seedMessages])
 
   const hasContent = seedMessages.length > 0 || previewMessages.length > 0
   if (!hasContent) {
     return null
+  }
+
+  const messageList = (
+    <div className="flex flex-col gap-4 py-1">
+      {seedMessages.map((message) => (
+        <div
+          key={message.id}
+          className="flex justify-start"
+        >
+          {message.kind === 'lexical' ? (
+            <ReceivingChatMessageBubble
+              contentMode="lexical"
+              lexicalContent={message.lexicalContent}
+              lexicalHydrationKey={message.lexicalHydrationKey}
+              time=""
+              avatarUrl={incomingAvatarUrl}
+              avatarFallback={incomingAvatarFallback}
+              variant={incomingBubbleVariant}
+              messageId={message.id}
+            />
+          ) : (
+            <ReceivingChatMessageBubble
+              text={message.text}
+              time=""
+              avatarUrl={incomingAvatarUrl}
+              avatarFallback={incomingAvatarFallback}
+              variant={incomingBubbleVariant}
+              messageId={message.id}
+            />
+          )}
+        </div>
+      ))}
+
+      {previewMessages.map((message) => (
+        <div
+          key={message.id}
+          className={cn('flex', message.direction === 'sending' ? 'justify-end' : 'justify-start')}
+        >
+          {message.direction === 'sending' ? (
+            <SendingChatMessageBubble
+              text={message.text}
+              time=""
+              avatarUrl={incomingAvatarUrl}
+              avatarFallback={incomingAvatarFallback}
+              variant={receivingBubbleVariant}
+              status={message.status ?? 'ready'}
+              messageId={message.id}
+              editMode={editingMessageId === message.id}
+              showHoverActions={onEditSendingMessage != null || onDeleteSendingMessage != null}
+              onEdit={
+                onEditSendingMessage
+                  ? () => onEditSendingMessage(message.id, message.text)
+                  : undefined
+              }
+              onDelete={
+                onDeleteSendingMessage ? () => onDeleteSendingMessage(message.id) : undefined
+              }
+            />
+          ) : (
+            <ReceivingChatMessageBubble
+              text={message.text}
+              time=""
+              avatarUrl={incomingAvatarUrl}
+              avatarFallback={incomingAvatarFallback}
+              variant={incomingBubbleVariant}
+              status={message.status ?? 'ready'}
+              messageId={message.id}
+              textBold={message.textBold}
+            />
+          )}
+        </div>
+      ))}
+      {!flat ? <div ref={bottomRef} /> : null}
+    </div>
+  )
+
+  if (flat) {
+    return <div className={cn('w-full min-w-0', className)}>{messageList}</div>
   }
 
   return (
@@ -129,80 +211,7 @@ export function OpenQuestionPreviewChatHistory({
         hideScrollBar
         viewportClassName="min-h-0 max-h-full flex-1 basis-0 [&>div]:!block [&>div]:min-h-0"
       >
-        <div className="flex flex-col gap-4 pb-2 pt-1">
-          {seedMessages.map((message) => (
-            <div
-              key={message.id}
-              className="flex justify-start"
-            >
-              {message.kind === 'lexical' ? (
-                <ReceivingChatMessageBubble
-                  contentMode="lexical"
-                  lexicalContent={message.lexicalContent}
-                  lexicalHydrationKey={message.lexicalHydrationKey}
-                  time=""
-                  avatarUrl={incomingAvatarUrl}
-                  avatarFallback={incomingAvatarFallback}
-                  variant={incomingBubbleVariant}
-                  messageId={message.id}
-                />
-              ) : (
-                <ReceivingChatMessageBubble
-                  text={message.text}
-                  time=""
-                  avatarUrl={incomingAvatarUrl}
-                  avatarFallback={incomingAvatarFallback}
-                  variant={incomingBubbleVariant}
-                  messageId={message.id}
-                />
-              )}
-            </div>
-          ))}
-
-          {previewMessages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                'flex',
-                message.direction === 'sending' ? 'justify-end' : 'justify-start',
-              )}
-            >
-              {message.direction === 'sending' ? (
-                <SendingChatMessageBubble
-                  text={message.text}
-                  time=""
-                  avatarUrl={incomingAvatarUrl}
-                  avatarFallback={incomingAvatarFallback}
-                  variant={receivingBubbleVariant}
-                  status={message.status ?? 'ready'}
-                  messageId={message.id}
-                  editMode={editingMessageId === message.id}
-                  showHoverActions={onEditSendingMessage != null || onDeleteSendingMessage != null}
-                  onEdit={
-                    onEditSendingMessage
-                      ? () => onEditSendingMessage(message.id, message.text)
-                      : undefined
-                  }
-                  onDelete={
-                    onDeleteSendingMessage ? () => onDeleteSendingMessage(message.id) : undefined
-                  }
-                />
-              ) : (
-                <ReceivingChatMessageBubble
-                  text={message.text}
-                  time=""
-                  avatarUrl={incomingAvatarUrl}
-                  avatarFallback={incomingAvatarFallback}
-                  variant={incomingBubbleVariant}
-                  status={message.status ?? 'ready'}
-                  messageId={message.id}
-                  textBold={message.textBold}
-                />
-              )}
-            </div>
-          ))}
-          <div ref={bottomRef} />
-        </div>
+        {messageList}
       </BlurredScrollArea>
     </div>
   )

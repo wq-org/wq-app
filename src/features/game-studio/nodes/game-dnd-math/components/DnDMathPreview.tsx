@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -56,6 +56,7 @@ import {
   lockCanvasRowsForSubmission,
 } from '../utils/canvasSubmissionLock'
 import { snapCenterToCursor } from '../utils/snapCenterToCursor'
+import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
 
 function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
   for (const row of rows) {
@@ -78,14 +79,20 @@ export type DnDMathPreviewProps = {
   nodeId: string
   nodeData?: GameDragDropMathNodeData
   onSessionScoreChange?: (score: number) => void
+  onSessionComplete?: (payload: { score: number }) => void
   embedded?: boolean
+  continuousSession?: boolean
+  sessionActive?: boolean
 }
 
 export function DnDMathPreview({
   nodeId,
   nodeData,
   onSessionScoreChange,
+  onSessionComplete,
   embedded = false,
+  continuousSession = false,
+  sessionActive = true,
 }: DnDMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
@@ -199,6 +206,18 @@ export function DnDMathPreview({
     onSessionScoreChange?.(runningEarnedScore)
   }, [onSessionScoreChange, runningEarnedScore])
 
+  const sessionCompleteReportedRef = useRef(false)
+
+  useEffect(() => {
+    sessionCompleteReportedRef.current = false
+  }, [nodeId, tabs.length])
+
+  useEffect(() => {
+    if (!allTabsCompleted || sessionCompleteReportedRef.current) return
+    sessionCompleteReportedRef.current = true
+    onSessionComplete?.({ score: runningEarnedScore })
+  }, [allTabsCompleted, onSessionComplete, runningEarnedScore])
+
   useEffect(() => {
     setCanvasRows([])
   }, [currentTabIndex])
@@ -222,9 +241,10 @@ export function DnDMathPreview({
           icon: CircleQuestionMark,
           text: t('dragDropMathGamePreview.badgeHowToPlay'),
           prompt: howToPlayPrompt,
+          disabled: embedded,
         },
       ] as const satisfies readonly Ai02PromptSuggestion[],
-    [allTabsCompleted, howToPlayPrompt, isCanvasEmpty, submissionLocked, t],
+    [allTabsCompleted, embedded, howToPlayPrompt, isCanvasEmpty, submissionLocked, t],
   )
 
   const previewMessages = useMemo(
@@ -372,8 +392,74 @@ export function DnDMathPreview({
     return renderCanvasToken(canvasToken)
   }, [activeDragId, canvasRows, instantColorFeedback, resolveDropValue, t])
 
+  const footerChrome = useMemo(
+    () => (
+      <>
+        <AiPromptBadgeList
+          prompts={prompts}
+          onPromptClick={handlePromptClick}
+        />
+        <DndContext
+          sensors={activeDragSensors}
+          collisionDetection={canvasCollisionDetection}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <DnDMathChatInput
+            className={cn('shrink-0', aiPromptBadgeListEnterAnimation)}
+            showPaletteLabel={false}
+            rows={canvasRows}
+            interactionLocked={submissionLocked || !sessionActive}
+            instantColorFeedback={instantColorFeedback}
+            onRowsReorder={submissionLocked || !sessionActive ? () => {} : reorderRows}
+            onTokenValueChange={submissionLocked || !sessionActive ? () => {} : updateTokenValue}
+            onMathTokenCommit={submissionLocked || !sessionActive ? () => {} : commitMathEquation}
+            onTokenRemove={submissionLocked || !sessionActive ? () => {} : removeToken}
+            onSigmaRemove={submissionLocked || !sessionActive ? () => {} : removeSigmaRow}
+            score={runningEarnedScore}
+            maxScore={maxScore}
+          />
+          <DragOverlay
+            dropAnimation={null}
+            modifiers={[snapCenterToCursor]}
+          >
+            {activeDragPreview}
+          </DragOverlay>
+        </DndContext>
+      </>
+    ),
+    [
+      activeDragPreview,
+      activeDragSensors,
+      canvasRows,
+      commitMathEquation,
+      handleDragCancel,
+      handleDragEnd,
+      handleDragStart,
+      handlePromptClick,
+      instantColorFeedback,
+      maxScore,
+      prompts,
+      removeSigmaRow,
+      removeToken,
+      reorderRows,
+      runningEarnedScore,
+      sessionActive,
+      submissionLocked,
+      updateTokenValue,
+    ],
+  )
+
+  useIfElsePreviewFooter(
+    continuousSession ? footerChrome : null,
+    continuousSession && sessionActive,
+  )
+
+  const showInlineChrome = !continuousSession
+
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className={cn('flex flex-col gap-3', continuousSession ? 'min-h-0' : 'h-full')}>
       {!embedded ? (
         <Text
           as="p"
@@ -385,7 +471,7 @@ export function DnDMathPreview({
         </Text>
       ) : null}
 
-      {hasMultipleTabs ? (
+      {hasMultipleTabs && !continuousSession ? (
         <Text
           as="p"
           variant="small"
@@ -411,43 +497,12 @@ export function DnDMathPreview({
         avatarFallback={avatarFallback}
         incomingBubbleVariant="default"
         receivingBubbleVariant="orange"
-        className="min-h-0 flex-1"
+        flat={continuousSession}
+        className={continuousSession ? undefined : 'min-h-0 flex-1'}
       />
 
-      <AiPromptBadgeList
-        prompts={prompts}
-        onPromptClick={handlePromptClick}
-      />
+      {showInlineChrome ? footerChrome : null}
 
-      <DndContext
-        sensors={activeDragSensors}
-        collisionDetection={canvasCollisionDetection}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
-      >
-        <DnDMathChatInput
-          className={cn('shrink-0', aiPromptBadgeListEnterAnimation)}
-          showPaletteLabel={false}
-          rows={canvasRows}
-          interactionLocked={submissionLocked}
-          instantColorFeedback={instantColorFeedback}
-          onRowsReorder={submissionLocked ? () => {} : reorderRows}
-          onTokenValueChange={submissionLocked ? () => {} : updateTokenValue}
-          onMathTokenCommit={submissionLocked ? () => {} : commitMathEquation}
-          onTokenRemove={submissionLocked ? () => {} : removeToken}
-          onSigmaRemove={submissionLocked ? () => {} : removeSigmaRow}
-          score={runningEarnedScore}
-          maxScore={maxScore}
-        />
-
-        <DragOverlay
-          dropAnimation={null}
-          modifiers={[snapCenterToCursor]}
-        >
-          {activeDragPreview}
-        </DragOverlay>
-      </DndContext>
       <DnDMathSubmitConfirmDialog
         open={submitDialogOpen}
         onOpenChange={setSubmitDialogOpen}

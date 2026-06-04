@@ -48,6 +48,8 @@ export type ImagePinSubmission = {
 export type UseImagePinGameArgs = {
   nodeId: string
   nodeData: GameImagePinNodeData
+  /** When true, skip confetti on each correct answer (parent may fire on session end). */
+  suppressPerAnswerConfetti?: boolean
 }
 
 type ImageNaturalSize = { width: number; height: number }
@@ -60,6 +62,11 @@ type CurrentPin = {
 type PreviewState = {
   messages: GameChatHistoryMessage[]
   questionIndex: number
+}
+
+type ResolvedSession = {
+  score: number
+  shouldCelebrate: boolean
 }
 
 function formatPreviewChatTime(date = new Date()): string {
@@ -224,7 +231,7 @@ function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value))
 }
 
-function fireCorrectConfetti(): void {
+export function fireImagePinPreviewConfetti(): void {
   confetti({
     particleCount: 150,
     spread: 70,
@@ -232,7 +239,11 @@ function fireCorrectConfetti(): void {
   })
 }
 
-export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
+export function useImagePinGame({
+  nodeId,
+  nodeData,
+  suppressPerAnswerConfetti = false,
+}: UseImagePinGameArgs) {
   const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
   const description = resolveGameImagePinDescription(nodeData)
@@ -267,6 +278,8 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
   const [submissions, setSubmissions] = useState<Record<string, ImagePinSubmission>>({})
   const [attemptCounts, setAttemptCounts] = useState<Record<string, number>>({})
   const [earnedScore, setEarnedScore] = useState(0)
+  const [isSessionComplete, setIsSessionComplete] = useState(false)
+  const [resolvedSession, setResolvedSession] = useState<ResolvedSession | null>(null)
   const [naturalSize, setNaturalSize] = useState<ImageNaturalSize | null>(null)
   const advanceTimeoutRef = useRef<number | null>(null)
   const wrongFreezeTimeoutRef = useRef<number | null>(null)
@@ -291,10 +304,12 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
     clearAdvanceTimeout()
     clearWrongFreezeTimeout()
     setState(initialState)
+    setIsSessionComplete(false)
     setCurrentPin(null)
     setSubmissions({})
     setAttemptCounts({})
     setEarnedScore(0)
+    setResolvedSession(null)
     msgSeqRef.current = 0
   }, [initialState])
 
@@ -429,13 +444,17 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
     setAttemptCounts((prev) => ({ ...prev, [questionId]: thisAttempt }))
 
     if (isSettled) {
+      const hasNextQuestion = state.questionIndex + 1 < questions.length
       const earned = isCorrect
         ? calcAttemptPoints(pointsPerQuestion, thisAttempt, deductionPercent, MAX_ATTEMPTS)
         : 0
+      const nextScore = earnedScore + earned
 
       if (isCorrect) {
         setEarnedScore((prev) => prev + earned)
-        fireCorrectConfetti()
+        if (!suppressPerAnswerConfetti) {
+          fireImagePinPreviewConfetti()
+        }
       }
 
       setSubmissions((prev) => ({ ...prev, [msgId]: { drop: currentPin.drop, variant } }))
@@ -462,6 +481,13 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
       setCurrentPin(null)
       clearAdvanceTimeout()
 
+      if (!hasNextQuestion) {
+        setResolvedSession({
+          score: nextScore,
+          shouldCelebrate: isCorrect,
+        })
+      }
+
       if (isCorrect) {
         // Phase 1 — replace loading with "+X pts" at T=500ms
         advanceTimeoutRef.current = window.setTimeout(() => {
@@ -483,7 +509,10 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
             advanceTimeoutRef.current = null
             setState((prev) => {
               const nextQuestion = questions[prev.questionIndex]
-              if (!nextQuestion) return prev
+              if (!nextQuestion) {
+                setIsSessionComplete(true)
+                return prev
+              }
               return {
                 ...prev,
                 messages: [
@@ -514,7 +543,10 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
             advanceTimeoutRef.current = null
             setState((prev) => {
               const nextQuestion = questions[prev.questionIndex]
-              if (!nextQuestion) return prev
+              if (!nextQuestion) {
+                setIsSessionComplete(true)
+                return prev
+              }
               return {
                 ...prev,
                 messages: [
@@ -620,5 +652,7 @@ export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
     getSubmissionForMessage,
     latestQuestionMessageId,
     earnedScore,
+    resolvedSession,
+    isSessionComplete,
   }
 }

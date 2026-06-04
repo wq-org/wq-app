@@ -55,6 +55,7 @@
   },
   "previewDrawer": {
     "title": "Spielsimulation",
+    "back": "Zur\u00fcck zum Editor",
     "emptyHint": "F\u00fcge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad f\u00fcr die Vorschau hinzu.",
     "ifElseFallback": "Wenn / sonst",
     "stepLabel": "Schritt {{index}} von {{total}}",
@@ -170,7 +171,13 @@
     "branchResultA": "Oberer Zweig (Knoten A) — Punktzahl erreicht oder \u00fcber Schwelle",
     "branchResultB": "Unterer Zweig (Knoten B) — Punktzahl unter Schwelle",
     "routesTo": "Weiter zu: {{node}}",
-    "branchNotConnected": "Auf diesem Zweig ist kein Knoten verbunden"
+    "branchNotConnected": "Auf diesem Zweig ist kein Knoten verbunden",
+    "thresholdStripMax": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
+    "thresholdStripValue": "Punkteschwelle: {{value}}",
+    "thresholdStripBranchA": "Knoten A (oben): {{range}}",
+    "thresholdStripBranchB": "Knoten B (unten): {{range}}",
+    "branchSectionTitleA": "Knoten A (oben) — {{range}}",
+    "branchSectionTitleB": "Knoten B (unten) — {{range}}"
   },
   "startDialog": {
     "title": "Startknoten konfigurieren",
@@ -203,7 +210,15 @@
     "pointsValue": "{{points}} Punkte",
     "floorNote": "Bei falschen Antworten k\u00f6nnen Abz\u00fcge gelten; der Score f\u00e4llt nie unter 0.",
     "publishing": "Ver\u00f6ffentlicht...",
-    "publishForStudents": "Halten, um f\u00fcr Lernende zu ver\u00f6ffentlichen"
+    "publishForStudents": "Halten, um f\u00fcr Lernende zu ver\u00f6ffentlichen",
+    "linkCourseSectionLabel": "Mit Kurs verkn\u00fcpfen (optional)",
+    "linkCourseTrigger": "Kurs ausw\u00e4hlen",
+    "linkCourseLoading": "Kurse werden geladen…",
+    "linkCourseEmptyHint": "Ver\u00f6ffentliche zuerst einen Kurs, um dieses Spiel damit zu verkn\u00fcpfen. Du kannst das Spiel auch ohne Verkn\u00fcpfung ver\u00f6ffentlichen.",
+    "linkCoursePopoverTitle": "Ver\u00f6ffentlichte Kurse",
+    "linkCoursePopoverHint": "Die Verkn\u00fcpfung ist optional. Das Spiel wird auch ohne Kurs ver\u00f6ffentlicht.",
+    "linkCourseNone": "Keine Kursverkn\u00fcpfung",
+    "linkCourseAriaLabel": "Ver\u00f6ffentlichten Kurs zum Verkn\u00fcpfen w\u00e4hlen"
   },
   "publishValidation": {
     "requirementsMet": "Fluss-Anforderungen erf\u00fcllt",

@@ -1,10 +1,15 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { Split } from 'lucide-react'
-import { Text } from '@/components/ui/text'
+
 import { GameNodeLayout } from '../../components/GameNodeLayout'
 import { IF_ELSE_HANDLE_A, IF_ELSE_HANDLE_B, type GameIfElseNodeData } from './game-if-else.schema'
 
 const MAX_LABEL_LENGTH = 24
+
+const HANDLE_BASE_CLASS = 'w-3! h-3! border-2! border-white!'
+const HANDLE_BRANCH_A_CLASS = `${HANDLE_BASE_CLASS} bg-orange-500!`
+/** Branch B — below score threshold. */
+const HANDLE_BRANCH_B_CLASS = `${HANDLE_BASE_CLASS} bg-muted-foreground!`
 
 type IfElseCanvasData = GameIfElseNodeData & { onClick?: () => void }
 
@@ -13,10 +18,6 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
   const fullLabel = d.label ?? d.title ?? 'If / else'
   const displayLabel =
     fullLabel.length > MAX_LABEL_LENGTH ? `${fullLabel.slice(0, MAX_LABEL_LENGTH)}…` : fullLabel
-  const thresholdLabel =
-    typeof d.scoreThreshold === 'number' && Number.isFinite(d.scoreThreshold)
-      ? `≥ ${Math.floor(d.scoreThreshold)} → A`
-      : null
   const routeLabel = d.correctPath === 'B' ? 'Node B' : d.correctPath === 'A' ? 'Node A' : null
 
   return (
@@ -27,14 +28,10 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
       selected={selected}
       onClick={d.onClick}
       meta={
-        thresholdLabel || routeLabel ? (
-          <Text
-            as="span"
-            variant="small"
-            className="text-xs text-gray-500 truncate block"
-          >
-            {thresholdLabel ?? (routeLabel ? `Correct route: ${routeLabel}` : '')}
-          </Text>
+        routeLabel ? (
+          <span className="truncate text-xs text-muted-foreground">
+            {`Correct route: ${routeLabel}`}
+          </span>
         ) : undefined
       }
       handles={
@@ -42,25 +39,25 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
           <Handle
             type="target"
             position={Position.Left}
-            className="w-3! h-3! bg-orange-500! border-2! border-white!"
+            className={HANDLE_BRANCH_A_CLASS}
             id="left"
             onClick={(e) => e.stopPropagation()}
           />
           <Handle
             type="source"
             position={Position.Right}
-            className="w-3! h-3! bg-orange-500! border-2! border-white!"
+            className={HANDLE_BRANCH_A_CLASS}
             id={IF_ELSE_HANDLE_A}
             onClick={(e) => e.stopPropagation()}
-            style={{ top: '30%' }}
+            style={{ top: '32%' }}
           />
           <Handle
             type="source"
             position={Position.Right}
-            className="w-3! h-3! bg-orange-500! border-2! border-white!"
+            className={HANDLE_BRANCH_B_CLASS}
             id={IF_ELSE_HANDLE_B}
             onClick={(e) => e.stopPropagation()}
-            style={{ top: '70%' }}
+            style={{ top: '68%' }}
           />
         </>
       }

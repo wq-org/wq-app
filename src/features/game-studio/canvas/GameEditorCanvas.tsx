@@ -42,7 +42,6 @@ import {
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
-import { GamePreviewDialog } from '../components/GamePreviewDialog'
 import { GamePublishDrawer } from '../components/GamePublishDrawer'
 import { deleteGame } from '@/features/command-palette'
 import { GameEditorSidebar } from './GameEditorSidebar'
@@ -133,8 +132,8 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [gameThemeId, setGameThemeId] = useState<ThemeId>('blue')
   const [projectVersion, setProjectVersion] = useState<number>(1)
   const [gameStatus, setGameStatus] = useState<'draft' | 'published'>('draft')
+  const [gameCourseId, setGameCourseId] = useState<string | null>(null)
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
-  const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false)
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
   const [interactionMode, setInteractionMode] = useState<'pan' | 'select'>('select')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -173,6 +172,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         setGameThemeId(game.theme_id || 'blue')
         setProjectVersion(game.version ?? 1)
         setGameStatus(game.status === 'published' ? 'published' : 'draft')
+        setGameCourseId(game.course_id ?? null)
         institutionIdRef.current = game.institution_id ?? null
 
         const config = game.game_content
@@ -536,7 +536,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [flushAutosave])
 
   const persist = useCallback(
-    async (status: 'save' | 'publish') => {
+    async (status: 'save' | 'publish', options?: { courseId?: string | null }) => {
       if (!projectId) {
         toast.error('Open a project from Game Studio to save.')
         return
@@ -561,6 +561,10 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       })
 
       if (status === 'publish') {
+        if (options?.courseId !== undefined) {
+          await updateGameForStudio(projectId, { course_id: options.courseId })
+          setGameCourseId(options.courseId)
+        }
         await publishGame(projectId)
         setGameStatus('published')
       }
@@ -578,14 +582,17 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [persist])
 
-  const handlePublish = useCallback(async () => {
-    try {
-      await persist('publish')
-    } catch (err) {
-      console.error(err)
-      throw err
-    }
-  }, [persist])
+  const handlePublish = useCallback(
+    async (options?: { courseId?: string | null }) => {
+      try {
+        await persist('publish', options)
+      } catch (err) {
+        console.error(err)
+        throw err
+      }
+    },
+    [persist],
+  )
 
   const handleUnpublish = useCallback(async () => {
     if (!projectId) {
@@ -601,6 +608,17 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       toast.error('Failed to unpublish project.')
     }
   }, [projectId])
+
+  const handlePreview = useCallback(async () => {
+    if (!projectId) {
+      toast.error('Open a project from Game Studio to preview.')
+      return
+    }
+    await flushAutosaveNow()
+    navigate(`/teacher/canvas/${projectId}/preview`, {
+      state: { nodes, edges },
+    })
+  }, [projectId, flushAutosaveNow, navigate, nodes, edges])
 
   const handleLeave = useCallback(async () => {
     try {
@@ -835,7 +853,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         >
           <GameEditorToolbar
             onSave={handleSave}
-            onPreview={() => setIsPreviewDrawerOpen(true)}
+            onPreview={handlePreview}
             onLeave={handleLeave}
             onPublish={() => setIsPublishDrawerOpen(true)}
             onUnpublish={handleUnpublish}
@@ -892,17 +910,13 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         onRollback={handleSettingsRollback}
         onDelete={handleSettingsDelete}
       />
-      <GamePreviewDialog
-        open={isPreviewDrawerOpen}
-        onOpenChange={setIsPreviewDrawerOpen}
-        nodes={nodes}
-        edges={edges}
-      />
       <GamePublishDrawer
         open={isPublishDrawerOpen}
         onOpenChange={setIsPublishDrawerOpen}
         nodes={nodes}
         edges={edges}
+        teacherId={getUserId() ?? undefined}
+        linkedCourseId={gameCourseId}
         onPublish={handlePublish}
         onFocusNode={handlePublishFocusNode}
       />
