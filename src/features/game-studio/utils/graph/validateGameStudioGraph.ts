@@ -14,6 +14,7 @@ import {
   isFlowParticipatingNode,
   isGameplayNode,
 } from './resolveFlowParticipatingNodes'
+import { collectFlowControlNodeIssues } from './validateFlowControlNodes'
 
 function intersectSets(a: ReadonlySet<string>, b: ReadonlySet<string>): Set<string> {
   const result = new Set<string>()
@@ -122,7 +123,8 @@ export function validateGameStudioGraph(nodes: Node[], edges: Edge[]): GraphVali
 
   const cardinalityIssues = collectCardinalityIssues(nodes)
   const edgeIssues = collectEdgeSanityIssues(edges, nodeById)
-  const structuralIssues = [...cardinalityIssues, ...edgeIssues]
+  const controlIssues = collectFlowControlNodeIssues(nodes, edges, outgoingBySource)
+  const structuralIssues = [...cardinalityIssues, ...edgeIssues, ...controlIssues]
 
   if (structuralIssues.length > 0) {
     return {

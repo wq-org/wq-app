@@ -1,23 +1,51 @@
 'use client'
 
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 
-import type { GraphIssue } from '../types/graph-validation.types'
+import type { PublishIssue } from '../types/publish-validation.types'
+import { resolvePublishIssueMessage } from '../utils/formatPublishIssue'
 
 export type GamePublishGraphIssueListProps = {
-  issues: GraphIssue[]
+  issues: PublishIssue[]
   canPublish: boolean
   onFocusNode?: (nodeId: string) => void
 }
 
-function resolveIssueMessage(
-  issue: GraphIssue,
-  translate: (key: string, params?: Record<string, string | number>) => string,
-): string {
-  return translate(`publishValidation.graphIssues.${issue.code}`, issue.params)
+function IssueRow({
+  issue,
+  message,
+  onFocusNode,
+}: {
+  issue: PublishIssue
+  message: string
+  onFocusNode?: (nodeId: string) => void
+}) {
+  const isWarning = issue.severity === 'warning'
+  const textClass = isWarning ? 'text-amber-700 dark:text-amber-400' : 'text-destructive'
+  const focusableNodeId = issue.nodeId
+
+  if (focusableNodeId && onFocusNode) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        className={cn(
+          'h-auto w-full justify-start px-2 py-1.5 text-left text-sm font-normal underline-offset-2 hover:underline',
+          textClass,
+        )}
+        onClick={() => onFocusNode(focusableNodeId)}
+      >
+        {message}
+      </Button>
+    )
+  }
+
+  return <span className={`px-2 py-1.5 text-sm ${textClass}`}>{message}</span>
 }
 
 export function GamePublishGraphIssueList({
@@ -27,11 +55,19 @@ export function GamePublishGraphIssueList({
 }: GamePublishGraphIssueListProps) {
   const { t } = useTranslation('features.gameStudio')
 
+  const errors = issues.filter((issue) => issue.severity === 'error')
+  const warnings = issues.filter((issue) => issue.severity === 'warning')
+  const hasWarningsOnly = canPublish && warnings.length > 0
+
   return (
     <div className="space-y-3 px-6 pt-4">
       <div className="flex items-center gap-2">
         {canPublish ? (
-          <CheckCircle2 className="size-5 shrink-0 text-green-600" />
+          hasWarningsOnly ? (
+            <AlertTriangle className="size-5 shrink-0 text-amber-600" />
+          ) : (
+            <CheckCircle2 className="size-5 shrink-0 text-green-600" />
+          )
         ) : (
           <AlertCircle className="size-5 shrink-0 text-destructive" />
         )}
@@ -41,54 +77,71 @@ export function GamePublishGraphIssueList({
           className="font-medium"
         >
           {canPublish
-            ? t('publishValidation.requirementsMet')
+            ? hasWarningsOnly
+              ? t('publishValidation.requirementsMetWithWarnings')
+              : t('publishValidation.requirementsMet')
             : t('publishValidation.requirementsNotMet')}
         </Text>
       </div>
 
-      {!canPublish && issues.length > 0 ? (
-        <div className="space-y-2">
-          <Text
-            as="p"
-            variant="small"
-            muted
-          >
-            {t('publishValidation.rulesTitle')}
-          </Text>
-          <ul
-            role="list"
-            className="space-y-1"
-          >
-            {issues.map((issue, index) => {
-              const message = resolveIssueMessage(issue, t)
-              const focusableNodeId = issue.nodeId
-
-              if (focusableNodeId && onFocusNode) {
-                return (
-                  <li key={`${issue.code}-${issue.nodeId ?? issue.edgeId ?? index}`}>
-                    <button
-                      type="button"
-                      className="w-full rounded-md px-2 py-1.5 text-left text-sm text-destructive underline-offset-2 hover:bg-muted hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      onClick={() => onFocusNode(focusableNodeId)}
-                    >
-                      {message}
-                    </button>
-                  </li>
-                )
-              }
-
-              return (
-                <li
-                  key={`${issue.code}-${issue.nodeId ?? issue.edgeId ?? index}`}
-                  className="px-2 py-1.5 text-sm text-destructive"
-                >
-                  {message}
-                </li>
-              )
-            })}
-          </ul>
-        </div>
+      {errors.length > 0 ? (
+        <IssueSection
+          title={t('publishValidation.errorsTitle')}
+          issues={errors}
+          onFocusNode={onFocusNode}
+          translate={t}
+        />
       ) : null}
+
+      {warnings.length > 0 ? (
+        <IssueSection
+          title={t('publishValidation.warningsTitle')}
+          issues={warnings}
+          onFocusNode={onFocusNode}
+          translate={t}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+function IssueSection({
+  title,
+  issues,
+  onFocusNode,
+  translate,
+}: {
+  title: string
+  issues: PublishIssue[]
+  onFocusNode?: (nodeId: string) => void
+  translate: (key: string, params?: Record<string, string | number>) => string
+}) {
+  return (
+    <div className="space-y-2">
+      <Text
+        as="p"
+        variant="small"
+        muted
+      >
+        {title}
+      </Text>
+      <ul
+        role="list"
+        className="space-y-1"
+      >
+        {issues.map((issue, index) => {
+          const message = resolvePublishIssueMessage(issue, translate)
+          return (
+            <li key={`${issue.code}-${issue.nodeId ?? issue.edgeId ?? index}`}>
+              <IssueRow
+                issue={issue}
+                message={message}
+                onFocusNode={onFocusNode}
+              />
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }

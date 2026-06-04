@@ -41,6 +41,11 @@ export const gameImagePinDefaultConfig: GameImagePinNodeData = {
   retryDeductionPercent: GAME_IMAGE_PIN_DEFAULT_RETRY_DEDUCTION_PERCENT,
 }
 
+export function resolveGameImagePinDescription(data: unknown): string {
+  const description = (data as GameImagePinNodeData | null | undefined)?.description
+  return typeof description === 'string' ? description.trim() : ''
+}
+
 export function resolveGameImagePinPoints(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0
     ? Math.floor(value)
@@ -80,32 +85,4 @@ export function getMissingGameImagePinDefaults(
   return patch
 }
 
-export function validateGameImagePinConfig(data: unknown): string[] {
-  const errors: string[] = []
-  const d = (data ?? {}) as GameImagePinNodeData
-  if (!String(d.title ?? '').trim()) errors.push('Missing title')
-  if (!String(d.description ?? '').trim()) errors.push('Missing description')
-  const hasImage = Boolean(
-    (typeof d.imagePreview === 'string' && d.imagePreview.trim()) ||
-      (typeof d.filepath === 'string' && d.filepath.trim()),
-  )
-  if (!hasImage) errors.push('Missing image')
-  const rectangles = Array.isArray(d.rectangles) ? d.rectangles : []
-  if (rectangles.length < 1) {
-    errors.push('No rectangles')
-    return errors
-  }
-  const hasValidRect = rectangles.some(
-    (r) =>
-      typeof r.x === 'number' &&
-      typeof r.y === 'number' &&
-      typeof r.width === 'number' &&
-      typeof r.height === 'number' &&
-      r.width > 0 &&
-      r.height > 0,
-  )
-  if (!hasValidRect) errors.push('Invalid rectangle geometry')
-  const hasQuestion = rectangles.some((r) => String(r.question ?? '').trim() !== '')
-  if (!hasQuestion) errors.push('Missing question text')
-  return errors
-}
+export { validateGameImagePinConfig } from './utils/validateGameImagePinPublish'

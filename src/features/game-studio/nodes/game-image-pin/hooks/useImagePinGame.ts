@@ -8,6 +8,7 @@ import {
   PIN_SOURCE_DROPPABLE_ID,
 } from '../constants/imagePinPreviewDnd.constants'
 import {
+  resolveGameImagePinDescription,
   resolveGameImagePinPoints,
   resolveGameImagePinRetryDeductionPercent,
   type GameImagePinNodeData,
@@ -67,10 +68,6 @@ function formatPreviewChatTime(date = new Date()): string {
 
 function getPreviewImageSrc(nodeData: GameImagePinNodeData): string {
   return typeof nodeData.imagePreview === 'string' ? nodeData.imagePreview.trim() : ''
-}
-
-function getPreviewDescription(nodeData: GameImagePinNodeData): string {
-  return typeof nodeData.description === 'string' ? nodeData.description.trim() : ''
 }
 
 function getPreviewQuestions(nodeData: GameImagePinNodeData): PreviewQuestion[] {
@@ -238,7 +235,7 @@ function fireCorrectConfetti(): void {
 export function useImagePinGame({ nodeId, nodeData }: UseImagePinGameArgs) {
   const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
-  const description = getPreviewDescription(nodeData)
+  const description = resolveGameImagePinDescription(nodeData)
   const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
   const submitAnswerPrompt = t('imagePinGamePreview.submitAnswerPrompt')
   const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')

@@ -13,14 +13,13 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { FieldTextarea } from '@/components/ui/field-textarea'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -102,7 +101,7 @@ export function ImagePinSettings({
   prevNode,
   nextNode,
 }: ImagePinSettingsProps) {
-  const { description = '', imagePreview } = nodeData
+  const { imagePreview } = nodeData
   const { t } = useTranslation('features.gameStudio')
   const maxPoints = resolveGameImagePinPoints(nodeData.points)
   const retryDeductionPercent = resolveGameImagePinRetryDeductionPercent(
@@ -169,10 +168,6 @@ export function ImagePinSettings({
 
   function handleLearningFieldRemove(id: LearningFieldId) {
     setSelectedLearningFieldIds((currentIds) => currentIds.filter((currentId) => currentId !== id))
-  }
-
-  function handleDescriptionChange(value: string) {
-    onPatchNodeData({ description: value })
   }
 
   function handleMaxPointsChange(value: number) {
@@ -275,23 +270,6 @@ export function ImagePinSettings({
           ) : null}
         </div>
       </div>
-
-      <FieldTextarea
-        value={description}
-        rows={5}
-        placeholder={t('imagePinSettings.gameDescriptionPlaceholder')}
-        onValueChange={handleDescriptionChange}
-        label={t('imagePinSettings.gameDescriptionLabel')}
-      />
-      <Text
-        as="p"
-        variant="small"
-        muted
-        bold
-        className="-mt-4"
-      >
-        {t('imagePinSettings.gameDescriptionHint')}
-      </Text>
 
       <Separator />
 

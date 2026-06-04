@@ -10,14 +10,7 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { getPublishValidationResult } from '../utils/publishValidation'
 import { GamePublishGraphIssueList } from './GamePublishGraphIssueList'
-import type { GraphIssue } from '../types/graph-validation.types'
-
-function resolveIssueMessage(
-  issue: GraphIssue,
-  translate: (key: string, params?: Record<string, string | number>) => string,
-): string {
-  return translate(`publishValidation.graphIssues.${issue.code}`, issue.params)
-}
+import { resolvePublishIssueMessage } from '../utils/formatPublishIssue'
 
 export function GamePublishDrawer({
   open,
@@ -35,9 +28,9 @@ export function GamePublishDrawer({
 
   const handlePublish = async () => {
     if (!canPublish) {
-      const firstIssue = validationResult.issues[0]
-      if (firstIssue) {
-        toast.error(resolveIssueMessage(firstIssue, t))
+      const firstError = validationResult.issues.find((issue) => issue.severity === 'error')
+      if (firstError) {
+        toast.error(resolvePublishIssueMessage(firstError, t))
       }
       return
     }
@@ -91,7 +84,7 @@ export function GamePublishDrawer({
         <div className="shrink-0 border-t p-6">
           <HoldConfirmButton
             onConfirm={handlePublish}
-            variant="darkblue"
+            variant="ghost"
             className="w-full rounded-lg"
             disabled={!canPublish || publishing}
           >

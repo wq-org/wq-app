@@ -63,7 +63,15 @@
       "save": "Speichern",
       "preview": "Vorschau",
       "leave": "Verlassen",
-      "publish": "Ver\u00f6ffentlichen"
+      "publish": "Ver\u00f6ffentlichen",
+      "unpublish": "Ver\u00f6ffentlichung zur\u00fcckziehen"
+    },
+    "unpublishDialog": {
+      "title": "Ver\u00f6ffentlichung zur\u00fcckziehen?",
+      "description": "Lernende k\u00f6nnen dieses Spiel im Kurs nicht mehr sehen oder spielen. Dein Entwurf im Game Studio bleibt erhalten \u2014 du kannst weiterbearbeiten und jederzeit erneut ver\u00f6ffentlichen.",
+      "cancel": "Abbrechen",
+      "confirm": "Ver\u00f6ffentlichung zur\u00fcckziehen",
+      "confirming": "Wird zur\u00fcckgezogen..."
     }
   },
   "settingsDrawer": {
@@ -160,24 +168,55 @@
     "pointsValue": "{{points}} Punkte",
     "floorNote": "Bei falschen Antworten k\u00f6nnen Abz\u00fcge gelten; der Score f\u00e4llt nie unter 0.",
     "publishing": "Ver\u00f6ffentlicht...",
-    "publishForStudents": "F\u00fcr Lernende ver\u00f6ffentlichen"
+    "publishForStudents": "Halten, um f\u00fcr Lernende zu ver\u00f6ffentlichen"
   },
   "publishValidation": {
     "requirementsMet": "Fluss-Anforderungen erf\u00fcllt",
+    "requirementsMetWithWarnings": "Ver\u00f6ffentlichbar mit Hinweisen",
     "requirementsNotMet": "Fluss-Anforderungen nicht erf\u00fcllt",
+    "errorsTitle": "Behebe diese Probleme vor der Ver\u00f6ffentlichung:",
+    "warningsTitle": "Hinweise (optional beheben):",
     "rulesTitle": "Behebe diese Graph-Probleme vor der Ver\u00f6ffentlichung:",
     "graphIssues": {
       "start.missing": "Genau ein Start-Knoten ist erforderlich.",
       "start.duplicate": "Nur ein Start-Knoten ist erlaubt ({{count}} gefunden).",
+      "start.noOutgoing": "\"{{label}}\" braucht mindestens eine ausgehende Verbindung.",
       "end.missing": "Genau ein End-Knoten ist erforderlich.",
       "end.duplicate": "Nur ein End-Knoten ist erlaubt ({{count}} gefunden).",
+      "end.hasOutgoing": "\"{{label}}\" darf keine ausgehenden Verbindungen haben.",
       "game.missing": "Mindestens ein Spiel-Knoten (Image Pin, Drag & Drop Math oder Open Question) ist erforderlich.",
       "edge.sourceMissing": "Eine Kante verweist auf einen fehlenden Quell-Knoten.",
       "edge.targetMissing": "Eine Kante verweist auf einen fehlenden Ziel-Knoten.",
       "edge.selfLoop": "\"{{label}}\" hat eine Schleifen-Kante, die nicht erlaubt ist.",
       "flow.endUnreachable": "Der End-Knoten ist vom Start aus nicht erreichbar.",
       "flow.notReachableFromStart": "\"{{label}}\" ist vom Start aus nicht erreichbar.",
-      "flow.cannotReachEnd": "\"{{label}}\" kann den End-Knoten nicht erreichen."
+      "flow.cannotReachEnd": "\"{{label}}\" kann den End-Knoten nicht erreichen.",
+      "ifElse.branch.missing": "\"{{label}}\" muss beide If- und Else-Zweige verbinden."
+    },
+    "nodeIssues": {
+      "imagePin.image.missing": "Image Pin \"{{label}}\" hat kein Bild.",
+      "imagePin.rect.none": "Image Pin \"{{label}}\" braucht mindestens eine Zielregion.",
+      "imagePin.rect.invalidGeometry": "Image Pin \"{{label}}\" hat eine Region mit ung\u00fcltiger Gr\u00f6\u00dfe (Region {{rectIndex}}).",
+      "imagePin.rect.missingQuestion": "Image Pin \"{{label}}\" hat eine Region ohne Fragetext (Region {{rectIndex}}).",
+      "imagePin.points.invalid": "Image Pin \"{{label}}\" hat ung\u00fcltige Punkte.",
+      "imagePin.retryDeduction.invalid": "Image Pin \"{{label}}\" hat einen ung\u00fcltigen Wiederholungsabzug.",
+      "imagePin.meta.incomplete": "Image Pin \"{{label}}\" hat keine Spielbeschreibung.",
+      "openQuestion.prompt.missing": "Open Question \"{{label}}\" braucht mindestens eine Aufgabenstellung.",
+      "openQuestion.answer.missing": "Open Question \"{{label}}\" hat {{count}} Aufgabe(n) ohne Musterl\u00f6sung.",
+      "openQuestion.points.invalid": "Open Question \"{{label}}\" muss mindestens 1 Punkt vergeben.",
+      "openQuestion.meta.missingTitle": "Open Question \"{{label}}\" hat keinen Titel.",
+      "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" hat keine Beschreibung.",
+      "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" braucht mindestens einen Aufgaben-Tab.",
+      "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" hat einen Tab ohne Titel.",
+      "dndMath.tab.emptyCanvas": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keine Canvas-Zeilen.",
+      "dndMath.tab.noContent": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keinen Inhalt.",
+      "dndMath.equation.invalid": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat eine ung\u00fcltige Gleichung.",
+      "dndMath.reference.orphan": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat doppelte Zeilen-Referenzen.",
+      "dndMath.scoring.noEvaluatableRow": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keine auswertbare Gleichung.",
+      "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" muss mindestens 1 Punkt vergeben.",
+      "start.meta.incomplete": "Start \"{{label}}\" hat keinen Titel oder keine Beschreibung.",
+      "end.meta.incomplete": "End \"{{label}}\" hat keinen Titel oder keine Beschreibung.",
+      "ifElse.condition.missing": "If/Else \"{{label}}\" hat keinen Bedingungstext."
     }
   },
   "previewIfElse": {

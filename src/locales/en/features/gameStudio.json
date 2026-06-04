@@ -63,7 +63,15 @@
       "save": "Save",
       "preview": "Preview",
       "leave": "Leave",
-      "publish": "Publish"
+      "publish": "Publish",
+      "unpublish": "Unpublish"
+    },
+    "unpublishDialog": {
+      "title": "Unpublish this game?",
+      "description": "Students will no longer see or play this game in the course. Your draft in Game Studio is not deleted — you can keep editing and publish again whenever you are ready.",
+      "cancel": "Cancel",
+      "confirm": "Unpublish",
+      "confirming": "Unpublishing..."
     }
   },
   "settingsDrawer": {
@@ -160,24 +168,55 @@
     "pointsValue": "{{points}} points",
     "floorNote": "Wrong-answer penalties may apply; score never below 0.",
     "publishing": "Publishing...",
-    "publishForStudents": "Publish for Students"
+    "publishForStudents": "Hold to publish for students"
   },
   "publishValidation": {
     "requirementsMet": "Flow requirements met",
+    "requirementsMetWithWarnings": "Ready to publish with warnings",
     "requirementsNotMet": "Flow requirements not met",
+    "errorsTitle": "Fix these issues before publishing:",
+    "warningsTitle": "Warnings (optional to fix):",
     "rulesTitle": "Fix these graph issues before publishing:",
     "graphIssues": {
       "start.missing": "Exactly one Start node is required.",
       "start.duplicate": "Only one Start node is allowed (found {{count}}).",
+      "start.noOutgoing": "\"{{label}}\" must have at least one outgoing connection.",
       "end.missing": "Exactly one End node is required.",
       "end.duplicate": "Only one End node is allowed (found {{count}}).",
+      "end.hasOutgoing": "\"{{label}}\" must not have outgoing connections.",
       "game.missing": "At least one game node (Image Pin, Drag & Drop Math, or Open Question) is required.",
       "edge.sourceMissing": "An edge references a missing source node.",
       "edge.targetMissing": "An edge references a missing target node.",
       "edge.selfLoop": "\"{{label}}\" has a self-loop edge, which is not allowed.",
       "flow.endUnreachable": "The End node is not reachable from Start.",
       "flow.notReachableFromStart": "\"{{label}}\" is not reachable from Start.",
-      "flow.cannotReachEnd": "\"{{label}}\" cannot reach the End node."
+      "flow.cannotReachEnd": "\"{{label}}\" cannot reach the End node.",
+      "ifElse.branch.missing": "\"{{label}}\" must connect both If and Else branches."
+    },
+    "nodeIssues": {
+      "imagePin.image.missing": "Image Pin \"{{label}}\" is missing an image.",
+      "imagePin.rect.none": "Image Pin \"{{label}}\" needs at least one target region.",
+      "imagePin.rect.invalidGeometry": "Image Pin \"{{label}}\" has a region with invalid size (region {{rectIndex}}).",
+      "imagePin.rect.missingQuestion": "Image Pin \"{{label}}\" has a region without question text (region {{rectIndex}}).",
+      "imagePin.points.invalid": "Image Pin \"{{label}}\" has invalid points.",
+      "imagePin.retryDeduction.invalid": "Image Pin \"{{label}}\" has an invalid retry deduction percentage.",
+      "imagePin.meta.incomplete": "Image Pin \"{{label}}\" is missing a game description.",
+      "openQuestion.prompt.missing": "Open Question \"{{label}}\" needs at least one exercise prompt.",
+      "openQuestion.answer.missing": "Open Question \"{{label}}\" has {{count}} exercise(s) missing a reference answer.",
+      "openQuestion.points.invalid": "Open Question \"{{label}}\" must award at least 1 point.",
+      "openQuestion.meta.missingTitle": "Open Question \"{{label}}\" has no title.",
+      "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" has no description.",
+      "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" needs at least one exercise tab.",
+      "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" has a tab without a title.",
+      "dndMath.tab.emptyCanvas": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has no canvas rows.",
+      "dndMath.tab.noContent": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has no content.",
+      "dndMath.equation.invalid": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has an invalid equation.",
+      "dndMath.reference.orphan": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has duplicate row references.",
+      "dndMath.scoring.noEvaluatableRow": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has no evaluatable equation.",
+      "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" must award at least 1 point.",
+      "start.meta.incomplete": "Start \"{{label}}\" is missing a title or description.",
+      "end.meta.incomplete": "End \"{{label}}\" is missing a title or description.",
+      "ifElse.condition.missing": "If/Else \"{{label}}\" has no condition text."
     }
   },
   "previewIfElse": {

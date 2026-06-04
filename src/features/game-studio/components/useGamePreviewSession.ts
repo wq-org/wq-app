@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import { getRegistryEntry } from '../nodes/_registry/GameNodeRegistry'
 import { getOrderedPlayableNodes } from '../utils/flowOrder'
+import { formatPublishIssueFallback } from '../utils/formatPublishIssue'
 
 export type SessionStep = {
   node: Node
@@ -20,7 +21,10 @@ export function useGamePreviewSession({ nodes, edges, open }: UseGamePreviewSess
   const steps = useMemo<SessionStep[]>(() => {
     return getOrderedPlayableNodes(nodes, edges).map((node) => {
       const entry = node.type ? getRegistryEntry(node.type) : null
-      const validationErrors = entry?.validateConfig(node.data) ?? []
+      const issues = entry?.validateConfig(node.data) ?? []
+      const validationErrors = issues
+        .filter((issue) => issue.severity === 'error')
+        .map(formatPublishIssueFallback)
       return { node, validationErrors }
     })
   }, [nodes, edges])

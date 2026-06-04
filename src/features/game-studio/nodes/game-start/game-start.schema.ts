@@ -1,3 +1,5 @@
+import type { PublishIssue } from '../../types/publish-validation.types'
+
 export type GameStartNodeData = {
   label?: string
   title?: string
@@ -10,12 +12,8 @@ export const gameStartDefaultConfig: GameStartNodeData = {
   label: 'Start',
 }
 
-export function validateGameStartConfig(data: unknown): string[] {
-  const errors: string[] = []
-  const d = (data ?? {}) as Record<string, unknown>
-  const title = String(d.title ?? d.label ?? '').trim()
-  const description = String(d.description ?? '').trim()
-  if (!title) errors.push('Missing title')
-  if (!description) errors.push('Missing description')
-  return errors
+export function validateGameStartConfig(data: unknown): PublishIssue[] {
+  void data
+  // Start has no author-facing fields yet — graph rules cover structural role.
+  return []
 }

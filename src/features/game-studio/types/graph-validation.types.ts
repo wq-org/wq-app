@@ -3,8 +3,10 @@ import type { Node } from '@xyflow/react'
 export type GraphIssueCode =
   | 'start.missing'
   | 'start.duplicate'
+  | 'start.noOutgoing'
   | 'end.missing'
   | 'end.duplicate'
+  | 'end.hasOutgoing'
   | 'game.missing'
   | 'edge.sourceMissing'
   | 'edge.targetMissing'
@@ -12,6 +14,7 @@ export type GraphIssueCode =
   | 'flow.endUnreachable'
   | 'flow.notReachableFromStart'
   | 'flow.cannotReachEnd'
+  | 'ifElse.branch.missing'
 
 export type GraphIssue = {
   code: GraphIssueCode

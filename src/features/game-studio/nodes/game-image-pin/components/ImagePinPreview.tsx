@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -19,7 +19,11 @@ import { useTranslation } from 'react-i18next'
 import { GameChatHistory } from '../../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
 import { PIN_DRAGGABLE_ID } from '../constants/imagePinPreviewDnd.constants'
-import { resolveGameImagePinPoints, type GameImagePinNodeData } from '../image-pin.schema'
+import {
+  resolveGameImagePinDescription,
+  resolveGameImagePinPoints,
+  type GameImagePinNodeData,
+} from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
 import { useImagePinGame } from '../hooks/useImagePinGame'
 import { ImagePin } from './ImagePin'
@@ -98,6 +102,8 @@ export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
+  const description = resolveGameImagePinDescription(nodeData)
+  const previewNodeData = useMemo(() => ({ ...nodeData, description }), [description, nodeData])
   const {
     displayMessages,
     handleDragEnd,
@@ -110,7 +116,7 @@ export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
     submitAnswerPrompt,
     howToPlayPrompt,
     earnedScore,
-  } = useImagePinGame({ nodeId, nodeData })
+  } = useImagePinGame({ nodeId, nodeData: previewNodeData })
 
   const maxScore = resolveGameImagePinPoints(nodeData.points)
 

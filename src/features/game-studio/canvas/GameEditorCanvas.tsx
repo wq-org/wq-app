@@ -33,7 +33,12 @@ import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/image-pin.schema'
 import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/game-dnd-math'
 import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/constants'
-import { getGameForStudio, publishGame, updateGameForStudio } from '../api/gameStudioApi'
+import {
+  getGameForStudio,
+  publishGame,
+  unpublishGame,
+  updateGameForStudio,
+} from '../api/gameStudioApi'
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
@@ -127,6 +132,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [gameTitle, setGameTitle] = useState<string>(DEFAULT_TITLE)
   const [gameThemeId, setGameThemeId] = useState<ThemeId>('blue')
   const [projectVersion, setProjectVersion] = useState<number>(1)
+  const [gameStatus, setGameStatus] = useState<'draft' | 'published'>('draft')
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false)
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
@@ -166,6 +172,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         setGameTitle(game.title || DEFAULT_TITLE)
         setGameThemeId(game.theme_id || 'blue')
         setProjectVersion(game.version ?? 1)
+        setGameStatus(game.status === 'published' ? 'published' : 'draft')
         institutionIdRef.current = game.institution_id ?? null
 
         const config = game.game_content
@@ -555,6 +562,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
       if (status === 'publish') {
         await publishGame(projectId)
+        setGameStatus('published')
       }
     },
     [projectId, getUserId, nodes, edges, gameTitle, gameThemeId],
@@ -578,6 +586,21 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       throw err
     }
   }, [persist])
+
+  const handleUnpublish = useCallback(async () => {
+    if (!projectId) {
+      toast.error('Open a project from Game Studio to unpublish.')
+      return
+    }
+    try {
+      await unpublishGame(projectId)
+      setGameStatus('draft')
+      toast.success('Project unpublished.')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to unpublish project.')
+    }
+  }, [projectId])
 
   const handleLeave = useCallback(async () => {
     try {
@@ -815,6 +838,8 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
             onPreview={() => setIsPreviewDrawerOpen(true)}
             onLeave={handleLeave}
             onPublish={() => setIsPublishDrawerOpen(true)}
+            onUnpublish={handleUnpublish}
+            isPublished={gameStatus === 'published'}
             onOpenSettings={() => setIsSettingsDrawerOpen(true)}
           />
 

@@ -2,6 +2,8 @@ import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import type { Edge, Node, NodeProps } from '@xyflow/react'
 
+import type { PublishIssue } from '../../types/publish-validation.types'
+
 export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
 /** Shared scoring contract — all game node data schemas may include these fields. */
@@ -68,8 +70,8 @@ export type GameNodeRegistryEntry = {
   DialogComponent: ComponentType<GameNodeDialogProps> | null
   /** Default node.data when dragged onto canvas */
   defaultConfig: Record<string, unknown>
-  /** Per-node validation; returns short missing-item labels */
-  validateConfig: (data: unknown) => string[]
+  /** Per-node publish/preview validation issues */
+  validateConfig: (data: unknown) => PublishIssue[]
   /** Whether the user can delete this node */
   isDeletable: boolean
   /** Whether multiple instances are allowed on a single canvas */

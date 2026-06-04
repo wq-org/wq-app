@@ -167,4 +167,47 @@ describe('validateGameStudioGraph', () => {
       cannotReachEnd: true,
     })
   })
+
+  it('blocks Start with no outgoing edges', () => {
+    const nodes = [startNode(), openQuestionNode(), endNode()]
+    const edges = [edge('e1', 'oq-1', 'end-1')]
+
+    const result = validateGameStudioGraph(nodes, edges)
+
+    expect(result.canPublish).toBe(false)
+    expect(result.issues.some((issue) => issue.code === 'start.noOutgoing')).toBe(true)
+  })
+
+  it('blocks End with outgoing edges', () => {
+    const nodes = [startNode(), openQuestionNode(), endNode()]
+    const edges = [
+      edge('e1', 'start-1', 'oq-1'),
+      edge('e2', 'oq-1', 'end-1'),
+      edge('e3', 'end-1', 'oq-1'),
+    ]
+
+    const result = validateGameStudioGraph(nodes, edges)
+
+    expect(result.canPublish).toBe(false)
+    expect(result.issues.some((issue) => issue.code === 'end.hasOutgoing')).toBe(true)
+  })
+
+  it('blocks If/Else missing a branch connection', () => {
+    const nodes = [
+      startNode(),
+      { id: 'if-1', type: 'gameIfElse', position: { x: 0, y: 0 }, data: { label: 'If/Else' } },
+      openQuestionNode(),
+      endNode(),
+    ]
+    const edges = [
+      edge('e1', 'start-1', 'if-1'),
+      { id: 'e2', source: 'if-1', target: 'oq-1', sourceHandle: 'right-top' },
+      edge('e3', 'oq-1', 'end-1'),
+    ]
+
+    const result = validateGameStudioGraph(nodes, edges)
+
+    expect(result.canPublish).toBe(false)
+    expect(result.issues.some((issue) => issue.code === 'ifElse.branch.missing')).toBe(true)
+  })
 })

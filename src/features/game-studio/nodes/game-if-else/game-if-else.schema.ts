@@ -1,3 +1,5 @@
+import type { PublishIssue } from '../../types/publish-validation.types'
+
 export type GameIfElseCorrectPath = 'A' | 'B'
 
 export type GameIfElseNodeData = {
@@ -19,8 +21,10 @@ export const gameIfElseDefaultConfig: GameIfElseNodeData = {
   label: 'If / else',
 }
 
-export function validateGameIfElseConfig(): string[] {
-  // Branching is always defined: correctPath defaults to 'A'.
-  // Condition + messages are optional descriptive text only.
+export function validateGameIfElseConfig(data: unknown): PublishIssue[] {
+  const d = (data ?? {}) as GameIfElseNodeData
+  if (!String(d.condition ?? '').trim()) {
+    return [{ code: 'ifElse.condition.missing', severity: 'warning' }]
+  }
   return []
 }
