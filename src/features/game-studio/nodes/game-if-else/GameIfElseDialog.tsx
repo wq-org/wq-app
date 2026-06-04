@@ -2,9 +2,10 @@ import { useTranslation } from 'react-i18next'
 
 import { GameNodeDialogShell } from '../../components/GameNodeDialogShell'
 import { GameLayout } from '../../components/GameDialogLayout'
-import { GameNodeBetaNotice } from '../../components/GameNodeBetaNotice'
 import type { GameNodeDialogProps } from '../_registry/game-node-registry.types'
 import type { GameIfElseNodeData } from './game-if-else.schema'
+import { GameIfElseEditor } from './GameIfElseEditor'
+import { GameIfElsePreview } from './GameIfElsePreview'
 import { GameIfElseSettings } from './GameIfElseSettings'
 
 export function GameIfElseDialog(props: GameNodeDialogProps) {
@@ -28,12 +29,18 @@ export function GameIfElseDialog(props: GameNodeDialogProps) {
         if (!next) onClose()
       }}
       title={t('ifElseDialog.title')}
+      description={t('ifElseDialog.description')}
     >
       <GameLayout
-        initialTab="settings"
-        disabledTabIds={['editor', 'preview']}
-        editorContent={<GameNodeBetaNotice nodeLabel={t('sidebar.logic.ifElse')} />}
-        previewContent={null}
+        editorContent={<GameIfElseEditor />}
+        previewContent={
+          <GameIfElsePreview
+            nodeId={nodeId}
+            nodeData={ifElseNodeData}
+            flowNodes={flowNodes}
+            flowEdges={flowEdges}
+          />
+        }
         settingsContent={
           <GameIfElseSettings
             nodeId={nodeId}

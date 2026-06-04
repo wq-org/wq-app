@@ -123,7 +123,7 @@
     "titlePlaceholder": "Enter node title",
     "fieldDescription": "Description",
     "descriptionPlaceholder": "Enter node description",
-    "deleteHint": "Hold the button below for 3 seconds to delete this node.",
+    "deleteHint": "Hold to delete this node",
     "incomingNode": "Incoming Node",
     "noIncomingNode": "No incoming node",
     "outgoingNodes": "Outgoing Nodes",
@@ -157,7 +157,9 @@
     "incomingMaxPoints": "Incoming step can award up to {{points}} points.",
     "branchIncoming": "Incoming",
     "branchA": "Node A (top)",
-    "branchB": "Node B (bottom)"
+    "branchB": "Node B (bottom)",
+    "branchPointsRange": "{{min}}–{{max}} pts",
+    "branchPointsSingle": "{{points}} pts"
   },
   "ifElsePreview": {
     "title": "Test branch routing",

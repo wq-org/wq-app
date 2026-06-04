@@ -3,6 +3,7 @@ import type { Edge, Node } from '@xyflow/react'
 
 import {
   getDefaultIfElseScoreThreshold,
+  getIfElseBranchPointRanges,
   getIncomingGameplayNode,
   resolveGameplayNodeMaxPoints,
   resolveIfElseBranchFromScore,
@@ -30,6 +31,22 @@ describe('getDefaultIfElseScoreThreshold', () => {
   it('returns 0 when max points is not positive', () => {
     expect(getDefaultIfElseScoreThreshold(0)).toBe(0)
     expect(getDefaultIfElseScoreThreshold(-5)).toBe(0)
+  })
+})
+
+describe('getIfElseBranchPointRanges', () => {
+  it('formats A and B ranges from threshold and max points', () => {
+    expect(getIfElseBranchPointRanges(50, 100)).toEqual({
+      branchA: { min: 50, max: 100 },
+      branchB: { min: 0, max: 49 },
+    })
+  })
+
+  it('returns null B range when threshold is zero', () => {
+    expect(getIfElseBranchPointRanges(0, 100)).toEqual({
+      branchA: { min: 0, max: 100 },
+      branchB: null,
+    })
   })
 })
 

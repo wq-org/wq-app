@@ -26,6 +26,7 @@ import {
 } from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
 import { useImagePinGame } from '../hooks/useImagePinGame'
+import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
 
@@ -33,6 +34,7 @@ export type ImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
   onSessionScoreChange?: (score: number) => void
+  embedded?: boolean
 }
 
 /**
@@ -99,12 +101,21 @@ function PositionedPin({ drop, children }: { drop: NormalizedPinPoint; children:
   )
 }
 
-export function ImagePinPreview({ nodeId, nodeData, onSessionScoreChange }: ImagePinPreviewProps) {
+export function ImagePinPreview({
+  nodeId,
+  nodeData,
+  onSessionScoreChange,
+  embedded = false,
+}: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
   const description = resolveGameImagePinDescription(nodeData)
-  const previewNodeData = useMemo(() => ({ ...nodeData, description }), [description, nodeData])
+  const resolvedImagePreview = useResolvedGameImagePinPreviewSrc(nodeData)
+  const previewNodeData = useMemo(
+    () => ({ ...nodeData, description, imagePreview: resolvedImagePreview }),
+    [description, nodeData, resolvedImagePreview],
+  )
   const {
     displayMessages,
     handleDragEnd,
@@ -180,13 +191,15 @@ export function ImagePinPreview({ nodeId, nodeData, onSessionScoreChange }: Imag
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <Text
-        as="p"
-        variant="small"
-        color="orange"
-      >
-        {t('imagePinGamePreview.previewNotice')}
-      </Text>
+      {!embedded ? (
+        <Text
+          as="p"
+          variant="small"
+          color="orange"
+        >
+          {t('imagePinGamePreview.previewNotice')}
+        </Text>
+      ) : null}
 
       <DndContext
         modifiers={[snapCenterToCursor]}

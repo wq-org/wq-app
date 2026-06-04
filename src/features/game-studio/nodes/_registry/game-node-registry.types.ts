@@ -38,6 +38,8 @@ export type GameNodePreviewProps = {
   nodeData: Record<string, unknown>
   /** Optional hook for parent previews (e.g. If/Else branch test) to read live session score. */
   onSessionScoreChange?: (score: number) => void
+  /** Hides per-node preview chrome when nested inside another preview (e.g. If/Else branch test). */
+  embedded?: boolean
 }
 
 /** Playable preview component for a gameplay node (null for non-playable flow nodes). */

@@ -78,9 +78,15 @@ export type DnDMathPreviewProps = {
   nodeId: string
   nodeData?: GameDragDropMathNodeData
   onSessionScoreChange?: (score: number) => void
+  embedded?: boolean
 }
 
-export function DnDMathPreview({ nodeId, nodeData, onSessionScoreChange }: DnDMathPreviewProps) {
+export function DnDMathPreview({
+  nodeId,
+  nodeData,
+  onSessionScoreChange,
+  embedded = false,
+}: DnDMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -368,14 +374,16 @@ export function DnDMathPreview({ nodeId, nodeData, onSessionScoreChange }: DnDMa
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <Text
-        as="p"
-        variant="small"
-        color="orange"
-        className="shrink-0"
-      >
-        {t('dragDropMathGamePreview.previewNotice')}
-      </Text>
+      {!embedded ? (
+        <Text
+          as="p"
+          variant="small"
+          color="orange"
+          className="shrink-0"
+        >
+          {t('dragDropMathGamePreview.previewNotice')}
+        </Text>
+      ) : null}
 
       {hasMultipleTabs ? (
         <Text

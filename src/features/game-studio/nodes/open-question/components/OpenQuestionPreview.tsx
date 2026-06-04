@@ -27,6 +27,7 @@ export type OpenQuestionPreviewProps = {
   nodeId: string
   nodeData?: GameOpenQuestionNodeData
   onSessionScoreChange?: (score: number) => void
+  embedded?: boolean
 }
 
 function questionMarkerId(nodeId: string, index: number, questionId: string): string {
@@ -37,6 +38,7 @@ export function OpenQuestionPreview({
   nodeId,
   nodeData,
   onSessionScoreChange,
+  embedded = false,
 }: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
@@ -378,14 +380,16 @@ export function OpenQuestionPreview({
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <Text
-        as="p"
-        variant="small"
-        color="orange"
-        className="shrink-0"
-      >
-        {t('openQuestionGamePreview.previewNotice')}
-      </Text>
+      {!embedded ? (
+        <Text
+          as="p"
+          variant="small"
+          color="orange"
+          className="shrink-0"
+        >
+          {t('openQuestionGamePreview.previewNotice')}
+        </Text>
+      ) : null}
 
       {hasFilledQuestions ? (
         <Text

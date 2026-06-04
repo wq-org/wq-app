@@ -58,6 +58,24 @@ export function resolveIfElseBranchFromScore(
   return score < threshold ? 'B' : 'A'
 }
 
+export type IfElseBranchPointRange = { min: number; max: number } | null
+
+/** Display ranges for beam map labels (A: at/above threshold, B: below threshold). */
+export function getIfElseBranchPointRanges(
+  threshold: number,
+  maxPoints: number,
+): { branchA: IfElseBranchPointRange; branchB: IfElseBranchPointRange } {
+  const t = Math.max(0, Math.floor(threshold))
+  const max = Math.max(0, Math.floor(maxPoints))
+  if (max <= 0) {
+    return { branchA: null, branchB: null }
+  }
+  const branchA: IfElseBranchPointRange = t > max ? null : { min: Math.min(t, max), max }
+  const branchB: IfElseBranchPointRange =
+    t <= 0 ? null : { min: 0, max: Math.min(max, Math.max(0, t - 1)) }
+  return { branchA, branchB }
+}
+
 export type AdjacentBranchNode = { id: string; nodeType: string | undefined }
 
 export function getOutgoingBranchNode(

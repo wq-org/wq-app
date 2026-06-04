@@ -123,7 +123,7 @@
     "titlePlaceholder": "Knotentitel eingeben",
     "fieldDescription": "Beschreibung",
     "descriptionPlaceholder": "Knotenbeschreibung eingeben",
-    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu l\u00f6schen.",
+    "deleteHint": "Halten um diesen Knoten zu l\u00f6schen",
     "incomingNode": "Eingehender Knoten",
     "noIncomingNode": "Kein eingehender Knoten",
     "outgoingNodes": "Ausgehende Knoten",
@@ -157,7 +157,9 @@
     "incomingMaxPoints": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
     "branchIncoming": "Eingehend",
     "branchA": "Knoten A (oben)",
-    "branchB": "Knoten B (unten)"
+    "branchB": "Knoten B (unten)",
+    "branchPointsRange": "{{min}}–{{max}} Pkt.",
+    "branchPointsSingle": "{{points}} Pkt."
   },
   "ifElsePreview": {
     "title": "Verzweigung testen",

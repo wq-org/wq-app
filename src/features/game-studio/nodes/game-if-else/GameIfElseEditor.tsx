@@ -1,17 +1,6 @@
-import { Text } from '@/components/ui/text'
+'use client'
 
-export type GameIfElseEditorProps = {
-  nodeId: string
-}
-
-export function GameIfElseEditor({ nodeId }: GameIfElseEditorProps) {
-  return (
-    <Text
-      as="p"
-      variant="body"
-      className="text-sm text-muted-foreground"
-    >
-      Editor – {nodeId}
-    </Text>
-  )
+/** If/Else has no editor surface; configuration lives under Settings. */
+export function GameIfElseEditor() {
+  return null
 }
