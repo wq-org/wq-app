@@ -9,6 +9,8 @@ export type GameIfElseNodeData = {
   condition?: string
   correctMessage?: string
   wrongMessage?: string
+  /** Minimum score on the incoming step to follow branch A (right-top); below → branch B. */
+  scoreThreshold?: number
   correctPath?: GameIfElseCorrectPath
 }
 
@@ -23,8 +25,12 @@ export const gameIfElseDefaultConfig: GameIfElseNodeData = {
 
 export function validateGameIfElseConfig(data: unknown): PublishIssue[] {
   const d = (data ?? {}) as GameIfElseNodeData
-  if (!String(d.condition ?? '').trim()) {
-    return [{ code: 'ifElse.condition.missing', severity: 'warning' }]
+  const issues: PublishIssue[] = []
+  if (typeof d.scoreThreshold !== 'number' || !Number.isFinite(d.scoreThreshold)) {
+    issues.push({ code: 'ifElse.scoreThreshold.missing', severity: 'warning' })
   }
-  return []
+  if (!String(d.condition ?? '').trim()) {
+    issues.push({ code: 'ifElse.condition.missing', severity: 'warning' })
+  }
+  return issues
 }

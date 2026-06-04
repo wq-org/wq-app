@@ -26,13 +26,18 @@ import { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDial
 export type OpenQuestionPreviewProps = {
   nodeId: string
   nodeData?: GameOpenQuestionNodeData
+  onSessionScoreChange?: (score: number) => void
 }
 
 function questionMarkerId(nodeId: string, index: number, questionId: string): string {
   return `${nodeId}-question-${index}-${questionId}`
 }
 
-export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewProps) {
+export function OpenQuestionPreview({
+  nodeId,
+  nodeData,
+  onSessionScoreChange,
+}: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -57,6 +62,10 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     recordAwardAndAdvance,
     reset,
   } = loop
+
+  useEffect(() => {
+    onSessionScoreChange?.(earnedTotal)
+  }, [earnedTotal, onSessionScoreChange])
 
   const [composerValue, setComposerValue] = useState('')
   const [previewMessages, setPreviewMessages] = useState<OpenQuestionPreviewChatMessage[]>([])

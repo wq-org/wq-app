@@ -149,6 +149,27 @@
     "activeRoute": "Active",
     "correctRouteLabel": "Correct answer -> {{node}}"
   },
+  "ifElseSettings": {
+    "title": "Branch settings",
+    "scoreThresholdLabel": "Score threshold",
+    "scoreThresholdHint": "Players at or above this score follow the top branch (Node A). Scores below follow the bottom branch (Node B).",
+    "noIncomingGameplay": "Connect a gameplay node (Image & Pin, Drag & drop math, or Open question) into this node to set a threshold.",
+    "incomingMaxPoints": "Incoming step can award up to {{points}} points.",
+    "branchIncoming": "Incoming",
+    "branchA": "Node A (top)",
+    "branchB": "Node B (bottom)"
+  },
+  "ifElsePreview": {
+    "title": "Test branch routing",
+    "playIncomingHint": "Play the incoming step below. Your score updates the branch result using the threshold from settings.",
+    "noIncoming": "Connect a gameplay node before this If/Else node to test routing.",
+    "yourScore": "Your score: {{score}}",
+    "threshold": "Threshold: {{value}}",
+    "branchResultA": "Top branch (Node A) — score at or above threshold",
+    "branchResultB": "Bottom branch (Node B) — score below threshold",
+    "routesTo": "Next: {{node}}",
+    "branchNotConnected": "No node connected on this branch"
+  },
   "startDialog": {
     "title": "Configure Start Node",
     "description": "Configure the start node with title and description",
@@ -228,7 +249,8 @@
       "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" must award at least 1 point.",
       "start.meta.incomplete": "Start \"{{label}}\" is missing a title or description.",
       "end.meta.incomplete": "End \"{{label}}\" is missing a title or description.",
-      "ifElse.condition.missing": "If/Else \"{{label}}\" has no condition text."
+      "ifElse.condition.missing": "If/Else \"{{label}}\" has no condition text.",
+      "ifElse.scoreThreshold.missing": "If/Else \"{{label}}\" has no score threshold set."
     }
   },
   "previewIfElse": {

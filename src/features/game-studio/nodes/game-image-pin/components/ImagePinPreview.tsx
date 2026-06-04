@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -32,6 +32,7 @@ import { ImagePinChatInput } from './ImagePinChatInput'
 export type ImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
+  onSessionScoreChange?: (score: number) => void
 }
 
 /**
@@ -98,7 +99,7 @@ function PositionedPin({ drop, children }: { drop: NormalizedPinPoint; children:
   )
 }
 
-export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
+export function ImagePinPreview({ nodeId, nodeData, onSessionScoreChange }: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -119,6 +120,10 @@ export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
   } = useImagePinGame({ nodeId, nodeData: previewNodeData })
 
   const maxScore = resolveGameImagePinPoints(nodeData.points)
+
+  useEffect(() => {
+    onSessionScoreChange?.(earnedScore)
+  }, [earnedScore, onSessionScoreChange])
 
   const prompts = [
     {

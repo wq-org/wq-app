@@ -36,6 +36,8 @@ export type GameNodeDataPatch =
 export type GameNodePreviewProps = {
   nodeId: string
   nodeData: Record<string, unknown>
+  /** Optional hook for parent previews (e.g. If/Else branch test) to read live session score. */
+  onSessionScoreChange?: (score: number) => void
 }
 
 /** Playable preview component for a gameplay node (null for non-playable flow nodes). */

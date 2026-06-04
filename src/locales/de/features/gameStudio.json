@@ -149,6 +149,27 @@
     "activeRoute": "Aktiv",
     "correctRouteLabel": "Richtige Antwort -> {{node}}"
   },
+  "ifElseSettings": {
+    "title": "Verzweigungseinstellungen",
+    "scoreThresholdLabel": "Punkteschwelle",
+    "scoreThresholdHint": "Spielende mit mindestens dieser Punktzahl folgen dem oberen Zweig (Knoten A). Darunter folgen sie dem unteren Zweig (Knoten B).",
+    "noIncomingGameplay": "Verbinde einen Spielknoten (Bild & Pin, Drag & Drop Mathe oder Offene Frage) mit diesem Knoten, um eine Schwelle zu setzen.",
+    "incomingMaxPoints": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
+    "branchIncoming": "Eingehend",
+    "branchA": "Knoten A (oben)",
+    "branchB": "Knoten B (unten)"
+  },
+  "ifElsePreview": {
+    "title": "Verzweigung testen",
+    "playIncomingHint": "Spiele den eingehenden Schritt unten. Deine Punktzahl bestimmt das Verzweigungsergebnis anhand der Schwelle in den Einstellungen.",
+    "noIncoming": "Verbinde einen Spielknoten vor diesem Wenn/Sonst-Knoten, um die Verzweigung zu testen.",
+    "yourScore": "Deine Punktzahl: {{score}}",
+    "threshold": "Schwelle: {{value}}",
+    "branchResultA": "Oberer Zweig (Knoten A) — Punktzahl erreicht oder \u00fcber Schwelle",
+    "branchResultB": "Unterer Zweig (Knoten B) — Punktzahl unter Schwelle",
+    "routesTo": "Weiter zu: {{node}}",
+    "branchNotConnected": "Auf diesem Zweig ist kein Knoten verbunden"
+  },
   "startDialog": {
     "title": "Startknoten konfigurieren",
     "description": "Konfiguriere den Startknoten mit Titel und Beschreibung",
@@ -228,7 +249,8 @@
       "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" muss mindestens 1 Punkt vergeben.",
       "start.meta.incomplete": "Start \"{{label}}\" hat keinen Titel oder keine Beschreibung.",
       "end.meta.incomplete": "End \"{{label}}\" hat keinen Titel oder keine Beschreibung.",
-      "ifElse.condition.missing": "If/Else \"{{label}}\" hat keinen Bedingungstext."
+      "ifElse.condition.missing": "If/Else \"{{label}}\" hat keinen Bedingungstext.",
+      "ifElse.scoreThreshold.missing": "If/Else \"{{label}}\" hat keine Punkteschwelle."
     }
   },
   "previewIfElse": {

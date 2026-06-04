@@ -77,9 +77,10 @@ function findRowForToken(rows: readonly DragDropMathCanvasRow[], tokenId: string
 export type DnDMathPreviewProps = {
   nodeId: string
   nodeData?: GameDragDropMathNodeData
+  onSessionScoreChange?: (score: number) => void
 }
 
-export function DnDMathPreview({ nodeId, nodeData }: DnDMathPreviewProps) {
+export function DnDMathPreview({ nodeId, nodeData, onSessionScoreChange }: DnDMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
@@ -187,6 +188,10 @@ export function DnDMathPreview({ nodeId, nodeData }: DnDMathPreviewProps) {
     studentRows: canvasRows,
     hasSubmittableCanvas: !isCanvasEmpty,
   })
+
+  useEffect(() => {
+    onSessionScoreChange?.(runningEarnedScore)
+  }, [onSessionScoreChange, runningEarnedScore])
 
   useEffect(() => {
     setCanvasRows([])

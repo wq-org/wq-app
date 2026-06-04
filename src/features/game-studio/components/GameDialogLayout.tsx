@@ -18,6 +18,10 @@ interface GameLayoutProps {
    * Used by beta/read-only nodes (e.g. Start/End) that only show a static notice.
    */
   tabsDisabled?: boolean
+  /** Individual tabs that cannot be selected (e.g. If/Else locks Editor + Preview). */
+  disabledTabIds?: TabType[]
+  /** Initial selected tab when the dialog opens. */
+  initialTab?: TabType
 }
 type TabType = 'editor' | 'preview' | 'settings'
 
@@ -29,21 +33,46 @@ export function GameLayout({
   previewOnly = false,
   playMode = false,
   tabsDisabled = false,
+  disabledTabIds = [],
+  initialTab = 'editor',
 }: GameLayoutProps) {
   const { t } = useTranslation('features.gameStudio')
-  const [activeTab, setActiveTab] = useState<TabType>('editor')
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab)
 
   if (previewOnly || playMode) {
     return <div className="flex w-full flex-col gap-6">{previewContent}</div>
   }
 
+  const disabledTabSet = new Set<TabType>(
+    tabsDisabled ? ['editor', 'preview', 'settings'] : disabledTabIds,
+  )
+
   const tabs: TabItem[] = [
-    { id: 'editor', icon: Edit, title: t('nodeLayout.editorTab'), disabled: tabsDisabled },
-    { id: 'preview', icon: Gamepad2, title: t('nodeLayout.previewTab'), disabled: tabsDisabled },
-    { id: 'settings', icon: Settings, title: t('nodeLayout.settingsTab'), disabled: tabsDisabled },
+    {
+      id: 'editor',
+      icon: Edit,
+      title: t('nodeLayout.editorTab'),
+      disabled: disabledTabSet.has('editor'),
+    },
+    {
+      id: 'preview',
+      icon: Gamepad2,
+      title: t('nodeLayout.previewTab'),
+      disabled: disabledTabSet.has('preview'),
+    },
+    {
+      id: 'settings',
+      icon: Settings,
+      title: t('nodeLayout.settingsTab'),
+      disabled: disabledTabSet.has('settings'),
+    },
   ]
 
-  const resolvedTab: TabType = tabsDisabled ? 'editor' : activeTab
+  const resolvedTab: TabType =
+    tabsDisabled || disabledTabSet.has(activeTab)
+      ? ((['settings', 'preview', 'editor'] as const).find((tab) => !disabledTabSet.has(tab)) ??
+        'editor')
+      : activeTab
 
   return (
     <div className="flex w-full flex-col h-full">
@@ -52,7 +81,7 @@ export function GameLayout({
         tabs={tabs}
         activeTabId={resolvedTab}
         onTabChange={(tabId) => {
-          if (tabsDisabled) return
+          if (tabsDisabled || disabledTabSet.has(tabId as TabType)) return
           setActiveTab(tabId as TabType)
         }}
       />

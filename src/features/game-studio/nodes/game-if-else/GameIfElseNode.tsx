@@ -13,6 +13,10 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
   const fullLabel = d.label ?? d.title ?? 'If / else'
   const displayLabel =
     fullLabel.length > MAX_LABEL_LENGTH ? `${fullLabel.slice(0, MAX_LABEL_LENGTH)}…` : fullLabel
+  const thresholdLabel =
+    typeof d.scoreThreshold === 'number' && Number.isFinite(d.scoreThreshold)
+      ? `≥ ${Math.floor(d.scoreThreshold)} → A`
+      : null
   const routeLabel = d.correctPath === 'B' ? 'Node B' : d.correctPath === 'A' ? 'Node A' : null
 
   return (
@@ -23,13 +27,13 @@ export function GameIfElseNode({ data, selected }: NodeProps) {
       selected={selected}
       onClick={d.onClick}
       meta={
-        routeLabel ? (
+        thresholdLabel || routeLabel ? (
           <Text
             as="span"
             variant="small"
             className="text-xs text-gray-500 truncate block"
           >
-            Correct route: {routeLabel}
+            {thresholdLabel ?? (routeLabel ? `Correct route: ${routeLabel}` : '')}
           </Text>
         ) : undefined
       }

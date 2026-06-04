@@ -114,12 +114,20 @@ export function resolveIfElseNode(
     }
   }
 
-  const correctPath =
-    ((node.data as Record<string, unknown> | undefined)?.correctPath as 'A' | 'B' | undefined) ??
-    'A'
-  const outcome = incomingResult.outcome
-  const branch = outcome === 'correct' ? correctPath : correctPath === 'B' ? 'A' : 'B'
   const data = node.data as Record<string, unknown> | undefined
+  const correctPath = (data?.correctPath as 'A' | 'B' | undefined) ?? 'A'
+  const scoreThreshold = data?.scoreThreshold
+  const branch =
+    typeof scoreThreshold === 'number' && Number.isFinite(scoreThreshold)
+      ? incomingResult.score < scoreThreshold
+        ? 'B'
+        : 'A'
+      : incomingResult.outcome === 'correct'
+        ? correctPath
+        : correctPath === 'B'
+          ? 'A'
+          : 'B'
+  const outcome = incomingResult.outcome
   const rawMessage =
     outcome === 'correct'
       ? typeof data?.correctMessage === 'string'
