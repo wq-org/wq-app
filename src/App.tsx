@@ -851,7 +851,7 @@ const App = () => {
                           commandBarContext="game-studio"
                           className="flex flex-col h-screen"
                         >
-                          <div className="flex-1 container min-h-0">
+                          <div className="container flex min-h-0 flex-1 flex-col">
                             <GamePreviewPage />
                           </div>
                         </AppShell>

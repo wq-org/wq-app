@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Edge, Node } from '@xyflow/react'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Text } from '@/components/ui/text'
 
 import { getFlowGraphNodeDisplayLabel } from '../../constants/flowGraphNodeTypes'
@@ -22,11 +22,21 @@ import { IfElseEmbeddedNodePreview } from './IfElseEmbeddedNodePreview'
 import { IfElsePreviewSegmentAnchor } from './IfElsePreviewSegmentAnchor'
 import { IfElsePreviewSessionShell } from './IfElsePreviewSessionShell'
 
+export type GameIfElsePreviewPlayMode = 'dialog' | 'flow'
+
 export type GameIfElsePreviewProps = {
   nodeId: string
   nodeData: GameIfElseNodeData
   flowNodes?: Node[]
   flowEdges?: Edge[]
+  /** Dialog preview shows routing hints; full-game flow shows gameplay only. */
+  playMode?: GameIfElsePreviewPlayMode
+  /** Skip replaying incoming when score is already known (full-game preview). */
+  seededIncomingScore?: number
+  sessionScoreBaseline?: number
+  onSessionScoreChange?: (score: number) => void
+  /** Fired when branch gameplay finishes (full-game advance). */
+  onFlowComplete?: (payload: { score: number; branch: GameIfElseCorrectPath }) => void
 }
 
 type BranchResult = {
@@ -39,32 +49,50 @@ export function GameIfElsePreview({
   nodeData,
   flowNodes = [],
   flowEdges = [],
+  playMode = 'dialog',
+  seededIncomingScore,
+  sessionScoreBaseline = 0,
+  onSessionScoreChange,
+  onFlowComplete,
 }: GameIfElsePreviewProps) {
   const { t } = useTranslation('features.gameStudio')
-  const [branchResult, setBranchResult] = useState<BranchResult | null>(null)
-  const [incomingPlayKey, setIncomingPlayKey] = useState(0)
-  const [branchPlayKey, setBranchPlayKey] = useState(0)
-  const incomingCompleteRef = useRef(false)
+  const isFlowPlay = playMode === 'flow'
+  const scoreThreshold =
+    typeof nodeData.scoreThreshold === 'number' && Number.isFinite(nodeData.scoreThreshold)
+      ? Math.max(0, Math.floor(nodeData.scoreThreshold))
+      : 0
 
   const incomingNode = useMemo(
     () => getIncomingGameplayNode(nodeId, flowNodes, flowEdges),
     [flowEdges, flowNodes, nodeId],
   )
 
-  const scoreThreshold =
-    typeof nodeData.scoreThreshold === 'number' && Number.isFinite(nodeData.scoreThreshold)
-      ? Math.max(0, Math.floor(nodeData.scoreThreshold))
-      : 0
+  const initialBranch = useMemo(() => {
+    if (seededIncomingScore == null || !Number.isFinite(seededIncomingScore)) return null
+    return {
+      branch: resolveIfElseBranchFromScore(seededIncomingScore, scoreThreshold),
+      score: seededIncomingScore,
+    }
+  }, [scoreThreshold, seededIncomingScore])
+
+  const [branchResult, setBranchResult] = useState<BranchResult | null>(initialBranch)
+  const [incomingPlayKey, setIncomingPlayKey] = useState(0)
+  const [branchPlayKey, setBranchPlayKey] = useState(initialBranch ? 1 : 0)
+  const incomingCompleteRef = useRef(initialBranch !== null)
+  const flowCompleteReportedRef = useRef(false)
+  const branchEarnedRef = useRef(0)
 
   const incomingNodeId = incomingNode?.id ?? ''
-  const resetKey = `${incomingNodeId}:${scoreThreshold}`
+  const resetKey = `${incomingNodeId}:${scoreThreshold}:${seededIncomingScore ?? 'play'}`
 
   useEffect(() => {
-    setBranchResult(null)
-    incomingCompleteRef.current = false
+    setBranchResult(initialBranch)
+    incomingCompleteRef.current = initialBranch !== null
+    flowCompleteReportedRef.current = false
+    branchEarnedRef.current = 0
     setIncomingPlayKey((key) => key + 1)
-    setBranchPlayKey(0)
-  }, [resetKey, nodeId])
+    setBranchPlayKey(initialBranch ? 1 : 0)
+  }, [initialBranch, resetKey, nodeId])
 
   const handleIncomingComplete = useCallback(
     (payload: { score: number }) => {
@@ -73,9 +101,26 @@ export function GameIfElsePreview({
       const branch = resolveIfElseBranchFromScore(payload.score, scoreThreshold)
       setBranchResult({ branch, score: payload.score })
       setBranchPlayKey((key) => key + 1)
+      onSessionScoreChange?.(sessionScoreBaseline + payload.score)
     },
-    [scoreThreshold],
+    [onSessionScoreChange, scoreThreshold, sessionScoreBaseline],
   )
+
+  const routingScore = branchResult?.score ?? 0
+
+  const handleBranchComplete = useCallback(
+    (payload: { score: number }) => {
+      if (flowCompleteReportedRef.current || !branchResult) return
+      flowCompleteReportedRef.current = true
+      branchEarnedRef.current = payload.score
+      const total = sessionScoreBaseline + routingScore + payload.score
+      onSessionScoreChange?.(total)
+      onFlowComplete?.({ score: total, branch: branchResult.branch })
+    },
+    [branchResult, onFlowComplete, onSessionScoreChange, routingScore, sessionScoreBaseline],
+  )
+
+  const branchScoreBaseline = sessionScoreBaseline + routingScore
 
   const branchTarget = useMemo(() => {
     if (!branchResult) return undefined
@@ -105,10 +150,11 @@ export function GameIfElsePreview({
     ? `${branchResult?.branch ?? ''}-${branchFlowNode.id}-${branchPlayKey}`
     : null
 
-  const incomingSessionActive = branchResult === null
-  const branchSessionActive = branchResult !== null
+  const skipIncomingPlay = seededIncomingScore != null
+  const incomingSessionActive = !skipIncomingPlay && branchResult === null
+  const branchSessionActive = branchResult !== null && !flowCompleteReportedRef.current
 
-  const hint = (
+  const hint = !isFlowPlay ? (
     <Text
       as="p"
       variant="small"
@@ -117,7 +163,7 @@ export function GameIfElsePreview({
     >
       {t('ifElsePreview.playIncomingHint')}
     </Text>
-  )
+  ) : null
 
   if (!incomingNode) {
     return (
@@ -134,70 +180,88 @@ export function GameIfElsePreview({
     )
   }
 
+  const branchGameplay = branchResult ? (
+    branchFlowNode && branchSegmentKey ? (
+      <IfElsePreviewSegmentAnchor
+        segmentKey={branchSegmentKey}
+        enabled={branchSessionActive}
+      >
+        {branchGameplayReady ? (
+          <IfElseEmbeddedNodePreview
+            flowNode={branchFlowNode}
+            sessionActive={branchSessionActive}
+            playKey={`${branchResult.branch}-${branchPlayKey}`}
+            missingLabel={t('ifElsePreview.branchNotConnected')}
+            sessionScoreBaseline={branchScoreBaseline}
+            onSessionComplete={handleBranchComplete}
+            onSessionScoreChange={branchSessionActive ? onSessionScoreChange : undefined}
+          />
+        ) : (
+          <Alert
+            variant="destructive"
+            className="border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/40"
+          >
+            <AlertDescription>
+              <p>{t('ifElsePreview.branchGameplayNotReady')}</p>
+            </AlertDescription>
+          </Alert>
+        )}
+      </IfElsePreviewSegmentAnchor>
+    ) : isFlowPlay ? null : (
+      <Text
+        as="p"
+        variant="small"
+        className="text-amber-700 dark:text-amber-400"
+      >
+        {t('ifElsePreview.branchNotConnected')}
+      </Text>
+    )
+  ) : null
+
+  const playContent = (
+    <>
+      {!skipIncomingPlay ? (
+        <IfElseEmbeddedNodePreview
+          flowNode={incomingNode}
+          sessionActive={incomingSessionActive}
+          playKey={String(incomingPlayKey)}
+          missingLabel={t('ifElsePreview.noIncoming')}
+          sessionScoreBaseline={sessionScoreBaseline}
+          onSessionComplete={handleIncomingComplete}
+          onSessionScoreChange={incomingSessionActive ? onSessionScoreChange : undefined}
+        />
+      ) : null}
+
+      {branchResult ? (
+        isFlowPlay ? (
+          branchGameplay
+        ) : (
+          <IfElsePreviewSegmentAnchor
+            segmentKey={`branch-routing-${branchResult.branch}-${branchResult.score}`}
+            className="gap-6"
+          >
+            <IfElseBranchDivider
+              score={branchResult.score}
+              threshold={scoreThreshold}
+              nextNodeLabel={branchNodeLabel}
+            />
+            {branchGameplay}
+          </IfElsePreviewSegmentAnchor>
+        )
+      ) : null}
+    </>
+  )
+
+  if (isFlowPlay) {
+    return <div className="flex min-h-0 flex-1 flex-col gap-3">{playContent}</div>
+  }
+
   return (
     <IfElsePreviewSessionShell
       header={hint}
       className="min-h-[28rem] flex-1"
     >
-      <IfElseEmbeddedNodePreview
-        flowNode={incomingNode}
-        sessionActive={incomingSessionActive}
-        playKey={String(incomingPlayKey)}
-        missingLabel={t('ifElsePreview.noIncoming')}
-        onSessionComplete={handleIncomingComplete}
-      />
-
-      {branchResult ? (
-        <IfElsePreviewSegmentAnchor
-          segmentKey={`branch-routing-${branchResult.branch}-${branchResult.score}`}
-          className="gap-6"
-        >
-          <IfElseBranchDivider
-            score={branchResult.score}
-            threshold={scoreThreshold}
-            nextNodeLabel={branchNodeLabel}
-          />
-          {branchFlowNode && branchSegmentKey ? (
-            <IfElsePreviewSegmentAnchor segmentKey={branchSegmentKey}>
-              {branchGameplayReady ? (
-                <>
-                  <Text
-                    as="p"
-                    variant="small"
-                    bold
-                  >
-                    {branchResult.branch === 'A'
-                      ? t('ifElseSettings.branchA')
-                      : t('ifElseSettings.branchB')}
-                    {branchNodeLabel ? ` · ${branchNodeLabel}` : null}
-                  </Text>
-                  <IfElseEmbeddedNodePreview
-                    flowNode={branchFlowNode}
-                    sessionActive={branchSessionActive}
-                    playKey={`${branchResult.branch}-${branchPlayKey}`}
-                    missingLabel={t('ifElsePreview.branchNotConnected')}
-                  />
-                </>
-              ) : (
-                <Alert
-                  variant="destructive"
-                  className="border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/40"
-                >
-                  <AlertTitle>
-                    {branchResult.branch === 'A'
-                      ? t('ifElseSettings.branchA')
-                      : t('ifElseSettings.branchB')}
-                    {branchNodeLabel ? ` · ${branchNodeLabel}` : null}
-                  </AlertTitle>
-                  <AlertDescription>
-                    <p>{t('ifElsePreview.branchGameplayNotReady')}</p>
-                  </AlertDescription>
-                </Alert>
-              )}
-            </IfElsePreviewSegmentAnchor>
-          ) : null}
-        </IfElsePreviewSegmentAnchor>
-      ) : null}
+      {playContent}
     </IfElsePreviewSessionShell>
   )
 }

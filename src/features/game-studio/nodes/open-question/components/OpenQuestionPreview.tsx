@@ -22,6 +22,7 @@ import {
   OpenQuestionPreviewChatHistory,
   type OpenQuestionPreviewChatMessage,
 } from './OpenQuestionPreviewChatHistory'
+import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
 import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
 import { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDialog'
 
@@ -33,6 +34,7 @@ export type OpenQuestionPreviewProps = {
   embedded?: boolean
   continuousSession?: boolean
   sessionActive?: boolean
+  sessionScoreBaseline?: number
 }
 
 function questionMarkerId(nodeId: string, index: number, questionId: string): string {
@@ -47,6 +49,7 @@ export function OpenQuestionPreview({
   embedded = false,
   continuousSession = false,
   sessionActive = true,
+  sessionScoreBaseline = 0,
 }: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
@@ -73,9 +76,11 @@ export function OpenQuestionPreview({
     reset,
   } = loop
 
+  const displayScore = sessionScoreBaseline + earnedTotal
+
   useEffect(() => {
-    onSessionScoreChange?.(earnedTotal)
-  }, [earnedTotal, onSessionScoreChange])
+    onSessionScoreChange?.(displayScore)
+  }, [displayScore, onSessionScoreChange])
 
   const [composerValue, setComposerValue] = useState('')
   const [previewMessages, setPreviewMessages] = useState<OpenQuestionPreviewChatMessage[]>([])
@@ -408,7 +413,7 @@ export function OpenQuestionPreview({
         />
         <OpenQuestionChatInput
           className="shrink-0"
-          score={earnedTotal}
+          score={displayScore}
           maxScore={maxScore}
           placeholder={t('openQuestionGamePreview.composerPlaceholder')}
           value={composerValue}
@@ -421,7 +426,7 @@ export function OpenQuestionPreview({
     ),
     [
       composerValue,
-      earnedTotal,
+      displayScore,
       handleComposerSubmit,
       handlePromptClick,
       isComposerLocked,
@@ -431,10 +436,11 @@ export function OpenQuestionPreview({
     ],
   )
 
-  useIfElsePreviewFooter(
-    continuousSession ? footerChrome : null,
-    continuousSession && sessionActive,
-  )
+  const shellSegmentActive = continuousSession && sessionActive
+
+  useIfElsePreviewFollowContent(previewMessages.length, shellSegmentActive)
+
+  useIfElsePreviewFooter(continuousSession ? footerChrome : null, shellSegmentActive)
 
   const showInlineChrome = !continuousSession
 

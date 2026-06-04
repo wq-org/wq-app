@@ -59,6 +59,8 @@ export type GameNodePreviewProps = {
   continuousSession?: boolean
   /** When continuousSession, only the active segment owns shell footer and DnD (if applicable). */
   sessionActive?: boolean
+  /** Points earned before this node in a multi-step preview session (footer shows baseline + node score). */
+  sessionScoreBaseline?: number
 }
 
 /** Playable preview component for a gameplay node (null for non-playable flow nodes). */

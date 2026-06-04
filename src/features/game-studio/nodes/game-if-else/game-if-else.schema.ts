@@ -21,16 +21,15 @@ export const IF_ELSE_HANDLE_B = 'right-bottom' as const
 
 export const gameIfElseDefaultConfig: GameIfElseNodeData = {
   label: 'If / else',
+  scoreThreshold: 0,
 }
 
 export function validateGameIfElseConfig(data: unknown): PublishIssue[] {
   const d = (data ?? {}) as GameIfElseNodeData
   const issues: PublishIssue[] = []
-  if (typeof d.scoreThreshold !== 'number' || !Number.isFinite(d.scoreThreshold)) {
-    issues.push({ code: 'ifElse.scoreThreshold.missing', severity: 'warning' })
-  }
-  if (!String(d.condition ?? '').trim()) {
-    issues.push({ code: 'ifElse.condition.missing', severity: 'warning' })
+  const threshold = d.scoreThreshold
+  if (typeof threshold !== 'number' || !Number.isFinite(threshold) || threshold < 0) {
+    issues.push({ code: 'ifElse.scoreThreshold.missing', severity: 'error' })
   }
   return issues
 }

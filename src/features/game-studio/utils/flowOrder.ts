@@ -54,6 +54,8 @@ export interface SessionNodeResult {
   wrong: number
   score: number
   outcome: 'correct' | 'wrong'
+  /** Set when a compound If/Else preview segment completes (branch taken). */
+  ifElseBranch?: 'A' | 'B'
 }
 
 export type SessionResultsByNode = Record<string, SessionNodeResult>

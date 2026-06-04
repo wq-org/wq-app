@@ -29,7 +29,7 @@ function comparePublishIssues(a: PublishIssue, b: PublishIssue): number {
     !a.code.startsWith('dndMath.') &&
     !a.code.startsWith('start.meta.') &&
     !a.code.startsWith('end.meta.') &&
-    !a.code.startsWith('ifElse.condition.')
+    !a.code.startsWith('ifElse.')
 
   const bIsGraph =
     !b.code.startsWith('imagePin.') &&
@@ -37,7 +37,7 @@ function comparePublishIssues(a: PublishIssue, b: PublishIssue): number {
     !b.code.startsWith('dndMath.') &&
     !b.code.startsWith('start.meta.') &&
     !b.code.startsWith('end.meta.') &&
-    !b.code.startsWith('ifElse.condition.')
+    !b.code.startsWith('ifElse.')
 
   if (aIsGraph && !bIsGraph) return -1
   if (!aIsGraph && bIsGraph) return 1

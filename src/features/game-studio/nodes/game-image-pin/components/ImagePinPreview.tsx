@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 import { GameChatHistory } from '../../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
 import { IF_ELSE_GAMEPLAY_ANCHOR_ATTR } from '../../game-if-else/ifElsePreview.constants'
+import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
 import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
 import { useIfElsePreviewImagePinDnd } from '../../game-if-else/useIfElsePreviewImagePinDnd'
 import { PIN_DRAGGABLE_ID } from '../constants/imagePinPreviewDnd.constants'
@@ -43,6 +44,7 @@ export type ImagePinPreviewProps = {
   embedded?: boolean
   continuousSession?: boolean
   sessionActive?: boolean
+  sessionScoreBaseline?: number
 }
 
 /**
@@ -118,6 +120,7 @@ export function ImagePinPreview({
   embedded = false,
   continuousSession = false,
   sessionActive = true,
+  sessionScoreBaseline = 0,
 }: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
@@ -152,9 +155,11 @@ export function ImagePinPreview({
   const sessionCompleteReportedRef = useRef(false)
   const sessionResolvedReportedRef = useRef(false)
 
+  const displayScore = sessionScoreBaseline + earnedScore
+
   useEffect(() => {
-    onSessionScoreChange?.(earnedScore)
-  }, [earnedScore, onSessionScoreChange])
+    onSessionScoreChange?.(displayScore)
+  }, [displayScore, onSessionScoreChange])
 
   useEffect(() => {
     sessionCompleteReportedRef.current = false
@@ -232,13 +237,13 @@ export function ImagePinPreview({
           onPromptClick={handlePromptClick}
         />
         <ImagePinChatInput
-          score={earnedScore}
+          score={displayScore}
           maxScore={maxScore}
           pinAtSource={pinAtSource}
         />
       </>
     ),
-    [earnedScore, handlePromptClick, maxScore, pinAtSource, prompts],
+    [displayScore, handlePromptClick, maxScore, pinAtSource, prompts],
   )
 
   const renderImageChildren = (message: GameChatHistoryMessage) => {
@@ -262,6 +267,8 @@ export function ImagePinPreview({
 
   const useShellSession = continuousSession
   const shellSegmentActive = useShellSession && sessionActive
+
+  useIfElsePreviewFollowContent(displayMessages.length, shellSegmentActive)
 
   useIfElsePreviewFooter(footerChrome, shellSegmentActive)
 

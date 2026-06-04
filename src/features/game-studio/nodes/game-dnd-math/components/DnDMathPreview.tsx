@@ -56,6 +56,7 @@ import {
   lockCanvasRowsForSubmission,
 } from '../utils/canvasSubmissionLock'
 import { snapCenterToCursor } from '../utils/snapCenterToCursor'
+import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
 import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
 
 function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
@@ -83,6 +84,7 @@ export type DnDMathPreviewProps = {
   embedded?: boolean
   continuousSession?: boolean
   sessionActive?: boolean
+  sessionScoreBaseline?: number
 }
 
 export function DnDMathPreview({
@@ -93,6 +95,7 @@ export function DnDMathPreview({
   embedded = false,
   continuousSession = false,
   sessionActive = true,
+  sessionScoreBaseline = 0,
 }: DnDMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
@@ -202,9 +205,11 @@ export function DnDMathPreview({
     hasSubmittableCanvas: !isCanvasEmpty,
   })
 
+  const displayScore = sessionScoreBaseline + runningEarnedScore
+
   useEffect(() => {
-    onSessionScoreChange?.(runningEarnedScore)
-  }, [onSessionScoreChange, runningEarnedScore])
+    onSessionScoreChange?.(displayScore)
+  }, [displayScore, onSessionScoreChange])
 
   const sessionCompleteReportedRef = useRef(false)
 
@@ -417,7 +422,7 @@ export function DnDMathPreview({
             onMathTokenCommit={submissionLocked || !sessionActive ? () => {} : commitMathEquation}
             onTokenRemove={submissionLocked || !sessionActive ? () => {} : removeToken}
             onSigmaRemove={submissionLocked || !sessionActive ? () => {} : removeSigmaRow}
-            score={runningEarnedScore}
+            score={displayScore}
             maxScore={maxScore}
           />
           <DragOverlay
@@ -444,17 +449,18 @@ export function DnDMathPreview({
       removeSigmaRow,
       removeToken,
       reorderRows,
-      runningEarnedScore,
+      displayScore,
       sessionActive,
       submissionLocked,
       updateTokenValue,
     ],
   )
 
-  useIfElsePreviewFooter(
-    continuousSession ? footerChrome : null,
-    continuousSession && sessionActive,
-  )
+  const shellSegmentActive = continuousSession && sessionActive
+
+  useIfElsePreviewFollowContent(previewMessages.length, shellSegmentActive)
+
+  useIfElsePreviewFooter(continuousSession ? footerChrome : null, shellSegmentActive)
 
   const showInlineChrome = !continuousSession
 

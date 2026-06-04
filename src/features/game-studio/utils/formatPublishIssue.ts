@@ -7,7 +7,7 @@ const NODE_ISSUE_PREFIXES = [
   'dndMath.',
   'start.meta.',
   'end.meta.',
-  'ifElse.condition.',
+  'ifElse.',
 ] as const
 
 export function isNodePublishIssueCode(code: string): boolean {
