@@ -45,7 +45,7 @@ export function GameProjectCardCourseMenu() {
         </PopoverTrigger>
         <PopoverContent
           align="end"
-          className="w-52 p-2"
+          className="w-52 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
         >
           <div className="flex flex-col gap-1">
             <Button
