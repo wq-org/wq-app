@@ -1,8 +1,11 @@
 import { Calculator } from 'lucide-react'
 
 import { GAME_FEATURE_KEY_DRAG_DROP_MATH } from '../../constants/gameFeatureKeys'
-import type { GameNodeRegistryEntry } from '../_registry/game-node-registry.types'
-import { DnDMathDialog, DnDMathNode } from './components'
+import type {
+  GameNodePreviewComponent,
+  GameNodeRegistryEntry,
+} from '../_registry/game-node-registry.types'
+import { DnDMathDialog, DnDMathNode, DnDMathPreview } from './components'
 import {
   GAME_DRAG_DROP_MATH_TYPE,
   gameDragDropMathDefaultConfig,
@@ -17,6 +20,7 @@ export const gameDragDropMathEntry: GameNodeRegistryEntry = {
   Icon: Calculator,
   NodeComponent: DnDMathNode,
   DialogComponent: DnDMathDialog,
+  PreviewComponent: DnDMathPreview as unknown as GameNodePreviewComponent,
   defaultConfig: gameDragDropMathDefaultConfig,
   validateConfig: validateGameDragDropMathConfig,
   isDeletable: true,

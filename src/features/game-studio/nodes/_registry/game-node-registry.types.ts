@@ -32,6 +32,15 @@ export type GameNodeDataPatch =
   | Record<string, unknown>
   | ((current: Record<string, unknown>) => Record<string, unknown>)
 
+/** Props passed to a node's playable preview when rendered in the holistic game preview. */
+export type GameNodePreviewProps = {
+  nodeId: string
+  nodeData: Record<string, unknown>
+}
+
+/** Playable preview component for a gameplay node (null for non-playable flow nodes). */
+export type GameNodePreviewComponent = ComponentType<GameNodePreviewProps>
+
 export type GameNodeDialogProps = {
   nodeId: string
   /** Current flow node `data` from the canvas (updates when patched). */
@@ -68,6 +77,8 @@ export type GameNodeRegistryEntry = {
   NodeComponent: ComponentType<NodeProps>
   /** Editor dialog — null means clicking the node opens nothing */
   DialogComponent: ComponentType<GameNodeDialogProps> | null
+  /** Playable preview rendered in the holistic game preview — null for non-playable nodes */
+  PreviewComponent: GameNodePreviewComponent | null
   /** Default node.data when dragged onto canvas */
   defaultConfig: Record<string, unknown>
   /** Per-node publish/preview validation issues */

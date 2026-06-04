@@ -47,10 +47,22 @@
     "deletingIn": "L\u00f6schen in {{seconds}}s",
     "deleting": "Wird gel\u00f6scht\u2026"
   },
+  "nodeBeta": {
+    "badge": "Beta",
+    "title": "Der {{node}}-Knoten ist in der Beta",
+    "description": "Bearbeitung, Vorschau und Einstellungen f\u00fcr den {{node}}-Knoten sind noch nicht verf\u00fcgbar. Diese Ansicht ist schreibgesch\u00fctzt, w\u00e4hrend wir sie fertigstellen.",
+    "creativityHint": "In der Zwischenzeit sind Spielknoten wie Bild & Pin vollst\u00e4ndig offen \u2014 f\u00fclle sie mit deiner Kreativit\u00e4t: lade ein Bild hoch, markiere Bereiche und formuliere zu jedem eine Frage."
+  },
   "previewDrawer": {
     "title": "Spielsimulation",
     "emptyHint": "F\u00fcge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad f\u00fcr die Vorschau hinzu.",
     "ifElseFallback": "Wenn / sonst",
+    "stepLabel": "Schritt {{index}} von {{total}}",
+    "startIntroLabel": "Einf\u00fchrung",
+    "invalidNodeTitle": "Dieser Knoten kann noch nicht in der Vorschau angezeigt werden",
+    "invalidNodeHint": "Behebe Folgendes auf der Leinwand und \u00f6ffne die Vorschau erneut:",
+    "completeTitle": "Ende der Vorschau",
+    "completeHint": "Du hast das Ende des Spielablaufs erreicht.",
     "labels": {
       "start": "Start",
       "end": "Ende"

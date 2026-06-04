@@ -16,6 +16,7 @@ export const gameIfElseEntry: GameNodeRegistryEntry = {
   Icon: Split,
   NodeComponent: GameIfElseNode,
   DialogComponent: GameIfElseDialog,
+  PreviewComponent: null,
   defaultConfig: gameIfElseDefaultConfig,
   validateConfig: validateGameIfElseConfig,
   isDeletable: true,

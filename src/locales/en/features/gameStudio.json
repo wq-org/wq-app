@@ -47,10 +47,22 @@
     "deletingIn": "Deleting in {{seconds}}s",
     "deleting": "Deleting\u2026"
   },
+  "nodeBeta": {
+    "badge": "Beta",
+    "title": "The {{node}} node is in beta",
+    "description": "Editing, preview, and settings for the {{node}} node aren't available yet. This screen is read-only while we finish building it.",
+    "creativityHint": "In the meantime, game nodes like Image & Pin are fully open \u2014 fill them with your creativity: upload an image, mark regions, and write a question for each."
+  },
   "previewDrawer": {
     "title": "Game Simulation",
     "emptyHint": "Add a Start node, game nodes, and an End node connected in a path to preview.",
     "ifElseFallback": "If / else",
+    "stepLabel": "Step {{index}} of {{total}}",
+    "startIntroLabel": "Intro",
+    "invalidNodeTitle": "This node can't be previewed yet",
+    "invalidNodeHint": "Fix the following on the canvas, then reopen the preview:",
+    "completeTitle": "End of preview",
+    "completeHint": "You've reached the end of the game flow.",
     "labels": {
       "start": "Start",
       "end": "End"

@@ -1,8 +1,11 @@
 import { MessageCircleQuestion } from 'lucide-react'
 
 import { GAME_FEATURE_KEY_OPEN_QUESTION } from '../../constants/gameFeatureKeys'
-import type { GameNodeRegistryEntry } from '../_registry/game-node-registry.types'
-import { OpenQuestionDialog, OpenQuestionNode } from './components'
+import type {
+  GameNodePreviewComponent,
+  GameNodeRegistryEntry,
+} from '../_registry/game-node-registry.types'
+import { OpenQuestionDialog, OpenQuestionNode, OpenQuestionPreview } from './components'
 import { GAME_OPEN_QUESTION_TYPE, gameOpenQuestionDefaultConfig } from './constants'
 import { validateOpenQuestionConfig } from './utils'
 
@@ -14,6 +17,7 @@ export const gameOpenQuestionEntry: GameNodeRegistryEntry = {
   Icon: MessageCircleQuestion,
   NodeComponent: OpenQuestionNode,
   DialogComponent: OpenQuestionDialog,
+  PreviewComponent: OpenQuestionPreview as unknown as GameNodePreviewComponent,
   defaultConfig: gameOpenQuestionDefaultConfig,
   validateConfig: validateOpenQuestionConfig,
   isDeletable: true,

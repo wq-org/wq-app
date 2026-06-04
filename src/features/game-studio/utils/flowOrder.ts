@@ -1,14 +1,14 @@
 import type { Node, Edge } from '@xyflow/react'
 
-const PLAYABLE_NODE_TYPES = ['gameImagePin'] as const
+import { isGameplayNodeType } from '../constants/flowGraphNodeTypes'
 
-function isPlayableType(type: string | undefined): type is (typeof PLAYABLE_NODE_TYPES)[number] {
-  return type != null && PLAYABLE_NODE_TYPES.includes(type as (typeof PLAYABLE_NODE_TYPES)[number])
+function isPlayableType(type: string | undefined): boolean {
+  return isGameplayNodeType(type)
 }
 
 /**
  * Returns playable game nodes in flow order: from start node, following edges.
- * Only nodes with type gameImagePin are included.
+ * Includes every gameplay node type (Image Pin, Drag & drop math, Open question).
  */
 export function getOrderedPlayableNodes(nodes: Node[], edges: Edge[]): Node[] {
   const byId = new Map(nodes.map((n) => [n.id, n]))

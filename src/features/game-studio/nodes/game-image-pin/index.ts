@@ -1,8 +1,11 @@
 import { MapPin } from 'lucide-react'
 
 import { GAME_FEATURE_KEY_GAME_IMAGE_PIN } from '../../constants/gameFeatureKeys'
-import type { GameNodeRegistryEntry } from '../_registry/game-node-registry.types'
-import { ImagePinDialog, ImagePinNode } from './components'
+import type {
+  GameNodePreviewComponent,
+  GameNodeRegistryEntry,
+} from '../_registry/game-node-registry.types'
+import { ImagePinDialog, ImagePinNode, ImagePinPreview } from './components'
 import {
   GAME_IMAGE_PIN_TYPE,
   gameImagePinDefaultConfig,
@@ -17,6 +20,7 @@ export const gameImagePinEntry: GameNodeRegistryEntry = {
   Icon: MapPin,
   NodeComponent: ImagePinNode,
   DialogComponent: ImagePinDialog,
+  PreviewComponent: ImagePinPreview as unknown as GameNodePreviewComponent,
   defaultConfig: gameImagePinDefaultConfig,
   validateConfig: validateGameImagePinConfig,
   isDeletable: true,
