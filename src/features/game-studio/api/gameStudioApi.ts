@@ -63,6 +63,7 @@ export interface UpdateGameForStudioPayload {
   description?: string
   theme_id?: ThemeId
   game_content?: FlowGameConfig
+  course_id?: string | null
 }
 
 /**
@@ -80,6 +81,7 @@ export async function updateGameForStudio(
   if (payload.description !== undefined) updates.description = payload.description
   if (payload.theme_id !== undefined) updates.theme_id = payload.theme_id
   if (payload.game_content !== undefined) updates.game_content = payload.game_content
+  if (payload.course_id !== undefined) updates.course_id = payload.course_id
 
   const { data, error } = await supabase
     .from('games')

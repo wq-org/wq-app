@@ -16,6 +16,7 @@ export const gameStartEntry: GameNodeRegistryEntry = {
   Icon: Play,
   NodeComponent: GameStartNode,
   DialogComponent: GameStartDialog,
+  PreviewComponent: null,
   defaultConfig: gameStartDefaultConfig,
   validateConfig: validateGameStartConfig,
   isDeletable: false,

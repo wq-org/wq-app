@@ -20,6 +20,39 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-04-game-studio-simulation-publish-if-else',
+    date: '4 June 2026',
+    title:
+      'Game Studio: simulate the full learning flow, publish with validation, branch on score with If/Else, and link games to courses',
+    summary:
+      'Game authors can now walk through an entire project from Start to End in a dedicated Game Simulation page that stacks each step in one session with a running score ring—no more previewing one node in isolation. Publishing is gated by graph and per-node checks (missing images, empty exercises, unwired If/Else branches, unreachable End nodes, and more), with clickable issues that focus the canvas. You can optionally link a published game to one of your published courses at publish time, unpublish without losing the draft, and manage course association from project cards. A new If/Else logic node routes learners by score threshold against the incoming gameplay step, with Smart Set, a beam map, and branch testing in preview. Start and End nodes that are still in beta show a clear read-only notice instead of broken editors.',
+    bullets: [
+      'Teachers: open Preview from the canvas toolbar to autosave and launch Game Simulation on a full page (`/teacher/canvas/:id/preview`)—the bottom command palette stays hidden so the run feels like a real play session',
+      'Teachers: simulate the whole flow in order—Start intro, then each gameplay node (Image & Pin, Drag & Drop Math, Open Question), If/Else routing, and End—with one in-memory session; scores are for testing only and are not saved to the database',
+      'Teachers: follow progress with a session score ring against the sum of maximum points across all gameplay nodes; completed steps stay visible in a chat-style scroll while the active step owns the sticky footer (including Image Pin drag-and-drop when needed)',
+      'Teachers: see clear errors inside simulation when a node is not ready (for example Image Pin without regions) instead of a silent failure',
+      'Teachers: open Publish to review game title, node count, and total achievable points before students play; hold to confirm publish when validation passes',
+      'Teachers: publishing is blocked until the graph is valid—exactly one Start and one End, at least one gameplay node, no self-loops, every node reachable from Start and able to reach End, and both outputs wired on every If/Else node',
+      'Teachers: per-node publish checks cover Image Pin (image, regions, questions, points), Open Question (prompts, reference answers, metadata), Drag & Drop Math (tabs, canvas content, equations, points), Start/End titles, and If/Else threshold and condition text',
+      'Teachers: tap any listed publish issue to jump the canvas to that node and fix it quickly',
+      'Teachers: publish with warnings when only non-blocking issues remain; errors must be cleared first',
+      'Teachers: optionally link the game to a published course in the publish drawer—linking is optional and the game still publishes if you skip it; only courses you have already published appear in the picker',
+      'Teachers: Unpublish from the editor menu (with confirmation) so students no longer see the live game while your Game Studio draft remains editable',
+      'Teachers: project version from the database is shown in settings with a version popover (current version context and rollback entry points where available)',
+      'Teachers: add an If / Else node from the Logic section to split the flow after a gameplay step based on the learner score versus a threshold—not only “correct vs wrong” copy',
+      'Teachers: set the score threshold manually or use Smart Set to fill half of the incoming step maximum points (floored); the beam map shows incoming node, Node A (top), and Node B (bottom) with point ranges and quick navigation to connected nodes',
+      'Teachers: in the If/Else preview tab, play the incoming gameplay step, watch your score against the threshold, see which branch fires, and preview the next connected node on that branch when it is ready',
+      'Teachers: in full-game simulation, If/Else advances automatically using the score earned on the preceding gameplay segment',
+      'Teachers: configure If/Else messages and which physical output counts as the route after a “correct” previous answer in the node dialog; branch settings stay separate from threshold routing',
+      'Teachers: Start and End nodes (and other nodes still marked beta) show a read-only beta notice—editing and preview for those node types are not offered until they are ready, while Image & Pin and other gameplay nodes stay fully usable',
+      'Teachers: on the Game Studio project list, use the card menu to open link-to-course or unlink-from-course dialogs (UI shells for associating games with courses outside the publish drawer)',
+      'Students (when a game is published and linked): play flows that can branch on partial credit—for example strong work on Drag & Drop Math or Image Pin can send learners down a different path than a score below the teacher threshold',
+      'Internal: centralized graph validation (`validateGameStudioGraph`), sorted publish issues, play-session advance resolver, and Vitest coverage for flow order, thresholds, and preview scoring',
+      'Internal: architecture doc `principle_vite_test.md` documents layer-by-layer testing conventions (mappers, MSW, hooks, components) for future features',
+    ],
+    badges: ['feature', 'new', 'improvement'],
+  },
+  {
     id: '2026-05-27-game-studio-dnd-math-node',
     date: '27 May 2026',
     title:

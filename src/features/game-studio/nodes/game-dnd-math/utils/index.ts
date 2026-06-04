@@ -106,6 +106,8 @@ export {
   reorderTokenWithinRow,
 } from './canvasDnd.utils'
 export { formatGroupedNumber, MATH_DISPLAY_NUMBER_LOCALE } from './numberDisplay'
+export { formatDnDMathScore, resolveDnDMathExerciseScoreShares } from './exerciseScoreDistribution'
+export type { DnDMathExerciseScoreShare } from './exerciseScoreDistribution'
 export {
   createEmptySigmaRow,
   normalizeSigmaRow,

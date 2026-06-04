@@ -1,36 +1,52 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { HoldConfirmButton } from '@/components/ui/HoldConfirmButton'
+import { Text } from '@/components/ui/text'
 import type { PublishDrawerProps } from '../types/game-studio.types'
 import { toast } from 'sonner'
-import { getValidationResult } from '../utils/publishValidation'
-import { PublishGameCheckList } from './PublishGameCheckList'
 import { useTranslation } from 'react-i18next'
+import { getPublishValidationResult } from '../utils/publishValidation'
+import { GamePublishGraphIssueList } from './GamePublishGraphIssueList'
+import { resolvePublishIssueMessage } from '../utils/formatPublishIssue'
+import { GamePublishCourseLinkPopover } from './GamePublishCourseLinkPopover'
+import { useTeacherPublishedCourses } from '../hooks/useTeacherPublishedCourses'
 
 export function GamePublishDrawer({
   open,
   onOpenChange,
   nodes = [],
   edges = [],
+  teacherId,
+  linkedCourseId = null,
   onPublish,
+  onFocusNode,
 }: PublishDrawerProps) {
   const { t } = useTranslation('features.gameStudio')
   const [publishing, setPublishing] = useState(false)
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(linkedCourseId)
 
-  const validationResult = getValidationResult(nodes, edges)
+  const { courses: publishedCourses, loading: coursesLoading } = useTeacherPublishedCourses(
+    teacherId,
+    open,
+  )
+
+  useEffect(() => {
+    if (open) setSelectedCourseId(linkedCourseId)
+  }, [open, linkedCourseId])
+
+  const validationResult = useMemo(() => getPublishValidationResult(nodes, edges), [nodes, edges])
   const canPublish = validationResult.canPublish
 
   const handlePublish = async () => {
     if (!canPublish) {
-      toast.error(
-        validationResult.globalErrors[0] ??
-          validationResult.nodeItems.find((i) => i.errors.length > 0)?.errors[0] ??
-          t('publishDrawer.cannotPublishGame'),
-      )
+      const firstError = validationResult.issues.find((issue) => issue.severity === 'error')
+      if (firstError) {
+        toast.error(resolvePublishIssueMessage(firstError, t))
+      }
       return
     }
 
@@ -41,7 +57,7 @@ export function GamePublishDrawer({
 
     setPublishing(true)
     try {
-      await onPublish()
+      await onPublish({ courseId: selectedCourseId })
       toast.success(t('publishDrawer.publishedSuccess'))
       onOpenChange(false)
     } catch (err) {
@@ -72,19 +88,34 @@ export function GamePublishDrawer({
           </div>
         </DrawerHeader>
 
-        <div className="flex-1" />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <GamePublishGraphIssueList
+            issues={validationResult.issues}
+            canPublish={canPublish}
+            onFocusNode={onFocusNode}
+          />
+        </div>
 
-        {/* Publish Button - Always at bottom */}
-        <div className="p-6 border-t shrink-0">
-          {!canPublish && (
-            <div className="mb-4">
-              <PublishGameCheckList validationResult={validationResult} />
-            </div>
-          )}
+        <div className="shrink-0 border-t p-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Text
+              as="p"
+              variant="small"
+              bold
+            >
+              {t('publishDrawer.linkCourseSectionLabel')}
+            </Text>
+            <GamePublishCourseLinkPopover
+              courses={publishedCourses}
+              loading={coursesLoading}
+              selectedCourseId={selectedCourseId}
+              onSelectCourse={setSelectedCourseId}
+            />
+          </div>
           <HoldConfirmButton
             onConfirm={handlePublish}
-            variant="darkblue"
-            className="rounded-lg w-full"
+            variant="ghost"
+            className="w-full rounded-lg"
             disabled={!canPublish || publishing}
           >
             {publishing ? t('publishDrawer.publishing') : t('publishDrawer.publishForStudents')}

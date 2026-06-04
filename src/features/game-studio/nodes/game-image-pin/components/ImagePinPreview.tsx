@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 import {
   DndContext,
   DragOverlay,
@@ -18,16 +19,34 @@ import { useTranslation } from 'react-i18next'
 
 import { GameChatHistory } from '../../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
+import { IF_ELSE_GAMEPLAY_ANCHOR_ATTR } from '../../game-if-else/ifElsePreview.constants'
+import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
+import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
+import { useIfElsePreviewImagePinDnd } from '../../game-if-else/useIfElsePreviewImagePinDnd'
 import { PIN_DRAGGABLE_ID } from '../constants/imagePinPreviewDnd.constants'
-import { resolveGameImagePinPoints, type GameImagePinNodeData } from '../image-pin.schema'
+import {
+  resolveGameImagePinDescription,
+  resolveGameImagePinPoints,
+  type GameImagePinNodeData,
+} from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
-import { useImagePinGame } from '../hooks/useImagePinGame'
+import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
+import { fireImagePinPreviewConfetti, useImagePinGame } from '../hooks/useImagePinGame'
+import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
 
 export type ImagePinPreviewProps = {
   nodeId: string
   nodeData: GameImagePinNodeData
+  onSessionScoreChange?: (score: number) => void
+  onSessionResolved?: (payload: { score: number }) => void
+  onSessionComplete?: (payload: { score: number }) => void
+  embedded?: boolean
+  continuousSession?: boolean
+  sessionActive?: boolean
+  sessionScoreBaseline?: number
+  sessionMaxScore?: number
 }
 
 /**
@@ -94,10 +113,27 @@ function PositionedPin({ drop, children }: { drop: NormalizedPinPoint; children:
   )
 }
 
-export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
+export function ImagePinPreview({
+  nodeId,
+  nodeData,
+  onSessionScoreChange,
+  onSessionResolved,
+  onSessionComplete,
+  embedded = false,
+  continuousSession = false,
+  sessionActive = true,
+  sessionScoreBaseline = 0,
+  sessionMaxScore,
+}: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
+  const description = resolveGameImagePinDescription(nodeData)
+  const resolvedImagePreview = useResolvedGameImagePinPreviewSrc(nodeData)
+  const previewNodeData = useMemo(
+    () => ({ ...nodeData, description, imagePreview: resolvedImagePreview }),
+    [description, nodeData, resolvedImagePreview],
+  )
   const {
     displayMessages,
     handleDragEnd,
@@ -110,9 +146,58 @@ export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
     submitAnswerPrompt,
     howToPlayPrompt,
     earnedScore,
-  } = useImagePinGame({ nodeId, nodeData })
+    resolvedSession,
+    isSessionComplete,
+  } = useImagePinGame({
+    nodeId,
+    nodeData: previewNodeData,
+    suppressPerAnswerConfetti: embedded && !continuousSession,
+  })
 
-  const maxScore = resolveGameImagePinPoints(nodeData.points)
+  const nodeMaxScore = resolveGameImagePinPoints(nodeData.points)
+  const footerMaxScore = resolvePlayPreviewFooterMaxScore(
+    nodeMaxScore,
+    continuousSession,
+    sessionMaxScore,
+  )
+  const sessionCompleteReportedRef = useRef(false)
+  const sessionResolvedReportedRef = useRef(false)
+
+  const displayScore = sessionScoreBaseline + earnedScore
+
+  useEffect(() => {
+    onSessionScoreChange?.(displayScore)
+  }, [displayScore, onSessionScoreChange])
+
+  useEffect(() => {
+    sessionCompleteReportedRef.current = false
+    sessionResolvedReportedRef.current = false
+  }, [nodeId])
+
+  useEffect(() => {
+    if (continuousSession) return
+    if (!resolvedSession || sessionResolvedReportedRef.current) return
+    sessionResolvedReportedRef.current = true
+    if (embedded && resolvedSession.shouldCelebrate) {
+      fireImagePinPreviewConfetti()
+    }
+    onSessionResolved?.({ score: resolvedSession.score })
+  }, [continuousSession, embedded, onSessionResolved, resolvedSession])
+
+  useEffect(() => {
+    if (!isSessionComplete || sessionCompleteReportedRef.current) return
+    sessionCompleteReportedRef.current = true
+    if (continuousSession && resolvedSession?.shouldCelebrate) {
+      fireImagePinPreviewConfetti()
+    }
+    onSessionComplete?.({ score: earnedScore })
+  }, [
+    continuousSession,
+    earnedScore,
+    isSessionComplete,
+    onSessionComplete,
+    resolvedSession?.shouldCelebrate,
+  ])
 
   const prompts = [
     {
@@ -130,23 +215,48 @@ export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
       icon: CircleQuestionMark,
       text: t('imagePinGamePreview.badgeHowToPlay'),
       prompt: howToPlayPrompt,
+      disabled: embedded,
     },
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveDragId(String(event.active.id))
-  }
+  }, [])
 
-  const handleDragEndWrapped = (event: DragEndEvent) => {
-    setActiveDragId(null)
-    handleDragEnd(event)
-  }
+  const handleDragEndWrapped = useCallback(
+    (event: DragEndEvent) => {
+      setActiveDragId(null)
+      handleDragEnd(event)
+    },
+    [handleDragEnd],
+  )
 
-  const handleDragCancel = () => {
+  const handleDragCancel = useCallback(() => {
     setActiveDragId(null)
-  }
+  }, [])
+
+  const useShellSession = continuousSession
+  const shellSegmentActive = useShellSession && sessionActive
+
+  const footerChrome = useMemo(
+    () => (
+      <>
+        <AiPromptBadgeList
+          prompts={prompts}
+          onPromptClick={handlePromptClick}
+        />
+        <ImagePinChatInput
+          score={displayScore}
+          maxScore={footerMaxScore}
+          pinAtSource={pinAtSource}
+          scoreVariant={useShellSession ? 'default' : 'orange'}
+        />
+      </>
+    ),
+    [displayScore, footerMaxScore, handlePromptClick, pinAtSource, prompts, useShellSession],
+  )
 
   const renderImageChildren = (message: GameChatHistoryMessage) => {
     const submission = getSubmissionForMessage(message)
@@ -167,49 +277,78 @@ export function ImagePinPreview({ nodeId, nodeData }: ImagePinPreviewProps) {
     return null
   }
 
+  useIfElsePreviewFollowContent(displayMessages.length, shellSegmentActive)
+
+  useIfElsePreviewFooter(footerChrome, shellSegmentActive)
+
+  const shellDndSession = useMemo(
+    () =>
+      shellSegmentActive
+        ? {
+            modifiers: [snapCenterToCursor] as Modifier[],
+            onDragStart: handleDragStart,
+            onDragEnd: handleDragEndWrapped,
+            onDragCancel: handleDragCancel,
+            overlay: (
+              <DragOverlay dropAnimation={null}>
+                {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
+              </DragOverlay>
+            ),
+          }
+        : null,
+    [activeDragId, handleDragCancel, handleDragEndWrapped, handleDragStart, shellSegmentActive],
+  )
+
+  useIfElsePreviewImagePinDnd(shellDndSession, shellSegmentActive)
+
+  const showInlineChrome = !useShellSession
+
+  const chatHistory = (
+    <div
+      {...(shellSegmentActive ? { [IF_ELSE_GAMEPLAY_ANCHOR_ATTR]: '' } : {})}
+      className={cn('flex flex-col gap-3', !useShellSession && 'min-h-0 flex-1')}
+    >
+      <GameChatHistory
+        messages={displayMessages}
+        flat={useShellSession}
+        className={useShellSession ? undefined : 'min-h-0 flex-1'}
+        showUserAvatar
+        incomingAvatarUrl={userAvatarUrl ?? undefined}
+        incomingBubbleVariant="default"
+        receivingBubbleVariant={useShellSession ? 'dark' : 'orange'}
+        renderImageChildren={renderImageChildren}
+      />
+      {showInlineChrome ? footerChrome : null}
+    </div>
+  )
+
   return (
-    <div className="flex h-full flex-col gap-3">
-      <Text
-        as="p"
-        variant="small"
-        color="orange"
-      >
-        {t('imagePinGamePreview.previewNotice')}
-      </Text>
+    <div className={cn('flex flex-col gap-3', useShellSession ? 'min-h-0' : 'h-full')}>
+      {!embedded ? (
+        <Text
+          as="p"
+          variant="small"
+          color="orange"
+        >
+          {t('imagePinGamePreview.previewNotice')}
+        </Text>
+      ) : null}
 
-      <DndContext
-        modifiers={[snapCenterToCursor]}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEndWrapped}
-        onDragCancel={handleDragCancel}
-      >
-        <div className="flex min-h-0 flex-1 flex-col gap-3">
-          <GameChatHistory
-            messages={displayMessages}
-            className="min-h-0 flex-1"
-            showUserAvatar
-            incomingAvatarUrl={userAvatarUrl ?? undefined}
-            incomingBubbleVariant="default"
-            receivingBubbleVariant="orange"
-            renderImageChildren={renderImageChildren}
-          />
-
-          <AiPromptBadgeList
-            prompts={prompts}
-            onPromptClick={handlePromptClick}
-          />
-
-          <ImagePinChatInput
-            score={earnedScore}
-            maxScore={maxScore}
-            pinAtSource={pinAtSource}
-          />
-        </div>
-
-        <DragOverlay dropAnimation={null}>
-          {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
-        </DragOverlay>
-      </DndContext>
+      {useShellSession ? (
+        chatHistory
+      ) : (
+        <DndContext
+          modifiers={[snapCenterToCursor]}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEndWrapped}
+          onDragCancel={handleDragCancel}
+        >
+          {chatHistory}
+          <DragOverlay dropAnimation={null}>
+            {activeDragId === PIN_DRAGGABLE_ID ? <ImagePin /> : null}
+          </DragOverlay>
+        </DndContext>
+      )}
     </div>
   )
 }

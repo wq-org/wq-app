@@ -12,6 +12,7 @@ export const gameEndEntry: GameNodeRegistryEntry = {
   Icon: Square,
   NodeComponent: GameEndNode,
   DialogComponent: GameEndDialog,
+  PreviewComponent: null,
   defaultConfig: gameEndDefaultConfig,
   validateConfig: validateGameEndConfig,
   isDeletable: true,

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { CircleQuestionMark, HandHelping } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -21,31 +22,58 @@ import {
   OpenQuestionPreviewChatHistory,
   type OpenQuestionPreviewChatMessage,
 } from './OpenQuestionPreviewChatHistory'
+import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
+import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
+import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
 import { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDialog'
 
 export type OpenQuestionPreviewProps = {
   nodeId: string
   nodeData?: GameOpenQuestionNodeData
+  onSessionScoreChange?: (score: number) => void
+  onSessionComplete?: (payload: { score: number }) => void
+  embedded?: boolean
+  continuousSession?: boolean
+  sessionActive?: boolean
+  sessionScoreBaseline?: number
+  sessionMaxScore?: number
 }
 
 function questionMarkerId(nodeId: string, index: number, questionId: string): string {
   return `${nodeId}-question-${index}-${questionId}`
 }
 
-export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewProps) {
+export function OpenQuestionPreview({
+  nodeId,
+  nodeData,
+  onSessionScoreChange,
+  onSessionComplete,
+  embedded = false,
+  continuousSession = false,
+  sessionActive = true,
+  sessionScoreBaseline = 0,
+  sessionMaxScore,
+}: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
   const { isScoring, scoreAnswer } = useScoring('game-studio-preview')
 
   const data = useMemo(() => nodeData ?? {}, [nodeData])
-  const maxScore = resolveGameOpenQuestionPoints(data.points)
+  const nodeMaxScore = resolveGameOpenQuestionPoints(data.points)
+  const footerMaxScore = resolvePlayPreviewFooterMaxScore(
+    nodeMaxScore,
+    continuousSession,
+    sessionMaxScore,
+  )
+  const footerScoreVariant = continuousSession ? 'default' : 'orange'
+  const receivingBubbleVariant = continuousSession ? 'dark' : 'orange'
   const descriptionContent = data.descriptionContent ?? null
   const title = data.title?.trim() || data.label?.trim() || ''
   const showDescription = hasLexicalEditorContent(descriptionContent)
   const showTitle = title.length > 0
 
-  const loop = useOpenQuestionPreviewLoop({ questions: data.questions, maxScore })
+  const loop = useOpenQuestionPreviewLoop({ questions: data.questions, maxScore: nodeMaxScore })
   const {
     filledQuestions,
     currentIndex,
@@ -57,6 +85,12 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     recordAwardAndAdvance,
     reset,
   } = loop
+
+  const displayScore = sessionScoreBaseline + earnedTotal
+
+  useEffect(() => {
+    onSessionScoreChange?.(displayScore)
+  }, [displayScore, onSessionScoreChange])
 
   const [composerValue, setComposerValue] = useState('')
   const [previewMessages, setPreviewMessages] = useState<OpenQuestionPreviewChatMessage[]>([])
@@ -94,6 +128,18 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     [filledQuestions],
   )
 
+  const sessionCompleteReportedRef = useRef(false)
+
+  useEffect(() => {
+    sessionCompleteReportedRef.current = false
+  }, [nodeId, filledQuestionIdsSignature])
+
+  useEffect(() => {
+    if (!isFinished || sessionCompleteReportedRef.current) return
+    sessionCompleteReportedRef.current = true
+    onSessionComplete?.({ score: earnedTotal })
+  }, [earnedTotal, isFinished, onSessionComplete])
+
   useEffect(() => {
     setPreviewMessages([])
     setEditingMessageId(null)
@@ -125,7 +171,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
     const finalSummaryText = liveScoringEnabled
       ? t('openQuestionGamePreview.iterationFinalSummary', {
           earned: earnedTotal,
-          total: maxScore,
+          total: nodeMaxScore,
         })
       : t('openQuestionGamePreview.iterationFinalSummaryComingSoon')
 
@@ -141,7 +187,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
         },
       ]
     })
-  }, [earnedTotal, isFinished, liveScoringEnabled, maxScore, nodeId, t])
+  }, [earnedTotal, isFinished, liveScoringEnabled, nodeMaxScore, nodeId, t])
 
   const runScoring = useCallback(
     async (messages: readonly OpenQuestionPreviewChatMessage[]) => {
@@ -303,6 +349,7 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
       icon: CircleQuestionMark,
       text: t('openQuestionGamePreview.badgeHowToPlay'),
       prompt: howToPlayPrompt,
+      disabled: embedded,
     },
   ] as const satisfies readonly Ai02PromptSuggestion[]
 
@@ -367,18 +414,62 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
 
   const hasFilledQuestions = filledQuestions.length > 0
 
-  return (
-    <div className="flex h-full flex-col gap-3">
-      <Text
-        as="p"
-        variant="small"
-        color="orange"
-        className="shrink-0"
-      >
-        {t('openQuestionGamePreview.previewNotice')}
-      </Text>
+  const footerChrome = useMemo(
+    () => (
+      <>
+        <AiPromptBadgeList
+          prompts={prompts}
+          onPromptClick={handlePromptClick}
+        />
+        <OpenQuestionChatInput
+          className="shrink-0"
+          score={displayScore}
+          maxScore={footerMaxScore}
+          scoreVariant={footerScoreVariant}
+          placeholder={t('openQuestionGamePreview.composerPlaceholder')}
+          value={composerValue}
+          onValueChange={setComposerValue}
+          onSubmit={handleComposerSubmit}
+          disabled={isComposerLocked}
+          clearOnSubmit={false}
+        />
+      </>
+    ),
+    [
+      composerValue,
+      displayScore,
+      handleComposerSubmit,
+      handlePromptClick,
+      isComposerLocked,
+      footerMaxScore,
+      footerScoreVariant,
+      prompts,
+      t,
+    ],
+  )
 
-      {hasFilledQuestions ? (
+  const shellSegmentActive = continuousSession && sessionActive
+
+  useIfElsePreviewFollowContent(previewMessages.length, shellSegmentActive)
+
+  useIfElsePreviewFooter(continuousSession ? footerChrome : null, shellSegmentActive)
+
+  const showInlineChrome = !continuousSession
+
+  return (
+    <div className={cn('flex flex-col gap-3', continuousSession ? 'min-h-0' : 'h-full')}>
+      {!embedded ? (
+        <Text
+          as="p"
+          variant="small"
+          color="orange"
+          className="shrink-0"
+        >
+          {t('openQuestionGamePreview.previewNotice')}
+        </Text>
+      ) : null}
+
+      {hasFilledQuestions && !continuousSession ? (
         <Text
           as="p"
           variant="small"
@@ -401,31 +492,17 @@ export function OpenQuestionPreview({ nodeId, nodeData }: OpenQuestionPreviewPro
         showTitle={showTitle}
         previewMessages={previewMessages}
         editingMessageId={editingMessageId}
-        onEditSendingMessage={handleEditMessage}
-        onDeleteSendingMessage={handleDeleteMessage}
+        onEditSendingMessage={sessionActive ? handleEditMessage : undefined}
+        onDeleteSendingMessage={sessionActive ? handleDeleteMessage : undefined}
         incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingAvatarFallback={avatarFallback}
         incomingBubbleVariant="default"
-        receivingBubbleVariant="orange"
-        className="min-h-0 flex-1"
+        receivingBubbleVariant={receivingBubbleVariant}
+        flat={continuousSession}
+        className={continuousSession ? undefined : 'min-h-0 flex-1'}
       />
 
-      <AiPromptBadgeList
-        prompts={prompts}
-        onPromptClick={handlePromptClick}
-      />
-
-      <OpenQuestionChatInput
-        className="shrink-0"
-        score={earnedTotal}
-        maxScore={maxScore}
-        placeholder={t('openQuestionGamePreview.composerPlaceholder')}
-        value={composerValue}
-        onValueChange={setComposerValue}
-        onSubmit={handleComposerSubmit}
-        disabled={isComposerLocked}
-        clearOnSubmit={false}
-      />
+      {showInlineChrome ? footerChrome : null}
 
       <OpenQuestionSubmitConfirmDialog
         open={submitDialogOpen}

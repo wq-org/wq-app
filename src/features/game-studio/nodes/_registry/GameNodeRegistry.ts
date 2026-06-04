@@ -7,6 +7,7 @@ import { gameEndEntry } from '../game-end'
 import { gameIfElseEntry } from '../game-if-else'
 import { gameImagePinEntry } from '../game-image-pin'
 import { gameOpenQuestionEntry } from '../open-question'
+import type { PublishIssue } from '../../types/publish-validation.types'
 import type { GameNodeCategory, GameNodeRegistryEntry } from './game-node-registry.types'
 
 export const GAME_NODE_REGISTRY: readonly GameNodeRegistryEntry[] = [
@@ -38,7 +39,7 @@ export function getSidebarEntries(category?: GameNodeCategory): readonly GameNod
 }
 
 /** Per-node validation — delegates to the registry entry. Empty array if type unknown. */
-export function validateNodeConfig(type: string | undefined, data: unknown): string[] {
+export function validateNodeConfig(type: string | undefined, data: unknown): PublishIssue[] {
   const entry = getRegistryEntry(type)
   if (!entry) return []
   return entry.validateConfig(data)

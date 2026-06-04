@@ -1,12 +1,13 @@
 'use client'
 
 import { Ai01 } from '@/components/shared/ai-components'
-import { Score } from '@/components/ui/score'
+import { Score, type ScoreProps } from '@/components/ui/score'
 import { cn } from '@/lib/utils'
 
 export type OpenQuestionChatInputProps = {
   score?: number
   maxScore?: number
+  scoreVariant?: ScoreProps['variant']
   placeholder?: string
   value?: string
   onValueChange?: (value: string) => void
@@ -21,6 +22,7 @@ export type OpenQuestionChatInputProps = {
 export function OpenQuestionChatInput({
   score = 0,
   maxScore = 0,
+  scoreVariant = 'orange',
   placeholder,
   value,
   onValueChange,
@@ -35,7 +37,7 @@ export function OpenQuestionChatInput({
         score={score}
         max={maxScore}
         size="lg"
-        variant="orange"
+        variant={scoreVariant}
         className="shrink-0 self-end"
       />
       <Ai01

@@ -1,3 +1,5 @@
+import type { PublishIssue } from '../../types/publish-validation.types'
+
 export type GameIfElseCorrectPath = 'A' | 'B'
 
 export type GameIfElseNodeData = {
@@ -7,6 +9,8 @@ export type GameIfElseNodeData = {
   condition?: string
   correctMessage?: string
   wrongMessage?: string
+  /** Minimum score on the incoming step to follow branch A (right-top); below → branch B. */
+  scoreThreshold?: number
   correctPath?: GameIfElseCorrectPath
 }
 
@@ -17,10 +21,15 @@ export const IF_ELSE_HANDLE_B = 'right-bottom' as const
 
 export const gameIfElseDefaultConfig: GameIfElseNodeData = {
   label: 'If / else',
+  scoreThreshold: 0,
 }
 
-export function validateGameIfElseConfig(): string[] {
-  // Branching is always defined: correctPath defaults to 'A'.
-  // Condition + messages are optional descriptive text only.
-  return []
+export function validateGameIfElseConfig(data: unknown): PublishIssue[] {
+  const d = (data ?? {}) as GameIfElseNodeData
+  const issues: PublishIssue[] = []
+  const threshold = d.scoreThreshold
+  if (typeof threshold !== 'number' || !Number.isFinite(threshold) || threshold < 0) {
+    issues.push({ code: 'ifElse.scoreThreshold.missing', severity: 'error' })
+  }
+  return issues
 }

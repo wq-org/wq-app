@@ -50,7 +50,7 @@ import { LessonProvider } from './contexts/lesson'
 import { TopicProvider } from './contexts/topic'
 import { Toaster } from './components/ui/sonner'
 import { AppShell } from './components/layout'
-import { GameEditorCanvas } from '@/features/game-studio'
+import { GameEditorCanvas, GamePreviewPage } from '@/features/game-studio'
 import {
   AdminAuditLogs,
   AdminAnalytics,
@@ -835,6 +835,24 @@ const App = () => {
                         >
                           <div className="flex-1 container">
                             <GameEditorCanvasWithProjectId />
+                          </div>
+                        </AppShell>
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="canvas/:id/preview"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <AppShell
+                          role="teacher"
+                          commandBarContext="game-studio"
+                          className="flex flex-col h-screen"
+                        >
+                          <div className="container flex min-h-0 flex-1 flex-col">
+                            <GamePreviewPage />
                           </div>
                         </AppShell>
                       </RequireOnboarding>

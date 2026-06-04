@@ -5,6 +5,7 @@ export { GameEditorToolbar } from './canvas/GameEditorToolbar'
 
 // ---- Pages ----
 export { GameStudioView } from './pages/GameStudioView'
+export { GamePreviewPage } from './pages/GamePreviewPage'
 
 // ---- Card / list components (kept for external consumers) ----
 export { EmptyProjectsView } from './components/EmptyProjectsView'

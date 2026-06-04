@@ -2,6 +2,8 @@ import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import type { Edge, Node, NodeProps } from '@xyflow/react'
 
+import type { PublishIssue } from '../../types/publish-validation.types'
+
 export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
 /** Shared scoring contract — all game node data schemas may include these fields. */
@@ -29,6 +31,42 @@ export type GameNodeAccent =
 export type GameNodeDataPatch =
   | Record<string, unknown>
   | ((current: Record<string, unknown>) => Record<string, unknown>)
+
+export type GameNodePreviewSessionCompletePayload = {
+  score: number
+}
+
+/** Props passed to a node's playable preview when rendered in the holistic game preview. */
+export type GameNodePreviewProps = {
+  nodeId: string
+  nodeData: Record<string, unknown>
+  /** Optional hook for parent previews (e.g. If/Else branch test) to read live session score. */
+  onSessionScoreChange?: (score: number) => void
+  /**
+   * Fired once when the preview result is settled and the final score is known.
+   * Parent previews (e.g. If/Else) can use this to route immediately without
+   * waiting for the child preview's own wrap-up animation/message delay.
+   */
+  onSessionResolved?: (payload: GameNodePreviewSessionCompletePayload) => void
+  /** Fired once when the preview session loop finishes (all questions/tabs settled). */
+  onSessionComplete?: (payload: GameNodePreviewSessionCompletePayload) => void
+  /** Hides per-node preview chrome when nested inside another preview (e.g. If/Else branch test). */
+  embedded?: boolean
+  /**
+   * If/Else continuous session: flat chat in shell scroll; active segment registers prompts +
+   * ChatInput in the shell footer. Image Pin also registers shell-level DndContext (footer + image).
+   */
+  continuousSession?: boolean
+  /** When continuousSession, only the active segment owns shell footer and DnD (if applicable). */
+  sessionActive?: boolean
+  /** Points earned before this node in a multi-step preview session (footer shows baseline + node score). */
+  sessionScoreBaseline?: number
+  /** Full-game preview: sum of max points for all gameplay nodes (score ring denominator). */
+  sessionMaxScore?: number
+}
+
+/** Playable preview component for a gameplay node (null for non-playable flow nodes). */
+export type GameNodePreviewComponent = ComponentType<GameNodePreviewProps>
 
 export type GameNodeDialogProps = {
   nodeId: string
@@ -66,10 +104,12 @@ export type GameNodeRegistryEntry = {
   NodeComponent: ComponentType<NodeProps>
   /** Editor dialog — null means clicking the node opens nothing */
   DialogComponent: ComponentType<GameNodeDialogProps> | null
+  /** Playable preview rendered in the holistic game preview — null for non-playable nodes */
+  PreviewComponent: GameNodePreviewComponent | null
   /** Default node.data when dragged onto canvas */
   defaultConfig: Record<string, unknown>
-  /** Per-node validation; returns short missing-item labels */
-  validateConfig: (data: unknown) => string[]
+  /** Per-node publish/preview validation issues */
+  validateConfig: (data: unknown) => PublishIssue[]
   /** Whether the user can delete this node */
   isDeletable: boolean
   /** Whether multiple instances are allowed on a single canvas */

@@ -12,7 +12,6 @@ export const OPEN_QUESTION_NEXT_DELAY_MS = 1500
 
 export const gameOpenQuestionDefaultConfig: GameOpenQuestionNodeData = {
   label: 'Open question',
-  title: '',
   points: GAME_OPEN_QUESTION_DEFAULT_POINTS,
   questions: [],
 }

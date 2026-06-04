@@ -47,10 +47,23 @@
     "deletingIn": "L\u00f6schen in {{seconds}}s",
     "deleting": "Wird gel\u00f6scht\u2026"
   },
+  "nodeBeta": {
+    "badge": "Beta",
+    "title": "Der {{node}}-Knoten ist in der Beta",
+    "description": "Bearbeitung, Vorschau und Einstellungen f\u00fcr den {{node}}-Knoten sind noch nicht verf\u00fcgbar. Diese Ansicht ist schreibgesch\u00fctzt, w\u00e4hrend wir sie fertigstellen.",
+    "creativityHint": "In der Zwischenzeit sind Spielknoten wie Bild & Pin vollst\u00e4ndig offen \u2014 f\u00fclle sie mit deiner Kreativit\u00e4t: lade ein Bild hoch, markiere Bereiche und formuliere zu jedem eine Frage."
+  },
   "previewDrawer": {
     "title": "Spielsimulation",
+    "back": "Zur\u00fcck zum Editor",
     "emptyHint": "F\u00fcge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad f\u00fcr die Vorschau hinzu.",
     "ifElseFallback": "Wenn / sonst",
+    "stepLabel": "Schritt {{index}} von {{total}}",
+    "startIntroLabel": "Einf\u00fchrung",
+    "invalidNodeTitle": "Dieser Knoten kann noch nicht in der Vorschau angezeigt werden",
+    "invalidNodeHint": "Behebe Folgendes auf der Leinwand und \u00f6ffne die Vorschau erneut:",
+    "completeTitle": "Ende der Vorschau",
+    "completeHint": "Du hast das Ende des Spielablaufs erreicht.",
     "labels": {
       "start": "Start",
       "end": "Ende"
@@ -63,18 +76,15 @@
       "save": "Speichern",
       "preview": "Vorschau",
       "leave": "Verlassen",
-      "publish": "Ver\u00f6ffentlichen"
-    }
-  },
-  "publishChecklist": {
-    "requirementsMet": "Anforderungen erf\u00fcllt",
-    "requirementsNotMet": "Anforderungen nicht erf\u00fcllt",
-    "rulesTitle": "Ver\u00f6ffentlichungsregeln",
-    "rules": {
-      "noAbandoned": "Keine verlassenen oder nicht verbundenen Knoten",
-      "linkedStartToEnd": "Alle Knoten sind von Start bis Ende verbunden",
-      "connectedPath": "Alle Knoten sind im Pfad Start bis Ende verbunden.",
-      "minimallyFilled": "Jeder Knoten ist mindestens so ausgef\u00fcllt, dass das Spiel spielbar ist."
+      "publish": "Ver\u00f6ffentlichen",
+      "unpublish": "Ver\u00f6ffentlichung zur\u00fcckziehen"
+    },
+    "unpublishDialog": {
+      "title": "Ver\u00f6ffentlichung zur\u00fcckziehen?",
+      "description": "Lernende k\u00f6nnen dieses Spiel im Kurs nicht mehr sehen oder spielen. Dein Entwurf im Game Studio bleibt erhalten \u2014 du kannst weiterbearbeiten und jederzeit erneut ver\u00f6ffentlichen.",
+      "cancel": "Abbrechen",
+      "confirm": "Ver\u00f6ffentlichung zur\u00fcckziehen",
+      "confirming": "Wird zur\u00fcckgezogen..."
     }
   },
   "settingsDrawer": {
@@ -84,15 +94,10 @@
     "projectTitlePlaceholder": "Projekttitel eingeben",
     "projectDescriptionLabel": "Projektbeschreibung",
     "projectDescriptionPlaceholder": "Projektbeschreibung eingeben",
-    "publishStatusLabel": "Ver\u00f6ffentlichungsstatus",
-    "publishStatus": {
-      "published": "Ver\u00f6ffentlicht",
-      "draft": "Entwurf",
-      "publishedHint": "Lernende k\u00f6nnen dieses Spiel spielen. Deaktivieren zum Zur\u00fcckziehen und Ausblenden.",
-      "draftHint": "Nutze den Ver\u00f6ffentlichen-Button in der Toolbar, um dieses Spiel f\u00fcr Lernende freizugeben."
-    },
     "versionLabel": "Version",
-    "versionValue": "Version : {{version}}",
+    "versionValue": "Version {{version}}",
+    "versionPopoverTitle": "Projektversion",
+    "versionPopoverCurrent": "Du bearbeitest Version {{version}}.",
     "rollbackLabel": "Rollback",
     "rollbackToVersion": "Rollback auf Version {{version}}",
     "noPreviousVersions": "Keine vorherigen Versionen",
@@ -101,9 +106,7 @@
       "saved": "Einstellungen gespeichert",
       "saveFailed": "Einstellungen konnten nicht gespeichert werden",
       "rolledBack": "Auf vorherige Version zur\u00fcckgesetzt",
-      "rollbackFailed": "Rollback fehlgeschlagen",
-      "unpublished": "Spiel unver\u00f6ffentlicht",
-      "unpublishFailed": "Unver\u00f6ffentlichen fehlgeschlagen"
+      "rollbackFailed": "Rollback fehlgeschlagen"
     },
     "themeLabel": "Vorschau-Thema",
     "themeHint": "Wahle den gespeicherten Vorschauhintergrund fur diese Projektkarte."
@@ -121,7 +124,7 @@
     "titlePlaceholder": "Knotentitel eingeben",
     "fieldDescription": "Beschreibung",
     "descriptionPlaceholder": "Knotenbeschreibung eingeben",
-    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu l\u00f6schen.",
+    "deleteHint": "Halten um diesen Knoten zu l\u00f6schen",
     "incomingNode": "Eingehender Knoten",
     "noIncomingNode": "Kein eingehender Knoten",
     "outgoingNodes": "Ausgehende Knoten",
@@ -147,6 +150,38 @@
     "activeRoute": "Aktiv",
     "correctRouteLabel": "Richtige Antwort -> {{node}}"
   },
+  "ifElseSettings": {
+    "title": "Verzweigungseinstellungen",
+    "scoreThresholdLabel": "Punkteschwelle",
+    "scoreThresholdValueLabel": "Wert der Punkteschwelle",
+    "smartSet": "Smart Set",
+    "scoreThresholdHint": "Schwelle manuell setzen oder mit Smart Set die Hälfte der maximalen Punkte des eingehenden Schritts übernehmen. Dein Wert bleibt gespeichert, bis du ihn änderst oder erneut Smart Set wählst.",
+    "noIncomingGameplay": "Verbinde einen Spielknoten (Bild & Pin, Drag & Drop Mathe oder Offene Frage) mit diesem Knoten, um eine Schwelle zu setzen.",
+    "incomingMaxPoints": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
+    "branchIncoming": "Eingehend",
+    "branchA": "Knoten A (oben)",
+    "branchB": "Knoten B (unten)",
+    "branchPointsRange": "{{min}}–{{max}} Pkt.",
+    "branchPointsSingle": "{{points}} Pkt."
+  },
+  "ifElsePreview": {
+    "title": "Verzweigung testen",
+    "playIncomingHint": "Spiele den eingehenden Schritt unten. Deine Punktzahl bestimmt das Verzweigungsergebnis anhand der Schwelle in den Einstellungen.",
+    "noIncoming": "Verbinde einen Spielknoten vor diesem Wenn/Sonst-Knoten, um die Verzweigung zu testen.",
+    "yourScore": "Deine Punktzahl: {{score}}",
+    "threshold": "Schwelle: {{value}}",
+    "branchResultA": "Oberer Zweig (Knoten A) — Punktzahl erreicht oder \u00fcber Schwelle",
+    "branchResultB": "Unterer Zweig (Knoten B) — Punktzahl unter Schwelle",
+    "routesTo": "Weiter zu: {{node}}",
+    "branchNotConnected": "Auf diesem Zweig ist kein Knoten verbunden",
+    "branchGameplayNotReady": "Dieser Knoten ist noch nicht spielbereit. Füge ein Bild und mindestens einen Fragenbereich hinzu.",
+    "thresholdStripMax": "Der vorherige Schritt kann bis zu {{points}} Punkte vergeben.",
+    "thresholdStripValue": "Punkteschwelle: {{value}}",
+    "thresholdStripBranchA": "Knoten A (oben): {{range}}",
+    "thresholdStripBranchB": "Knoten B (unten): {{range}}",
+    "branchSectionTitleA": "Knoten A (oben) — {{range}}",
+    "branchSectionTitleB": "Knoten B (unten) — {{range}}"
+  },
   "startDialog": {
     "title": "Startknoten konfigurieren",
     "description": "Konfiguriere den Startknoten mit Titel und Beschreibung",
@@ -169,7 +204,6 @@
   "publishDrawer": {
     "title": "Spiel ver\u00f6ffentlichen",
     "untitledGame": "Unbenanntes Spiel",
-    "cannotPublishGame": "Spiel kann nicht ver\u00f6ffentlicht werden",
     "publishUnavailable": "Ver\u00f6ffentlichen ist nicht verf\u00fcgbar. Speichere zuerst das Projekt.",
     "publishedSuccess": "Spiel erfolgreich ver\u00f6ffentlicht!",
     "publishFailed": "Spiel konnte nicht ver\u00f6ffentlicht werden",
@@ -179,7 +213,64 @@
     "pointsValue": "{{points}} Punkte",
     "floorNote": "Bei falschen Antworten k\u00f6nnen Abz\u00fcge gelten; der Score f\u00e4llt nie unter 0.",
     "publishing": "Ver\u00f6ffentlicht...",
-    "publishForStudents": "F\u00fcr Lernende ver\u00f6ffentlichen"
+    "publishForStudents": "Halten, um f\u00fcr Lernende zu ver\u00f6ffentlichen",
+    "linkCourseSectionLabel": "Mit Kurs verkn\u00fcpfen (optional)",
+    "linkCourseTrigger": "Kurs ausw\u00e4hlen",
+    "linkCourseLoading": "Kurse werden geladen…",
+    "linkCourseEmptyHint": "Ver\u00f6ffentliche zuerst einen Kurs, um dieses Spiel damit zu verkn\u00fcpfen. Du kannst das Spiel auch ohne Verkn\u00fcpfung ver\u00f6ffentlichen.",
+    "linkCoursePopoverTitle": "Ver\u00f6ffentlichte Kurse",
+    "linkCoursePopoverHint": "Die Verkn\u00fcpfung ist optional. Das Spiel wird auch ohne Kurs ver\u00f6ffentlicht.",
+    "linkCourseNone": "Keine Kursverkn\u00fcpfung",
+    "linkCourseAriaLabel": "Ver\u00f6ffentlichten Kurs zum Verkn\u00fcpfen w\u00e4hlen"
+  },
+  "publishValidation": {
+    "requirementsMet": "Fluss-Anforderungen erf\u00fcllt",
+    "requirementsMetWithWarnings": "Ver\u00f6ffentlichbar mit Hinweisen",
+    "requirementsNotMet": "Fluss-Anforderungen nicht erf\u00fcllt",
+    "errorsTitle": "Behebe diese Probleme vor der Ver\u00f6ffentlichung:",
+    "warningsTitle": "Hinweise (optional beheben):",
+    "rulesTitle": "Behebe diese Graph-Probleme vor der Ver\u00f6ffentlichung:",
+    "graphIssues": {
+      "start.missing": "Genau ein Start-Knoten ist erforderlich.",
+      "start.duplicate": "Nur ein Start-Knoten ist erlaubt ({{count}} gefunden).",
+      "start.noOutgoing": "\"{{label}}\" braucht mindestens eine ausgehende Verbindung.",
+      "end.missing": "Genau ein End-Knoten ist erforderlich.",
+      "end.duplicate": "Nur ein End-Knoten ist erlaubt ({{count}} gefunden).",
+      "end.hasOutgoing": "\"{{label}}\" darf keine ausgehenden Verbindungen haben.",
+      "game.missing": "Mindestens ein Spiel-Knoten (Image Pin, Drag & Drop Math oder Open Question) ist erforderlich.",
+      "edge.sourceMissing": "Eine Kante verweist auf einen fehlenden Quell-Knoten.",
+      "edge.targetMissing": "Eine Kante verweist auf einen fehlenden Ziel-Knoten.",
+      "edge.selfLoop": "\"{{label}}\" hat eine Schleifen-Kante, die nicht erlaubt ist.",
+      "flow.endUnreachable": "Der End-Knoten ist vom Start aus nicht erreichbar.",
+      "flow.notReachableFromStart": "\"{{label}}\" ist vom Start aus nicht erreichbar.",
+      "flow.cannotReachEnd": "\"{{label}}\" kann den End-Knoten nicht erreichen.",
+      "ifElse.branch.missing": "\"{{label}}\" muss beide If- und Else-Zweige verbinden."
+    },
+    "nodeIssues": {
+      "imagePin.image.missing": "Image Pin \"{{label}}\" hat kein Bild.",
+      "imagePin.rect.none": "Image Pin \"{{label}}\" braucht mindestens eine Zielregion.",
+      "imagePin.rect.invalidGeometry": "Image Pin \"{{label}}\" hat eine Region mit ung\u00fcltiger Gr\u00f6\u00dfe (Region {{rectIndex}}).",
+      "imagePin.rect.missingQuestion": "Image Pin \"{{label}}\" hat eine Region ohne Fragetext (Region {{rectIndex}}).",
+      "imagePin.points.invalid": "Image Pin \"{{label}}\" hat ung\u00fcltige Punkte.",
+      "imagePin.retryDeduction.invalid": "Image Pin \"{{label}}\" hat einen ung\u00fcltigen Wiederholungsabzug.",
+      "imagePin.meta.incomplete": "Image Pin \"{{label}}\" hat keine Spielbeschreibung.",
+      "openQuestion.prompt.missing": "Open Question \"{{label}}\" braucht mindestens eine Aufgabenstellung.",
+      "openQuestion.answer.missing": "Open Question \"{{label}}\" hat {{count}} Aufgabe(n) ohne Musterl\u00f6sung.",
+      "openQuestion.points.invalid": "Open Question \"{{label}}\" muss mindestens 1 Punkt vergeben.",
+      "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" hat keine Beschreibung.",
+      "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" braucht mindestens einen Aufgaben-Tab.",
+      "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" hat einen Tab ohne Titel.",
+      "dndMath.tab.emptyCanvas": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keine Canvas-Zeilen.",
+      "dndMath.tab.noContent": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keinen Inhalt.",
+      "dndMath.equation.invalid": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat eine ung\u00fcltige Gleichung.",
+      "dndMath.reference.orphan": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat doppelte Zeilen-Referenzen.",
+      "dndMath.scoring.noEvaluatableRow": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keine auswertbare Gleichung.",
+      "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" muss mindestens 1 Punkt vergeben.",
+      "start.meta.incomplete": "Start \"{{label}}\" hat keinen Titel oder keine Beschreibung.",
+      "end.meta.incomplete": "End \"{{label}}\" hat keinen Titel oder keine Beschreibung.",
+      "ifElse.condition.missing": "If/Else \"{{label}}\" hat keinen Bedingungstext.",
+      "ifElse.scoreThreshold.missing": "If/Else \"{{label}}\" hat keine Punkteschwelle."
+    }
   },
   "previewIfElse": {
     "ifElseFallback": "Wenn / sonst",
@@ -212,7 +303,22 @@
     "status": {
       "published": "Ver\u00f6ffentlicht",
       "draft": "Entwurf"
+    },
+    "courseMenu": {
+      "triggerAriaLabel": "Projektoptionen",
+      "linkToCourse": "Mit Kurs verkn\u00fcpfen",
+      "unlinkFromCourse": "Von Kurs trennen"
     }
+  },
+  "linkGameDialog": {
+    "title": "Mit Kurs verkn\u00fcpfen",
+    "description": "W\u00e4hle einen Kurs, mit dem dieses Spiel verkn\u00fcpft werden soll.",
+    "cancel": "Abbrechen"
+  },
+  "unlinkGameDialog": {
+    "title": "Von Kurs trennen",
+    "description": "Entferne die Kursverkn\u00fcpfung von diesem Spiel.",
+    "cancel": "Abbrechen"
   },
   "gameCard": {
     "centerAvatarAlt": "Zentraler Avatar",
@@ -334,6 +440,7 @@
     "scoreAccordionErrorFreeTitle": "Fehlerfrei (5 %)",
     "scoreAccordionErrorFreeBody": "Einheit, Notation, Rundung und Konzept pro Schritt, gemittelt.",
     "scoreAccordionPointsMapping": "Erreichte Punkte = Score × {{maxPoints}} (Beispiel: Score 0,437 → {{examplePoints}} Punkte bei max. {{maxPoints}}).",
+    "scoreAccordionExerciseSplit": "Aufgabenverteilung: {{split}} Pkt. ({{count}} Aufgabe(n), Summe bleibt {{maxPoints}}).",
     "scoreAccordionCarryNote": "Carry-Modus ist Standard für Schritte. Strict-Modus (optional) vergleicht immer mit den Operanden der Musterlösung."
   },
   "imagePinDialog": {

@@ -7,6 +7,7 @@ import type { GameProjectCardProps } from '../types/game-studio.types'
 import { useTranslation } from 'react-i18next'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
+import { GameProjectCardCourseMenu } from './GameProjectCardCourseMenu'
 
 export function GameProjectCard({
   title,
@@ -48,6 +49,7 @@ export function GameProjectCard({
             ? t('gameProjectCard.status.published')
             : t('gameProjectCard.status.draft')}
         </Badge>
+        <GameProjectCardCourseMenu />
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         <div className="flex flex-col items-start gap-2 flex-1 min-w-0">

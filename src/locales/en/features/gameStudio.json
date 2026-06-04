@@ -47,10 +47,23 @@
     "deletingIn": "Deleting in {{seconds}}s",
     "deleting": "Deleting\u2026"
   },
+  "nodeBeta": {
+    "badge": "Beta",
+    "title": "The {{node}} node is in beta",
+    "description": "Editing, preview, and settings for the {{node}} node aren't available yet. This screen is read-only while we finish building it.",
+    "creativityHint": "In the meantime, game nodes like Image & Pin are fully open \u2014 fill them with your creativity: upload an image, mark regions, and write a question for each."
+  },
   "previewDrawer": {
     "title": "Game Simulation",
+    "back": "Back to editor",
     "emptyHint": "Add a Start node, game nodes, and an End node connected in a path to preview.",
     "ifElseFallback": "If / else",
+    "stepLabel": "Step {{index}} of {{total}}",
+    "startIntroLabel": "Intro",
+    "invalidNodeTitle": "This node can't be previewed yet",
+    "invalidNodeHint": "Fix the following on the canvas, then reopen the preview:",
+    "completeTitle": "End of preview",
+    "completeHint": "You've reached the end of the game flow.",
     "labels": {
       "start": "Start",
       "end": "End"
@@ -63,18 +76,15 @@
       "save": "Save",
       "preview": "Preview",
       "leave": "Leave",
-      "publish": "Publish"
-    }
-  },
-  "publishChecklist": {
-    "requirementsMet": "Requirements met",
-    "requirementsNotMet": "Requirements not met",
-    "rulesTitle": "Publishing rules",
-    "rules": {
-      "noAbandoned": "No abandoned or disconnected nodes",
-      "linkedStartToEnd": "All nodes linked from Start to End",
-      "connectedPath": "All nodes connected (path Start to End).",
-      "minimallyFilled": "Each node minimally filled so the game is playable."
+      "publish": "Publish",
+      "unpublish": "Unpublish"
+    },
+    "unpublishDialog": {
+      "title": "Unpublish this game?",
+      "description": "Students will no longer see or play this game in the course. Your draft in Game Studio is not deleted — you can keep editing and publish again whenever you are ready.",
+      "cancel": "Cancel",
+      "confirm": "Unpublish",
+      "confirming": "Unpublishing..."
     }
   },
   "settingsDrawer": {
@@ -84,15 +94,10 @@
     "projectTitlePlaceholder": "Enter project title",
     "projectDescriptionLabel": "Project Description",
     "projectDescriptionPlaceholder": "Enter project description",
-    "publishStatusLabel": "Publish status",
-    "publishStatus": {
-      "published": "Published",
-      "draft": "Draft",
-      "publishedHint": "Students can play this game. Turn off to unpublish and hide it from the list.",
-      "draftHint": "Use the Publish button in the toolbar to publish this game for students."
-    },
     "versionLabel": "Version",
-    "versionValue": "Version : {{version}}",
+    "versionValue": "Version {{version}}",
+    "versionPopoverTitle": "Project version",
+    "versionPopoverCurrent": "You are editing version {{version}}.",
     "rollbackLabel": "Rollback",
     "rollbackToVersion": "Rollback to Version {{version}}",
     "noPreviousVersions": "No previous versions",
@@ -101,9 +106,7 @@
       "saved": "Settings saved",
       "saveFailed": "Failed to save settings",
       "rolledBack": "Rolled back to previous version",
-      "rollbackFailed": "Failed to rollback",
-      "unpublished": "Game unpublished",
-      "unpublishFailed": "Failed to unpublish"
+      "rollbackFailed": "Failed to rollback"
     },
     "themeLabel": "Preview Theme",
     "themeHint": "Choose the saved preview background for this project card."
@@ -121,7 +124,7 @@
     "titlePlaceholder": "Enter node title",
     "fieldDescription": "Description",
     "descriptionPlaceholder": "Enter node description",
-    "deleteHint": "Hold the button below for 3 seconds to delete this node.",
+    "deleteHint": "Hold to delete this node",
     "incomingNode": "Incoming Node",
     "noIncomingNode": "No incoming node",
     "outgoingNodes": "Outgoing Nodes",
@@ -147,6 +150,38 @@
     "activeRoute": "Active",
     "correctRouteLabel": "Correct answer -> {{node}}"
   },
+  "ifElseSettings": {
+    "title": "Branch settings",
+    "scoreThresholdLabel": "Score threshold",
+    "scoreThresholdValueLabel": "Score threshold value",
+    "smartSet": "Smart Set",
+    "scoreThresholdHint": "Set the split manually or use Smart Set for half of the incoming step's max points. Your value is saved until you change it or press Smart Set again.",
+    "noIncomingGameplay": "Connect a gameplay node (Image & Pin, Drag & drop math, or Open question) into this node to set a threshold.",
+    "incomingMaxPoints": "Incoming step can award up to {{points}} points.",
+    "branchIncoming": "Incoming",
+    "branchA": "Node A (top)",
+    "branchB": "Node B (bottom)",
+    "branchPointsRange": "{{min}}–{{max}} pts",
+    "branchPointsSingle": "{{points}} pts"
+  },
+  "ifElsePreview": {
+    "title": "Test branch routing",
+    "playIncomingHint": "Play the incoming step below. Your score updates the branch result using the threshold from settings.",
+    "noIncoming": "Connect a gameplay node before this If/Else node to test routing.",
+    "yourScore": "Your score: {{score}}",
+    "threshold": "Threshold: {{value}}",
+    "branchResultA": "Top branch (Node A) — score at or above threshold",
+    "branchResultB": "Bottom branch (Node B) — score below threshold",
+    "routesTo": "Next: {{node}}",
+    "branchNotConnected": "No node connected on this branch",
+    "branchGameplayNotReady": "This node is not ready to preview. Add an image and at least one question region.",
+    "thresholdStripMax": "Incoming step can award up to {{points}} points.",
+    "thresholdStripValue": "Score threshold: {{value}}",
+    "thresholdStripBranchA": "Node A (top): {{range}}",
+    "thresholdStripBranchB": "Node B (bottom): {{range}}",
+    "branchSectionTitleA": "Node A (top) — {{range}}",
+    "branchSectionTitleB": "Node B (bottom) — {{range}}"
+  },
   "startDialog": {
     "title": "Configure Start Node",
     "description": "Configure the start node with title and description",
@@ -169,7 +204,6 @@
   "publishDrawer": {
     "title": "Publish Game",
     "untitledGame": "Untitled Game",
-    "cannotPublishGame": "Cannot publish game",
     "publishUnavailable": "Publish is not available. Save the project first.",
     "publishedSuccess": "Game published successfully!",
     "publishFailed": "Failed to publish game",
@@ -179,7 +213,64 @@
     "pointsValue": "{{points}} points",
     "floorNote": "Wrong-answer penalties may apply; score never below 0.",
     "publishing": "Publishing...",
-    "publishForStudents": "Publish for Students"
+    "publishForStudents": "Hold to publish for students",
+    "linkCourseSectionLabel": "Link to course (optional)",
+    "linkCourseTrigger": "Select a course",
+    "linkCourseLoading": "Loading courses…",
+    "linkCourseEmptyHint": "Publish a course first to link this game to it. You can still publish the game without a link.",
+    "linkCoursePopoverTitle": "Published courses",
+    "linkCoursePopoverHint": "Linking is optional. The game will still publish if you skip this.",
+    "linkCourseNone": "No course link",
+    "linkCourseAriaLabel": "Choose a published course to link"
+  },
+  "publishValidation": {
+    "requirementsMet": "Flow requirements met",
+    "requirementsMetWithWarnings": "Ready to publish with warnings",
+    "requirementsNotMet": "Flow requirements not met",
+    "errorsTitle": "Fix these issues before publishing:",
+    "warningsTitle": "Warnings (optional to fix):",
+    "rulesTitle": "Fix these graph issues before publishing:",
+    "graphIssues": {
+      "start.missing": "Exactly one Start node is required.",
+      "start.duplicate": "Only one Start node is allowed (found {{count}}).",
+      "start.noOutgoing": "\"{{label}}\" must have at least one outgoing connection.",
+      "end.missing": "Exactly one End node is required.",
+      "end.duplicate": "Only one End node is allowed (found {{count}}).",
+      "end.hasOutgoing": "\"{{label}}\" must not have outgoing connections.",
+      "game.missing": "At least one game node (Image Pin, Drag & Drop Math, or Open Question) is required.",
+      "edge.sourceMissing": "An edge references a missing source node.",
+      "edge.targetMissing": "An edge references a missing target node.",
+      "edge.selfLoop": "\"{{label}}\" has a self-loop edge, which is not allowed.",
+      "flow.endUnreachable": "The End node is not reachable from Start.",
+      "flow.notReachableFromStart": "\"{{label}}\" is not reachable from Start.",
+      "flow.cannotReachEnd": "\"{{label}}\" cannot reach the End node.",
+      "ifElse.branch.missing": "\"{{label}}\" must connect both If and Else branches."
+    },
+    "nodeIssues": {
+      "imagePin.image.missing": "Image Pin \"{{label}}\" is missing an image.",
+      "imagePin.rect.none": "Image Pin \"{{label}}\" needs at least one target region.",
+      "imagePin.rect.invalidGeometry": "Image Pin \"{{label}}\" has a region with invalid size (region {{rectIndex}}).",
+      "imagePin.rect.missingQuestion": "Image Pin \"{{label}}\" has a region without question text (region {{rectIndex}}).",
+      "imagePin.points.invalid": "Image Pin \"{{label}}\" has invalid points.",
+      "imagePin.retryDeduction.invalid": "Image Pin \"{{label}}\" has an invalid retry deduction percentage.",
+      "imagePin.meta.incomplete": "Image Pin \"{{label}}\" is missing a game description.",
+      "openQuestion.prompt.missing": "Open Question \"{{label}}\" needs at least one exercise prompt.",
+      "openQuestion.answer.missing": "Open Question \"{{label}}\" has {{count}} exercise(s) missing a reference answer.",
+      "openQuestion.points.invalid": "Open Question \"{{label}}\" must award at least 1 point.",
+      "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" has no description.",
+      "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" needs at least one exercise tab.",
+      "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" has a tab without a title.",
+      "dndMath.tab.emptyCanvas": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has no canvas rows.",
+      "dndMath.tab.noContent": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has no content.",
+      "dndMath.equation.invalid": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has an invalid equation.",
+      "dndMath.reference.orphan": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has duplicate row references.",
+      "dndMath.scoring.noEvaluatableRow": "Drag & Drop Math \"{{label}}\" tab \"{{tabTitle}}\" has no evaluatable equation.",
+      "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" must award at least 1 point.",
+      "start.meta.incomplete": "Start \"{{label}}\" is missing a title or description.",
+      "end.meta.incomplete": "End \"{{label}}\" is missing a title or description.",
+      "ifElse.condition.missing": "If/Else \"{{label}}\" has no condition text.",
+      "ifElse.scoreThreshold.missing": "If/Else \"{{label}}\" has no score threshold set."
+    }
   },
   "previewIfElse": {
     "ifElseFallback": "If / else",
@@ -212,7 +303,22 @@
     "status": {
       "published": "Published",
       "draft": "Draft"
+    },
+    "courseMenu": {
+      "triggerAriaLabel": "Project options",
+      "linkToCourse": "Link to course",
+      "unlinkFromCourse": "Unlink from course"
     }
+  },
+  "linkGameDialog": {
+    "title": "Link to course",
+    "description": "Choose a course to link this game to.",
+    "cancel": "Cancel"
+  },
+  "unlinkGameDialog": {
+    "title": "Unlink from course",
+    "description": "Remove the course link from this game.",
+    "cancel": "Cancel"
   },
   "gameCard": {
     "centerAvatarAlt": "Center avatar",
@@ -334,6 +440,7 @@
     "scoreAccordionErrorFreeTitle": "Error-free (5%)",
     "scoreAccordionErrorFreeBody": "Units, notation, rounding, and concept checks averaged per step.",
     "scoreAccordionPointsMapping": "Awarded points = Score × {{maxPoints}} (example: Score 0.437 → {{examplePoints}} points at max {{maxPoints}}).",
+    "scoreAccordionExerciseSplit": "Exercise split: {{split}} pts ({{count}} exercise(s), total stays {{maxPoints}}).",
     "scoreAccordionCarryNote": "Carry mode is the default for step scoring. Strict mode (optional) always compares against the model solution operands."
   },
   "imagePinDialog": {

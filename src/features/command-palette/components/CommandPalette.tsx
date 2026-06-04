@@ -33,6 +33,7 @@ import {
   OPEN_COMMAND_UPLOAD_EVENT,
   type OpenCommandAddEventDetail,
 } from '../constants/commandPaletteEvents'
+import { isGameStudioPreviewPath } from '../utils/isGameStudioPreviewPath'
 
 const activeStyles = {
   text: 'text-blue-500',
@@ -110,6 +111,7 @@ export function CommandPalette({
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.commandPalette')
+  const isGamePreview = isGameStudioPreviewPath(location.pathname)
 
   const normalizedContextRole = normalizeCommandRole(commandBarContext)
   const normalizedUserRole = normalizeCommandRole(getRole())
@@ -169,6 +171,20 @@ export function CommandPalette({
   )
   const [selectedId, setSelectedId] = useState<string>(defaultSelectedId)
   const activeId = selectedId
+
+  useLayoutEffect(() => {
+    if (isGamePreview) {
+      setIsVisible(false)
+      if (paletteRef.current) {
+        gsap.set(paletteRef.current, { y: 80, opacity: 0 })
+      }
+      if (notchRef.current) {
+        gsap.set(notchRef.current, { y: 80 })
+      }
+      return
+    }
+    showPalette()
+  }, [isGamePreview, showPalette])
 
   useEffect(() => {
     const onOpenAdd = (event: Event) => {
@@ -372,67 +388,69 @@ export function CommandPalette({
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center pointer-events-none">
-        <button
-          ref={notchRef}
-          type="button"
-          onClick={handleNotchClick}
-          className="pointer-events-auto mb-3 flex h-10 w-28 cursor-pointer select-none items-center justify-center rounded-full touch-none"
-          role="button"
-          tabIndex={0}
-          aria-label={isVisible ? 'Hide command palette' : 'Show command palette'}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              handleNotchClick()
-            }
-          }}
-        >
-          <div className="h-2 w-16 rounded-full bg-muted-foreground/40" />
-        </button>
-        <Tooltip.Provider delayDuration={200}>
-          <div
-            ref={paletteRef}
-            className={cn(
-              className,
-              'pointer-events-auto mx-auto flex items-center justify-center rounded-full border border-border/70 bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl w-fit',
-            )}
-            role="region"
-            aria-label="Quick actions"
+      {!isGamePreview ? (
+        <div className="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center pointer-events-none">
+          <button
+            ref={notchRef}
+            type="button"
+            onClick={handleNotchClick}
+            className="pointer-events-auto mb-3 flex h-10 w-28 cursor-pointer select-none items-center justify-center rounded-full touch-none"
+            role="button"
+            tabIndex={0}
+            aria-label={isVisible ? 'Hide command palette' : 'Show command palette'}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleNotchClick()
+              }
+            }}
           >
-            <Toolbar.Root className="flex items-center gap-3">
-              <div
-                ref={actionsTrackRef}
-                className="relative"
-              >
+            <div className="h-2 w-16 rounded-full bg-muted-foreground/40" />
+          </button>
+          <Tooltip.Provider delayDuration={200}>
+            <div
+              ref={paletteRef}
+              className={cn(
+                className,
+                'pointer-events-auto mx-auto flex items-center justify-center rounded-full border border-border/70 bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl w-fit',
+              )}
+              role="region"
+              aria-label="Quick actions"
+            >
+              <Toolbar.Root className="flex items-center gap-3">
                 <div
-                  ref={activeIndicatorRef}
-                  className={cn(
-                    'pointer-events-none absolute left-0 top-0 z-0 h-14 w-14 rounded-full border opacity-0',
-                    activeStyles.bg,
-                    activeStyles.border,
-                  )}
-                />
+                  ref={actionsTrackRef}
+                  className="relative"
+                >
+                  <div
+                    ref={activeIndicatorRef}
+                    className={cn(
+                      'pointer-events-none absolute left-0 top-0 z-0 h-14 w-14 rounded-full border opacity-0',
+                      activeStyles.bg,
+                      activeStyles.border,
+                    )}
+                  />
 
-                <div className="relative z-10 flex items-center gap-3">
-                  {primaryChunks.map((chunk, chunkIndex) => (
-                    <Fragment key={chunk.map((i) => i.id).join('-')}>
-                      {chunkIndex > 0 ? (
-                        <Separator.Root
-                          decorative
-                          orientation="vertical"
-                          className="mx-2 h-12 w-px bg-border"
-                        />
-                      ) : null}
-                      {renderChunkRow(chunk, chunkIndex)}
-                    </Fragment>
-                  ))}
+                  <div className="relative z-10 flex items-center gap-3">
+                    {primaryChunks.map((chunk, chunkIndex) => (
+                      <Fragment key={chunk.map((i) => i.id).join('-')}>
+                        {chunkIndex > 0 ? (
+                          <Separator.Root
+                            decorative
+                            orientation="vertical"
+                            className="mx-2 h-12 w-px bg-border"
+                          />
+                        ) : null}
+                        {renderChunkRow(chunk, chunkIndex)}
+                      </Fragment>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </Toolbar.Root>
-          </div>
-        </Tooltip.Provider>
-      </div>
+              </Toolbar.Root>
+            </div>
+          </Tooltip.Provider>
+        </div>
+      ) : null}
 
       {/* Searchable dialog palette */}
       <Dialog.Root

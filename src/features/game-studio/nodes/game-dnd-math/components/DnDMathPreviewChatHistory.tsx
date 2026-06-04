@@ -43,6 +43,7 @@ export type DnDMathPreviewChatHistoryProps = {
   incomingBubbleVariant?: ChatBubbleVariant
   receivingBubbleVariant?: ChatBubbleVariant
   className?: string
+  flat?: boolean
 }
 
 function buildPreviewMessages({
@@ -89,6 +90,7 @@ export function DnDMathPreviewChatHistory({
   incomingBubbleVariant = 'default',
   receivingBubbleVariant = 'orange',
   className,
+  flat = false,
 }: DnDMathPreviewChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const messages = useMemo(
@@ -104,8 +106,9 @@ export function DnDMathPreviewChatHistory({
   )
 
   useEffect(() => {
+    if (flat) return
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [previewMessages, messages])
+  }, [flat, previewMessages, messages])
 
   const hasContent = messages.length > 0 || previewMessages.length > 0
 
@@ -170,6 +173,78 @@ export function DnDMathPreviewChatHistory({
     )
   }
 
+  const messageList = (
+    <div className="flex flex-col gap-4 py-1">
+      {messages.map((message) => (
+        <div
+          key={message.id}
+          className="flex justify-start"
+        >
+          {message.kind === 'lexical' ? (
+            <ReceivingChatMessageBubble
+              contentMode="lexical"
+              lexicalContent={message.lexicalContent}
+              lexicalHydrationKey={message.lexicalHydrationKey}
+              time=""
+              avatarUrl={avatarUrl}
+              avatarFallback={avatarFallback}
+              variant={incomingBubbleVariant}
+              messageId={message.id}
+            />
+          ) : (
+            <ReceivingChatMessageBubble
+              text={message.text}
+              time=""
+              avatarUrl={avatarUrl}
+              avatarFallback={avatarFallback}
+              variant={incomingBubbleVariant}
+              messageId={message.id}
+            />
+          )}
+        </div>
+      ))}
+
+      {previewMessages.map((message) => (
+        <div
+          key={message.id}
+          className={cn('flex', message.direction === 'sending' ? 'justify-end' : 'justify-start')}
+        >
+          {message.direction === 'sending' ? (
+            <SendingChatMessageBubble
+              contentMode={message.kind === 'math' ? 'math' : 'text'}
+              text={message.text ?? ''}
+              mathContent={message.kind === 'math' ? renderMathRows(message.rows ?? []) : undefined}
+              time=""
+              avatarUrl={avatarUrl}
+              avatarFallback={avatarFallback}
+              variant={receivingBubbleVariant}
+              status={message.kind === 'loading' ? 'loading' : 'ready'}
+              messageId={message.id}
+            />
+          ) : (
+            <ReceivingChatMessageBubble
+              contentMode={message.kind === 'math' ? 'math' : 'text'}
+              text={message.text ?? ''}
+              mathContent={message.kind === 'math' ? renderMathRows(message.rows ?? []) : undefined}
+              time=""
+              avatarUrl={avatarUrl}
+              avatarFallback={avatarFallback}
+              variant={incomingBubbleVariant}
+              status={message.kind === 'loading' ? 'loading' : 'ready'}
+              messageId={message.id}
+              textBold={message.bold}
+            />
+          )}
+        </div>
+      ))}
+      {!flat ? <div ref={bottomRef} /> : null}
+    </div>
+  )
+
+  if (flat) {
+    return <div className={cn('w-full min-w-0', className)}>{messageList}</div>
+  }
+
   return (
     <div
       className={cn(
@@ -182,78 +257,7 @@ export function DnDMathPreviewChatHistory({
         hideScrollBar
         viewportClassName="min-h-0 max-h-full flex-1 basis-0 [&>div]:!block [&>div]:min-h-0"
       >
-        <div className="flex flex-col gap-4 pb-2 pt-1">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className="flex justify-start"
-            >
-              {message.kind === 'lexical' ? (
-                <ReceivingChatMessageBubble
-                  contentMode="lexical"
-                  lexicalContent={message.lexicalContent}
-                  lexicalHydrationKey={message.lexicalHydrationKey}
-                  time=""
-                  avatarUrl={avatarUrl}
-                  avatarFallback={avatarFallback}
-                  variant={incomingBubbleVariant}
-                  messageId={message.id}
-                />
-              ) : (
-                <ReceivingChatMessageBubble
-                  text={message.text}
-                  time=""
-                  avatarUrl={avatarUrl}
-                  avatarFallback={avatarFallback}
-                  variant={incomingBubbleVariant}
-                  messageId={message.id}
-                />
-              )}
-            </div>
-          ))}
-
-          {previewMessages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                'flex',
-                message.direction === 'sending' ? 'justify-end' : 'justify-start',
-              )}
-            >
-              {message.direction === 'sending' ? (
-                <SendingChatMessageBubble
-                  contentMode={message.kind === 'math' ? 'math' : 'text'}
-                  text={message.text ?? ''}
-                  mathContent={
-                    message.kind === 'math' ? renderMathRows(message.rows ?? []) : undefined
-                  }
-                  time=""
-                  avatarUrl={avatarUrl}
-                  avatarFallback={avatarFallback}
-                  variant={receivingBubbleVariant}
-                  status={message.kind === 'loading' ? 'loading' : 'ready'}
-                  messageId={message.id}
-                />
-              ) : (
-                <ReceivingChatMessageBubble
-                  contentMode={message.kind === 'math' ? 'math' : 'text'}
-                  text={message.text ?? ''}
-                  mathContent={
-                    message.kind === 'math' ? renderMathRows(message.rows ?? []) : undefined
-                  }
-                  time=""
-                  avatarUrl={avatarUrl}
-                  avatarFallback={avatarFallback}
-                  variant={incomingBubbleVariant}
-                  status={message.kind === 'loading' ? 'loading' : 'ready'}
-                  messageId={message.id}
-                  textBold={message.bold}
-                />
-              )}
-            </div>
-          ))}
-          <div ref={bottomRef} />
-        </div>
+        {messageList}
       </BlurredScrollArea>
     </div>
   )

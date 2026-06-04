@@ -1,6 +1,12 @@
 import type { Node, Edge } from '@xyflow/react'
 import type { ThemeId } from '@/lib/themes'
 
+/** Draft version row for project settings rollback UI. */
+export type GameStudioVersionOption = {
+  id: string
+  version: number
+}
+
 // ========== Drawer Props ==========
 export interface SettingsDrawerProps {
   open: boolean
@@ -10,7 +16,7 @@ export interface SettingsDrawerProps {
   description?: string
   themeId?: ThemeId
   version?: number
-  rollbackVersions?: { id: string; version: number }[]
+  rollbackVersions?: readonly GameStudioVersionOption[]
   onSave?: (payload: {
     title: string
     description: string
@@ -18,17 +24,11 @@ export interface SettingsDrawerProps {
   }) => void | Promise<void>
   onRollback?: (versionId: string) => void | Promise<void>
   onDelete?: () => void
-  /** Whether the game is published (visible to students). */
-  isPublished?: boolean
-  /** Called when user unpublishes the game (switch off). */
-  onUnpublish?: () => void | Promise<void>
 }
 
-export interface PreviewDrawerProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  nodes?: Node[]
-  edges?: Edge[]
+export type PublishGameOptions = {
+  /** When set, links this game to the course on publish (optional). */
+  courseId?: string | null
 }
 
 export interface PublishDrawerProps {
@@ -36,9 +36,10 @@ export interface PublishDrawerProps {
   onOpenChange: (open: boolean) => void
   nodes?: Node[]
   edges?: Edge[]
-  gameTitle?: string
-  /** Called when user clicks Publish (after validation). Should save then publish. */
-  onPublish?: () => Promise<void>
+  teacherId?: string
+  linkedCourseId?: string | null
+  onPublish?: (options?: PublishGameOptions) => Promise<void>
+  onFocusNode?: (nodeId: string) => void
 }
 
 // ========== Card Types ==========

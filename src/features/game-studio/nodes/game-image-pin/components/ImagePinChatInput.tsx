@@ -1,6 +1,6 @@
 'use client'
 
-import { Score } from '@/components/ui/score'
+import { Score, type ScoreProps } from '@/components/ui/score'
 import { cn } from '@/lib/utils'
 
 import { ImagePinSourceSlot } from './ImagePinSourceSlot'
@@ -9,6 +9,7 @@ export type ImagePinChatInputProps = {
   score: number
   maxScore: number
   pinAtSource: boolean
+  scoreVariant?: ScoreProps['variant']
   className?: string
 }
 
@@ -17,6 +18,7 @@ export function ImagePinChatInput({
   score,
   maxScore,
   pinAtSource,
+  scoreVariant = 'orange',
   className,
 }: ImagePinChatInputProps) {
   return (
@@ -25,7 +27,7 @@ export function ImagePinChatInput({
         score={score}
         max={maxScore}
         size="lg"
-        variant="orange"
+        variant={scoreVariant}
       />
       <ImagePinSourceSlot
         pinAtSource={pinAtSource}

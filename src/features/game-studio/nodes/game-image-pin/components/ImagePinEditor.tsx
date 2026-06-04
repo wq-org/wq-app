@@ -4,6 +4,12 @@ import { useTranslation } from 'react-i18next'
 
 import { FileDropzone, ImageCarousel, SelectTabs } from '@/components/shared'
 import type { ImageCarouselImage } from '@/components/shared'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
@@ -69,6 +75,7 @@ export function ImagePinEditor({
 }: ImagePinEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameImagePinNodeData
+  const description = typeof pin.description === 'string' ? pin.description : ''
   const imagePreview =
     typeof pin.imagePreview === 'string' && pin.imagePreview.trim() !== '' ? pin.imagePreview : ''
 
@@ -344,6 +351,13 @@ export function ImagePinEditor({
     [handleFileSelected],
   )
 
+  const handleDescriptionChange = useCallback(
+    (value: string) => {
+      onPatchNodeData({ description: value })
+    },
+    [onPatchNodeData],
+  )
+
   /** Always rendered under the dropzone: combines other Image Pin nodes + your cloud library. */
   const galleryBelowDropzone = (
     <div
@@ -405,6 +419,45 @@ export function ImagePinEditor({
           exampleValues={[t('imagePinEditor.helpExampleValues')]}
         />
       </div>
+
+      <Accordion
+        type="single"
+        collapsible
+        className={imagePinEditorEnterSubtle}
+      >
+        <AccordionItem
+          value="game-description"
+          className="border-b-0"
+        >
+          <AccordionTrigger className="py-3">
+            <Text
+              as="p"
+              variant="body"
+              className="text-sm font-medium text-foreground"
+            >
+              {t('imagePinSettings.gameDescriptionLabel')}
+            </Text>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="flex flex-col gap-2 pb-2">
+              <FieldTextarea
+                value={description}
+                rows={5}
+                placeholder={t('imagePinSettings.gameDescriptionPlaceholder')}
+                onValueChange={handleDescriptionChange}
+              />
+              <Text
+                as="p"
+                variant="small"
+                muted
+                bold
+              >
+                {t('imagePinSettings.gameDescriptionHint')}
+              </Text>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className="flex w-full flex-col gap-4">
         <div className="flex flex-col gap-4">

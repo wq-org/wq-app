@@ -77,8 +77,5 @@ export function resolveGameDragDropMathPoints(value: unknown): number {
     : GAME_DRAG_DROP_MATH_DEFAULT_POINTS
 }
 
-/** Shell node — validation deferred until authoring UI exists. */
-export function validateGameDragDropMathConfig(data: unknown): string[] {
-  void data
-  return []
-}
+/** Shell node — delegates to publish validator. */
+export { validateGameDragDropMathConfig } from '../utils/validateGameDragDropMathPublish'
