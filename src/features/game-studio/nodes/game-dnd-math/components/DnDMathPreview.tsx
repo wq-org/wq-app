@@ -58,6 +58,7 @@ import {
 import { snapCenterToCursor } from '../utils/snapCenterToCursor'
 import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
 import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
+import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
 
 function findTokenInRows(rows: readonly DragDropMathCanvasRow[], tokenId: string) {
   for (const row of rows) {
@@ -85,6 +86,7 @@ export type DnDMathPreviewProps = {
   continuousSession?: boolean
   sessionActive?: boolean
   sessionScoreBaseline?: number
+  sessionMaxScore?: number
 }
 
 export function DnDMathPreview({
@@ -96,6 +98,7 @@ export function DnDMathPreview({
   continuousSession = false,
   sessionActive = true,
   sessionScoreBaseline = 0,
+  sessionMaxScore,
 }: DnDMathPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
@@ -104,7 +107,13 @@ export function DnDMathPreview({
   const defaultTabTitle = t('dragDropMathEditor.newExerciseTabLabel')
   const pin = useMemo(() => nodeData ?? {}, [nodeData])
   const instantColorFeedback = pin.instantColorFeedback !== false
-  const maxScore = resolveGameDragDropMathPoints(pin.points)
+  const nodeMaxScore = resolveGameDragDropMathPoints(pin.points)
+  const footerMaxScore = resolvePlayPreviewFooterMaxScore(
+    nodeMaxScore,
+    continuousSession,
+    sessionMaxScore,
+  )
+  const footerScoreVariant = continuousSession ? 'default' : 'orange'
 
   const { tabs } = useMemo(
     () => resolveExerciseTabsState(pin, defaultTabTitle),
@@ -121,10 +130,10 @@ export function DnDMathPreview({
   const howToPlayResponse = useMemo(
     () =>
       buildDragDropMathHowToPlayResponse(
-        t('dragDropMathGamePreview.howToPlayScoringResponse', { maxPoints: maxScore }),
+        t('dragDropMathGamePreview.howToPlayScoringResponse', { maxPoints: nodeMaxScore }),
         t('dragDropMathGamePreview.howToPlayResponse'),
       ),
-    [maxScore, t],
+    [nodeMaxScore, t],
   )
 
   const descriptionContent = pin.descriptionContent ?? null
@@ -199,7 +208,7 @@ export function DnDMathPreview({
   } = useDnDMathPreviewGame({
     nodeId,
     submitPrompt: t('dragDropMathGamePreview.submitAnswerPrompt'),
-    totalMaxScore: maxScore,
+    totalMaxScore: nodeMaxScore,
     tabs,
     studentRows: canvasRows,
     hasSubmittableCanvas: !isCanvasEmpty,
@@ -423,7 +432,8 @@ export function DnDMathPreview({
             onTokenRemove={submissionLocked || !sessionActive ? () => {} : removeToken}
             onSigmaRemove={submissionLocked || !sessionActive ? () => {} : removeSigmaRow}
             score={displayScore}
-            maxScore={maxScore}
+            maxScore={footerMaxScore}
+            scoreVariant={footerScoreVariant}
           />
           <DragOverlay
             dropAnimation={null}
@@ -444,7 +454,8 @@ export function DnDMathPreview({
       handleDragStart,
       handlePromptClick,
       instantColorFeedback,
-      maxScore,
+      footerMaxScore,
+      footerScoreVariant,
       prompts,
       removeSigmaRow,
       removeToken,

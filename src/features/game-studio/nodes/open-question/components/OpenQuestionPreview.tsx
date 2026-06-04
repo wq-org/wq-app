@@ -24,6 +24,7 @@ import {
 } from './OpenQuestionPreviewChatHistory'
 import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
 import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
+import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
 import { OpenQuestionSubmitConfirmDialog } from './OpenQuestionSubmitConfirmDialog'
 
 export type OpenQuestionPreviewProps = {
@@ -35,6 +36,7 @@ export type OpenQuestionPreviewProps = {
   continuousSession?: boolean
   sessionActive?: boolean
   sessionScoreBaseline?: number
+  sessionMaxScore?: number
 }
 
 function questionMarkerId(nodeId: string, index: number, questionId: string): string {
@@ -50,6 +52,7 @@ export function OpenQuestionPreview({
   continuousSession = false,
   sessionActive = true,
   sessionScoreBaseline = 0,
+  sessionMaxScore,
 }: OpenQuestionPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile, getUserId, getUserInstitutionId } = useUser()
@@ -57,13 +60,19 @@ export function OpenQuestionPreview({
   const { isScoring, scoreAnswer } = useScoring('game-studio-preview')
 
   const data = useMemo(() => nodeData ?? {}, [nodeData])
-  const maxScore = resolveGameOpenQuestionPoints(data.points)
+  const nodeMaxScore = resolveGameOpenQuestionPoints(data.points)
+  const footerMaxScore = resolvePlayPreviewFooterMaxScore(
+    nodeMaxScore,
+    continuousSession,
+    sessionMaxScore,
+  )
+  const footerScoreVariant = continuousSession ? 'default' : 'orange'
   const descriptionContent = data.descriptionContent ?? null
   const title = data.title?.trim() || data.label?.trim() || ''
   const showDescription = hasLexicalEditorContent(descriptionContent)
   const showTitle = title.length > 0
 
-  const loop = useOpenQuestionPreviewLoop({ questions: data.questions, maxScore })
+  const loop = useOpenQuestionPreviewLoop({ questions: data.questions, maxScore: nodeMaxScore })
   const {
     filledQuestions,
     currentIndex,
@@ -161,7 +170,7 @@ export function OpenQuestionPreview({
     const finalSummaryText = liveScoringEnabled
       ? t('openQuestionGamePreview.iterationFinalSummary', {
           earned: earnedTotal,
-          total: maxScore,
+          total: nodeMaxScore,
         })
       : t('openQuestionGamePreview.iterationFinalSummaryComingSoon')
 
@@ -177,7 +186,7 @@ export function OpenQuestionPreview({
         },
       ]
     })
-  }, [earnedTotal, isFinished, liveScoringEnabled, maxScore, nodeId, t])
+  }, [earnedTotal, isFinished, liveScoringEnabled, nodeMaxScore, nodeId, t])
 
   const runScoring = useCallback(
     async (messages: readonly OpenQuestionPreviewChatMessage[]) => {
@@ -414,7 +423,8 @@ export function OpenQuestionPreview({
         <OpenQuestionChatInput
           className="shrink-0"
           score={displayScore}
-          maxScore={maxScore}
+          maxScore={footerMaxScore}
+          scoreVariant={footerScoreVariant}
           placeholder={t('openQuestionGamePreview.composerPlaceholder')}
           value={composerValue}
           onValueChange={setComposerValue}
@@ -430,7 +440,8 @@ export function OpenQuestionPreview({
       handleComposerSubmit,
       handlePromptClick,
       isComposerLocked,
-      maxScore,
+      footerMaxScore,
+      footerScoreVariant,
       prompts,
       t,
     ],

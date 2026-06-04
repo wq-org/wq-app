@@ -21,9 +21,10 @@ import { useGamePreviewPlaySession } from './useGamePreviewPlaySession'
 export type GamePreviewPlayFlowProps = {
   nodes: Node[]
   edges: Edge[]
+  sessionMaxScore: number
 }
 
-export function GamePreviewPlayFlow({ nodes, edges }: GamePreviewPlayFlowProps) {
+export function GamePreviewPlayFlow({ nodes, edges, sessionMaxScore }: GamePreviewPlayFlowProps) {
   const { t } = useTranslation('features.gameStudio')
   const {
     revealedSegments,
@@ -106,6 +107,7 @@ export function GamePreviewPlayFlow({ nodes, edges }: GamePreviewPlayFlowProps) 
                     playMode="flow"
                     seededIncomingScore={seededIncomingScore}
                     sessionScoreBaseline={segmentBaseline}
+                    sessionMaxScore={sessionMaxScore}
                     onSessionScoreChange={isActive ? handleSessionScoreChange : undefined}
                     onFlowComplete={
                       isActive
@@ -127,6 +129,7 @@ export function GamePreviewPlayFlow({ nodes, edges }: GamePreviewPlayFlowProps) 
                     playKey={segment.id}
                     missingLabel={t('previewDrawer.invalidNodeTitle')}
                     sessionScoreBaseline={segmentBaseline}
+                    sessionMaxScore={sessionMaxScore}
                     onSessionComplete={
                       isActive
                         ? (payload) =>

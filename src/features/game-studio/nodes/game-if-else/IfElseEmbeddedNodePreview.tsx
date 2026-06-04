@@ -14,6 +14,7 @@ export type IfElseEmbeddedNodePreviewProps = {
   playKey: string
   missingLabel: string
   sessionScoreBaseline?: number
+  sessionMaxScore?: number
   onSessionComplete?: (payload: GameNodePreviewSessionCompletePayload) => void
   onSessionScoreChange?: (score: number) => void
 }
@@ -24,6 +25,7 @@ export function IfElseEmbeddedNodePreview({
   playKey,
   missingLabel,
   sessionScoreBaseline = 0,
+  sessionMaxScore,
   onSessionComplete,
   onSessionScoreChange,
 }: IfElseEmbeddedNodePreviewProps) {
@@ -55,6 +57,7 @@ export function IfElseEmbeddedNodePreview({
         continuousSession
         sessionActive={sessionActive}
         sessionScoreBaseline={sessionScoreBaseline}
+        sessionMaxScore={sessionMaxScore}
         onSessionComplete={sessionActive ? onSessionComplete : undefined}
         onSessionScoreChange={sessionActive ? onSessionScoreChange : undefined}
       />

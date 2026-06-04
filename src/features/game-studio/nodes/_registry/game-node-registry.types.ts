@@ -61,6 +61,8 @@ export type GameNodePreviewProps = {
   sessionActive?: boolean
   /** Points earned before this node in a multi-step preview session (footer shows baseline + node score). */
   sessionScoreBaseline?: number
+  /** Full-game preview: sum of max points for all gameplay nodes (score ring denominator). */
+  sessionMaxScore?: number
 }
 
 /** Playable preview component for a gameplay node (null for non-playable flow nodes). */

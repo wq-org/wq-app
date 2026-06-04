@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import type { Edge, Node } from '@xyflow/react'
@@ -7,6 +8,7 @@ import type { Edge, Node } from '@xyflow/react'
 import { Text } from '@/components/ui/text'
 
 import { GamePreviewPlayFlow } from '../components/GamePreviewPlayFlow'
+import { computePlayPreviewSessionMaxScore } from '../utils/playPreviewSessionScore'
 
 type PreviewLocationState = {
   nodes?: Node[]
@@ -20,6 +22,7 @@ export function GamePreviewPage() {
   const state = (location.state ?? {}) as PreviewLocationState
   const nodes = state.nodes ?? []
   const edges = state.edges ?? []
+  const sessionMaxScore = useMemo(() => computePlayPreviewSessionMaxScore(nodes), [nodes])
 
   return (
     <div className="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col overflow-hidden px-4 pt-4 pb-2">
@@ -35,6 +38,7 @@ export function GamePreviewPage() {
         <GamePreviewPlayFlow
           nodes={nodes}
           edges={edges}
+          sessionMaxScore={sessionMaxScore}
         />
       </div>
     </div>

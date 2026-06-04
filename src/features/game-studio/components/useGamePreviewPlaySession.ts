@@ -5,9 +5,7 @@ import type { Edge, Node } from '@xyflow/react'
 
 import { getRegistryEntry } from '../nodes/_registry/GameNodeRegistry'
 import { formatPublishIssueFallback } from '../utils/formatPublishIssue'
-import { resolveGameDragDropMathPoints } from '../nodes/game-dnd-math/types/drag-drop-math.schema'
-import { resolveGameImagePinPoints } from '../nodes/game-image-pin/image-pin.schema'
-import { resolveGameOpenQuestionPoints } from '../nodes/open-question/utils/openQuestionPoints'
+import { resolveGameplayNodeMaxPoints } from '../nodes/game-if-else/game-if-else.utils'
 import { GAME_START_TYPE } from '../nodes/game-start/game-start.schema'
 import type { SessionResultsByNode } from '../utils/flowOrder'
 import {
@@ -20,20 +18,6 @@ import {
 export type UseGamePreviewPlaySessionArgs = {
   nodes: Node[]
   edges: Edge[]
-}
-
-function resolveNodeMaxPoints(node: Node): number {
-  const data = (node.data ?? {}) as Record<string, unknown>
-  switch (node.type) {
-    case 'gameImagePin':
-      return resolveGameImagePinPoints(data.points)
-    case 'gameDragDropMath':
-      return resolveGameDragDropMathPoints(data.points)
-    case 'gameOpenQuestion':
-      return resolveGameOpenQuestionPoints(data.points)
-    default:
-      return 0
-  }
 }
 
 /**
@@ -99,7 +83,7 @@ export function useGamePreviewPlaySession({ nodes, edges }: UseGamePreviewPlaySe
       const sessionTotal = payload.isTotalScore ? payload.score : priorTotal + payload.score
       const nodeScore = payload.isTotalScore ? sessionTotal - priorTotal : payload.score
 
-      const maxPoints = resolveNodeMaxPoints(node)
+      const maxPoints = resolveGameplayNodeMaxPoints(node)
       const result = toSessionNodeResult(nodeScore, maxPoints, payload.ifElseBranch)
       const nextResults = { ...resultsByNode, [nodeId]: result }
       setResultsByNode(nextResults)

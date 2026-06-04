@@ -30,6 +30,7 @@ import {
   type GameImagePinNodeData,
 } from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
+import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
 import { fireImagePinPreviewConfetti, useImagePinGame } from '../hooks/useImagePinGame'
 import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
 import { ImagePin } from './ImagePin'
@@ -45,6 +46,7 @@ export type ImagePinPreviewProps = {
   continuousSession?: boolean
   sessionActive?: boolean
   sessionScoreBaseline?: number
+  sessionMaxScore?: number
 }
 
 /**
@@ -121,6 +123,7 @@ export function ImagePinPreview({
   continuousSession = false,
   sessionActive = true,
   sessionScoreBaseline = 0,
+  sessionMaxScore,
 }: ImagePinPreviewProps) {
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
@@ -151,7 +154,12 @@ export function ImagePinPreview({
     suppressPerAnswerConfetti: embedded && !continuousSession,
   })
 
-  const maxScore = resolveGameImagePinPoints(nodeData.points)
+  const nodeMaxScore = resolveGameImagePinPoints(nodeData.points)
+  const footerMaxScore = resolvePlayPreviewFooterMaxScore(
+    nodeMaxScore,
+    continuousSession,
+    sessionMaxScore,
+  )
   const sessionCompleteReportedRef = useRef(false)
   const sessionResolvedReportedRef = useRef(false)
 
@@ -229,6 +237,9 @@ export function ImagePinPreview({
     setActiveDragId(null)
   }, [])
 
+  const useShellSession = continuousSession
+  const shellSegmentActive = useShellSession && sessionActive
+
   const footerChrome = useMemo(
     () => (
       <>
@@ -238,12 +249,13 @@ export function ImagePinPreview({
         />
         <ImagePinChatInput
           score={displayScore}
-          maxScore={maxScore}
+          maxScore={footerMaxScore}
           pinAtSource={pinAtSource}
+          scoreVariant={useShellSession ? 'default' : 'orange'}
         />
       </>
     ),
-    [displayScore, handlePromptClick, maxScore, pinAtSource, prompts],
+    [displayScore, footerMaxScore, handlePromptClick, pinAtSource, prompts, useShellSession],
   )
 
   const renderImageChildren = (message: GameChatHistoryMessage) => {
@@ -264,9 +276,6 @@ export function ImagePinPreview({
     }
     return null
   }
-
-  const useShellSession = continuousSession
-  const shellSegmentActive = useShellSession && sessionActive
 
   useIfElsePreviewFollowContent(displayMessages.length, shellSegmentActive)
 
@@ -306,7 +315,7 @@ export function ImagePinPreview({
         showUserAvatar
         incomingAvatarUrl={userAvatarUrl ?? undefined}
         incomingBubbleVariant="default"
-        receivingBubbleVariant="orange"
+        receivingBubbleVariant={useShellSession ? 'dark' : 'orange'}
         renderImageChildren={renderImageChildren}
       />
       {showInlineChrome ? footerChrome : null}

@@ -58,6 +58,21 @@ export function resolveIfElseBranchFromScore(
   return score < threshold ? 'B' : 'A'
 }
 
+/**
+ * In full-game preview mode, the incoming gameplay node may already be completed
+ * before the If/Else node mounts. In that case, its score is only used for
+ * branch routing and must not be added to the running session score again.
+ */
+export function getIfElseRoutingScoreContribution(
+  routingScore: number,
+  seededIncomingScore: number | undefined,
+): number {
+  if (seededIncomingScore != null && Number.isFinite(seededIncomingScore)) {
+    return 0
+  }
+  return routingScore
+}
+
 export type IfElseBranchPointRange = { min: number; max: number } | null
 
 /** Display ranges for beam map labels (A: at/above threshold, B: below threshold). */

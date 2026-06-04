@@ -13,6 +13,7 @@ import { isImagePinPreviewPlayable } from '../game-image-pin/utils/imagePinPrevi
 import type { GameIfElseCorrectPath } from './game-if-else.schema'
 import type { GameIfElseNodeData } from './game-if-else.schema'
 import {
+  getIfElseRoutingScoreContribution,
   getIncomingGameplayNode,
   getOutgoingBranchNode,
   resolveIfElseBranchFromScore,
@@ -34,6 +35,7 @@ export type GameIfElsePreviewProps = {
   /** Skip replaying incoming when score is already known (full-game preview). */
   seededIncomingScore?: number
   sessionScoreBaseline?: number
+  sessionMaxScore?: number
   onSessionScoreChange?: (score: number) => void
   /** Fired when branch gameplay finishes (full-game advance). */
   onFlowComplete?: (payload: { score: number; branch: GameIfElseCorrectPath }) => void
@@ -52,6 +54,7 @@ export function GameIfElsePreview({
   playMode = 'dialog',
   seededIncomingScore,
   sessionScoreBaseline = 0,
+  sessionMaxScore,
   onSessionScoreChange,
   onFlowComplete,
 }: GameIfElsePreviewProps) {
@@ -107,20 +110,30 @@ export function GameIfElsePreview({
   )
 
   const routingScore = branchResult?.score ?? 0
+  const routingScoreContribution = getIfElseRoutingScoreContribution(
+    routingScore,
+    seededIncomingScore,
+  )
 
   const handleBranchComplete = useCallback(
     (payload: { score: number }) => {
       if (flowCompleteReportedRef.current || !branchResult) return
       flowCompleteReportedRef.current = true
       branchEarnedRef.current = payload.score
-      const total = sessionScoreBaseline + routingScore + payload.score
+      const total = sessionScoreBaseline + routingScoreContribution + payload.score
       onSessionScoreChange?.(total)
       onFlowComplete?.({ score: total, branch: branchResult.branch })
     },
-    [branchResult, onFlowComplete, onSessionScoreChange, routingScore, sessionScoreBaseline],
+    [
+      branchResult,
+      onFlowComplete,
+      onSessionScoreChange,
+      routingScoreContribution,
+      sessionScoreBaseline,
+    ],
   )
 
-  const branchScoreBaseline = sessionScoreBaseline + routingScore
+  const branchScoreBaseline = sessionScoreBaseline + routingScoreContribution
 
   const branchTarget = useMemo(() => {
     if (!branchResult) return undefined
@@ -193,6 +206,7 @@ export function GameIfElsePreview({
             playKey={`${branchResult.branch}-${branchPlayKey}`}
             missingLabel={t('ifElsePreview.branchNotConnected')}
             sessionScoreBaseline={branchScoreBaseline}
+            sessionMaxScore={sessionMaxScore}
             onSessionComplete={handleBranchComplete}
             onSessionScoreChange={branchSessionActive ? onSessionScoreChange : undefined}
           />
@@ -227,6 +241,7 @@ export function GameIfElsePreview({
           playKey={String(incomingPlayKey)}
           missingLabel={t('ifElsePreview.noIncoming')}
           sessionScoreBaseline={sessionScoreBaseline}
+          sessionMaxScore={sessionMaxScore}
           onSessionComplete={handleIncomingComplete}
           onSessionScoreChange={incomingSessionActive ? onSessionScoreChange : undefined}
         />

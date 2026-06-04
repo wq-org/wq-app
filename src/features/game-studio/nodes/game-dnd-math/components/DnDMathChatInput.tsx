@@ -1,6 +1,6 @@
 'use client'
 
-import { Score } from '@/components/ui/score'
+import { Score, type ScoreProps } from '@/components/ui/score'
 import { cn } from '@/lib/utils'
 
 import { DnDMathCanvasPanel, type DnDMathCanvasPanelProps } from './DnDMathCanvasPanel'
@@ -8,6 +8,7 @@ import { DnDMathCanvasPanel, type DnDMathCanvasPanelProps } from './DnDMathCanva
 export type DnDMathChatInputProps = DnDMathCanvasPanelProps & {
   score?: number
   maxScore?: number
+  scoreVariant?: ScoreProps['variant']
   /** Passed to {@link DnDMathCanvasPanel} (e.g. transparent preview shell). */
   panelClassName?: string
 }
@@ -16,6 +17,7 @@ export function DnDMathChatInput({
   className,
   score = 0,
   maxScore = 0,
+  scoreVariant = 'orange',
   panelClassName,
   ...canvasProps
 }: DnDMathChatInputProps) {
@@ -25,7 +27,7 @@ export function DnDMathChatInput({
         score={score}
         max={maxScore}
         size="lg"
-        variant="orange"
+        variant={scoreVariant}
       />
       <DnDMathCanvasPanel
         {...canvasProps}

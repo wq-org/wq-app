@@ -3,6 +3,7 @@ import type { Edge, Node } from '@xyflow/react'
 
 import {
   getDefaultIfElseScoreThreshold,
+  getIfElseRoutingScoreContribution,
   getIfElseBranchPointRanges,
   getIncomingGameplayNode,
   getOutgoingBranchEdge,
@@ -58,6 +59,16 @@ describe('resolveIfElseBranchFromScore', () => {
     expect(resolveIfElseBranchFromScore(4, 5)).toBe('B')
     expect(resolveIfElseBranchFromScore(5, 5)).toBe('A')
     expect(resolveIfElseBranchFromScore(10, 5)).toBe('A')
+  })
+})
+
+describe('getIfElseRoutingScoreContribution', () => {
+  it('does not count the incoming score twice when If/Else mounts after a finished node', () => {
+    expect(getIfElseRoutingScoreContribution(40, 40)).toBe(0)
+  })
+
+  it('counts the incoming score normally when the If/Else preview plays the incoming node itself', () => {
+    expect(getIfElseRoutingScoreContribution(40, undefined)).toBe(40)
   })
 })
 
