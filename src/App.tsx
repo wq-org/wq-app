@@ -38,8 +38,21 @@ import {
   TeacherViewPage,
 } from '@/features/teacher'
 import { NotFoundPage } from './user/pages/not-found'
-import { ClassroomDetailPage } from '@/features/classroom'
-import { CourseDetailPage, CourseLayout, CoursePage } from '@/features/course'
+import {
+  CourseDetailPage,
+  CourseLayout,
+  CoursePage,
+  PublishedCourseLessonPage,
+  PublishedCoursePage,
+  PublishedCourseTopicLessonPage,
+  PublishedCourseTopicPage,
+} from '@/features/course'
+import {
+  ClassroomCourseTopicLessonPublishedPage,
+  ClassroomDetailPage,
+  ClassroomPublishedCoursePage,
+  ClassroomTopicPublishedPage,
+} from '@/features/classroom'
 import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
 import { Onboarding } from '@/features/onboarding'
@@ -721,6 +734,36 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published/topic/:topicId/lesson/:lessonId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <ClassroomCourseTopicLessonPublishedPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published/topic/:topicId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <ClassroomTopicPublishedPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <ClassroomPublishedCoursePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="dashboard/classroom/:classroomId"
                   element={
                     <RequireAuth>
@@ -756,6 +799,56 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherSchedulePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/published/:courseVersionId/topic/:topicId/lesson/:lessonId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCourseTopicLessonPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/published/:courseVersionId/topic/:topicId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCourseTopicPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/published/:courseVersionId/lesson/:lessonId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCourseLessonPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/published/:courseVersionId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCoursePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/published"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCoursePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

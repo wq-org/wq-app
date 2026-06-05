@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
 import { CoursePreviewTab, CourseSettings } from '@/features/course'
-import { workspacePreviewNavigationState } from '../types/course-navigation.types'
+import {
+  resolveWorkspaceInitialTab,
+  workspacePreviewNavigationState,
+} from '../types/course-navigation.types'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { CourseTabs, type CourseTabId } from './CourseTabs'
@@ -98,6 +101,13 @@ export function CourseLayout() {
       fetchCourseById(courseId)
     }
   }, [courseId, fetchCourseById])
+
+  useEffect(() => {
+    const initialTab = resolveWorkspaceInitialTab(location.state)
+    if (initialTab === 'preview') {
+      setActiveTab('preview')
+    }
+  }, [location.key, location.state])
 
   if (!courseId) {
     return (

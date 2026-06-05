@@ -1,4 +1,5 @@
 import type { Course, CourseCardProps } from '../types/course.types'
+import type { ClassroomCourseListItem } from '../types/course-version.types'
 
 export function teacherInitialsFromProfile(displayName?: string | null): string {
   const trimmed = displayName?.trim()
@@ -12,7 +13,10 @@ export function teacherInitialsFromProfile(displayName?: string | null): string 
   return trimmed.slice(0, 2).toUpperCase()
 }
 
-export function toCourseCardProps(course: Course): CourseCardProps {
+export function toCourseCardProps(course: Course | ClassroomCourseListItem): CourseCardProps {
+  const deliveredVersionNo =
+    'deliveredVersionNo' in course ? course.deliveredVersionNo : course.published_version_no
+
   return {
     id: course.id,
     title: course.title,
@@ -21,6 +25,6 @@ export function toCourseCardProps(course: Course): CourseCardProps {
     themeId: course.theme_id,
     teacherAvatar: course.teacher_profile?.avatar_url ?? undefined,
     teacherInitials: teacherInitialsFromProfile(course.teacher_profile?.display_name),
-    publishedVersionNo: course.published_version_no ?? undefined,
+    publishedVersionNo: deliveredVersionNo ?? undefined,
   }
 }

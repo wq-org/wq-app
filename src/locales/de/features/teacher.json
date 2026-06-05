@@ -68,6 +68,13 @@
         "coursesSearchPlaceholder": "Nach Kurstitel suchen …",
         "coursesEmpty": "Für diesen Klassenraum wurden noch keine Kurse veröffentlicht.",
         "coursesNoMatches": "Keine Kurse entsprechen deiner Suche."
+      },
+      "publishedCourse": {
+        "backToClassroom": "Zur\u00fcck zum Klassenraum",
+        "contextLabel": "Live-Version f\u00fcr diesen Klassenraum \u2014 das sehen Lernende.",
+        "invalidLink": "Dieser Klassenraum-Kurs-Link ist ung\u00fcltig.",
+        "notDelivered": "Dieser Kurs wurde in diesen Klassenraum nicht ausgeliefert.",
+        "loadError": "Die ausgelieferte Kurs-Snapshot-Ansicht konnte nicht geladen werden."
       }
     }
   },

@@ -30,7 +30,7 @@ export function ClassroomCoursesPanel({
   const courseCards = useMemo(() => filteredCourses.map(toCourseCardProps), [filteredCourses])
 
   const handleCourseView = (courseId: string) => {
-    navigate(`/teacher/course/${courseId}`)
+    navigate(`/teacher/dashboard/classroom/${classroomId}/course/${courseId}/published`)
   }
 
   if (parentLoading || loading) {

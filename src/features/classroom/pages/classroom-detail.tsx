@@ -1,10 +1,9 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BookOpen, Calendar, type LucideIcon, Users } from 'lucide-react'
+import { BookOpen, type LucideIcon, Users } from 'lucide-react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { AppShell } from '@/components/layout'
-import { LoadingPage } from '@/components/shared'
 import { DashboardSection } from '@/features/dashboard'
 import { Text } from '@/components/ui/text'
 
@@ -17,11 +16,9 @@ type ClassroomLocationState = {
 }
 
 type SectionSpec = {
-  id: 'students' | 'schedule' | 'courses'
+  id: 'students' | 'courses'
   icon: LucideIcon
   titleKey: string
-  placeholderKey: string
-  loadingKey: string
 }
 
 const CLASSROOM_SECTIONS: SectionSpec[] = [
@@ -29,22 +26,11 @@ const CLASSROOM_SECTIONS: SectionSpec[] = [
     id: 'students',
     icon: Users,
     titleKey: 'pages.classroomDetail.sections.studentsTitle',
-    placeholderKey: 'pages.classroomDetail.sections.studentsPlaceholder',
-    loadingKey: 'pages.classroomDetail.sections.studentsLoading',
-  },
-  {
-    id: 'schedule',
-    icon: Calendar,
-    titleKey: 'pages.classroomDetail.sections.scheduleTitle',
-    placeholderKey: 'pages.classroomDetail.sections.schedulePlaceholder',
-    loadingKey: 'pages.classroomDetail.sections.scheduleLoading',
   },
   {
     id: 'courses',
     icon: BookOpen,
     titleKey: 'pages.classroomDetail.sections.coursesTitle',
-    placeholderKey: 'pages.classroomDetail.sections.coursesPlaceholder',
-    loadingKey: 'pages.classroomDetail.sections.coursesLoading',
   },
 ]
 
@@ -130,25 +116,11 @@ export function ClassroomDetailPage() {
                   classroomId={classroomId}
                   parentLoading={loading}
                 />
-              ) : spec.id === 'courses' ? (
+              ) : (
                 <ClassroomCoursesPanel
                   classroomId={classroomId}
                   parentLoading={loading}
                 />
-              ) : loading ? (
-                <LoadingPage
-                  variant="embedded"
-                  message={t(spec.loadingKey)}
-                  size={72}
-                />
-              ) : (
-                <Text
-                  as="p"
-                  variant="body"
-                  className="text-sm text-muted-foreground"
-                >
-                  {t(spec.placeholderKey)}
-                </Text>
               )}
             </DashboardSection>
           ))}

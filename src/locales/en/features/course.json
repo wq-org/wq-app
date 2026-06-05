@@ -147,6 +147,33 @@
     "open": "Open",
     "imageAlt": "Course"
   },
+  "published": {
+    "readOnlyBanner": "Published · read-only",
+    "readOnlyVersionBadge": "Published v{{version}} · read-only",
+    "tabs": {
+      "overview": "Overview",
+      "details": "Details"
+    },
+    "versionBadge": "Published v{{version}}",
+    "versionSelectPlaceholder": "Select version",
+    "versionOption": "Version {{version}}",
+    "publishedAt": "Published {{date}}",
+    "deliveryCount": "Delivered to {{count}} classroom(s)",
+    "noChangeNote": "Change note: —",
+    "compareToDraft": "Compare to current draft",
+    "openEditor": "Open editor",
+    "emptyTree": "This published version has no topics yet.",
+    "noSearchMatches": "No topics match your search.",
+    "loadError": "Could not load the published course snapshot.",
+    "noPublishedVersion": "This course has no published version yet.",
+    "invalidCourse": "This course link is invalid.",
+    "invalidLesson": "This lesson link is invalid.",
+    "lessonNotFound": "This lesson is not part of the selected published version.",
+    "topicNotFound": "This topic is not part of the selected published version.",
+    "topicLessonCount": "{{count}} lesson(s) in this topic",
+    "backToPublishedCourse": "Back to published course",
+    "backToTopics": "Back to topics"
+  },
   "join": {
     "actions": {
       "join": "Join",

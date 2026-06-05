@@ -147,6 +147,33 @@
     "open": "\u00d6ffnen",
     "imageAlt": "Kurs"
   },
+  "published": {
+    "readOnlyBanner": "Ver\u00f6ffentlicht \u00b7 schreibgesch\u00fctzt",
+    "readOnlyVersionBadge": "Ver\u00f6ffentlicht v{{version}} \u00b7 schreibgesch\u00fctzt",
+    "tabs": {
+      "overview": "\u00dcbersicht",
+      "details": "Details"
+    },
+    "versionBadge": "Ver\u00f6ffentlicht v{{version}}",
+    "versionSelectPlaceholder": "Version ausw\u00e4hlen",
+    "versionOption": "Version {{version}}",
+    "publishedAt": "Ver\u00f6ffentlicht am {{date}}",
+    "deliveryCount": "An {{count}} Klassenraum/Klassenr\u00e4ume ausgeliefert",
+    "noChangeNote": "\u00c4nderungsnotiz: \u2014",
+    "compareToDraft": "Mit aktuellem Entwurf vergleichen",
+    "openEditor": "Editor \u00f6ffnen",
+    "emptyTree": "Diese ver\u00f6ffentlichte Version enth\u00e4lt noch keine Themen.",
+    "noSearchMatches": "Keine Themen entsprechen deiner Suche.",
+    "loadError": "Die ver\u00f6ffentlichte Kurs-Snapshot-Ansicht konnte nicht geladen werden.",
+    "noPublishedVersion": "F\u00fcr diesen Kurs gibt es noch keine ver\u00f6ffentlichte Version.",
+    "invalidCourse": "Dieser Kurs-Link ist ung\u00fcltig.",
+    "invalidLesson": "Dieser Lektions-Link ist ung\u00fcltig.",
+    "lessonNotFound": "Diese Lektion ist nicht Teil der ausgew\u00e4hlten ver\u00f6ffentlichten Version.",
+    "topicNotFound": "Dieses Thema ist nicht Teil der ausgew\u00e4hlten ver\u00f6ffentlichten Version.",
+    "topicLessonCount": "{{count}} Lektion(en) in diesem Thema",
+    "backToPublishedCourse": "Zur\u00fcck zur ver\u00f6ffentlichten Kursansicht",
+    "backToTopics": "Zur\u00fcck zu Themen"
+  },
   "join": {
     "actions": {
       "join": "Beitreten",

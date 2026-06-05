@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { getUserInstitutionId } from '@/features/auth'
 import type { Course, CourseTeacherProfile, UpdateCourseData } from '../types/course.types'
+import type { ClassroomCourseListItem } from '../types/course-version.types'
 
 /**
  * Create a new course
@@ -98,17 +99,33 @@ export async function getTeacherPublishedCourses(teacherId: string): Promise<Cou
 }
 
 type ClassroomCourseDeliveryRow = {
+  id: string
   course_id: string
+  course_version_id: string
+  course_versions:
+    | { version_no: number; status: string }
+    | { version_no: number; status: string }[]
+    | null
   courses: TeacherCourseRow | TeacherCourseRow[] | null
 }
 
+function normalizeDeliveryVersion(
+  value: ClassroomCourseDeliveryRow['course_versions'],
+): { version_no: number; status: string } | null {
+  if (value == null) return null
+  return Array.isArray(value) ? (value[0] ?? null) : value
+}
+
 /** Courses delivered to a classroom via course_deliveries (deduped, newest delivery first). */
-export async function getClassroomCourses(classroomId: string): Promise<Course[]> {
+export async function getClassroomCourses(classroomId: string): Promise<ClassroomCourseListItem[]> {
   const { data, error } = await supabase
     .from('course_deliveries')
     .select(
       `
+      id,
       course_id,
+      course_version_id,
+      course_versions (version_no, status),
       courses (
         *,
         teacher:profiles!courses_teacher_id_fkey(display_name, avatar_url),
@@ -126,7 +143,7 @@ export async function getClassroomCourses(classroomId: string): Promise<Course[]
   }
 
   const seenCourseIds = new Set<string>()
-  const courses: Course[] = []
+  const courses: ClassroomCourseListItem[] = []
 
   for (const row of (data ?? []) as ClassroomCourseDeliveryRow[]) {
     if (seenCourseIds.has(row.course_id)) continue
@@ -136,7 +153,15 @@ export async function getClassroomCourses(classroomId: string): Promise<Course[]
     if (!courseRow) continue
 
     seenCourseIds.add(row.course_id)
-    courses.push(mapTeacherCourseRow(courseRow))
+    const course = mapTeacherCourseRow(courseRow)
+    const deliveryVersion = normalizeDeliveryVersion(row.course_versions)
+
+    courses.push({
+      ...course,
+      deliveryId: row.id,
+      courseVersionId: row.course_version_id,
+      deliveredVersionNo: deliveryVersion?.version_no ?? course.published_version_no ?? null,
+    })
   }
 
   return courses

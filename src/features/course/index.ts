@@ -15,8 +15,19 @@ export { CourseFilter } from './components/CourseFilter'
 export type { CourseFilterProps } from './components/CourseFilter'
 export { EmptyLessonsView } from './components/EmptyLessonsView'
 export { EmptyTopicsView } from './components/EmptyTopicsView'
+export {
+  PublishedCoursePageShell,
+  PublishedCourseTopicList,
+  PublishedCourseVersionSelect,
+  PublishedCourseView,
+  PublishedLessonReader,
+  PublishedTopicDetails,
+  PublishedTopicView,
+} from './components/published'
 export { useCourses } from './hooks/useCourses'
 export { useCourseDetail } from './hooks/useCourseDetail'
+export { usePublishedCourseVersion } from './hooks/usePublishedCourseVersion'
+export { usePublishedCourseVersionsList } from './hooks/usePublishedCourseVersionsList'
 export { COURSE_SEARCH_FIELDS } from './types/course.types'
 export type {
   Course,
@@ -27,6 +38,11 @@ export type {
   EnrollmentStatus,
   CourseEnrollment,
 } from './types/course.types'
+export type {
+  ClassroomCourseListItem,
+  PublishedCourseVersion,
+  PublishedCourseVersionSummary,
+} from './types/course-version.types'
 export type { EnrollmentCourse, CourseMemberType, CourseMember } from './api/enrollmentsApi'
 export {
   createCourse,
@@ -39,7 +55,29 @@ export {
 } from './api/coursesApi'
 export { publishCourseToClassrooms } from './api/coursePublishApi'
 export type { PublishCourseToClassroomsResult } from './api/coursePublishApi'
+export {
+  countDeliveriesForVersion,
+  getClassroomCourseDelivery,
+  getCourseVersionTree,
+  getLatestPublishedCourseVersionId,
+  listPublishedCourseVersions,
+} from './api/courseVersionApi'
 export { toCourseCardProps, teacherInitialsFromProfile } from './utils/courseCard.utils'
+export {
+  buildClassroomPublishedCourseRoute,
+  buildClassroomPublishedLessonRoute,
+  buildClassroomPublishedTopicRoute,
+  buildPublishedCourseRoute,
+  buildPublishedLessonRoute,
+  buildPublishedTopicLessonRoute,
+  buildPublishedTopicRoute,
+  findPublishedLessonInTopic,
+  findPublishedLessonInTree,
+  findPublishedTopicInTree,
+  formatPublishedAt,
+} from './utils/courseVersion.utils'
+export { workspacePreviewNavigationState } from './types/course-navigation.types'
+export type { WorkspaceInitialTab, WorkspaceNavigationState } from './types/course-navigation.types'
 export {
   requestCourseJoin,
   cancelCourseJoin,
@@ -51,3 +89,9 @@ export { getHeadingsFromLessonValue } from './utils/lessonHeadings'
 
 export { Course as CoursePage } from './pages/course'
 export { CourseDetailPage } from './pages/course-detail'
+export { PublishedCoursePage } from './pages/published-course'
+export { PublishedCourseLessonPage } from './pages/published-course-lesson'
+export {
+  PublishedCourseTopicPage,
+  PublishedCourseTopicLessonPage,
+} from './pages/published-course-topic'

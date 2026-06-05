@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { getClassroomCourses } from '@/features/course/api/coursesApi'
-import type { Course } from '@/features/course/types/course.types'
+import type { ClassroomCourseListItem } from '@/features/course'
 
 export function useClassroomCourses(classroomId: string | undefined) {
-  const [courses, setCourses] = useState<Course[]>([])
+  const [courses, setCourses] = useState<ClassroomCourseListItem[]>([])
   const [loading, setLoading] = useState(Boolean(classroomId?.trim()))
   const [error, setError] = useState<string | null>(null)
 

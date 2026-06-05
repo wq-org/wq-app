@@ -69,6 +69,13 @@
         "coursesSearchPlaceholder": "Search by course title…",
         "coursesEmpty": "No courses have been published to this classroom yet.",
         "coursesNoMatches": "No courses match your search."
+      },
+      "publishedCourse": {
+        "backToClassroom": "Back to classroom",
+        "contextLabel": "Live version delivered to this classroom — what students see.",
+        "invalidLink": "This classroom course link is invalid.",
+        "notDelivered": "This course is not delivered to this classroom.",
+        "loadError": "Could not load the delivered course snapshot."
       }
     }
   },
