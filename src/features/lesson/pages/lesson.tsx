@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { File, TextQuote, X } from 'lucide-react'
 import type { SerializedEditorState } from 'lexical'
@@ -22,13 +22,24 @@ import { useUser } from '@/contexts/user/UserContext'
 import { LESSON_CONTENT_SCHEMA_VERSION, type SaveStatus } from '@/features/lesson'
 import { Editor, syncLessonImageLinks, type PasteOverflowInfo } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
+import { LessonPreview } from '../components/LessonPreview'
 import { LessonSettingsDrawer } from '../components/LessonSettingsDrawer'
+import { resolveWorkspaceInitialTab } from '@/features/course/types/course-navigation.types'
 
 const AUTOSAVE_DELAY_MS = 600
 const AUTOSAVE_TOAST_ID = 'lesson-autosave-status'
 const DESCRIPTION_TEXTAREA_ID = 'lesson-description'
 
 export const Lesson = () => {
+  const location = useLocation()
+  if (resolveWorkspaceInitialTab(location.state) === 'preview') {
+    return <LessonPreview />
+  }
+
+  return <LessonEditor />
+}
+
+const LessonEditor = () => {
   const { t } = useTranslation('features.lesson')
   const { lessonId } = useParams<{ lessonId: string }>()
   const { lesson, fetchLessonById, updateLesson } = useLesson()

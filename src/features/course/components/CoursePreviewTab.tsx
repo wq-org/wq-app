@@ -10,6 +10,7 @@ import type { ThemeId } from '@/lib/themes'
 import { LessonFilter } from '@/features/lesson'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { getTopicsByCourseId, TOPIC_SEARCH_FIELDS } from '@/features/topic'
+import { workspacePreviewNavigationState } from '../types/course-navigation.types'
 
 export interface CoursePreviewTabProps {
   courseId: string
@@ -84,7 +85,9 @@ export function CoursePreviewTab({ courseId, themeId, onTopicView }: CoursePrevi
               return
             }
 
-            navigate(`/teacher/course/${courseId}/topic/${topicId}`)
+            navigate(`/teacher/course/${courseId}/topic/${topicId}`, {
+              state: workspacePreviewNavigationState(),
+            })
           }}
         />
       )}

@@ -8,6 +8,22 @@
     "descriptionPlaceholder": "Kursbeschreibung",
     "publishedLabel": "Ver\u00f6ffentlicht",
     "publishedHint": "Diesen Kurs f\u00fcr Lernende sichtbar machen",
+    "publishAction": "In Klassenr\u00e4ume ver\u00f6ffentlichen",
+    "publishing": "Ver\u00f6ffentlichen...",
+    "publishDialog": {
+      "title": "Kurs in Klassenr\u00e4umen ver\u00f6ffentlichen",
+      "description": "W\u00e4hle Klassenr\u00e4ume, die diese Kursversion erhalten sollen. Beim Ver\u00f6ffentlichen entsteht ein unver\u00e4nderlicher Snapshot deiner Themen und Lektionen; der Zugang f\u00fcr Lernende l\u00e4uft \u00fcber Kurs-Auslieferungen.",
+      "classroomColumn": "Klassenraum",
+      "studentsColumn": "Lernende",
+      "selectAllAriaLabel": "Alle Klassenr\u00e4ume ausw\u00e4hlen",
+      "selectClassroomAriaLabel": "{{title}} ausw\u00e4hlen",
+      "selectionHint": "{{count}} Klassenraum/Klassenr\u00e4ume ausgew\u00e4hlt",
+      "confirm": "In {{count}} Klassenraum/Klassenr\u00e4ume ver\u00f6ffentlichen",
+      "cancel": "Abbrechen",
+      "loadingClassrooms": "Klassenr\u00e4ume werden geladen…",
+      "loadError": "Klassenr\u00e4ume konnten nicht geladen werden. Bitte erneut versuchen.",
+      "emptyClassrooms": "Keine Klassenr\u00e4ume verf\u00fcgbar. Lege zuerst einen Klassenraum an und ver\u00f6ffentliche dann diesen Kurs."
+    },
     "save": "\u00c4nderungen speichern",
     "saving": "Speichern...",
     "deleteAction": "Kurs l\u00f6schen",
@@ -21,7 +37,9 @@
       "saveSuccessDescription": "Deine Kursdetails wurden aktualisiert.",
       "saveFailed": "\u00c4nderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
       "deleteFailed": "Kurs konnte nicht gel\u00f6scht werden. Bitte versuche es erneut.",
-      "publishStatusFailed": "Ver\u00f6ffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      "publishStatusFailed": "Ver\u00f6ffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+      "publishSuccess": "Kurs ver\u00f6ffentlicht",
+      "publishSuccessDescription": "Version {{version}} ist in {{count}} Klassenraum/Klassenr\u00e4umen aktiv. Lernende dort k\u00f6nnen auf diesen Snapshot zugreifen."
     },
     "themeLabel": "Thema",
     "themeHint": "Wahle den Standardhintergrund fur den Kurs, wenn kein eigenes Bild verwendet wird."

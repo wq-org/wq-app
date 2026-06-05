@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import { getCourseById, updateCourse, deleteCourse } from '@/features/course'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
@@ -12,10 +11,13 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
-import { Check } from 'lucide-react'
+import { Check, Upload } from 'lucide-react'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { useDisclosure } from '@/hooks/use-disclosure'
+
+import { CoursePublishDialog } from './CoursePublishDialog'
 
 interface CourseSettingsProps {
   courseId: string
@@ -27,8 +29,8 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const navigate = useNavigate()
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)
-  const [isPublishing, setIsPublishing] = useState(false)
   const [saving, setSaving] = useState(false)
+  const publishDialog = useDisclosure()
   const [deleting, setDeleting] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -117,27 +119,6 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     }
   }
 
-  const handleTogglePublished = async (checked: boolean) => {
-    try {
-      setIsPublishing(true)
-
-      await updateCourse(courseId, {
-        is_published: checked,
-      })
-      setIsPublished(checked)
-      toast.success(t('settings.toasts.saveSuccess'), {
-        description: t('settings.toasts.saveSuccessDescription'),
-      })
-    } catch (error) {
-      setIsPublishing(false)
-      console.error('Error updating publish status:', error)
-      setIsPublished(!checked)
-      toast.error(t('settings.toasts.publishStatusFailed'))
-    } finally {
-      setIsPublishing(false)
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -202,61 +183,66 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
           />
         </div>
 
-        <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">
-          <div className="flex flex-col gap-1">
-            <Label
-              htmlFor="published"
-              className="text-base font-medium"
+        <div className="flex items-center justify-between gap-4 border-t py-4">
+          <div className="flex items-center gap-4">
+            <HoldToDeleteButton
+              loading={deleting}
+              onDelete={handleDeleteCourse}
+            >
+              {t('settings.deleteAction')}
+            </HoldToDeleteButton>
+            <Button
+              variant="outline"
+              onClick={handleSaveChanges}
+              disabled={!hasChanges || saving}
+              className="gap-2"
+            >
+              {saving ? (
+                <>
+                  <Spinner
+                    variant="white"
+                    size="sm"
+                  />
+                  {t('settings.saving')}
+                </>
+              ) : (
+                <Check />
+              )}
+              {t('settings.save')}
+            </Button>
+          </div>
+
+          {isPublished ? (
+            <Text
+              as="span"
+              variant="small"
+              className="text-muted-foreground"
             >
               {t('settings.publishedLabel')}
-            </Label>
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('settings.publishedHint')}
             </Text>
-          </div>
-          {isPublishing ? (
-            <Spinner size="xs" />
           ) : (
-            <Switch
-              id="published"
-              checked={isPublished}
-              onCheckedChange={handleTogglePublished}
-            />
+            <Button
+              type="button"
+              variant="darkblue"
+              className="gap-2"
+              onClick={publishDialog.onOpen}
+            >
+              <Upload
+                className="size-4"
+                aria-hidden
+              />
+              {t('settings.publishAction')}
+            </Button>
           )}
         </div>
-
-        <div className="flex  items-center justify-end gap-4 py-4 border-t">
-          <HoldToDeleteButton
-            loading={deleting}
-            onDelete={handleDeleteCourse}
-          >
-            {t('settings.deleteAction')}
-          </HoldToDeleteButton>
-          <Button
-            variant="darkblue"
-            onClick={handleSaveChanges}
-            disabled={!hasChanges || saving}
-            className="gap-2"
-          >
-            {saving ? (
-              <>
-                <Spinner
-                  variant="white"
-                  size="sm"
-                />
-                {t('settings.saving')}
-              </>
-            ) : (
-              <Check />
-            )}
-            {t('settings.save')}
-          </Button>
-        </div>
       </div>
+
+      <CoursePublishDialog
+        courseId={courseId}
+        open={publishDialog.isOpen}
+        onOpenChange={publishDialog.onToggle}
+        onPublished={() => setIsPublished(true)}
+      />
     </div>
   )
 }

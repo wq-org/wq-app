@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
 import { CoursePreviewTab, CourseSettings } from '@/features/course'
+import { workspacePreviewNavigationState } from '../types/course-navigation.types'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { CourseTabs, type CourseTabId } from './CourseTabs'
@@ -144,7 +145,9 @@ export function CourseLayout() {
                   courseId={courseId}
                   themeId={selectedCourse?.theme_id}
                   onTopicView={(topicId) =>
-                    navigate(`/teacher/course/${courseId}/topic/${topicId}`)
+                    navigate(`/teacher/course/${courseId}/topic/${topicId}`, {
+                      state: workspacePreviewNavigationState(),
+                    })
                   }
                 />
               ) : null}

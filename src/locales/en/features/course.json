@@ -8,6 +8,22 @@
     "descriptionPlaceholder": "Course description",
     "publishedLabel": "Published",
     "publishedHint": "Make this course visible to students",
+    "publishAction": "Publish to classrooms",
+    "publishing": "Publishing...",
+    "publishDialog": {
+      "title": "Publish course to classrooms",
+      "description": "Choose classrooms that should receive this course version. Publishing creates an immutable snapshot of your topics and lessons, then opens student access through course deliveries.",
+      "classroomColumn": "Classroom",
+      "studentsColumn": "Students",
+      "selectAllAriaLabel": "Select all classrooms",
+      "selectClassroomAriaLabel": "Select {{title}}",
+      "selectionHint": "{{count}} classroom(s) selected",
+      "confirm": "Publish to {{count}} classroom(s)",
+      "cancel": "Cancel",
+      "loadingClassrooms": "Loading classrooms…",
+      "loadError": "Could not load classrooms. Try again.",
+      "emptyClassrooms": "No classrooms available. Create a classroom first, then publish this course."
+    },
     "save": "Save Changes",
     "saving": "Saving...",
     "deleteAction": "Delete Course",
@@ -21,7 +37,9 @@
       "saveSuccessDescription": "Your course details have been updated.",
       "saveFailed": "Failed to save changes. Please try again.",
       "deleteFailed": "Failed to delete course. Please try again.",
-      "publishStatusFailed": "Failed to update publish status. Please try again."
+      "publishStatusFailed": "Failed to update publish status. Please try again.",
+      "publishSuccess": "Course published",
+      "publishSuccessDescription": "Version {{version}} is live in {{count}} classroom(s). Students in those classrooms can access this snapshot."
     },
     "themeLabel": "Theme",
     "themeHint": "Choose the default course background when no custom image is used."

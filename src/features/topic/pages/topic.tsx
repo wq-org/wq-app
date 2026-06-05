@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { dismissSaveStatusToast, showSaveStatusToast } from '@/components/shared'
@@ -17,14 +17,21 @@ import type { TopicTabId } from '@/features/topic'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 import { LESSON_SEARCH_FIELDS } from '@/features/lesson'
 import { Separator } from '@/components/ui/separator'
+import {
+  resolveWorkspaceInitialTab,
+  workspacePreviewNavigationState,
+} from '@/features/course/types/course-navigation.types'
 
 const TOPIC_LESSONS_ERROR_TOAST_ID = 'topic-lessons-list-error'
 
 const Topic = () => {
   const { t } = useTranslation('features.course')
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>()
+  const location = useLocation()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<TopicTabId>('editor')
+  const [activeTab, setActiveTab] = useState<TopicTabId>(() =>
+    resolveWorkspaceInitialTab(location.state) === 'preview' ? 'preview' : 'editor',
+  )
   const [searchQuery, setSearchQuery] = useState('')
   const [loadError, setLoadError] = useState<string | null>(null)
   const { selectedCourse, fetchCourseById } = useCourse()
@@ -230,7 +237,7 @@ const Topic = () => {
           themeId={selectedCourse?.theme_id}
           onLessonOpen={(lessonId) => {
             navigate(`/teacher/course/${courseId}/lesson/${lessonId}`, {
-              state: { initialTab: 'preview' },
+              state: workspacePreviewNavigationState(),
             })
           }}
         />

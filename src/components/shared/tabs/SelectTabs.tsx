@@ -29,6 +29,11 @@ type SelectTabsPropsBase = {
   className?: string
   variant?: SelectTabsLayoutVariant
   colorVariant?: SelectTabsColorVariant
+  /**
+   * Centers tabs when they fit the viewport. When content overflows, horizontal
+   * scroll and edge fades behave the same as the default left-aligned layout.
+   */
+  centered?: boolean
   /** Invoked when the user clicks a tab’s close control. */
   onTabClose?: (tabId: string) => void
   closeTabAriaLabel?: string
@@ -117,6 +122,7 @@ export function SelectTabs(props: SelectTabsProps) {
     className = '',
     variant = 'default',
     colorVariant = 'default',
+    centered = false,
     onTabClose,
     closeTabAriaLabel = 'Close tab',
   } = props
@@ -133,7 +139,7 @@ export function SelectTabs(props: SelectTabsProps) {
       >
         <div
           role="tablist"
-          className={selectTabsContainerVariants({ layout: variant })}
+          className={selectTabsContainerVariants({ layout: variant, centered })}
         >
           {tabs.map((tab) => {
             const Icon = tab.icon

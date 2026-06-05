@@ -8,6 +8,7 @@ export { CourseLayout } from './components/CourseLayout'
 export { CoursePreviewTab } from './components/CoursePreviewTab'
 export type { CoursePreviewTabProps } from './components/CoursePreviewTab'
 export { CourseSettings } from './components/CourseSettings'
+export { CoursePublishDialog } from './components/CoursePublishDialog'
 export { CourseTabs } from './components/CourseTabs'
 export type { CourseTabId, CourseTabItem } from './components/CourseTabs'
 export { CourseFilter } from './components/CourseFilter'
@@ -35,6 +36,8 @@ export {
   updateCourse,
   deleteCourse,
 } from './api/coursesApi'
+export { publishCourseToClassrooms } from './api/coursePublishApi'
+export type { PublishCourseToClassroomsResult } from './api/coursePublishApi'
 export {
   requestCourseJoin,
   cancelCourseJoin,

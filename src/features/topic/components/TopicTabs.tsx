@@ -18,9 +18,16 @@ type TopicTabsProps = {
   onTabChange: (tabId: TopicTabId) => void
   tabs?: readonly TopicTabItem[]
   className?: string
+  centered?: boolean
 }
 
-export function TopicTabs({ activeTabId, onTabChange, tabs, className }: TopicTabsProps) {
+export function TopicTabs({
+  activeTabId,
+  onTabChange,
+  tabs,
+  className,
+  centered = true,
+}: TopicTabsProps) {
   const { t } = useTranslation('features.course')
 
   const defaultTabs = useMemo<readonly TopicTabItem[]>(
@@ -57,6 +64,7 @@ export function TopicTabs({ activeTabId, onTabChange, tabs, className }: TopicTa
       activeTabId={activeTabId}
       onTabChange={(tabId) => onTabChange(tabId as TopicTabId)}
       className={className}
+      centered={centered}
     />
   )
 }

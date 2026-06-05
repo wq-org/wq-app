@@ -34,9 +34,14 @@ export const selectTabsContainerVariants = cva('flex w-max min-w-full flex-nowra
       default: 'gap-12',
       compact: 'gap-4',
     },
+    centered: {
+      true: 'justify-center',
+      false: '',
+    },
   },
   defaultVariants: {
     layout: 'default',
+    centered: false,
   },
 })
 
