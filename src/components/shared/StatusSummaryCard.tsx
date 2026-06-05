@@ -3,73 +3,85 @@ import { SquareTerminalIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  statusSummaryCardVariants,
+  type StatusSummaryCardVariant,
+} from './status-summary-card-variants'
+
+export type { StatusSummaryCardVariant } from './status-summary-card-variants'
 
 export type StatusSummaryRow = {
   label: string
   value: string | React.ReactNode
 }
 
-export type StatusSummaryIconAccent = 'fuchsia' | 'emerald' | 'blue' | 'amber'
+export type StatusSummaryIconAccent = StatusSummaryCardVariant | 'fuchsia' | 'emerald' | 'amber'
 
 export type StatusSummaryCardProps = {
   title: string
   description?: string
   icon?: React.ComponentType<{ className?: string; strokeWidth?: string | number }>
+  variant?: StatusSummaryCardVariant
   iconAccent?: StatusSummaryIconAccent
   headerClassName?: string
   rows: StatusSummaryRow[]
   className?: string
 }
 
-const ACCENT_STYLES: Record<StatusSummaryIconAccent, { from: string; blur: string; text: string }> =
-  {
-    fuchsia: {
-      from: 'from-fuchsia-50/80',
-      blur: 'bg-fuchsia-400/10',
-      text: 'text-fuchsia-600',
-    },
-    emerald: {
-      from: 'from-emerald-50/80',
-      blur: 'bg-emerald-400/10',
-      text: 'text-emerald-600',
-    },
-    blue: {
-      from: 'from-blue-50/80',
-      blur: 'bg-blue-400/10',
-      text: 'text-blue-600',
-    },
-    amber: {
-      from: 'from-amber-50/80',
-      blur: 'bg-amber-400/10',
-      text: 'text-amber-600',
-    },
+const LEGACY_ICON_ACCENT_VARIANTS: Record<
+  Exclude<StatusSummaryIconAccent, StatusSummaryCardVariant>,
+  StatusSummaryCardVariant
+> = {
+  fuchsia: 'pink',
+  emerald: 'green',
+  amber: 'orange',
+}
+
+function resolveStatusSummaryVariant(
+  variant: StatusSummaryCardVariant | undefined,
+  iconAccent: StatusSummaryIconAccent,
+): StatusSummaryCardVariant {
+  if (variant) return variant
+
+  if (iconAccent in LEGACY_ICON_ACCENT_VARIANTS) {
+    return LEGACY_ICON_ACCENT_VARIANTS[iconAccent as keyof typeof LEGACY_ICON_ACCENT_VARIANTS]
   }
+
+  return iconAccent
+}
 
 export function StatusSummaryCard({
   title,
   description,
   icon: Icon = SquareTerminalIcon,
-  iconAccent = 'fuchsia',
+  variant,
+  iconAccent = 'violet',
   headerClassName,
   rows,
   className,
 }: StatusSummaryCardProps) {
-  const accent = ACCENT_STYLES[iconAccent]
+  const resolvedVariant = resolveStatusSummaryVariant(variant, iconAccent)
 
   return (
-    <Card className={cn('w-full overflow-hidden p-0', className)}>
+    <Card
+      className={cn(
+        statusSummaryCardVariants({ variant: resolvedVariant }),
+        'w-full overflow-hidden p-0',
+        className,
+      )}
+    >
       <CardContent className="flex flex-col items-center p-0">
         <div
           className={cn(
-            'flex w-full flex-col items-center justify-center bg-linear-to-b to-transparent py-10',
-            headerClassName ?? accent.from,
+            'flex w-full flex-col items-center justify-center bg-linear-to-b from-[var(--status-summary-header)] to-transparent py-10',
+            headerClassName,
           )}
         >
           <div className="relative mb-4">
-            <div className={cn('absolute inset-0 scale-150 rounded-full blur-2xl', accent.blur)} />
+            <div className="absolute inset-0 scale-150 rounded-full bg-[var(--status-summary-glow)] blur-2xl" />
             <Icon
               aria-hidden="true"
-              className={cn('relative size-14', accent.text)}
+              className="relative size-14 text-[var(--status-summary-accent)]"
               strokeWidth="1.5"
             />
           </div>

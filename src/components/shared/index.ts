@@ -103,9 +103,11 @@ export type {
 export { StatusSummaryCard } from './StatusSummaryCard'
 export type {
   StatusSummaryCardProps,
+  StatusSummaryCardVariant,
   StatusSummaryIconAccent,
   StatusSummaryRow,
 } from './StatusSummaryCard'
+export { statusSummaryCardVariants } from './status-summary-card-variants'
 export { StatsLinks } from './StatsLinks'
 export type { StatsLinksChangeType, StatsLinksItem, StatsLinksProps } from './StatsLinks'
 export {

@@ -67,7 +67,7 @@ function StatusSummarySkeletonLoaderCard({ className }: { className?: string }) 
   return (
     <Card className={cn('w-full overflow-hidden p-0', className)}>
       <CardContent className="flex flex-col items-center p-0">
-        <div className="flex min-h-[200px] w-full flex-col items-center justify-center bg-linear-to-b from-blue-100/40 via-blue-50/30 to-transparent py-10 dark:from-blue-950/30 dark:via-blue-950/20">
+        <div className="flex min-h-[200px] w-full flex-col items-center justify-center bg-linear-to-b from-muted/45 via-muted/20 to-transparent py-10 dark:from-muted/20 dark:via-muted/10">
           <Skeleton className="size-14 rounded-full" />
           <Skeleton className="mt-4 h-5 w-32" />
           <Skeleton className="mt-2 h-4 w-72 max-w-[85%]" />

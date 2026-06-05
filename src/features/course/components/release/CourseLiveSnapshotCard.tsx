@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { RadioTowerIcon } from 'lucide-react'
 
-import { StatusSummaryCard } from '@/components/shared/StatusSummaryCard'
+import { StatusSummaryCard } from '@/components/shared'
 import { SkeletonLoaderCard } from '@/components/shared/skeletons/SkeletonLoaderCard'
 import { Text } from '@/components/ui/text'
+import { COLORS } from '@/lib/themes'
 
 import type { PublishedCourseVersion } from '../../types/course-version.types'
 import { formatPublishedAt } from '../../utils/courseVersion.utils'
@@ -53,14 +54,14 @@ export function CourseLiveSnapshotCard({
   }
 
   const publishedAtLabel = formatPublishedAt(live.publishedAt, i18n.language)
+  const themeLabel = COLORS[live.themeId].label
 
   return (
     <StatusSummaryCard
       title={t('settings.liveCourse.title')}
       description={t('settings.liveCourse.description')}
       icon={RadioTowerIcon}
-      iconAccent="blue"
-      headerClassName="from-blue-300/70 via-blue-100/80 to-transparent dark:from-blue-600/35 dark:via-blue-950/50 dark:to-transparent"
+      variant={live.themeId}
       rows={[
         {
           label: t('settings.liveCourse.version'),
@@ -84,7 +85,7 @@ export function CourseLiveSnapshotCard({
         },
         {
           label: t('settings.liveCourse.themeLabel'),
-          value: live.themeId,
+          value: themeLabel,
         },
       ]}
     />
