@@ -4,7 +4,7 @@ import { CourseCardCompact } from './CourseCardCompact'
 import { cn } from '@/lib/utils'
 import type { CourseCardProps } from '../types/course.types'
 
-type CourseCardListVariant = 'default' | 'compact' | 'horizontal'
+type CourseCardListVariant = 'default' | 'compact'
 
 export type CourseCardListProps = {
   courses: readonly CourseCardProps[]
@@ -38,31 +38,6 @@ export function CourseCardList({
               {...course}
               onView={handleView}
             />
-          ))}
-        </div>
-      </BlurredScrollArea>
-    )
-  }
-
-  if (variant === 'horizontal') {
-    return (
-      <BlurredScrollArea
-        orientation="horizontal"
-        hideScrollBar
-        className={cn('w-full min-h-0', scrollAreaClassName)}
-        viewportClassName="pb-1"
-      >
-        <div className={cn('flex w-max flex-nowrap gap-5', className)}>
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className="h-full w-[320px] shrink-0"
-            >
-              <CourseCard
-                {...course}
-                onView={handleView}
-              />
-            </div>
           ))}
         </div>
       </BlurredScrollArea>

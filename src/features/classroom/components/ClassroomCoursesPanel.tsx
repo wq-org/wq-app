@@ -77,7 +77,7 @@ export function ClassroomCoursesPanel({
         </Text>
       ) : (
         <CourseCardList
-          variant="horizontal"
+          variant="compact"
           courses={courseCards}
           onCourseView={handleCourseView}
         />
