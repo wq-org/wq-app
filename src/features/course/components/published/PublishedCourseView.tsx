@@ -18,6 +18,7 @@ type PublishedCourseViewProps = {
   shouldShowVersionSelect: boolean
   classroomContextLabel?: string | null
   onTopicView: (topicId: string) => void
+  onGameOpen: (gameId: string) => void
   onVersionChange: (courseVersionId: string) => void
   onCompareToDraft: () => void
   onOpenEditor?: () => void
@@ -31,6 +32,7 @@ export function PublishedCourseView({
   shouldShowVersionSelect,
   classroomContextLabel,
   onTopicView,
+  onGameOpen,
   onVersionChange,
   onCompareToDraft,
   onOpenEditor,
@@ -51,9 +53,13 @@ export function PublishedCourseView({
         className="mt-0 p-0"
       >
         <PublishedCourseTopicList
+          courseId={tree.courseId}
+          courseTitle={tree.courseTitle}
+          courseDescription={tree.courseDescription}
           topics={tree.topics}
           themeId={tree.themeId}
           onTopicView={onTopicView}
+          onGameOpen={onGameOpen}
         />
       </TabsContent>
 

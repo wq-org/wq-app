@@ -99,9 +99,11 @@ export {
   unpublishGame,
   getGameForStudio,
   getTeacherFlowGames,
+  getPublishedGamesForCourse,
   getPublishedGamesFromFollowedTeachers,
 } from './api/gameStudioApi'
 export { useTeacherGameProjects } from './hooks/useTeacherGameProjects'
+export { useCourseLinkedGames } from './hooks/useCourseLinkedGames'
 
 // ---- Flow-traversal utilities ----
 export type {

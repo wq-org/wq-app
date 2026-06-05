@@ -65,9 +65,11 @@ export {
 export { toCourseCardProps, teacherInitialsFromProfile } from './utils/courseCard.utils'
 export {
   buildClassroomPublishedCourseRoute,
+  buildClassroomPublishedGameRoute,
   buildClassroomPublishedLessonRoute,
   buildClassroomPublishedTopicRoute,
   buildPublishedCourseRoute,
+  buildPublishedCourseGameRoute,
   buildPublishedLessonRoute,
   buildPublishedTopicLessonRoute,
   buildPublishedTopicRoute,
@@ -90,6 +92,7 @@ export { getHeadingsFromLessonValue } from './utils/lessonHeadings'
 export { Course as CoursePage } from './pages/course'
 export { CourseDetailPage } from './pages/course-detail'
 export { PublishedCoursePage } from './pages/published-course'
+export { PublishedCourseGamePage } from './pages/published-course-game'
 export { PublishedCourseLessonPage } from './pages/published-course-lesson'
 export {
   PublishedCourseTopicPage,

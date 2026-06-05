@@ -43,6 +43,7 @@ import {
   CourseLayout,
   CoursePage,
   PublishedCourseLessonPage,
+  PublishedCourseGamePage,
   PublishedCoursePage,
   PublishedCourseTopicLessonPage,
   PublishedCourseTopicPage,
@@ -734,6 +735,16 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published/game/:gameId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCourseGamePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="dashboard/classroom/:classroomId/course/:courseId/published/topic/:topicId/lesson/:lessonId"
                   element={
                     <RequireAuth>
@@ -799,6 +810,16 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherSchedulePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/published/:courseVersionId/game/:gameId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <PublishedCourseGamePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

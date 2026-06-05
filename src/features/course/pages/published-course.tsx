@@ -7,7 +7,11 @@ import { workspacePreviewNavigationState } from '../types/course-navigation.type
 import { PublishedCoursePageShell, PublishedCourseView } from '../components/published'
 import { usePublishedCourseVersion } from '../hooks/usePublishedCourseVersion'
 import { usePublishedCourseVersionsList } from '../hooks/usePublishedCourseVersionsList'
-import { buildPublishedCourseRoute, buildPublishedTopicRoute } from '../utils/courseVersion.utils'
+import {
+  buildPublishedCourseRoute,
+  buildPublishedCourseGameRoute,
+  buildPublishedTopicRoute,
+} from '../utils/courseVersion.utils'
 
 export function PublishedCoursePage() {
   const { t } = useTranslation('features.course')
@@ -50,6 +54,11 @@ export function PublishedCoursePage() {
   const handleTopicView = (topicCardId: string) => {
     if (!trimmedCourseId || !resolvedVersionId) return
     navigate(buildPublishedTopicRoute(trimmedCourseId, resolvedVersionId, topicCardId))
+  }
+
+  const handleGameOpen = (gameId: string) => {
+    if (!trimmedCourseId || !resolvedVersionId) return
+    navigate(buildPublishedCourseGameRoute(trimmedCourseId, resolvedVersionId, gameId))
   }
 
   if (!trimmedCourseId) {
@@ -104,6 +113,7 @@ export function PublishedCoursePage() {
         selectedVersionId={resolvedVersionId}
         shouldShowVersionSelect={!isClassroomLocked && versions.length > 1}
         onTopicView={handleTopicView}
+        onGameOpen={handleGameOpen}
         onVersionChange={handleVersionChange}
         onCompareToDraft={handleCompareToDraft}
         onOpenEditor={handleOpenEditor}

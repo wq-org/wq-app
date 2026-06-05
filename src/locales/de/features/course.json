@@ -172,7 +172,13 @@
     "topicNotFound": "Dieses Thema ist nicht Teil der ausgew\u00e4hlten ver\u00f6ffentlichten Version.",
     "topicLessonCount": "{{count}} Lektion(en) in diesem Thema",
     "backToPublishedCourse": "Zur\u00fcck zur ver\u00f6ffentlichten Kursansicht",
-    "backToTopics": "Zur\u00fcck zu Themen"
+    "backToTopics": "Zur\u00fcck zu Themen",
+    "gamesSection": {
+      "title": "Spiele",
+      "loading": "Spiele werden geladen\u2026",
+      "emptyTitle": "Noch keine verkn\u00fcpften Spiele",
+      "emptyDescription": "Ver\u00f6ffentliche ein Spiel im Game Studio und verkn\u00fcpfe es mit diesem Kurs, damit es hier erscheint."
+    }
   },
   "join": {
     "actions": {

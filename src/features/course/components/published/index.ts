@@ -1,3 +1,4 @@
+export { PublishedCourseGamesSection } from './PublishedCourseGamesSection'
 export { PublishedCourseDetails } from './PublishedCourseDetails'
 export { PublishedCoursePageShell } from './PublishedCoursePageShell'
 export { PublishedCourseTabs } from './PublishedCourseTabs'

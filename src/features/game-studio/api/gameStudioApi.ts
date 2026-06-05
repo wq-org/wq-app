@@ -186,6 +186,43 @@ export async function getGameForStudio(gameId: string): Promise<GameForStudio | 
 }
 
 /**
+ * Published flow games linked to a course (`games.course_id`).
+ * Used on published course overview — same games students see when the course is linked at publish time.
+ */
+export async function getPublishedGamesForCourse(courseId: string): Promise<GameCardProps[]> {
+  const { data, error } = await supabase
+    .from('games')
+    .select('id, title, description, version, status, theme_id')
+    .eq('course_id', courseId)
+    .eq('game_type', 'flow')
+    .eq('status', 'published')
+    .order('updated_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching published games for course:', error)
+    throw error
+  }
+
+  return (data || []).map(
+    (row: {
+      id: string
+      title: string
+      description: string | null
+      version: number | null
+      status: string | null
+      theme_id: ThemeId
+    }) => ({
+      id: row.id,
+      title: row.title || 'Untitled Game',
+      description: row.description ?? 'No description available',
+      themeId: row.theme_id,
+      version: row.version ?? undefined,
+      status: 'published' as const,
+    }),
+  )
+}
+
+/**
  * Get all flow games for a teacher (for Game Studio list).
  */
 export async function getTeacherFlowGames(teacherId: string): Promise<GameForStudio[]> {

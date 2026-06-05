@@ -12,6 +12,7 @@ import {
   workspacePreviewNavigationState,
   buildClassroomPublishedLessonRoute,
   buildClassroomPublishedTopicRoute,
+  buildClassroomPublishedGameRoute,
   findPublishedTopicInTree,
   findPublishedLessonInTopic,
 } from '@/features/course'
@@ -52,6 +53,11 @@ export function ClassroomPublishedCoursePage() {
   const handleTopicView = (topicCardId: string) => {
     if (!classroomId || !courseId) return
     navigate(buildClassroomPublishedTopicRoute(classroomId, courseId, topicCardId))
+  }
+
+  const handleGameOpen = (gameId: string) => {
+    if (!classroomId || !courseId) return
+    navigate(buildClassroomPublishedGameRoute(classroomId, courseId, gameId))
   }
 
   if (!classroomId || !courseId) {
@@ -107,6 +113,7 @@ export function ClassroomPublishedCoursePage() {
         shouldShowVersionSelect={false}
         classroomContextLabel={t('pages.classroomDetail.publishedCourse.contextLabel')}
         onTopicView={handleTopicView}
+        onGameOpen={handleGameOpen}
         onVersionChange={() => undefined}
         onCompareToDraft={handleCompareToDraft}
       />

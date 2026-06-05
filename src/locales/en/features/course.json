@@ -172,7 +172,13 @@
     "topicNotFound": "This topic is not part of the selected published version.",
     "topicLessonCount": "{{count}} lesson(s) in this topic",
     "backToPublishedCourse": "Back to published course",
-    "backToTopics": "Back to topics"
+    "backToTopics": "Back to topics",
+    "gamesSection": {
+      "title": "Games",
+      "loading": "Loading games…",
+      "emptyTitle": "No linked games yet",
+      "emptyDescription": "Publish a game from Game Studio and link it to this course to show it here."
+    }
   },
   "join": {
     "actions": {
