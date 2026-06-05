@@ -51,6 +51,10 @@ export function toPublishedCourseVersion(row: CourseVersionTreeRow): PublishedCo
   const course = normalizeEmbeddedCourse(row.courses)
   const topics = sortByOrderIndex(row.course_version_topics ?? []).map(toPublishedCourseTopic)
 
+  const snapshotTitle = row.title?.trim()
+  const snapshotDescription = row.description?.trim()
+  const snapshotThemeId = row.theme_id
+
   return {
     id: row.id,
     courseId: row.course_id,
@@ -58,9 +62,9 @@ export function toPublishedCourseVersion(row: CourseVersionTreeRow): PublishedCo
     status: row.status,
     publishedAt: row.published_at ? new Date(row.published_at) : null,
     hasPendingChanges: Boolean(row.has_pending_changes),
-    courseTitle: course?.title?.trim() || '',
-    courseDescription: course?.description?.trim() || '',
-    themeId: (course?.theme_id ?? 'blue') as ThemeId,
+    courseTitle: snapshotTitle || course?.title?.trim() || '',
+    courseDescription: snapshotDescription || course?.description?.trim() || '',
+    themeId: (snapshotThemeId ?? course?.theme_id ?? 'blue') as ThemeId,
     topics,
   }
 }

@@ -22,14 +22,11 @@ const VERSION_TREE_SELECT = `
   status,
   published_at,
   has_pending_changes,
+  title,
+  description,
+  theme_id,
   created_at,
   updated_at,
-  courses (
-    id,
-    title,
-    description,
-    theme_id
-  ),
   course_version_topics (
     id,
     course_version_id,

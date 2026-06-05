@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { getUserInstitutionId } from '@/features/auth'
+import type { ThemeId } from '@/lib/themes'
 import type { Course, CourseTeacherProfile, UpdateCourseData } from '../types/course.types'
 import type { ClassroomCourseListItem } from '../types/course-version.types'
 
@@ -103,15 +104,31 @@ type ClassroomCourseDeliveryRow = {
   course_id: string
   course_version_id: string
   course_versions:
-    | { version_no: number; status: string }
-    | { version_no: number; status: string }[]
+    | {
+        version_no: number
+        status: string
+        title: string | null
+        description: string | null
+        theme_id: ThemeId | null
+      }
+    | {
+        version_no: number
+        status: string
+        title: string | null
+        description: string | null
+        theme_id: ThemeId | null
+      }[]
     | null
   courses: TeacherCourseRow | TeacherCourseRow[] | null
 }
 
-function normalizeDeliveryVersion(
-  value: ClassroomCourseDeliveryRow['course_versions'],
-): { version_no: number; status: string } | null {
+function normalizeDeliveryVersion(value: ClassroomCourseDeliveryRow['course_versions']): {
+  version_no: number
+  status: string
+  title: string | null
+  description: string | null
+  theme_id: ThemeId | null
+} | null {
   if (value == null) return null
   return Array.isArray(value) ? (value[0] ?? null) : value
 }
@@ -125,7 +142,7 @@ export async function getClassroomCourses(classroomId: string): Promise<Classroo
       id,
       course_id,
       course_version_id,
-      course_versions (version_no, status),
+      course_versions (version_no, status, title, description, theme_id),
       courses (
         *,
         teacher:profiles!courses_teacher_id_fkey(display_name, avatar_url),
@@ -155,9 +172,15 @@ export async function getClassroomCourses(classroomId: string): Promise<Classroo
     seenCourseIds.add(row.course_id)
     const course = mapTeacherCourseRow(courseRow)
     const deliveryVersion = normalizeDeliveryVersion(row.course_versions)
+    const snapshotTitle = deliveryVersion?.title?.trim()
+    const snapshotDescription = deliveryVersion?.description?.trim()
+    const snapshotThemeId = deliveryVersion?.theme_id
 
     courses.push({
       ...course,
+      title: snapshotTitle || course.title,
+      description: snapshotDescription ?? course.description,
+      theme_id: snapshotThemeId ?? course.theme_id,
       deliveryId: row.id,
       courseVersionId: row.course_version_id,
       deliveredVersionNo: deliveryVersion?.version_no ?? course.published_version_no ?? null,

@@ -11,6 +11,9 @@ export type CourseVersionRow = {
   status: CourseVersionStatus
   published_at: string | null
   has_pending_changes: boolean | null
+  title: string | null
+  description: string | null
+  theme_id: ThemeId | null
   created_at: string
   updated_at: string
 }
@@ -38,7 +41,8 @@ export type CourseVersionLessonRow = {
 }
 
 export type CourseVersionTreeRow = CourseVersionRow & {
-  courses:
+  /** @deprecated Legacy join; prefer snapshot columns on course_versions. */
+  courses?:
     | {
         id: string
         title: string
@@ -66,6 +70,22 @@ export type ClassroomCourseDeliveryListRow = {
   id: string
   course_id: string
   course_version_id: string
+  course_versions:
+    | {
+        version_no: number
+        status: string
+        title: string | null
+        description: string | null
+        theme_id: ThemeId | null
+      }
+    | {
+        version_no: number
+        status: string
+        title: string | null
+        description: string | null
+        theme_id: ThemeId | null
+      }[]
+    | null
   courses: ClassroomCourseEmbed | ClassroomCourseEmbed[] | null
 }
 
