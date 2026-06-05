@@ -1,57 +1,45 @@
-import { Children, cloneElement, forwardRef, isValidElement } from 'react'
+import * as React from 'react'
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 
-import type { CSSProperties, ElementRef, HTMLAttributes, ReactElement } from 'react'
+type AvatarElement = React.ReactElement<React.ComponentProps<typeof Avatar>>
 
-// ================================== //
-
-type TAvatarGroupRef = ElementRef<'div'>
-type TAvatarGroupProps = HTMLAttributes<HTMLDivElement> & { max?: number; spacing?: number }
-type AvatarGroupChildProps = {
-  className?: string
-  style?: CSSProperties
+interface AvatarGroupProps extends React.ComponentProps<'div'> {
+  children: AvatarElement | AvatarElement[]
+  max?: number
 }
 
-const AvatarGroup = forwardRef<TAvatarGroupRef, TAvatarGroupProps>(
-  ({ className, children, max = 1, spacing = 10, ...props }, ref) => {
-    const avatarItems = Children.toArray(children).filter(
-      (child): child is ReactElement<AvatarGroupChildProps> =>
-        isValidElement<AvatarGroupChildProps>(child),
-    )
-    const firstAvatarClassName = avatarItems[0]?.props.className
+export function AvatarGroup({ children, max, className, ...props }: AvatarGroupProps) {
+  const childArray = React.Children.toArray(children).filter(
+    React.isValidElement,
+  ) as AvatarElement[]
+  const totalAvatars = childArray.length
+  const displayedAvatars = childArray.slice(0, max).reverse()
+  const remainingAvatars = max ? Math.max(totalAvatars - max, 0) : 0
 
-    return (
-      <div
-        ref={ref}
-        className={cn('relative flex', className)}
-        {...props}
-      >
-        {avatarItems.slice(0, max).map((child, index) =>
-          cloneElement(child, {
-            className: cn(child.props.className, 'border-2 border-background'),
-            style: { marginLeft: index === 0 ? 0 : -spacing, ...child.props.style },
-          }),
-        )}
-
-        {avatarItems.length > max && (
-          <div
-            className={cn(
-              'relative flex items-center justify-center rounded-full border-2 border-background bg-muted',
-              firstAvatarClassName,
-            )}
-            style={{ marginLeft: -spacing }}
-          >
-            <p>+{avatarItems.length - max}</p>
-          </div>
-        )}
-      </div>
-    )
-  },
-)
-
-AvatarGroup.displayName = 'AvatarGroup'
-
-// ================================== //
-
-export { AvatarGroup }
+  return (
+    <div
+      className={cn('flex flex-row-reverse items-center', className)}
+      {...props}
+    >
+      {remainingAvatars > 0 ? (
+        <Avatar className="relative -ml-2 ring-2 ring-background hover:z-10">
+          <AvatarFallback className="bg-muted-foreground text-white">
+            +{remainingAvatars}
+          </AvatarFallback>
+        </Avatar>
+      ) : null}
+      {displayedAvatars.map((avatar, index) => (
+        <div
+          className="relative -ml-2 hover:z-10"
+          key={avatar.key ?? index}
+        >
+          {React.cloneElement(avatar, {
+            className: cn('ring-2 ring-background', avatar.props.className),
+          })}
+        </div>
+      ))}
+    </div>
+  )
+}

@@ -9,6 +9,7 @@ import { DashboardSection } from '@/features/dashboard'
 import { Text } from '@/components/ui/text'
 
 import { ClassroomCoursesPanel } from '../components/ClassroomCoursesPanel'
+import { ClassroomStudentsPanel } from '../components/ClassroomStudentsPanel'
 import { useClassroomDetail } from '../hooks/useClassroomDetail'
 
 type ClassroomLocationState = {
@@ -124,7 +125,12 @@ export function ClassroomDetailPage() {
               classNameContainer="px-4 py-4"
               showContainerBorder
             >
-              {spec.id === 'courses' ? (
+              {spec.id === 'students' ? (
+                <ClassroomStudentsPanel
+                  classroomId={classroomId}
+                  parentLoading={loading}
+                />
+              ) : spec.id === 'courses' ? (
                 <ClassroomCoursesPanel
                   classroomId={classroomId}
                   parentLoading={loading}
