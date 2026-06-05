@@ -101,6 +101,11 @@
       "placeholderAll": "Stundenplan für alle Klassenräume — Inhalt folgt.",
       "placeholderClassroom": "Stundenplan für {{name}} — Inhalt folgt."
     },
+    "filterTabs": {
+      "all": "Alle",
+      "published": "Veröffentlicht",
+      "drafts": "Entwürfe"
+    },
     "tasks": {
       "empty": "Keine Aufgaben für diesen Filter."
     },

@@ -24,7 +24,7 @@ import { Editor, syncLessonImageLinks, type PasteOverflowInfo } from '@/features
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 import { LessonPreview } from '../components/LessonPreview'
 import { LessonSettingsDrawer } from '../components/LessonSettingsDrawer'
-import { resolveWorkspaceInitialTab } from '@/features/course/types/course-navigation.types'
+import { LessonLiveStatusBanner, resolveWorkspaceInitialTab } from '@/features/course'
 
 const AUTOSAVE_DELAY_MS = 600
 const AUTOSAVE_TOAST_ID = 'lesson-autosave-status'
@@ -307,6 +307,12 @@ const LessonEditor = () => {
                     </AlertDescription>
                   </Alert>
                 ) : null}
+                <div className="mt-4">
+                  <LessonLiveStatusBanner
+                    courseId={selectedCourse?.id}
+                    lessonId={lessonId}
+                  />
+                </div>
                 <div className="mt-2 pb-24">
                   {lessonId && !loading && lesson ? (
                     <div key={lessonId}>

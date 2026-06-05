@@ -20,6 +20,34 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-05-course-classroom-publish-and-snapshot-views',
+    date: '5 June 2026',
+    title:
+      'Publish courses to classrooms with frozen snapshots, browse deliveries from the classroom hub, and see linked games on published course overviews',
+    summary:
+      'Course publishing is now a deliberate classroom rollout, not a single on/off switch. Teachers pick one or more classrooms, the system snapshots topics, lessons, and course title, description, and theme into an immutable version, and enrolled students in those classrooms get access to that frozen delivery. You can preview draft content read-only end-to-end before publishing, open what was delivered from classroom detail, search students and courses there, and review linked Game Studio games on published course overviews. Draft edits no longer leak into what classrooms already received until you publish again.',
+    bullets: [
+      'Teachers: publish a course from Course Settings with Publish to classrooms — choose one or more classrooms in a checkbox table (student counts shown); the system snapshots your topics and lessons and creates a versioned delivery for each classroom',
+      'Teachers: after the first publish, Settings shows a Published label instead of the old toggle; republishing to push draft updates to classrooms is not exposed in the UI yet (each publish would create a new version number)',
+      'Teachers: editing course title, description, or theme in the draft editor no longer changes what classrooms see — delivered views read the snapshot frozen at publish time',
+      'Teachers: preview your course end-to-end before publishing — from the course or topic Preview tab, opening a topic or lesson stays in read-only preview (LessonPreview with TOC), not the editor',
+      'Teachers: on your Courses page, course cards show owner avatar, aligned layout, and a clear Published or Unpublished badge; opening a course still lands in the familiar workspace',
+      'Teachers: classroom detail now has a real Courses section — search delivered courses by title and open them from a compact horizontal card strip; only courses actually delivered to that classroom appear',
+      'Teachers: each classroom course card opens the delivered snapshot (frozen version for that classroom), not your live draft editor',
+      'Teachers: browse a published delivery with Overview and Details tabs — Overview shows the course header, a horizontal strip of linked published games (or an empty state), then searchable topics; Details shows version number, publish time, delivery count, and Compare to draft',
+      'Teachers: drill from published course → topic → full-bleed lesson reader on dedicated routes; browser back works through the stack',
+      'Teachers: outside a classroom, open any published version from `/teacher/course/:courseId/published` and switch between versions when more than one exists',
+      'Teachers: classroom detail Students section lists enrolled learners as an avatar grid with names; search by display name or username and tap a student for a profile dialog (bio, email fallback, chat shortcut)',
+      'Teachers: published course overviews list Game Studio flow games linked to that course; tapping a game opens a placeholder page — in-course play from the course shell is not built yet',
+      'Teachers: on published Game Studio project cards, use the card menu to link or unlink a game from a published course — pick from a scrollable table where the whole row is selectable; draft project cards hide course actions',
+      'Students: when a teacher publishes to your classroom, a course delivery record is created so you can access the frozen snapshot the teacher rolled out (access rules are enforced; dedicated student snapshot browsing pages are not in this release yet)',
+      'Students: your existing student course pages are unchanged in this batch — teachers review deliveries first; student-facing snapshot routes will follow',
+      'Students: linked games visible on the teacher published overview do not open a play session from the course yet — play still happens through existing game flows when a game is published and reachable elsewhere',
+      'Internal: `app.publish_course_to_classrooms` RPC, course metadata snapshot columns on `course_versions`, lesson audit fix for publish, `ClearableInput` compact size for classroom search bars, and architecture doc `course_publishing_mental_model.md`',
+    ],
+    badges: ['feature', 'new', 'improvement'],
+  },
+  {
     id: '2026-06-04-game-studio-simulation-publish-if-else',
     date: '4 June 2026',
     title:
@@ -45,7 +73,7 @@ export const changelogEntries: SiteChangelogEntry[] = [
       'Teachers: in full-game simulation, If/Else advances automatically using the score earned on the preceding gameplay segment',
       'Teachers: configure If/Else messages and which physical output counts as the route after a “correct” previous answer in the node dialog; branch settings stay separate from threshold routing',
       'Teachers: Start and End nodes (and other nodes still marked beta) show a read-only beta notice—editing and preview for those node types are not offered until they are ready, while Image & Pin and other gameplay nodes stay fully usable',
-      'Teachers: on the Game Studio project list, use the card menu to open link-to-course or unlink-from-course dialogs (UI shells for associating games with courses outside the publish drawer)',
+      'Teachers: on the Game Studio project list, use the card menu on published projects to link or unlink a course — pick from your published courses in a scrollable table (whole row selectable); draft projects hide course actions until published',
       'Students (when a game is published and linked): play flows that can branch on partial credit—for example strong work on Drag & Drop Math or Image Pin can send learners down a different path than a score below the teacher threshold',
       'Internal: centralized graph validation (`validateGameStudioGraph`), sorted publish issues, play-session advance resolver, and Vitest coverage for flow order, thresholds, and preview scoring',
       'Internal: architecture doc `principle_vite_test.md` documents layer-by-layer testing conventions (mappers, MSW, hooks, components) for future features',

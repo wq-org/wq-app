@@ -42,7 +42,87 @@
       "publishSuccessDescription": "Version {{version}} ist in {{count}} Klassenraum/Klassenr\u00e4umen aktiv. Lernende dort k\u00f6nnen auf diesen Snapshot zugreifen."
     },
     "themeLabel": "Thema",
-    "themeHint": "Wahle den Standardhintergrund fur den Kurs, wenn kein eigenes Bild verwendet wird."
+    "themeHint": "Wahle den Standardhintergrund fur den Kurs, wenn kein eigenes Bild verwendet wird.",
+    "liveCourse": {
+      "title": "Live-Kurs",
+      "description": "Was Lernende derzeit aus der zuletzt veröffentlichten Version erhalten.",
+      "emptyTitle": "Noch nicht veröffentlicht",
+      "emptyDescription": "Veröffentliche diesen Kurs in einem Klassenraum, um den ersten Live-Snapshot zu erstellen.",
+      "version": "Live-Version",
+      "versionValue": "v{{version}}",
+      "publishedAt": "Veröffentlicht",
+      "deliveries": "Aktive Auslieferungen",
+      "deliveriesValue": "{{count}} Klassenraum/Klassenräume",
+      "titleLabel": "Titel",
+      "descriptionLabel": "Beschreibung",
+      "noDescription": "Keine Beschreibung",
+      "themeLabel": "Thema"
+    },
+    "draftChanges": {
+      "title": "Entwurfsänderungen",
+      "description": "Unveröffentlichte Änderungen im Vergleich zum Live-Snapshot.",
+      "badge": {
+        "upToDate": "Aktuell",
+        "patch": "Patch empfohlen",
+        "major": "Major empfohlen"
+      },
+      "status": {
+        "noChanges": "Keine unveröffentlichten Änderungen",
+        "totalChanges": "{{count}} unveröffentlichte Änderung(en)",
+        "metadataChanged": "Kurs-Metadaten geändert",
+        "topicsAdded": "{{count}} Thema/Themen hinzugefügt",
+        "topicsRemoved": "{{count}} Thema/Themen entfernt",
+        "topicsReordered": "Themenreihenfolge geändert",
+        "topicsModified": "{{count}} Thema/Themen geändert",
+        "lessonsAdded": "{{count}} Lektion(en) hinzugefügt",
+        "lessonsRemoved": "{{count}} Lektion(en) entfernt",
+        "lessonsReordered": "Lektionsreihenfolge geändert",
+        "lessonsModified": "{{count}} Lektion(en) geändert",
+        "lessonsContentChanged": "{{count}} Lektionsinhalt-Änderung(en)"
+      }
+    },
+    "releasePanel": {
+      "title": "Release",
+      "description": "Entwurfsänderungen prüfen und Updates in Klassenräume veröffentlichen.",
+      "firstPublishTitle": "Erste Veröffentlichung",
+      "firstPublishDescription": "Erstelle den ersten unveränderlichen Snapshot und liefere ihn an ausgewählte Klassenräume.",
+      "currentLive": "Aktuell live",
+      "currentLiveValue": "Version v{{version}}",
+      "draftStatus": "Entwurfsstatus",
+      "draftStatusUpToDate": "Entspricht dem Live-Stand",
+      "draftStatusChanged": "{{count}} unveröffentlichte Änderung(en)",
+      "recommendedType": "Empfohlenes Release",
+      "reviewChanges": "Änderungen prüfen",
+      "publishPatch": "Patch veröffentlichen",
+      "publishMajor": "Neue Major-Version veröffentlichen",
+      "patchBlockedTitle": "Patch nicht verfügbar",
+      "patchBlockedDescription": "Strukturelle Änderungen erfordern ein Major-Release. Verwende stattdessen „Neue Major-Version veröffentlichen“."
+    },
+    "publishPatchDialog": {
+      "title": "Patch in Klassenräume veröffentlichen",
+      "description": "Metadaten- und Inhaltsupdates als neue Patch-Version an ausgewählte Klassenräume liefern.",
+      "confirm": "Patch in {{count}} Klassenraum/Klassenräume veröffentlichen"
+    },
+    "publishMajorDialog": {
+      "title": "Neue Major-Version veröffentlichen",
+      "description": "Erstelle eine neue Major-Version für strukturelle Änderungen wie hinzugefügte, entfernte oder umsortierte Themen und Lektionen.",
+      "confirm": "Major in {{count}} Klassenraum/Klassenräume veröffentlichen"
+    },
+    "releaseConfirmation": {
+      "major": {
+        "title": "Neue Major-Version veröffentlichen?",
+        "description": "Dadurch entsteht die unveränderliche Version v{{version}} aus deinem aktuellen Entwurf. Im nächsten Schritt wählst du die Klassenräume.",
+        "technicalTitle": "Was passiert, wenn du veröffentlichst?",
+        "technicalPoints": [
+          "Der Kurs erhält eine neue Versionsnummer – zum Beispiel wird aus v1 die Version v2. Die alte Version bleibt unverändert erhalten.",
+          "Dein aktueller Entwurf wird eingefroren. Alles, was du bisher geschrieben hast – Themen, Lektionen und Kursinfos – wird als feste Momentaufnahme gespeichert. Danach kannst du diesen Stand nicht mehr verändern.",
+          "Die Klassenräume, die du im nächsten Schritt auswählst, erhalten sofort Zugriff auf die neue Version.",
+          "Klassenräume, die du nicht auswählst, lernen einfach weiter mit der bisherigen Version. Nichts wird für sie verändert oder gelöscht."
+        ],
+        "cancel": "Abbrechen",
+        "confirm": "Weiter zur Klassenraumauswahl"
+      }
+    }
   },
   "page": {
     "loadError": "Dieser Kurs konnte nicht geladen werden.",
@@ -178,6 +258,44 @@
       "loading": "Spiele werden geladen\u2026",
       "emptyTitle": "Noch keine verkn\u00fcpften Spiele",
       "emptyDescription": "Ver\u00f6ffentliche ein Spiel im Game Studio und verkn\u00fcpfe es mit diesem Kurs, damit es hier erscheint."
+    }
+  },
+  "releaseReview": {
+    "title": "Änderungen prüfen",
+    "breadcrumbSettings": "Einstellungen",
+    "subtitleWithLive": "Live v{{liveVersion}} vs. aktueller Entwurf",
+    "subtitleNoLive": "Vergleiche deinen Entwurf mit dem Live-Snapshot.",
+    "backToSettings": "Zurück zu Einstellungen",
+    "loadError": "Entwurfs- und Live-Daten konnten nicht geladen werden.",
+    "emptyTitle": "Keine unveröffentlichten Änderungen",
+    "emptyDescription": "Dein Entwurf entspricht dem Live-Snapshot. Bearbeite den Kurs, um neue Änderungen zu erzeugen.",
+    "changeListTitle": "Änderungen",
+    "diffPanelTitle": "Ausgewählte Änderung vergleichen",
+    "diffPanelTitleWithFile": "Vergleich: {{label}}",
+    "liveVsDraftHint": "Live v{{version}} links, aktueller Entwurf rechts.",
+    "selectChangeHint": "Wähle eine Änderung aus der Liste, um Live und Entwurf zu vergleichen.",
+    "groups": {
+      "course": "Kurs",
+      "topics": "Themen",
+      "lessons": "Lektionen"
+    },
+    "changeKinds": {
+      "added": "Hinzugefügt",
+      "removed": "Entfernt",
+      "modified": "Geändert",
+      "reordered": "Neu sortiert"
+    }
+  },
+  "lesson": {
+    "liveStatus": {
+      "notPublishedTitle": "Noch in keiner veröffentlichten Version",
+      "notPublishedDescription": "Diese Lektion existiert derzeit nur in deinem Entwurf, bis du den Kurs veröffentlichst.",
+      "inLiveTitle": "Teil der Live-Version",
+      "inLiveDescription": "Lernende in ausgelieferten Klassenräumen sehen diese Lektion aus dem veröffentlichten Snapshot.",
+      "versionBadge": "v{{version}}",
+      "unpublishedTitle": "Unveröffentlichte Entwurfsänderungen",
+      "unpublishedDescription": "Eine Veröffentlichung ist nötig, damit Lernende deine neuesten Änderungen sehen.",
+      "reviewChanges": "Änderungen prüfen"
     }
   },
   "join": {

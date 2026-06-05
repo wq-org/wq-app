@@ -42,7 +42,87 @@
       "publishSuccessDescription": "Version {{version}} is live in {{count}} classroom(s). Students in those classrooms can access this snapshot."
     },
     "themeLabel": "Theme",
-    "themeHint": "Choose the default course background when no custom image is used."
+    "themeHint": "Choose the default course background when no custom image is used.",
+    "liveCourse": {
+      "title": "Live course",
+      "description": "What students currently get from the latest published version.",
+      "emptyTitle": "Not published yet",
+      "emptyDescription": "Publish this course to a classroom to create the first live snapshot.",
+      "version": "Live version",
+      "versionValue": "v{{version}}",
+      "publishedAt": "Published",
+      "deliveries": "Active deliveries",
+      "deliveriesValue": "{{count}} classroom(s)",
+      "titleLabel": "Title",
+      "descriptionLabel": "Description",
+      "noDescription": "No description",
+      "themeLabel": "Theme"
+    },
+    "draftChanges": {
+      "title": "Draft changes",
+      "description": "Unpublished edits compared to the live snapshot.",
+      "badge": {
+        "upToDate": "Up to date",
+        "patch": "Patch recommended",
+        "major": "Major recommended"
+      },
+      "status": {
+        "noChanges": "No unpublished changes",
+        "totalChanges": "{{count}} unpublished change(s)",
+        "metadataChanged": "Course metadata changed",
+        "topicsAdded": "{{count}} topic(s) added",
+        "topicsRemoved": "{{count}} topic(s) removed",
+        "topicsReordered": "Topic order changed",
+        "topicsModified": "{{count}} topic(s) modified",
+        "lessonsAdded": "{{count}} lesson(s) added",
+        "lessonsRemoved": "{{count}} lesson(s) removed",
+        "lessonsReordered": "Lesson order changed",
+        "lessonsModified": "{{count}} lesson(s) modified",
+        "lessonsContentChanged": "{{count}} lesson content change(s)"
+      }
+    },
+    "releasePanel": {
+      "title": "Release",
+      "description": "Review draft changes and publish updates to classrooms.",
+      "firstPublishTitle": "First publish",
+      "firstPublishDescription": "Create the first immutable snapshot and deliver it to selected classrooms.",
+      "currentLive": "Current live",
+      "currentLiveValue": "Version v{{version}}",
+      "draftStatus": "Draft status",
+      "draftStatusUpToDate": "Up to date with live",
+      "draftStatusChanged": "{{count}} unpublished change(s)",
+      "recommendedType": "Recommended release",
+      "reviewChanges": "Review changes",
+      "publishPatch": "Publish patch",
+      "publishMajor": "Publish new major version",
+      "patchBlockedTitle": "Patch not available",
+      "patchBlockedDescription": "Structural changes require a major release. Use Publish new major version instead."
+    },
+    "publishPatchDialog": {
+      "title": "Publish patch to classrooms",
+      "description": "Deliver metadata and content updates as a new patch version to selected classrooms.",
+      "confirm": "Publish patch to {{count}} classroom(s)"
+    },
+    "publishMajorDialog": {
+      "title": "Publish new major version",
+      "description": "Create a new major version for structural changes such as added, removed, or reordered topics and lessons.",
+      "confirm": "Publish major to {{count}} classroom(s)"
+    },
+    "releaseConfirmation": {
+      "major": {
+        "title": "Publish new major version?",
+        "description": "This creates immutable version v{{version}} from your current draft and delivers it to classrooms you select next.",
+        "technicalTitle": "What happens when you publish?",
+        "technicalPoints": [
+          "The course gets a new version number – for example, v1 becomes v2. The previous version stays unchanged.",
+          "Your current draft is frozen. Everything you've written – topics, lessons, and course info – is saved as a fixed snapshot. You can't change that snapshot afterward.",
+          "Classrooms you select in the next step immediately get access to the new version.",
+          "Classrooms you don't select keep learning with the previous version. Nothing is changed or deleted for them."
+        ],
+        "cancel": "Cancel",
+        "confirm": "Continue to classroom selection"
+      }
+    }
   },
   "page": {
     "loadError": "Could not load this course.",
@@ -178,6 +258,44 @@
       "loading": "Loading games…",
       "emptyTitle": "No linked games yet",
       "emptyDescription": "Publish a game from Game Studio and link it to this course to show it here."
+    }
+  },
+  "releaseReview": {
+    "title": "Review changes",
+    "breadcrumbSettings": "Settings",
+    "subtitleWithLive": "Live v{{liveVersion}} vs. current draft",
+    "subtitleNoLive": "Compare your draft against the live snapshot.",
+    "backToSettings": "Back to settings",
+    "loadError": "Could not load draft and live data for review.",
+    "emptyTitle": "No unpublished changes",
+    "emptyDescription": "Your draft matches the live snapshot. Edit the course to create new changes.",
+    "changeListTitle": "Changes",
+    "diffPanelTitle": "Compare selected change",
+    "diffPanelTitleWithFile": "Compare: {{label}}",
+    "liveVsDraftHint": "Live v{{version}} on the left, current draft on the right.",
+    "selectChangeHint": "Select a change from the list to compare live and draft.",
+    "groups": {
+      "course": "Course",
+      "topics": "Topics",
+      "lessons": "Lessons"
+    },
+    "changeKinds": {
+      "added": "Added",
+      "removed": "Removed",
+      "modified": "Modified",
+      "reordered": "Reordered"
+    }
+  },
+  "lesson": {
+    "liveStatus": {
+      "notPublishedTitle": "Not yet in a published version",
+      "notPublishedDescription": "This lesson is only in your draft workspace until you publish the course.",
+      "inLiveTitle": "Part of live version",
+      "inLiveDescription": "Students in delivered classrooms see this lesson from the published snapshot.",
+      "versionBadge": "v{{version}}",
+      "unpublishedTitle": "Unpublished draft changes",
+      "unpublishedDescription": "Publishing is required for students to see your latest edits.",
+      "reviewChanges": "Review changes"
     }
   },
   "join": {

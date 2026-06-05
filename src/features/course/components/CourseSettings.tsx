@@ -11,13 +11,14 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ColorPicker } from '@/components/shared'
 import type { ThemeId } from '@/lib/themes'
-import { Check, Upload } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
-import { useDisclosure } from '@/hooks/use-disclosure'
 
-import { CoursePublishDialog } from './CoursePublishDialog'
+import { useCourseReleaseStatus } from '../hooks/useCourseReleaseStatus'
+import { CourseLiveSnapshotCard } from './release/CourseLiveSnapshotCard'
+import { CourseReleasePanel } from './release/CourseReleasePanel'
 
 interface CourseSettingsProps {
   courseId: string
@@ -30,16 +31,22 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const publishDialog = useDisclosure()
   const [deleting, setDeleting] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [themeId, setThemeId] = useState<ThemeId>('blue')
-  const [isPublished, setIsPublished] = useState(false)
   const [originalTitle, setOriginalTitle] = useState('')
   const [originalDescription, setOriginalDescription] = useState('')
   const [originalThemeId, setOriginalThemeId] = useState<ThemeId>('blue')
   const [hasChanges, setHasChanges] = useState(false)
+
+  const {
+    live,
+    diff,
+    deliveryCount,
+    loading: releaseLoading,
+    refetch: refetchReleaseStatus,
+  } = useCourseReleaseStatus({ courseId })
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -49,7 +56,6 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         setTitle(course.title || '')
         setDescription(course.description || '')
         setThemeId(course.theme_id || 'blue')
-        setIsPublished(course.is_published || false)
         setOriginalTitle(course.title || '')
         setOriginalDescription(course.description || '')
         setOriginalThemeId(course.theme_id || 'blue')
@@ -61,7 +67,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     }
 
     if (courseId) {
-      fetchCourse()
+      void fetchCourse()
     }
   }, [courseId])
 
@@ -95,6 +101,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
       setOriginalThemeId(themeId)
       setHasChanges(false)
       onUnsavedChange?.(false)
+      await refetchReleaseStatus()
       toast.success(t('settings.toasts.saveSuccess'), {
         description: t('settings.toasts.saveSuccessDescription'),
       })
@@ -119,6 +126,10 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     }
   }
 
+  const handlePublished = () => {
+    void refetchReleaseStatus()
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -132,7 +143,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   }
 
   return (
-    <div className="flex flex-col gap-6 pb-12">
+    <div className="flex flex-col gap-6 pb-24">
       <div className="flex flex-col gap-2">
         <Text
           as="h2"
@@ -183,66 +194,48 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
           />
         </div>
 
-        <div className="flex items-center justify-between gap-4 border-t py-4">
-          <div className="flex items-center gap-4">
-            <HoldToDeleteButton
-              loading={deleting}
-              onDelete={handleDeleteCourse}
-            >
-              {t('settings.deleteAction')}
-            </HoldToDeleteButton>
-            <Button
-              variant="outline"
-              onClick={handleSaveChanges}
-              disabled={!hasChanges || saving}
-              className="gap-2"
-            >
-              {saving ? (
-                <>
-                  <Spinner
-                    variant="white"
-                    size="sm"
-                  />
-                  {t('settings.saving')}
-                </>
-              ) : (
-                <Check />
-              )}
-              {t('settings.save')}
-            </Button>
-          </div>
+        <CourseLiveSnapshotCard
+          live={live}
+          deliveryCount={deliveryCount}
+          loading={releaseLoading}
+        />
 
-          {isPublished ? (
-            <Text
-              as="span"
-              variant="small"
-              className="text-muted-foreground"
-            >
-              {t('settings.publishedLabel')}
-            </Text>
-          ) : (
-            <Button
-              type="button"
-              variant="darkblue"
-              className="gap-2"
-              onClick={publishDialog.onOpen}
-            >
-              <Upload
-                className="size-4"
-                aria-hidden
-              />
-              {t('settings.publishAction')}
-            </Button>
-          )}
+        <CourseReleasePanel
+          courseId={courseId}
+          live={live}
+          diff={diff}
+          loading={releaseLoading}
+          onPublished={handlePublished}
+        />
+
+        <div className="flex items-center gap-4 border-t pt-8 pb-4">
+          <HoldToDeleteButton
+            loading={deleting}
+            onDelete={handleDeleteCourse}
+          >
+            {t('settings.deleteAction')}
+          </HoldToDeleteButton>
+          <Button
+            variant="outline"
+            onClick={handleSaveChanges}
+            disabled={!hasChanges || saving}
+            className="gap-2"
+          >
+            {saving ? (
+              <>
+                <Spinner
+                  variant="white"
+                  size="sm"
+                />
+                {t('settings.saving')}
+              </>
+            ) : (
+              <Check />
+            )}
+            {t('settings.save')}
+          </Button>
         </div>
       </div>
-
-      <CoursePublishDialog
-        courseId={courseId}
-        open={publishDialog.isOpen}
-        onOpenChange={publishDialog.onToggle}
-        onPublished={() => setIsPublished(true)}
-      />
     </div>
   )
 }

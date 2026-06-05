@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { workspacePreviewNavigationState } from '../types/course-navigation.types'
 import { PublishedCoursePageShell, PublishedCourseView } from '../components/published'
 import { usePublishedCourseVersion } from '../hooks/usePublishedCourseVersion'
 import { usePublishedCourseVersionsList } from '../hooks/usePublishedCourseVersionsList'
@@ -12,6 +11,7 @@ import {
   buildPublishedCourseGameRoute,
   buildPublishedTopicRoute,
 } from '../utils/courseVersion.utils'
+import { buildCourseReleaseReviewRoute } from '../utils/courseRelease.utils'
 
 export function PublishedCoursePage() {
   const { t } = useTranslation('features.course')
@@ -41,9 +41,7 @@ export function PublishedCoursePage() {
 
   const handleCompareToDraft = () => {
     if (!trimmedCourseId) return
-    navigate(`/teacher/course/${trimmedCourseId}`, {
-      state: workspacePreviewNavigationState(),
-    })
+    navigate(buildCourseReleaseReviewRoute(trimmedCourseId))
   }
 
   const handleOpenEditor = () => {

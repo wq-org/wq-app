@@ -45,6 +45,7 @@ import {
   PublishedCourseLessonPage,
   PublishedCourseGamePage,
   PublishedCoursePage,
+  CourseReleaseReviewPage,
   PublishedCourseTopicLessonPage,
   PublishedCourseTopicPage,
 } from '@/features/course'
@@ -870,6 +871,16 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <PublishedCoursePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="course/:courseId/release/review"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <CourseReleaseReviewPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

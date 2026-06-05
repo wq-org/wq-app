@@ -9,10 +9,10 @@ import {
   PublishedLessonReader,
   PublishedTopicView,
   usePublishedCourseVersion,
-  workspacePreviewNavigationState,
   buildClassroomPublishedLessonRoute,
   buildClassroomPublishedTopicRoute,
   buildClassroomPublishedGameRoute,
+  buildCourseReleaseReviewRoute,
   findPublishedTopicInTree,
   findPublishedLessonInTopic,
 } from '@/features/course'
@@ -45,9 +45,7 @@ export function ClassroomPublishedCoursePage() {
 
   const handleCompareToDraft = () => {
     if (!courseId) return
-    navigate(`/teacher/course/${courseId}`, {
-      state: workspacePreviewNavigationState(),
-    })
+    navigate(buildCourseReleaseReviewRoute(courseId))
   }
 
   const handleTopicView = (topicCardId: string) => {

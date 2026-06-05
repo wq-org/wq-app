@@ -42,29 +42,40 @@ import {
 } from '@/features/classroom'
 import { TeacherGameProjectsEmpty } from '../components/TeacherGameProjectsEmpty'
 
-const COURSE_FILTER_TABS = [
-  { id: 'all', title: 'All', icon: LibraryBig },
-  { id: 'published', title: 'Published', icon: BookOpenCheck },
-  { id: 'drafts', title: 'Drafts', icon: BookOpenText },
-] as const satisfies readonly TabItem[]
-
-const GAME_FILTER_TABS = [
-  { id: 'all', title: 'All', icon: SplinePointer },
-  { id: 'published', title: 'Published', icon: Joystick },
-  { id: 'drafts', title: 'Drafts', icon: DraftingCompass },
-] as const satisfies readonly TabItem[]
-
-const TASK_FILTER_TABS = [
-  { id: 'all', title: 'All', icon: ListTodo },
-  { id: 'published', title: 'Published', icon: ListChecks },
-  { id: 'drafts', title: 'Drafts', icon: LayoutList },
-] as const satisfies readonly TabItem[]
+const DEFAULT_FILTER_TAB_ID = 'all'
 
 const Dashboard = () => {
   const { t } = useTranslation('features.teacher')
   const navigate = useNavigate()
   const { profile } = useUser()
   const fetchEnabled = Boolean(profile?.user_id)
+
+  const courseFilterTabs: TabItem[] = useMemo(
+    () => [
+      { id: 'all', title: t('dashboard.filterTabs.all'), icon: LibraryBig },
+      { id: 'published', title: t('dashboard.filterTabs.published'), icon: BookOpenCheck },
+      { id: 'drafts', title: t('dashboard.filterTabs.drafts'), icon: BookOpenText },
+    ],
+    [t],
+  )
+
+  const gameFilterTabs: TabItem[] = useMemo(
+    () => [
+      { id: 'all', title: t('dashboard.filterTabs.all'), icon: SplinePointer },
+      { id: 'published', title: t('dashboard.filterTabs.published'), icon: Joystick },
+      { id: 'drafts', title: t('dashboard.filterTabs.drafts'), icon: DraftingCompass },
+    ],
+    [t],
+  )
+
+  const taskFilterTabs: TabItem[] = useMemo(
+    () => [
+      { id: 'all', title: t('dashboard.filterTabs.all'), icon: ListTodo },
+      { id: 'published', title: t('dashboard.filterTabs.published'), icon: ListChecks },
+      { id: 'drafts', title: t('dashboard.filterTabs.drafts'), icon: LayoutList },
+    ],
+    [t],
+  )
 
   const {
     rows: teacherClassrooms,
@@ -83,10 +94,10 @@ const Dashboard = () => {
   }, [institutionFlagsLoading, institutionPlanCode, institutionFeatureFlags])
   const { courses, loading: coursesLoading, error: coursesError, fetchCourses } = useCourses()
 
-  const [activeCourseTabId, setActiveCourseTabId] = useState<string>(COURSE_FILTER_TABS[0].id)
-  const [activeGameTabId, setActiveGameTabId] = useState<string>(GAME_FILTER_TABS[0].id)
+  const [activeCourseTabId, setActiveCourseTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
+  const [activeGameTabId, setActiveGameTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
   const [activeScheduleTabId, setActiveScheduleTabId] = useState<string>('all')
-  const [activeTaskTabId, setActiveTaskTabId] = useState<string>(TASK_FILTER_TABS[0].id)
+  const [activeTaskTabId, setActiveTaskTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
 
   useEffect(() => {
     if (!profile?.user_id) return
@@ -318,11 +329,11 @@ const Dashboard = () => {
                 <>
                   <SelectTabs
                     variant="compact"
-                    tabs={COURSE_FILTER_TABS}
+                    tabs={courseFilterTabs}
                     activeTabId={activeCourseTabId}
                     onTabChange={handleCourseTabChange}
                   />
-                  {COURSE_FILTER_TABS.map((tab) => {
+                  {courseFilterTabs.map((tab) => {
                     const tabCourses =
                       tab.id === 'all'
                         ? coursesByFilterTab.all
@@ -377,11 +388,11 @@ const Dashboard = () => {
                 <>
                   <SelectTabs
                     variant="compact"
-                    tabs={GAME_FILTER_TABS}
+                    tabs={gameFilterTabs}
                     activeTabId={activeGameTabId}
                     onTabChange={handleGameTabChange}
                   />
-                  {GAME_FILTER_TABS.map((tab) => {
+                  {gameFilterTabs.map((tab) => {
                     const games =
                       tab.id === 'all'
                         ? gamesByFilterTab.all
@@ -429,11 +440,11 @@ const Dashboard = () => {
             <>
               <SelectTabs
                 variant="compact"
-                tabs={TASK_FILTER_TABS}
+                tabs={taskFilterTabs}
                 activeTabId={activeTaskTabId}
                 onTabChange={handleTaskTabChange}
               />
-              {TASK_FILTER_TABS.map((tab) => {
+              {taskFilterTabs.map((tab) => {
                 const tabTasks =
                   tab.id === 'all'
                     ? tasksByFilter.all

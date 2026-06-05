@@ -16,6 +16,7 @@ export type StatusSummaryCardProps = {
   description?: string
   icon?: React.ComponentType<{ className?: string; strokeWidth?: string | number }>
   iconAccent?: StatusSummaryIconAccent
+  headerClassName?: string
   rows: StatusSummaryRow[]
   className?: string
 }
@@ -49,6 +50,7 @@ export function StatusSummaryCard({
   description,
   icon: Icon = SquareTerminalIcon,
   iconAccent = 'fuchsia',
+  headerClassName,
   rows,
   className,
 }: StatusSummaryCardProps) {
@@ -60,7 +62,7 @@ export function StatusSummaryCard({
         <div
           className={cn(
             'flex w-full flex-col items-center justify-center bg-linear-to-b to-transparent py-10',
-            accent.from,
+            headerClassName ?? accent.from,
           )}
         >
           <div className="relative mb-4">

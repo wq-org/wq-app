@@ -1,5 +1,3 @@
-export { CourseAnalyticsTab } from './components/CourseAnalyticsTab'
-export type { CourseAnalyticsTabProps } from './components/CourseAnalyticsTab'
 export { CourseCard } from './components/CourseCard'
 export { CourseCardCompact } from './components/CourseCardCompact'
 export { CourseCardList } from './components/CourseCardList'
@@ -28,6 +26,9 @@ export { useCourses } from './hooks/useCourses'
 export { useCourseDetail } from './hooks/useCourseDetail'
 export { usePublishedCourseVersion } from './hooks/usePublishedCourseVersion'
 export { usePublishedCourseVersionsList } from './hooks/usePublishedCourseVersionsList'
+export { useCourseReleaseStatus } from './hooks/useCourseReleaseStatus'
+export { useCourseReleaseReview } from './hooks/useCourseReleaseReview'
+export { useLessonReleaseStatus } from './hooks/useLessonReleaseStatus'
 export { COURSE_SEARCH_FIELDS } from './types/course.types'
 export type {
   Course,
@@ -78,7 +79,26 @@ export {
   findPublishedTopicInTree,
   formatPublishedAt,
 } from './utils/courseVersion.utils'
-export { workspacePreviewNavigationState } from './types/course-navigation.types'
+export {
+  buildCourseReleaseReviewRoute,
+  compareDraftToPublished,
+  findDiffFileByLessonId,
+  resolveLessonReleaseStatus,
+} from './utils/courseRelease.utils'
+export type {
+  CourseDraftDiff,
+  CourseDraftSnapshot,
+  CourseReleaseCompareInput,
+  CourseReleaseStatusLineKey,
+  LessonReleaseStatus,
+  ReleaseType,
+} from './types/course-release.types'
+export { LessonLiveStatusBanner } from './components/release/LessonLiveStatusBanner'
+export {
+  resolveWorkspaceInitialTab,
+  workspacePreviewNavigationState,
+  workspaceSettingsNavigationState,
+} from './types/course-navigation.types'
 export type { WorkspaceInitialTab, WorkspaceNavigationState } from './types/course-navigation.types'
 export {
   requestCourseJoin,
@@ -92,6 +112,7 @@ export { getHeadingsFromLessonValue } from './utils/lessonHeadings'
 export { Course as CoursePage } from './pages/course'
 export { CourseDetailPage } from './pages/course-detail'
 export { PublishedCoursePage } from './pages/published-course'
+export { CourseReleaseReviewPage } from './pages/course-release-review'
 export { PublishedCourseGamePage } from './pages/published-course-game'
 export { PublishedCourseLessonPage } from './pages/published-course-lesson'
 export {

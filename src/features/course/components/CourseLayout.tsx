@@ -12,7 +12,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { CourseTabs, type CourseTabId } from './CourseTabs'
-import { CourseAnalyticsTab } from './CourseAnalyticsTab'
 import { CourseSectionHeader } from './CourseSectionHeader'
 
 export function CourseLayout() {
@@ -106,6 +105,8 @@ export function CourseLayout() {
     const initialTab = resolveWorkspaceInitialTab(location.state)
     if (initialTab === 'preview') {
       setActiveTab('preview')
+    } else if (initialTab === 'settings') {
+      setActiveTab('settings')
     }
   }, [location.key, location.state])
 
@@ -167,7 +168,6 @@ export function CourseLayout() {
                   onUnsavedChange={setHasUnsavedChanges}
                 />
               ) : null}
-              {activeTab === 'analytics' ? <CourseAnalyticsTab courseId={courseId} /> : null}
             </div>
           </div>
         )}

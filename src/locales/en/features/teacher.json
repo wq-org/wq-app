@@ -102,6 +102,11 @@
       "placeholderAll": "Schedule for all classrooms — content coming soon.",
       "placeholderClassroom": "Schedule for {{name}} — content coming soon."
     },
+    "filterTabs": {
+      "all": "All",
+      "published": "Published",
+      "drafts": "Drafts"
+    },
     "tasks": {
       "empty": "No tasks match this filter."
     },

@@ -1,10 +1,10 @@
-import { BarChart2, Eye, FilePenLine, Settings } from 'lucide-react'
+import { Eye, FilePenLine, Settings } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 
-export type CourseTabId = 'editor' | 'preview' | 'settings' | 'analytics'
+export type CourseTabId = 'editor' | 'preview' | 'settings'
 
 export type CourseTabItem = {
   id: CourseTabId
@@ -46,11 +46,6 @@ export function CourseTabs({
         id: 'settings',
         title: t('layout.tabs.settings', { defaultValue: 'Settings' }),
         icon: Settings,
-      },
-      {
-        id: 'analytics',
-        title: t('layout.tabs.analytics', { defaultValue: 'Analytics' }),
-        icon: BarChart2,
       },
     ],
     [t],

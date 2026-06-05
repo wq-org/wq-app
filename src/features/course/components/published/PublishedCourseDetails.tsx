@@ -113,13 +113,6 @@ export function PublishedCourseDetails({
         >
           {t('published.deliveryCount', { count: deliveryCount })}
         </Text>
-        <Text
-          as="p"
-          variant="small"
-          muted
-        >
-          {t('published.noChangeNote')}
-        </Text>
       </div>
 
       {shouldShowVersionSelect ? (
