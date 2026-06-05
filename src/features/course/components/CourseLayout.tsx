@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { useCourse } from '@/contexts/course'
 import { CoursePreviewTab, CourseSettings } from '@/features/course'
+import { CourseHistoryTab } from '../components/history/CourseHistoryTab'
 import {
   resolveWorkspaceInitialTab,
   workspacePreviewNavigationState,
@@ -107,6 +108,8 @@ export function CourseLayout() {
       setActiveTab('preview')
     } else if (initialTab === 'settings') {
       setActiveTab('settings')
+    } else if (initialTab === 'history') {
+      setActiveTab('history')
     }
   }, [location.key, location.state])
 
@@ -168,6 +171,7 @@ export function CourseLayout() {
                   onUnsavedChange={setHasUnsavedChanges}
                 />
               ) : null}
+              {activeTab === 'history' ? <CourseHistoryTab courseId={courseId} /> : null}
             </div>
           </div>
         )}

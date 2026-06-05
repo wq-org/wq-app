@@ -28,6 +28,7 @@ export { usePublishedCourseVersion } from './hooks/usePublishedCourseVersion'
 export { usePublishedCourseVersionsList } from './hooks/usePublishedCourseVersionsList'
 export { useCourseReleaseStatus } from './hooks/useCourseReleaseStatus'
 export { useCourseReleaseReview } from './hooks/useCourseReleaseReview'
+export { useCourseVersionHistory } from './hooks/useCourseVersionHistory'
 export { useLessonReleaseStatus } from './hooks/useLessonReleaseStatus'
 export { COURSE_SEARCH_FIELDS } from './types/course.types'
 export type {
@@ -41,6 +42,7 @@ export type {
 } from './types/course.types'
 export type {
   ClassroomCourseListItem,
+  CourseVersionHistorySummaryRow,
   PublishedCourseVersion,
   PublishedCourseVersionSummary,
 } from './types/course-version.types'
@@ -57,10 +59,12 @@ export {
 export { publishCourseToClassrooms } from './api/coursePublishApi'
 export type { PublishCourseToClassroomsResult } from './api/coursePublishApi'
 export {
+  countActiveDeliveriesForVersion,
   countDeliveriesForVersion,
   getClassroomCourseDelivery,
   getCourseVersionTree,
   getLatestPublishedCourseVersionId,
+  listCourseVersionHistory,
   listPublishedCourseVersions,
 } from './api/courseVersionApi'
 export { toCourseCardProps, teacherInitialsFromProfile } from './utils/courseCard.utils'
@@ -82,6 +86,7 @@ export {
 export {
   buildCourseReleaseReviewRoute,
   compareDraftToPublished,
+  comparePublishedVersions,
   findDiffFileByLessonId,
   resolveLessonReleaseStatus,
 } from './utils/courseRelease.utils'
@@ -90,12 +95,15 @@ export type {
   CourseDraftSnapshot,
   CourseReleaseCompareInput,
   CourseReleaseStatusLineKey,
+  CourseVersionHistoryEntry,
   LessonReleaseStatus,
   ReleaseType,
 } from './types/course-release.types'
+export { CourseHistoryTab } from './components/history/CourseHistoryTab'
 export { LessonLiveStatusBanner } from './components/release/LessonLiveStatusBanner'
 export {
   resolveWorkspaceInitialTab,
+  workspaceHistoryNavigationState,
   workspacePreviewNavigationState,
   workspaceSettingsNavigationState,
 } from './types/course-navigation.types'

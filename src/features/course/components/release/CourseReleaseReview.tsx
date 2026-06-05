@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowUpCircle, Upload } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { toast } from 'sonner'
+import { Upload } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import {
@@ -16,16 +15,15 @@ import { Button } from '@/components/ui/button'
 import { DiffViewer } from '@/components/ui/diff-viewer'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { useDisclosure } from '@/hooks/use-disclosure'
 
-import { workspaceSettingsNavigationState } from '../../types/course-navigation.types'
+import { useCoursePublishFlow } from '../../hooks/useCoursePublishFlow'
 import { useCourseReleaseReview } from '../../hooks/useCourseReleaseReview'
+import { workspaceSettingsNavigationState } from '../../types/course-navigation.types'
 import type {
   CourseDraftDiffChangeKind,
   CourseDraftDiffFileKind,
 } from '../../types/course-release.types'
-import { CourseReleaseConfirmationDialog } from './CourseReleaseConfirmationDialog'
-import { CoursePublishMajorDialog, CoursePublishPatchDialog } from './CoursePublishReleaseDialog'
+import { CoursePublishFlowDialogs } from './CoursePublishFlowDialogs'
 
 type CourseReleaseReviewProps = {
   courseId: string
@@ -47,28 +45,13 @@ function groupLabel(kind: CourseDraftDiffFileKind, t: (key: string) => string): 
 
 export function CourseReleaseReview({ courseId, focusLessonId }: CourseReleaseReviewProps) {
   const { t } = useTranslation('features.course')
-  const patchDialog = useDisclosure()
-  const majorConfirmDialog = useDisclosure()
-  const majorDialog = useDisclosure()
 
   const { live, diff, files, selectedFile, selectItem, loading, error, refetch } =
     useCourseReleaseReview({ courseId, initialFocusLessonId: focusLessonId })
 
-  const hasChanges = (diff?.summary.totalChanges ?? 0) > 0
-  const releaseType = diff?.recommendedReleaseType ?? 'none'
-  const canPublishPatch = Boolean(live) && hasChanges && releaseType === 'patch'
-  const canPublishMajor = Boolean(live) && hasChanges
-  const nextVersionNo = live ? live.versionNo + 1 : null
+  const publishFlow = useCoursePublishFlow({ live, diff })
 
-  const handlePatchClick = () => {
-    if (releaseType === 'major') {
-      toast.message(t('settings.releasePanel.patchBlockedTitle'), {
-        description: t('settings.releasePanel.patchBlockedDescription'),
-      })
-      return
-    }
-    patchDialog.onOpen()
-  }
+  const hasChanges = (diff?.summary.totalChanges ?? 0) > 0
 
   const handlePublished = () => {
     void refetch()
@@ -280,46 +263,23 @@ export function CourseReleaseReview({ courseId, focusLessonId }: CourseReleaseRe
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 border-t pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={!canPublishPatch}
-          className="gap-2"
-          onClick={handlePatchClick}
-        >
-          <Upload className="size-4" />
-          {t('settings.releasePanel.publishPatch')}
-        </Button>
+      <div className="flex justify-end border-t pt-4">
         <Button
           type="button"
           variant="darkblue"
-          disabled={!canPublishMajor}
+          disabled={!publishFlow.canPublishUpdate}
           className="gap-2"
-          onClick={majorConfirmDialog.onOpen}
+          onClick={publishFlow.handlePublishUpdate}
         >
-          <ArrowUpCircle className="size-4" />
-          {t('settings.releasePanel.publishMajor')}
+          <Upload className="size-4" />
+          {publishFlow.publishButtonLabel}
         </Button>
       </div>
 
-      <CourseReleaseConfirmationDialog
-        open={majorConfirmDialog.isOpen}
-        onOpenChange={majorConfirmDialog.onToggle}
-        onConfirm={majorDialog.onOpen}
-        nextVersionNo={nextVersionNo}
-      />
-      <CoursePublishPatchDialog
+      <CoursePublishFlowDialogs
         courseId={courseId}
-        open={patchDialog.isOpen}
-        onOpenChange={patchDialog.onToggle}
         onPublished={handlePublished}
-      />
-      <CoursePublishMajorDialog
-        courseId={courseId}
-        open={majorDialog.isOpen}
-        onOpenChange={majorDialog.onToggle}
-        onPublished={handlePublished}
+        flow={publishFlow}
       />
     </div>
   )

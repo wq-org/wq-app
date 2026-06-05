@@ -155,3 +155,12 @@ export type ClassroomCourseListItem = import('./course.types').Course & {
   courseVersionId: string
   deliveredVersionNo: number | null
 }
+
+export type CourseVersionHistorySummaryRow = {
+  id: string
+  versionNo: number
+  status: 'published' | 'archived'
+  publishedAt: Date | null
+  createdAt: Date
+  activeDeliveryCount: number
+}

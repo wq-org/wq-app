@@ -73,11 +73,11 @@ export function CourseReleaseConfirmationDialog({
             variant="small"
             className="font-medium"
           >
-            {t(`settings.releaseConfirmation.${variant}.technicalTitle`)}
+            {t(`settings.releaseConfirmation.${variant}.impactTitle`)}
           </Text>
           <ul className="mt-2 list-disc space-y-1.5 pl-5">
             {(
-              t(`settings.releaseConfirmation.${variant}.technicalPoints`, {
+              t(`settings.releaseConfirmation.${variant}.impactPoints`, {
                 returnObjects: true,
               }) as string[]
             ).map((point) => (

@@ -26,7 +26,7 @@ import { Text } from '@/components/ui/text'
 
 import { useCoursePublishDialog } from '../../hooks/useCoursePublishDialog'
 
-export type CoursePublishReleaseDialogVariant = 'first' | 'patch' | 'major'
+export type CoursePublishReleaseDialogVariant = 'first' | 'update' | 'major'
 
 export type CoursePublishReleaseDialogProps = {
   courseId: string
@@ -38,20 +38,20 @@ export type CoursePublishReleaseDialogProps = {
 
 const TITLE_KEYS: Record<CoursePublishReleaseDialogVariant, string> = {
   first: 'settings.publishDialog.title',
-  patch: 'settings.publishPatchDialog.title',
-  major: 'settings.publishMajorDialog.title',
+  update: 'settings.publishUpdateDialog.title',
+  major: 'settings.publishUpdateDialog.title',
 }
 
 const DESCRIPTION_KEYS: Record<CoursePublishReleaseDialogVariant, string> = {
   first: 'settings.publishDialog.description',
-  patch: 'settings.publishPatchDialog.description',
-  major: 'settings.publishMajorDialog.description',
+  update: 'settings.publishUpdateDialog.description',
+  major: 'settings.publishUpdateDialog.descriptionMajor',
 }
 
 const CONFIRM_KEYS: Record<CoursePublishReleaseDialogVariant, string> = {
   first: 'settings.publishDialog.confirm',
-  patch: 'settings.publishPatchDialog.confirm',
-  major: 'settings.publishMajorDialog.confirm',
+  update: 'settings.publishUpdateDialog.confirm',
+  major: 'settings.publishUpdateDialog.confirm',
 }
 
 export function CoursePublishReleaseDialog({
@@ -201,23 +201,5 @@ export function CoursePublishReleaseDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
-
-export function CoursePublishPatchDialog(props: Omit<CoursePublishReleaseDialogProps, 'variant'>) {
-  return (
-    <CoursePublishReleaseDialog
-      {...props}
-      variant="patch"
-    />
-  )
-}
-
-export function CoursePublishMajorDialog(props: Omit<CoursePublishReleaseDialogProps, 'variant'>) {
-  return (
-    <CoursePublishReleaseDialog
-      {...props}
-      variant="major"
-    />
   )
 }

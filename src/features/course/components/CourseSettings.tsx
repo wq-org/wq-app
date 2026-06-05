@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { getCourseById, updateCourse, deleteCourse } from '@/features/course'
 import { useNavigate } from 'react-router-dom'
-import { useUser } from '@/contexts/user'
-import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
-import { Spinner } from '@/components/ui/spinner'
-import { Text } from '@/components/ui/text'
 import { useTranslation } from 'react-i18next'
+import { Check, GitCompareArrows, Upload } from 'lucide-react'
 import { toast } from 'sonner'
+
 import { ColorPicker } from '@/components/shared'
-import type { ThemeId } from '@/lib/themes'
-import { Check } from 'lucide-react'
+import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
+import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { Label } from '@/components/ui/label'
+import { Spinner } from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
+import { deleteCourse, getCourseById, updateCourse } from '@/features/course'
+import { useUser } from '@/contexts/user'
+import type { ThemeId } from '@/lib/themes'
 
+import { useCoursePublishFlow } from '../hooks/useCoursePublishFlow'
 import { useCourseReleaseStatus } from '../hooks/useCourseReleaseStatus'
+import { buildCourseReleaseReviewRoute } from '../utils/courseRelease.utils'
 import { CourseLiveSnapshotCard } from './release/CourseLiveSnapshotCard'
+import { CoursePublishFlowDialogs } from './release/CoursePublishFlowDialogs'
 import { CourseReleasePanel } from './release/CourseReleasePanel'
 
-interface CourseSettingsProps {
+type CourseSettingsProps = {
   courseId: string
   onUnsavedChange?: (dirty: boolean) => void
 }
@@ -47,6 +51,9 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     loading: releaseLoading,
     refetch: refetchReleaseStatus,
   } = useCourseReleaseStatus({ courseId })
+
+  const publishFlow = useCoursePublishFlow({ live, diff })
+  const hasReleaseChanges = (diff?.summary.totalChanges ?? 0) > 0
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -130,9 +137,13 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     void refetchReleaseStatus()
   }
 
+  const handleReviewChanges = () => {
+    navigate(buildCourseReleaseReviewRoute(courseId))
+  }
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <Spinner
           variant="gray"
           size="lg"
@@ -201,41 +212,72 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         />
 
         <CourseReleasePanel
-          courseId={courseId}
           live={live}
           diff={diff}
           loading={releaseLoading}
-          onPublished={handlePublished}
         />
 
-        <div className="flex items-center gap-4 border-t pt-8 pb-4">
+        <div className="flex flex-col gap-4 border-t pt-8 sm:flex-row sm:items-center sm:justify-between">
           <HoldToDeleteButton
             loading={deleting}
             onDelete={handleDeleteCourse}
           >
             {t('settings.deleteAction')}
           </HoldToDeleteButton>
-          <Button
-            variant="outline"
-            onClick={handleSaveChanges}
-            disabled={!hasChanges || saving}
-            className="gap-2"
-          >
-            {saving ? (
-              <>
+
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2"
+              disabled={!hasReleaseChanges || releaseLoading}
+              onClick={handleReviewChanges}
+            >
+              <GitCompareArrows
+                className="size-4"
+                aria-hidden
+              />
+              {t('settings.releasePanel.reviewChanges')}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2"
+              onClick={handleSaveChanges}
+              disabled={!hasChanges || saving}
+            >
+              {saving ? (
                 <Spinner
                   variant="white"
                   size="sm"
                 />
-                {t('settings.saving')}
-              </>
-            ) : (
-              <Check />
-            )}
-            {t('settings.save')}
-          </Button>
+              ) : (
+                <Check className="size-4" />
+              )}
+              {saving ? t('settings.saving') : t('settings.save')}
+            </Button>
+            <Button
+              type="button"
+              variant="darkblue"
+              className="gap-2"
+              disabled={!publishFlow.canPublishUpdate || releaseLoading}
+              onClick={publishFlow.handlePublishUpdate}
+            >
+              <Upload
+                className="size-4"
+                aria-hidden
+              />
+              {publishFlow.publishButtonLabel}
+            </Button>
+          </div>
         </div>
       </div>
+
+      <CoursePublishFlowDialogs
+        courseId={courseId}
+        onPublished={handlePublished}
+        flow={publishFlow}
+      />
     </div>
   )
 }

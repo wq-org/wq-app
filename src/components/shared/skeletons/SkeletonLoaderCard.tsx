@@ -3,7 +3,11 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
-export type SkeletonLoaderCardVariant = 'default' | 'statusSummary' | 'releasePanel'
+export type SkeletonLoaderCardVariant =
+  | 'default'
+  | 'statusSummary'
+  | 'releasePanel'
+  | 'historyTimeline'
 
 type SkeletonLoaderCardProps = {
   variant?: SkeletonLoaderCardVariant
@@ -12,6 +16,38 @@ type SkeletonLoaderCardProps = {
 
 const STATUS_SUMMARY_ROW_COUNT = 6
 const RELEASE_PANEL_SECTION_COUNT = 3
+const HISTORY_TIMELINE_ROW_COUNT = 3
+
+function HistoryTimelineSkeletonLoaderCard({ className }: { className?: string }) {
+  return (
+    <div className={cn('flex flex-col gap-3', className)}>
+      {Array.from({ length: HISTORY_TIMELINE_ROW_COUNT }, (_, index) => (
+        <div
+          key={index}
+          className="rounded-2xl border bg-card px-4 py-4"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-1 flex-col gap-2">
+              <div className="flex flex-wrap gap-2">
+                <Skeleton className="h-6 w-16 rounded-full" />
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-6 w-28 rounded-full" />
+              </div>
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-3.5 w-full max-w-md" />
+              <Skeleton className="h-3.5 w-full max-w-sm" />
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-9 w-24 rounded-md" />
+              <Skeleton className="h-9 w-32 rounded-md" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function DefaultSkeletonLoaderCard({ className }: { className?: string }) {
   return (
@@ -109,6 +145,10 @@ export function SkeletonLoaderCard({ variant = 'default', className }: SkeletonL
 
   if (variant === 'releasePanel') {
     return <ReleasePanelSkeletonLoaderCard className={className} />
+  }
+
+  if (variant === 'historyTimeline') {
+    return <HistoryTimelineSkeletonLoaderCard className={className} />
   }
 
   return <DefaultSkeletonLoaderCard className={className} />

@@ -3,7 +3,7 @@ import type { PublishedCourseVersion } from './course-version.types'
 import type { Lesson } from '@/features/lesson'
 import type { Topic } from '@/features/topic/types/topic.types'
 
-export type ReleaseType = 'none' | 'patch' | 'major'
+export type ReleaseType = 'none' | 'patch' | 'minor' | 'major'
 
 export type CourseDraftDiffChangeKind = 'added' | 'removed' | 'modified' | 'reordered'
 
@@ -65,3 +65,9 @@ export type LessonReleaseStatus = {
   hasDraftDrift: boolean
   diffFileId: string | null
 }
+
+export type CourseVersionHistoryEntry =
+  import('./course-version.types').CourseVersionHistorySummaryRow & {
+    releaseType: ReleaseType
+    changeSummaryKeys: CourseReleaseStatusLineKey[]
+  }

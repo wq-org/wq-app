@@ -4,6 +4,7 @@ import type {
   CourseDraftDiff,
   CourseDraftDiffFile,
   CourseDraftDiffSummary,
+  CourseDraftSnapshot,
   CourseReleaseCompareInput,
   CourseReleaseStatusLineKey,
   LessonReleaseStatus,
@@ -177,7 +178,7 @@ function classifyReleaseType(
 ): ReleaseType {
   if (summary.totalChanges === 0) return 'none'
 
-  if (
+  const isStructural =
     hasStructuralMajor ||
     summary.topicsAdded > 0 ||
     summary.topicsRemoved > 0 ||
@@ -185,9 +186,15 @@ function classifyReleaseType(
     summary.lessonsAdded > 0 ||
     summary.lessonsRemoved > 0 ||
     summary.lessonsReordered > 0
-  ) {
-    return 'major'
-  }
+
+  if (isStructural) return 'major'
+
+  const hasLessonOrTopicEdits =
+    summary.lessonsContentChanged > 0 || summary.lessonsModified > 0 || summary.topicsModified > 0
+
+  if (hasLessonOrTopicEdits) return 'minor'
+
+  if (summary.metadataChanged) return 'patch'
 
   return 'patch'
 }
@@ -575,6 +582,79 @@ export function compareDraftToPublished({
     recommendedReleaseType,
     statusLineKeys: buildStatusLineKeys(summary),
   }
+}
+
+export function publishedVersionToDraftSnapshot(
+  version: PublishedCourseVersion,
+): CourseDraftSnapshot {
+  return {
+    course: {
+      id: version.courseId,
+      title: version.courseTitle,
+      description: version.courseDescription,
+      teacher_id: '',
+      institution_id: '',
+      theme_id: version.themeId,
+      is_published: true,
+      created_at: '',
+      updated_at: '',
+    },
+    topics: version.topics.map((topic) => ({
+      id: topic.sourceTopicId ?? topic.id,
+      course_id: version.courseId,
+      title: topic.title,
+      description: topic.description,
+      order_index: topic.orderIndex,
+      lessons: topic.lessons.map((lesson) => ({
+        id: lesson.sourceLessonId ?? lesson.id,
+        title: lesson.title,
+        description: lesson.description,
+        content: lesson.content ?? {
+          root: {
+            children: [],
+            direction: null,
+            format: '',
+            indent: 0,
+            type: 'root',
+            version: 1,
+          },
+        },
+      })),
+    })),
+  }
+}
+
+export type PublishedVersionCompareResult = {
+  releaseType: ReleaseType
+  changeSummaryKeys: CourseReleaseStatusLineKey[]
+}
+
+export function comparePublishedVersions(
+  current: PublishedCourseVersion,
+  previous: PublishedCourseVersion | null,
+): PublishedVersionCompareResult {
+  if (!previous) {
+    return {
+      releaseType: 'major',
+      changeSummaryKeys: [{ key: 'history.changeSummary.firstPublish' }],
+    }
+  }
+
+  const diff = compareDraftToPublished({
+    draft: publishedVersionToDraftSnapshot(current),
+    live: previous,
+  })
+
+  const releaseType = diff.recommendedReleaseType === 'none' ? 'patch' : diff.recommendedReleaseType
+
+  const changeSummaryKeys =
+    diff.summary.totalChanges === 0
+      ? [{ key: 'history.changeSummary.noStructuralChanges' }]
+      : diff.statusLineKeys.filter(
+          (line) => line.key !== 'settings.draftChanges.status.totalChanges',
+        )
+
+  return { releaseType, changeSummaryKeys }
 }
 
 export function buildCourseReleaseReviewRoute(courseId: string, focusLessonId?: string): string {

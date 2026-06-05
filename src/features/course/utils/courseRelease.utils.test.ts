@@ -4,7 +4,11 @@ import type { LessonDraftState } from '@/features/lesson/types/lesson.types'
 
 import type { CourseDraftSnapshot } from '../types/course-release.types'
 import type { PublishedCourseVersion } from '../types/course-version.types'
-import { compareDraftToPublished, resolveLessonReleaseStatus } from './courseRelease.utils'
+import {
+  compareDraftToPublished,
+  comparePublishedVersions,
+  resolveLessonReleaseStatus,
+} from './courseRelease.utils'
 
 function buildDraft(overrides: Partial<CourseDraftSnapshot> = {}): CourseDraftSnapshot {
   return {
@@ -188,7 +192,7 @@ describe('compareDraftToPublished', () => {
 
     const diff = compareDraftToPublished({ draft, live: buildLive() })
 
-    expect(diff.recommendedReleaseType).toBe('patch')
+    expect(diff.recommendedReleaseType).toBe('minor')
     expect(diff.summary.lessonsContentChanged).toBe(1)
     expect(diff.files.some((file) => file.id === 'lesson-content-lesson-1')).toBe(true)
   })
@@ -282,6 +286,69 @@ describe('compareDraftToPublished', () => {
 
     expect(diff.recommendedReleaseType).toBe('major')
     expect(diff.summary.topicsAdded).toBeGreaterThan(0)
+  })
+})
+
+describe('comparePublishedVersions', () => {
+  it('returns major with first publish summary when no previous version', () => {
+    const result = comparePublishedVersions(buildLive(), null)
+
+    expect(result.releaseType).toBe('major')
+    expect(result.changeSummaryKeys[0]?.key).toBe('history.changeSummary.firstPublish')
+  })
+
+  it('returns patch when only course metadata changed between versions', () => {
+    const previous = buildLive({ versionNo: 1 })
+    const current = buildLive({
+      id: 'version-2',
+      versionNo: 2,
+      courseTitle: 'Updated title',
+    })
+
+    const result = comparePublishedVersions(current, previous)
+
+    expect(result.releaseType).toBe('patch')
+    expect(result.changeSummaryKeys.some((line) => line.key.includes('metadataChanged'))).toBe(true)
+  })
+
+  it('returns major when a lesson is added between versions', () => {
+    const previous = buildLive({ versionNo: 1 })
+    const current = buildLive({
+      id: 'version-2',
+      versionNo: 2,
+      topics: [
+        {
+          ...buildLive().topics[0]!,
+          lessons: [
+            ...buildLive().topics[0]!.lessons,
+            {
+              id: 'cvl-2',
+              sourceLessonId: 'lesson-2',
+              title: 'Lesson 2',
+              description: 'New lesson',
+              content: {
+                root: {
+                  children: [],
+                  direction: null,
+                  format: '',
+                  indent: 0,
+                  type: 'root',
+                  version: 1,
+                },
+              } as LessonDraftState,
+              pages: [],
+              orderIndex: 1,
+              contentSchemaVersion: 1,
+            },
+          ],
+        },
+      ],
+    })
+
+    const result = comparePublishedVersions(current, previous)
+
+    expect(result.releaseType).toBe('major')
+    expect(result.changeSummaryKeys.some((line) => line.key.includes('lessonsAdded'))).toBe(true)
   })
 })
 

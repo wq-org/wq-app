@@ -9,6 +9,7 @@
     "publishedLabel": "Ver\u00f6ffentlicht",
     "publishedHint": "Diesen Kurs f\u00fcr Lernende sichtbar machen",
     "publishAction": "In Klassenr\u00e4ume ver\u00f6ffentlichen",
+    "publishUpdateAction": "Kurs-Update ver\u00f6ffentlichen",
     "publishing": "Ver\u00f6ffentlichen...",
     "publishDialog": {
       "title": "Kurs in Klassenr\u00e4umen ver\u00f6ffentlichen",
@@ -24,7 +25,7 @@
       "loadError": "Klassenr\u00e4ume konnten nicht geladen werden. Bitte erneut versuchen.",
       "emptyClassrooms": "Keine Klassenr\u00e4ume verf\u00fcgbar. Lege zuerst einen Klassenraum an und ver\u00f6ffentliche dann diesen Kurs."
     },
-    "save": "\u00c4nderungen speichern",
+    "save": "Speichern",
     "saving": "Speichern...",
     "deleteAction": "Kurs l\u00f6schen",
     "errors": {
@@ -63,8 +64,9 @@
       "description": "Unveröffentlichte Änderungen im Vergleich zum Live-Snapshot.",
       "badge": {
         "upToDate": "Aktuell",
-        "patch": "Patch empfohlen",
-        "major": "Major empfohlen"
+        "patch": "Nur Details",
+        "minor": "Inhalts-Updates",
+        "major": "Strukturelle \u00c4nderungen"
       },
       "status": {
         "noChanges": "Keine unveröffentlichten Änderungen",
@@ -83,44 +85,40 @@
     },
     "releasePanel": {
       "title": "Release",
-      "description": "Entwurfsänderungen prüfen und Updates in Klassenräume veröffentlichen.",
-      "firstPublishTitle": "Erste Veröffentlichung",
-      "firstPublishDescription": "Erstelle den ersten unveränderlichen Snapshot und liefere ihn an ausgewählte Klassenräume.",
-      "currentLive": "Aktuell live",
-      "currentLiveValue": "Version v{{version}}",
-      "draftStatus": "Entwurfsstatus",
-      "draftStatusUpToDate": "Entspricht dem Live-Stand",
-      "draftStatusChanged": "{{count}} unveröffentlichte Änderung(en)",
-      "recommendedType": "Empfohlenes Release",
-      "reviewChanges": "Änderungen prüfen",
-      "publishPatch": "Patch veröffentlichen",
-      "publishMajor": "Neue Major-Version veröffentlichen",
-      "patchBlockedTitle": "Patch nicht verfügbar",
-      "patchBlockedDescription": "Strukturelle Änderungen erfordern ein Major-Release. Verwende stattdessen „Neue Major-Version veröffentlichen“."
+      "description": "Sieh, was sich seit der letzten Ver\u00f6ffentlichung an deinem Kurs ge\u00e4ndert hat.",
+      "firstPublishTitle": "Bereit f\u00fcr deine Klassen?",
+      "firstPublishDescription": "W\u00e4hle, welche Klassenr\u00e4ume diesen Kurs erhalten sollen. Lernende sehen nur das, was du in ihrem Klassenraum ver\u00f6ffentlichst.",
+      "currentLive": "Was Lernende jetzt sehen",
+      "currentLiveValue": "Ver\u00f6ffentlichter Snapshot v{{version}}",
+      "draftStatus": "Deine unver\u00f6ffentlichten \u00c4nderungen",
+      "draftStatusUpToDate": "Entspricht dem, was Lernende bereits haben",
+      "draftStatusChanged": "{{count}} unver\u00f6ffentlichte \u00c4nderung(en)",
+      "classroomImpactTitle": "Bevor du ver\u00f6ffentlichst",
+      "classroomImpactPoints": [
+        "Lernende in den ausgew\u00e4hlten Klassenr\u00e4umen sehen deine \u00c4nderungen nach dem Ver\u00f6ffentlichen.",
+        "Im n\u00e4chsten Schritt w\u00e4hlst du, welche Klassenr\u00e4ume das Update erhalten.",
+        "Klassenr\u00e4ume, die du \u00fcberspringst, behalten die aktuelle Version. Ein Ver\u00f6ffentlichen l\u00e4sst sich nicht r\u00fcckg\u00e4ngig machen \u2013 aber nichts \u00e4ndert sich f\u00fcr Klassen, die du nicht ausw\u00e4hlst."
+      ],
+      "reviewChanges": "\u00c4nderungen pr\u00fcfen"
     },
-    "publishPatchDialog": {
-      "title": "Patch in Klassenräume veröffentlichen",
-      "description": "Metadaten- und Inhaltsupdates als neue Patch-Version an ausgewählte Klassenräume liefern.",
-      "confirm": "Patch in {{count}} Klassenraum/Klassenräume veröffentlichen"
-    },
-    "publishMajorDialog": {
-      "title": "Neue Major-Version veröffentlichen",
-      "description": "Erstelle eine neue Major-Version für strukturelle Änderungen wie hinzugefügte, entfernte oder umsortierte Themen und Lektionen.",
-      "confirm": "Major in {{count}} Klassenraum/Klassenräume veröffentlichen"
+    "publishUpdateDialog": {
+      "title": "Welche Klassen sollen das Update erhalten?",
+      "description": "Lernende in den ausgew\u00e4hlten Klassenr\u00e4umen sehen deine neuesten \u00c4nderungen sofort. Andere Klassen lernen mit der bisherigen Version weiter.",
+      "descriptionMajor": "Du hast Themen oder Lektionen hinzugef\u00fcgt, entfernt oder umsortiert. W\u00e4hle die Klassen, die dieses gr\u00f6\u00dfere Update erhalten sollen. Andere bleiben auf der aktuellen Version.",
+      "confirm": "Update in {{count}} Klassenraum/Klassenr\u00e4ume ver\u00f6ffentlichen"
     },
     "releaseConfirmation": {
       "major": {
-        "title": "Neue Major-Version veröffentlichen?",
-        "description": "Dadurch entsteht die unveränderliche Version v{{version}} aus deinem aktuellen Entwurf. Im nächsten Schritt wählst du die Klassenräume.",
-        "technicalTitle": "Was passiert, wenn du veröffentlichst?",
-        "technicalPoints": [
-          "Der Kurs erhält eine neue Versionsnummer – zum Beispiel wird aus v1 die Version v2. Die alte Version bleibt unverändert erhalten.",
-          "Dein aktueller Entwurf wird eingefroren. Alles, was du bisher geschrieben hast – Themen, Lektionen und Kursinfos – wird als feste Momentaufnahme gespeichert. Danach kannst du diesen Stand nicht mehr verändern.",
-          "Die Klassenräume, die du im nächsten Schritt auswählst, erhalten sofort Zugriff auf die neue Version.",
-          "Klassenräume, die du nicht auswählst, lernen einfach weiter mit der bisherigen Version. Nichts wird für sie verändert oder gelöscht."
+        "title": "Strukturelle \u00c4nderungen ver\u00f6ffentlichen?",
+        "description": "Themen oder Lektionen wurden hinzugef\u00fcgt, entfernt oder umsortiert. Im n\u00e4chsten Schritt w\u00e4hlst du die betroffenen Klassenr\u00e4ume.",
+        "impactTitle": "Was das f\u00fcr deine Klassen bedeutet",
+        "impactPoints": [
+          "Sehen meine Lernenden das sofort? Ja \u2013 in den Klassen, die du im n\u00e4chsten Schritt ausw\u00e4hlst.",
+          "Welche Klassen bekommen das Update? Nur die, die du ausw\u00e4hlst. Alle anderen behalten die aktuelle Version.",
+          "Kann ich das r\u00fcckg\u00e4ngig machen? Nein \u2013 aber Klassen, die du nicht ausw\u00e4hlst, sind nicht betroffen."
         ],
         "cancel": "Abbrechen",
-        "confirm": "Weiter zur Klassenraumauswahl"
+        "confirm": "Klassen ausw\u00e4hlen"
       }
     }
   },
@@ -166,8 +164,10 @@
   },
   "layout": {
     "tabs": {
+      "overview": "Editor",
       "preview": "Vorschau",
       "settings": "Einstellungen",
+      "history": "Verlauf",
       "analytics": "Analytik"
     },
     "unsavedChanges": {
@@ -175,6 +175,42 @@
       "description": "Beim Wechsel der Registerkarte oder beim Verlassen der Seite gehen \u00c4nderungen m\u00f6glicherweise verloren.",
       "stay": "Bleiben",
       "continueAnyway": "Trotzdem fortfahren"
+    }
+  },
+  "history": {
+    "title": "Versionsverlauf",
+    "description": "Alle veröffentlichten Snapshots dieses Kurses, neueste zuerst. Entwurfsänderungen erscheinen hier nicht.",
+    "timelineHint": "Neueste Versionen stehen oben. Klappe eine Zeile auf, um Themen und Lektionen des Snapshots zu sehen.",
+    "versionBadge": "v{{version}}",
+    "publishedAt": "Veröffentlicht {{date}}",
+    "activeClassrooms": "{{count}} aktive Klasse(n)",
+    "status": {
+      "published": "Veröffentlicht",
+      "archived": "Archiviert"
+    },
+    "changeSummary": {
+      "firstPublish": "Erster veröffentlichter Snapshot",
+      "noStructuralChanges": "Keine strukturellen Änderungen zur vorherigen Version"
+    },
+    "actions": {
+      "inspect": "Ansehen",
+      "expandSnapshot": "Snapshot"
+    },
+    "treePreview": {
+      "title": "Snapshot-Inhalt",
+      "loading": "Snapshot wird geladen…",
+      "loadError": "Dieser Snapshot konnte nicht geladen werden.",
+      "empty": "Diese Version enthält keine Themen.",
+      "noLessons": "Keine Lektionen in diesem Thema"
+    },
+    "empty": {
+      "title": "Noch keine veröffentlichten Versionen",
+      "description": "Veröffentliche den Kurs unter Einstellungen, um den ersten Snapshot zu erstellen.",
+      "goToSettings": "Zu Einstellungen"
+    },
+    "errors": {
+      "loadFailed": "Versionsverlauf konnte nicht geladen werden. Bitte erneut versuchen.",
+      "retry": "Erneut versuchen"
     }
   },
   "analytics": {

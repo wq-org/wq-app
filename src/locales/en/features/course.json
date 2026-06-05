@@ -9,6 +9,7 @@
     "publishedLabel": "Published",
     "publishedHint": "Make this course visible to students",
     "publishAction": "Publish to classrooms",
+    "publishUpdateAction": "Publish course update",
     "publishing": "Publishing...",
     "publishDialog": {
       "title": "Publish course to classrooms",
@@ -63,8 +64,9 @@
       "description": "Unpublished edits compared to the live snapshot.",
       "badge": {
         "upToDate": "Up to date",
-        "patch": "Patch recommended",
-        "major": "Major recommended"
+        "patch": "Details only",
+        "minor": "Content updates",
+        "major": "Structural changes"
       },
       "status": {
         "noChanges": "No unpublished changes",
@@ -83,44 +85,40 @@
     },
     "releasePanel": {
       "title": "Release",
-      "description": "Review draft changes and publish updates to classrooms.",
-      "firstPublishTitle": "First publish",
-      "firstPublishDescription": "Create the first immutable snapshot and deliver it to selected classrooms.",
-      "currentLive": "Current live",
-      "currentLiveValue": "Version v{{version}}",
-      "draftStatus": "Draft status",
-      "draftStatusUpToDate": "Up to date with live",
+      "description": "See what changed since students last received this course.",
+      "firstPublishTitle": "Ready to share with classrooms?",
+      "firstPublishDescription": "Choose which classrooms should get this course. Students only see what you publish to their classroom.",
+      "currentLive": "What students have now",
+      "currentLiveValue": "Published snapshot v{{version}}",
+      "draftStatus": "Your unpublished edits",
+      "draftStatusUpToDate": "Matches what students already have",
       "draftStatusChanged": "{{count}} unpublished change(s)",
-      "recommendedType": "Recommended release",
-      "reviewChanges": "Review changes",
-      "publishPatch": "Publish patch",
-      "publishMajor": "Publish new major version",
-      "patchBlockedTitle": "Patch not available",
-      "patchBlockedDescription": "Structural changes require a major release. Use Publish new major version instead."
+      "classroomImpactTitle": "Before you publish",
+      "classroomImpactPoints": [
+        "Students in selected classrooms will see your updates after you publish.",
+        "You choose which classrooms get the update in the next step.",
+        "Classrooms you skip keep the current version. You can't undo a publish, but nothing changes for classrooms you don't select."
+      ],
+      "reviewChanges": "Review changes"
     },
-    "publishPatchDialog": {
-      "title": "Publish patch to classrooms",
-      "description": "Deliver metadata and content updates as a new patch version to selected classrooms.",
-      "confirm": "Publish patch to {{count}} classroom(s)"
-    },
-    "publishMajorDialog": {
-      "title": "Publish new major version",
-      "description": "Create a new major version for structural changes such as added, removed, or reordered topics and lessons.",
-      "confirm": "Publish major to {{count}} classroom(s)"
+    "publishUpdateDialog": {
+      "title": "Which classrooms should get this update?",
+      "description": "Students in the classrooms you select will see your latest changes right away. Other classrooms keep learning with what they already have.",
+      "descriptionMajor": "You added or removed topics or lessons. Select the classrooms that should receive this larger update. Other classrooms stay on the current version.",
+      "confirm": "Publish update to {{count}} classroom(s)"
     },
     "releaseConfirmation": {
       "major": {
-        "title": "Publish new major version?",
-        "description": "This creates immutable version v{{version}} from your current draft and delivers it to classrooms you select next.",
-        "technicalTitle": "What happens when you publish?",
-        "technicalPoints": [
-          "The course gets a new version number – for example, v1 becomes v2. The previous version stays unchanged.",
-          "Your current draft is frozen. Everything you've written – topics, lessons, and course info – is saved as a fixed snapshot. You can't change that snapshot afterward.",
-          "Classrooms you select in the next step immediately get access to the new version.",
-          "Classrooms you don't select keep learning with the previous version. Nothing is changed or deleted for them."
+        "title": "Publish structural changes?",
+        "description": "Topics or lessons were added, removed, or reordered. You'll choose which classrooms receive this update next.",
+        "impactTitle": "What this means for your classrooms",
+        "impactPoints": [
+          "Will my students see this immediately? Yes — in the classrooms you select in the next step.",
+          "Which classrooms get the update? Only the ones you choose. Everyone else keeps the current version.",
+          "Can I undo this? No — but classrooms you don't select are not affected."
         ],
         "cancel": "Cancel",
-        "confirm": "Continue to classroom selection"
+        "confirm": "Choose classrooms"
       }
     }
   },
@@ -168,6 +166,7 @@
       "overview": "Editor",
       "preview": "Preview",
       "settings": "Settings",
+      "history": "History",
       "analytics": "Analytics"
     },
     "unsavedChanges": {
@@ -175,6 +174,42 @@
       "description": "You might lose changes if you switch tab or leave the page.",
       "stay": "Stay",
       "continueAnyway": "Continue anyway"
+    }
+  },
+  "history": {
+    "title": "Version history",
+    "description": "Every published snapshot of this course, newest first. Draft edits are not shown here.",
+    "timelineHint": "Newest versions appear at the top. Expand a row to preview the topic and lesson tree students received.",
+    "versionBadge": "v{{version}}",
+    "publishedAt": "Published {{date}}",
+    "activeClassrooms": "{{count}} active classroom(s)",
+    "status": {
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "changeSummary": {
+      "firstPublish": "First published snapshot",
+      "noStructuralChanges": "No structural changes from the previous version"
+    },
+    "actions": {
+      "inspect": "Inspect",
+      "expandSnapshot": "Snapshot"
+    },
+    "treePreview": {
+      "title": "Snapshot contents",
+      "loading": "Loading snapshot…",
+      "loadError": "Could not load this snapshot.",
+      "empty": "This version has no topics.",
+      "noLessons": "No lessons in this topic"
+    },
+    "empty": {
+      "title": "No published versions yet",
+      "description": "Publish this course from Settings to create the first immutable snapshot.",
+      "goToSettings": "Go to Settings"
+    },
+    "errors": {
+      "loadFailed": "Could not load version history. Try again.",
+      "retry": "Retry"
     }
   },
   "analytics": {

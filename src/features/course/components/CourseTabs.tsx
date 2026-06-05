@@ -1,10 +1,10 @@
-import { Eye, FilePenLine, Settings } from 'lucide-react'
+import { History, Eye, FilePenLine, Settings } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 
-export type CourseTabId = 'editor' | 'preview' | 'settings'
+export type CourseTabId = 'editor' | 'preview' | 'settings' | 'history'
 
 export type CourseTabItem = {
   id: CourseTabId
@@ -46,6 +46,11 @@ export function CourseTabs({
         id: 'settings',
         title: t('layout.tabs.settings', { defaultValue: 'Settings' }),
         icon: Settings,
+      },
+      {
+        id: 'history',
+        title: t('layout.tabs.history', { defaultValue: 'History' }),
+        icon: History,
       },
     ],
     [t],
