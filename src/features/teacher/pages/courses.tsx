@@ -9,7 +9,12 @@ import { Button } from '@/components/ui/button'
 import { FieldInput } from '@/components/ui/field-input'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { CourseCardList, COURSE_SEARCH_FIELDS, useCourses } from '@/features/course'
+import {
+  CourseCardList,
+  COURSE_SEARCH_FIELDS,
+  toCourseCardProps,
+  useCourses,
+} from '@/features/course'
 import { requestOpenCommandAddDialog } from '@/features/command-palette'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
@@ -37,17 +42,7 @@ export function TeacherCoursesPage() {
 
   const filteredCourses = useSearchFilter(courses, searchQuery, COURSE_SEARCH_FIELDS)
 
-  const courseCards = useMemo(
-    () =>
-      filteredCourses.map((c) => ({
-        id: c.id,
-        title: c.title,
-        description: c.description,
-        is_published: c.is_published,
-        themeId: c.theme_id,
-      })),
-    [filteredCourses],
-  )
+  const courseCards = useMemo(() => filteredCourses.map(toCourseCardProps), [filteredCourses])
 
   const handleAddCourse = () => {
     requestOpenCommandAddDialog()

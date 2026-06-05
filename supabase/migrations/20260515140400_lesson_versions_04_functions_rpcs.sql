@@ -66,7 +66,7 @@ CREATE OR REPLACE FUNCTION app.publish_lesson_version(
 RETURNS UUID
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, app
+SET search_path = public, app, audit, pg_temp
 AS $$
 DECLARE
   v_institution_id UUID;
@@ -130,22 +130,21 @@ BEGIN
   )
   RETURNING id INTO v_version_id;
 
-  -- Audit event (docs/architecture/principle_database.md + principle_dsgvo_audit_datendefinition.md)
-  INSERT INTO public.audit.events (event_type, occurred_at, actor_user_id, institution_id, subject_type, subject_id, metadata)
-  VALUES (
-    'lesson.published',
-    now(),
-    (SELECT app.auth_uid()),
-    v_institution_id,
-    'lesson_version',
-    v_version_id,
-    jsonb_build_object(
-      'lesson_id', p_lesson_id,
+  PERFORM audit.log_event(
+    p_event_type := 'lesson.published',
+    p_subject_type := 'lesson_version',
+    p_subject_id := v_version_id,
+    p_institution_id := v_institution_id,
+    p_payload := jsonb_build_object(
       'version_major', v_current_major,
       'version_patch', v_current_patch,
-      'change_kind', p_change_kind,
-      'change_note', p_change_note,
-      'visibility_level', 'institution_admin'
+      'change_kind', p_change_kind::text
+    ),
+    p_metadata := jsonb_build_object(
+      'visibility_level', 'institution_admin',
+      'context', jsonb_build_object(
+        'lesson_id', p_lesson_id
+      )
     )
   );
 

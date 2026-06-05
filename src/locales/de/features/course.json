@@ -143,6 +143,7 @@
   "card": {
     "published": "Ver\u00f6ffentlicht",
     "unpublished": "Nicht ver\u00f6ffentlicht",
+    "version": "v{{version}}",
     "open": "\u00d6ffnen",
     "imageAlt": "Kurs"
   },

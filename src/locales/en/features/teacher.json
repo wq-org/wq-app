@@ -56,7 +56,12 @@
         "scheduleLoading": "Loading schedule…",
         "coursesTitle": "Courses",
         "coursesPlaceholder": "Coming soon.",
-        "coursesLoading": "Loading courses…"
+        "coursesLoading": "Loading courses…",
+        "coursesLoadError": "Could not load courses for this classroom.",
+        "coursesSearchLabel": "Search courses",
+        "coursesSearchPlaceholder": "Search by course title…",
+        "coursesEmpty": "No courses have been published to this classroom yet.",
+        "coursesNoMatches": "No courses match your search."
       }
     }
   },

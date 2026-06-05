@@ -55,7 +55,12 @@
         "scheduleLoading": "Stundenplan wird geladen …",
         "coursesTitle": "Kurse",
         "coursesPlaceholder": "Demnächst.",
-        "coursesLoading": "Kurse werden geladen …"
+        "coursesLoading": "Kurse werden geladen …",
+        "coursesLoadError": "Kurse für diesen Klassenraum konnten nicht geladen werden.",
+        "coursesSearchLabel": "Kurse durchsuchen",
+        "coursesSearchPlaceholder": "Nach Kurstitel suchen …",
+        "coursesEmpty": "Für diesen Klassenraum wurden noch keine Kurse veröffentlicht.",
+        "coursesNoMatches": "Keine Kurse entsprechen deiner Suche."
       }
     }
   },

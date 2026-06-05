@@ -67,40 +67,30 @@ SECURITY DEFINER
 SET search_path = public, audit, pg_temp
 AS $$
 BEGIN
-  -- Append-only audit (docs/architecture/principle_dsgvo_audit_datendefinition.md envelope).
-  INSERT INTO public.audit.events (
-    event_type,
-    occurred_at,
-    actor_user_id,
-    institution_id,
-    subject_type,
-    subject_id,
-    metadata
-  )
-  VALUES (
-    'lesson_version.disabled',
-    now(),
-    (SELECT app.auth_uid()),
-    NEW.institution_id,
-    'lesson_version',
-    NEW.id,
-    jsonb_build_object(
-      'context',
-      jsonb_build_object(
+  PERFORM audit.log_event(
+    p_event_type := 'lesson_version.disabled',
+    p_subject_type := 'lesson_version',
+    p_subject_id := NEW.id,
+    p_institution_id := NEW.institution_id,
+    p_payload := jsonb_build_object(
+      'reason', 'patch_revoked_or_deprecated'
+    ),
+    p_metadata := jsonb_build_object(
+      'visibility_level', 'institution_admin',
+      'context', jsonb_build_object(
         'lesson_id', NEW.lesson_id,
         'version_major', NEW.version_major,
         'version_patch', NEW.version_patch
-      ),
-      'reason', 'patch_revoked_or_deprecated',
-      'visibility_level', 'institution_admin'
+      )
     )
   );
+
   RETURN NEW;
 END;
 $$;
 
 COMMENT ON FUNCTION public.audit_lesson_version_disabled() IS
-  'SECURITY DEFINER audit trigger: writes audit.events with actor_user_id, institution_id, subject_*, metadata.context (principle_dsgvo_audit_datendefinition.md).';
+  'SECURITY DEFINER audit trigger: writes audit.events via audit.log_event (principle_dsgvo_audit_datendefinition.md).';
 
 -- =============================================================================
 -- Triggers on public.lesson_versions

@@ -35,9 +35,11 @@ export {
   getCourseById,
   updateCourse,
   deleteCourse,
+  getClassroomCourses,
 } from './api/coursesApi'
 export { publishCourseToClassrooms } from './api/coursePublishApi'
 export type { PublishCourseToClassroomsResult } from './api/coursePublishApi'
+export { toCourseCardProps, teacherInitialsFromProfile } from './utils/courseCard.utils'
 export {
   requestCourseJoin,
   cancelCourseJoin,

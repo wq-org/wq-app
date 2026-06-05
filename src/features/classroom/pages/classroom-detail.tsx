@@ -8,6 +8,7 @@ import { LoadingPage } from '@/components/shared'
 import { DashboardSection } from '@/features/dashboard'
 import { Text } from '@/components/ui/text'
 
+import { ClassroomCoursesPanel } from '../components/ClassroomCoursesPanel'
 import { useClassroomDetail } from '../hooks/useClassroomDetail'
 
 type ClassroomLocationState = {
@@ -15,6 +16,7 @@ type ClassroomLocationState = {
 }
 
 type SectionSpec = {
+  id: 'students' | 'schedule' | 'courses'
   icon: LucideIcon
   titleKey: string
   placeholderKey: string
@@ -23,18 +25,21 @@ type SectionSpec = {
 
 const CLASSROOM_SECTIONS: SectionSpec[] = [
   {
+    id: 'students',
     icon: Users,
     titleKey: 'pages.classroomDetail.sections.studentsTitle',
     placeholderKey: 'pages.classroomDetail.sections.studentsPlaceholder',
     loadingKey: 'pages.classroomDetail.sections.studentsLoading',
   },
   {
+    id: 'schedule',
     icon: Calendar,
     titleKey: 'pages.classroomDetail.sections.scheduleTitle',
     placeholderKey: 'pages.classroomDetail.sections.schedulePlaceholder',
     loadingKey: 'pages.classroomDetail.sections.scheduleLoading',
   },
   {
+    id: 'courses',
     icon: BookOpen,
     titleKey: 'pages.classroomDetail.sections.coursesTitle',
     placeholderKey: 'pages.classroomDetail.sections.coursesPlaceholder',
@@ -113,13 +118,18 @@ export function ClassroomDetailPage() {
         <div className="mt-10 flex flex-col gap-10">
           {CLASSROOM_SECTIONS.map((spec) => (
             <DashboardSection
-              key={spec.titleKey}
+              key={spec.id}
               title={t(spec.titleKey)}
               icon={spec.icon}
               classNameContainer="px-4 py-4"
               showContainerBorder
             >
-              {loading ? (
+              {spec.id === 'courses' ? (
+                <ClassroomCoursesPanel
+                  classroomId={classroomId}
+                  parentLoading={loading}
+                />
+              ) : loading ? (
                 <LoadingPage
                   variant="embedded"
                   message={t(spec.loadingKey)}

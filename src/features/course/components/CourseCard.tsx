@@ -24,7 +24,7 @@ export function CourseCard({
   const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
 
   return (
-    <Card className="w-[320px] py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
+    <Card className="flex h-full w-[320px] flex-col py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
       <CardHeader className="relative flex flex-col justify-start items-start px-0 gap-4">
         <AspectRatio
           ratio={16 / 9}
@@ -51,15 +51,24 @@ export function CourseCard({
             </div>
           )}
         </AspectRatio>
-        <Badge
-          variant={is_published ? 'default' : 'secondary'}
-          className="absolute top-3 left-3 "
-        >
-          {is_published ? t('card.published') : t('card.unpublished')}
-        </Badge>
+        {is_published ? (
+          <Badge
+            variant="default"
+            className="absolute top-3 right-3"
+          >
+            {t('card.published')}
+          </Badge>
+        ) : (
+          <Badge
+            variant="secondary"
+            className="absolute top-3 right-3"
+          >
+            {t('card.unpublished')}
+          </Badge>
+        )}
       </CardHeader>
-      <CardContent className="flex flex-col p-6">
-        <div className="flex items-center gap-3">
+      <CardContent className="flex flex-1 flex-col p-6">
+        <div className="flex items-start gap-3">
           <Avatar
             size="lg"
             className="rounded-full"
@@ -79,7 +88,7 @@ export function CourseCard({
                 <CardTitle
                   clampLines={2}
                   title={title}
-                  className="text-xl font-semibold"
+                  className="min-h-[3.6875rem] flex-none text-xl font-semibold"
                 >
                   {title}
                 </CardTitle>
@@ -97,8 +106,8 @@ export function CourseCard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <CardDescription className="text-gray-500 text-left mt-3 min-h-[60px] line-clamp-3 overflow-hidden text-ellipsis flex-1">
+        <div className="mt-3 flex flex-1 flex-col gap-3">
+          <CardDescription className="min-h-[3.75rem] flex-none text-left text-gray-500 line-clamp-3 overflow-hidden text-ellipsis">
             {description}
           </CardDescription>
           <div className="flex items-center justify-end gap-2 mt-auto">

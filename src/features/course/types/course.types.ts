@@ -1,6 +1,11 @@
 import type { ThemeId } from '@/lib/themes'
 
 // Course interface, each course has the specified shape
+export interface CourseTeacherProfile {
+  display_name: string | null
+  avatar_url: string | null
+}
+
 export interface Course {
   id: string // uuid
   title: string // text
@@ -11,6 +16,10 @@ export interface Course {
   is_published: boolean // bool
   created_at: string // timestamptz (ISO string)
   updated_at: string // timestamptz (ISO string)
+  /** Populated by getTeacherCourses list query. */
+  teacher_profile?: CourseTeacherProfile | null
+  /** Latest published course_versions.version_no; populated by getTeacherCourses. */
+  published_version_no?: number | null
 }
 
 // Type for creating a new course (no id, created_at, updated_at)
@@ -41,6 +50,7 @@ export interface CourseCardProps {
   themeId?: ThemeId
   teacherAvatar?: string
   teacherInitials?: string
+  publishedVersionNo?: number
   onView?: (id: string) => void
   className?: string
 }

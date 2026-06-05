@@ -6,7 +6,12 @@ import { toast } from 'sonner'
 import { AppShell } from '@/components/layout'
 import { LoadingPage, SelectTabs, SelectTabsContent, type TabItem } from '@/components/shared'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
-import { CourseCardList, useCourses, type CourseCardProps } from '@/features/course'
+import {
+  CourseCardList,
+  toCourseCardProps,
+  useCourses,
+  type CourseCardProps,
+} from '@/features/course'
 import { DashboardSection } from '@/features/dashboard'
 import { GameProjectCardList, useTeacherGameProjects } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
@@ -150,17 +155,7 @@ const Dashboard = () => {
     }
   }, [teacherClassrooms, activeScheduleTabId])
 
-  const courseCards: CourseCardProps[] = useMemo(
-    () =>
-      courses.map((c) => ({
-        id: c.id,
-        title: c.title,
-        description: c.description,
-        is_published: c.is_published,
-        themeId: c.theme_id,
-      })),
-    [courses],
-  )
+  const courseCards: CourseCardProps[] = useMemo(() => courses.map(toCourseCardProps), [courses])
 
   const coursesByFilterTab = useMemo(() => {
     const all = courseCards

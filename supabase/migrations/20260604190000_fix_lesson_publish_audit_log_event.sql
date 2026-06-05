@@ -1,12 +1,8 @@
 -- =============================================================================
--- LESSON DRAFT JSONB — 02_functions_rpcs
--- Retarget publish flow to lessons.content instead of lesson_blocks.
--- Follows docs/architecture/principle_database.md (SECURITY DEFINER + pinned search_path;
--- audit envelope on publish).
+-- FIX — lesson publish audit writes
+-- `INSERT INTO public.audit.events` is invalid three-part naming (PG treats it as
+-- cross-database). Use audit.log_event per principle_database.md.
 -- =============================================================================
-
-COMMENT ON COLUMN public.lesson_versions.lexical_state IS
-  'Canonical Lexical document JSONB captured from lessons.content at publish time.';
 
 CREATE OR REPLACE FUNCTION app.publish_lesson_version(
   p_lesson_id UUID,
@@ -123,3 +119,34 @@ GRANT EXECUTE ON FUNCTION app.publish_lesson_version(UUID, public.lesson_change_
 COMMENT ON FUNCTION app.publish_lesson_version IS
   'Publish immutable lesson version from lessons.content. Returns lesson_version_id. Requires teacher ownership.';
 
+CREATE OR REPLACE FUNCTION public.audit_lesson_version_disabled()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, audit, pg_temp
+AS $$
+BEGIN
+  PERFORM audit.log_event(
+    p_event_type := 'lesson_version.disabled',
+    p_subject_type := 'lesson_version',
+    p_subject_id := NEW.id,
+    p_institution_id := NEW.institution_id,
+    p_payload := jsonb_build_object(
+      'reason', 'patch_revoked_or_deprecated'
+    ),
+    p_metadata := jsonb_build_object(
+      'visibility_level', 'institution_admin',
+      'context', jsonb_build_object(
+        'lesson_id', NEW.lesson_id,
+        'version_major', NEW.version_major,
+        'version_patch', NEW.version_patch
+      )
+    )
+  );
+
+  RETURN NEW;
+END;
+$$;
+
+COMMENT ON FUNCTION public.audit_lesson_version_disabled() IS
+  'SECURITY DEFINER audit trigger: writes audit.events via audit.log_event (principle_dsgvo_audit_datendefinition.md).';

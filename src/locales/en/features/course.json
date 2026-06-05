@@ -143,6 +143,7 @@
   "card": {
     "published": "Published",
     "unpublished": "Unpublished",
+    "version": "v{{version}}",
     "open": "Open",
     "imageAlt": "Course"
   },
