@@ -6,14 +6,31 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useDisclosure } from '@/hooks/use-disclosure'
+
 import { LinkGameDialog } from './LinkGameDialog'
 import { UnlinkGameDialog } from './UnlinkGameDialog'
 
-export function GameProjectCardCourseMenu() {
+type GameProjectCardCourseMenuProps = {
+  gameId: string
+  linkedCourseId?: string | null
+  status?: 'draft' | 'published'
+  onCourseLinkChanged?: () => void
+}
+
+export function GameProjectCardCourseMenu({
+  gameId,
+  linkedCourseId = null,
+  status = 'draft',
+  onCourseLinkChanged,
+}: GameProjectCardCourseMenuProps) {
   const { t } = useTranslation('features.gameStudio')
   const popover = useDisclosure()
   const linkDialog = useDisclosure()
   const unlinkDialog = useDisclosure()
+
+  if (status !== 'published') {
+    return null
+  }
 
   const handleOpenLinkDialog = () => {
     popover.onClose()
@@ -63,6 +80,7 @@ export function GameProjectCardCourseMenu() {
               variant="ghost"
               size="sm"
               className="justify-start"
+              disabled={!linkedCourseId}
               onClick={handleOpenUnlinkDialog}
             >
               <Unlink className="size-4" />
@@ -73,12 +91,18 @@ export function GameProjectCardCourseMenu() {
       </Popover>
 
       <LinkGameDialog
+        gameId={gameId}
+        linkedCourseId={linkedCourseId}
         open={linkDialog.isOpen}
         onOpenChange={linkDialog.onToggle}
+        onLinked={onCourseLinkChanged}
       />
       <UnlinkGameDialog
+        gameId={gameId}
+        linkedCourseId={linkedCourseId}
         open={unlinkDialog.isOpen}
         onOpenChange={unlinkDialog.onToggle}
+        onUnlinked={onCourseLinkChanged}
       />
     </>
   )

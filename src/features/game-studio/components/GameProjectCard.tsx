@@ -10,12 +10,15 @@ import { getThemeBackgroundStyle } from '@/lib/themes'
 import { GameProjectCardCourseMenu } from './GameProjectCardCourseMenu'
 
 export function GameProjectCard({
+  id,
   title,
   description,
   themeId,
   version,
-  status,
+  status = 'draft',
+  linkedCourseId = null,
   onOpen,
+  onCourseLinkChanged,
 }: GameProjectCardProps) {
   const { t } = useTranslation('features.gameStudio')
   const resolvedTitle = title || t('gameProjectCard.untitledProject')
@@ -49,7 +52,12 @@ export function GameProjectCard({
             ? t('gameProjectCard.status.published')
             : t('gameProjectCard.status.draft')}
         </Badge>
-        <GameProjectCardCourseMenu />
+        <GameProjectCardCourseMenu
+          gameId={id}
+          linkedCourseId={linkedCourseId}
+          status={status}
+          onCourseLinkChanged={onCourseLinkChanged}
+        />
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         <div className="flex flex-col items-start gap-2 flex-1 min-w-0">

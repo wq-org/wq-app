@@ -313,12 +313,34 @@
   "linkGameDialog": {
     "title": "Link to course",
     "description": "Choose a course to link this game to.",
-    "cancel": "Cancel"
+    "kursename": "Course name",
+    "selectCourseColumn": "Select course",
+    "selectCourseAriaLabel": "Select {{title}}",
+    "emptyCourses": "No published courses available yet.",
+    "cancel": "Cancel",
+    "confirm": "Link course",
+    "linking": "Linking…",
+    "toasts": {
+      "linkedSuccess": "Game linked to course",
+      "linkedFailed": "Could not link game to course"
+    }
   },
   "unlinkGameDialog": {
     "title": "Unlink from course",
-    "description": "Remove the course link from this game.",
-    "cancel": "Cancel"
+    "description": "Select the linked course you want to remove from this game.",
+    "kursename": "Course name",
+    "selectCourseColumn": "Select course",
+    "selectCourseAriaLabel": "Select {{title}}",
+    "noLinkedCourse": "This game is not linked to a course.",
+    "loadFailed": "Could not load the linked course.",
+    "cancel": "Cancel",
+    "confirm": "Unlink course",
+    "unlinking": "Unlinking…",
+    "toasts": {
+      "loadFailed": "Could not load the linked course",
+      "unlinkedSuccess": "Course link removed",
+      "unlinkedFailed": "Could not remove course link"
+    }
   },
   "gameCard": {
     "centerAvatarAlt": "Center avatar",

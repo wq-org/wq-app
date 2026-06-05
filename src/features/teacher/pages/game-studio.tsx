@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AppShell } from '@/components/layout'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/contexts/user'
@@ -26,31 +26,44 @@ const GameStudio = () => {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
 
+  const loadProjects = useCallback(
+    (options?: { silent?: boolean }) => {
+      const teacherId = getUserId()
+      if (!teacherId) {
+        setProjects([])
+        if (!options?.silent) setLoading(false)
+        return
+      }
+
+      if (!options?.silent) setLoading(true)
+      getTeacherFlowGames(teacherId)
+        .then((data) => {
+          setProjects(
+            data.map((g) => ({
+              id: g.id,
+              title: g.title || t('page.fallbackUntitledGame'),
+              description: g.description ?? t('page.fallbackNoDescription'),
+              themeId: g.theme_id,
+              version: g.version ?? undefined,
+              status: g.status === 'published' ? 'published' : 'draft',
+              linkedCourseId: g.course_id ?? null,
+            })),
+          )
+        })
+        .catch((err) => {
+          console.error(err)
+          toast.error(t('page.toasts.loadFailed'))
+        })
+        .finally(() => {
+          if (!options?.silent) setLoading(false)
+        })
+    },
+    [getUserId, t],
+  )
+
   useEffect(() => {
-    const teacherId = getUserId()
-    if (!teacherId) {
-      setLoading(false)
-      return
-    }
-    getTeacherFlowGames(teacherId)
-      .then((data) => {
-        setProjects(
-          data.map((g) => ({
-            id: g.id,
-            title: g.title || t('page.fallbackUntitledGame'),
-            description: g.description ?? t('page.fallbackNoDescription'),
-            themeId: g.theme_id,
-            version: g.version ?? undefined,
-            status: g.status === 'published' ? 'published' : 'draft',
-          })),
-        )
-      })
-      .catch((err) => {
-        console.error(err)
-        toast.error(t('page.toasts.loadFailed'))
-      })
-      .finally(() => setLoading(false))
-  }, [getUserId, t])
+    loadProjects()
+  }, [loadProjects])
 
   const searchableProjects = useMemo(
     () =>
@@ -147,6 +160,7 @@ const GameStudio = () => {
                 <GameProjectCardList
                   projects={filteredProjects}
                   onOpen={(id) => navigate(`/teacher/canvas/${id}`)}
+                  onCourseLinkChanged={() => loadProjects({ silent: true })}
                 />
               )}
             </div>

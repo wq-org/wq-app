@@ -7,6 +7,7 @@ import type { GameProjectCardListProps } from '../types/game-studio.types'
 export function GameProjectCardList({
   projects,
   onOpen,
+  onCourseLinkChanged,
   variant = 'default',
   className,
   scrollAreaClassName,
@@ -52,7 +53,9 @@ export function GameProjectCardList({
             themeId={project.themeId}
             version={project.version}
             status={project.status}
+            linkedCourseId={project.linkedCourseId}
             onOpen={() => handleOpen(project.id)}
+            onCourseLinkChanged={onCourseLinkChanged}
           />
         </div>
       ))}

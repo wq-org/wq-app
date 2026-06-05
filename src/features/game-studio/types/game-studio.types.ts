@@ -44,13 +44,15 @@ export interface PublishDrawerProps {
 
 // ========== Card Types ==========
 export interface GameProjectCardProps {
-  id?: string
+  id: string
   title?: string
   description?: string
   themeId?: ThemeId
   version?: number
   status?: 'draft' | 'published'
+  linkedCourseId?: string | null
   onOpen?: () => void
+  onCourseLinkChanged?: () => void
 }
 
 export interface GameProjectCardCompactProps {
@@ -93,8 +95,10 @@ export interface GameProjectCardListProps {
     themeId?: ThemeId
     version?: number
     status?: 'draft' | 'published'
+    linkedCourseId?: string | null
   }[]
   onOpen?: (projectId: string) => void
+  onCourseLinkChanged?: () => void
   variant?: GameProjectCardListVariant
   className?: string
   scrollAreaClassName?: string
