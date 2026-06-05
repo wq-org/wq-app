@@ -69,6 +69,9 @@ export function ClassroomStudentsPanel({
         onValueChange={setSearchQuery}
         label={t('pages.classroomDetail.sections.studentsSearchLabel')}
         placeholder={t('pages.classroomDetail.sections.studentsSearchPlaceholder')}
+        labelVisibility="sr-only"
+        showSearchIcon
+        size="compact"
         className="max-w-md"
       />
 

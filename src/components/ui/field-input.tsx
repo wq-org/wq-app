@@ -18,6 +18,9 @@ type FieldInputProps = {
   maxLength?: number
   hideSeparator?: boolean
   showClearButton?: boolean
+  showSearchIcon?: boolean
+  labelVisibility?: 'sr-only' | 'visible'
+  size?: 'default' | 'compact'
   inputClassName?: string
   className?: string
 }
@@ -37,6 +40,9 @@ export const FieldInput = ({
   maxLength,
   hideSeparator = false,
   showClearButton = true,
+  showSearchIcon = false,
+  labelVisibility = 'visible',
+  size = 'default',
   inputClassName,
   className,
 }: FieldInputProps) => {
@@ -51,7 +57,7 @@ export const FieldInput = ({
         onValueChange={onValueChange}
         placeholder={placeholder}
         label={label}
-        labelVisibility="visible"
+        labelVisibility={labelVisibility}
         name={name}
         type={type}
         inputMode={inputMode}
@@ -59,6 +65,8 @@ export const FieldInput = ({
         required={required}
         hideSeparator={hideSeparator}
         showClearButton={showClearButton}
+        showSearchIcon={showSearchIcon}
+        size={size}
         disabled={disabled}
         maxLength={maxLength}
         inputClassName={inputClassName}

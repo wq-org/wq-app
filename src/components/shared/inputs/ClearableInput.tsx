@@ -29,7 +29,33 @@ interface ClearableInputProps {
   showClearButton?: boolean
   /** Use `visible` for form fields (matches `FieldTextarea`). Search bars keep `sr-only`. */
   labelVisibility?: 'sr-only' | 'visible'
+  size?: 'default' | 'compact'
 }
+
+const rootSizeClassName = {
+  default: 'pb-2',
+  compact: 'pb-0',
+} as const
+
+const labelOffsetClassName = {
+  default: 'mt-4',
+  compact: 'mt-2',
+} as const
+
+const inputSizeClassName = {
+  default: 'h-12 min-h-16 py-2 pr-10',
+  compact: 'h-9 min-h-0 py-1.5 pr-9 text-sm',
+} as const
+
+const searchIconSizeClassName = {
+  default: 'left-3 size-4',
+  compact: 'left-2.5 size-3.5',
+} as const
+
+const clearButtonSizeClassName = {
+  default: 'size-9',
+  compact: 'size-8',
+} as const
 
 export const ClearableInput = ({
   value,
@@ -53,6 +79,7 @@ export const ClearableInput = ({
   showSearchIcon = false,
   showClearButton = true,
   labelVisibility = 'sr-only',
+  size = 'default',
 }: ClearableInputProps) => {
   const generatedId = useId()
   const inputId = id ?? generatedId
@@ -84,7 +111,7 @@ export const ClearableInput = ({
   )
 
   return (
-    <div className={cn('relative pb-2', className)}>
+    <div className={cn('relative', rootSizeClassName[size], className)}>
       <Label
         htmlFor={inputId}
         className={cn(labelVisibility === 'sr-only' && 'sr-only')}
@@ -92,10 +119,18 @@ export const ClearableInput = ({
         {label}
       </Label>
 
-      <div className={cn('relative w-full', labelVisibility === 'visible' && 'mt-4')}>
+      <div
+        className={cn(
+          'relative w-full',
+          labelVisibility === 'visible' && labelOffsetClassName[size],
+        )}
+      >
         {showSearchIcon ? (
           <Search
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+            className={cn(
+              'pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted-foreground',
+              searchIconSizeClassName[size],
+            )}
             aria-hidden
           />
         ) : null}
@@ -108,8 +143,9 @@ export const ClearableInput = ({
           value={inputValue}
           onChange={handleInputChange}
           className={cn(
-            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent h-12 w-full py-2 min-h-16 pr-10',
-            showSearchIcon && `px-10`,
+            'placeholder:text-muted-foreground disabled:opacity-50 flex-1 outline-none bg-transparent w-full',
+            inputSizeClassName[size],
+            showSearchIcon && (size === 'compact' ? 'pl-9 pr-9' : 'px-10'),
             inputClassName,
           )}
           autoFocus={autoFocus}
@@ -129,18 +165,21 @@ export const ClearableInput = ({
             type="button"
             size="icon"
             variant="ghost"
-            className="absolute right-2 top-1/2 rounded-full p-1 -translate-y-1/2 hover:bg-accent"
+            className={cn(
+              'absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-accent',
+              clearButtonSizeClassName[size],
+            )}
             onClick={handleClear}
             aria-label={clearButtonLabel}
             disabled={disabled || inputValue.length === 0}
           >
-            <X className="h-4 w-4" />
+            <X className={cn(size === 'compact' ? 'size-3.5' : 'size-4')} />
           </Button>
         )}
       </div>
 
       {!hideSeparator ? (
-        <Separator className={cn('mt-2', separatorClassName)} />
+        <Separator className={cn(size === 'compact' ? 'mt-1' : 'mt-2', separatorClassName)} />
       ) : null}
     </div>
   )
