@@ -67,12 +67,16 @@ export {
   archiveCourseVersion,
   countActiveDeliveriesForVersion,
   countDeliveriesForVersion,
+  countOfflineDeliveriesForCourse,
+  countStudentVisibleDeliveriesForCourse,
   getClassroomCourseDelivery,
   getCourseVersionTree,
   getLatestPublishedCourseVersionId,
   listCourseArchiveOptions,
   listCourseVersionHistory,
   listPublishedCourseVersions,
+  restoreCourseDeliveriesOnline,
+  takeCourseDeliveriesOffline,
 } from './api/courseVersionApi'
 export { toCourseCardProps, teacherInitialsFromProfile } from './utils/courseCard.utils'
 export {

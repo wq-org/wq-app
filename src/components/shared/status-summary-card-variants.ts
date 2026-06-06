@@ -3,6 +3,8 @@ import { cva, type VariantProps } from 'class-variance-authority'
 export const statusSummaryCardVariants = cva('', {
   variants: {
     variant: {
+      default:
+        '[--status-summary-accent:oklch(0.72_0_0)] [--status-summary-header:oklch(0.92_0_0/0.12)] [--status-summary-glow:oklch(1_0_0/0.08)]',
       violet:
         '[--status-summary-accent:oklch(var(--oklch-violet))] [--status-summary-header:oklch(var(--oklch-violet)/0.16)] [--status-summary-glow:oklch(var(--oklch-violet)/0.14)]',
       indigo:
@@ -21,7 +23,7 @@ export const statusSummaryCardVariants = cva('', {
     },
   },
   defaultVariants: {
-    variant: 'violet',
+    variant: 'default',
   },
 })
 

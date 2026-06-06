@@ -15,6 +15,8 @@ type CourseReleaseStatusState = {
   live: PublishedCourseVersion | null
   diff: CourseDraftDiff | null
   deliveryCount: number
+  studentVisibleDeliveryCount: number
+  offlineDeliveryCount: number
   loading: boolean
   error: string | null
   refetch: () => Promise<void>
@@ -27,6 +29,8 @@ export function useCourseReleaseStatus({
   const [draft, setDraft] = useState<CourseDraftSnapshot | null>(null)
   const [live, setLive] = useState<PublishedCourseVersion | null>(null)
   const [deliveryCount, setDeliveryCount] = useState(0)
+  const [studentVisibleDeliveryCount, setStudentVisibleDeliveryCount] = useState(0)
+  const [offlineDeliveryCount, setOfflineDeliveryCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -36,6 +40,8 @@ export function useCourseReleaseStatus({
       setDraft(null)
       setLive(null)
       setDeliveryCount(0)
+      setStudentVisibleDeliveryCount(0)
+      setOfflineDeliveryCount(0)
       setLoading(false)
       setError(null)
       return
@@ -53,10 +59,14 @@ export function useCourseReleaseStatus({
       setDraft(nextDraft)
       setLive(published.tree)
       setDeliveryCount(published.deliveryCount)
+      setStudentVisibleDeliveryCount(published.studentVisibleDeliveryCount)
+      setOfflineDeliveryCount(published.offlineDeliveryCount)
     } catch (err: unknown) {
       setDraft(null)
       setLive(null)
       setDeliveryCount(0)
+      setStudentVisibleDeliveryCount(0)
+      setOfflineDeliveryCount(0)
       setError(err instanceof Error ? err.message : 'load_failed')
     } finally {
       setLoading(false)
@@ -77,6 +87,8 @@ export function useCourseReleaseStatus({
     live,
     diff,
     deliveryCount,
+    studentVisibleDeliveryCount,
+    offlineDeliveryCount,
     loading,
     error,
     refetch: load,

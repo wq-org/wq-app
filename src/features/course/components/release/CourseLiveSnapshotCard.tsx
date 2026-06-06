@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { RadioTowerIcon } from 'lucide-react'
+import { RadioOff, RadioTowerIcon } from 'lucide-react'
 
 import { StatusSummaryCard } from '@/components/shared'
 import { SkeletonLoaderCard } from '@/components/shared/skeletons/SkeletonLoaderCard'
@@ -12,12 +12,14 @@ import { formatPublishedAt } from '../../utils/courseVersion.utils'
 type CourseLiveSnapshotCardProps = {
   live: PublishedCourseVersion | null
   deliveryCount: number
+  offlineDeliveryCount?: number
   loading?: boolean
 }
 
 export function CourseLiveSnapshotCard({
   live,
   deliveryCount,
+  offlineDeliveryCount = 0,
   loading = false,
 }: CourseLiveSnapshotCardProps) {
   const { t, i18n } = useTranslation('features.course')
@@ -55,13 +57,26 @@ export function CourseLiveSnapshotCard({
 
   const publishedAtLabel = formatPublishedAt(live.publishedAt, i18n.language)
   const themeLabel = COLORS[live.themeId].label
+  const isOffline = deliveryCount === 0 && offlineDeliveryCount > 0
+  const cardTitle = isOffline
+    ? t('settings.liveCourse.offlineTitle')
+    : t('settings.liveCourse.title')
+  const cardDescription = isOffline
+    ? t('settings.liveCourse.offlineDescription')
+    : t('settings.liveCourse.description')
+  const deliveryLabel = isOffline
+    ? t('settings.liveCourse.offlineDeliveries')
+    : t('settings.liveCourse.deliveries')
+  const deliveryValue = t('settings.liveCourse.deliveriesValue', {
+    count: isOffline ? offlineDeliveryCount : deliveryCount,
+  })
 
   return (
     <StatusSummaryCard
-      title={t('settings.liveCourse.title')}
-      description={t('settings.liveCourse.description')}
-      icon={RadioTowerIcon}
-      variant={live.themeId}
+      title={cardTitle}
+      description={cardDescription}
+      icon={isOffline ? RadioOff : RadioTowerIcon}
+      variant={isOffline ? 'default' : live.themeId}
       rows={[
         {
           label: t('settings.liveCourse.version'),
@@ -72,8 +87,8 @@ export function CourseLiveSnapshotCard({
           value: publishedAtLabel,
         },
         {
-          label: t('settings.liveCourse.deliveries'),
-          value: t('settings.liveCourse.deliveriesValue', { count: deliveryCount }),
+          label: deliveryLabel,
+          value: deliveryValue,
         },
         {
           label: t('settings.liveCourse.titleLabel'),

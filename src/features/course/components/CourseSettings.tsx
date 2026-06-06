@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Archive, Check, GitCompareArrows, Upload } from 'lucide-react'
+import {
+  Archive,
+  Check,
+  GitCompareArrows,
+  MoreHorizontal,
+  Power,
+  PowerOff,
+  Upload,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ColorPicker } from '@/components/shared'
@@ -11,9 +19,16 @@ import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
-import { deleteCourse, getCourseById, updateCourse } from '@/features/course'
+import {
+  deleteCourse,
+  getCourseById,
+  restoreCourseDeliveriesOnline,
+  takeCourseDeliveriesOffline,
+  updateCourse,
+} from '@/features/course'
 import { useUser } from '@/contexts/user'
 import type { ThemeId } from '@/lib/themes'
 
@@ -37,6 +52,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [deliveryVisibilityChanging, setDeliveryVisibilityChanging] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [themeId, setThemeId] = useState<ThemeId>('blue')
@@ -45,17 +61,21 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const [originalThemeId, setOriginalThemeId] = useState<ThemeId>('blue')
   const [hasChanges, setHasChanges] = useState(false)
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false)
 
   const {
     live,
     diff,
     deliveryCount,
+    studentVisibleDeliveryCount,
+    offlineDeliveryCount,
     loading: releaseLoading,
     refetch: refetchReleaseStatus,
   } = useCourseReleaseStatus({ courseId })
 
   const publishFlow = useCoursePublishFlow({ live, diff })
   const hasReleaseChanges = (diff?.summary.totalChanges ?? 0) > 0
+  const showRestoreOnlineAction = offlineDeliveryCount > 0 && studentVisibleDeliveryCount === 0
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -147,6 +167,40 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     void refetchReleaseStatus()
   }
 
+  const handleTakeOffline = async () => {
+    try {
+      setDeliveryVisibilityChanging(true)
+      const affectedCount = await takeCourseDeliveriesOffline(courseId)
+      await refetchReleaseStatus()
+      setMoreMenuOpen(false)
+      toast.success(t('settings.toasts.offlineSuccess'), {
+        description: t('settings.toasts.offlineSuccessDescription', { count: affectedCount }),
+      })
+    } catch (error) {
+      console.error('Error taking course deliveries offline:', error)
+      toast.error(t('settings.toasts.offlineFailed'))
+    } finally {
+      setDeliveryVisibilityChanging(false)
+    }
+  }
+
+  const handleRestoreOnline = async () => {
+    try {
+      setDeliveryVisibilityChanging(true)
+      const affectedCount = await restoreCourseDeliveriesOnline(courseId)
+      await refetchReleaseStatus()
+      setMoreMenuOpen(false)
+      toast.success(t('settings.toasts.onlineSuccess'), {
+        description: t('settings.toasts.onlineSuccessDescription', { count: affectedCount }),
+      })
+    } catch (error) {
+      console.error('Error restoring course deliveries online:', error)
+      toast.error(t('settings.toasts.onlineFailed'))
+    } finally {
+      setDeliveryVisibilityChanging(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -214,6 +268,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         <CourseLiveSnapshotCard
           live={live}
           deliveryCount={deliveryCount}
+          offlineDeliveryCount={offlineDeliveryCount}
           loading={releaseLoading}
         />
 
@@ -223,28 +278,94 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
           loading={releaseLoading}
         />
 
-        <div className="flex flex-col gap-4 border-t pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <HoldToDeleteButton
-            loading={deleting}
-            onDelete={handleDeleteCourse}
-          >
-            {t('settings.deleteAction')}
-          </HoldToDeleteButton>
-
+        <div className="flex flex-col gap-4 border-t pt-8 sm:flex-row sm:items-center sm:justify-end">
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button
-              type="button"
-              variant="orange"
-              className="gap-2"
-              disabled={releaseLoading}
-              onClick={() => setArchiveDialogOpen(true)}
+            <Popover
+              open={moreMenuOpen}
+              onOpenChange={setMoreMenuOpen}
             >
-              <Archive
-                className="size-4"
-                aria-hidden
-              />
-              {t('settings.archiveAction')}
-            </Button>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="gap-2"
+                  aria-label={t('settings.moreActions')}
+                >
+                  <MoreHorizontal
+                    className="size-4"
+                    aria-hidden
+                  />
+                  {t('settings.moreActionsLabel')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-60 gap-1 p-1.5"
+              >
+                {showRestoreOnlineAction ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-9 justify-start gap-2 px-2"
+                    disabled={deliveryVisibilityChanging || releaseLoading}
+                    onClick={() => {
+                      void handleRestoreOnline()
+                    }}
+                  >
+                    <Power
+                      className="size-4"
+                      aria-hidden
+                    />
+                    {t('settings.onlineAction')}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-9 justify-start gap-2 px-2"
+                    disabled={
+                      studentVisibleDeliveryCount === 0 ||
+                      deliveryVisibilityChanging ||
+                      releaseLoading
+                    }
+                    onClick={() => {
+                      void handleTakeOffline()
+                    }}
+                  >
+                    <PowerOff
+                      className="size-4"
+                      aria-hidden
+                    />
+                    {t('settings.offlineAction')}
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="h-9 justify-start gap-2 px-2"
+                  disabled={releaseLoading}
+                  onClick={() => {
+                    setMoreMenuOpen(false)
+                    setArchiveDialogOpen(true)
+                  }}
+                >
+                  <Archive
+                    className="size-4"
+                    aria-hidden
+                  />
+                  {t('settings.archiveAction')}
+                </Button>
+                <div className="my-1 h-px bg-border" />
+                <HoldToDeleteButton
+                  loading={deleting}
+                  onDelete={handleDeleteCourse}
+                  variant="ghost"
+                  className="h-9 w-full justify-start px-2 text-destructive hover:text-destructive"
+                >
+                  {t('settings.deleteAction')}
+                </HoldToDeleteButton>
+              </PopoverContent>
+            </Popover>
             <Button
               type="button"
               variant="outline"
@@ -260,7 +381,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               className="gap-2"
               onClick={handleSaveChanges}
               disabled={!hasChanges || saving}

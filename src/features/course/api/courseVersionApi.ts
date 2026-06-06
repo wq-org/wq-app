@@ -198,6 +198,64 @@ export async function countActiveDeliveriesForVersion(courseVersionId: string): 
   return count ?? 0
 }
 
+export async function countStudentVisibleDeliveriesForCourse(courseId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('course_deliveries')
+    .select('id', { count: 'exact', head: true })
+    .eq('course_id', courseId)
+    .is('deleted_at', null)
+    .in('status', ['active', 'scheduled'])
+
+  if (error) {
+    console.error('countStudentVisibleDeliveriesForCourse:', error)
+    throw error
+  }
+
+  return count ?? 0
+}
+
+export async function countOfflineDeliveriesForCourse(courseId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('course_deliveries')
+    .select('id', { count: 'exact', head: true })
+    .eq('course_id', courseId)
+    .is('deleted_at', null)
+    .eq('status', 'offline')
+
+  if (error) {
+    console.error('countOfflineDeliveriesForCourse:', error)
+    throw error
+  }
+
+  return count ?? 0
+}
+
+export async function takeCourseDeliveriesOffline(courseId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('take_course_deliveries_offline', {
+    p_course_id: courseId,
+  })
+
+  if (error) {
+    console.error('takeCourseDeliveriesOffline:', error)
+    throw error
+  }
+
+  return typeof data === 'number' ? data : 0
+}
+
+export async function restoreCourseDeliveriesOnline(courseId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('restore_course_deliveries_online', {
+    p_course_id: courseId,
+  })
+
+  if (error) {
+    console.error('restoreCourseDeliveriesOnline:', error)
+    throw error
+  }
+
+  return typeof data === 'number' ? data : 0
+}
+
 export async function listCourseVersionHistory(
   courseId: string,
 ): Promise<CourseVersionHistorySummaryRow[]> {

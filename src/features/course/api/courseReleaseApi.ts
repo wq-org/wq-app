@@ -4,6 +4,8 @@ import { getTopicsByCourseId } from '@/features/topic'
 import { getCourseById } from './coursesApi'
 import {
   countActiveDeliveriesForVersion,
+  countOfflineDeliveriesForCourse,
+  countStudentVisibleDeliveriesForCourse,
   getCourseVersionTree,
   getLatestPublishedCourseVersionId,
 } from './courseVersionApi'
@@ -25,18 +27,24 @@ export async function fetchCourseDraftSnapshot(courseId: string): Promise<Course
   return { course, topics: topicsWithLessons }
 }
 
-export async function fetchLatestPublishedCourseTree(
-  courseId: string,
-): Promise<{ tree: PublishedCourseVersion | null; deliveryCount: number }> {
+export async function fetchLatestPublishedCourseTree(courseId: string): Promise<{
+  tree: PublishedCourseVersion | null
+  deliveryCount: number
+  studentVisibleDeliveryCount: number
+  offlineDeliveryCount: number
+}> {
   const versionId = await getLatestPublishedCourseVersionId(courseId)
   if (!versionId) {
-    return { tree: null, deliveryCount: 0 }
+    return { tree: null, deliveryCount: 0, studentVisibleDeliveryCount: 0, offlineDeliveryCount: 0 }
   }
 
-  const [tree, deliveryCount] = await Promise.all([
-    getCourseVersionTree(versionId),
-    countActiveDeliveriesForVersion(versionId),
-  ])
+  const [tree, deliveryCount, studentVisibleDeliveryCount, offlineDeliveryCount] =
+    await Promise.all([
+      getCourseVersionTree(versionId),
+      countActiveDeliveriesForVersion(versionId),
+      countStudentVisibleDeliveriesForCourse(courseId),
+      countOfflineDeliveriesForCourse(courseId),
+    ])
 
-  return { tree, deliveryCount }
+  return { tree, deliveryCount, studentVisibleDeliveryCount, offlineDeliveryCount }
 }

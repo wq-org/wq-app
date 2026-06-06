@@ -66,7 +66,13 @@ export type ClassroomCourseDeliveryRow = {
   published_at: string | null
 }
 
-export type CourseDeliveryStatus = 'draft' | 'scheduled' | 'active' | 'archived' | 'canceled'
+export type CourseDeliveryStatus =
+  | 'draft'
+  | 'scheduled'
+  | 'active'
+  | 'offline'
+  | 'archived'
+  | 'canceled'
 
 export type ClassroomCourseDeliveryListRow = {
   id: string
