@@ -63,7 +63,7 @@ function buildDraft(overrides: Partial<CourseDraftSnapshot> = {}): CourseDraftSn
                 type: 'root',
                 version: 1,
               },
-            } as LessonDraftState,
+            } as unknown as LessonDraftState,
           },
         ],
       },
@@ -124,7 +124,7 @@ function buildLive(overrides: Partial<PublishedCourseVersion> = {}): PublishedCo
                 type: 'root',
                 version: 1,
               },
-            } as LessonDraftState,
+            } as unknown as LessonDraftState,
             pages: [],
             orderIndex: 0,
             contentSchemaVersion: 1,
@@ -188,7 +188,7 @@ describe('compareDraftToPublished', () => {
         type: 'root',
         version: 1,
       },
-    } as LessonDraftState
+    } as unknown as LessonDraftState
 
     const diff = compareDraftToPublished({ draft, live: buildLive() })
 
@@ -268,7 +268,7 @@ describe('compareDraftToPublished', () => {
                     type: 'root',
                     version: 1,
                   },
-                } as LessonDraftState,
+                } as unknown as LessonDraftState,
               },
             ],
           },
@@ -335,7 +335,7 @@ describe('comparePublishedVersions', () => {
                   type: 'root',
                   version: 1,
                 },
-              } as LessonDraftState,
+              } as unknown as LessonDraftState,
               pages: [],
               orderIndex: 1,
               contentSchemaVersion: 1,
@@ -392,7 +392,7 @@ describe('resolveLessonReleaseStatus', () => {
         type: 'root',
         version: 1,
       },
-    } as LessonDraftState
+    } as unknown as LessonDraftState
     const live = buildLive()
     const diff = compareDraftToPublished({ draft, live })
     const status = resolveLessonReleaseStatus(diff, live, 'lesson-1')
