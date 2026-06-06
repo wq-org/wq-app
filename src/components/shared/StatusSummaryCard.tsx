@@ -47,7 +47,7 @@ function resolveStatusSummaryVariant(
     return LEGACY_ICON_ACCENT_VARIANTS[iconAccent as keyof typeof LEGACY_ICON_ACCENT_VARIANTS]
   }
 
-  return iconAccent
+  return iconAccent as StatusSummaryCardVariant
 }
 
 export function StatusSummaryCard({
