@@ -10,7 +10,7 @@ import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { CourseCardList, buildStudentPublishedCourseRoute } from '@/features/course'
-import { DashboardSection } from '@/features/dashboard'
+import { DashboardSection, useDashboardGreetingPeriod } from '@/features/dashboard'
 import { useStudentCourseDeliveries } from '../hooks/useStudentCourseDeliveries'
 
 export function Dashboard() {
@@ -19,11 +19,12 @@ export function Dashboard() {
   const { loading, profile } = useUser()
   const fetchEnabled = Boolean(profile?.user_id)
   const { courses, loading: coursesLoading } = useStudentCourseDeliveries(fetchEnabled)
+  const greetingPeriod = useDashboardGreetingPeriod()
 
   const greetingName = profile?.display_name?.trim() || profile?.username?.trim()
   const greeting = greetingName
-    ? t('dashboard.greetingWithName', { name: greetingName })
-    : t('dashboard.greeting')
+    ? t(`dashboard.greetings.${greetingPeriod}WithName`, { name: greetingName })
+    : t(`dashboard.greetings.${greetingPeriod}`)
 
   const teachers = useMemo(() => {
     const teacherById = new Map<string, NonNullable<(typeof courses)[number]['teacher']>>()

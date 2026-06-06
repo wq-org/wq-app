@@ -81,6 +81,14 @@
   },
   "dashboard": {
     "loading": "Loading…",
+    "greetings": {
+      "morning": "Good morning",
+      "morningWithName": "Good morning, {{name}}",
+      "midday": "Good afternoon",
+      "middayWithName": "Good afternoon, {{name}}",
+      "evening": "Good evening",
+      "eveningWithName": "Good evening, {{name}}"
+    },
     "loadingClassrooms": "Loading classrooms…",
     "loadingSchedule": "Loading schedule…",
     "loadingCourses": "Loading courses…",

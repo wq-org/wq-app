@@ -1,8 +1,14 @@
 {
   "dashboard": {
     "loading": "Loading…",
-    "greeting": "Good morning",
-    "greetingWithName": "Good morning, {{name}}",
+    "greetings": {
+      "morning": "Good morning",
+      "morningWithName": "Good morning, {{name}}",
+      "midday": "Good afternoon",
+      "middayWithName": "Good afternoon, {{name}}",
+      "evening": "Good evening",
+      "eveningWithName": "Good evening, {{name}}"
+    },
     "sections": {
       "courses": {
         "title": "Courses",

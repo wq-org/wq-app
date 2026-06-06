@@ -6,13 +6,14 @@ import { toast } from 'sonner'
 import { AppShell } from '@/components/layout'
 import { LoadingPage, SelectTabs, SelectTabsContent, type TabItem } from '@/components/shared'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
+import { Text } from '@/components/ui/text'
 import {
   CourseCardList,
   toCourseCardProps,
   useCourses,
   type CourseCardProps,
 } from '@/features/course'
-import { DashboardSection } from '@/features/dashboard'
+import { DashboardSection, useDashboardGreetingPeriod } from '@/features/dashboard'
 import { GameProjectCardList, useTeacherGameProjects } from '@/features/game-studio'
 import { useUser } from '@/contexts/user'
 import { useMyInstitutionFeatureFlags } from '@/features/entitlements'
@@ -49,6 +50,11 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const { profile } = useUser()
   const fetchEnabled = Boolean(profile?.user_id)
+  const greetingPeriod = useDashboardGreetingPeriod()
+  const greetingName = profile?.display_name?.trim() || profile?.username?.trim()
+  const greeting = greetingName
+    ? t(`dashboard.greetings.${greetingPeriod}WithName`, { name: greetingName })
+    : t(`dashboard.greetings.${greetingPeriod}`)
 
   const courseFilterTabs: TabItem[] = useMemo(
     () => [
@@ -236,10 +242,18 @@ const Dashboard = () => {
       role="teacher"
       className="flex flex-col gap-8"
     >
-      <div className="flex w-full justify-center">
-        <QuoteOfTheDay />
-      </div>
       <main className="container flex flex-col gap-11 pb-40">
+        <section className="flex flex-col items-center gap-3 pt-10 text-center">
+          <Text
+            as="h1"
+            variant="h1"
+            className="text-2xl font-semibold"
+          >
+            {greeting}
+          </Text>
+          <QuoteOfTheDay />
+        </section>
+
         <div className="flex gap-8 w-full">
           <DashboardSection
             title="Classrooms"

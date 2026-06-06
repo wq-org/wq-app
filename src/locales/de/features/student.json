@@ -1,8 +1,14 @@
 {
   "dashboard": {
     "loading": "Wird geladen …",
-    "greeting": "Guten Morgen",
-    "greetingWithName": "Guten Morgen, {{name}}",
+    "greetings": {
+      "morning": "Guten Morgen",
+      "morningWithName": "Guten Morgen, {{name}}",
+      "midday": "Guten Mittag",
+      "middayWithName": "Guten Mittag, {{name}}",
+      "evening": "Guten Abend",
+      "eveningWithName": "Guten Abend, {{name}}"
+    },
     "sections": {
       "courses": {
         "title": "Kurse",
