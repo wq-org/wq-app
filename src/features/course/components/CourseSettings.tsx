@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Check, GitCompareArrows, Upload } from 'lucide-react'
+import { Archive, Check, GitCompareArrows, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ColorPicker } from '@/components/shared'
@@ -20,6 +20,7 @@ import type { ThemeId } from '@/lib/themes'
 import { useCoursePublishFlow } from '../hooks/useCoursePublishFlow'
 import { useCourseReleaseStatus } from '../hooks/useCourseReleaseStatus'
 import { buildCourseReleaseReviewRoute } from '../utils/courseRelease.utils'
+import { CourseArchiveDialog } from './archive/CourseArchiveDialog'
 import { CourseLiveSnapshotCard } from './release/CourseLiveSnapshotCard'
 import { CoursePublishFlowDialogs } from './release/CoursePublishFlowDialogs'
 import { CourseReleasePanel } from './release/CourseReleasePanel'
@@ -43,6 +44,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const [originalDescription, setOriginalDescription] = useState('')
   const [originalThemeId, setOriginalThemeId] = useState<ThemeId>('blue')
   const [hasChanges, setHasChanges] = useState(false)
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
 
   const {
     live,
@@ -141,6 +143,10 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     navigate(buildCourseReleaseReviewRoute(courseId))
   }
 
+  const handleArchived = () => {
+    void refetchReleaseStatus()
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -228,6 +234,19 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button
               type="button"
+              variant="orange"
+              className="gap-2"
+              disabled={releaseLoading}
+              onClick={() => setArchiveDialogOpen(true)}
+            >
+              <Archive
+                className="size-4"
+                aria-hidden
+              />
+              {t('settings.archiveAction')}
+            </Button>
+            <Button
+              type="button"
               variant="outline"
               className="gap-2"
               disabled={!hasReleaseChanges || releaseLoading}
@@ -277,6 +296,12 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         courseId={courseId}
         onPublished={handlePublished}
         flow={publishFlow}
+      />
+      <CourseArchiveDialog
+        courseId={courseId}
+        open={archiveDialogOpen}
+        onOpenChange={setArchiveDialogOpen}
+        onArchived={handleArchived}
       />
     </div>
   )

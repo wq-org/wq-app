@@ -1,6 +1,30 @@
 {
   "dashboard": {
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "greeting": "Good morning",
+    "greetingWithName": "Good morning, {{name}}",
+    "sections": {
+      "courses": {
+        "title": "Courses",
+        "loading": "Loading courses…",
+        "empty": "No published courses are available yet."
+      },
+      "tasks": {
+        "title": "Tasks",
+        "empty": "No tasks are assigned right now."
+      },
+      "teachers": {
+        "title": "Teachers",
+        "loading": "Loading teachers…",
+        "empty": "Teachers will appear here once courses are available."
+      }
+    }
+  },
+  "publishedCourse": {
+    "invalidLink": "This course link is invalid.",
+    "notDelivered": "This course is not available for your classroom.",
+    "loadError": "Could not load this course.",
+    "contextLabel": "Read-only course for your classroom."
   },
   "view": {
     "title": "Student View",

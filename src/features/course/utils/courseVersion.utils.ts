@@ -128,6 +128,35 @@ export function buildClassroomPublishedGameRoute(
   return `/teacher/dashboard/classroom/${classroomId}/course/${courseId}/published/game/${gameId}`
 }
 
+export function buildStudentPublishedCourseRoute(classroomId: string, courseId: string): string {
+  return `/student/dashboard/classroom/${classroomId}/course/${courseId}/published`
+}
+
+export function buildStudentPublishedTopicRoute(
+  classroomId: string,
+  courseId: string,
+  topicId: string,
+): string {
+  return `/student/dashboard/classroom/${classroomId}/course/${courseId}/published/topic/${topicId}`
+}
+
+export function buildStudentPublishedLessonRoute(
+  classroomId: string,
+  courseId: string,
+  topicId: string,
+  lessonId: string,
+): string {
+  return `/student/dashboard/classroom/${classroomId}/course/${courseId}/published/topic/${topicId}/lesson/${lessonId}`
+}
+
+export function buildStudentPublishedGameRoute(
+  classroomId: string,
+  courseId: string,
+  gameId: string,
+): string {
+  return `/student/dashboard/classroom/${classroomId}/course/${courseId}/published/game/${gameId}`
+}
+
 export function buildPublishedTopicRoute(
   courseId: string,
   courseVersionId: string,

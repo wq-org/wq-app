@@ -1,6 +1,30 @@
 {
   "dashboard": {
-    "loading": "Wird geladen …"
+    "loading": "Wird geladen …",
+    "greeting": "Guten Morgen",
+    "greetingWithName": "Guten Morgen, {{name}}",
+    "sections": {
+      "courses": {
+        "title": "Kurse",
+        "loading": "Kurse werden geladen …",
+        "empty": "Noch sind keine veröffentlichten Kurse verfügbar."
+      },
+      "tasks": {
+        "title": "Aufgaben",
+        "empty": "Aktuell sind keine Aufgaben zugewiesen."
+      },
+      "teachers": {
+        "title": "Lehrende",
+        "loading": "Lehrende werden geladen …",
+        "empty": "Lehrende erscheinen hier, sobald Kurse verfügbar sind."
+      }
+    }
+  },
+  "publishedCourse": {
+    "invalidLink": "Dieser Kurslink ist ungültig.",
+    "notDelivered": "Dieser Kurs ist für deinen Klassenraum nicht verfügbar.",
+    "loadError": "Der Kurs konnte nicht geladen werden.",
+    "contextLabel": "Schreibgeschützter Kurs für deinen Klassenraum."
   },
   "view": {
     "title": "Lernendenansicht",

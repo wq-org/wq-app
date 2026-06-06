@@ -29,6 +29,7 @@ export { usePublishedCourseVersionsList } from './hooks/usePublishedCourseVersio
 export { useCourseReleaseStatus } from './hooks/useCourseReleaseStatus'
 export { useCourseReleaseReview } from './hooks/useCourseReleaseReview'
 export { useCourseVersionHistory } from './hooks/useCourseVersionHistory'
+export { useCourseArchiveDialog } from './hooks/useCourseArchiveDialog'
 export { useLessonReleaseStatus } from './hooks/useLessonReleaseStatus'
 export { COURSE_SEARCH_FIELDS } from './types/course.types'
 export type {
@@ -42,6 +43,10 @@ export type {
 } from './types/course.types'
 export type {
   ClassroomCourseListItem,
+  CourseArchiveOptions,
+  CourseArchiveVersionBlockReason,
+  CourseArchiveVersionOption,
+  CourseDeliveryStatus,
   CourseVersionHistorySummaryRow,
   PublishedCourseVersion,
   PublishedCourseVersionSummary,
@@ -59,11 +64,13 @@ export {
 export { publishCourseToClassrooms } from './api/coursePublishApi'
 export type { PublishCourseToClassroomsResult } from './api/coursePublishApi'
 export {
+  archiveCourseVersion,
   countActiveDeliveriesForVersion,
   countDeliveriesForVersion,
   getClassroomCourseDelivery,
   getCourseVersionTree,
   getLatestPublishedCourseVersionId,
+  listCourseArchiveOptions,
   listCourseVersionHistory,
   listPublishedCourseVersions,
 } from './api/courseVersionApi'
@@ -78,6 +85,10 @@ export {
   buildPublishedLessonRoute,
   buildPublishedTopicLessonRoute,
   buildPublishedTopicRoute,
+  buildStudentPublishedCourseRoute,
+  buildStudentPublishedGameRoute,
+  buildStudentPublishedLessonRoute,
+  buildStudentPublishedTopicRoute,
   findPublishedLessonInTopic,
   findPublishedLessonInTree,
   findPublishedTopicInTree,

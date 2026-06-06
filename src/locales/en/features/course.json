@@ -28,6 +28,32 @@
     "save": "Save Changes",
     "saving": "Saving...",
     "deleteAction": "Delete Course",
+    "archiveAction": "Archive",
+    "archiveDialog": {
+      "title": "Archive course version",
+      "description": "Archived versions are no longer active. All learning progress stays available.",
+      "confirm": "Archive",
+      "archiving": "Archiving...",
+      "loadError": "Could not load archive options.",
+      "retry": "Retry",
+      "empty": "There are no published versions right now.",
+      "selectVersionAriaLabel": "Select version {{version}}",
+      "versionStatus": {
+        "inactive": "Not active",
+        "latest": "Current live version",
+        "singleClassroom": "{{classroom}} is learning with it",
+        "multipleClassrooms": "{{classroom}} and {{count}} more are learning with it"
+      },
+      "activeClassroomWarning": "Archive only when the classroom is finished.",
+      "blockReasons": {
+        "latestPublished": "Cannot be archived while it is the newest version."
+      },
+      "toasts": {
+        "success": "Archive complete",
+        "versionSuccessDescription": "The course version is no longer active. Learning progress stays intact.",
+        "failed": "Archive failed. Please try again."
+      }
+    },
     "errors": {
       "saveFailed": "Failed to save changes. Please try again.",
       "deleteFailed": "Failed to delete course. Please try again.",

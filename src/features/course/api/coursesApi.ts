@@ -152,6 +152,7 @@ export async function getClassroomCourses(classroomId: string): Promise<Classroo
     )
     .eq('classroom_id', classroomId)
     .is('deleted_at', null)
+    .in('status', ['active', 'scheduled'])
     .order('created_at', { ascending: false })
 
   if (error) {

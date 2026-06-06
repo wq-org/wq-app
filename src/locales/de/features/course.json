@@ -28,6 +28,32 @@
     "save": "Speichern",
     "saving": "Speichern...",
     "deleteAction": "Kurs l\u00f6schen",
+    "archiveAction": "Archivierung",
+    "archiveDialog": {
+      "title": "Kursversion archivieren",
+      "description": "Archivierte Versionen sind nicht mehr aktiv. Alle Lernfortschritte bleiben erhalten.",
+      "confirm": "Archivieren",
+      "archiving": "Archivieren...",
+      "loadError": "Archivierungsoptionen konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "empty": "Es gibt derzeit keine ver\u00f6ffentlichten Versionen.",
+      "selectVersionAriaLabel": "Version {{version}} ausw\u00e4hlen",
+      "versionStatus": {
+        "inactive": "Nicht aktiv",
+        "latest": "Aktuelle Live-Version",
+        "singleClassroom": "{{classroom}} lernt gerade damit",
+        "multipleClassrooms": "{{classroom}} und {{count}} weitere lernen gerade damit"
+      },
+      "activeClassroomWarning": "Erst archivieren, wenn der Klassenraum fertig ist.",
+      "blockReasons": {
+        "latestPublished": "Kann nicht archiviert werden, solange es die neueste Version ist."
+      },
+      "toasts": {
+        "success": "Archivierung abgeschlossen",
+        "versionSuccessDescription": "Die Kursversion ist nicht mehr aktiv. Lernst\u00e4nde bleiben erhalten.",
+        "failed": "Archivierung fehlgeschlagen. Bitte versuche es erneut."
+      }
+    },
     "errors": {
       "saveFailed": "\u00c4nderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
       "deleteFailed": "Kurs konnte nicht gel\u00f6scht werden. Bitte versuche es erneut.",

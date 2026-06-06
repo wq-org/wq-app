@@ -23,6 +23,10 @@ import {
   StudentNotesPage,
   StudentTasksPage,
   StudentViewPage,
+  StudentPublishedCourseGamePage,
+  StudentPublishedCoursePage,
+  StudentPublishedLessonPage,
+  StudentPublishedTopicPage,
 } from '@/features/student'
 import {
   TeacherDashboard,
@@ -1033,6 +1037,46 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <StudentDashboard />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published/game/:gameId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentPublishedCourseGamePage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published/topic/:topicId/lesson/:lessonId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentPublishedLessonPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published/topic/:topicId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentPublishedTopicPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard/classroom/:classroomId/course/:courseId/published"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentPublishedCoursePage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

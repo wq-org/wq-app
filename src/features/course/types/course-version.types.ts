@@ -66,6 +66,8 @@ export type ClassroomCourseDeliveryRow = {
   published_at: string | null
 }
 
+export type CourseDeliveryStatus = 'draft' | 'scheduled' | 'active' | 'archived' | 'canceled'
+
 export type ClassroomCourseDeliveryListRow = {
   id: string
   course_id: string
@@ -163,4 +165,21 @@ export type CourseVersionHistorySummaryRow = {
   publishedAt: Date | null
   createdAt: Date
   activeDeliveryCount: number
+}
+
+export type CourseArchiveVersionBlockReason = 'latestPublished'
+
+export type CourseArchiveVersionOption = {
+  id: string
+  versionNo: number
+  publishedAt: Date | null
+  activeDeliveryCount: number
+  activeClassroomTitles: string[]
+  isLatestPublished: boolean
+  isEligible: boolean
+  blockReason: CourseArchiveVersionBlockReason | null
+}
+
+export type CourseArchiveOptions = {
+  versions: CourseArchiveVersionOption[]
 }

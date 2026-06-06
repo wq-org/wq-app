@@ -20,7 +20,7 @@ type PublishedCourseViewProps = {
   onTopicView: (topicId: string) => void
   onGameOpen: (gameId: string) => void
   onVersionChange: (courseVersionId: string) => void
-  onCompareToDraft: () => void
+  onCompareToDraft?: () => void
   onOpenEditor?: () => void
 }
 

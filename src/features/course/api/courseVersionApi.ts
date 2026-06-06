@@ -1,6 +1,9 @@
 import { supabase } from '@/lib/supabase'
 
 import type {
+  CourseArchiveOptions,
+  CourseArchiveVersionBlockReason,
+  CourseArchiveVersionOption,
   ClassroomCourseDelivery,
   ClassroomCourseDeliveryRow,
   CourseVersionHistorySummaryRow,
@@ -49,6 +52,11 @@ const VERSION_TREE_SELECT = `
     )
   )
 `
+
+type CourseArchiveDeliveryClassroomRow = {
+  course_version_id: string
+  classrooms: { title: string | null } | { title: string | null }[] | null
+}
 
 export async function listPublishedCourseVersions(
   courseId: string,
@@ -100,6 +108,8 @@ export async function getClassroomCourseDelivery(
     .eq('classroom_id', classroomId)
     .eq('course_id', courseId)
     .is('deleted_at', null)
+    .not('published_at', 'is', null)
+    .in('status', ['active', 'scheduled'])
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
@@ -137,6 +147,38 @@ function toCourseVersionHistorySummaryRow(row: {
     publishedAt: row.published_at ? new Date(row.published_at) : null,
     createdAt: new Date(row.created_at),
     activeDeliveryCount: row.activeDeliveryCount,
+  }
+}
+
+function firstJoinedValue<T>(value: T | T[] | null): T | null {
+  if (value == null) return null
+  return Array.isArray(value) ? (value[0] ?? null) : value
+}
+
+function resolveVersionBlockReason(
+  summary: CourseVersionHistorySummaryRow,
+  latestPublishedVersionId: string | null,
+): CourseArchiveVersionBlockReason | null {
+  if (summary.id === latestPublishedVersionId) return 'latestPublished'
+  return null
+}
+
+function toCourseArchiveVersionOption(
+  summary: CourseVersionHistorySummaryRow,
+  latestPublishedVersionId: string | null,
+  activeClassroomTitles: string[],
+): CourseArchiveVersionOption {
+  const blockReason = resolveVersionBlockReason(summary, latestPublishedVersionId)
+
+  return {
+    id: summary.id,
+    versionNo: summary.versionNo,
+    publishedAt: summary.publishedAt,
+    activeDeliveryCount: summary.activeDeliveryCount,
+    activeClassroomTitles,
+    isLatestPublished: summary.id === latestPublishedVersionId,
+    isEligible: blockReason == null,
+    blockReason,
   }
 }
 
@@ -181,6 +223,60 @@ export async function listCourseVersionHistory(
   )
 }
 
+export async function listCourseArchiveOptions(courseId: string): Promise<CourseArchiveOptions> {
+  const [versionHistory, activeClassroomsResponse] = await Promise.all([
+    listCourseVersionHistory(courseId),
+    supabase
+      .from('course_deliveries')
+      .select(
+        `
+        course_version_id,
+        classrooms (title)
+      `,
+      )
+      .eq('course_id', courseId)
+      .is('deleted_at', null)
+      .in('status', ['active', 'scheduled'])
+      .order('created_at', { ascending: false }),
+  ])
+
+  const { data, error } = activeClassroomsResponse
+
+  if (error) {
+    console.error('listCourseArchiveOptions:', error)
+    throw error
+  }
+
+  const latestPublishedVersionId =
+    versionHistory.find((summary) => summary.status === 'published')?.id ?? null
+  const classroomsByVersionId = buildActiveClassroomsByVersionId(
+    (data ?? []) as CourseArchiveDeliveryClassroomRow[],
+  )
+
+  return {
+    versions: versionHistory
+      .filter((summary) => summary.status === 'published')
+      .map((summary) =>
+        toCourseArchiveVersionOption(
+          summary,
+          latestPublishedVersionId,
+          classroomsByVersionId.get(summary.id) ?? [],
+        ),
+      ),
+  }
+}
+
+export async function archiveCourseVersion(courseVersionId: string): Promise<void> {
+  const { error } = await supabase.rpc('archive_course_version', {
+    p_course_version_id: courseVersionId,
+  })
+
+  if (error) {
+    console.error('archiveCourseVersion:', error)
+    throw error
+  }
+}
+
 export async function countDeliveriesForVersion(courseVersionId: string): Promise<number> {
   const { count, error } = await supabase
     .from('course_deliveries')
@@ -194,4 +290,21 @@ export async function countDeliveriesForVersion(courseVersionId: string): Promis
   }
 
   return count ?? 0
+}
+
+function buildActiveClassroomsByVersionId(
+  rows: CourseArchiveDeliveryClassroomRow[],
+): Map<string, string[]> {
+  const classroomsByVersionId = new Map<string, string[]>()
+
+  for (const row of rows) {
+    const classroom = firstJoinedValue(row.classrooms)
+    const title = classroom?.title?.trim()
+    if (!title) continue
+
+    const currentTitles = classroomsByVersionId.get(row.course_version_id) ?? []
+    classroomsByVersionId.set(row.course_version_id, [...currentTitles, title])
+  }
+
+  return classroomsByVersionId
 }

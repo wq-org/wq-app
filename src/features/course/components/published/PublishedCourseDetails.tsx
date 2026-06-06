@@ -22,7 +22,7 @@ type PublishedCourseDetailsProps = {
   selectedVersionId: string | null
   shouldShowVersionSelect: boolean
   onVersionChange: (courseVersionId: string) => void
-  onCompareToDraft: () => void
+  onCompareToDraft?: () => void
   onOpenEditor?: () => void
 }
 
@@ -126,26 +126,31 @@ export function PublishedCourseDetails({
         </>
       ) : null}
 
-      <Separator />
-
-      <div className="flex flex-col items-start gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCompareToDraft}
-        >
-          {t('published.compareToDraft')}
-        </Button>
-        {onOpenEditor ? (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onOpenEditor}
-          >
-            {t('published.openEditor')}
-          </Button>
-        ) : null}
-      </div>
+      {onCompareToDraft || onOpenEditor ? (
+        <>
+          <Separator />
+          <div className="flex flex-col items-start gap-2">
+            {onCompareToDraft ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCompareToDraft}
+              >
+                {t('published.compareToDraft')}
+              </Button>
+            ) : null}
+            {onOpenEditor ? (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onOpenEditor}
+              >
+                {t('published.openEditor')}
+              </Button>
+            ) : null}
+          </div>
+        </>
+      ) : null}
     </div>
   )
 }

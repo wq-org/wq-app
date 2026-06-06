@@ -12,3 +12,9 @@ export { StudentTasksPage } from './pages/tasks'
 export { StudentSettingsPage } from './pages/settings'
 export { Chat as StudentChat } from './pages/chat'
 export { StudentViewPage } from './pages/view'
+export {
+  StudentPublishedCourseGamePage,
+  StudentPublishedCoursePage,
+  StudentPublishedLessonPage,
+  StudentPublishedTopicPage,
+} from './pages/published-course'

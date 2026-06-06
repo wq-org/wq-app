@@ -3,7 +3,7 @@ import { getTopicsByCourseId } from '@/features/topic'
 
 import { getCourseById } from './coursesApi'
 import {
-  countDeliveriesForVersion,
+  countActiveDeliveriesForVersion,
   getCourseVersionTree,
   getLatestPublishedCourseVersionId,
 } from './courseVersionApi'
@@ -35,7 +35,7 @@ export async function fetchLatestPublishedCourseTree(
 
   const [tree, deliveryCount] = await Promise.all([
     getCourseVersionTree(versionId),
-    countDeliveriesForVersion(versionId),
+    countActiveDeliveriesForVersion(versionId),
   ])
 
   return { tree, deliveryCount }
