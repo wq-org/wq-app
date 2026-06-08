@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BookOpen, ClipboardList, GraduationCap } from 'lucide-react'
@@ -6,12 +6,15 @@ import { BookOpen, ClipboardList, GraduationCap } from 'lucide-react'
 import { AppShell } from '@/components/layout'
 import { LoadingPage } from '@/components/shared'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { QuoteOfTheDay } from '@/components/ui/QuoteOfTheDay'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { CourseCardList, buildStudentPublishedCourseRoute } from '@/features/course'
 import { DashboardSection, useDashboardGreetingPeriod } from '@/features/dashboard'
 import { useStudentCourseDeliveries } from '../hooks/useStudentCourseDeliveries'
+import type { StudentTeacherSummary } from '../api/studentCourseDeliveriesApi'
+import { TeacherProfileDialog } from '../components/TeacherProfileDialog'
 
 export function Dashboard() {
   const { t } = useTranslation('features.student')
@@ -36,6 +39,14 @@ export function Dashboard() {
 
     return [...teacherById.values()]
   }, [courses])
+
+  const [selectedTeacher, setSelectedTeacher] = useState<StudentTeacherSummary | null>(null)
+  const [teacherDialogOpen, setTeacherDialogOpen] = useState(false)
+
+  const handleTeacherClick = (teacher: StudentTeacherSummary) => {
+    setSelectedTeacher(teacher)
+    setTeacherDialogOpen(true)
+  }
 
   const handleCourseView = (courseId: string) => {
     const course = courses.find((item) => item.id === courseId)
@@ -85,7 +96,19 @@ export function Dashboard() {
               size={72}
             />
           ) : courses.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t('dashboard.sections.courses.empty')}</p>
+            <Empty className="border-none p-2 md:p-4">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <BookOpen className="size-5" />
+                </EmptyMedia>
+                <EmptyTitle className="text-sm font-medium">
+                  {t('dashboard.sections.courses.emptyTitle')}
+                </EmptyTitle>
+                <EmptyDescription>
+                  {t('dashboard.sections.courses.emptyDescription')}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <CourseCardList
               variant="compact"
@@ -99,10 +122,20 @@ export function Dashboard() {
         <DashboardSection
           title={t('dashboard.sections.tasks.title')}
           icon={ClipboardList}
-          classNameContainer="h-55.5 max-h-80 min-h-0"
+          classNameContainer="min-h-16"
           showContainerBorder
         >
-          <p className="text-sm text-muted-foreground">{t('dashboard.sections.tasks.empty')}</p>
+          <Empty className="border-none p-2 md:p-4">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <ClipboardList className="size-5" />
+              </EmptyMedia>
+              <EmptyTitle className="text-sm font-medium">
+                {t('dashboard.sections.tasks.emptyTitle')}
+              </EmptyTitle>
+              <EmptyDescription>{t('dashboard.sections.tasks.emptyDescription')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </DashboardSection>
 
         <DashboardSection
@@ -118,19 +151,31 @@ export function Dashboard() {
               size={72}
             />
           ) : teachers.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t('dashboard.sections.teachers.empty')}
-            </p>
+            <Empty className="border-none p-2 md:p-4">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <GraduationCap className="size-5" />
+                </EmptyMedia>
+                <EmptyTitle className="text-sm font-medium">
+                  {t('dashboard.sections.teachers.emptyTitle')}
+                </EmptyTitle>
+                <EmptyDescription>
+                  {t('dashboard.sections.teachers.emptyDescription')}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : (
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-4">
               {teachers.map((teacher) => (
-                <div
+                <button
                   key={teacher.id}
-                  className="flex w-28 min-w-0 flex-col items-center gap-2"
+                  type="button"
+                  onClick={() => handleTeacherClick(teacher)}
+                  className="group flex w-24 min-w-0 flex-col items-center gap-2 rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Avatar
-                    size="xl"
-                    className="shadow-sm"
+                    size="lg"
+                    className="shadow-sm ring-ring ring-offset-background transition-shadow group-hover:ring-2 group-hover:ring-offset-2"
                   >
                     <AvatarImage
                       src={teacher.avatarUrl ?? undefined}
@@ -147,12 +192,18 @@ export function Dashboard() {
                   >
                     {teacher.name}
                   </Text>
-                </div>
+                </button>
               ))}
             </div>
           )}
         </DashboardSection>
       </main>
+
+      <TeacherProfileDialog
+        teacher={selectedTeacher}
+        open={teacherDialogOpen}
+        onOpenChange={setTeacherDialogOpen}
+      />
     </AppShell>
   )
 }

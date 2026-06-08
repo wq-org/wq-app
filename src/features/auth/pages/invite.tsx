@@ -5,7 +5,7 @@ import { Text } from '@/components/ui/text'
 import { FieldInput } from '@/components/ui/field-input'
 import { Check, AlertTriangle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { signUpUser, redeemInstitutionInvite, validateInviteToken } from '../api/authApi'
+import { signUpUser, loginUser, redeemInstitutionInvite, validateInviteToken } from '../api/authApi'
 import { useUser } from '@/contexts/user'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
@@ -82,15 +82,39 @@ export function AuthInvitePage() {
         return
       }
 
-      // Redeem the invite to create membership and activate institution
+      // Guarantee the active session is the invited user's before redeeming.
+      // redeem_institution_invite runs as auth.uid() and rejects a mismatched
+      // signed-in email, so a stale session (e.g. an admin opening the link in the
+      // same browser) would otherwise make redemption fail and strand the account.
+      const login = await loginUser({ email: inviteState.email, password })
+      if (!login.success) {
+        toast.error('Account created', {
+          description: 'Please log in to finish activating your invite.',
+        })
+        navigate(`/auth/login?invite_token=${encodeURIComponent(token)}`)
+        return
+      }
+
+      // Redemption is the ONLY path that grants the invited role and membership:
+      // handle_new_user always seeds the default 'student' role for security, and
+      // redeem_institution_invite upgrades it. Its failure must NOT be swallowed —
+      // otherwise the account is stranded as 'student' with no institution access.
       try {
         await redeemInstitutionInvite(token)
-        // Refresh profile so React state picks up the DB role (institution_admin)
-        await refreshProfile()
       } catch (redeemError) {
         console.error('Invite redemption failed:', redeemError)
-        // Still proceed to onboarding — invite can be redeemed later on login
+        toast.error('Could not activate invite', {
+          description:
+            redeemError instanceof Error
+              ? redeemError.message
+              : 'Your account was created but the invite could not be activated. Please contact your administrator.',
+        })
+        setIsLoading(false)
+        return
       }
+
+      // Refresh profile so React state picks up the DB role granted by redemption.
+      await refreshProfile()
 
       toast.success('Account Created!', {
         description: "Welcome! Let's complete your profile.",

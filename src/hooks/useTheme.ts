@@ -1,12 +1,10 @@
 import { useCallback, useSyncExternalStore } from 'react'
 import { isAccentId, type AccentId } from '@/lib/themes'
+import { THEME_STORAGE_ACCENT, THEME_STORAGE_MODE } from '@/lib/themePreferences'
 
 export type ColorMode = 'light' | 'dark' | 'system'
 export type ThemeAccent = AccentId | 'default'
 type ThemeScope = 'app' | 'public'
-
-const STORAGE_ACCENT = 'wq:accent'
-const STORAGE_MODE = 'wq:mode'
 const DEFAULT_ACCENT: ThemeAccent = 'default'
 const DEFAULT_MODE: ColorMode = 'light'
 const DEFAULT_SCOPE: ThemeScope = 'public'
@@ -42,7 +40,7 @@ function readStoredAccent(): ThemeAccent {
   if (typeof window === 'undefined') return DEFAULT_ACCENT
 
   try {
-    const storedAccent = window.localStorage.getItem(STORAGE_ACCENT)
+    const storedAccent = window.localStorage.getItem(THEME_STORAGE_ACCENT)
     return storedAccent && isAccentId(storedAccent) ? storedAccent : DEFAULT_ACCENT
   } catch {
     return DEFAULT_ACCENT
@@ -53,7 +51,7 @@ function readStoredMode(): ColorMode {
   if (typeof window === 'undefined') return DEFAULT_MODE
 
   try {
-    const storedMode = window.localStorage.getItem(STORAGE_MODE)
+    const storedMode = window.localStorage.getItem(THEME_STORAGE_MODE)
     return isColorMode(storedMode) ? storedMode : DEFAULT_MODE
   } catch {
     return DEFAULT_MODE
@@ -64,8 +62,8 @@ function persistTheme(snapshot: ThemeSnapshot) {
   if (typeof window === 'undefined') return
 
   try {
-    window.localStorage.setItem(STORAGE_ACCENT, snapshot.accent)
-    window.localStorage.setItem(STORAGE_MODE, snapshot.mode)
+    window.localStorage.setItem(THEME_STORAGE_ACCENT, snapshot.accent)
+    window.localStorage.setItem(THEME_STORAGE_MODE, snapshot.mode)
   } catch {
     // Ignore storage failures and keep the in-memory theme active.
   }

@@ -19,40 +19,6 @@ import {
 const VERSION_SUMMARY_COLUMNS = 'id, version_no, published_at, status'
 const VERSION_HISTORY_COLUMNS = 'id, version_no, published_at, status, created_at'
 
-const VERSION_TREE_SELECT = `
-  id,
-  institution_id,
-  course_id,
-  version_no,
-  status,
-  published_at,
-  has_pending_changes,
-  title,
-  description,
-  theme_id,
-  created_at,
-  updated_at,
-  course_version_topics (
-    id,
-    course_version_id,
-    source_topic_id,
-    title,
-    description,
-    order_index,
-    course_version_lessons (
-      id,
-      course_version_topic_id,
-      source_lesson_id,
-      title,
-      description,
-      content,
-      pages,
-      order_index,
-      content_schema_version
-    )
-  )
-`
-
 type CourseArchiveDeliveryClassroomRow = {
   course_version_id: string
   classrooms: { title: string | null } | { title: string | null }[] | null
@@ -84,11 +50,10 @@ export async function getLatestPublishedCourseVersionId(courseId: string): Promi
 export async function getCourseVersionTree(
   courseVersionId: string,
 ): Promise<PublishedCourseVersion> {
-  const { data, error } = await supabase
-    .from('course_versions')
-    .select(VERSION_TREE_SELECT)
-    .eq('id', courseVersionId)
-    .single()
+  const { data, error } = await supabase.rpc('get_course_version_with_content', {
+    p_course_version_id: courseVersionId,
+    p_include_content: true,
+  })
 
   if (error) {
     console.error('getCourseVersionTree:', error)

@@ -1,3 +1,4 @@
+import { clearBrowserStoragePreservingTheme } from '@/lib/themePreferences'
 import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
 import { isValidRole } from '../types/auth.types'
@@ -150,20 +151,18 @@ export async function loginUser(loginData: AuthData): Promise<AuthApiResponse> {
 
 /**
  * Log out the current user
- * Clears Supabase session, sessionStorage, localStorage, and cookies
+ * Clears Supabase session, sessionStorage, localStorage (except theme prefs), and cookies
  */
 export async function logoutUser(): Promise<void> {
   try {
     // Sign out from Supabase (clears Supabase session and cookies)
     await supabase.auth.signOut()
 
-    sessionStorage.clear()
-    localStorage.clear()
+    clearBrowserStoragePreservingTheme()
   } catch (error) {
     console.error('Error during logout:', error)
     // Even if there's an error, try to clear local storage
-    sessionStorage.clear()
-    localStorage.clear()
+    clearBrowserStoragePreservingTheme()
     throw error
   }
 }
@@ -240,24 +239,40 @@ export async function redeemInstitutionInvite(token: string): Promise<void> {
 }
 
 /**
+ * Login-time self-heal: redeem any pending institution invite addressed to the
+ * currently authenticated user's email. Idempotent — safe to call on every login.
+ * Recovers accounts stranded as the default 'student' role when the invite-signup
+ * redemption did not complete. Returns the number of invites redeemed.
+ */
+export async function redeemPendingInstitutionInvites(): Promise<number> {
+  const { data, error } = await supabase.rpc('redeem_pending_institution_invites')
+  if (error) {
+    console.error('redeemPendingInstitutionInvites:', error)
+    return 0
+  }
+  return typeof data === 'number' ? data : 0
+}
+
+/**
  * Validate an institution invite token without redeeming it.
  * Returns invite details if valid, null if not found/expired/accepted.
  */
 export async function validateInviteToken(
   token: string,
 ): Promise<{ email: string; institutionId: string; membershipRole: string } | null> {
+  // RLS (institution_invites_select_anon) is the single source of truth for invite
+  // validity: the anon SELECT policy only returns rows where accepted_at IS NULL,
+  // revoked_at IS NULL, and expires_at > now() — all evaluated on the DB clock. A
+  // row reaching this point is therefore already known-valid. We deliberately do
+  // NOT re-check expiry against the browser clock: that produced false "expired"
+  // results whenever the client clock ran ahead of the server.
   const { data, error } = await supabase
     .from('institution_invites')
-    .select('email, institution_id, membership_role, expires_at, accepted_at, revoked_at')
+    .select('email, institution_id, membership_role')
     .eq('token', token)
     .maybeSingle()
 
   if (error || !data) return null
-  if (data.accepted_at) return null
-  if (data.revoked_at) return null
-
-  const expiresAt = new Date(data.expires_at as string)
-  if (expiresAt.getTime() < Date.now()) return null
 
   return {
     email: data.email as string,

@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/text'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldSeparator } from '@/components/ui/field'
 import { Link, useNavigate } from 'react-router-dom'
-import { loginUser } from '../api/authApi'
+import { loginUser, redeemPendingInstitutionInvites } from '../api/authApi'
 import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
@@ -61,6 +61,11 @@ export const LoginPage = () => {
 
       if (responseData.success && responseData.session && responseData.user) {
         try {
+          // Self-heal: redeem any pending invite for this user before reading the
+          // profile, so a previously stranded 'student' picks up its invited role
+          // and routes to the correct dashboard. Idempotent and non-fatal.
+          await redeemPendingInstitutionInvites()
+
           const profile = await supabase
             .from('profiles')
             .select('user_id, role, is_onboarded')

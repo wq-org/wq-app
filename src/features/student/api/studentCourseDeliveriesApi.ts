@@ -6,7 +6,9 @@ import { teacherInitialsFromProfile } from '@/features/course'
 type StudentDeliveryTeacherRow = {
   user_id: string
   display_name: string | null
+  username: string | null
   avatar_url: string | null
+  description: string | null
 }
 
 type StudentCourseDeliveryRow = {
@@ -53,8 +55,10 @@ type StudentCourseDeliveryRow = {
 export type StudentTeacherSummary = {
   id: string
   name: string
+  username: string | null
   avatarUrl: string | null
   initials: string
+  bio: string | null
 }
 
 export type StudentCourseDelivery = CourseCardProps & {
@@ -93,8 +97,10 @@ function toStudentCourseDelivery(row: StudentCourseDeliveryRow): StudentCourseDe
     teacher: {
       id: teacher?.user_id ?? course.id,
       name: teacherName,
+      username: teacher?.username ?? null,
       avatarUrl: teacher?.avatar_url ?? null,
       initials: teacherInitials,
+      bio: teacher?.description ?? null,
     },
   }
 }
@@ -117,7 +123,7 @@ export async function getStudentCourseDeliveries(): Promise<StudentCourseDeliver
         description,
         theme_id,
         is_published,
-        teacher:profiles!courses_teacher_id_fkey(user_id, display_name, avatar_url)
+        teacher:profiles!courses_teacher_id_fkey(user_id, display_name, username, avatar_url, description)
       )
     `,
     )

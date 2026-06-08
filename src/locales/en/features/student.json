@@ -13,16 +13,24 @@
       "courses": {
         "title": "Courses",
         "loading": "Loading courses…",
-        "empty": "No published courses are available yet."
+        "empty": "No published courses are available yet.",
+        "emptyTitle": "No courses yet",
+        "emptyDescription": "Your teachers haven't published any courses yet. Check back soon."
       },
       "tasks": {
         "title": "Tasks",
-        "empty": "No tasks are assigned right now."
+        "empty": "No tasks are assigned right now.",
+        "emptyTitle": "No tasks assigned",
+        "emptyDescription": "You're all caught up. New tasks from your teachers will appear here."
       },
       "teachers": {
         "title": "Teachers",
         "loading": "Loading teachers…",
-        "empty": "Teachers will appear here once courses are available."
+        "empty": "Teachers will appear here once courses are available.",
+        "emptyTitle": "No teachers yet",
+        "emptyDescription": "Teachers will appear here once you're enrolled in a course.",
+        "noBio": "No bio available.",
+        "openChat": "Open chat"
       }
     }
   },

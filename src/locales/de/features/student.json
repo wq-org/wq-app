@@ -13,16 +13,24 @@
       "courses": {
         "title": "Kurse",
         "loading": "Kurse werden geladen …",
-        "empty": "Noch sind keine veröffentlichten Kurse verfügbar."
+        "empty": "Noch sind keine veröffentlichten Kurse verfügbar.",
+        "emptyTitle": "Noch keine Kurse",
+        "emptyDescription": "Deine Lehrenden haben noch keine Kurse veröffentlicht. Schau später wieder vorbei."
       },
       "tasks": {
         "title": "Aufgaben",
-        "empty": "Aktuell sind keine Aufgaben zugewiesen."
+        "empty": "Aktuell sind keine Aufgaben zugewiesen.",
+        "emptyTitle": "Keine Aufgaben zugewiesen",
+        "emptyDescription": "Alles erledigt. Neue Aufgaben von deinen Lehrenden erscheinen hier."
       },
       "teachers": {
         "title": "Lehrende",
         "loading": "Lehrende werden geladen …",
-        "empty": "Lehrende erscheinen hier, sobald Kurse verfügbar sind."
+        "empty": "Lehrende erscheinen hier, sobald Kurse verfügbar sind.",
+        "emptyTitle": "Noch keine Lehrenden",
+        "emptyDescription": "Lehrende erscheinen hier, sobald du in einem Kurs eingeschrieben bist.",
+        "noBio": "Keine Beschreibung vorhanden.",
+        "openChat": "Chat öffnen"
       }
     }
   },
