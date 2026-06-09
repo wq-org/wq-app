@@ -89,6 +89,14 @@ export type {
   SerializableEdge,
   SerializableNode,
 } from './types/game-studio.types'
+export type {
+  GameVersionStatus,
+  GameVersionRow,
+  PublishedGameVersion,
+  GameLifecycleState,
+  GameDraftDiff,
+  GameDraftDiffSummary,
+} from './types/game-version.types'
 
 // ---- API ----
 export type { GameForStudio, UpdateGameForStudioPayload } from './api/gameStudioApi'
@@ -98,12 +106,21 @@ export {
   publishGame,
   unpublishGame,
   getGameForStudio,
+  getLatestPublishedGameVersion,
+  archiveGame,
+  softDeleteGame,
   getTeacherFlowGames,
   getPublishedGamesForCourse,
   getPublishedGamesFromFollowedTeachers,
 } from './api/gameStudioApi'
 export { useTeacherGameProjects } from './hooks/useTeacherGameProjects'
 export { useCourseLinkedGames } from './hooks/useCourseLinkedGames'
+export { useGameReleaseStatus } from './hooks/useGameReleaseStatus'
+export {
+  resolveGameLifecycleState,
+  buildGameReleaseDiff,
+  formatGamePublishedAt,
+} from './utils/gameLifecycle.utils'
 
 // ---- Flow-traversal utilities ----
 export type {

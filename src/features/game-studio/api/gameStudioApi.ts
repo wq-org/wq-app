@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
+import type { GameVersionRow, PublishedGameVersion } from '../types/game-version.types'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
 import type { ThemeId } from '@/lib/themes'
 
@@ -18,8 +19,34 @@ export interface GameForStudio {
   published_version: number | null
   is_draft: boolean | null
   published_at: string | null
+  current_published_version_id: string | null
+  archived_at: string | null
   created_at: string
   updated_at: string
+}
+
+type GameVersionJoinRow = {
+  title: string
+  description: string | null
+  theme_id: ThemeId
+}
+
+function toPublishedGameVersion(
+  row: GameVersionRow,
+  game: GameVersionJoinRow,
+): PublishedGameVersion {
+  return {
+    id: row.id,
+    gameId: row.game_id,
+    versionNo: row.version_no,
+    status: row.status,
+    content: row.content,
+    publishedAt: row.published_at ? new Date(row.published_at) : null,
+    createdAt: new Date(row.created_at),
+    gameTitle: game.title,
+    gameDescription: game.description,
+    themeId: game.theme_id,
+  }
 }
 
 /**
@@ -174,7 +201,13 @@ export async function getCurrentGameDraftVersionId(gameId: string): Promise<stri
 }
 
 export async function getGameForStudio(gameId: string): Promise<GameForStudio | null> {
-  const { data, error } = await supabase.from('games').select('*').eq('id', gameId).single()
+  const { data, error } = await supabase
+    .from('games')
+    .select(
+      'id, title, description, teacher_id, institution_id, course_id, game_type, theme_id, game_content, status, version, published_version, is_draft, published_at, current_published_version_id, archived_at, created_at, updated_at',
+    )
+    .eq('id', gameId)
+    .single()
 
   if (error) {
     if (error.code === 'PGRST116') return null
@@ -183,6 +216,50 @@ export async function getGameForStudio(gameId: string): Promise<GameForStudio | 
   }
 
   return data as GameForStudio
+}
+
+export async function getLatestPublishedGameVersion(
+  gameId: string,
+): Promise<PublishedGameVersion | null> {
+  const { data: game, error: gameError } = await supabase
+    .from('games')
+    .select('current_published_version_id, title, description, theme_id')
+    .eq('id', gameId)
+    .single()
+
+  if (gameError) throw new Error(gameError.message)
+
+  const versionId = (game as { current_published_version_id: string | null })
+    .current_published_version_id
+  if (!versionId) return null
+
+  const { data: version, error: versionError } = await supabase
+    .from('game_versions')
+    .select('id, game_id, version_no, status, content, published_at, created_at, updated_at')
+    .eq('id', versionId)
+    .single()
+
+  if (versionError) throw new Error(versionError.message)
+
+  return toPublishedGameVersion(version as unknown as GameVersionRow, game as GameVersionJoinRow)
+}
+
+export async function archiveGame(gameId: string): Promise<void> {
+  const { error } = await supabase
+    .from('games')
+    .update({ archived_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', gameId)
+
+  if (error) throw new Error(error.message)
+}
+
+export async function softDeleteGame(gameId: string): Promise<void> {
+  const { error } = await supabase
+    .from('games')
+    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', gameId)
+
+  if (error) throw new Error(error.message)
 }
 
 /**
@@ -228,17 +305,16 @@ export async function getPublishedGamesForCourse(courseId: string): Promise<Game
 export async function getTeacherFlowGames(teacherId: string): Promise<GameForStudio[]> {
   const { data, error } = await supabase
     .from('games')
-    .select('*')
+    .select(
+      'id, title, description, teacher_id, institution_id, course_id, game_type, theme_id, status, version, published_version, current_published_version_id, archived_at, created_at, updated_at',
+    )
     .eq('teacher_id', teacherId)
     .eq('game_type', 'flow')
     .order('updated_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching teacher flow games:', error)
-    throw error
-  }
+  if (error) throw new Error(error.message)
 
-  return (data || []) as GameForStudio[]
+  return (data ?? []) as GameForStudio[]
 }
 
 async function getFollowedTeacherIdsForCurrentUser(): Promise<string[]> {

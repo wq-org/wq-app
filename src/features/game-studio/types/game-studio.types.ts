@@ -1,12 +1,6 @@
 import type { Node, Edge } from '@xyflow/react'
 import type { ThemeId } from '@/lib/themes'
 
-/** Draft version row for project settings rollback UI. */
-export type GameStudioVersionOption = {
-  id: string
-  version: number
-}
-
 // ========== Drawer Props ==========
 export interface SettingsDrawerProps {
   open: boolean
@@ -15,14 +9,11 @@ export interface SettingsDrawerProps {
   title?: string
   description?: string
   themeId?: ThemeId
-  version?: number
-  rollbackVersions?: readonly GameStudioVersionOption[]
   onSave?: (payload: {
     title: string
     description: string
     theme_id: ThemeId
   }) => void | Promise<void>
-  onRollback?: (versionId: string) => void | Promise<void>
   onDelete?: () => void
 }
 
