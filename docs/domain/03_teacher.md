@@ -301,6 +301,119 @@ flowchart TD
 
 ## Schema visualization
 
+```mermaid
+flowchart TD
+  FM["Frau Müller<br/>profiles.role = teacher"]
+  IM["institution_memberships<br/>Schule für Farbe und Gestaltung<br/>status: active"]
+
+  FM --> IM
+
+  %% Courses
+  FM --> CROOT["courses<br/>teacher_id = self"]
+
+  CROOT --> C1["Grundlagen Farbe<br/>is_published: true"]
+  CROOT --> C2["Aufbaukurs Farbe<br/>is_published: false<br/>draft, not yet delivered"]
+
+  C1 --> TOPICS["topics"]
+
+  TOPICS --> T1["Farbenlehre<br/>order_index: 1"]
+  T1 --> L1["Primärfarben<br/>lesson, order_index: 1"]
+  T1 --> L2["Sekundärfarben<br/>lesson, order_index: 2"]
+
+  TOPICS --> T2["Farbmischung<br/>order_index: 2"]
+  T2 --> L3["Der Farbkreis<br/>lesson, order_index: 1"]
+  L3 --> TGATE["topic_availability_rules<br/>is_locked: true<br/>unlock_at: 2026-04-10"]
+
+  C1 --> CV["course_versions"]
+  CV --> CV1["v1<br/>status: archived"]
+  CV --> CV2["v2<br/>status: published<br/>immutable snapshot"]
+  CV2 --> CVL["course_version_topics<br/>→ course_version_lessons"]
+
+  C1 --> CD["course_deliveries"]
+  CD --> CD1["Farbmischung classroom + v2<br/>status: active<br/>starts_at: 2023-09-01"]
+
+  %% Games
+  FM --> GROOT["games<br/>teacher_id = self"]
+
+  GROOT --> G1["Farbkreis Quiz<br/>course_id → Grundlagen Farbe"]
+  G1 --> GV["game_versions"]
+  GV --> GV2["v2<br/>status: archived"]
+  GV --> GV3["v3<br/>status: published<br/>current_published_version_id"]
+
+  G1 --> GD["game_deliveries"]
+  GD --> GD1["Farbmischung classroom + v3<br/>status: published<br/>lesson_id → Der Farbkreis"]
+
+  G1 --> GR["game_runs"]
+  GR --> GR1["mode: classroom<br/>status: completed<br/>2026-03-28"]
+  GR1 --> GS1["game_session<br/>27 game_session_participants"]
+  GR --> GR2["mode: solo<br/>Anna Schmidt<br/>score: 675<br/>is_personal_best: true"]
+
+  GROOT --> G2["Mischfarben Challenge<br/>standalone, no course_id"]
+  G2 --> G2V["game_versions<br/>v1, status: published"]
+
+  %% Tasks
+  FM --> TTROOT["task_templates<br/>teacher_id = self"]
+
+  TTROOT --> TT1["Farbpalette erstellen"]
+  TT1 --> TTV["task_template_versions"]
+  TTV --> TTV1["v1<br/>status: published<br/>instructions jsonb<br/>rubric jsonb"]
+
+  TT1 --> TD["task_deliveries"]
+  TD --> TD1["Farbmischung classroom<br/>status: active<br/>due_at: 2026-04-10"]
+
+  TD1 --> GA["Gruppe A<br/>Anna Schmidt + Tom Weber"]
+  GA --> GAN["notes<br/>scope: collaborative<br/>co-editing"]
+  GA --> GAS["task_submissions<br/>status: submitted<br/>2026-04-08"]
+
+  TD1 --> GB["Gruppe B<br/>Lena Fischer + Jonas Meier"]
+  GB --> GBN["notes<br/>scope: collaborative"]
+  GB --> GBS["task_submissions<br/>status: reviewed<br/>feedback: Gut strukturiert!"]
+
+  %% Classrooms
+  FM --> CLROOT["classrooms<br/>primary_teacher_id = self"]
+
+  CLROOT --> CL1["Farbmischung<br/>ML-3A, Jahrgang 2023<br/>status: active"]
+
+  CL1 --> CM["classroom_members"]
+  CM --> S1["Anna Schmidt<br/>student<br/>enrolled_at: 2023-09-01"]
+  CM --> S2["Tom Weber<br/>student<br/>enrolled_at: 2023-09-01"]
+  CM --> S3["Lena Fischer<br/>student<br/>enrolled_at: 2023-09-01"]
+  CM --> S4["Jonas Meier<br/>student<br/>enrolled_at: 2023-09-01"]
+  CM --> S5["Max Huber<br/>student<br/>withdrawn_at: 2024-01-15<br/>leave_reason: transfer"]
+  CM --> CT1["Herr Bauer<br/>co_teacher<br/>enrolled_at: 2023-09-01"]
+
+  %% Attendance
+  CL1 --> AS["classroom_attendance_schedules"]
+  AS --> AS1["course_id → Grundlagen Farbe<br/>is_active: true<br/>active_from: 2023-09-01<br/>active_until: null<br/>days_of_week: [1,3,5]<br/>08:00–09:30<br/>timezone: Europe/Berlin"]
+
+  AS1 --> AE["classroom_attendance_schedule_exceptions"]
+  AE --> AE1["exception_date: 2026-04-18<br/>exception_type: skip<br/>no session generated"]
+
+  AS1 --> ASESS["classroom_attendance_sessions<br/>materialized via RPC"]
+
+  ASESS --> SES1["2026-03-31 Mo<br/>Farbenlehre – Stunde 12<br/>course_id → Grundlagen Farbe<br/>08:00–09:30<br/>schedule_id: set"]
+  SES1 --> AR["classroom_attendance_records"]
+  AR --> AR1["Anna Schmidt<br/>status: present<br/>check_in: 08:02<br/>source: self_check_in"]
+  AR --> AR2["Tom Weber<br/>status: late<br/>check_in: 08:18<br/>source: manual"]
+  AR --> AR3["Lena Fischer<br/>status: present<br/>check_in: 07:59<br/>source: self_check_in"]
+
+  ASESS --> SES2["2026-04-02 Mi<br/>title: null<br/>course_id → Grundlagen Farbe<br/>08:00–09:30<br/>no records yet — session open"]
+  ASESS --> SKIP["2026-04-18 Fr<br/>skipped via exception<br/>no session row generated"]
+
+  %% Rewards
+  CL1 --> CRS["classroom_reward_settings"]
+  CRS --> LB["leaderboard_opt_in: true"]
+  CRS --> JC["joker_config<br/>Hausaufgaben-Joker cost: 200<br/>Fehler-Joker cost: 300"]
+  CRS --> LT["level_thresholds<br/>Einsteiger: 0<br/>Lernprofi: 500<br/>Wissensträger: 1500<br/>..."]
+
+  %% Analytics
+  FM --> AN["Analytics<br/>read scoped to own content"]
+
+  AN --> LP["lesson_progress<br/>Anna completed Primärfarben: 2026-03-15<br/>Tom last_position: page 2"]
+  AN --> LE["learning_events<br/>847 rows across Grundlagen Farbe delivery<br/>slide_viewed, time_spent, ..."]
+  AN --> GRS["game_run_stats_scoped<br/>Anna best_score: 675<br/>Tom best_score: 420<br/>Lena best_score: 580"]
+```
+
 ```text
 Frau Müller  [profiles.role = teacher]
 │   institution_memberships → Schule für Farbe und Gestaltung  (status: active)

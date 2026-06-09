@@ -3,9 +3,10 @@ export { listTeacherClassrooms } from './api/classroomsTeacherApi'
 export { ClassroomCard } from './components/ClassroomCard'
 export { ClassroomCardList } from './components/ClassroomCardList'
 export type { ClassroomCardListItem } from './components/ClassroomCardList'
+export { ClassroomCoursesPanel } from './components/ClassroomCoursesPanel'
+export { ClassroomStudentsPanel } from './components/ClassroomStudentsPanel'
 export { useClassroomDetail } from './hooks/useClassroomDetail'
 export { useTeacherClassrooms } from './hooks/useTeacherClassrooms'
-export { ClassroomDetailPage } from './pages/classroom-detail'
 export {
   ClassroomPublishedCoursePage,
   ClassroomTopicPublishedPage,

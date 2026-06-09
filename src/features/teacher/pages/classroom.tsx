@@ -6,10 +6,11 @@ import { useLocation, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout'
 import { DashboardSection } from '@/features/dashboard'
 import { Text } from '@/components/ui/text'
-
-import { ClassroomCoursesPanel } from '../components/ClassroomCoursesPanel'
-import { ClassroomStudentsPanel } from '../components/ClassroomStudentsPanel'
-import { useClassroomDetail } from '../hooks/useClassroomDetail'
+import {
+  ClassroomCoursesPanel,
+  ClassroomStudentsPanel,
+  useClassroomDetail,
+} from '@/features/classroom'
 
 type ClassroomLocationState = {
   name?: string
@@ -23,18 +24,18 @@ type SectionSpec = {
 
 const CLASSROOM_SECTIONS: SectionSpec[] = [
   {
-    id: 'students',
-    icon: Users,
-    titleKey: 'pages.classroomDetail.sections.studentsTitle',
-  },
-  {
     id: 'courses',
     icon: BookOpen,
     titleKey: 'pages.classroomDetail.sections.coursesTitle',
   },
+  {
+    id: 'students',
+    icon: Users,
+    titleKey: 'pages.classroomDetail.sections.studentsTitle',
+  },
 ]
 
-export function ClassroomDetailPage() {
+export function TeacherClassroomPage() {
   const { t } = useTranslation('features.teacher')
   const { classroomId } = useParams<{ classroomId: string }>()
   const location = useLocation()

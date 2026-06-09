@@ -30,6 +30,7 @@ import {
 } from '@/features/student'
 import {
   TeacherDashboard,
+  TeacherClassroomPage,
   TeacherCoursesPage,
   TeacherSchedulePage,
   TeacherSettingsPage,
@@ -55,7 +56,6 @@ import {
 } from '@/features/course'
 import {
   ClassroomCourseTopicLessonPublishedPage,
-  ClassroomDetailPage,
   ClassroomPublishedCoursePage,
   ClassroomTopicPublishedPage,
 } from '@/features/classroom'
@@ -784,7 +784,7 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <ClassroomDetailPage />
+                        <TeacherClassroomPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

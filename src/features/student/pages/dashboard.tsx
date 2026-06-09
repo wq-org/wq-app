@@ -141,7 +141,7 @@ export function Dashboard() {
         <DashboardSection
           title={t('dashboard.sections.teachers.title')}
           icon={GraduationCap}
-          classNameContainer="min-h-42"
+          classNameContainer="min-h-32"
           showContainerBorder
         >
           {coursesLoading ? (
