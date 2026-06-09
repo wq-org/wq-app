@@ -21,6 +21,21 @@ export type GameVersionRow = {
   updated_at: string
 }
 
+/** Fields selected when mapping a published game_versions row to UI state. */
+export type PublishedGameVersionSource = Pick<
+  GameVersionRow,
+  | 'id'
+  | 'game_id'
+  | 'version_no'
+  | 'status'
+  | 'content'
+  | 'title'
+  | 'description'
+  | 'theme_id'
+  | 'published_at'
+  | 'created_at'
+>
+
 export type PublishedGameVersion = {
   id: string
   gameId: string

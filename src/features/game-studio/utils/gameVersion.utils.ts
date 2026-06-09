@@ -1,8 +1,8 @@
 import type { ThemeId } from '@/lib/themes'
 
-import type { GameVersionRow, PublishedGameVersion } from '../types/game-version.types'
+import type { PublishedGameVersion, PublishedGameVersionSource } from '../types/game-version.types'
 
-export function toPublishedGameVersion(row: GameVersionRow): PublishedGameVersion {
+export function toPublishedGameVersion(row: PublishedGameVersionSource): PublishedGameVersion {
   return {
     id: row.id,
     gameId: row.game_id,

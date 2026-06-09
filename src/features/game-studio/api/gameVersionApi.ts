@@ -1,10 +1,27 @@
 import { supabase } from '@/lib/supabase'
 
-import type { PublishedGameVersion } from '../types/game-version.types'
+import type { PublishedGameVersion, PublishedGameVersionSource } from '../types/game-version.types'
 import { toPublishedGameVersion } from '../utils/gameVersion.utils'
 
 const VERSION_COLUMNS =
-  'id, game_id, version_no, status, content, title, description, theme_id, published_at, created_at, updated_at'
+  'id, game_id, version_no, status, content, title, description, theme_id, published_at, created_at, updated_at' as const
+
+type DeliveredGameVersionSnapshot = {
+  title: string | null
+  description: string | null
+  theme_id: string | null
+  version_no: number
+}
+
+type DeliveredGameRow = {
+  game_id: string
+  game_versions: DeliveredGameVersionSnapshot | DeliveredGameVersionSnapshot[] | null
+}
+
+function firstRelation<T>(value: T | T[] | null | undefined): T | null {
+  if (value == null) return null
+  return Array.isArray(value) ? (value[0] ?? null) : value
+}
 
 export async function getLatestPublishedGameVersionId(gameId: string): Promise<string | null> {
   const { data: game, error } = await supabase
@@ -33,7 +50,7 @@ export async function getPublishedGameVersion(
   if (error) throw new Error(error.message)
   if (!data) return null
 
-  return toPublishedGameVersion(data)
+  return toPublishedGameVersion(data as PublishedGameVersionSource)
 }
 
 export async function countPublishedDeliveriesForGame(gameId: string): Promise<number> {
@@ -57,16 +74,6 @@ export async function countArchivedDeliveriesForGame(gameId: string): Promise<nu
 
   if (error) throw new Error(error.message)
   return count ?? 0
-}
-
-type DeliveredGameRow = {
-  game_id: string
-  game_versions: {
-    title: string | null
-    description: string | null
-    theme_id: string | null
-    version_no: number
-  } | null
 }
 
 export async function getDeliveredGamesForCourse(courseId: string) {
@@ -105,7 +112,7 @@ export async function getDeliveredGamesForCourse(courseId: string) {
     if (seen.has(row.game_id)) continue
     seen.add(row.game_id)
 
-    const version = row.game_versions
+    const version = firstRelation(row.game_versions)
     if (!version) continue
 
     games.push({
